@@ -1,0 +1,3 @@
+export enum EventType {
+    PORTFOLIO_SWITCHED = 'PORTFOLIO_SWITCHED'
+}

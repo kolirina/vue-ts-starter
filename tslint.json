@@ -1,23 +1,34 @@
 {
-    "defaultSeverity": "error",
-    "extends": [
-        "tslint:recommended"
+  "defaultSeverity": "error",
+  "extends": [
+    "tslint:recommended"
+  ],
+  "jsRules": {},
+  "rules": {
+    "quotemark": [
+      true,
+      "single"
     ],
-    "jsRules": {},
-    "rules": {
-        "quotemark": [
-            true,
-            "single"
-        ],
-        "indent": [
-            true
-        ],
-        "interface-name": [
-            false
-        ],
-        "arrow-parens": false,
-        // Pending fix for shorthand property names.
-        "object-literal-sort-keys": false
-    },
-    "rulesDirectory": []
+    "indent": [
+      true
+    ],
+    "interface-name": [
+      false
+    ],
+    "arrow-parens": false,
+    // Pending fix for shorthand property names.
+    "object-literal-sort-keys": false,
+    "strictPropertyInitialization": false,
+    /** Явно типы указывать не нужно для переменных и для инициализируемых параметров */
+    "no-inferrable-types": true,
+    /** Краткий стиль указания свойств в JSON объекте делаем необязательным */
+    "object-literal-shorthand": false,
+    /** Разрешаем указывать и типы и интерфейсы */
+    "interface-over-type-literal": false,
+    /** Файл не должен заканчиваться символом переноса строки */
+    "eofline": false,
+    /* Разрешаем расширять базовые правила нашими */
+    "curly": true
+  },
+  "rulesDirectory": []
 }

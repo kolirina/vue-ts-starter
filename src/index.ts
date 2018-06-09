@@ -1,21 +1,21 @@
 import Vue from "vue";
-import HelloComponent from "./components/Hello.vue";
-import HelloDecoratorComponent from "./components/HelloDecorator.vue";
+import {RouterConfiguration} from "./router/routerConfiguration";
+import {Application} from "./application";
+import {AppFrame} from "./app/appFrame";
+import {VuexConfiguration} from "./vuex/vuexConfiguration";
+
+const initialized = Application.start();
+const router = RouterConfiguration.getRouter();
+const store = VuexConfiguration.getStore();
 
 let v = new Vue({
+    router,
+    store,
     el: "#app",
+    // language=Vue
     template: `
-    <div>
-        Name: <input v-model="name" type="text">
-        <h1>Hello Component</h1>
-        <hello-component :name="name" :initialEnthusiasm="5" />
-        <h1>Hello Decorator Component</h1>
-        <hello-decorator-component :name="name" :initialEnthusiasm="5" />
-        </div>
+        <app-frame></app-frame>
     `,
-    data: { name: "World" },
-    components: {
-        HelloComponent,
-        HelloDecoratorComponent
-    }
+    components: {AppFrame}
 });
+

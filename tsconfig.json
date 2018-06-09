@@ -6,9 +6,19 @@
         "module": "es2015",
         "moduleResolution": "node",
         "target": "es5",
-        "experimentalDecorators": true
+        "experimentalDecorators": true,
+        // добавлено1
+//        "declaration": true,
+//        "noImplicitAny": true,
+//        "noImplicitReturns": true,
+//
+        "emitDecoratorMetadata": true,
+        "preserveConstEnums": true,
+//        "noResolve": true,
+        "strictNullChecks": false
     },
     "include": [
-        "./src/**/*"
+        "./src/**/*",
+        "./typings"
     ]
 }
