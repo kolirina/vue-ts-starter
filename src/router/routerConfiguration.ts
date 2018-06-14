@@ -4,7 +4,7 @@ import {NavigationGuard, Route, RouteConfig} from 'vue-router/types/router';
 import {PortfolioPage} from '../pages/portfolioPage';
 import {TradesPage} from '../pages/tradesPage';
 import {SettingsPage} from '../pages/settingsPage';
-import {Container} from "typescript-ioc";
+import {Container} from 'typescript-ioc';
 import {Storage} from '../platform/services/storage'
 
 Vue.use(VueRouter);
@@ -12,7 +12,8 @@ Vue.use(VueRouter);
 /** Сервис работы с localStorage */
 const localStorage: Storage = Container.get(Storage);
 /** Ключ под которым хранится токен пользователя */
-const TOKEN_KEY = "INTELINVEST_TOKEN";
+const TOKEN_KEY = 'INTELINVEST_TOKEN';
+const STORE_KEY = 'vuex';
 
 /**
  * Класс отвечающий за создание роутингов и инициализацию роутера
@@ -34,20 +35,29 @@ export class RouterConfiguration {
                 scrollBehavior: (() => ({x: 0, y: 0}))
             });
         }
-        RouterConfiguration.router.beforeEach((to, from, next) => {
-            console.log('TO: ', to, localStorage.get(TOKEN_KEY, 'TOKEN IS NULL'));
-            if (!localStorage.get(TOKEN_KEY, null) && to.name !== 'login') {
-                console.log('TOKEN NOT FOUND. GOING TO LOGIN PAGE');
-                next({name: 'login'});
-                return;
-            }
-            next();
-        });
+        // RouterConfiguration.router.beforeEach((to, from, next) => {
+        //     console.log('TO: ', to, localStorage.get(TOKEN_KEY, 'TOKEN IS NULL'));
+        //     if (!localStorage.get(TOKEN_KEY, null) && to.name !== 'login') {
+        //         console.log('TOKEN NOT FOUND. GOING TO LOGIN PAGE');
+        //         next({name: 'login'});
+        //         return;
+        //     }
+        //     next();
+        // });
         return RouterConfiguration.router;
     }
 
     private static createRoutes(): RouteConfig[] {
         return [
+            {
+                path: '/logout',
+                name: 'logout',
+                beforeEnter: (to, from, next) => {
+                    console.log('BEFORE LOGOUT');
+                    localStorage.delete(STORE_KEY);
+                    next({name: 'portfolio'});
+                }
+            },
             {
                 path: '*',
                 beforeEnter: () => {

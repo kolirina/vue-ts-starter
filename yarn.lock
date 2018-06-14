@@ -2,10 +2,6 @@
 # yarn lockfile v1
 
 
-"@types/amcharts@^3.21.2":
-  version "3.21.2"
-  resolved "https://registry.yarnpkg.com/@types/amcharts/-/amcharts-3.21.2.tgz#028f9ce27f0df403c0f8e7187a609bf97cb98a1e"
-
 "@types/chartist@^0.9.40":
   version "0.9.40"
   resolved "https://registry.yarnpkg.com/@types/chartist/-/chartist-0.9.40.tgz#87a747edb8c776990adf4a710169259bb5d16a0a"
@@ -50,10 +46,6 @@ align-text@^0.1.1, align-text@^0.1.3:
 alphanum-sort@^1.0.1, alphanum-sort@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/alphanum-sort/-/alphanum-sort-1.0.2.tgz#97a1119649b211ad33691d9f9f486a8ec9fbe0a3"
-
-amcharts3@^3.21.13:
-  version "3.21.13"
-  resolved "https://registry.yarnpkg.com/amcharts3/-/amcharts3-3.21.13.tgz#ff0e876dcef63bca93f5d69eac17fd6703ace655"
 
 ansi-regex@^2.0.0:
   version "2.1.1"
@@ -702,6 +694,10 @@ deep-extend@~0.4.0:
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/deep-extend/-/deep-extend-0.4.1.tgz#efe4113d08085f4e6f9687759810f807469e2253"
 
+deepmerge@^2.1.0:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/deepmerge/-/deepmerge-2.1.1.tgz#e862b4e45ea0555072bf51e7fd0d9845170ae768"
+
 defined@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/defined/-/defined-1.0.0.tgz#c98d9bcef75674188e110969151199e39b1fa693"
@@ -1263,6 +1259,10 @@ js-beautify@^1.6.3:
     editorconfig "^0.13.2"
     mkdirp "~0.5.0"
     nopt "~3.0.1"
+
+js-big-decimal@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/js-big-decimal/-/js-big-decimal-1.2.0.tgz#73470d24ed0fee8b59f3cff04cc20d7ae554ebb5"
 
 js-tokens@^3.0.0:
   version "3.0.1"
@@ -2274,6 +2274,10 @@ sha.js@^2.3.6:
   dependencies:
     inherits "^2.0.1"
 
+shvl@^1.3.0:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/shvl/-/shvl-1.3.1.tgz#6c20a17b4a20b08e9f8cab60c50a92229fcc176e"
+
 sigmund@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/sigmund/-/sigmund-1.0.1.tgz#3ff21f198cad2175f9f3b781853fd94d0d19b590"
@@ -2636,6 +2640,13 @@ vuetify@^1.0.18:
 vuex-class@^0.3.1:
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/vuex-class/-/vuex-class-0.3.1.tgz#3c0b946bcff4cf2be1904de5b0cab1a3dd5c41d5"
+
+vuex-persistedstate@^2.5.4:
+  version "2.5.4"
+  resolved "https://registry.yarnpkg.com/vuex-persistedstate/-/vuex-persistedstate-2.5.4.tgz#a19710ad7f9a08cea4e65fc585924d9fdac7384a"
+  dependencies:
+    deepmerge "^2.1.0"
+    shvl "^1.3.0"
 
 vuex@^3.0.1:
   version "3.0.1"

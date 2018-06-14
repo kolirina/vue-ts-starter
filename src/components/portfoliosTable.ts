@@ -17,7 +17,7 @@ import {PortfolioRow, TableHeader} from "../types/types";
                         </v-edit-dialog>
                     </td>
                     <td class="text-xs-right">{{ props.item.fixFee }}</td>
-                    <td class="text-xs-center">{{ props.item.currency }}</td>
+                    <td class="text-xs-center">{{ props.item.viewCurrency }}</td>
                     <td class="text-xs-center">{{ props.item.type }}</td>
                     <td class="text-xs-center">{{ props.item.openDate }}</td>
                     <td class="justify-center layout px-0">

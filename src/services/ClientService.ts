@@ -23,8 +23,8 @@ export class ClientService {
 
     async load(): Promise<ClientInfo> {
         // ------------------------------ POST ------------------------------------------
-        const result = await axios.get('http://localhost:8080/api/user/login', {
-            username: 'FirstUser',
+        const result = await axios.post('http://localhost:8080/api/user/login', {
+            username: 'b1ack',
             password: '12345678'
         });
         return await result.data;

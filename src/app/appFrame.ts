@@ -75,13 +75,16 @@ const mainStore = namespace(StoreType.MAIN);
                             </v-btn>
                         </slot>
                     </add-trade-dialog>
+                    <v-btn icon @click="logout">
+                        <v-icon>exit_to_app</v-icon>
+                    </v-btn>
                 </v-toolbar>
 
                 <v-content>
                     <v-container fluid fill-height>
-                        <keep-alive :include="cachedPages">
+                        <!--<keep-alive :include="cachedPages">-->
                             <router-view></router-view>
-                        </keep-alive>
+                        <!--</keep-alive>-->
                     </v-container>
                 </v-content>
                 <v-footer color="indigo" app inset>
@@ -135,6 +138,11 @@ export class AppFrame extends UI {
         await this.loadUser();
         await this.setCurrentPortfolio(this.$store.state[StoreType.MAIN].clientInfo.user.currentPortfolioId);
         this.isInitialized = true;
+    }
+
+    private logout(): void {
+        console.log('logout');
+        this.$router.push({name: 'logout'})
     }
 }
 

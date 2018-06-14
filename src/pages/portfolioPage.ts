@@ -6,8 +6,9 @@ import {StockTable} from '../components/stockTable';
 import {StoreType} from '../vuex/storeType';
 import {PieChart} from '../components/charts/pieChart';
 import {namespace} from "vuex-class/lib/bindings";
+import {BondTable} from '../components/bondTable';
 
-const mainStore = namespace(StoreType.MAIN);
+const MainStore = namespace(StoreType.MAIN);
 
 @Component({
     // language=Vue
@@ -33,7 +34,7 @@ const mainStore = namespace(StoreType.MAIN);
                 <v-expansion-panel-content>
                     <div slot="header">Облигации</div>
                     <v-card>
-                        <stock-table :rows="portfolio.overview.bondPortfolio.rows"></stock-table>
+                        <bond-table :rows="portfolio.overview.bondPortfolio.rows"></bond-table>
                     </v-card>
                 </v-expansion-panel-content>
             </v-expansion-panel>
@@ -52,13 +53,12 @@ const mainStore = namespace(StoreType.MAIN);
             </v-expansion-panel>
         </v-container>
     `,
-    components: {AssetTable, StockTable, PieChart},
-    name: 'PortfolioPage'
+    components: {AssetTable, StockTable, BondTable, PieChart}
 })
 export class PortfolioPage extends UI {
 
-    //@mainStore.Getter
-    portfolio: Portfolio = null;
+    @MainStore.Getter
+    private portfolio: Portfolio;
 
     private loading = false;
 
@@ -71,10 +71,11 @@ export class PortfolioPage extends UI {
             this.loading = false;
         }, 4000);
         this.data = [5, 9, 7, 8, 5, 3, 5, 4];
+        console.log("PORTFOLIO PAGE", this.$store);
+        // this.portfolio = this.$store.state[StoreType.MAIN].currentPortfolio;
     }
 
     private activated(): void {
-        console.log("PORTFOLIO PAGE", this.$store);
-        this.portfolio = this.$store.state[StoreType.MAIN].currentPortfolio;
+
     }
 }

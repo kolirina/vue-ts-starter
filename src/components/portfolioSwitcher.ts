@@ -49,7 +49,7 @@ export class PortfolioSwitcher extends UI {
 
 
     private getPortfolioName(portfolio: PortfolioRow): string {
-        return `${portfolio.name} (${portfolio.viewCurrency}), ${portfolio.access}`;
+        return `${portfolio.name} (${portfolio.viewCurrency}), ${portfolio.access ? 'Публичный' : 'Закрытый'}`;
     }
 
     private getSelected(id?: string): PortfolioRow {
