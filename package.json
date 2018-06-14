@@ -15,11 +15,10 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@types/amcharts": "^3.21.2",
     "@types/chartist": "^0.9.40",
-    "amcharts3": "^3.21.13",
     "axios": "^0.18.0",
     "chartist": "^0.11.0",
+    "js-big-decimal": "^1.2.0",
     "typescript-ioc": "^1.2.3",
     "vue": "^2.5.2",
     "vue-class-component": "^6.0.0",
@@ -27,7 +26,8 @@
     "vue-router": "^3.0.1",
     "vuetify": "^1.0.18",
     "vuex": "^3.0.1",
-    "vuex-class": "^0.3.1"
+    "vuex-class": "^0.3.1",
+    "vuex-persistedstate": "^2.5.4"
   },
   "devDependencies": {
     "css-loader": "^0.28.1",

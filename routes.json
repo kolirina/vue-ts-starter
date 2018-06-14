@@ -1,0 +1,5 @@
+{
+  "api/user/login": "/login",
+  "/api/portfolios/:id/overview": "/overview",
+  "/api/portfolios/6735/trades": "/trades"
+}

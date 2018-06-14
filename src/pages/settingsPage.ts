@@ -1,9 +1,11 @@
 import Component from "vue-class-component";
 import {UI} from "../app/UI";
-import {PortfolioRow} from "../types/types";
-import {Container} from "typescript-ioc";
-import {ClientService} from "../services/ClientService";
+import {ClientInfo, PortfolioRow} from "../types/types";
 import {PortfoliosTable} from "../components/portfoliosTable";
+import {StoreType} from "../vuex/storeType";
+import {namespace} from "vuex-class/lib/bindings";
+
+const MainStore = namespace(StoreType.MAIN);
 
 @Component({
     // language=Vue
@@ -16,11 +18,12 @@ import {PortfoliosTable} from "../components/portfoliosTable";
 })
 export class SettingsPage extends UI {
 
-    private clientService = (<ClientService> Container.get(ClientService));
+    @MainStore.Getter
+    private clientInfo: ClientInfo;
 
     private portfolios: PortfolioRow[] = null;
 
     private async mounted(): Promise<void> {
-        this.portfolios = await this.clientService.getClientInfo().client.portfolios;
+        this.portfolios = this.clientInfo.user.portfolios;
     }
 }

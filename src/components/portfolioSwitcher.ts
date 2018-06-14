@@ -1,15 +1,11 @@
 import {UI} from "../app/UI";
 import Component from "vue-class-component";
 import {ClientInfo, Portfolio, PortfolioRow} from "../types/types";
-import {ClientService} from "../services/ClientService";
-import {Container} from "typescript-ioc";
 import {StoreType} from "../vuex/storeType";
 import {MutationType} from "../vuex/mutationType";
-import {Action, Getter, namespace, State} from "vuex-class/lib/bindings";
-import {PortfolioService} from "../services/PortfolioService";
+import {Action, Getter, namespace} from "vuex-class/lib/bindings";
 
-const MainState = namespace(StoreType.MAIN, State);
-const MainAction = namespace(StoreType.MAIN, Action);
+const MainStore = namespace(StoreType.MAIN);
 
 @Component({
     // language=Vue
@@ -28,43 +24,37 @@ const MainAction = namespace(StoreType.MAIN, Action);
 })
 export class PortfolioSwitcher extends UI {
 
-    @MainState("clientInfo")
+    @MainStore.Getter
     private clientInfo: ClientInfo;
+    @MainStore.Getter
+    private portfolio: Portfolio;
 
-    @MainAction(MutationType.SET_CURRENT_PORTFOLIO)
-    setCurrentPortfolio: (portfolio: Portfolio) => void;
-
-    private clientService = (<ClientService> Container.get(ClientService));
-    private portfolioService = (<PortfolioService> Container.get(PortfolioService));
+    @MainStore.Action(MutationType.SET_CURRENT_PORTFOLIO)
+    private setCurrentPortfolio: (id: string) => Promise<Portfolio>;
 
     private portfolios: PortfolioRow[] = null;
 
     private selected: PortfolioRow = null;
 
-    private async mounted(): Promise<void> {
-        this.portfolios = await this.clientService.getClientInfo().client.portfolios;
+    private async created(): Promise<void> {
+        console.log('PS', this.clientInfo);
+        this.portfolios = this.clientInfo.user.portfolios;
         this.selected = this.getSelected();
     }
 
-    private created(): void {
-        console.log("created in PS", this.clientInfo);
-    }
-
-    private onSelect(selected: PortfolioRow): void {
-        // this.$store.commit(`${StoreType.MAIN}/${MutationType.SET_CURRENT_PORTFOLIO}`, selected.id);
-        // this.$store.commit('')
-        this.setCurrentPortfolio(this.portfolioService.getById(selected.id));
+    private async onSelect(selected: PortfolioRow): Promise<void> {
+        await this.setCurrentPortfolio(selected.id);
         this.selected = selected;
     }
 
 
     private getPortfolioName(portfolio: PortfolioRow): string {
-        return `${portfolio.name} (${portfolio.currency}), ${portfolio.access}`;
+        return `${portfolio.name} (${portfolio.viewCurrency}), ${portfolio.access}`;
     }
 
     private getSelected(id?: string): PortfolioRow {
         console.log("SELECTED", this.$store.state[StoreType.MAIN]);
-        const currentPortfolioId = this.$store.state[StoreType.MAIN].currentPortfolio.id;
+        const currentPortfolioId = this.portfolio.id;
         const portfolio = this.portfolios.find(p => p.id === currentPortfolioId);
         if (!portfolio) {
             return this.portfolios[0];

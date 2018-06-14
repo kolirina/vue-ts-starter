@@ -1,6 +1,7 @@
 import {Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {ClientInfo} from "../types/types";
+import axios from 'axios';
 
 @Service("ClientService")
 @Singleton
@@ -8,29 +9,24 @@ export class ClientService {
 
     private clientInfo: ClientInfo = null;
 
-    getClientInfo(): ClientInfo {
+    async getClientInfo(): Promise<ClientInfo> {
         if (!this.clientInfo) {
-            this.init();
+            await this.init();
         }
         return this.clientInfo;
     }
 
-    init(): void {
-        this.clientInfo = {
-            token: 'LJSFDGJL(FSDG*FSDJLSDF)SD(FSD',
-            client: {
-                id: '3',
-                username: 'FirstUser',
-                email: 'first@intelinvest.ru',
-                tariff: 'PRO',
-                paidTill: '10.10.2020',
-                currentPortfolioId: '28',
-                portfolios: [
-                    {id: '28', name: 'Портфель открытый', access: 'Публичный', fixFee: '0.1', currency: 'RUR', type: 'BROKERAGE', openDate: '20.10.2017'},
-                    {id: '41', name: 'Портфель закрытый', access: 'Закрытый', fixFee: '0.2', currency: 'USD', type: 'IIS', openDate: '20.10.2015'}
-                ]
-            }
-        };
-        console.log("INIT CLIENT SERVICE");
+    private async init(): Promise<void> {
+        this.clientInfo = await this.load();
+        console.log("INIT CLIENT SERVICE", this.clientInfo);
+    }
+
+    async load(): Promise<ClientInfo> {
+        // ------------------------------ POST ------------------------------------------
+        const result = await axios.get('http://localhost:8080/api/user/login', {
+            username: 'FirstUser',
+            password: '12345678'
+        });
+        return await result.data;
     }
 }

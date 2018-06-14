@@ -3,15 +3,15 @@ import {UI} from "../app/UI";
 import {Portfolio} from "../types/types";
 import {TradesTable} from "../components/tradesTable";
 import {StoreType} from "../vuex/storeType";
-import {Getter, namespace} from "vuex-class/lib/bindings";
+import {namespace} from "vuex-class/lib/bindings";
 
-const PortfolioGetter = namespace(StoreType.MAIN, Getter);
+const MainStore = namespace(StoreType.MAIN);
 
 @Component({
     // language=Vue
     template: `
         <v-container v-if="portfolio" fluid>
-            <dashboard :data="portfolio.overview.dashboard"></dashboard>
+            <dashboard :data="portfolio.overview.dashboardData"></dashboard>
             <trades-table :trades="portfolio.trades"></trades-table>
         </v-container>
     `,
@@ -19,5 +19,10 @@ const PortfolioGetter = namespace(StoreType.MAIN, Getter);
 })
 export class TradesPage extends UI {
 
-    @PortfolioGetter('portfolio') portfolio: Portfolio;
+    @MainStore.Getter
+    private portfolio: Portfolio;
+
+    private mounted(): void {
+        console.log('TRADES PAGE', this.$store.state[StoreType.MAIN]);
+    }
 }

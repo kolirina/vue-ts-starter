@@ -1,21 +1,27 @@
-import Vue from "vue";
-import {RouterConfiguration} from "./router/routerConfiguration";
-import {Application} from "./application";
+import {RouterConfiguration} from './router/routerConfiguration';
+import {VuexConfiguration} from './vuex/vuexConfiguration';
+import {UIRegistry} from './app/uiRegistry';
 import {AppFrame} from "./app/appFrame";
-import {VuexConfiguration} from "./vuex/vuexConfiguration";
 
-const initialized = Application.start();
+const initialized = UIRegistry.init();
 const router = RouterConfiguration.getRouter();
 const store = VuexConfiguration.getStore();
 
-let v = new Vue({
-    router,
-    store,
-    el: "#app",
-    // language=Vue
-    template: `
-        <app-frame></app-frame>
-    `,
-    components: {AppFrame}
-});
+async function _start(resolve: () => void, reject: () => void): Promise<void> {
+    try {
+        const app = new AppFrame({router, store});
+        app.$mount('#app');
+        resolve();
+    } catch (error) {
+        console.log('ERROR WHILE INIT APPLICATION', error);
+        reject();
+    }
+}
 
+export function start(): void {
+    new Promise((resolve, reject) => {
+        _start(resolve, reject);
+    });
+}
+
+start();

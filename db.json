@@ -1,0 +1,380 @@
+{
+  "login": {
+    "token": "x9C2Z1fIiICXXYsk4dzQdfNNAeJQPRL1",
+    "user": {
+      "id": 3,
+      "username": "FirstUser",
+      "email": "first@intelinvest.ru",
+      "tariff": "PRO",
+      "paidTill": "2018-05-09",
+      "currentPortfolioId": 6735,
+      "portfolios": [
+        {
+          "id": 3,
+          "name": "myport",
+          "viewCurrency": "RUB"
+        },
+        {
+          "id": 25,
+          "name": "mmvb10",
+          "viewCurrency": "RUB"
+        },
+        {
+          "id": 32,
+          "name": "test",
+          "viewCurrency": "RUB"
+        },
+        {
+          "id": 37,
+          "name": "Портфель Предпринимателя",
+          "viewCurrency": "RUB"
+        },
+        {
+          "id": 38,
+          "name": "Портфель Менеджера",
+          "viewCurrency": "RUB"
+        },
+        {
+          "id": 4997,
+          "name": "test",
+          "viewCurrency": "RUB"
+        },
+        {
+          "id": 5467,
+          "name": "finam",
+          "viewCurrency": "RUB"
+        },
+        {
+          "id": 5602,
+          "name": "dfgdfgdfg",
+          "viewCurrency": "RUB"
+        },
+        {
+          "id": 6266,
+          "name": "ticket_327",
+          "viewCurrency": "RUB"
+        },
+        {
+          "id": 6273,
+          "name": "teeeee",
+          "viewCurrency": "RUB"
+        },
+        {
+          "id": 6284,
+          "name": "опопропро",
+          "viewCurrency": "RUB"
+        },
+        {
+          "id": 6355,
+          "name": "oblig",
+          "viewCurrency": "RUB"
+        },
+        {
+          "id": 6361,
+          "name": "oblig_clone_clone",
+          "viewCurrency": "RUB"
+        },
+        {
+          "id": 6366,
+          "name": "oblig_clone_clone_clone",
+          "viewCurrency": "RUB"
+        },
+        {
+          "id": 6407,
+          "name": "tetete",
+          "viewCurrency": "USD"
+        },
+        {
+          "id": 6686,
+          "name": "test",
+          "viewCurrency": "RUB"
+        },
+        {
+          "id": 6699,
+          "name": "tormozzz",
+          "viewCurrency": "RUB"
+        },
+        {
+          "id": 6734,
+          "name": "import_test",
+          "viewCurrency": "RUB"
+        },
+        {
+          "id": 6735,
+          "name": "impo ",
+          "viewCurrency": "RUB"
+        }
+      ]
+    }
+  },
+  "overview": {
+    "dashboardData": {
+      "currentCost": "USD 394.538631798",
+      "currentCostInAlternativeCurrency": "RUB 24357.000249502",
+      "profitWithoutDividendsAndCoupons": "USD -16.350587262",
+      "profit": "USD -16.350587262",
+      "percentProfit": -3.971109175,
+      "profitWithoutFees": "USD -16.350587262",
+      "yearYield": -7.63,
+      "yearYieldWithoutDividendsAndCoupons": -7.63,
+      "dailyChanges": "USD -0.000000036",
+      "dailyChangesPercent": -9e-9
+    },
+    "assetRows": [
+      {
+        "profit": "USD -32.532551100",
+        "percCurrShare": 58.414418849,
+        "currCost": "USD 230.467448900",
+        "type": "STOCK",
+        "assetType": "STOCK"
+      },
+      {
+        "profit": "USD 0.000000000",
+        "percCurrShare": 0,
+        "currCost": "USD 0.000000000",
+        "type": "BOND",
+        "assetType": "BOND"
+      },
+      {
+        "profit": null,
+        "percCurrShare": 41.585581151,
+        "currCost": "RUB 10129.000000000",
+        "type": "RUBLES",
+        "assetType": "MONEY"
+      },
+      {
+        "profit": null,
+        "percCurrShare": 0,
+        "currCost": "USD 0.000000000",
+        "type": "DOLLARS",
+        "assetType": "MONEY"
+      }
+    ],
+    "stockPortfolio": {
+      "sumRow": {
+        "profit": "USD -32.532551100",
+        "percCurrShare": 0,
+        "currCost": "USD 230.467448900",
+        "initCost": "USD 262.755665800",
+        "avgInvested": "USD 262.755665800",
+        "yearYield": -30.74,
+        "ownedDays": 147,
+        "percProfit": -12.381293854,
+        "rateProfit": "USD -32.532551100",
+        "rateProfitPercent": -12.369791293,
+        "exchangeProfit": "USD 0.000000000",
+        "exchangeProfitPercent": 0,
+        "summaryCost": "USD 262.755665800",
+        "summFee": "USD 0.000000000",
+        "buyFee": null,
+        "sellFee": null,
+        "dailyPl": "USD -2.917309500",
+        "dailyPlPercent": -1.265822793,
+        "decimals": 0,
+        "currPrice": null,
+        "profitFromDividends": "USD 0.000000000",
+        "profitFromDividendsPercent": 0,
+        "assetType": "STOCK",
+        "bcost": "USD 262.755665800",
+        "scost": "USD 0.000000000"
+      },
+      "rows": [
+        {
+          "profit": "USD -32.532551100",
+          "percCurrShare": 100,
+          "currCost": "USD 230.467448900",
+          "initCost": "USD 262.755665800",
+          "avgInvested": "USD 262.755665800",
+          "yearYield": -30.74,
+          "ownedDays": 147,
+          "percProfit": -12.381293854,
+          "rateProfit": "USD -32.532551100",
+          "rateProfitPercent": -12.369791293,
+          "exchangeProfit": "USD 0.000000000",
+          "exchangeProfitPercent": 0,
+          "summaryCost": "USD 230.467448900",
+          "summFee": "USD 0.000000000",
+          "buyFee": "USD 0.000000000",
+          "sellFee": "USD 0.000000000",
+          "dailyPl": "USD -2.917309500",
+          "dailyPlPercent": -1.25,
+          "decimals": 2,
+          "currPrice": "USD 2.304674489",
+          "profitFromDividends": "USD 0.000000000",
+          "profitFromDividendsPercent": 0,
+          "stockTarget": {
+            "id": null,
+            "stock": {
+              "id": 1075,
+              "decimals": 2,
+              "currency": "RUB",
+              "isin": "RU0007661625",
+              "shortname": "������� ��",
+              "change": -1.25,
+              "boardName": "T_PLUS",
+              "ticker": "GAZP",
+              "price": "RUB 142.280000000",
+              "name": "\"�������\" (���) ��",
+              "regNumber": "1-02-00028-A",
+              "lotsize": "10",
+              "rating": 5,
+              "maxRating": 14,
+              "lastRating": 5,
+              "interval": 0,
+              "site": " ",
+              "yield3": null,
+              "yield5": null,
+              "yieldAll": null,
+              "weight": null,
+              "color": null,
+              "privileged": false,
+              "sector": {
+                "name": "����� � ���",
+                "parent": null,
+                "root": true
+              },
+              "issueSize": 23673512900,
+              "issueCapitalization": 3368267415412,
+              "moexId": 711
+            },
+            "maxOwnedDays": null,
+            "targetPrice": null,
+            "stopLossPrice": null,
+            "portfolioId": 6735,
+            "currentCost": null,
+            "currentShare": null,
+            "targetShare": null,
+            "lotsize": 0,
+            "checked": false,
+            "minAmount": null,
+            "maxAmount": null,
+            "minQuantity": null,
+            "maxQuantity": null,
+            "minLotsize": 0,
+            "maxLotsize": 0
+          },
+          "id": 0,
+          "stock": {
+            "id": 1075,
+            "decimals": 2,
+            "currency": "RUB",
+            "isin": "RU0007661625",
+            "shortname": "ГАЗПРОМ ао",
+            "change": -1.18,
+            "boardName": "T_PLUS",
+            "ticker": "GAZP",
+            "price": "RUB 139.330000000",
+            "name": "\"Газпром\" (ПАО) ао",
+            "regNumber": "1-02-00028-A",
+            "lotsize": "10",
+            "rating": 5,
+            "maxRating": 14,
+            "lastRating": 5,
+            "interval": 0,
+            "site": " ",
+            "yield3": null,
+            "yield5": null,
+            "yieldAll": null,
+            "weight": null,
+            "color": null,
+            "privileged": false,
+            "sector": {
+              "name": "Нефть и газ",
+              "parent": null,
+              "root": true
+            }
+          },
+          "quantity": 100,
+          "avgBuy": "USD 2.630000000",
+          "avgBuyClean": "USD 2.630000000",
+          "firstBuy": 1516179600000,
+          "lastBuy": 1516179600000,
+          "lotCounts": 10,
+          "short": false,
+          "assetType": "STOCK",
+          "bcost": "USD 262.755665800",
+          "scost": "USD 0.000000000"
+        }
+      ]
+    },
+    "bondPortfolio": {
+      "sumRow": {
+        "profit": "USD 0.000000000",
+        "percCurrShare": 0,
+        "currCost": "USD 0.000000000",
+        "initCost": "USD 0.000000000",
+        "avgInvested": "USD 0.000000000",
+        "yearYield": null,
+        "ownedDays": 0,
+        "percProfit": null,
+        "rateProfit": "USD 0.000000000",
+        "rateProfitPercent": 0,
+        "exchangeProfit": "USD 0.000000000",
+        "exchangeProfitPercent": null,
+        "summaryCost": "USD 0.000000000",
+        "summFee": "USD 0.000000000",
+        "buyFee": null,
+        "sellFee": null,
+        "dailyPl": "USD 0.000000000",
+        "dailyPlPercent": null,
+        "decimals": 0,
+        "currPrice": null,
+        "profitFromCoupons": "USD 0.000000000",
+        "profitFromCouponsPercent": null,
+        "buyNkd": "USD 0.000000000",
+        "sellNkd": "USD 0.000000000",
+        "assetType": "BOND",
+        "bcost": "USD 0.000000000",
+        "scost": "USD 0.000000000"
+      },
+      "rows": []
+    }
+  },
+  "trades": [
+    {
+      "id": 545643,
+      "date": 1512464400000,
+      "operation": "BUY",
+      "operationLabel": "Внесение",
+      "currency": "RUB",
+      "note": "",
+      "signedTotal": "RUB 24000.000000000"
+    },
+    {
+      "id": 545644,
+      "date": 1516179600000,
+      "operation": "BUY",
+      "operationLabel": "Покупка",
+      "currency": "RUB",
+      "note": "",
+      "signedTotal": "RUB 14870.000000000"
+    },
+    {
+      "id": 545645,
+      "date": 1516179600000,
+      "operation": "SELL",
+      "operationLabel": "Списание",
+      "currency": "RUB",
+      "note": "Списание денег за сделку по ГАЗПРОМ ао",
+      "signedTotal": "RUB -14870.000000000"
+    },
+    {
+      "id": 546673,
+      "date": 1527346058000,
+      "operation": "BUY",
+      "operationLabel": "Внесение",
+      "currency": "RUB",
+      "note": "Зачисление денег за доходную операцию от 2018.05.26",
+      "signedTotal": "RUB 999.000000000"
+    },
+    {
+      "id": 546672,
+      "date": 1527346058000,
+      "operation": "INCOME",
+      "operationLabel": "Доход",
+      "currency": "RUB",
+      "note": "льльльльль",
+      "signedTotal": "RUB 999.000000000"
+    }
+  ]
+}

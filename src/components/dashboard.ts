@@ -1,7 +1,7 @@
-import Component from "vue-class-component";
-import {UI} from "../app/UI";
-import {Prop, Watch} from "vue-property-decorator";
-import {DashboardBlock, DashboardBrick} from "../types/types";
+import Component from 'vue-class-component';
+import {UI} from '../app/UI';
+import {Prop, Watch} from 'vue-property-decorator';
+import {DashboardBrick, DashboardData} from '../types/types';
 
 @Component({
     // language=Vue
@@ -12,12 +12,12 @@ import {DashboardBlock, DashboardBrick} from "../types/types";
             </v-card-title>
             <v-container fluid>
                 <v-layout row>
-                    <v-flex class="headline" :align-content-start="true">
+                    <v-flex class="headline">
                         <v-icon>{{ block.icon }}</v-icon>
                         <span>{{ block.mainValue }}</span>
                     </v-flex>
                 </v-layout>
-                <v-layout row>
+                <v-layout row :align-start="true" :align-content-start="true">
                     <v-flex>
                         <span>{{ block.secondValue }}</span>
                         <span>{{ block.secondValueDesc }}</span>
@@ -58,16 +58,49 @@ export class DashboardBrickComponent extends UI {
 export class Dashboard extends UI {
 
     @Prop({required: true})
-    private data: DashboardBlock;
+    private data: DashboardData;
 
     private blocks: DashboardBrick[] = [];
 
     @Watch('data')
-    private onBlockChange(newValue: DashboardBlock): void {
-        this.blocks = newValue.bricks;
+    private onBlockChange(newValue: DashboardData): void {
+        this.fillBricks(newValue);
     }
 
     private created(): void {
-        this.blocks = this.data.bricks;
+        this.fillBricks(this.data);
+        console.log('DASHBOARD: ', this.blocks);
+    }
+
+    private fillBricks(newValue: DashboardData): void {
+        this.blocks[0] = {
+            name: 'Суммарная стоимость',
+            mainValue: newValue.currentCost,
+            secondValue: newValue.currentCostInAlternativeCurrency,
+            color: 'blue',
+            icon: 'fas fa-briefcase'
+        };
+        this.blocks[1] = {
+            name: 'Суммарная прибыль',
+            mainValue: newValue.profit,
+            secondValue: newValue.profitWithoutDividendsAndCoupons,
+            secondValueDesc: 'без дивидендов и купонов',
+            color: 'orange',
+            icon: 'fas fa-money-bill-alt'
+        };
+        this.blocks[2] = {
+            name: 'Среднегодовая доходность',
+            mainValue: newValue.yearYield,
+            secondValue: newValue.yearYieldWithoutDividendsAndCoupons,
+            color: 'green',
+            icon: 'fas fa-chart-bar'
+        };
+        this.blocks[3] = {
+            name: 'Изменение за день',
+            mainValue: newValue.dailyChanges,
+            secondValue: newValue.dailyChangesPercent,
+            color: 'red',
+            icon: 'fas fa-hand-holding-usd'
+        };
     }
 }

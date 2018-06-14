@@ -15,32 +15,32 @@ export {Action, Getter, Mutation, namespace, State};
 export class UI extends Vue {
 
     /**
-     * Глобальная шина событий
+     * Р“Р»РѕР±Р°Р»СЊРЅР°СЏ С€РёРЅР° СЃРѕР±С‹С‚РёР№
      */
     private static eventBus = new Vue();
 
     /**
-     * Подписывает компонент на глобальное событие
-     * @param event    событие
-     * @param callback обработчик события
+     * РџРѕРґРїРёСЃС‹РІР°РµС‚ РєРѕРјРїРѕРЅРµРЅС‚ РЅР° РіР»РѕР±Р°Р»СЊРЅРѕРµ СЃРѕР±С‹С‚РёРµ
+     * @param event    СЃРѕР±С‹С‚РёРµ
+     * @param callback РѕР±СЂР°Р±РѕС‚С‡РёРє СЃРѕР±С‹С‚РёСЏ
      */
     static on(event: string | string[], callback: (...args: any[]) => any) {
         UI.eventBus.$on(event, callback);
     }
 
     /**
-     * Отписывает компонент от глобального события
-     * @param event    событие
-     * @param callback обработчик события
+     * РћС‚РїРёСЃС‹РІР°РµС‚ РєРѕРјРїРѕРЅРµРЅС‚ РѕС‚ РіР»РѕР±Р°Р»СЊРЅРѕРіРѕ СЃРѕР±С‹С‚РёСЏ
+     * @param event    СЃРѕР±С‹С‚РёРµ
+     * @param callback РѕР±СЂР°Р±РѕС‚С‡РёРє СЃРѕР±С‹С‚РёСЏ
      */
     static off(event?: string | string[], callback?: (...args: any[]) => any) {
         UI.eventBus.$off(event, callback);
     }
 
     /**
-     * Уведомляет о наступлении глобального события
-     * @param event событие
-     * @param args  данные
+     * РЈРІРµРґРѕРјР»СЏРµС‚ Рѕ РЅР°СЃС‚СѓРїР»РµРЅРёРё РіР»РѕР±Р°Р»СЊРЅРѕРіРѕ СЃРѕР±С‹С‚РёСЏ
+     * @param event СЃРѕР±С‹С‚РёРµ
+     * @param args  РґР°РЅРЅС‹Рµ
      */
     static emit(event: string, ...args: any[]) {
         UI.eventBus.$emit(event, ...args);

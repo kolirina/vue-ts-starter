@@ -1,7 +1,7 @@
 import Component from "vue-class-component";
 import {Prop} from "vue-property-decorator";
 import {UI} from "../app/UI";
-import {StockRow, TableHeader} from "../types/types";
+import {StockPortfolioRow, TableHeader} from '../types/types';
 
 @Component({
     // language=Vue
@@ -10,14 +10,14 @@ import {StockRow, TableHeader} from "../types/types";
             <v-progress-linear slot="progress" color="blue" indeterminate></v-progress-linear>
             <template slot="items" slot-scope="props">
                 <tr @click="props.expanded = !props.expanded">
-                    <td>{{ props.item.company }}</td>
-                    <td>{{ props.item.ticker }}</td>
-                    <td class="text-xs-right">{{ props.item.avgPrice }}</td>
-                    <td class="text-xs-right">{{ props.item.currentPrice }}</td>
-                    <td class="text-xs-right">{{ props.item.currentCost }}</td>
+                    <td>{{ props.item.stock.shortname }}</td>
+                    <td>{{ props.item.stock.ticker }}</td>
+                    <td class="text-xs-right">{{ props.item.avgBuy }}</td>
+                    <td class="text-xs-right">{{ props.item.currPrice }}</td>
+                    <td class="text-xs-right">{{ props.item.currCost }}</td>
                     <td class="text-xs-right">{{ props.item.profit }}</td>
-                    <td class="text-xs-right">{{ props.item.profitPercent }}</td>
-                    <td class="text-xs-right">{{ props.item.currentShare }}</td>
+                    <td class="text-xs-right">{{ props.item.percProfit }}</td>
+                    <td class="text-xs-right">{{ props.item.percCurrShare }}</td>
                     <td class="justify-center layout px-0">
                         <v-btn icon class="mx-0">
                             <v-icon color="teal">edit</v-icon>
@@ -42,17 +42,17 @@ export class StockTable extends UI {
     private headers: TableHeader[] = [
         {text: 'Компания', align: 'left', sortable: false, value: 'company'},
         {text: 'Тикер', align: 'left', value: 'ticker'},
-        {text: 'Ср. цена', align: 'right', value: 'avgPrice'},
-        {text: 'Тек. цена', align: 'right', value: 'currentPrice'},
-        {text: 'Тек. стоимость', align: 'right', value: 'currentCost', sortable: false},
+        {text: 'Ср. цена', align: 'right', value: 'avgBuy'},
+        {text: 'Тек. цена', align: 'right', value: 'currPrice'},
+        {text: 'Тек. стоимость', align: 'right', value: 'currCost', sortable: false},
         {text: 'Прибыль', align: 'right', value: 'profit', sortable: false},
-        {text: 'Прибыль, %', align: 'right', value: 'profitPercent'},
-        {text: 'Тек. доля', align: 'right', value: 'currentShare'},
+        {text: 'Прибыль, %', align: 'right', value: 'percProfit'},
+        {text: 'Тек. доля', align: 'right', value: 'percCurrShare'},
         {text: 'Действия', align: 'right', value: 'actions'}
     ];
 
     @Prop({default: [], required: true})
-    private rows: StockRow[];
+    private rows: StockPortfolioRow[];
 
     @Prop({default: false})
     private loading: boolean;

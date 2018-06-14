@@ -1,55 +1,77 @@
 import {Module, ActionContext} from 'vuex';
-import {MutationType} from "./mutationType";
-import {ClientService} from "../services/ClientService";
-import {Container} from "typescript-ioc";
-import {ClientInfo, Portfolio} from "../types/types";
-import {PortfolioService} from "../services/PortfolioService";
-import {GetterType} from "./getterType";
+import {MutationType} from './mutationType';
+import {ClientService} from '../services/ClientService';
+import {Container} from 'typescript-ioc';
+import {ClientInfo, Portfolio} from '../types/types';
+import {PortfolioService} from '../services/PortfolioService';
+import {GetterType} from './getterType';
+import {Storage} from '../platform/services/storage';
 
-/** Сервис работы с клиентом */
+/** РЎРµСЂРІРёСЃ СЂР°Р±РѕС‚С‹ СЃ РєР»РёРµРЅС‚РѕРј */
 const clientService: ClientService = Container.get(ClientService);
-/** Сервис работы с клиентом */
+/** РЎРµСЂРІРёСЃ СЂР°Р±РѕС‚С‹ СЃ РєР»РёРµРЅС‚РѕРј */
 const portfolioService: PortfolioService = Container.get(PortfolioService);
+/** РЎРµСЂРІРёСЃ СЂР°Р±РѕС‚С‹ СЃ localStorage */
+const localStorage: Storage = Container.get(Storage);
+/** РљР»СЋС‡ РїРѕРґ РєРѕС‚РѕСЂС‹Рј С…СЂР°РЅРёС‚СЃСЏ С‚РѕРєРµРЅ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ */
+const TOKEN_KEY = "INTELINVEST_TOKEN";
 
-/** Состояния хранилища */
+/** РЎРѕСЃС‚РѕСЏРЅРёСЏ С…СЂР°РЅРёР»РёС‰Р° */
 export class StateHolder {
-    /** Информация о клиенте */
-    clientInfo = clientService.getClientInfo();
-    /** Текущий выбранный портфель */
-    currentPortfolio: Portfolio = portfolioService.getById(this.clientInfo.client.currentPortfolioId);
+    /** РРЅС„РѕСЂРјР°С†РёСЏ Рѕ РєР»РёРµРЅС‚Рµ */
+    clientInfo: ClientInfo = null;
+    /** РўРµРєСѓС‰РёР№ РІС‹Р±СЂР°РЅРЅС‹Р№ РїРѕСЂС‚С„РµР»СЊ */
+    currentPortfolio: Portfolio = null;
+    /** Р’РµСЂСЃРёСЏ СЃС‚РѕСЂР° */
+    version = '1.0'
 }
 
 const Getters = {
     [GetterType.PORTFOLIO](state: StateHolder): Portfolio {
         return state.currentPortfolio;
+    },
+    [GetterType.CLIENT_INFO](state: StateHolder): ClientInfo {
+        return state.clientInfo;
     }
 };
 
-/** Мутаторы хранилища */
+/** РњСѓС‚Р°С‚РѕСЂС‹ С…СЂР°РЅРёР»РёС‰Р° */
 const Mutations = {
-    /** Мутатор проставлящий информацию о клиенте */
+    /** РњСѓС‚Р°С‚РѕСЂ РїСЂРѕСЃС‚Р°РІР»СЏС‰РёР№ РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ РєР»РёРµРЅС‚Рµ */
     [MutationType.SET_CLIENT_INFO](state: StateHolder, clientInfo: ClientInfo): void {
         state.clientInfo = clientInfo;
+        localStorage.set(TOKEN_KEY, clientInfo.token);
     },
     [MutationType.SET_CURRENT_PORTFOLIO](state: StateHolder, portfolio: Portfolio): void {
         state.currentPortfolio = portfolio;
     }
 };
 
-/** Действия хранилища */
+/** Р”РµР№СЃС‚РІРёСЏ С…СЂР°РЅРёР»РёС‰Р° */
 const Actions = {
-    /** Дейстие проставляющие информацию о клиенте */
-    [MutationType.SET_CLIENT_INFO](context: ActionContext<StateHolder, void>): void {
-        const clientInfo = clientService.getClientInfo();
-        context.commit(MutationType.SET_CLIENT_INFO, clientInfo);
+    /** Р”РµР№СЃС‚РёРµ РїСЂРѕСЃС‚Р°РІР»СЏСЋС‰РёРµ РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ РєР»РёРµРЅС‚Рµ */
+    [MutationType.SET_CLIENT_INFO](context: ActionContext<StateHolder, void>): Promise<ClientInfo> {
+        return new Promise<ClientInfo>((resolve) => {
+            clientService.getClientInfo().then((clientInfo: ClientInfo) => {
+                context.commit(MutationType.SET_CLIENT_INFO, clientInfo);
+                console.log('ACTION SET USER', clientInfo, context);
+                resolve(clientInfo);
+            });
+        });
     },
-    [MutationType.SET_CURRENT_PORTFOLIO](context: ActionContext<StateHolder, void>, portfolio: Portfolio): void {
-        context.commit(MutationType.SET_CURRENT_PORTFOLIO, portfolio);
+    [MutationType.SET_CURRENT_PORTFOLIO](context: ActionContext<StateHolder, void>, id: string): Promise<Portfolio> {
+        return new Promise<Portfolio>((resolve) => {
+            portfolioService.getById(id).then((portfolio: Portfolio) => {
+                console.log('ACTION SET PORTFOLIO', portfolio, context);
+                context.commit(MutationType.SET_CURRENT_PORTFOLIO, portfolio);
+                resolve(portfolio);
+            });
+        });
     }
 };
 
 /**
- * Главный модуль хранилища
+ * Р“Р»Р°РІРЅС‹Р№ РјРѕРґСѓР»СЊ С…СЂР°РЅРёР»РёС‰Р°
  */
 export class MainStore implements Module<StateHolder, void> {
     namespaced = true;

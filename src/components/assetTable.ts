@@ -8,10 +8,10 @@ import {TableHeader, AssetRow} from "../types/types";
     template: `
         <v-data-table :headers="headers" :items="assets" hide-actions class="elevation-1">
             <template slot="items" slot-scope="props">
-                <td>{{ props.item.name }}</td>
-                <td class="text-xs-right">{{ props.item.currentCost }}</td>
+                <td>{{ assetDesc(props.item.type) }}</td>
+                <td class="text-xs-right">{{ props.item.currCost }}</td>
                 <td class="text-xs-right">{{ props.item.profit }}</td>
-                <td class="text-xs-right">{{ props.item.currentShare }}</td>
+                <td class="text-xs-right">{{ props.item.percCurrShare }}</td>
                 <td class="justify-center layout px-0">
                     <v-btn icon class="mx-0">
                         <v-icon color="teal">edit</v-icon>
@@ -28,12 +28,25 @@ export class AssetTable extends UI {
 
     private headers: TableHeader[] = [
         {text: 'Актив', sortable: false, value: 'name'},
-        {text: 'Текущая стоимость', align: 'center', value: 'currentCost'},
+        {text: 'Текущая стоимость', align: 'center', value: 'currCost'},
         {text: 'Прибыль', align: 'center', value: 'profit'},
-        {text: 'Текущая доля', align: 'center', value: 'currentShare'},
+        {text: 'Текущая доля', align: 'center', value: 'percCurrShare'},
         {text: 'Действия', align: 'center', value: 'name', sortable: false}
     ];
 
     @Prop({default: [], required: true})
     private assets: AssetRow[];
+
+    private assetDesc(type: string): string {
+        switch (type) {
+            case 'STOCK':
+                return 'Акции';
+            case 'BOND':
+                return 'Облигации';
+            case 'RUBLES':
+                return 'Рубли';
+            case 'DOLLARS':
+                return 'Доллары';
+        }
+    }
 }

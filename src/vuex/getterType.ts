@@ -1,6 +1,7 @@
 /**
- * Перечисление всех типов гэттеров
+ * РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РІСЃРµС… С‚РёРїРѕРІ РіСЌС‚С‚РµСЂРѕРІ
  */
 export enum GetterType {
-    PORTFOLIO = "portfolio"
+    PORTFOLIO = "portfolio",
+    CLIENT_INFO = 'clientInfo'
 }
