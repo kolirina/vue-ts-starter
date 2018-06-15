@@ -19,7 +19,7 @@ const MainStore = namespace(StoreType.MAIN);
 export class SettingsPage extends UI {
 
     @MainStore.Getter
-    private clientInfo: ClientInfo;
+    private clientInfo: ClientInfo = null;
 
     private portfolios: PortfolioRow[] = null;
 

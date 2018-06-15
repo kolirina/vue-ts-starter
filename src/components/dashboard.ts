@@ -2,6 +2,7 @@ import Component from 'vue-class-component';
 import {UI} from '../app/UI';
 import {Prop, Watch} from 'vue-property-decorator';
 import {DashboardBrick, DashboardData} from '../types/types';
+import {Filters} from "../platform/filters/Filters";
 
 @Component({
     // language=Vue
@@ -75,15 +76,15 @@ export class Dashboard extends UI {
     private fillBricks(newValue: DashboardData): void {
         this.blocks[0] = {
             name: 'Суммарная стоимость',
-            mainValue: newValue.currentCost,
-            secondValue: newValue.currentCostInAlternativeCurrency,
+            mainValue: Filters.formatMoneyAmount(newValue.currentCost, true),
+            secondValue: Filters.formatMoneyAmount(newValue.currentCostInAlternativeCurrency, true),
             color: 'blue',
             icon: 'fas fa-briefcase'
         };
         this.blocks[1] = {
             name: 'Суммарная прибыль',
-            mainValue: newValue.profit,
-            secondValue: newValue.profitWithoutDividendsAndCoupons,
+            mainValue: Filters.formatMoneyAmount(newValue.profit, true),
+            secondValue: Filters.formatMoneyAmount(newValue.profitWithoutDividendsAndCoupons, true),
             secondValueDesc: 'без дивидендов и купонов',
             color: 'orange',
             icon: 'fas fa-money-bill-alt'
@@ -97,7 +98,7 @@ export class Dashboard extends UI {
         };
         this.blocks[3] = {
             name: 'Изменение за день',
-            mainValue: newValue.dailyChanges,
+            mainValue: Filters.formatMoneyAmount(newValue.dailyChanges, true),
             secondValue: newValue.dailyChangesPercent,
             color: 'red',
             icon: 'fas fa-hand-holding-usd'

@@ -14,9 +14,9 @@ import {TableHeader, TradeRow} from "../types/types";
                     <td>{{ props.item.operationLabel }}</td>
                     <td>{{ props.item.date }}</td>
                     <td class="text-xs-right">{{ props.item.quantity }}</td>
-                    <td class="text-xs-right">{{ props.item.price }}</td>
-                    <td class="text-xs-right">{{ props.item.fee }}</td>
-                    <td class="text-xs-right">{{ props.item.signedTotal }}</td>
+                    <td class="text-xs-right">{{ props.item.price | amount(true) }}</td>
+                    <td class="text-xs-right">{{ props.item.fee | amount(true) }}</td>
+                    <td class="text-xs-right">{{ props.item.signedTotal | amount(true) }}</td>
                     <td class="justify-center layout px-0">
                         <v-btn icon class="mx-0">
                             <v-icon color="teal">edit</v-icon>

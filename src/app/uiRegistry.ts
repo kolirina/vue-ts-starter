@@ -6,6 +6,7 @@ import Vuetify from 'vuetify';
 import Vue from "vue";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
 import {Dashboard} from "../components/dashboard";
+import {Filters} from "../platform/filters/Filters";
 
 export class UIRegistry {
 
@@ -18,6 +19,10 @@ export class UIRegistry {
         // компоненты
         UI.component("dashboard", Dashboard);
         UI.component("add-trade-dialog", AddTradeDialog);
+
+        // фильтры
+        UI.filter('amount', Filters.formatMoneyAmount);
+        UI.filter('number', Filters.formatNumber);
 
         return true;
     }

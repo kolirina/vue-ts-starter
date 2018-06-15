@@ -7,6 +7,7 @@
         "moduleResolution": "node",
         "target": "es5",
         "experimentalDecorators": true,
+        "allowSyntheticDefaultImports": true,
         // добавлено1
 //        "declaration": true,
 //        "noImplicitAny": true,

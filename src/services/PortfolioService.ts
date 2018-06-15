@@ -2,14 +2,10 @@ import {Container, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {Overview, Portfolio} from '../types/types';
 import {Cache} from "../platform/services/cache";
-import axios from 'axios';
 import {ClientService} from './ClientService';
-import {Storage} from '../platform/services/storage';
 
-/** Сервис работы с localStorage */
-const localStorage: Storage = Container.get(Storage);
-/** Ключ под которым хранится токен пользователя */
-const TOKEN_KEY = "INTELINVEST_TOKEN";
+import {HTTP} from "../platform/services/http";
+
 const PORTFOLIOS_KEY = "PORTFOLIOS";
 
 @Service("PortfolioService")
@@ -50,21 +46,8 @@ export class PortfolioService {
     }
 
     private async loadPortfolio(id: string): Promise<Portfolio> {
-        const token = localStorage.get(TOKEN_KEY, null);
-        if (!token) {
-            throw new Error('Не задан токен для получения портфелей');
-        }
-        const overview = <Overview>(await axios.get(`http://localhost:8080/api/portfolios/${id}/overview`, {
-            headers: {
-                authorization: `Bearer ${token}`
-            }
-        })).data;
-        const trades = (await axios.get(`http://localhost:8080/api/portfolios/${id}/trades`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                contentType: 'application/json'
-            }
-        })).data;
+        const overview = <Overview>(await HTTP.get(`http://localhost:8080/api/portfolios/${id}/overview`)).data;
+        const trades = (await HTTP.get(`http://localhost:8080/api/portfolios/${id}/trades`)).data;
         return {id, trades, overview};
     }
 }

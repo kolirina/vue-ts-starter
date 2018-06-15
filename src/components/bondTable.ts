@@ -12,12 +12,12 @@ import {BondPortfolioRow, TableHeader} from '../types/types';
                 <tr @click="props.expanded = !props.expanded">
                     <td>{{ props.item.bond.shortname }}</td>
                     <td>{{ props.item.bond.ticker }}</td>
-                    <td class="text-xs-right">{{ props.item.avgBuy }}</td>
-                    <td class="text-xs-right">{{ props.item.currPrice }}</td>
-                    <td class="text-xs-right">{{ props.item.currCost }}</td>
-                    <td class="text-xs-right">{{ props.item.profit }}</td>
-                    <td class="text-xs-right">{{ props.item.percProfit }}</td>
-                    <td class="text-xs-right">{{ props.item.percCurrShare }}</td>
+                    <td class="text-xs-right">{{ props.item.avgBuy | amount }}</td>
+                    <td class="text-xs-right">{{ props.item.currPrice | amount(true) }}</td>
+                    <td class="text-xs-right">{{ props.item.currCost | amount(true) }}</td>
+                    <td class="text-xs-right">{{ props.item.profit | amount(true) }}</td>
+                    <td class="text-xs-right">{{ props.item.percProfit | number }}</td>
+                    <td class="text-xs-right">{{ props.item.percCurrShare | number }}</td>
                     <td class="justify-center layout px-0">
                         <v-btn icon class="mx-0">
                             <v-icon color="teal">edit</v-icon>

@@ -72,7 +72,6 @@ export class PortfolioPage extends UI {
         }, 4000);
         this.data = [5, 9, 7, 8, 5, 3, 5, 4];
         console.log("PORTFOLIO PAGE", this.$store);
-        // this.portfolio = this.$store.state[StoreType.MAIN].currentPortfolio;
     }
 
     private activated(): void {

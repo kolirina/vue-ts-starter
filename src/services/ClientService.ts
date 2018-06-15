@@ -2,6 +2,7 @@ import {Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {ClientInfo} from "../types/types";
 import axios from 'axios';
+import {HTTP} from "../platform/services/http";
 
 @Service("ClientService")
 @Singleton
@@ -23,7 +24,7 @@ export class ClientService {
 
     async load(): Promise<ClientInfo> {
         // ------------------------------ POST ------------------------------------------
-        const result = await axios.post('http://localhost:8080/api/user/login', {
+        const result = await HTTP.get('/user/login', {
             username: 'b1ack',
             password: '12345678'
         });

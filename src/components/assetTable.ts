@@ -9,9 +9,9 @@ import {TableHeader, AssetRow} from "../types/types";
         <v-data-table :headers="headers" :items="assets" hide-actions class="elevation-1">
             <template slot="items" slot-scope="props">
                 <td>{{ assetDesc(props.item.type) }}</td>
-                <td class="text-xs-right">{{ props.item.currCost }}</td>
-                <td class="text-xs-right">{{ props.item.profit }}</td>
-                <td class="text-xs-right">{{ props.item.percCurrShare }}</td>
+                <td class="text-xs-right">{{ props.item.currCost | amount(true) }}</td>
+                <td class="text-xs-right">{{ props.item.profit | amount(true) }}</td>
+                <td class="text-xs-right">{{ props.item.percCurrShare | number }}</td>
                 <td class="justify-center layout px-0">
                     <v-btn icon class="mx-0">
                         <v-icon color="teal">edit</v-icon>

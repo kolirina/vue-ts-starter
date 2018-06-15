@@ -1,8 +1,8 @@
 {
-  "name": "typescript-vue-starter",
+  "name": "intelinvest-frontend",
   "version": "1.0.0",
   "private": true,
-  "description": "",
+  "description": "Frontend for intelinvest.ru",
   "main": "index.js",
   "scripts": {
     "build": "webpack",
@@ -10,15 +10,17 @@
   },
   "keywords": [],
   "author": {
-    "name": "Daniel Rosenwasser",
-    "url": "https://github.com/DanielRosenwasser"
+    "name": "Intelinvest Team",
+    "url": "https://bitbucket.org/intelinvestteam/intelinvest_frontend"
   },
   "license": "Apache-2.0",
   "dependencies": {
     "@types/chartist": "^0.9.40",
     "axios": "^0.18.0",
     "chartist": "^0.11.0",
+    "decimal.js": "^10.0.1",
     "js-big-decimal": "^1.2.0",
+    "moment": "^2.22.2",
     "typescript-ioc": "^1.2.3",
     "vue": "^2.5.2",
     "vue-class-component": "^6.0.0",

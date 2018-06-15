@@ -1,8 +1,17 @@
 import axios from 'axios';
+import {Storage} from './storage';
+import {Container} from "typescript-ioc";
+
+/** Сервис работы с localStorage */
+const localStorage: Storage = Container.get(Storage);
+/** Ключ под которым хранится токен пользователя */
+const TOKEN_KEY = "INTELINVEST_TOKEN";
+const token = localStorage.get(TOKEN_KEY, null);
 
 export const HTTP = axios.create({
-    baseURL: `http://test.intelinvest.ru/api/`,
+    baseURL: `http://localhost:8080/api`,
     headers: {
-        Authorization: 'Bearer {token}'
+        Authorization: token ? `Bearer ${token}` : '',
+        ContentType: 'application/json'
     }
 });
