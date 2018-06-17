@@ -1,33 +1,26 @@
-import {Singleton} from "typescript-ioc";
-import {Service} from "../platform/decorators/service";
-import {ClientInfo} from "../types/types";
+import {Singleton} from 'typescript-ioc';
+import {Service} from '../platform/decorators/service';
+import {ClientInfo, LoginRequest} from '../types/types';
 import axios from 'axios';
-import {HTTP} from "../platform/services/http";
+import {HTTP} from '../platform/services/http';
+import {CatchErrors} from '../platform/decorators/catchErrors';
 
-@Service("ClientService")
+@Service('ClientService')
 @Singleton
 export class ClientService {
 
-    private clientInfo: ClientInfo = null;
+    clientInfo: ClientInfo = null;
 
-    async getClientInfo(): Promise<ClientInfo> {
+    async getClientInfo(request: LoginRequest): Promise<ClientInfo> {
         if (!this.clientInfo) {
-            await this.init();
+            // ------------------------------ POST ------------------------------------------
+            const result = await HTTP.post('/user/login', request).catch(reason => {
+                console.log('REASON ', reason);
+                throw new Error(reason);
+            });
+            this.clientInfo = await <ClientInfo>result.data;
+            console.log('INIT CLIENT SERVICE', this.clientInfo);
         }
         return this.clientInfo;
-    }
-
-    private async init(): Promise<void> {
-        this.clientInfo = await this.load();
-        console.log("INIT CLIENT SERVICE", this.clientInfo);
-    }
-
-    async load(): Promise<ClientInfo> {
-        // ------------------------------ POST ------------------------------------------
-        const result = await HTTP.get('/user/login', {
-            username: 'b1ack',
-            password: '12345678'
-        });
-        return await result.data;
     }
 }

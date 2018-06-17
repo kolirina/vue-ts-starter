@@ -176,6 +176,7 @@ export type BondPortfolio = {
 
 export type Portfolio = {
     id: string,
+    portfolioParams: PortfolioParams,
     trades: TradeRow[],
     overview: Overview
 }
@@ -209,7 +210,7 @@ export type DashboardBrick = {
     icon: string
 }
 
-export type PortfolioRow = {
+export type PortfolioParams = {
     id: string,
     name: string,
     access: string,
@@ -232,7 +233,7 @@ export type Client = {
     tariff: string,
     paidTill: string,
     currentPortfolioId: string,
-    portfolios: PortfolioRow[]
+    portfolios: PortfolioParams[]
 }
 
 export type Share = {
@@ -331,4 +332,18 @@ export type Bond = Share & {
     isRepaid: boolean;
     /** Абсолютная текущая цена облигации без учета НКД */
     absolutePrice: string;
+}
+
+export type LoginRequest = {
+    username: string,
+    password: string
+}
+
+export type LineChartItem = {
+    date: string,
+    amount: string,
+    stockAmount: string,
+    bondAmount: string,
+    year: string,
+    lastItemOfTheYear: string
 }

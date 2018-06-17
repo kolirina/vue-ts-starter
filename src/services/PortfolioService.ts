@@ -1,19 +1,20 @@
-import {Container, Singleton} from "typescript-ioc";
-import {Service} from "../platform/decorators/service";
-import {Overview, Portfolio} from '../types/types';
-import {Cache} from "../platform/services/cache";
+import {Container, Singleton} from 'typescript-ioc';
+import {Service} from '../platform/decorators/service';
+import {LineChartItem, Overview, Portfolio, PortfolioParams} from '../types/types';
+import {Cache} from '../platform/services/cache';
 import {ClientService} from './ClientService';
+import {Decimal} from 'decimal.js';
 
-import {HTTP} from "../platform/services/http";
+import {HTTP} from '../platform/services/http';
+import {BigMoney} from '../types/bigMoney';
 
-const PORTFOLIOS_KEY = "PORTFOLIOS";
+const PORTFOLIOS_KEY = 'PORTFOLIOS';
 
-@Service("PortfolioService")
+@Service('PortfolioService')
 @Singleton
 export class PortfolioService {
 
     private cacheService = (<Cache> Container.get(Cache));
-    private clientService: ClientService = (<ClientService>Container.get(ClientService));
 
     private cache: { [key: string]: Portfolio } = {};
 
@@ -30,7 +31,7 @@ export class PortfolioService {
 
     private init(): void {
         this.cacheService.put(PORTFOLIOS_KEY, this.cache);
-        console.log("INIT PORTFOLIO SERVICE");
+        console.log('INIT PORTFOLIO SERVICE');
     }
 
     async getById(id: string): Promise<Portfolio> {
@@ -46,8 +47,21 @@ export class PortfolioService {
     }
 
     private async loadPortfolio(id: string): Promise<Portfolio> {
-        const overview = <Overview>(await HTTP.get(`http://localhost:8080/api/portfolios/${id}/overview`)).data;
-        const trades = (await HTTP.get(`http://localhost:8080/api/portfolios/${id}/trades`)).data;
-        return {id, trades, overview};
+        const portfolio = <PortfolioParams>(await HTTP.get(`/portfolios/${id}`)).data;
+        const overview = <Overview>(await HTTP.get(`/portfolios/${id}/overview`)).data;
+        // проставляем идентификаторы чтобы работали разворачиваютщиеся блоки в табилицах
+        overview.stockPortfolio.rows.forEach((value, index) => value.id = index.toString());
+        overview.bondPortfolio.rows.forEach((value, index) => value.id = index.toString());
+        const trades = (await HTTP.get(`/portfolios/${id}/trades`)).data;
+        return {id, portfolioParams: portfolio, trades, overview};
+    }
+
+    async getCostChart(id: string): Promise<any> {
+        const data = <LineChartItem[]>(await HTTP.get(`/portfolios/${id}/cost-chart`)).data;
+        const result: any[] = [];
+        data.forEach(value => {
+            result.push([new Date(value.date).getTime(), new BigMoney(value.amount).amount.toDP(2, Decimal.ROUND_HALF_UP).toNumber()])
+        });
+        return result;
     }
 }

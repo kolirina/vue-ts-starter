@@ -35,15 +35,6 @@ export class RouterConfiguration {
                 scrollBehavior: (() => ({x: 0, y: 0}))
             });
         }
-        // RouterConfiguration.router.beforeEach((to, from, next) => {
-        //     console.log('TO: ', to, localStorage.get(TOKEN_KEY, 'TOKEN IS NULL'));
-        //     if (!localStorage.get(TOKEN_KEY, null) && to.name !== 'login') {
-        //         console.log('TOKEN NOT FOUND. GOING TO LOGIN PAGE');
-        //         next({name: 'login'});
-        //         return;
-        //     }
-        //     next();
-        // });
         return RouterConfiguration.router;
     }
 
@@ -52,10 +43,10 @@ export class RouterConfiguration {
             {
                 path: '/logout',
                 name: 'logout',
-                beforeEnter: (to, from, next) => {
+                beforeEnter: () => {
                     console.log('BEFORE LOGOUT');
                     localStorage.delete(STORE_KEY);
-                    next({name: 'portfolio'});
+                    window.location.reload(true);
                 }
             },
             {

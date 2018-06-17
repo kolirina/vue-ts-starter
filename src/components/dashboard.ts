@@ -99,7 +99,7 @@ export class Dashboard extends UI {
         this.blocks[3] = {
             name: 'Изменение за день',
             mainValue: Filters.formatMoneyAmount(newValue.dailyChanges, true),
-            secondValue: newValue.dailyChangesPercent,
+            secondValue: Filters.formatNumber(newValue.dailyChangesPercent),
             color: 'red',
             icon: 'fas fa-hand-holding-usd'
         };

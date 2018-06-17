@@ -1,47 +1,53 @@
-import Component from "vue-class-component";
-import {Prop} from "vue-property-decorator";
-import {UI} from "../app/UI";
+import Component from 'vue-class-component';
+import {Prop} from 'vue-property-decorator';
+import {UI} from '../app/UI';
 import {StockPortfolioRow, TableHeader} from '../types/types';
-import {StockRowInfoDialog} from "./dialogs/stockRowInfoDialog";
 
 @Component({
     // language=Vue
-    template: `        
-        <div>
-            <v-data-table :headers="headers" :items="rows" item-key="ticker" :loading="loading" hide-actions>
-                <v-progress-linear slot="progress" color="blue" indeterminate></v-progress-linear>
-                <template slot="items" slot-scope="props">
-                    <tr @click="props.expanded = !props.expanded">
-                        <td>{{ props.item.stock.shortname }}</td>
-                        <td>{{ props.item.stock.ticker }}</td>
-                        <td class="text-xs-right">{{ props.item.avgBuy | amount }}</td>
-                        <td class="text-xs-right">{{ props.item.currPrice| amount(true) }}</td>
-                        <td class="text-xs-right">{{ props.item.currCost| amount(true) }}</td>
-                        <td class="text-xs-right">{{ props.item.profit| amount(true) }}</td>
-                        <td class="text-xs-right">{{ props.item.percProfit | number }}</td>
-                        <td class="text-xs-right">{{ props.item.percCurrShare | number }}</td>
-                        <td class="justify-center layout px-0">
-                            <v-btn icon class="mx-0" @click.stop="showInfo(props.item)">
-                                <v-icon color="teal">edit</v-icon>
-                            </v-btn>
-                            <v-btn icon class="mx-0">
-                                <v-icon color="pink">delete</v-icon>
-                            </v-btn>
-                        </td>
-                    </tr>
-                </template>
+    template: `
+        <v-data-table :headers="headers" :items="rows" item-key="id" :loading="loading" hide-actions>
+            <v-progress-linear slot="progress" color="blue" indeterminate></v-progress-linear>
+            <template slot="items" slot-scope="props">
+                <tr @click="props.expanded = !props.expanded">
+                    <td><span>{{ props.item.stock.shortname }}</span> <span>{{ props.item.stock.change }}%</span>
+                    </td>
+                    <td>{{ props.item.stock.ticker }}</td>
+                    <td class="text-xs-right">{{ props.item.avgBuy | amount }}</td>
+                    <td class="text-xs-right">{{ props.item.currPrice| amount(true) }}</td>
+                    <td class="text-xs-right">{{ props.item.currCost| amount(true) }}</td>
+                    <td class="text-xs-right">{{ props.item.profit| amount(true) }}</td>
+                    <td class="text-xs-right">{{ props.item.percProfit | number }}</td>
+                    <td class="text-xs-right">{{ props.item.percCurrShare | number }}</td>
+                    <td class="justify-center layout px-0">
+                        <v-btn icon class="mx-0" @click.stop="showInfo(props.item)">
+                            <v-icon color="teal">edit</v-icon>
+                        </v-btn>
+                        <v-btn icon class="mx-0">
+                            <v-icon color="pink">delete</v-icon>
+                        </v-btn>
+                    </td>
+                </tr>
+            </template>
 
-                <template slot="expand" slot-scope="props">
-                    <v-card flat>
-                        <v-card-text>Штуки тут</v-card-text>
-                    </v-card>
-                </template>
-            </v-data-table>
-
-            <stock-row-info-dialog :item="selected" v-model="showed"></stock-row-info-dialog>
-        </div>
-    `,
-    components: {StockRowInfoDialog}
+            <template slot="expand" slot-scope="props">
+                <v-card flat>
+                    <v-card-text>
+                        <v-container grid-list-md>
+                            <v-layout wrap>
+                                <v-flex>
+                                    {{ 'Вы держите акцию в портфеле:' + props.item.ownedDays + ' дня c, ' + props.item.firstBuy }}
+                                </v-flex>
+                                <v-flex>
+                                    {{ 'Количество полных лотов ' + props.item.lotCounts }}
+                                </v-flex>
+                            </v-layout>
+                        </v-container>
+                    </v-card-text>
+                </v-card>
+            </template>
+        </v-data-table>
+    `
 })
 export class StockTable extends UI {
 
@@ -70,5 +76,9 @@ export class StockTable extends UI {
     private showInfo(selected: StockPortfolioRow): void {
         this.selected = selected;
         this.showed = true;
+    }
+
+    private close(): void {
+        this.showed = false;
     }
 }

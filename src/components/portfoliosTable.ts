@@ -1,7 +1,7 @@
 import Component from "vue-class-component";
 import {Prop} from "vue-property-decorator";
 import {UI} from "../app/UI";
-import {PortfolioRow, TableHeader} from "../types/types";
+import {PortfolioParams, TableHeader} from "../types/types";
 
 @Component({
     // language=Vue
@@ -50,7 +50,7 @@ export class PortfoliosTable extends UI {
     ];
 
     @Prop({default: [], required: true})
-    private portfolios: PortfolioRow[];
+    private portfolios: PortfolioParams[];
 
     private max25chars(v: string): any {
         return v.length <= 25 || 'Input too long!'

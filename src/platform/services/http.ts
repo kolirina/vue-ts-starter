@@ -9,7 +9,7 @@ const TOKEN_KEY = "INTELINVEST_TOKEN";
 const token = localStorage.get(TOKEN_KEY, null);
 
 export const HTTP = axios.create({
-    baseURL: `http://localhost:8080/api`,
+    baseURL: `${window.location.protocol}//${window.location.host}/api`,
     headers: {
         Authorization: token ? `Bearer ${token}` : '',
         ContentType: 'application/json'

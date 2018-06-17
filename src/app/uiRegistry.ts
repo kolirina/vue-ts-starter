@@ -7,6 +7,8 @@ import Vue from "vue";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
 import {Dashboard} from "../components/dashboard";
 import {Filters} from "../platform/filters/Filters";
+import {PieChart} from '../components/charts/pieChart';
+import {LineChart} from '../components/charts/lineChart';
 
 export class UIRegistry {
 
@@ -16,9 +18,12 @@ export class UIRegistry {
     static init(): boolean {
 
         Vue.use(Vuetify);
+
         // компоненты
         UI.component("dashboard", Dashboard);
         UI.component("add-trade-dialog", AddTradeDialog);
+        UI.component("pie-chart", PieChart);
+        UI.component("line-chart", LineChart);
 
         // фильтры
         UI.filter('amount', Filters.formatMoneyAmount);

@@ -1,7 +1,7 @@
 import {UI} from './UI';
 import Component from 'vue-class-component';
 import {MutationType} from '../vuex/mutationType';
-import {ClientInfo, Portfolio} from '../types/types';
+import {ClientInfo, LoginRequest, Portfolio} from '../types/types';
 import {namespace} from 'vuex-class/lib/bindings';
 import {StoreType} from '../vuex/storeType';
 import {PortfolioSwitcher} from "../components/portfolioSwitcher";
@@ -24,8 +24,8 @@ const mainStore = namespace(StoreType.MAIN);
                                     </v-toolbar>
                                     <v-card-text>
                                         <v-form>
-                                            <v-text-field prepend-icon="person" name="login" label="Login" type="text"></v-text-field>
-                                            <v-text-field id="password" prepend-icon="lock" name="password" label="Password" type="password"></v-text-field>
+                                            <v-text-field prepend-icon="person" name="login" label="Имя пользователя" type="text" required v-model="username"></v-text-field>
+                                            <v-text-field id="password" prepend-icon="lock" name="password" label="Пароль" required type="password" v-model="password"></v-text-field>
                                         </v-form>
                                     </v-card-text>
                                     <v-card-actions>
@@ -37,6 +37,11 @@ const mainStore = namespace(StoreType.MAIN);
                         </v-layout>
                     </v-container>
                 </v-content>
+
+                <v-snackbar :timeout="5000" :top="true" :right="true" v-model="showMessage" :color="severity">
+                    {{ message }}
+                    <v-btn flat color="pink" @click.native="closeMessage">Close</v-btn>
+                </v-snackbar>
             </template>
             
             <template v-else>
@@ -98,10 +103,20 @@ const mainStore = namespace(StoreType.MAIN);
 export class AppFrame extends UI {
 
     @mainStore.Action(MutationType.SET_CLIENT_INFO)
-    private loadUser: () => Promise<ClientInfo>;
+    private loadUser: (request: LoginRequest) => Promise<ClientInfo>;
 
     @mainStore.Action(MutationType.SET_CURRENT_PORTFOLIO)
     private setCurrentPortfolio: (id: string) => Promise<Portfolio>;
+
+    private username: string = null;
+
+    private password: string = null;
+
+    private showMessage = false;
+
+    private message = '';
+
+    private severity = 'info';
 
     private isInitialized = false;
 
@@ -134,8 +149,18 @@ export class AppFrame extends UI {
     }
 
     private async login(): Promise<void> {
+        if (!this.username || !this.password) {
+            this.message = 'Заполните поля';
+            this.severity = 'error';
+            return;
+        }
         console.log('LOGIN');
-        await this.loadUser();
+        try {
+            await this.loadUser({username: this.username, password: this.password});
+        } catch (e) {
+            console.log('Ошибка при входе', e);
+            return;
+        }
         await this.setCurrentPortfolio(this.$store.state[StoreType.MAIN].clientInfo.user.currentPortfolioId);
         this.isInitialized = true;
     }
@@ -143,6 +168,12 @@ export class AppFrame extends UI {
     private logout(): void {
         console.log('logout');
         this.$router.push({name: 'logout'})
+    }
+
+    private closeMessage(): void {
+        this.showMessage = false;
+        this.message = '';
+        this.severity = 'info';
     }
 }
 

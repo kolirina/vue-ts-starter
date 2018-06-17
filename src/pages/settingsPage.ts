@@ -1,6 +1,6 @@
 import Component from "vue-class-component";
 import {UI} from "../app/UI";
-import {ClientInfo, PortfolioRow} from "../types/types";
+import {ClientInfo, PortfolioParams} from "../types/types";
 import {PortfoliosTable} from "../components/portfoliosTable";
 import {StoreType} from "../vuex/storeType";
 import {namespace} from "vuex-class/lib/bindings";
@@ -19,9 +19,9 @@ const MainStore = namespace(StoreType.MAIN);
 export class SettingsPage extends UI {
 
     @MainStore.Getter
-    private clientInfo: ClientInfo = null;
+    private clientInfo: ClientInfo;
 
-    private portfolios: PortfolioRow[] = null;
+    private portfolios: PortfolioParams[] = null;
 
     private async mounted(): Promise<void> {
         this.portfolios = this.clientInfo.user.portfolios;

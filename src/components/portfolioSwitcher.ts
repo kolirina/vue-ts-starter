@@ -1,6 +1,6 @@
 import {UI} from "../app/UI";
 import Component from "vue-class-component";
-import {ClientInfo, Portfolio, PortfolioRow} from "../types/types";
+import {ClientInfo, Portfolio, PortfolioParams} from "../types/types";
 import {StoreType} from "../vuex/storeType";
 import {MutationType} from "../vuex/mutationType";
 import {Action, Getter, namespace} from "vuex-class/lib/bindings";
@@ -32,9 +32,9 @@ export class PortfolioSwitcher extends UI {
     @MainStore.Action(MutationType.SET_CURRENT_PORTFOLIO)
     private setCurrentPortfolio: (id: string) => Promise<Portfolio>;
 
-    private portfolios: PortfolioRow[] = null;
+    private portfolios: PortfolioParams[] = null;
 
-    private selected: PortfolioRow = null;
+    private selected: PortfolioParams = null;
 
     private async created(): Promise<void> {
         console.log('PS', this.clientInfo);
@@ -42,17 +42,17 @@ export class PortfolioSwitcher extends UI {
         this.selected = this.getSelected();
     }
 
-    private async onSelect(selected: PortfolioRow): Promise<void> {
+    private async onSelect(selected: PortfolioParams): Promise<void> {
         await this.setCurrentPortfolio(selected.id);
         this.selected = selected;
     }
 
 
-    private getPortfolioName(portfolio: PortfolioRow): string {
+    private getPortfolioName(portfolio: PortfolioParams): string {
         return `${portfolio.name} (${portfolio.viewCurrency}), ${portfolio.access ? 'Публичный' : 'Закрытый'}`;
     }
 
-    private getSelected(id?: string): PortfolioRow {
+    private getSelected(id?: string): PortfolioParams {
         console.log("SELECTED", this.$store.state[StoreType.MAIN]);
         const currentPortfolioId = this.portfolio.id;
         const portfolio = this.portfolios.find(p => p.id === currentPortfolioId);

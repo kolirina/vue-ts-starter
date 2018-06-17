@@ -2,7 +2,7 @@ import {Module, ActionContext} from 'vuex';
 import {MutationType} from './mutationType';
 import {ClientService} from '../services/ClientService';
 import {Container} from 'typescript-ioc';
-import {ClientInfo, Portfolio} from '../types/types';
+import {ClientInfo, LoginRequest, Portfolio} from '../types/types';
 import {PortfolioService} from '../services/PortfolioService';
 import {GetterType} from './getterType';
 import {Storage} from '../platform/services/storage';
@@ -50,9 +50,9 @@ const Mutations = {
 /** Действия хранилища */
 const Actions = {
     /** Дейстие проставляющие информацию о клиенте */
-    [MutationType.SET_CLIENT_INFO](context: ActionContext<StateHolder, void>): Promise<ClientInfo> {
+    [MutationType.SET_CLIENT_INFO](context: ActionContext<StateHolder, void>, request: LoginRequest): Promise<ClientInfo> {
         return new Promise<ClientInfo>((resolve) => {
-            clientService.getClientInfo().then((clientInfo: ClientInfo) => {
+            clientService.getClientInfo(request).then((clientInfo: ClientInfo) => {
                 context.commit(MutationType.SET_CLIENT_INFO, clientInfo);
                 console.log('ACTION SET USER', clientInfo, context);
                 resolve(clientInfo);
