@@ -1,7 +1,7 @@
 import {UI} from '../../app/UI';
 import Component from 'vue-class-component';
-import Highcharts, {ChartObject, DataPoint} from 'highcharts';
-import {Portfolio, Sector, StockPortfolioRow} from '../../types/types';
+import Highcharts, {ChartObject} from 'highcharts';
+import {Portfolio, StockPortfolioRow} from '../../types/types';
 import {StoreType} from '../../vuex/storeType';
 import {namespace} from 'vuex-class/lib/bindings';
 import {Prop} from 'vue-property-decorator';
@@ -27,7 +27,7 @@ const MainStore = namespace(StoreType.MAIN);
         </div>
     `
 })
-export class BarChart extends UI {
+export class SectorsChart extends UI {
 
     $refs: {
         container: HTMLElement

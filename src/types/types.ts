@@ -300,7 +300,7 @@ export type Stock = Share & {
 export type Sector = {
     name: string;
     parent: Sector;
-    isRoot: boolean;
+    root: boolean;
 }
 
 export type Bond = Share & {

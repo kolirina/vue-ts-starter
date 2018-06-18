@@ -8,9 +8,12 @@
         "target": "es5",
         "experimentalDecorators": true,
         "allowSyntheticDefaultImports": true,
+        "noImplicitAny": true,
+        "declaration": false,
+        "noImplicitReturns": true,
         // добавлено1
 //        "declaration": true,
-//        "noImplicitAny": true,
+//        "noImplicitAny": false,
 //        "noImplicitReturns": true,
 
         "emitDecoratorMetadata": true,

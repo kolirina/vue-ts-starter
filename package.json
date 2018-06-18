@@ -15,10 +15,8 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@types/chartist": "^0.9.40",
     "@types/highcharts": "^5.0.22",
     "axios": "^0.18.0",
-    "chartist": "^0.11.0",
     "decimal.js": "^10.0.1",
     "highcharts": "^6.1.0",
     "highcharts-3d": "^0.1.7",
@@ -27,7 +25,6 @@
     "typescript-ioc": "^1.2.3",
     "vue": "^2.5.2",
     "vue-class-component": "^6.0.0",
-    "vue-highcharts": "0.0.10",
     "vue-property-decorator": "^6.0.0",
     "vue-router": "^3.0.1",
     "vuetify": "^1.0.18",

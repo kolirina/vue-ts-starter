@@ -10,15 +10,18 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-container grid-list-md text-xs-center>
-            <v-layout row wrap>
-                <v-flex xs12>
-                    <div v-show="chart" ref="container" style="min-width: 500px; width: 100%; height: 500px; margin: 0 auto"></div>
-                    <v-progress-circular v-if="!chart" :size="70" :width="7" indeterminate
-                                         color="indigo"></v-progress-circular>
-                </v-flex>
-            </v-layout>
-        </v-container>
+        <div>
+            <v-container grid-list-md text-xs-center v-if="!chart">
+                <v-layout row wrap>
+                    <v-flex xs12>
+                        <v-progress-circular :size="70" :width="7" indeterminate
+                                             color="indigo"></v-progress-circular>
+                    </v-flex>
+                </v-layout>
+            </v-container>
+
+            <div v-show="chart" ref="container" style="min-width: 500px; width: 100%; height: 500px; margin: 0 auto"></div>
+        </div>
     `
 })
 export class LineChart extends UI {

@@ -10,6 +10,7 @@ import {BarChart} from '../components/charts/barChart';
 import {StockPieChart} from '../components/charts/stockPieChart';
 import {BondPieChart} from '../components/charts/bondPieChart';
 import {PortfolioLineChart} from '../components/charts/portfolioLineChart';
+import {SectorsChart} from "../components/charts/sectorsChart";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -68,7 +69,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-expansion-panel-content>
             </v-expansion-panel>
             
-            <div style="height: 50px"></div>
+            <div style="height: 50px" v-if="portfolio.overview.bondPortfolio.rows.length > 0"></div>
             
             <v-expansion-panel focusable v-if="portfolio.overview.bondPortfolio.rows.length > 0">
                 <v-expansion-panel-content :expand="true" :lazy="true">
@@ -88,14 +89,14 @@ const MainStore = namespace(StoreType.MAIN);
                     <div slot="header">Отрасли</div>
                     <v-card>
                         <v-card-text class="grey lighten-3">
-                            <bar-chart :balloon-title="portfolio.portfolioParams.name"></bar-chart>
+                            <sectors-chart></sectors-chart>
                         </v-card-text>
                     </v-card>
                 </v-expansion-panel-content>
             </v-expansion-panel>
         </v-container>
     `,
-    components: {AssetTable, StockTable, BondTable, BarChart, StockPieChart, BondPieChart, PortfolioLineChart}
+    components: {AssetTable, StockTable, BondTable, BarChart, StockPieChart, BondPieChart, PortfolioLineChart, SectorsChart}
 })
 export class PortfolioPage extends UI {
 

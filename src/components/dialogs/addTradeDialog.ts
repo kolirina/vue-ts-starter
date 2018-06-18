@@ -5,7 +5,6 @@ import Component from "vue-class-component";
     // language=Vue
     template: `
         <v-dialog v-model="showed" persistent max-width="500px">
-            <!--<v-btn slot="activator" color="primary" dark>Open Dialog</v-btn>-->
             <v-btn slot="activator" icon>
                 <v-icon>add_circle_outline</v-icon>
             </v-btn>
@@ -68,4 +67,12 @@ import Component from "vue-class-component";
 export class AddTradeDialog extends UI {
 
     private showed = false;
+
+    show(): void {
+        this.showed = true;
+    }
+
+    close(): void {
+        this.showed = false;
+    }
 }
