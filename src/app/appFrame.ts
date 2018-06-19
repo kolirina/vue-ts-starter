@@ -68,7 +68,7 @@ const mainStore = namespace(StoreType.MAIN);
                     <v-toolbar-title>INTELINVEST</v-toolbar-title>
                     <v-spacer></v-spacer>
                     <portfolio-switcher></portfolio-switcher>
-                    <v-btn icon @click.native.stop="openDialog3">
+                    <v-btn icon @click.native.stop="openDialog">
                         <v-icon>add_circle_outline</v-icon>
                     </v-btn>
                     <v-btn icon @click="logout">
@@ -168,15 +168,7 @@ export class AppFrame extends UI {
         this.severity = 'info';
     }
 
-    private openDialog(): void {
-        this.$modal.show('addTradeDialog', {
-            text: 'This text is passed as a property'
-        }, {
-            draggable: true
-        });
-    }
-
-    private async openDialog3(): Promise<void> {
+    private async openDialog(): Promise<void> {
         await new AddTradeDialog().show('lolololo');
     }
 
