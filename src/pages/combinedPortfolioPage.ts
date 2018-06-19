@@ -28,8 +28,8 @@ const MainStore = namespace(StoreType.MAIN);
             <dashboard v-if="overview" :data="overview.dashboardData"></dashboard>
             <div style="height: 20px"></div>
 
-            <v-expansion-panel focusable :expand="true">
-                <v-expansion-panel-content :lazy="true" :value="true">
+            <v-expansion-panel focusable expand>
+                <v-expansion-panel-content :value="$uistate.combinedPanel" :lazy="true" v-state="$uistate.COMBINED_CONTROL_PANEL">
                     <div slot="header">Управление комбинированным портфелем</div>
                     <v-card>
                         <v-card-text class="grey lighten-3">
@@ -58,8 +58,8 @@ const MainStore = namespace(StoreType.MAIN);
 
                 <div style="height: 50px"></div>
 
-                <v-expansion-panel focusable>
-                    <v-expansion-panel-content :expand="true" :lazy="true">
+                <v-expansion-panel focusable expand>
+                    <v-expansion-panel-content :value="$uistate.stocksTablePanel" :lazy="true" v-state="$uistate.STOCKS">
                         <div slot="header">Акции</div>
                         <v-card>
                             <stock-table :rows="overview.stockPortfolio.rows"></stock-table>
@@ -69,8 +69,8 @@ const MainStore = namespace(StoreType.MAIN);
 
                 <div style="height: 50px"></div>
 
-                <v-expansion-panel focusable>
-                    <v-expansion-panel-content :expand="true" :lazy="true">
+                <v-expansion-panel focusable expand>
+                    <v-expansion-panel-content :value="$uistate.bondsTablePanel" :lazy="true" v-state="$uistate.BONDS">
                         <div slot="header">Облигации</div>
                         <v-card>
                             <bond-table :rows="overview.bondPortfolio.rows"></bond-table>
@@ -80,8 +80,8 @@ const MainStore = namespace(StoreType.MAIN);
 
                 <div style="height: 50px"></div>
 
-                <v-expansion-panel focusable>
-                    <v-expansion-panel-content :expand="true" :lazy="true">
+                <v-expansion-panel focusable expand>
+                    <v-expansion-panel-content :value="$uistate.historyPanel" :lazy="true" v-state="$uistate.HISTORY_PANEL">
                         <div slot="header">Стоимость портфеля</div>
                         <v-card>
                             <v-card-text class="grey lighten-3">
@@ -93,8 +93,8 @@ const MainStore = namespace(StoreType.MAIN);
 
                 <div style="height: 50px"></div>
 
-                <v-expansion-panel focusable>
-                    <v-expansion-panel-content :expand="true" :lazy="true">
+                <v-expansion-panel focusable expand>
+                    <v-expansion-panel-content :value="$uistate.stockGraph" :lazy="true" v-state="$uistate.STOCK_CHART_PANEL">
                         <div slot="header">Состав портфеля акций</div>
                         <v-card>
                             <v-card-text class="grey lighten-3">
@@ -106,8 +106,8 @@ const MainStore = namespace(StoreType.MAIN);
 
                 <div style="height: 50px" v-if="overview.bondPortfolio.rows.length > 0"></div>
 
-                <v-expansion-panel focusable v-if="overview.bondPortfolio.rows.length > 0">
-                    <v-expansion-panel-content :expand="true" :lazy="true">
+                <v-expansion-panel v-if="overview.bondPortfolio.rows.length > 0" focusable expand>
+                    <v-expansion-panel-content :value="$uistate.bondGraph" :lazy="true" v-state="$uistate.BOND_CHART_PANEL">
                         <div slot="header">Состав портфеля облигаций</div>
                         <v-card>
                             <v-card-text class="grey lighten-3">
@@ -119,8 +119,8 @@ const MainStore = namespace(StoreType.MAIN);
 
                 <div style="height: 50px"></div>
 
-                <v-expansion-panel v-if="sectorsChartData" focusable>
-                    <v-expansion-panel-content :expand="true" :lazy="true">
+                <v-expansion-panel v-if="sectorsChartData" focusable expand>
+                    <v-expansion-panel-content :value="$uistate.sectorsGraph" :lazy="true" v-state="$uistate.SECTORS_PANEL">
                         <div slot="header">Отрасли</div>
                         <v-card>
                             <v-card-text class="grey lighten-3">
