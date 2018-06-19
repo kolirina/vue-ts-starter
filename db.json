@@ -3294,7 +3294,6 @@
     "openDate": "09.04.2018",
     "type": "Брокерский"
   },
-
   "overview-37": {
     "dashboardData": {
       "currentCost": "RUB 3319781.251200000",
@@ -8003,7 +8002,6 @@
     "openDate": "15.09.2014",
     "type": "Брокерский"
   },
-
   "overview-3": {
     "dashboardData": {
       "currentCost": "RUB 7693311.017140000",
@@ -12177,7 +12175,6 @@
     "openDate": "15.09.2014",
     "type": "Брокерский"
   },
-
   "overview-combined": {
     "dashboardData": {
       "currentCost": "RUB 1462044.297510890",
@@ -17667,5 +17664,11 @@
       "year": "2013",
       "lastItemOfTheYear": false
     }
-  ]
+  ],
+  "set-combined": {
+    "combined": true
+  },
+  "logout": {
+    "token": null
+  }
 }

@@ -6,11 +6,11 @@ import {PortfolioParams, TableHeader} from "../types/types";
 @Component({
     // language=Vue
     template: `
-        <v-data-table :headers="headers" :items="portfolios" item-key="id" hide-actions>
+        <v-data-table :headers="headers" :items="portfolios" item-key="id" hide-actions @click.stop>
             <template slot="items" slot-scope="props">
                 <tr>
                     <td>
-                        <v-checkbox v-model="props.item.combined"></v-checkbox>
+                        <v-checkbox v-model="props.item.combined" @change="onSetCombined(props.item)"></v-checkbox>
                     </td>
                     <td class="text-xs-left">{{ props.item.name }}</td>
                     <td class="text-xs-center">{{ props.item.viewCurrency }}</td>
@@ -33,4 +33,8 @@ export class CombinedPortfoliosTable extends UI {
 
     @Prop({default: [], required: true})
     private portfolios: PortfolioParams[];
+
+    private onSetCombined(portfolioParams: PortfolioParams): void {
+        this.$emit('change', {id: portfolioParams.id, combined: portfolioParams.combined});
+    }
 }

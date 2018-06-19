@@ -56,7 +56,8 @@ export class LineChart extends UI {
     private async draw(): Promise<void> {
         this.chart = Highcharts.chart(this.$refs.container, {
             chart: {
-                zoomType: 'x'
+                zoomType: 'x',
+                backgroundColor: null
             },
             title: {
                 text: this.title

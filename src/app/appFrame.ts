@@ -47,16 +47,7 @@ const mainStore = namespace(StoreType.MAIN);
             </template>
 
             <template v-else>
-                <v-navigation-drawer v-model="drawer" fixed app>
-                    <v-toolbar flat>
-                        <v-list>
-                            <v-list-tile>
-                                <v-list-tile-title class="title">
-                                    Меню
-                                </v-list-tile-title>
-                            </v-list-tile>
-                        </v-list>
-                    </v-toolbar>
+                <v-navigation-drawer v-model="drawer" fixed clipped app>
                     <v-divider></v-divider>
                     <v-list dense class="pt-0">
                         <v-list-tile v-for="item in items" :key="item.title" @click="go(item.name)">
@@ -68,9 +59,10 @@ const mainStore = namespace(StoreType.MAIN);
                             </v-list-tile-content>
                         </v-list-tile>
                     </v-list>
+                    <v-divider dark class="my-3"></v-divider>
                 </v-navigation-drawer>
 
-                <v-toolbar color="indigo" dark fixed app>
+                <v-toolbar color="indigo" dark app clipped-left>
                     <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
                     <v-toolbar-title>INTELINVEST</v-toolbar-title>
                     <v-spacer></v-spacer>

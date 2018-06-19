@@ -13,7 +13,7 @@ const MainStore = namespace(StoreType.MAIN);
         <div v-if="portfolios" class="text-xs-center">
             <v-menu offset-y>
                 <v-btn slot="activator" color="primary" dark>{{ getPortfolioName(selected) }}</v-btn>
-                <v-list>
+                <v-list style="max-height: 500px; overflow-x: auto;">
                     <v-list-tile v-for="(portfolio, index) in portfolios" :key="index" @click="onSelect(portfolio)">
                         <v-list-tile-title>{{ getPortfolioName(portfolio) }}</v-list-tile-title>
                     </v-list-tile>

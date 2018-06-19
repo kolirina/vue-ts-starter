@@ -18,6 +18,7 @@ import {DataPoint} from "highcharts";
 import {BigMoney} from "../types/bigMoney";
 import {Decimal} from "decimal.js";
 import {ChartUtils} from "../utils/ChartUtils";
+import {CombinedData} from "../types/eventObjects";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -28,23 +29,22 @@ const MainStore = namespace(StoreType.MAIN);
             <dashboard v-if="overview" :data="overview.dashboardData"></dashboard>
             <div style="height: 20px"></div>
 
-            <v-expansion-panel focusable expand>
+            <v-expansion-panel expand>
                 <v-expansion-panel-content :value="$uistate.combinedPanel" :lazy="true" v-state="$uistate.COMBINED_CONTROL_PANEL">
                     <div slot="header">Управление комбинированным портфелем</div>
                     <v-card>
                         <v-card-text class="grey lighten-3">
-                            <combined-portfolios-table :portfolios="clientInfo.user.portfolios"></combined-portfolios-table>
+                            <combined-portfolios-table :portfolios="clientInfo.user.portfolios" @change="onSetCombined"></combined-portfolios-table>
                         </v-card-text>
                     </v-card>
                     <v-container grid-list-md text-xs-center>
                         <v-layout row wrap>
                             <v-flex xs6>
-                                <v-btn color="info">Сформировать</v-btn>
+                                <v-btn color="info" @click.stop="doCombinedPortfolio">Сформировать</v-btn>
                             </v-flex>
                             <v-flex xs6>
-                                <v-card dark color="secondary">
-                                    <v-card-text class="px-0">6</v-card-text>
-                                </v-card>
+                                <v-select :items="['RUR', 'USD']" v-model="viewCurrency" label="Валюта представления" @change="doCombinedPortfolio"
+                                          single-line></v-select>
                             </v-flex>
                         </v-layout>
                     </v-container>
@@ -80,7 +80,7 @@ const MainStore = namespace(StoreType.MAIN);
 
                 <div style="height: 50px"></div>
 
-                <v-expansion-panel focusable expand>
+                <v-expansion-panel expand>
                     <v-expansion-panel-content :value="$uistate.historyPanel" :lazy="true" v-state="$uistate.HISTORY_PANEL">
                         <div slot="header">Стоимость портфеля</div>
                         <v-card>
@@ -93,7 +93,7 @@ const MainStore = namespace(StoreType.MAIN);
 
                 <div style="height: 50px"></div>
 
-                <v-expansion-panel focusable expand>
+                <v-expansion-panel expand>
                     <v-expansion-panel-content :value="$uistate.stockGraph" :lazy="true" v-state="$uistate.STOCK_CHART_PANEL">
                         <div slot="header">Состав портфеля акций</div>
                         <v-card>
@@ -106,7 +106,7 @@ const MainStore = namespace(StoreType.MAIN);
 
                 <div style="height: 50px" v-if="overview.bondPortfolio.rows.length > 0"></div>
 
-                <v-expansion-panel v-if="overview.bondPortfolio.rows.length > 0" focusable expand>
+                <v-expansion-panel v-if="overview.bondPortfolio.rows.length > 0" expand>
                     <v-expansion-panel-content :value="$uistate.bondGraph" :lazy="true" v-state="$uistate.BOND_CHART_PANEL">
                         <div slot="header">Состав портфеля облигаций</div>
                         <v-card>
@@ -119,7 +119,7 @@ const MainStore = namespace(StoreType.MAIN);
 
                 <div style="height: 50px"></div>
 
-                <v-expansion-panel v-if="sectorsChartData" focusable expand>
+                <v-expansion-panel v-if="sectorsChartData" expand>
                     <v-expansion-panel-content :value="$uistate.sectorsGraph" :lazy="true" v-state="$uistate.SECTORS_PANEL">
                         <div slot="header">Отрасли</div>
                         <v-card>
@@ -143,15 +143,18 @@ export class CombinedPortfolioPage extends UI {
     private portfolioService: PortfolioService;
 
     private overview: Overview = null;
+    private viewCurrency = 'RUR';
 
     private lineChartData: any[] = [];
-
     private stockPieChartData: DataPoint[] = [];
     private bondPieChartData: DataPoint[] = [];
     private sectorsChartData: SectorChartData = null;
 
     private async created(): Promise<void> {
-        console.log('COMBINED: ', this.portfolioService);
+        await this.doCombinedPortfolio();
+    }
+
+    private async doCombinedPortfolio(): Promise<void> {
         const ids = this.clientInfo.user.portfolios.filter(value => value.combined).map(value => value.id);
         const portfolio = await this.portfolioService.getPortfolioOverviewCombined(ids);
         this.overview = portfolio.overview;
@@ -159,6 +162,10 @@ export class CombinedPortfolioPage extends UI {
         this.stockPieChartData = this.doStockPieChartData();
         this.bondPieChartData = this.doBondPieChartData();
         this.sectorsChartData = ChartUtils.doSectorsChartData(this.overview);
+    }
+
+    private async onSetCombined(data: CombinedData): Promise<void> {
+        this.portfolioService.setCombinedFlag(data.id, data.combined);
     }
 
     private doStockPieChartData(): DataPoint[] {

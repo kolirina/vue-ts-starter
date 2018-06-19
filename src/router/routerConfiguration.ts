@@ -7,14 +7,12 @@ import {SettingsPage} from '../pages/settingsPage';
 import {Container} from 'typescript-ioc';
 import {Storage} from '../platform/services/storage'
 import {CombinedPortfolioPage} from "../pages/combinedPortfolioPage";
+import {LogoutService} from "../services/logoutService";
 
 Vue.use(VueRouter);
 
 /** Сервис работы с localStorage */
 const localStorage: Storage = Container.get(Storage);
-/** Ключ под которым хранится токен пользователя */
-const TOKEN_KEY = 'INTELINVEST_TOKEN';
-const STORE_KEY = 'vuex';
 
 /**
  * Класс отвечающий за создание роутингов и инициализацию роутера
@@ -44,11 +42,7 @@ export class RouterConfiguration {
             {
                 path: '/logout',
                 name: 'logout',
-                beforeEnter: () => {
-                    console.log('BEFORE LOGOUT');
-                    localStorage.delete(STORE_KEY);
-                    window.location.reload(true);
-                }
+                beforeEnter: () => (<LogoutService> Container.get(LogoutService)).logout()
             },
             {
                 path: '*',

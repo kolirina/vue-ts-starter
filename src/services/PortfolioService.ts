@@ -70,6 +70,16 @@ export class PortfolioService {
     }
 
     /**
+     * Проставляет флаг combined в портфеле
+     * @param {string} id
+     * @param {boolean} combined
+     * @return {Promise<void>}
+     */
+    async setCombinedFlag(id: string, combined: boolean): Promise<void> {
+        await HTTP.post(`/portfolios/${id}/set-combined`, {combined});
+    }
+
+    /**
      * Возвращает данные по портфелю
      * @param {string} id идентификатор портфеля
      * @return {Promise<Portfolio>}
