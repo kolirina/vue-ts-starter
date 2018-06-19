@@ -1,12 +1,11 @@
 import {UI} from '../../app/UI';
 import Component from 'vue-class-component';
 import Highcharts, {ChartObject} from 'highcharts';
-import {Portfolio, StockPortfolioRow} from '../../types/types';
+import {Portfolio} from '../../types/types';
 import {StoreType} from '../../vuex/storeType';
 import {namespace} from 'vuex-class/lib/bindings';
-import {Prop} from 'vue-property-decorator';
-import {BigMoney} from '../../types/bigMoney';
-import {Decimal} from 'decimal.js';
+import {Prop, Watch} from 'vue-property-decorator';
+import {ChartUtils} from "../../utils/ChartUtils";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -47,32 +46,18 @@ export class SectorsChart extends UI {
     private chart: ChartObject = null;
 
     private async mounted(): Promise<void> {
-        const data: any[] = [];
-        const currentTotalCost = this.portfolio.overview.stockPortfolio.rows.map(row => new BigMoney(row.currCost).amount.abs())
-            .reduce((result: Decimal, current: Decimal) => result.add(current), new Decimal("0"));
-        const rowsBySector: { [sectorName: string]: StockPortfolioRow[] } = {};
-        this.portfolio.overview.stockPortfolio.rows.filter(row => parseInt(row.quantity, 10) !== 0).forEach(row => {
-            const sector = row.stock.sector;
-            const sectorName = sector.root ? sector.name : sector.parent.name;
-            if (rowsBySector[sectorName] === undefined) {
-                rowsBySector[sectorName] = [];
-            }
-            rowsBySector[sectorName].push(row);
-        });
-        Object.keys(rowsBySector).forEach(key => {
-            const sumAmount = rowsBySector[key].map(row => new BigMoney(row.currCost).amount.abs())
-                .reduce((result: Decimal, current: Decimal) => result.add(current), new Decimal("0"));
-            const tickers = rowsBySector[key].map(row => row.stock.ticker).join(',');
-            const percentage = new Decimal(sumAmount).mul(100).dividedBy(currentTotalCost).toDP(2, Decimal.ROUND_HALF_UP).toString();
-            data.push({
-                name: key,
-                y: sumAmount.toDP(2, Decimal.ROUND_HALF_UP).toNumber(),
-                percentage,
-                tickers
-            })
-        });
-        this.categoryNames = Object.keys(rowsBySector);
-        await this.draw(data);
+        await this.doChart();
+    }
+
+    private async doChart(): Promise<void> {
+        const chartData = ChartUtils.doSectorsChartData(this.portfolio.overview);
+        this.categoryNames = chartData.categories;
+        await this.draw(chartData.data);
+    }
+
+    @Watch('portfolio')
+    private async onPortfolioChange(): Promise<void> {
+        await this.doChart();
     }
 
     private async draw(data: any[]): Promise<void> {
@@ -126,7 +111,7 @@ export class SectorsChart extends UI {
                 enabled: false
             },
             series: [{
-                name: 'Сектора',
+                name: 'Отрасли',
                 data: data
             }]
         });

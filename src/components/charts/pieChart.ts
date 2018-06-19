@@ -1,12 +1,10 @@
 import {UI} from '../../app/UI';
 import Component from 'vue-class-component';
-import Highcharts, {ChartObject, DataPoint} from 'highcharts';
+import Highcharts, {ChartObject} from 'highcharts';
 import {Portfolio} from '../../types/types';
 import {StoreType} from '../../vuex/storeType';
 import {namespace} from 'vuex-class/lib/bindings';
-import {Prop} from 'vue-property-decorator';
-import {BigMoney} from '../../types/bigMoney';
-import {Decimal} from 'decimal.js';
+import {Prop, Watch} from 'vue-property-decorator';
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -48,7 +46,11 @@ export class PieChart extends UI {
     private chart: ChartObject = null;
 
     private async mounted(): Promise<void> {
-        console.log("MOUNT", this.data);
+        await this.draw();
+    }
+
+    @Watch('data')
+    private async onPortfolioChange(): Promise<void> {
         await this.draw();
     }
 

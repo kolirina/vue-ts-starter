@@ -3,7 +3,7 @@ import Component from 'vue-class-component';
 import Highcharts, {ChartObject, Gradient} from 'highcharts';
 import {StoreType} from '../../vuex/storeType';
 import {namespace} from 'vuex-class/lib/bindings';
-import {Prop} from 'vue-property-decorator';
+import {Prop, Watch} from 'vue-property-decorator';
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -45,8 +45,12 @@ export class LineChart extends UI {
     private chart: ChartObject = null;
 
     private async mounted(): Promise<void> {
-        console.log('MOUNT LINE CHART', this.data);
         await this.draw();
+    }
+
+    @Watch('data')
+    private async onDataChange(): Promise<void> {
+        this.draw();
     }
 
     private async draw(): Promise<void> {

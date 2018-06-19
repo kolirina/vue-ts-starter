@@ -6,11 +6,7 @@ import {Portfolio} from '../../types/types';
 import {StoreType} from '../../vuex/storeType';
 import {namespace} from 'vuex-class/lib/bindings';
 import Highcharts, {ChartObject, Gradient} from 'highcharts';
-import exporting from 'highcharts/modules/exporting';
-import Highcharts3D from 'highcharts-3d'
-
-Highcharts3D(Highcharts);
-exporting(Highcharts);
+import {Watch} from "vue-property-decorator";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -47,8 +43,17 @@ export class PortfolioLineChart extends UI {
     private portfolioService = (<PortfolioService>Container.get(PortfolioService));
 
     private async mounted(): Promise<void> {
+        await this.doChart();
+    }
+
+    private async doChart(): Promise<void> {
         this.chartData = await this.portfolioService.getCostChart(this.portfolio.id);
         await this.draw(this.chartData);
+    }
+
+    @Watch('portfolio')
+    private async onPortfolioChange(): Promise<void> {
+        await this.doChart();
     }
 
     private async draw(chartData: any[]): Promise<void> {

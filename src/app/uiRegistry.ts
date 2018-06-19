@@ -9,6 +9,12 @@ import {Dashboard} from "../components/dashboard";
 import {Filters} from "../platform/filters/Filters";
 import {PieChart} from '../components/charts/pieChart';
 import {LineChart} from '../components/charts/lineChart';
+import Highcharts from 'highcharts';
+import exporting from 'highcharts/modules/exporting';
+import Highcharts3D from 'highcharts-3d'
+
+Highcharts3D(Highcharts);
+exporting(Highcharts);
 
 export class UIRegistry {
 

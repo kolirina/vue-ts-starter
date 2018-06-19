@@ -39,16 +39,16 @@ export class DashboardBrickComponent extends UI {
     template: `
         <v-container v-if="data" grid-list-md text-xs-center fluid>
             <v-layout row wrap>
-                <v-flex xs3>
+                <v-flex xl3 lg3 md6 sm12 xs12>
                     <dashboard-brick-component :block="blocks[0]"></dashboard-brick-component>
                 </v-flex>
-                <v-flex xs3 :align-content-start="true">
+                <v-flex xl3 lg3 md6 sm12 xs12 :align-content-start="true">
                     <dashboard-brick-component :block="blocks[1]"></dashboard-brick-component>
                 </v-flex>
-                <v-flex xs3>
+                <v-flex xl3 lg3 md6 sm12 xs12>
                     <dashboard-brick-component :block="blocks[2]"></dashboard-brick-component>
                 </v-flex>
-                <v-flex xs3>
+                <v-flex xl3 lg3 md6 sm12 xs12>
                     <dashboard-brick-component :block="blocks[3]"></dashboard-brick-component>
                 </v-flex>
             </v-layout>

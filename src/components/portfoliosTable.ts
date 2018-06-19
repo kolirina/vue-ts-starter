@@ -44,7 +44,7 @@ export class PortfoliosTable extends UI {
     private headers: TableHeader[] = [
         {text: 'Название', align: 'left', value: 'name'},
         {text: 'Фикс. комиссия', align: 'right', value: 'fixFee'},
-        {text: 'Валюта', align: 'center', value: 'currency'},
+        {text: 'Валюта', align: 'center', value: 'viewCurrency'},
         {text: 'Тип счета', align: 'center', value: 'type'},
         {text: 'Дата открытия', align: 'center', value: 'openDate'}
     ];

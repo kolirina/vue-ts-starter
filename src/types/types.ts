@@ -1,5 +1,3 @@
-import {BigMoney} from "./bigMoney";
-
 export type _portfolioRow = {
     /** Прибыль */
     profit: string,
@@ -164,6 +162,11 @@ export type Overview = {
     bondPortfolio: BondPortfolio
 }
 
+export type PortfolioCombined = {
+    trades: TradeRow[],
+    overview: Overview
+}
+
 export type StockPortfolio = {
     sumRow: StockPortfolioSumRow,
     rows: StockPortfolioRow[]
@@ -217,7 +220,8 @@ export type PortfolioParams = {
     fixFee: string,
     viewCurrency: string,
     type: string,
-    openDate: string
+    openDate: string,
+    combined: boolean
 }
 
 export class ClientInfo {
@@ -346,4 +350,9 @@ export type LineChartItem = {
     bondAmount: string,
     year: string,
     lastItemOfTheYear: string
+}
+
+export type SectorChartData = {
+    data: any[],
+    categories: string[]
 }

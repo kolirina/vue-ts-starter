@@ -6,6 +6,7 @@ import {TradesPage} from '../pages/tradesPage';
 import {SettingsPage} from '../pages/settingsPage';
 import {Container} from 'typescript-ioc';
 import {Storage} from '../platform/services/storage'
+import {CombinedPortfolioPage} from "../pages/combinedPortfolioPage";
 
 Vue.use(VueRouter);
 
@@ -65,6 +66,11 @@ export class RouterConfiguration {
                 name: 'trades',
                 path: '/trades',
                 component: TradesPage
+            },
+            {
+                name: 'combined-portfolio',
+                path: '/combined-portfolio',
+                component: CombinedPortfolioPage
             },
             {
                 name: 'settings',

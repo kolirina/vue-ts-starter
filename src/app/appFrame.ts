@@ -24,8 +24,10 @@ const mainStore = namespace(StoreType.MAIN);
                                     </v-toolbar>
                                     <v-card-text>
                                         <v-form>
-                                            <v-text-field prepend-icon="person" name="login" label="Имя пользователя" type="text" required v-model="username"></v-text-field>
-                                            <v-text-field id="password" prepend-icon="lock" name="password" label="Пароль" required type="password" v-model="password"></v-text-field>
+                                            <v-text-field prepend-icon="person" name="login" label="Имя пользователя" type="text" required
+                                                          v-model="username"></v-text-field>
+                                            <v-text-field id="password" prepend-icon="lock" name="password" label="Пароль" required type="password"
+                                                          v-model="password"></v-text-field>
                                         </v-form>
                                     </v-card-text>
                                     <v-card-actions>
@@ -43,7 +45,7 @@ const mainStore = namespace(StoreType.MAIN);
                     <v-btn flat color="pink" @click.native="closeMessage">Close</v-btn>
                 </v-snackbar>
             </template>
-            
+
             <template v-else>
                 <v-navigation-drawer v-model="drawer" fixed app>
                     <v-toolbar flat>
@@ -88,7 +90,7 @@ const mainStore = namespace(StoreType.MAIN);
                 <v-content>
                     <v-container fluid fill-height>
                         <!--<keep-alive :include="cachedPages">-->
-                            <router-view></router-view>
+                        <router-view></router-view>
                         <!--</keep-alive>-->
                     </v-container>
                 </v-content>
@@ -133,6 +135,7 @@ export class AppFrame extends UI {
     private items: NavBarItem[] = [
         {title: 'Портфель', name: 'portfolio', icon: 'fas fa-briefcase'},
         {title: 'Сделки', name: 'trades', icon: 'fas fa-list-alt'},
+        {title: 'Комбинированный портфель', name: 'combined-portfolio', icon: 'fas fa-object-group'},
         {title: 'Настройки', name: 'settings', icon: 'fas fa-cog'}
     ];
 

@@ -37,7 +37,6 @@ export class PortfolioSwitcher extends UI {
     private selected: PortfolioParams = null;
 
     private async created(): Promise<void> {
-        console.log('PS', this.clientInfo);
         this.portfolios = this.clientInfo.user.portfolios;
         this.selected = this.getSelected();
     }
@@ -53,13 +52,11 @@ export class PortfolioSwitcher extends UI {
     }
 
     private getSelected(id?: string): PortfolioParams {
-        console.log("SELECTED", this.$store.state[StoreType.MAIN]);
         const currentPortfolioId = this.portfolio.id;
         const portfolio = this.portfolios.find(p => p.id === currentPortfolioId);
         if (!portfolio) {
             return this.portfolios[0];
         }
         return portfolio;
-
     }
 }

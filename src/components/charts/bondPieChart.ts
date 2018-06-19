@@ -6,6 +6,7 @@ import {StoreType} from '../../vuex/storeType';
 import {namespace} from 'vuex-class/lib/bindings';
 import {BigMoney} from '../../types/bigMoney';
 import {Decimal} from 'decimal.js';
+import {Watch} from "vue-property-decorator";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -23,10 +24,15 @@ export class BondPieChart extends UI {
     private chartData: DataPoint[] = [];
 
     private created(): void {
-        this.chartData = this.stockPieChartData();
+        this.chartData = this.doBondPieChartData();
     }
 
-    private stockPieChartData(): DataPoint[] {
+    @Watch('portfolio')
+    private onPortfolioChange(): void {
+        this.chartData = this.doBondPieChartData();
+    }
+
+    private doBondPieChartData(): DataPoint[] {
         const data: DataPoint[] = [];
         this.portfolio.overview.bondPortfolio.rows.filter(value => value.currCost != '0').forEach(row => {
             data.push({

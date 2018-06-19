@@ -13,5 +13,9 @@
   "/api/portfolios/3/overview": "/overview-3",
   "/api/portfolios/3/trades": "/trades-3",
   "/api/portfolios/3/cost-chart": "/cost-chart-3",
-  "/api/portfolios/3": "/portfolio-params-3"
+  "/api/portfolios/3": "/portfolio-params-3",
+
+  "/api/portfolios/overview-combined": "/overview-combined",
+  "/api/portfolios/trades-combined": "/trades-combined",
+  "/api/portfolios/cost-chart-combined": "/cost-chart-combined"
 }
