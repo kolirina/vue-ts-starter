@@ -5,6 +5,7 @@ import {ClientInfo, LoginRequest, Portfolio} from '../types/types';
 import {namespace} from 'vuex-class/lib/bindings';
 import {StoreType} from '../vuex/storeType';
 import {PortfolioSwitcher} from "../components/portfolioSwitcher";
+import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
 
 const mainStore = namespace(StoreType.MAIN);
 
@@ -67,13 +68,9 @@ const mainStore = namespace(StoreType.MAIN);
                     <v-toolbar-title>INTELINVEST</v-toolbar-title>
                     <v-spacer></v-spacer>
                     <portfolio-switcher></portfolio-switcher>
-                    <add-trade-dialog>
-                        <slot name="activator">
-                            <v-btn icon>
-                                <v-icon>plus</v-icon>
-                            </v-btn>
-                        </slot>
-                    </add-trade-dialog>
+                    <v-btn icon @click.native.stop="openDialog3">
+                        <v-icon>add_circle_outline</v-icon>
+                    </v-btn>
                     <v-btn icon @click="logout">
                         <v-icon>exit_to_app</v-icon>
                     </v-btn>
@@ -170,6 +167,19 @@ export class AppFrame extends UI {
         this.message = '';
         this.severity = 'info';
     }
+
+    private openDialog(): void {
+        this.$modal.show('addTradeDialog', {
+            text: 'This text is passed as a property'
+        }, {
+            draggable: true
+        });
+    }
+
+    private async openDialog3(): Promise<void> {
+        await new AddTradeDialog().show('lolololo');
+    }
+
 }
 
 export type NavBarItem = {

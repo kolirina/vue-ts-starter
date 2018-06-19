@@ -1,13 +1,10 @@
-import {UI} from "../../app/UI";
 import Component from "vue-class-component";
+import {CustomDialog} from "./customDialog";
 
 @Component({
     // language=Vue
     template: `
         <v-dialog v-model="showed" persistent max-width="500px">
-            <v-btn slot="activator" icon>
-                <v-icon>add_circle_outline</v-icon>
-            </v-btn>
             <v-card>
                 <v-card-title>
                     <span class="headline">User Profile</span>
@@ -62,17 +59,9 @@ import Component from "vue-class-component";
                 </v-card-actions>
             </v-card>
         </v-dialog>
-    `
+    `,
+    components: {CustomDialog}
 })
-export class AddTradeDialog extends UI {
+export class AddTradeDialog extends CustomDialog<string, boolean> {
 
-    private showed = false;
-
-    show(): void {
-        this.showed = true;
-    }
-
-    close(): void {
-        this.showed = false;
-    }
 }
