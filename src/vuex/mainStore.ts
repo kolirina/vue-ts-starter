@@ -6,6 +6,8 @@ import {ClientInfo, LoginRequest, Portfolio} from '../types/types';
 import {PortfolioService} from '../services/PortfolioService';
 import {GetterType} from './getterType';
 import {Storage} from '../platform/services/storage';
+import {StoreKeys} from '../types/storeKeys';
+import {HTTP} from '../platform/services/http';
 
 /** Сервис работы с клиентом */
 const clientService: ClientService = Container.get(ClientService);
@@ -13,8 +15,6 @@ const clientService: ClientService = Container.get(ClientService);
 const portfolioService: PortfolioService = Container.get(PortfolioService);
 /** Сервис работы с localStorage */
 const localStorage: Storage = Container.get(Storage);
-/** Ключ под которым хранится токен пользователя */
-const TOKEN_KEY = "INTELINVEST_TOKEN";
 
 /** Состояния хранилища */
 export class StateHolder {
@@ -40,7 +40,6 @@ const Mutations = {
     /** Мутатор проставлящий информацию о клиенте */
     [MutationType.SET_CLIENT_INFO](state: StateHolder, clientInfo: ClientInfo): void {
         state.clientInfo = clientInfo;
-        localStorage.set(TOKEN_KEY, clientInfo.token);
     },
     [MutationType.SET_CURRENT_PORTFOLIO](state: StateHolder, portfolio: Portfolio): void {
         state.currentPortfolio = portfolio;
@@ -53,6 +52,8 @@ const Actions = {
     [MutationType.SET_CLIENT_INFO](context: ActionContext<StateHolder, void>, request: LoginRequest): Promise<ClientInfo> {
         return new Promise<ClientInfo>((resolve) => {
             clientService.getClientInfo(request).then((clientInfo: ClientInfo) => {
+                localStorage.set(StoreKeys.TOKEN_KEY, clientInfo.token);
+                HTTP.init();
                 context.commit(MutationType.SET_CLIENT_INFO, clientInfo);
                 console.log('ACTION SET USER', clientInfo, context);
                 resolve(clientInfo);

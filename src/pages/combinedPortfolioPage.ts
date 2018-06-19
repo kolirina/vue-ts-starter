@@ -43,7 +43,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 <v-btn color="info" @click.stop="doCombinedPortfolio">Сформировать</v-btn>
                             </v-flex>
                             <v-flex xs6>
-                                <v-select :items="['RUR', 'USD']" v-model="viewCurrency" label="Валюта представления" @change="doCombinedPortfolio"
+                                <v-select :items="['RUB', 'USD']" v-model="viewCurrency" label="Валюта представления" @change="doCombinedPortfolio"
                                           single-line></v-select>
                             </v-flex>
                         </v-layout>
@@ -143,7 +143,7 @@ export class CombinedPortfolioPage extends UI {
     private portfolioService: PortfolioService;
 
     private overview: Overview = null;
-    private viewCurrency = 'RUR';
+    private viewCurrency = 'RUB';
 
     private lineChartData: any[] = [];
     private stockPieChartData: DataPoint[] = [];
@@ -156,9 +156,8 @@ export class CombinedPortfolioPage extends UI {
 
     private async doCombinedPortfolio(): Promise<void> {
         const ids = this.clientInfo.user.portfolios.filter(value => value.combined).map(value => value.id);
-        const portfolio = await this.portfolioService.getPortfolioOverviewCombined(ids);
-        this.overview = portfolio.overview;
-        this.lineChartData = await this.portfolioService.getCostChartCombined(ids);
+        this.overview = await this.portfolioService.getPortfolioOverviewCombined({ids: ids, viewCurrency: this.viewCurrency});
+        this.lineChartData = await this.portfolioService.getCostChartCombined({ids: ids, viewCurrency: this.viewCurrency});
         this.stockPieChartData = this.doStockPieChartData();
         this.bondPieChartData = this.doBondPieChartData();
         this.sectorsChartData = ChartUtils.doSectorsChartData(this.overview);

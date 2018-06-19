@@ -162,11 +162,6 @@ export type Overview = {
     bondPortfolio: BondPortfolio
 }
 
-export type PortfolioCombined = {
-    trades: TradeRow[],
-    overview: Overview
-}
-
 export type StockPortfolio = {
     sumRow: StockPortfolioSumRow,
     rows: StockPortfolioRow[]
@@ -355,4 +350,9 @@ export type LineChartItem = {
 export type SectorChartData = {
     data: any[],
     categories: string[]
+}
+
+export type CombinedInfoRequest = {
+    ids: string[],
+    viewCurrency: string
 }

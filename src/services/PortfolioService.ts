@@ -1,6 +1,9 @@
 import {Container, Singleton} from 'typescript-ioc';
 import {Service} from '../platform/decorators/service';
-import {LineChartItem, Overview, Portfolio, PortfolioCombined, PortfolioParams} from '../types/types';
+import {
+    CombinedInfoRequest, LineChartItem, Overview, Portfolio,
+    PortfolioParams
+} from '../types/types';
 import {Cache} from '../platform/services/cache';
 import {Decimal} from 'decimal.js';
 
@@ -47,21 +50,20 @@ export class PortfolioService {
 
     /**
      * Возвращает данные по комбинированному портфелю
-     * @param {string[]} ids идентификаторы портфелей
+     * @param request
      * @return {Promise<>}
      */
-    async getPortfolioOverviewCombined(ids: string[]): Promise<PortfolioCombined> {
+    async getPortfolioOverviewCombined(request: CombinedInfoRequest): Promise<Overview> {
         // -------------------------------------- POST --------------------------------
-        const overview = <Overview>(await HTTP.get(`/portfolios/overview-combined`, {data: ids})).data;
+        const overview = <Overview>(await HTTP.INSTANCE.post(`/portfolios/overview-combined`, request)).data;
         // проставляем идентификаторы чтобы работали разворачиваютщиеся блоки в табилицах
         overview.stockPortfolio.rows.forEach((value, index) => value.id = index.toString());
         overview.bondPortfolio.rows.forEach((value, index) => value.id = index.toString());
-        const trades = (await HTTP.get(`/portfolios/trades-combined`, {data: ids})).data;
-        return {trades, overview};
+        return overview;
     }
 
-    async getCostChartCombined(ids: string[]): Promise<any> {
-        const data = <LineChartItem[]>(await HTTP.get(`/portfolios/cost-chart-combined`, {data: ids})).data;
+    async getCostChartCombined(request: CombinedInfoRequest): Promise<any> {
+        const data = <LineChartItem[]>(await HTTP.INSTANCE.post(`/portfolios/cost-chart-combined`, request)).data;
         const result: any[] = [];
         data.forEach(value => {
             result.push([new Date(value.date).getTime(), new BigMoney(value.amount).amount.toDP(2, Decimal.ROUND_HALF_UP).toNumber()])
@@ -76,7 +78,7 @@ export class PortfolioService {
      * @return {Promise<void>}
      */
     async setCombinedFlag(id: string, combined: boolean): Promise<void> {
-        await HTTP.post(`/portfolios/${id}/set-combined`, {combined});
+        await HTTP.INSTANCE.post(`/portfolios/${id}/combined`, {combined});
     }
 
     /**
@@ -85,17 +87,17 @@ export class PortfolioService {
      * @return {Promise<Portfolio>}
      */
     private async loadPortfolio(id: string): Promise<Portfolio> {
-        const portfolio = <PortfolioParams>(await HTTP.get(`/portfolios/${id}`)).data;
-        const overview = <Overview>(await HTTP.get(`/portfolios/${id}/overview`)).data;
+        const portfolio = <PortfolioParams>(await HTTP.INSTANCE.get(`/portfolios/${id}`)).data;
+        const overview = <Overview>(await HTTP.INSTANCE.get(`/portfolios/${id}/overview`)).data;
         // проставляем идентификаторы чтобы работали разворачиваютщиеся блоки в табилицах
         overview.stockPortfolio.rows.forEach((value, index) => value.id = index.toString());
         overview.bondPortfolio.rows.forEach((value, index) => value.id = index.toString());
-        const trades = (await HTTP.get(`/portfolios/${id}/trades`)).data;
+        const trades = (await HTTP.INSTANCE.get(`/portfolios/${id}/trades`)).data;
         return {id, portfolioParams: portfolio, trades, overview};
     }
 
     async getCostChart(id: string): Promise<any> {
-        const data = <LineChartItem[]>(await HTTP.get(`/portfolios/${id}/cost-chart`)).data;
+        const data = <LineChartItem[]>(await HTTP.INSTANCE.get(`/portfolios/${id}/cost-chart`)).data;
         const result: any[] = [];
         data.forEach(value => {
             result.push([new Date(value.date).getTime(), new BigMoney(value.amount).amount.toDP(2, Decimal.ROUND_HALF_UP).toNumber()])
