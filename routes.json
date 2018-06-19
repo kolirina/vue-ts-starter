@@ -1,7 +1,17 @@
 {
   "api/user/login": "/login",
-  "/api/portfolios/:id/overview": "/overview",
-  "/api/portfolios/6735/trades": "/trades",
-  "/api/portfolios/6735/cost-chart": "/cost-chart",
-  "/api/portfolios/6735": "/portfolio-params"
+  "/api/portfolios/6735/overview": "/overview-6735",
+  "/api/portfolios/6735/trades": "/trades-6735",
+  "/api/portfolios/6735/cost-chart": "/cost-chart-6735",
+  "/api/portfolios/6735": "/portfolio-params-6735",
+
+  "/api/portfolios/37/overview": "/overview-37",
+  "/api/portfolios/37/trades": "/trades-37",
+  "/api/portfolios/37/cost-chart": "/cost-chart-37",
+  "/api/portfolios/37": "/portfolio-params-37",
+
+  "/api/portfolios/3/overview": "/overview-3",
+  "/api/portfolios/3/trades": "/trades-3",
+  "/api/portfolios/3/cost-chart": "/cost-chart-3",
+  "/api/portfolios/3": "/portfolio-params-3"
 }

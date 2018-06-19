@@ -1,5 +1,6 @@
-import { Static } from "highcharts";
+declare module 'highcharts-3d' {
 
-declare function Highcharts3D(H: Static): Static;
-export = Highcharts3D;
-export as namespace Highcharts3D;
+    import {Static} from "highcharts";
+    function Highcharts3D(H: Static): Static;
+    export = Highcharts3D;
+}

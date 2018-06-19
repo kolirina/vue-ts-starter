@@ -48,5 +48,6 @@ export class AssetTable extends UI {
             case 'DOLLARS':
                 return 'Доллары';
         }
+        throw new Error('Неизвестный тип актива: ' + type);
     }
 }

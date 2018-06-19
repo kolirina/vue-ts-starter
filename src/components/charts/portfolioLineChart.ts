@@ -7,9 +7,7 @@ import {StoreType} from '../../vuex/storeType';
 import {namespace} from 'vuex-class/lib/bindings';
 import Highcharts, {ChartObject, Gradient} from 'highcharts';
 import exporting from 'highcharts/modules/exporting';
-// tslint:disable-next-line
-import Highcharts3D from 'highcharts/highcharts-3d'
-//import * as highcharts3d from 'highcharts/highcharts-3d'
+import Highcharts3D from 'highcharts-3d'
 
 Highcharts3D(Highcharts);
 exporting(Highcharts);
