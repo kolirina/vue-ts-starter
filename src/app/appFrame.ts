@@ -51,7 +51,18 @@ const mainStore = namespace(StoreType.MAIN);
                 <v-navigation-drawer v-model="drawer" fixed clipped app>
                     <v-divider></v-divider>
                     <v-list dense class="pt-0">
-                        <v-list-tile v-for="item in items" :key="item.title" @click="go(item.name)">
+                        <v-list-tile v-for="item in mainSection" :key="item.title" @click="go(item.name)">
+                            <v-list-tile-action>
+                                <v-icon>{{ item.icon }}</v-icon>
+                            </v-list-tile-action>
+                            <v-list-tile-content>
+                                <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+                            </v-list-tile-content>
+                        </v-list-tile>
+                    </v-list>
+                    <v-divider dark class="my-3"></v-divider>
+                    <v-list dense class="pt-0">
+                        <v-list-tile v-for="item in settingsSection" :key="item.title" @click="go(item.name)">
                             <v-list-tile-action>
                                 <v-icon>{{ item.icon }}</v-icon>
                             </v-list-tile-action>
@@ -121,11 +132,19 @@ export class AppFrame extends UI {
 
     private drawer: boolean = false;
 
-    private items: NavBarItem[] = [
+    private mainSection: NavBarItem[] = [
         {title: 'Портфель', name: 'portfolio', icon: 'fas fa-briefcase'},
         {title: 'Сделки', name: 'trades', icon: 'fas fa-list-alt'},
         {title: 'Комбинированный портфель', name: 'combined-portfolio', icon: 'fas fa-object-group'},
-        {title: 'Настройки', name: 'settings', icon: 'fas fa-cog'}
+    ];
+
+    private settingsSection: NavBarItem[] = [
+        {title: 'Управление портфелями', name: 'portfolio-settings', icon: 'fas fa-cog'},
+        {title: 'Импорт и экспорт', name: 'import-export', icon: 'fas fa-download'},
+        {title: 'Профиль', name: 'profile', icon: 'fas fa-user'},
+        {title: 'Тарифы', name: 'tariffs', icon: 'fas fa-credit-card'},
+        {title: 'Промо-коды', name: 'promo-codes', icon: 'fas fa-heart'},
+        {title: 'Уведомления', name: 'notifications', icon: 'fas fa-bell'}
     ];
 
     private go(path: string): void {

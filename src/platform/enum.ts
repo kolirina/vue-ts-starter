@@ -8,7 +8,7 @@
  */
 export function Enum(idProperty?: string) {
     // tslint:disable-next-line
-    return function <T extends Function, V>(target: T & IStaticEnum<V>): T & IStaticEnum<V> {
+    return function <T extends Function, V>(target: T): T {
         if ((target as any).__enumMap__ || (target as any).__enumValues__) {
             const enumName = (target as any).prototype.constructor.name;
             throw new Error("Перечисление " + enumName + " уже инициализировано");
@@ -59,6 +59,8 @@ export function Enum(idProperty?: string) {
  */
 export interface IStaticEnum<T> {
 
+    new(): {enumName: string};
+
     values(): ReadonlyArray<T>;
 
     valueOf(id: string | number): T;
@@ -69,7 +71,7 @@ export interface IStaticEnum<T> {
 /**
  * Базовый класс для создания перечисления
  */
-export class Enumerable<T> {
+class Enumerable {
 
     /**
      * Создает элемент перечисления
@@ -87,7 +89,7 @@ export class Enumerable<T> {
      * Параметр this нужен для корректного определения типов элементов перечисления.
      * @return {ReadonlyArray<T>} все элементы перечисления
      */
-    static values<T>(this: IStaticEnum<T>): ReadonlyArray<T> {
+    static values(): ReadonlyArray<any> {
         if (!(this as any).__enumValues__) {
             const enumName = (this as any).prototype.constructor.name;
             throw new Error("Перечисление " + enumName + " не инициализировано. Необходимо добавить к классу декоратор @Enum.");
@@ -103,7 +105,7 @@ export class Enumerable<T> {
      * @param {string | number} id идентификатор элемента
      * @return {T} элемент перечисления с указанным идентификатором
      */
-    static valueOf<T>(this: IStaticEnum<T>, id: string | number): T {
+    static valueOf(id: string | number): any {
         if (!(this as any).__enumMap__) {
             const enumName = (this as any).prototype.constructor.name;
             throw new Error("Перечисление " + enumName + " не инициализировано. Необходимо добавить к классу декоратор @Enum.");
@@ -123,7 +125,7 @@ export class Enumerable<T> {
      * @param {string} name наименование элемента в перечислении
      * @return {T} элемент перечисления с указанным наименованием
      */
-    static valueByName<T>(this: IStaticEnum<T>, name: string): T {
+    static valueByName(name: string): any {
         if (!(this as any).__enumMapByName__) {
             const enumName = (this as any).prototype.constructor.name;
             throw new Error("Перечисление " + enumName + " не инициализировано. Необходимо добавить к классу декоратор @Enum.");
@@ -143,3 +145,5 @@ export class Enumerable<T> {
         return (this as any).__enumName__;
     }
 }
+
+export const EnumType = class extends Enumerable {};

@@ -21,5 +21,7 @@
 
   "/api/portfolios/38/set-combined": "/set-combined",
 
+  "/api/market/stocks/search\\?query=:query": "/stock-search",
+
   "/api/user/logout": "/logout"
 }
