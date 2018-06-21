@@ -50,28 +50,34 @@ const mainStore = namespace(StoreType.MAIN);
             <template v-else>
                 <v-navigation-drawer v-model="drawer" fixed clipped app>
                     <v-divider></v-divider>
-                    <v-list dense class="pt-0">
-                        <v-list-tile v-for="item in mainSection" :key="item.title" @click="go(item.name)">
-                            <v-list-tile-action>
-                                <v-icon>{{ item.icon }}</v-icon>
-                            </v-list-tile-action>
-                            <v-list-tile-content>
-                                <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-                            </v-list-tile-content>
-                        </v-list-tile>
+                    <v-list dense>
+                        <template v-for="item in mainSection">
+                            <v-list-group v-if="item.subMenu" v-model="item.active" :key="item.title" :prepend-icon="item.icon" no-action>
+                                <v-list-tile slot="activator">
+                                    <v-list-tile-content>
+                                        <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+                                    </v-list-tile-content>
+                                </v-list-tile>
+                                <v-list-tile v-for="subItem in item.subMenu" :key="subItem.action" :to="{name: subItem.action}">
+                                    <v-list-tile-action>
+                                        <v-icon>{{ subItem.icon }}</v-icon>
+                                    </v-list-tile-action>
+                                    <v-list-tile-content>
+                                        <v-list-tile-title>{{ subItem.title }}</v-list-tile-title>
+                                    </v-list-tile-content>
+                                </v-list-tile>
+                            </v-list-group>
+                            
+                            <v-list-tile v-else :key="item.action" :to="{name: item.action}">
+                                <v-list-tile-action>
+                                    <v-icon>{{ item.icon }}</v-icon>
+                                </v-list-tile-action>
+                                <v-list-tile-content>
+                                    <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+                                </v-list-tile-content>
+                            </v-list-tile>
+                        </template>
                     </v-list>
-                    <v-divider dark class="my-3"></v-divider>
-                    <v-list dense class="pt-0">
-                        <v-list-tile v-for="item in settingsSection" :key="item.title" @click="go(item.name)">
-                            <v-list-tile-action>
-                                <v-icon>{{ item.icon }}</v-icon>
-                            </v-list-tile-action>
-                            <v-list-tile-content>
-                                <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-                            </v-list-tile-content>
-                        </v-list-tile>
-                    </v-list>
-                    <v-divider dark class="my-3"></v-divider>
                 </v-navigation-drawer>
 
                 <v-toolbar color="indigo" dark app clipped-left>
@@ -133,22 +139,23 @@ export class AppFrame extends UI {
     private drawer: boolean = false;
 
     private mainSection: NavBarItem[] = [
-        {title: 'Портфель', name: 'portfolio', icon: 'fas fa-briefcase'},
-        {title: 'Сделки', name: 'trades', icon: 'fas fa-list-alt'},
-        {title: 'Комбинированный портфель', name: 'combined-portfolio', icon: 'fas fa-object-group'},
-    ];
-
-    private settingsSection: NavBarItem[] = [
-        {title: 'Управление портфелями', name: 'portfolio-settings', icon: 'fas fa-cog'},
-        {title: 'Импорт и экспорт', name: 'import-export', icon: 'fas fa-download'},
-        {title: 'Профиль', name: 'profile', icon: 'fas fa-user'},
-        {title: 'Тарифы', name: 'tariffs', icon: 'fas fa-credit-card'},
-        {title: 'Промо-коды', name: 'promo-codes', icon: 'fas fa-heart'},
-        {title: 'Уведомления', name: 'notifications', icon: 'fas fa-bell'}
+        {title: 'Портфель', action: 'portfolio', icon: 'fas fa-briefcase'},
+        {title: 'Сделки', action: 'trades', icon: 'fas fa-list-alt'},
+        {title: 'Комбинированный портфель', action: 'combined-portfolio', icon: 'fas fa-object-group'},
+        {
+            title: 'Настройки', icon: 'fas fa-cog', subMenu: [
+                {title: 'Управление портфелями', action: 'portfolio-settings', icon: 'fas fa-suitcase'},
+                {title: 'Импорт и экспорт', action: 'import-export', icon: 'fas fa-download'},
+                {title: 'Профиль', action: 'profile', icon: 'fas fa-user'},
+                {title: 'Тарифы', action: 'tariffs', icon: 'fas fa-credit-card'},
+                {title: 'Промо-коды', action: 'promo-codes', icon: 'fas fa-heart'},
+                {title: 'Уведомления', action: 'notifications', icon: 'fas fa-bell'}
+            ]
+        }
     ];
 
     private go(path: string): void {
-        this.$router.push({name: `${path.toLowerCase()}`});
+        this.$router.push({name: `${path}`});
     }
 
     private async created(): Promise<void> {
@@ -195,6 +202,9 @@ export class AppFrame extends UI {
 
 export type NavBarItem = {
     title: string,
-    name: string,
-    icon: string
+    /** routing, для корневых элементов может не заполнен */
+    action?: string,
+    icon: string,
+    active?: boolean,
+    subMenu?: NavBarItem[]
 }

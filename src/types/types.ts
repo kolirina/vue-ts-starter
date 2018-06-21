@@ -238,6 +238,10 @@ export type Client = {
 export type Share = {
     /** Идентификатору бумаги в системе */
     id: string;
+
+    price: string,
+
+    lotsize: string,
     /** Количество значащих разрядов */
     decimals: string;
     /** Код валюты */
@@ -355,4 +359,31 @@ export type SectorChartData = {
 export type CombinedInfoRequest = {
     ids: string[],
     viewCurrency: string
+}
+
+export type TradeData = {
+    /** Тикер */
+    ticker: string,
+    /** Дата */
+    date: Date,
+    /** Количество */
+    quantity: number,
+    /** Цена */
+    price: string,
+    /** Номинал */
+    facevalue: string,
+    /** НКД */
+    nkd: string,
+    /** Признак начисления на одну бумагу */
+    perOne: boolean,
+    /** Комиссия */
+    fee: string,
+    /** Заметка */
+    note: string,
+    /** Признак списания/зачисления денег */
+    keepMoney: boolean,
+    /** Сумма денег для списания/зачисления */
+    moneyAmount: string,
+    /** Валюта сделки */
+    currency: string
 }
