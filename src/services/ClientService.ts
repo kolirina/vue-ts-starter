@@ -23,4 +23,13 @@ export class ClientService {
         }
         return this.clientInfo;
     }
+
+    /**
+     * Отправляет запрос на смену типа вознаграждения промо-кода
+     * @param {string} type
+     * @returns {Promise<void>}
+     */
+    async changeReferralAwardType(type: string): Promise<void> {
+        await HTTP.INSTANCE.post(`/user/promo-code`, type);
+    }
 }

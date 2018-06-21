@@ -232,7 +232,9 @@ export type Client = {
     tariff: string,
     paidTill: string,
     currentPortfolioId: string,
-    portfolios: PortfolioParams[]
+    portfolios: PortfolioParams[],
+    referralAwardType: string,
+    promoCode: string
 }
 
 export type Share = {

@@ -164,7 +164,7 @@ export class CombinedPortfolioPage extends UI {
     }
 
     private async onSetCombined(data: CombinedData): Promise<void> {
-        this.portfolioService.setCombinedFlag(data.id, data.combined);
+        await this.portfolioService.setCombinedFlag(data.id, data.combined);
     }
 
     private doStockPieChartData(): DataPoint[] {

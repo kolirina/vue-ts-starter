@@ -16,7 +16,7 @@ export class HTTP {
             baseURL: `${window.location.protocol}//${window.location.host}/api`,
             headers: {
                 Authorization: token ? `Bearer ${token}` : '',
-                ContentType: 'application/json'
+                'Content-Type': 'application/json'
             }
         });
     }
