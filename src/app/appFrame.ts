@@ -94,7 +94,7 @@ const mainStore = namespace(StoreType.MAIN);
                 </v-toolbar>
 
                 <v-content>
-                    <v-container fluid fill-height>
+                    <v-container fluid>
                         <!--<keep-alive :include="cachedPages">-->
                         <router-view></router-view>
                         <!--</keep-alive>-->

@@ -78,7 +78,7 @@ export class PortfolioService {
      * @return {Promise<void>}
      */
     async setCombinedFlag(id: string, combined: boolean): Promise<void> {
-        await HTTP.INSTANCE.post(`/portfolios/${id}/combined`, {combined});
+        await HTTP.INSTANCE.post(`/portfolios/${id}/combined`, combined);
     }
 
     /**
