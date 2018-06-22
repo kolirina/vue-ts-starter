@@ -178,7 +178,7 @@
           "name": "impo ",
           "viewCurrency": "USD",
           "access": false,
-          "fixFee": "0.00000",
+          "fixFee": "0.1000",
           "openDate": "09.04.2018",
           "type": "Брокерский",
           "combined": true
@@ -3290,7 +3290,7 @@
     "name": "impo ",
     "viewCurrency": "USD",
     "access": false,
-    "fixFee": "0.00000",
+    "fixFee": "0.10000",
     "openDate": "09.04.2018",
     "type": "Брокерский"
   },
@@ -18008,7 +18008,5 @@
       "moexId": null
     }
   ],
-  "logout": {
-    "token": null
-  }
+  "logout": {}
 }

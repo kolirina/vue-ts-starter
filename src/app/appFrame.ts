@@ -195,9 +195,8 @@ export class AppFrame extends UI {
     }
 
     private async openDialog(): Promise<void> {
-        await new AddTradeDialog().show('lolololo');
+        await new AddTradeDialog().show({store: this.$store.state[StoreType.MAIN], router: this.$router});
     }
-
 }
 
 export type NavBarItem = {
