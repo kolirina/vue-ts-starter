@@ -6,6 +6,8 @@ import {namespace} from 'vuex-class/lib/bindings';
 import {StoreType} from '../vuex/storeType';
 import {PortfolioSwitcher} from "../components/portfolioSwitcher";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
+import {Inject} from "typescript-ioc";
+import {ClientService} from "../services/ClientService";
 
 const mainStore = namespace(StoreType.MAIN);
 
@@ -110,8 +112,11 @@ const mainStore = namespace(StoreType.MAIN);
 })
 export class AppFrame extends UI {
 
+    @Inject
+    private clientService: ClientService;
+
     @mainStore.Action(MutationType.SET_CLIENT_INFO)
-    private loadUser: (request: LoginRequest) => Promise<ClientInfo>;
+    private loadUser: (clientInfo: ClientInfo) => Promise<void>;
 
     @mainStore.Action(MutationType.SET_CURRENT_PORTFOLIO)
     private setCurrentPortfolio: (id: string) => Promise<Portfolio>;
@@ -174,9 +179,12 @@ export class AppFrame extends UI {
         }
         console.log('LOGIN');
         try {
-            await this.loadUser({username: this.username, password: this.password});
+            const clientInfo = await this.clientService.getClientInfo({username: this.username, password: this.password});
+            await this.loadUser(clientInfo);
         } catch (e) {
             console.log('Ошибка при входе', e);
+            this.message = 'Ошибка при входе';
+            this.severity = 'error';
             return;
         }
         await this.setCurrentPortfolio(this.$store.state[StoreType.MAIN].clientInfo.user.currentPortfolioId);

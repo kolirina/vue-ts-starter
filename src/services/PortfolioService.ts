@@ -1,7 +1,7 @@
 import {Container, Singleton} from 'typescript-ioc';
 import {Service} from '../platform/decorators/service';
 import {
-    CombinedInfoRequest, LineChartItem, Overview, Portfolio,
+    CombinedInfoRequest, EventChartData, HighStockEventData, HighStockEventsGroup, LineChartItem, Overview, Portfolio,
     PortfolioParams
 } from '../types/types';
 import {Cache} from '../platform/services/cache';
@@ -101,6 +101,34 @@ export class PortfolioService {
         const result: any[] = [];
         data.forEach(value => {
             result.push([new Date(value.date).getTime(), new BigMoney(value.amount).amount.toDP(2, Decimal.ROUND_HALF_UP).toNumber()])
+        });
+        return result;
+    }
+
+    async getEventsChartDataWithDefaults(id: string): Promise<HighStockEventsGroup[]> {
+        return this.getEventsChartData(id);
+    }
+
+    async getEventsChartData(id: string, flags = 'flags', onSeries = 'dataseries', shape = 'circlepin', width = 10): Promise<HighStockEventsGroup[]> {
+        const data = <EventChartData[]>(await HTTP.INSTANCE.get(`/portfolios/${id}/events-chart-data`)).data;
+        const result: HighStockEventsGroup[] = [];
+        const events: HighStockEventData[] = [];
+        const temp = data.reduce((result: { [key: string]: HighStockEventData[] }, current: EventChartData) => {
+            result[current.backgroundColor] = result[current.backgroundColor] || [];
+            result[current.backgroundColor].push({x: new Date(current.date).getTime(), title: current.text, text: current.description});
+            return result
+        }, {} as { [key: string]: HighStockEventData[] });
+        Object.keys(temp).forEach(key => {
+            result.push({
+                type: flags,
+                data: temp[key],
+                onSeries: onSeries,
+                shape: shape,
+                color: key,
+                fillColor: key,
+                stackDistance: 20,
+                width: width
+            })
         });
         return result;
     }

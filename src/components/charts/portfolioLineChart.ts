@@ -5,7 +5,8 @@ import {Container} from 'typescript-ioc';
 import {Portfolio} from '../../types/types';
 import {StoreType} from '../../vuex/storeType';
 import {namespace} from 'vuex-class/lib/bindings';
-import Highcharts, {ChartObject, Gradient} from 'highcharts';
+import Highcharts, {ChartObject, DataPoint, Gradient} from 'highcharts';
+import Highstock from 'highcharts/highstock';
 import {Watch} from "vue-property-decorator";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -37,6 +38,7 @@ export class PortfolioLineChart extends UI {
     private portfolio: Portfolio;
 
     private chartData: any[] = [];
+    private eventsChartData: DataPoint[] = [];
 
     private chart: ChartObject = null;
 
@@ -48,6 +50,7 @@ export class PortfolioLineChart extends UI {
 
     private async doChart(): Promise<void> {
         this.chartData = await this.portfolioService.getCostChart(this.portfolio.id);
+        this.eventsChartData = await this.portfolioService.getEventsChartDataWithDefaults(this.portfolio.id);
         await this.draw(this.chartData);
     }
 
@@ -57,7 +60,7 @@ export class PortfolioLineChart extends UI {
     }
 
     private async draw(chartData: any[]): Promise<void> {
-        this.chart = Highcharts.chart(this.$refs.container, {
+        this.chart = Highstock.stockChart(this.$refs.container, {
             chart: {
                 zoomType: 'x',
                 backgroundColor: null
@@ -115,8 +118,10 @@ export class PortfolioLineChart extends UI {
             series: [{
                 type: 'area',
                 name: this.portfolio.portfolioParams.name,
-                data: this.chartData
-            }],
+                data: this.chartData,
+                id: 'dataseries'
+            },
+                ...this.eventsChartData],
             exporting: {
                 enabled: true
             }

@@ -18008,5 +18008,181 @@
       "moexId": null
     }
   ],
-  "logout": {}
+  "logout": {},
+  "events-data-6735": [
+    {
+      "date": "2018-01-04",
+      "backgroundColor": "#93D8FF",
+      "description": "Дивиденд CHMF на сумму: 51387.60",
+      "text": "D"
+    },
+    {
+      "date": "2018-01-04",
+      "backgroundColor": "#93D8FF",
+      "description": "Дивиденд GAZP на сумму: 38160.00",
+      "text": "D"
+    },
+    {
+      "date": "2018-01-04",
+      "backgroundColor": "#93D8FF",
+      "description": "Дивиденд GMKN на сумму: 105866.32",
+      "text": "D"
+    },
+    {
+      "date": "2018-01-04",
+      "backgroundColor": "#93D8FF",
+      "description": "Дивиденд LKOH на сумму: 51042.00",
+      "text": "D"
+    },
+    {
+      "date": "2018-01-04",
+      "backgroundColor": "#93D8FF",
+      "description": "Дивиденд ROSN на сумму: 36862.90",
+      "text": "D"
+    },
+    {
+      "date": "2018-01-04",
+      "backgroundColor": "#93D8FF",
+      "description": "Дивиденд SBER на сумму: 4257.00",
+      "text": "D"
+    },
+    {
+      "date": "2018-01-11",
+      "backgroundColor": "#006400b3",
+      "description": "Покупка акции CHMF на сумму: 60210.00",
+      "text": "B"
+    },
+    {
+      "date": "2018-01-11",
+      "backgroundColor": "#006400b3",
+      "description": "Покупка акции GAZP на сумму: 28280.00",
+      "text": "B"
+    },
+    {
+      "date": "2018-01-11",
+      "backgroundColor": "#006400b3",
+      "description": "Покупка акции LKOH на сумму: 52307.00",
+      "text": "B"
+    },
+    {
+      "date": "2018-01-18",
+      "backgroundColor": "#006400b3",
+      "description": "Покупка акции GMKN на сумму: 93010.00",
+      "text": "B"
+    },
+    {
+      "date": "2018-08-15",
+      "backgroundColor": "#006400b3",
+      "description": "Покупка акции ROSN на сумму: 37290.00",
+      "text": "B"
+    },
+    {
+      "date": "2018-01-03",
+      "backgroundColor": "#006400b3",
+      "description": "Покупка акции GMKN на сумму: 74214.00",
+      "text": "B"
+    },
+    {
+      "date": "2018-01-03",
+      "backgroundColor": "#006400b3",
+      "description": "Покупка акции LKOH на сумму: 58400.00",
+      "text": "B"
+    },
+    {
+      "date": "2018-02-03",
+      "backgroundColor": "#006400b3",
+      "description": "Покупка акции SBER на сумму: 53100.00",
+      "text": "B"
+    },
+    {
+      "date": "2018-02-24",
+      "backgroundColor": "#006400b3",
+      "description": "Покупка акции ROSN на сумму: 25064.00",
+      "text": "B"
+    },
+    {
+      "date": "2018-03-01",
+      "backgroundColor": "#006400b3",
+      "description": "Покупка акции GAZP на сумму: 47196.00",
+      "text": "B"
+    },
+    {
+      "date": "2018-03-30",
+      "backgroundColor": "#93D8FF",
+      "description": "Дивиденд SBERP на сумму: 81954.00",
+      "text": "D"
+    },
+    {
+      "date": "2018-03-30",
+      "backgroundColor": "#93D8FF",
+      "description": "Дивиденд CHMF на сумму: 47285.20",
+      "text": "D"
+    },
+    {
+      "date": "2018-03-30",
+      "backgroundColor": "#93D8FF",
+      "description": "Дивиденд CHMF на сумму: 41675.09",
+      "text": "D"
+    },
+    {
+      "date": "2018-03-30",
+      "backgroundColor": "#93D8FF",
+      "description": "Дивиденд GAZP на сумму: 38469.96",
+      "text": "D"
+    },
+    {
+      "date": "2018-04-30",
+      "backgroundColor": "#93D8FF",
+      "description": "Дивиденд GMKN на сумму: 65201.98",
+      "text": "D"
+    },
+    {
+      "date": "2018-04-30",
+      "backgroundColor": "#93D8FF",
+      "description": "Дивиденд LKOH на сумму: 58672.80",
+      "text": "D"
+    },
+    {
+      "date": "2018-04-30",
+      "backgroundColor": "#93D8FF",
+      "description": "Дивиденд ROSN на сумму: 23931.96",
+      "text": "D"
+    },
+    {
+      "date": "2018-05-30",
+      "backgroundColor": "#93D8FF",
+      "description": "Дивиденд SBER на сумму: 49381.20",
+      "text": "D"
+    },
+    {
+      "date": "2018-05-30",
+      "backgroundColor": "#93D8FF",
+      "description": "Дивиденд TRNFP на сумму: 78496.69",
+      "text": "D"
+    },
+    {
+      "date": "2018-05-30",
+      "backgroundColor": "#93D8FF",
+      "description": "Дивиденд HYDR на сумму: 21092.76",
+      "text": "D"
+    },
+    {
+      "date": "2018-06-30",
+      "backgroundColor": "#93D8FF",
+      "description": "Дивиденд VTBR на сумму: 8856.60",
+      "text": "D"
+    },
+    {
+      "date": "2018-06-30",
+      "backgroundColor": "#006400b3",
+      "description": "Покупка акции SBERP на сумму: 74975.00",
+      "text": "B"
+    },
+    {
+      "date": "2017-08-30",
+      "backgroundColor": "#006400b3",
+      "description": "Покупка акции CHMF на сумму: 87690.00",
+      "text": "B"
+    }
+  ]
 }

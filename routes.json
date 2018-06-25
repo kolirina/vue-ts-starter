@@ -4,6 +4,7 @@
   "/api/portfolios/6735/trades": "/trades-6735",
   "/api/portfolios/6735/cost-chart": "/cost-chart-6735",
   "/api/portfolios/6735": "/portfolio-params-6735",
+  "/api/portfolios/6735/events-chart-data": "/events-data-6735",
 
   "/api/portfolios/37/overview": "/overview-37",
   "/api/portfolios/37/trades": "/trades-37",

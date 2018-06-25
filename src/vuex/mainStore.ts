@@ -1,16 +1,13 @@
 import {Module, ActionContext} from 'vuex';
 import {MutationType} from './mutationType';
-import {ClientService} from '../services/ClientService';
 import {Container} from 'typescript-ioc';
-import {ClientInfo, LoginRequest, Portfolio} from '../types/types';
+import {ClientInfo, Portfolio} from '../types/types';
 import {PortfolioService} from '../services/PortfolioService';
 import {GetterType} from './getterType';
 import {Storage} from '../platform/services/storage';
 import {StoreKeys} from '../types/storeKeys';
 import {HTTP} from '../platform/services/http';
 
-/** Сервис работы с клиентом */
-const clientService: ClientService = Container.get(ClientService);
 /** Сервис работы с клиентом */
 const portfolioService: PortfolioService = Container.get(PortfolioService);
 /** Сервис работы с localStorage */
@@ -49,16 +46,11 @@ const Mutations = {
 /** Действия хранилища */
 const Actions = {
     /** Дейстие проставляющие информацию о клиенте */
-    [MutationType.SET_CLIENT_INFO](context: ActionContext<StateHolder, void>, request: LoginRequest): Promise<ClientInfo> {
-        return new Promise<ClientInfo>((resolve) => {
-            clientService.getClientInfo(request).then((clientInfo: ClientInfo) => {
-                localStorage.set(StoreKeys.TOKEN_KEY, clientInfo.token);
-                HTTP.init();
-                context.commit(MutationType.SET_CLIENT_INFO, clientInfo);
-                console.log('ACTION SET USER', clientInfo, context);
-                resolve(clientInfo);
-            });
-        });
+    [MutationType.SET_CLIENT_INFO](context: ActionContext<StateHolder, void>, clientInfo: ClientInfo): void {
+        localStorage.set(StoreKeys.TOKEN_KEY, clientInfo.token);
+        HTTP.init();
+        context.commit(MutationType.SET_CLIENT_INFO, clientInfo);
+        console.log('ACTION SET USER', clientInfo, context);
     },
     [MutationType.SET_CURRENT_PORTFOLIO](context: ActionContext<StateHolder, void>, id: string): Promise<Portfolio> {
         return new Promise<Portfolio>((resolve) => {
