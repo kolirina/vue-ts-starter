@@ -14,10 +14,7 @@ export class ClientService {
     async getClientInfo(request: LoginRequest): Promise<ClientInfo> {
         if (!this.clientInfo) {
             // ------------------------------ POST ------------------------------------------
-            const result = await axios.post('/api/user/login', request).catch(reason => {
-                console.log('REASON ', reason);
-                throw new Error(reason);
-            });
+            const result = await axios.post('/api/user/login', request);
             this.clientInfo = await <ClientInfo>result.data;
             console.log('INIT CLIENT SERVICE', this.clientInfo);
         }

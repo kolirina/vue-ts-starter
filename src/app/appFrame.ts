@@ -29,7 +29,7 @@ const mainStore = namespace(StoreType.MAIN);
                                         <v-form>
                                             <v-text-field prepend-icon="person" name="login" label="Имя пользователя" type="text" required
                                                           v-model="username"></v-text-field>
-                                            <v-text-field id="password" prepend-icon="lock" name="password" label="Пароль" required type="password"
+                                            <v-text-field id="password" prepend-icon="lock" name="password" label="Пароль" required v-validate="'required'" type="password"
                                                           v-model="password"></v-text-field>
                                         </v-form>
                                     </v-card-text>
@@ -45,7 +45,7 @@ const mainStore = namespace(StoreType.MAIN);
 
                 <v-snackbar :timeout="5000" :top="true" :right="true" v-model="showMessage" :color="severity">
                     {{ message }}
-                    <v-btn flat color="pink" @click.native="closeMessage">Close</v-btn>
+                    <v-btn flat color="white" @click.native="closeMessage">X</v-btn>
                 </v-snackbar>
             </template>
 
@@ -173,6 +173,7 @@ export class AppFrame extends UI {
 
     private async login(): Promise<void> {
         if (!this.username || !this.password) {
+            this.showMessage = true;
             this.message = 'Заполните поля';
             this.severity = 'error';
             return;
@@ -183,6 +184,7 @@ export class AppFrame extends UI {
             await this.loadUser(clientInfo);
         } catch (e) {
             console.log('Ошибка при входе', e);
+            this.showMessage = true;
             this.message = 'Ошибка при входе';
             this.severity = 'error';
             return;

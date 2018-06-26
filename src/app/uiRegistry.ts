@@ -3,6 +3,7 @@
  */
 import {UI} from "./UI";
 import Vuetify from 'vuetify';
+import VeeValidate from 'vee-validate';
 import Vue from "vue";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
 import {Dashboard} from "../components/dashboard";
@@ -27,6 +28,7 @@ export class UIRegistry {
     static init(): boolean {
 
         Vue.use(Vuetify);
+        Vue.use(VeeValidate);
 
         // компоненты
         UI.component("dashboard", Dashboard);
