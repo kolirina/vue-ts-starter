@@ -155,7 +155,7 @@ import {StoreType} from "../../vuex/storeType";
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn color="info lighten-2" flat @click.native="cancel">Отмена</v-btn>
-                    <v-btn :loading="processState" :disabled="processState" color="blue" @click.native="addTrade">
+                    <v-btn :loading="processState" :disabled="processState" color="primary" dark @click.native="addTrade">
                         Добавить
                         <span slot="loader" class="custom-loader">
                         <v-icon light>fas fa-spinner fa-spin</v-icon>

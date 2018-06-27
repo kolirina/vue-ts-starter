@@ -18,7 +18,7 @@ import {PortfolioParams, TableHeader} from "../types/types";
                     </td>
                     <td class="text-xs-right">{{ props.item.fixFee }}</td>
                     <td class="text-xs-center">{{ props.item.viewCurrency }}</td>
-                    <td class="text-xs-center">{{ props.item.type }}</td>
+                    <td class="text-xs-center">{{ props.item.accountType }}</td>
                     <td class="text-xs-center">{{ props.item.openDate }}</td>
                     <td class="justify-center layout px-0">
                         <v-btn icon class="mx-0">
@@ -45,7 +45,7 @@ export class PortfoliosTable extends UI {
         {text: 'Название', align: 'left', value: 'name'},
         {text: 'Фикс. комиссия', align: 'right', value: 'fixFee'},
         {text: 'Валюта', align: 'center', value: 'viewCurrency'},
-        {text: 'Тип счета', align: 'center', value: 'type'},
+        {text: 'Тип счета', align: 'center', value: 'accountType'},
         {text: 'Дата открытия', align: 'center', value: 'openDate'}
     ];
 
