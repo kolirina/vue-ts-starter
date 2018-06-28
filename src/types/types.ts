@@ -211,10 +211,11 @@ export type DashboardBrick = {
 export type PortfolioParams = {
     id: string,
     name: string,
-    access: string,
+    access: boolean,
     fixFee: string,
     viewCurrency: string,
-    type: string,
+    accountType: string,
+    professionalMode: boolean,
     openDate: string,
     combined: boolean
 }

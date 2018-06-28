@@ -5,13 +5,14 @@
         "strict": true,
         "module": "es2015",
         "moduleResolution": "node",
-        "target": "es5",
+        "target": "esnext",
         "experimentalDecorators": true,
         "allowSyntheticDefaultImports": true,
+        "resolveJsonModule": true,
         "noImplicitAny": true,
         "declaration": false,
         "noImplicitReturns": true,
-        // добавлено1
+        // РґРѕР±Р°РІР»РµРЅРѕ1
 //        "declaration": true,
 //        "noImplicitAny": false,
 //        "noImplicitReturns": true,

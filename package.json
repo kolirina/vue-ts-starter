@@ -38,7 +38,7 @@
   "devDependencies": {
     "css-loader": "^0.28.1",
     "ts-loader": "^2.0.3",
-    "typescript": "^2.7.2",
+    "typescript": "^2.9.0",
     "typescript-ioc": "^1.2.3",
     "vue-loader": "^12.0.3",
     "vue-template-compiler": "^2.5.2",

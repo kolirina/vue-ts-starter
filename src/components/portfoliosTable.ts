@@ -2,6 +2,8 @@ import Component from "vue-class-component";
 import {Prop} from "vue-property-decorator";
 import {UI} from "../app/UI";
 import {PortfolioParams, TableHeader} from "../types/types";
+import {PortfolioEditDialog} from "./dialogs/portfolioEditDialog";
+import {StoreType} from "../vuex/storeType";
 
 @Component({
     // language=Vue
@@ -21,7 +23,7 @@ import {PortfolioParams, TableHeader} from "../types/types";
                     <td class="text-xs-center">{{ props.item.accountType }}</td>
                     <td class="text-xs-center">{{ props.item.openDate }}</td>
                     <td class="justify-center layout px-0">
-                        <v-btn icon class="mx-0">
+                        <v-btn icon class="mx-0" @click.stop="openDialogForEdit(props.item)">
                             <v-icon color="teal">edit</v-icon>
                         </v-btn>
                         <v-btn icon class="mx-0">
@@ -54,5 +56,9 @@ export class PortfoliosTable extends UI {
 
     private max25chars(v: string): any {
         return v.length <= 25 || 'Input too long!'
+    }
+
+    private async openDialogForEdit(portfolioParams: PortfolioParams): Promise<void> {
+        await new PortfolioEditDialog().show({store: this.$store.state[StoreType.MAIN], router: this.$router, portfolioParams});
     }
 }

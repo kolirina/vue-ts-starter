@@ -17,11 +17,11 @@ import {MainStore} from "../../vuex/mainStore";
                     <v-container grid-list-md>
                         <v-layout wrap>
                             <v-flex xs12>
-                                <v-text-field label="Название" v-model="name" required></v-text-field>
+                                <v-text-field label="Название" v-model="name" required :counter="40"></v-text-field>
                             </v-flex>
 
                             <v-flex xs12>
-                                <v-select :items="accessTypes" v-model="access" label="Доступ"></v-select>
+                                <v-select :items="accessTypes" v-model="access" item-text="label" label="Доступ"></v-select>
                             </v-flex>
 
                             <v-flex xs12>
@@ -74,11 +74,11 @@ import {MainStore} from "../../vuex/mainStore";
                             </v-flex>
 
                             <v-flex xs12>
-                                <v-select :items="iisTypes" v-model="iisType" label="Тип вычета"></v-select>
+                                <v-select v-if="accountType === 'ИИС'" :items="iisTypes" v-model="iisType" label="Тип вычета"></v-select>
                             </v-flex>
 
                             <v-flex xs12>
-                                <v-text-field label="Фиксированная комиссия" v-model="fixFee" 
+                                <v-text-field label="Фиксированная комиссия" v-model="fixFee"
                                               hint="Для автоматического рассчета комиссии при внесении сделок.">
                                 </v-text-field>
                             </v-flex>
@@ -93,10 +93,10 @@ import {MainStore} from "../../vuex/mainStore";
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn color="info lighten-2" flat @click.native="cancel">Отмена</v-btn>
-                    <v-btn :loading="processState" :disabled="processState" color="primary" dark @click.native="addTrade">
+                    <v-btn :loading="processState" :disabled="processState" color="primary" light @click.native="savePortfolio">
                         Добавить
                         <span slot="loader" class="custom-loader">
-                        <v-icon light>fas fa-spinner fa-spin</v-icon>
+                        <v-icon color="blue">fas fa-spinner fa-spin</v-icon>
                       </span>
                     </v-btn>
                 </v-card-actions>
@@ -111,26 +111,33 @@ export class PortfolioEditDialog extends CustomDialog<PortfolioDialogData, boole
         dateMenu: any
     };
 
+    private id = "";
     private name = "";
     private viewCurrency = "RUB";
-    private access = "Закрытый";
+    private access = false;
     private fixFee = "";
     private openDate = "";
     private accountType = "Брокерский";
     private professionalMode = false;
-    private iisType = "";
+    private iisType = "С вычетом на взносы";
     private broker = "";
     private note = "";
+    private combined = false;
 
     private dateMenuValue = false;
     private currencyList = ['RUB', 'USD'];
-    private accessTypes = ['Закрытый', 'Публичный'];
+    private accessTypes = [AccessTypes.PRIVATE, AccessTypes.PUBLIC];
     private iisTypes = ['С вычетом на взносы', 'С вычетом на взносы'];
     private accountTypes = ['Брокерский', 'ИИС'];
     private processState = false;
 
     private mounted(): void {
         console.log('PortfolioEditDialog');
+        if (this.data.portfolioParams) {
+            Object.assign(this, this.data.portfolioParams);
+            console.log(this.data.portfolioParams);
+        }
+        console.log(this.id, this.name);
     }
 
     private cancel(): void {
@@ -139,11 +146,33 @@ export class PortfolioEditDialog extends CustomDialog<PortfolioDialogData, boole
 
     private async savePortfolio(): Promise<void> {
         this.processState = true;
+        const portfolio: PortfolioParams = {
+            id: this.id,
+            name: this.name,
+            access: this.access,
+            fixFee: this.fixFee,
+            viewCurrency: this.viewCurrency,
+            accountType: this.accountType,
+            professionalMode: this.professionalMode,
+            openDate: this.openDate,
+            combined: this.combined
+        };
+        console.log(portfolio);
         setTimeout(() => {
             this.processState = false;
+            this.close(true);
         }, 5000);
-        //this.close(true);
     }
+}
+
+class AccessTypes {
+    static readonly PUBLIC = {value: true, label: "Публичный"};
+    static readonly PRIVATE = {value: false, label: "Закрытый"};
+}
+
+type AccessType = {
+    value: boolean,
+    label: string
 }
 
 export type PortfolioDialogData = {
