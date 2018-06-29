@@ -1,7 +1,7 @@
 import {Container, Singleton} from 'typescript-ioc';
 import {Service} from '../platform/decorators/service';
 import {
-    CombinedInfoRequest, EventChartData, HighStockEventData, HighStockEventsGroup, LineChartItem, Overview, Portfolio,
+    CombinedInfoRequest, Overview, Portfolio,
     PortfolioParams
 } from '../types/types';
 import {Cache} from '../platform/services/cache';
@@ -9,6 +9,7 @@ import {Decimal} from 'decimal.js';
 
 import {HTTP} from '../platform/services/http';
 import {BigMoney} from '../types/bigMoney';
+import {EventChartData, HighStockEventData, HighStockEventsGroup, LineChartItem} from "../types/charts/types";
 
 const PORTFOLIOS_KEY = 'PORTFOLIOS';
 
@@ -55,7 +56,7 @@ export class PortfolioService {
      */
     async getPortfolioOverviewCombined(request: CombinedInfoRequest): Promise<Overview> {
         // -------------------------------------- POST --------------------------------
-        const overview = <Overview>(await HTTP.INSTANCE.post(`/portfolios/overview-combined`, request)).data;
+        const overview = <Overview>(await HTTP.INSTANCE.get(`/portfolios/overview-combined`, request)).data;
         // проставляем идентификаторы чтобы работали разворачиваютщиеся блоки в табилицах
         overview.stockPortfolio.rows.forEach((value, index) => value.id = index.toString());
         overview.bondPortfolio.rows.forEach((value, index) => value.id = index.toString());
@@ -63,7 +64,7 @@ export class PortfolioService {
     }
 
     async getCostChartCombined(request: CombinedInfoRequest): Promise<any> {
-        const data = <LineChartItem[]>(await HTTP.INSTANCE.post(`/portfolios/cost-chart-combined`, request)).data;
+        const data = <LineChartItem[]>(await HTTP.INSTANCE.get(`/portfolios/cost-chart-combined`, request)).data;
         const result: any[] = [];
         data.forEach(value => {
             result.push([new Date(value.date).getTime(), new BigMoney(value.amount).amount.toDP(2, Decimal.ROUND_HALF_UP).toNumber()])

@@ -1,7 +1,7 @@
 import Component from 'vue-class-component';
 import {UI} from '../app/UI';
 import {AssetTable} from '../components/assetTable';
-import {ClientInfo, Overview, SectorChartData} from '../types/types';
+import {ClientInfo, Overview} from '../types/types';
 import {StockTable} from '../components/stockTable';
 import {StoreType} from '../vuex/storeType';
 import {namespace} from 'vuex-class/lib/bindings';
@@ -19,6 +19,7 @@ import {BigMoney} from "../types/bigMoney";
 import {Decimal} from "decimal.js";
 import {ChartUtils} from "../utils/ChartUtils";
 import {CombinedData} from "../types/eventObjects";
+import {SectorChartData} from "../types/charts/types";
 
 const MainStore = namespace(StoreType.MAIN);
 

@@ -23,6 +23,7 @@
   "/api/portfolios/38/set-combined": "/set-combined",
 
   "/api/market/stocks/search\\?query=:query": "/stock-search",
+  "/api/market/stocks/price-history\\?ticker=:ticker": "/stock-price-history",
 
   "/api/user/logout": "/logout"
 }

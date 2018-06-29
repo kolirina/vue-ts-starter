@@ -88,3 +88,7 @@ export class CustomDialog<ParamType, ReturnType> extends UI {
         return dialogFormProps.closable !== false;
     }
 }
+
+export enum BtnReturn {
+    YES = "YES", NO = "NO", CANCEL = "CANCEL"
+}

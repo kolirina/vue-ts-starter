@@ -16,6 +16,7 @@ import Highcharts3D from 'highcharts-3d'
 import * as Cookies from "js-cookie";
 import {UiStateHelper} from "../utils/uiStateHelper";
 import {StateDirective} from "../platform/directives/stateDirective";
+import ElementUI from 'element-ui';
 
 Highcharts3D(Highcharts);
 exporting(Highcharts);
@@ -29,6 +30,7 @@ export class UIRegistry {
 
         Vue.use(Vuetify);
         Vue.use(VeeValidate);
+        Vue.use(ElementUI);
 
         // компоненты
         UI.component("dashboard", Dashboard);
@@ -39,6 +41,7 @@ export class UIRegistry {
         // фильтры
         UI.filter('amount', Filters.formatMoneyAmount);
         UI.filter('number', Filters.formatNumber);
+        UI.filter("date", Filters.formatDate);
 
         // директивы
         UI.directive(StateDirective.NAME, new StateDirective());

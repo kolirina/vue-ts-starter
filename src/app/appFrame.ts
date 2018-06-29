@@ -60,9 +60,9 @@ const mainStore = namespace(StoreType.MAIN);
                                         <v-list-tile-title>{{ item.title }}</v-list-tile-title>
                                     </v-list-tile-content>
                                 </v-list-tile>
-                                <v-list-tile v-for="subItem in item.subMenu" :key="subItem.action" :to="{name: subItem.action}">
+                                <v-list-tile v-for="subItem in item.subMenu" :key="subItem.action" :to="{name: subItem.action, params: item.params}">
                                     <v-list-tile-action>
-                                        <v-icon>{{ subItem.icon }}</v-icon>
+                                        <v-icon small>{{ subItem.icon }}</v-icon>
                                     </v-list-tile-action>
                                     <v-list-tile-content>
                                         <v-list-tile-title>{{ subItem.title }}</v-list-tile-title>
@@ -70,9 +70,9 @@ const mainStore = namespace(StoreType.MAIN);
                                 </v-list-tile>
                             </v-list-group>
                             
-                            <v-list-tile v-else :key="item.action" :to="{name: item.action}">
+                            <v-list-tile v-else :key="item.action" :to="{name: item.action, params: item.params}">
                                 <v-list-tile-action>
-                                    <v-icon>{{ item.icon }}</v-icon>
+                                    <v-icon small>{{ item.icon }}</v-icon>
                                 </v-list-tile-action>
                                 <v-list-tile-content>
                                     <v-list-tile-title>{{ item.title }}</v-list-tile-title>
@@ -147,6 +147,7 @@ export class AppFrame extends UI {
         {title: 'Портфель', action: 'portfolio', icon: 'fas fa-briefcase'},
         {title: 'Сделки', action: 'trades', icon: 'fas fa-list-alt'},
         {title: 'Комбинированный портфель', action: 'combined-portfolio', icon: 'fas fa-object-group'},
+        {title: 'Информация', action: 'share-info', params: {ticker: 'GAZP'}, icon: 'fas fa-info'},
         {
             title: 'Настройки', icon: 'fas fa-cog', subMenu: [
                 {title: 'Управление портфелями', action: 'portfolio-settings', icon: 'fas fa-suitcase'},
@@ -158,10 +159,6 @@ export class AppFrame extends UI {
             ]
         }
     ];
-
-    private go(path: string): void {
-        this.$router.push({name: `${path}`});
-    }
 
     private async created(): Promise<void> {
         // если удалось восстановить state, значит все уже загружено
@@ -215,5 +212,6 @@ export type NavBarItem = {
     action?: string,
     icon: string,
     active?: boolean,
-    subMenu?: NavBarItem[]
+    subMenu?: NavBarItem[],
+    params?: { [key: string]: string}
 }

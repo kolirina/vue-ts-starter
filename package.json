@@ -6,6 +6,7 @@
   "main": "index.js",
   "scripts": {
     "build": "webpack",
+    "build-prod": "webpack -p",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -19,6 +20,7 @@
     "@types/js-cookie": "^2.1.0",
     "axios": "^0.18.0",
     "decimal.js": "^10.0.1",
+    "element-ui": "^2.4.2",
     "highcharts": "^6.1.0",
     "highcharts-3d": "^0.1.7",
     "js-big-decimal": "^1.2.0",

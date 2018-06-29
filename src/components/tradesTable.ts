@@ -9,10 +9,13 @@ import {TableHeader, TradeRow} from "../types/types";
         <v-data-table :headers="headers" :items="trades" item-key="id" hide-actions>
             <template slot="items" slot-scope="props">
                 <tr @click="props.expanded = !props.expanded">
-                    <td>{{ props.item.ticker }}</td>
-                    <td>{{ props.item.name }}</td>
+                    <td>
+                        <router-link v-if="props.item.companyName" :to="{name: 'share-info', params: {ticker: props.item.ticker}}">{{ props.item.ticker }}</router-link>
+                        <span v-else>{{ props.item.ticker }}</span>
+                    </td>
+                    <td>{{ props.item.companyName }}</td>
                     <td>{{ props.item.operationLabel }}</td>
-                    <td>{{ props.item.date }}</td>
+                    <td class="text-xs-center">{{ props.item.date | date('L') }}</td>
                     <td class="text-xs-right">{{ props.item.quantity }}</td>
                     <td class="text-xs-right">{{ props.item.price | amount(true) }}</td>
                     <td class="text-xs-right">{{ props.item.fee | amount(true) }}</td>

@@ -1,6 +1,7 @@
-import {Overview, SectorChartData, StockPortfolioRow} from "../types/types";
+import {Overview, StockPortfolioRow} from "../types/types";
 import {BigMoney} from "../types/bigMoney";
 import {Decimal} from "decimal.js";
+import {SectorChartData} from "../types/charts/types";
 
 export class ChartUtils {
 

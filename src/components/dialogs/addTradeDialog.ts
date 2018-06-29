@@ -11,10 +11,8 @@ import {BigMoney} from "../../types/bigMoney";
 import {TradeMap} from "../../types/trade/tradeMap";
 import {TradeDataHolder} from "../../types/trade/tradeDataHolder";
 import {TradeValue} from "../../types/trade/tradeValue";
-import {Store, StoreOptions} from "vuex";
 import {VueRouter} from "vue-router/types/router";
 import {MainStore} from "../../vuex/mainStore";
-import {StoreType} from "../../vuex/storeType";
 
 
 @Component({
@@ -82,20 +80,20 @@ import {StoreType} from "../../vuex/storeType";
                             </v-flex>
 
                             <v-flex v-if="shareAssetType" xs12>
-                                <v-text-field :label="priceLabel" v-model="price" v-mask="priceMask"
+                                <v-text-field :label="priceLabel" v-model="price"
                                               @keyup="calculateFee"
                                               prepend-icon="fas fa-money-bill-alt"></v-text-field>
                             </v-flex>
 
                             <v-flex v-if="bondTrade" xs12>
-                                <v-text-field label="Номинал" v-model="facevalue" v-mask="priceMask"
+                                <v-text-field label="Номинал" v-model="facevalue"
                                               @keyup="calculateFee"
                                               prepend-icon="fas fa-money-bill"></v-text-field>
                             </v-flex>
                             <v-flex v-if="bondTrade" xs12>
                                 <v-layout wrap>
                                     <v-flex xs12 lg6>
-                                        <v-text-field label="НКД" v-model="nkd" v-mask="priceMask"
+                                        <v-text-field label="НКД" v-model="nkd"
                                                       @keyup="calculateFee"
                                                       prepend-icon="fas fa-money-bill-alt"></v-text-field>
                                     </v-flex>
@@ -127,7 +125,7 @@ import {StoreType} from "../../vuex/storeType";
                             <v-flex v-if="moneyTrade" xs12>
                                 <v-layout wrap>
                                     <v-flex xs12 lg8>
-                                        <v-text-field label="Сумма" v-model="moneyAmount" v-mask="priceMask"
+                                        <v-text-field label="Сумма" v-model="moneyAmount"
                                                       prepend-icon="fas fa-money-bill-alt"></v-text-field>
                                     </v-flex>
                                     <v-flex xs12 lg4>
@@ -230,7 +228,10 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     private mounted(): void {
         this.portfolio = (this.data.store as any).currentPortfolio;
-        console.log('ADD TRADE DIALOG2', this.portfolio);
+        this.share = this.data.share || null;
+        this.assetType = this.data.assetType || AssetType.STOCK;
+        this.operation = this.data.operation || Operation.BUY;
+        console.log('ADD TRADE DIALOG2', this.data);
     }
 
     @Watch("assetType")
@@ -434,5 +435,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 export type TradeDialogData = {
     store: MainStore,
     router: VueRouter,
-    // tradeData: TradeData
+    tradeData?: TradeData,
+    share?: Share,
+    operation?: Operation,
+    assetType?: AssetType
 }

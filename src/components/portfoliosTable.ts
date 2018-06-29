@@ -4,6 +4,7 @@ import {UI} from "../app/UI";
 import {PortfolioParams, TableHeader} from "../types/types";
 import {PortfolioEditDialog} from "./dialogs/portfolioEditDialog";
 import {StoreType} from "../vuex/storeType";
+import {ConfirmDialog} from "./dialogs/confirmDialog";
 
 @Component({
     // language=Vue
@@ -26,7 +27,7 @@ import {StoreType} from "../vuex/storeType";
                         <v-btn icon class="mx-0" @click.stop="openDialogForEdit(props.item)">
                             <v-icon color="teal">edit</v-icon>
                         </v-btn>
-                        <v-btn icon class="mx-0">
+                        <v-btn icon class="mx-0" @click.stop="deletePortfolio(props.item)">
                             <v-icon color="pink">delete</v-icon>
                         </v-btn>
                     </td>
@@ -60,5 +61,12 @@ export class PortfoliosTable extends UI {
 
     private async openDialogForEdit(portfolioParams: PortfolioParams): Promise<void> {
         await new PortfolioEditDialog().show({store: this.$store.state[StoreType.MAIN], router: this.$router, portfolioParams});
+    }
+
+    private async deletePortfolio(portfolio: PortfolioParams): Promise<void> {
+        const result = await new ConfirmDialog().show(`Вы собираетесь удалить портфель. ${portfolio.name}
+                                              Все сделки по акциям, облигациям и дивиденды,
+                                              связанные с этим портфелем будут удалены.`);
+        console.log(result);
     }
 }

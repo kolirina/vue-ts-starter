@@ -13,6 +13,7 @@ import {ProfilePage} from "../pages/profilePage";
 import {TariffsPage} from "../pages/tariffsPage";
 import {PromoCodesPage} from "../pages/promoCodesPage";
 import {NotificationsPage} from "../pages/notificationsPage";
+import {ShareInfoPage} from "../pages/shareInfoPage";
 
 Vue.use(VueRouter);
 
@@ -70,6 +71,11 @@ export class RouterConfiguration {
                 name: 'combined-portfolio',
                 path: '/combined-portfolio',
                 component: CombinedPortfolioPage
+            },
+            {
+                name: 'share-info',
+                path: '/share-info/:ticker',
+                component: ShareInfoPage
             },
             {
                 name: 'portfolio-settings',

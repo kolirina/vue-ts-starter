@@ -1,5 +1,6 @@
 import {BigMoney} from "../../types/bigMoney";
 import {Decimal} from 'decimal.js';
+import {DateUtils} from "../../utils/dateUtils";
 
 const DEFAULT_SCALE = 2;
 const MAX_SCALE = 3;
@@ -26,5 +27,15 @@ export class Filters {
         }
         return DF.format(new Decimal(value).toDP(DEFAULT_SCALE, Decimal.ROUND_HALF_UP).toNumber());
 
+    }
+
+    /**
+     * Фильтр форматирования даты возможностью указать произвольный формат
+     * @param {string} date        дата
+     * @param {string} format      формат отображаемой даты
+     * @returns {string} отформатированая дата
+     */
+    static formatDate(date: string, format: string): string {
+        return DateUtils.parseDate(date).format(format);
     }
 }

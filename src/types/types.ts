@@ -21,6 +21,7 @@ export type TradeRow = {
     currency: string,
     signedTotal: string
     ticker?: string,
+    companyName?: string,
     quantity: string,
     price: string,
     fee: string,
@@ -184,6 +185,8 @@ export type TableHeader = {
     align?: string,
     sortable?: boolean,
     value: string
+    class?: string[] | string;
+    width?: string;
 }
 
 export type DashboardData = {
@@ -343,44 +346,6 @@ export type Bond = Share & {
 export type LoginRequest = {
     username: string,
     password: string
-}
-
-export type LineChartItem = {
-    date: string,
-    amount: string,
-    stockAmount: string,
-    bondAmount: string,
-    year: string,
-    lastItemOfTheYear: string
-}
-
-export type EventChartData = {
-    date: string,
-    backgroundColor: string,
-    description: string,
-    text: string
-}
-
-export type HighStockEventData = {
-    x: number,
-    title: string,
-    text: string
-}
-
-export type HighStockEventsGroup = {
-    type: string,
-    data: HighStockEventData[]
-    onSeries: string,
-    shape: string,
-    color: string,
-    fillColor: string,
-    stackDistance: number,
-    width: number
-}
-
-export type SectorChartData = {
-    data: any[],
-    categories: string[]
 }
 
 export type CombinedInfoRequest = {
