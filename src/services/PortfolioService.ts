@@ -56,7 +56,7 @@ export class PortfolioService {
      */
     async getPortfolioOverviewCombined(request: CombinedInfoRequest): Promise<Overview> {
         // -------------------------------------- POST --------------------------------
-        const overview = <Overview>(await HTTP.INSTANCE.get(`/portfolios/overview-combined`, request)).data;
+        const overview = <Overview>(await HTTP.INSTANCE.post(`/portfolios/overview-combined`, request)).data;
         // проставляем идентификаторы чтобы работали разворачиваютщиеся блоки в табилицах
         overview.stockPortfolio.rows.forEach((value, index) => value.id = index.toString());
         overview.bondPortfolio.rows.forEach((value, index) => value.id = index.toString());
@@ -64,7 +64,7 @@ export class PortfolioService {
     }
 
     async getCostChartCombined(request: CombinedInfoRequest): Promise<any> {
-        const data = <LineChartItem[]>(await HTTP.INSTANCE.get(`/portfolios/cost-chart-combined`, request)).data;
+        const data = <LineChartItem[]>(await HTTP.INSTANCE.post(`/portfolios/cost-chart-combined`, request)).data;
         const result: any[] = [];
         data.forEach(value => {
             result.push([new Date(value.date).getTime(), new BigMoney(value.amount).amount.toDP(2, Decimal.ROUND_HALF_UP).toNumber()])
@@ -110,8 +110,17 @@ export class PortfolioService {
         return this.getEventsChartData(id);
     }
 
-    async getEventsChartData(id: string, flags = 'flags', onSeries = 'dataseries', shape = 'circlepin', width = 10): Promise<HighStockEventsGroup[]> {
+    async getEventsChartData(id: string): Promise<HighStockEventsGroup[]> {
         const data = <EventChartData[]>(await HTTP.INSTANCE.get(`/portfolios/${id}/events-chart-data`)).data;
+        return this.processEventsChartData(data);
+    }
+
+    async getEventsChartDataCombined(request: CombinedInfoRequest): Promise<HighStockEventsGroup[]> {
+        const data = <EventChartData[]>(await HTTP.INSTANCE.post(`/portfolios/events-chart-data-combined`, request)).data;
+        return this.processEventsChartData(data);
+    }
+
+    async processEventsChartData(data: EventChartData[], flags = 'flags', onSeries = 'dataseries', shape = 'circlepin', width = 10): Promise<HighStockEventsGroup[]> {
         const result: HighStockEventsGroup[] = [];
         const events: HighStockEventData[] = [];
         const temp = data.reduce((result: { [key: string]: HighStockEventData[] }, current: EventChartData) => {

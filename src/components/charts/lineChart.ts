@@ -1,9 +1,11 @@
 import {UI} from '../../app/UI';
 import Component from 'vue-class-component';
 import Highcharts, {ChartObject, Gradient} from 'highcharts';
+import Highstock from 'highcharts/highstock';
 import {StoreType} from '../../vuex/storeType';
 import {namespace} from 'vuex-class/lib/bindings';
 import {Prop, Watch} from 'vue-property-decorator';
+import {HighStockEventsGroup} from '../../types/charts/types';
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -39,22 +41,31 @@ export class LineChart extends UI {
     @Prop({default: '', type: String})
     private yAxisTitle: string;
 
-    @Prop()
+    @Prop({required: true})
     private data: any[];
+
+    @Prop({required: true})
+    private eventsChartData: HighStockEventsGroup[];
 
     private chart: ChartObject = null;
 
     private async mounted(): Promise<void> {
+        console.log(this.eventsChartData);
+        await this.draw();
+    }
+
+    @Watch('eventsChartData')
+    private async onDataChange(): Promise<void> {
         await this.draw();
     }
 
     @Watch('data')
-    private async onDataChange(): Promise<void> {
-        this.draw();
+    private async onEventsChartDataChange(): Promise<void> {
+        await this.draw();
     }
 
     private async draw(): Promise<void> {
-        this.chart = Highcharts.chart(this.$refs.container, {
+        this.chart = Highstock.stockChart(this.$refs.container, {
             chart: {
                 zoomType: 'x',
                 backgroundColor: null
@@ -66,7 +77,13 @@ export class LineChart extends UI {
                 text: 'Выделите участок для увеличения'
             },
             xAxis: {
-                type: 'datetime'
+                type: 'datetime',
+                gridLineWidth: 1,
+                labels: {
+                    style: {
+                        fontSize: '12px'
+                    }
+                }
             },
             yAxis: {
                 title: {
@@ -106,8 +123,13 @@ export class LineChart extends UI {
             series: [{
                 type: 'area',
                 name: this.balloonTitle,
-                data: this.data
-            }]
+                data: this.data,
+                id: 'dataseries'
+            },
+                ...this.eventsChartData],
+            exporting: {
+                enabled: true
+            }
         });
     }
 }

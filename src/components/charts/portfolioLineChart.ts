@@ -7,7 +7,8 @@ import {StoreType} from '../../vuex/storeType';
 import {namespace} from 'vuex-class/lib/bindings';
 import Highcharts, {ChartObject, DataPoint, Gradient} from 'highcharts';
 import Highstock from 'highcharts/highstock';
-import {Watch} from "vue-property-decorator";
+import {Watch} from 'vue-property-decorator';
+import {HighStockEventsGroup} from '../../types/charts/types';
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -24,7 +25,8 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-layout>
             </v-container>
 
-            <div v-show="chart" ref="container" style="min-width: 500px; width: 100%; height: 500px; margin: 0 auto"></div>
+            <div v-show="chart" ref="container"
+                 style="min-width: 500px; width: 100%; height: 500px; margin: 0 auto"></div>
         </div>
     `
 })
@@ -38,7 +40,7 @@ export class PortfolioLineChart extends UI {
     private portfolio: Portfolio;
 
     private chartData: any[] = [];
-    private eventsChartData: DataPoint[] = [];
+    private eventsChartData: HighStockEventsGroup[] = [];
 
     private chart: ChartObject = null;
 

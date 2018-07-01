@@ -19,7 +19,7 @@ import {BigMoney} from "../types/bigMoney";
 import {Decimal} from "decimal.js";
 import {ChartUtils} from "../utils/ChartUtils";
 import {CombinedData} from "../types/eventObjects";
-import {SectorChartData} from "../types/charts/types";
+import {HighStockEventsGroup, SectorChartData} from '../types/charts/types';
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -30,8 +30,8 @@ const MainStore = namespace(StoreType.MAIN);
             <dashboard v-if="overview" :data="overview.dashboardData"></dashboard>
             <div style="height: 20px"></div>
 
-            <v-expansion-panel expand>
-                <v-expansion-panel-content :value="$uistate.combinedPanel" :lazy="true" v-state="$uistate.COMBINED_CONTROL_PANEL">
+            <v-expansion-panel expand :value="$uistate.combinedPanel">
+                <v-expansion-panel-content :lazy="true" v-state="$uistate.COMBINED_CONTROL_PANEL">
                     <div slot="header">Управление комбинированным портфелем</div>
                     <v-card>
                         <v-card-text class="grey lighten-3">
@@ -59,8 +59,8 @@ const MainStore = namespace(StoreType.MAIN);
 
                 <div style="height: 50px"></div>
 
-                <v-expansion-panel focusable expand>
-                    <v-expansion-panel-content :value="$uistate.stocksTablePanel" :lazy="true" v-state="$uistate.STOCKS">
+                <v-expansion-panel focusable expand :value="$uistate.stocksTablePanel">
+                    <v-expansion-panel-content :lazy="true" v-state="$uistate.STOCKS">
                         <div slot="header">Акции</div>
                         <v-card>
                             <stock-table :rows="overview.stockPortfolio.rows"></stock-table>
@@ -70,8 +70,8 @@ const MainStore = namespace(StoreType.MAIN);
 
                 <div style="height: 50px"></div>
 
-                <v-expansion-panel focusable expand>
-                    <v-expansion-panel-content :value="$uistate.bondsTablePanel" :lazy="true" v-state="$uistate.BONDS">
+                <v-expansion-panel focusable expand :value="$uistate.bondsTablePanel">
+                    <v-expansion-panel-content :lazy="true" v-state="$uistate.BONDS">
                         <div slot="header">Облигации</div>
                         <v-card>
                             <bond-table :rows="overview.bondPortfolio.rows"></bond-table>
@@ -81,12 +81,12 @@ const MainStore = namespace(StoreType.MAIN);
 
                 <div style="height: 50px"></div>
 
-                <v-expansion-panel expand>
-                    <v-expansion-panel-content :value="$uistate.historyPanel" :lazy="true" v-state="$uistate.HISTORY_PANEL">
+                <v-expansion-panel expand :value="$uistate.historyPanel">
+                    <v-expansion-panel-content :lazy="true" v-state="$uistate.HISTORY_PANEL">
                         <div slot="header">Стоимость портфеля</div>
                         <v-card>
                             <v-card-text class="grey lighten-3">
-                                <line-chart :data="lineChartData" balloon-title="Портфель"></line-chart>
+                                <line-chart :data="lineChartData" :events-chart-data="eventsChartData" balloon-title="Портфель"></line-chart>
                             </v-card-text>
                         </v-card>
                     </v-expansion-panel-content>
@@ -94,8 +94,8 @@ const MainStore = namespace(StoreType.MAIN);
 
                 <div style="height: 50px"></div>
 
-                <v-expansion-panel expand>
-                    <v-expansion-panel-content :value="$uistate.stockGraph" :lazy="true" v-state="$uistate.STOCK_CHART_PANEL">
+                <v-expansion-panel expand :value="$uistate.stockGraph">
+                    <v-expansion-panel-content :lazy="true" v-state="$uistate.STOCK_CHART_PANEL">
                         <div slot="header">Состав портфеля акций</div>
                         <v-card>
                             <v-card-text class="grey lighten-3">
@@ -107,8 +107,8 @@ const MainStore = namespace(StoreType.MAIN);
 
                 <div style="height: 50px" v-if="overview.bondPortfolio.rows.length > 0"></div>
 
-                <v-expansion-panel v-if="overview.bondPortfolio.rows.length > 0" expand>
-                    <v-expansion-panel-content :value="$uistate.bondGraph" :lazy="true" v-state="$uistate.BOND_CHART_PANEL">
+                <v-expansion-panel v-if="overview.bondPortfolio.rows.length > 0" expand :value="$uistate.bondGraph">
+                    <v-expansion-panel-content :lazy="true" v-state="$uistate.BOND_CHART_PANEL">
                         <div slot="header">Состав портфеля облигаций</div>
                         <v-card>
                             <v-card-text class="grey lighten-3">
@@ -120,8 +120,8 @@ const MainStore = namespace(StoreType.MAIN);
 
                 <div style="height: 50px"></div>
 
-                <v-expansion-panel v-if="sectorsChartData" expand>
-                    <v-expansion-panel-content :value="$uistate.sectorsGraph" :lazy="true" v-state="$uistate.SECTORS_PANEL">
+                <v-expansion-panel v-if="sectorsChartData" expand :value="$uistate.sectorsGraph">
+                    <v-expansion-panel-content :lazy="true" v-state="$uistate.SECTORS_PANEL">
                         <div slot="header">Отрасли</div>
                         <v-card>
                             <v-card-text class="grey lighten-3">
@@ -147,6 +147,7 @@ export class CombinedPortfolioPage extends UI {
     private viewCurrency = 'RUB';
 
     private lineChartData: any[] = [];
+    private eventsChartData: HighStockEventsGroup[] = [];
     private stockPieChartData: DataPoint[] = [];
     private bondPieChartData: DataPoint[] = [];
     private sectorsChartData: SectorChartData = null;
@@ -159,6 +160,7 @@ export class CombinedPortfolioPage extends UI {
         const ids = this.clientInfo.user.portfolios.filter(value => value.combined).map(value => value.id);
         this.overview = await this.portfolioService.getPortfolioOverviewCombined({ids: ids, viewCurrency: this.viewCurrency});
         this.lineChartData = await this.portfolioService.getCostChartCombined({ids: ids, viewCurrency: this.viewCurrency});
+        this.eventsChartData = await this.portfolioService.getEventsChartDataCombined({ids: ids, viewCurrency: this.viewCurrency});
         this.stockPieChartData = this.doStockPieChartData();
         this.bondPieChartData = this.doBondPieChartData();
         this.sectorsChartData = ChartUtils.doSectorsChartData(this.overview);

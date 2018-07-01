@@ -17,22 +17,21 @@ declare module 'vue/types/options' {
 }
 
 declare interface UiStateHelper {
-    stocksTablePanel: boolean;
-    bondsTablePanel: boolean;
-    yearDivsTablePanel: boolean;
-    divTradesTablePanel: boolean;
-    sumYearDivsTablePanel: boolean;
-    sumDivsTablePanel: boolean;
-    combinedPanel: boolean;
-    historyPanel: boolean;
-    stockGraph: boolean;
-    bondGraph: boolean;
-    sectorsGraph: boolean;
-    investmentsSettingsPanel: boolean;
-    referralStatisticsPanel: boolean;
-    eventsCalendarPanel: boolean;
+    stocksTablePanel: number;
+    bondsTablePanel: number;
+    yearDivsTablePanel: number;
+    divTradesTablePanel: number;
+    sumYearDivsTablePanel: number;
+    sumDivsTablePanel: number;
+    combinedPanel: number;
+    historyPanel: number;
+    stockGraph: number;
+    bondGraph: number;
+    sectorsGraph: number;
+    investmentsSettingsPanel: number;
+    referralStatisticsPanel: number;
+    eventsCalendarPanel: number;
 
-    setState(type: string, value: boolean): void;
+    setState(type: string, value: number): void;
     toggleState(type: string): void;
 }
-    

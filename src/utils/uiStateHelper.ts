@@ -20,123 +20,123 @@ export class UiStateHelper {
     static readonly REFERRAL_STATISTICS_PANEL = "referralStatistics";
     static readonly EVENTS_CALENDAR = "events_calendar";
 
-    static set stocksTablePanel(value: boolean) {
+    static set stocksTablePanel(value: number) {
         localStorage.set(UiStateHelper.STOCKS, value);
     }
 
-    static get stocksTablePanel(): boolean {
-        return localStorage.get(UiStateHelper.STOCKS, false);
+    static get stocksTablePanel(): number {
+        return localStorage.get(UiStateHelper.STOCKS, 0);
     }
 
-    static set bondsTablePanel(value: boolean) {
+    static set bondsTablePanel(value: number) {
         localStorage.set(UiStateHelper.BONDS, value);
     }
 
-    static get bondsTablePanel(): boolean {
-        return localStorage.get(UiStateHelper.BONDS, false);
+    static get bondsTablePanel(): number {
+        return localStorage.get(UiStateHelper.BONDS, 0);
     }
 
-    static set yearDivsTablePanel(value: boolean) {
+    static set yearDivsTablePanel(value: number) {
         localStorage.set(UiStateHelper.YEAR_DIV_LIST, value);
     }
 
-    static get yearDivsTablePanel(): boolean {
-        return localStorage.get(UiStateHelper.YEAR_DIV_LIST, false);
+    static get yearDivsTablePanel(): number {
+        return localStorage.get(UiStateHelper.YEAR_DIV_LIST, 0);
     }
 
-    static set divTradesTablePanel(value: boolean) {
+    static set divTradesTablePanel(value: number) {
         localStorage.set(UiStateHelper.DIV_LIST, value);
     }
 
-    static get divTradesTablePanel(): boolean {
-        return localStorage.get(UiStateHelper.DIV_LIST, false);
+    static get divTradesTablePanel(): number {
+        return localStorage.get(UiStateHelper.DIV_LIST, 0);
     }
 
-    static set sumYearDivsTablePanel(value: boolean) {
+    static set sumYearDivsTablePanel(value: number) {
         localStorage.set(UiStateHelper.SUM_YEAR_DIVIDENDS, value);
     }
 
-    static get sumYearDivsTablePanel(): boolean {
-        return localStorage.get(UiStateHelper.SUM_YEAR_DIVIDENDS, false);
+    static get sumYearDivsTablePanel(): number {
+        return localStorage.get(UiStateHelper.SUM_YEAR_DIVIDENDS, 0);
     }
 
-    static set sumDivsTablePanel(value: boolean) {
+    static set sumDivsTablePanel(value: number) {
         localStorage.set(UiStateHelper.SUM_DIVS, value);
     }
 
-    static get sumDivsTablePanel(): boolean {
-        return localStorage.get(UiStateHelper.SUM_DIVS, false);
+    static get sumDivsTablePanel(): number {
+        return localStorage.get(UiStateHelper.SUM_DIVS, 0);
     }
 
-    static set combinedPanel(value: boolean) {
+    static set combinedPanel(value: number) {
         localStorage.set(UiStateHelper.COMBINED_CONTROL_PANEL, value);
     }
 
-    static get combinedPanel(): boolean {
-        return localStorage.get(UiStateHelper.COMBINED_CONTROL_PANEL, false);
+    static get combinedPanel(): number {
+        return localStorage.get(UiStateHelper.COMBINED_CONTROL_PANEL, 0);
     }
 
-    static set historyPanel(value: boolean) {
+    static set historyPanel(value: number) {
         localStorage.set(UiStateHelper.HISTORY_PANEL, value);
     }
 
-    static get historyPanel(): boolean {
-        return localStorage.get(UiStateHelper.HISTORY_PANEL, false);
+    static get historyPanel(): number {
+        return localStorage.get(UiStateHelper.HISTORY_PANEL, 0);
     }
 
-    static set stockGraph(value: boolean) {
+    static set stockGraph(value: number) {
         localStorage.set(UiStateHelper.STOCK_CHART_PANEL, value);
     }
 
-    static get stockGraph(): boolean {
-        return localStorage.get(UiStateHelper.STOCK_CHART_PANEL, false);
+    static get stockGraph(): number {
+        return localStorage.get(UiStateHelper.STOCK_CHART_PANEL, 0);
     }
 
-    static set bondGraph(value: boolean) {
+    static set bondGraph(value: number) {
         localStorage.set(UiStateHelper.BOND_CHART_PANEL, value);
     }
 
-    static get bondGraph(): boolean {
-        return localStorage.get(UiStateHelper.BOND_CHART_PANEL, false);
+    static get bondGraph(): number {
+        return localStorage.get(UiStateHelper.BOND_CHART_PANEL, 0);
     }
 
-    static set sectorsGraph(value: boolean) {
+    static set sectorsGraph(value: number) {
         localStorage.set(UiStateHelper.SECTORS_PANEL, value);
     }
 
-    static get sectorsGraph(): boolean {
-        return localStorage.get(UiStateHelper.SECTORS_PANEL, false);
+    static get sectorsGraph(): number {
+        return localStorage.get(UiStateHelper.SECTORS_PANEL, 0);
     }
 
-    static set investmentsSettingsPanel(value: boolean) {
+    static set investmentsSettingsPanel(value: number) {
         localStorage.set(UiStateHelper.INVESTMENTS_SETTINGS_PANEL, value);
     }
 
-    static get investmentsSettingsPanel(): boolean {
-        return localStorage.get(UiStateHelper.INVESTMENTS_SETTINGS_PANEL, false);
+    static get investmentsSettingsPanel(): number {
+        return localStorage.get(UiStateHelper.INVESTMENTS_SETTINGS_PANEL, 0);
     }
 
-    static set referralStatisticsPanel(value: boolean) {
+    static set referralStatisticsPanel(value: number) {
         localStorage.set(UiStateHelper.REFERRAL_STATISTICS_PANEL, value);
     }
 
-    static get referralStatisticsPanel(): boolean {
-        return localStorage.get(UiStateHelper.REFERRAL_STATISTICS_PANEL, false);
+    static get referralStatisticsPanel(): number {
+        return localStorage.get(UiStateHelper.REFERRAL_STATISTICS_PANEL, 0);
     }
 
-    static set eventsCalendarPanel(value: boolean) {
+    static set eventsCalendarPanel(value: number) {
         localStorage.set(UiStateHelper.EVENTS_CALENDAR, value);
     }
 
-    static get eventsCalendarPanel(): boolean {
-        return localStorage.get(UiStateHelper.EVENTS_CALENDAR, false);
+    static get eventsCalendarPanel(): number {
+        return localStorage.get(UiStateHelper.EVENTS_CALENDAR, 0);
     }
 
-    static setState(type: string, value: boolean): void {
+    static setState(type: string, value: number): void {
         localStorage.set(type, value);
     }
 
     static toggleState(type: string): void {
-        localStorage.set(type, !localStorage.get(type, false));
+        localStorage.set(type, 1 - localStorage.get(type, 0));
     }
 }
