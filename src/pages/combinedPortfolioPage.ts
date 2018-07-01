@@ -34,7 +34,7 @@ const MainStore = namespace(StoreType.MAIN);
                 <v-expansion-panel-content :lazy="true" v-state="$uistate.COMBINED_CONTROL_PANEL">
                     <div slot="header">Управление комбинированным портфелем</div>
                     <v-card>
-                        <v-card-text class="grey lighten-3">
+                        <v-card-text>
                             <combined-portfolios-table :portfolios="clientInfo.user.portfolios" @change="onSetCombined"></combined-portfolios-table>
                         </v-card-text>
                     </v-card>
@@ -85,7 +85,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <v-expansion-panel-content :lazy="true" v-state="$uistate.HISTORY_PANEL">
                         <div slot="header">Стоимость портфеля</div>
                         <v-card>
-                            <v-card-text class="grey lighten-3">
+                            <v-card-text>
                                 <line-chart :data="lineChartData" :events-chart-data="eventsChartData" balloon-title="Портфель"></line-chart>
                             </v-card-text>
                         </v-card>
@@ -98,7 +98,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <v-expansion-panel-content :lazy="true" v-state="$uistate.STOCK_CHART_PANEL">
                         <div slot="header">Состав портфеля акций</div>
                         <v-card>
-                            <v-card-text class="grey lighten-3">
+                            <v-card-text>
                                 <pie-chart :data="stockPieChartData"></pie-chart>
                             </v-card-text>
                         </v-card>
@@ -111,7 +111,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <v-expansion-panel-content :lazy="true" v-state="$uistate.BOND_CHART_PANEL">
                         <div slot="header">Состав портфеля облигаций</div>
                         <v-card>
-                            <v-card-text class="grey lighten-3">
+                            <v-card-text>
                                 <pie-chart :data="bondPieChartData"></pie-chart>
                             </v-card-text>
                         </v-card>
@@ -124,7 +124,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <v-expansion-panel-content :lazy="true" v-state="$uistate.SECTORS_PANEL">
                         <div slot="header">Отрасли</div>
                         <v-card>
-                            <v-card-text class="grey lighten-3">
+                            <v-card-text>
                                 <bar-chart :data="sectorsChartData.data" :category-names="sectorsChartData.category" series-name="Отрасли"></bar-chart>
                             </v-card-text>
                         </v-card>

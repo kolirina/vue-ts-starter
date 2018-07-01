@@ -110,7 +110,7 @@ export class ShareInfoPage extends UI {
         if (ticker) {
             const result = await this.marketService.searchStocks(ticker);
             if (result && result.length) {
-                this.share = result[3];
+                this.share = result[0];
                 console.log('SHARE PAGE', this.share);
                 this.chartData = await this.marketService.getStockPriceHistory(ticker);
             }

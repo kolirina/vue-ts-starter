@@ -49,7 +49,7 @@ const MainStore = namespace(StoreType.MAIN);
                 <v-expansion-panel-content :lazy="true" v-state="$uistate.HISTORY_PANEL">
                     <div slot="header">Стоимость портфеля</div>
                     <v-card>
-                        <v-card-text class="grey lighten-3">
+                        <v-card-text>
                             <portfolio-line-chart></portfolio-line-chart>
                         </v-card-text>
                     </v-card>
@@ -62,7 +62,7 @@ const MainStore = namespace(StoreType.MAIN);
                 <v-expansion-panel-content :lazy="true" v-state="$uistate.STOCK_CHART_PANEL">
                     <div slot="header">Состав портфеля акций</div>
                     <v-card>
-                        <v-card-text class="grey lighten-3">
+                        <v-card-text>
                             <stock-pie-chart></stock-pie-chart>
                         </v-card-text>
                     </v-card>
@@ -75,7 +75,7 @@ const MainStore = namespace(StoreType.MAIN);
                 <v-expansion-panel-content :lazy="true" v-state="$uistate.BOND_CHART_PANEL">
                     <div slot="header">Состав портфеля облигаций</div>
                     <v-card>
-                        <v-card-text class="grey lighten-3">
+                        <v-card-text>
                             <bond-pie-chart></bond-pie-chart>
                         </v-card-text>
                     </v-card>
@@ -88,7 +88,7 @@ const MainStore = namespace(StoreType.MAIN);
                 <v-expansion-panel-content :lazy="true" v-state="$uistate.SECTORS_PANEL">
                     <div slot="header">Отрасли</div>
                     <v-card>
-                        <v-card-text class="grey lighten-3">
+                        <v-card-text>
                             <sectors-chart></sectors-chart>
                         </v-card-text>
                     </v-card>

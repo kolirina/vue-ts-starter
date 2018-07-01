@@ -44,7 +44,7 @@ export class LineChart extends UI {
     @Prop({required: true})
     private data: any[];
 
-    @Prop({required: true})
+    @Prop({required: false})
     private eventsChartData: HighStockEventsGroup[];
 
     private chart: ChartObject = null;
@@ -126,7 +126,7 @@ export class LineChart extends UI {
                 data: this.data,
                 id: 'dataseries'
             },
-                ...this.eventsChartData],
+                ...this.eventsChartData || []],
             exporting: {
                 enabled: true
             }

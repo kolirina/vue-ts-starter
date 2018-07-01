@@ -26,11 +26,7 @@ export class MarketService {
     async getStockPriceHistory(ticker: string): Promise<Dot[]> {
         console.log('searchStocks');
         const result: Dot[] = [];
-        const data: BaseChartDot[] = (await HTTP.INSTANCE.get('/market/stocks/price-history', {
-            params: {
-                ticker
-            }
-        })).data;
+        const data: BaseChartDot[] = (await HTTP.INSTANCE.get(`/market/stock/${ticker}/price-history`)).data;
         data.forEach(value => {
             result.push([new Date(value.date).getTime(), new Decimal(value.amount).toNumber()]);
         });
