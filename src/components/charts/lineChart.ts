@@ -16,8 +16,7 @@ const MainStore = namespace(StoreType.MAIN);
             <v-container grid-list-md text-xs-center v-if="!chart">
                 <v-layout row wrap>
                     <v-flex xs12>
-                        <v-progress-circular :size="70" :width="7" indeterminate
-                                             color="indigo"></v-progress-circular>
+                        <v-progress-circular :size="70" :width="7" indeterminate color="indigo"></v-progress-circular>
                     </v-flex>
                 </v-layout>
             </v-container>

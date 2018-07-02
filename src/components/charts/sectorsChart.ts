@@ -64,7 +64,14 @@ export class SectorsChart extends UI {
         this.chart = Highcharts.chart(this.$refs.container, {
             chart: {
                 type: 'bar',
-                backgroundColor: null
+                backgroundColor: null,
+                options3d: {
+                    enabled: true,
+                    alpha: 0,
+                    beta: 0,
+                    depth: 20,
+                    viewDistance: 25
+                }
             },
             title: {
                 text: this.title

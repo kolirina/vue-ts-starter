@@ -3,7 +3,8 @@ import {UI} from "../app/UI";
 import {Share} from "../types/types";
 import {Inject} from "typescript-ioc";
 import {MarketService} from "../services/marketService";
-import {Dot} from "../types/charts/types";
+import {BaseChartDot, Dot, HighStockEventsGroup} from "../types/charts/types";
+import {DividendChart} from "../components/charts/dividendChart";
 
 @Component({
     // language=Vue
@@ -91,11 +92,18 @@ import {Dot} from "../types/charts/types";
             <div style="height: 20px"></div>
             <v-card>
                 <v-card-text>
-                    <line-chart :data="chartData" :balloon-title="share.ticker"></line-chart>
+                    <line-chart :data="history" :events-chart-data="events" :balloon-title="share.ticker"></line-chart>
+                </v-card-text>
+            </v-card>
+            <div style="height: 20px"></div>
+            <v-card>
+                <v-card-text>
+                    <dividend-chart :data="dividends" title="Дивиденды"></dividend-chart>
                 </v-card-text>
             </v-card>
         </v-container>
-    `
+    `,
+    components: {DividendChart}
 })
 export class ShareInfoPage extends UI {
 
@@ -103,17 +111,18 @@ export class ShareInfoPage extends UI {
     private marketService: MarketService;
 
     private share: Share = null;
-    private chartData: Dot[] = [];
+    private history: Dot[] = [];
+    private dividends: BaseChartDot[] = [];
+    private events: HighStockEventsGroup[] = [];
 
     private async created(): Promise<void> {
         const ticker = this.$route.params.ticker;
         if (ticker) {
-            const result = await this.marketService.searchStocks(ticker);
-            if (result && result.length) {
-                this.share = result[0];
-                console.log('SHARE PAGE', this.share);
-                this.chartData = await this.marketService.getStockPriceHistory(ticker);
-            }
+            const result = await this.marketService.getStockInfo(ticker);
+            this.share = result.stock;
+            this.history = result.history;
+            this.dividends = result.dividends;
+            this.events.push(result.events);
         }
     }
 

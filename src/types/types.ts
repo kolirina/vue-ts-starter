@@ -1,3 +1,5 @@
+import {BaseChartDot, Dot, HighStockEventsGroup} from "./charts/types";
+
 export type _portfolioRow = {
     /** Прибыль */
     profit: string,
@@ -341,6 +343,18 @@ export type Bond = Share & {
     isRepaid: boolean;
     /** Абсолютная текущая цена облигации без учета НКД */
     absolutePrice: string;
+}
+
+/** Информация по акции */
+export type StockInfo = {
+    /** Акция */
+    stock: Stock;
+    /** История цены */
+    history: Dot[];
+    /** Дивиденды */
+    dividends: BaseChartDot[];
+    /** События. В данном случае дивиденды */
+    events: HighStockEventsGroup;
 }
 
 export type LoginRequest = {

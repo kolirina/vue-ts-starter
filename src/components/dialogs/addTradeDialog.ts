@@ -27,33 +27,35 @@ import {MainStore} from "../../vuex/mainStore";
                     <v-container grid-list-md>
                         <v-layout wrap>
                             <v-flex xs12 sm6>
-                                <v-select :items="assetTypes" v-model="assetType" label="Тип актива" item-text="description"></v-select>
+                                <v-select :items="assetTypes" v-model="assetType" :return-object="true" label="Тип актива" item-text="description"></v-select>
                             </v-flex>
 
                             <v-flex xs12 sm6>
-                                <v-select :items="assetType.operations" v-model="operation" label="Операция" item-text="description"></v-select>
+                                <v-select :items="assetType.operations" v-model="operation" :return-object="true" label="Операция" item-text="description"></v-select>
                             </v-flex>
 
                             <v-flex v-if="shareAssetType" xs12>
-                                <v-select :items="filteredShares"
-                                          :filter="customFilter"
-                                          v-model="share"
-                                          label="Тикер / Название компании"
-                                          :loading="shareSearch"
-                                          :no-data-text="notFoundLabel"
-                                          autocomplete
-                                          clearable
-                                          cache-items
-                                          required
-                                          prepend-icon="fas fa-building"
-                                          :search-input.sync="searchQuery">
+                                <v-autocomplete :items="filteredShares"
+                                                v-model="share"
+                                                label="Тикер / Название компании"
+                                                :loading="shareSearch"
+                                                :no-data-text="notFoundLabel"
+                                                clearable
+                                                cache-items
+                                                required
+                                                dense
+                                                :hide-details="true"
+                                                :hide-no-data="true"
+                                                :no-filter="true"
+                                                prepend-icon="fas fa-building"
+                                                :search-input.sync="searchQuery">
                                     <template slot="selection" slot-scope="data">
                                         {{ shareLabelSelected(data.item) }}
                                     </template>
                                     <template slot="item" slot-scope="data">
                                         {{ shareLabelListItem(data.item) }}
                                     </template>
-                                </v-select>
+                                </v-autocomplete>
                             </v-flex>
 
                             <v-flex xs12>
@@ -73,20 +75,23 @@ import {MainStore} from "../../vuex/mainStore";
                                             v-model="date"
                                             label="Дата"
                                             required
+                                            :hide-details="true"
                                             prepend-icon="event"
                                             readonly></v-text-field>
-                                    <v-date-picker v-model="date" @input="$refs.dateMenu.save(date)"></v-date-picker>
+                                    <v-date-picker v-model="date" :no-title="true" locale="ru" :first-day-of-week="1" @input="$refs.dateMenu.save(date)"></v-date-picker>
                                 </v-menu>
                             </v-flex>
 
                             <v-flex v-if="shareAssetType" xs12>
                                 <v-text-field :label="priceLabel" v-model="price"
+                                              :hide-details="true"
                                               @keyup="calculateFee"
                                               prepend-icon="fas fa-money-bill-alt"></v-text-field>
                             </v-flex>
 
                             <v-flex v-if="bondTrade" xs12>
                                 <v-text-field label="Номинал" v-model="facevalue"
+                                              :hide-details="true"
                                               @keyup="calculateFee"
                                               prepend-icon="fas fa-money-bill"></v-text-field>
                             </v-flex>
@@ -94,6 +99,7 @@ import {MainStore} from "../../vuex/mainStore";
                                 <v-layout wrap>
                                     <v-flex xs12 lg6>
                                         <v-text-field label="НКД" v-model="nkd"
+                                                      :hide-details="true"
                                                       @keyup="calculateFee"
                                                       prepend-icon="fas fa-money-bill-alt"></v-text-field>
                                     </v-flex>
@@ -191,8 +197,6 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private share: Share = null;
 
     private filteredShares: Share[] = [];
-
-    private ticker: string = null;
 
     private date: Date = null;
 
@@ -307,6 +311,11 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     @Watch("share")
     private shareSelect(): void {
         console.log('SELECT SHARE', this.share);
+        // при очистке поля автокомплита
+        if (!this.share) {
+            this.price = "";
+            return;
+        }
         this.price = new BigMoney(this.share.price).amount.toString();
         this.currency = this.share.currency;
     }
@@ -323,17 +332,6 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     private cancel(): void {
         this.close();
-    }
-
-    /**
-     * Фильтрация происходит на сервере, дополнительно фильтровать не нужно
-     * @param item
-     * @param {string} queryText
-     * @param {string} itemText
-     * @returns {boolean}
-     */
-    private customFilter(item: any, queryText: string, itemText: string): boolean {
-        return true;
     }
 
     private shareLabelSelected(share: Share): string {

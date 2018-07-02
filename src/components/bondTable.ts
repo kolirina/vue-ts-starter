@@ -29,7 +29,7 @@ import {BtnReturn} from "./dialogs/customDialog";
                             <v-btn slot="activator" color="primary" flat icon dark class="purple">
                                 <v-icon color="primary" small>fas fa-bars</v-icon>
                             </v-btn>
-                            <v-list>
+                            <v-list dense>
                                 <v-list-tile @click="">
                                     <v-list-tile-title>
                                         <v-icon color="primary" small>fas fa-list-alt</v-icon>

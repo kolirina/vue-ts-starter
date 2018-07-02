@@ -4,14 +4,13 @@ import {PortfolioParams} from "../../types/types";
 import {VueRouter} from "vue-router/types/router";
 import {MainStore} from "../../vuex/mainStore";
 
-
 @Component({
     // language=Vue
     template: `
         <v-dialog v-model="showed" persistent max-width="700px">
             <v-card>
                 <v-card-title>
-                    <span class="headline">Добавление сделки</span>
+                    <span class="headline">{{ (editMode ? 'Редактирование' : 'Добавление') + ' портфеля' }}</span>
                 </v-card-title>
                 <v-card-text>
                     <v-container grid-list-md>
@@ -21,7 +20,7 @@ import {MainStore} from "../../vuex/mainStore";
                             </v-flex>
 
                             <v-flex xs12>
-                                <v-select :items="accessTypes" v-model="access" item-text="label" label="Доступ"></v-select>
+                                <v-select :items="accessTypes" v-model="access" :return-value="true" item-text="label" label="Доступ"></v-select>
                             </v-flex>
 
                             <v-flex xs12>
@@ -65,7 +64,7 @@ import {MainStore} from "../../vuex/mainStore";
                                             required
                                             append-icon="event"
                                             readonly></v-text-field>
-                                    <v-date-picker v-model="openDate" @input="$refs.dateMenu.save(openDate)"></v-date-picker>
+                                    <v-date-picker v-model="openDate" :no-title="true" locale="ru" :first-day-of-week="1" @input="$refs.dateMenu.save(openDate)"></v-date-picker>
                                 </v-menu>
                             </v-flex>
 
@@ -84,7 +83,7 @@ import {MainStore} from "../../vuex/mainStore";
                             </v-flex>
 
                             <v-flex xs12>
-                                <v-text-field label="Заметка" v-model="note" :counter="500" multi-line></v-text-field>
+                                <v-textarea label="Заметка" v-model="note" :counter="500"></v-textarea>
                             </v-flex>
                         </v-layout>
                     </v-container>
@@ -130,12 +129,14 @@ export class PortfolioEditDialog extends CustomDialog<PortfolioDialogData, boole
     private iisTypes = ['С вычетом на взносы', 'С вычетом на взносы'];
     private accountTypes = ['Брокерский', 'ИИС'];
     private processState = false;
+    private editMode = false;
 
     private mounted(): void {
         console.log('PortfolioEditDialog');
         if (this.data.portfolioParams) {
             Object.assign(this, this.data.portfolioParams);
             console.log(this.data.portfolioParams);
+            this.editMode = true;
         }
         console.log(this.id, this.name);
     }

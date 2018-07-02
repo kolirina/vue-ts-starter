@@ -21,7 +21,7 @@ import {Operation} from "../types/operation";
                         <v-btn slot="activator" color="primary" flat icon dark class="purple">
                             <v-icon color="primary" small>fas fa-bars</v-icon>
                         </v-btn>
-                        <v-list>
+                        <v-list dense>
                             <v-list-tile @click.stop="openTradeDialog(props.item, operation.BUY)">
                                 <v-list-tile-title>
                                     <v-icon color="primary" small>fas fa-plus</v-icon>

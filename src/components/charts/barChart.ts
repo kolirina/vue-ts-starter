@@ -51,7 +51,7 @@ export class BarChart extends UI {
     }
 
     @Watch('data')
-    private async onPortfolioChange(): Promise<void> {
+    private async onDataChange(): Promise<void> {
         await this.draw();
     }
 
