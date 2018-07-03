@@ -27,9 +27,9 @@ export class MarketService {
         const result = (await HTTP.INSTANCE.get<_stockInfo>(`/market/stock/${ticker}/stock-info`)).data;
         return {
             stock: result.stock,
-            history: this.convertDots(result.history),
-            dividends: result.dividends,
-            events: this.convertEvents(result.dividends, ticker)
+            history: this.convertDots(result.historyJson),
+            dividends: result.dividendsJson,
+            events: this.convertEvents(result.dividendsJson, ticker)
         };
     }
 
@@ -64,9 +64,7 @@ type _stockInfo = {
     /** Акция */
     stock: Stock;
     /** История цены */
-    history: BaseChartDot[];
+    historyJson: BaseChartDot[];
     /** Дивиденды */
-    dividends: BaseChartDot[];
-    /** События. В данном случае дивиденды */
-    events: BaseChartDot[];
+    dividendsJson: BaseChartDot[];
 }

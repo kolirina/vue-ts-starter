@@ -40,7 +40,7 @@ import {DividendChart} from "../components/charts/dividendChart";
                             <td>Сектор</td>
                             <td>
                                 <div>{{ share.sector.name }}</div>
-                                <span v-if="share.sector.parent">родительский сектор:{{ share.sector.parent.name }}</span>
+                                <span v-if="share.sector.parent">родительский сектор: {{ share.sector.parent.name }}</span>
                             </td>
                         </tr>
                         <tr>
@@ -58,6 +58,24 @@ import {DividendChart} from "../components/charts/dividendChart";
                         <tr v-if="share.issueCapitalization">
                             <td>Рыночная капитализация</td>
                             <td>{{ share.issueCapitalization | number }}</td>
+                        </tr>
+                        <tr>
+                            <td>Див. доходность за 3 года</td>
+                            <td>
+                                {{ share.yield3 }} %
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Див. доходность за 5 лет</td>
+                            <td>
+                                {{ share.yield5 }} %
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Див. доходность суммарная</td>
+                            <td>
+                                {{ share.yieldAll }} %
+                            </td>
                         </tr>
                         <tr>
                             <td>Рейтинг</td>
@@ -85,8 +103,6 @@ import {DividendChart} from "../components/charts/dividendChart";
                         </tr>
                         </tbody>
                     </table>
-
-                    <!-- TODO див доходность и кнопка добавить в портфель -->
                 </v-card-text>
             </v-card>
             <div style="height: 20px"></div>
