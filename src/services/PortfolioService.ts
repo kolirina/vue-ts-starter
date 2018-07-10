@@ -1,15 +1,13 @@
 import {Container, Singleton} from 'typescript-ioc';
 import {Service} from '../platform/decorators/service';
-import {
-    CombinedInfoRequest, Overview, Portfolio,
-    PortfolioParams
-} from '../types/types';
+import {CombinedInfoRequest, Overview, Portfolio, PortfolioParams} from '../types/types';
 import {Cache} from '../platform/services/cache';
 import {Decimal} from 'decimal.js';
 
 import {HTTP} from '../platform/services/http';
 import {BigMoney} from '../types/bigMoney';
-import {EventChartData, HighStockEventData, HighStockEventsGroup, LineChartItem} from "../types/charts/types";
+import {EventChartData, HighStockEventsGroup, LineChartItem} from "../types/charts/types";
+import {ChartUtils} from "../utils/ChartUtils";
 
 const PORTFOLIOS_KEY = 'PORTFOLIOS';
 
@@ -112,34 +110,11 @@ export class PortfolioService {
 
     async getEventsChartData(id: string): Promise<HighStockEventsGroup[]> {
         const data = <EventChartData[]>(await HTTP.INSTANCE.get(`/portfolios/${id}/events-chart-data`)).data;
-        return this.processEventsChartData(data);
+        return ChartUtils.processEventsChartData(data);
     }
 
     async getEventsChartDataCombined(request: CombinedInfoRequest): Promise<HighStockEventsGroup[]> {
         const data = <EventChartData[]>(await HTTP.INSTANCE.post(`/portfolios/events-chart-data-combined`, request)).data;
-        return this.processEventsChartData(data);
-    }
-
-    async processEventsChartData(data: EventChartData[], flags = 'flags', onSeries = 'dataseries', shape = 'circlepin', width = 10): Promise<HighStockEventsGroup[]> {
-        const result: HighStockEventsGroup[] = [];
-        const events: HighStockEventData[] = [];
-        const temp = data.reduce((result: { [key: string]: HighStockEventData[] }, current: EventChartData) => {
-            result[current.backgroundColor] = result[current.backgroundColor] || [];
-            result[current.backgroundColor].push({x: new Date(current.date).getTime(), title: current.text, text: current.description});
-            return result
-        }, {} as { [key: string]: HighStockEventData[] });
-        Object.keys(temp).forEach(key => {
-            result.push({
-                type: flags,
-                data: temp[key],
-                onSeries: onSeries,
-                shape: shape,
-                color: key,
-                fillColor: key,
-                stackDistance: 20,
-                width: width
-            })
-        });
-        return result;
+        return ChartUtils.processEventsChartData(data);
     }
 }

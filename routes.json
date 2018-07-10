@@ -25,7 +25,8 @@
   "/api/portfolios/38/set-combined": "/set-combined",
 
   "/api/market/stocks/search\\?query=:query": "/stock-search",
-  "/api/market/stock/:ticker/stock-info": "/stock-info",
+  "/api/market/stock/:ticker/info": "/stock-info",
+  "/api/market/bond/:isin/info": "/bond-info",
 
   "/api/user/logout": "/logout"
 }

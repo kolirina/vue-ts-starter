@@ -40,3 +40,14 @@ export type SectorChartData = {
     data: any[],
     categories: string[]
 }
+
+/** Данные для столбчатого графика */
+export type ColumnDataSeries = {
+    name: string,
+    data: number[]
+}
+
+export type ColumnChartData = {
+    categoryNames: string[],
+    series: ColumnDataSeries[]
+}

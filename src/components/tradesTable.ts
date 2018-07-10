@@ -16,9 +16,11 @@ import {BtnReturn} from "./dialogs/customDialog";
             <template slot="items" slot-scope="props">
                 <tr @click="props.expanded = !props.expanded">
                     <td>
-                        <router-link v-if="props.item.companyName" :to="{name: 'share-info', params: {ticker: props.item.ticker}}">{{ props.item.ticker }}
+                        <router-link v-if="props.item.asset === 'STOCK'" :to="{name: 'share-info', params: {ticker: props.item.ticker}}">{{ props.item.ticker }}
                         </router-link>
-                        <span v-else>{{ props.item.ticker }}</span>
+                        <router-link v-if="props.item.asset === 'BOND'" :to="{name: 'bond-info', params: {isin: props.item.ticker}}">{{ props.item.ticker }}
+                        </router-link>
+                        <span v-if="props.item.asset === 'MONEY'">{{ props.item.ticker }}</span>
                     </td>
                     <td>{{ props.item.companyName }}</td>
                     <td>{{ props.item.operationLabel }}</td>

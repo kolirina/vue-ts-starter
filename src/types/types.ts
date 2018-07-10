@@ -1,4 +1,4 @@
-import {BaseChartDot, Dot, HighStockEventsGroup} from "./charts/types";
+import {BaseChartDot, ColumnChartData, Dot, HighStockEventsGroup} from "./charts/types";
 
 export type _portfolioRow = {
     /** Прибыль */
@@ -355,6 +355,18 @@ export type StockInfo = {
     dividends: BaseChartDot[];
     /** События. В данном случае дивиденды */
     events: HighStockEventsGroup;
+}
+
+/** Информация по облигации */
+export type BondInfo = {
+    /** Облигация */
+    bond: Bond;
+    /** История цены */
+    history: Dot[];
+    /** Выплаты */
+    payments: ColumnChartData;
+    /** События. В данном случае дивиденды */
+    events: HighStockEventsGroup[];
 }
 
 export type LoginRequest = {

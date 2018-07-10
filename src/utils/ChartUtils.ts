@@ -1,11 +1,12 @@
 import {Overview, StockPortfolioRow} from "../types/types";
 import {BigMoney} from "../types/bigMoney";
 import {Decimal} from "decimal.js";
-import {SectorChartData} from "../types/charts/types";
+import {EventChartData, HighStockEventData, HighStockEventsGroup, SectorChartData} from "../types/charts/types";
 
 export class ChartUtils {
 
-    private ChartUtils() {}
+    private ChartUtils() {
+    }
 
     static doSectorsChartData(overview: Overview): SectorChartData {
         const data: any[] = [];
@@ -34,5 +35,28 @@ export class ChartUtils {
         });
         const categoryNames = Object.keys(rowsBySector);
         return {data, categories: categoryNames};
+    }
+
+    static processEventsChartData(data: EventChartData[], flags = 'flags', onSeries = 'dataseries', shape = 'circlepin', width = 10): HighStockEventsGroup[] {
+        const result: HighStockEventsGroup[] = [];
+        const events: HighStockEventData[] = [];
+        const temp = data.reduce((result: { [key: string]: HighStockEventData[] }, current: EventChartData) => {
+            result[current.backgroundColor] = result[current.backgroundColor] || [];
+            result[current.backgroundColor].push({x: new Date(current.date).getTime(), title: current.text, text: current.description});
+            return result
+        }, {} as { [key: string]: HighStockEventData[] });
+        Object.keys(temp).forEach(key => {
+            result.push({
+                type: flags,
+                data: temp[key],
+                onSeries: onSeries,
+                shape: shape,
+                color: key,
+                fillColor: key,
+                stackDistance: 20,
+                width: width
+            })
+        });
+        return result;
     }
 }

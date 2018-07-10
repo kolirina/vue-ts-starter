@@ -14,6 +14,7 @@ import {TariffsPage} from "../pages/tariffsPage";
 import {PromoCodesPage} from "../pages/promoCodesPage";
 import {NotificationsPage} from "../pages/notificationsPage";
 import {ShareInfoPage} from "../pages/shareInfoPage";
+import {BondInfoPage} from "../pages/bondInfoPage";
 
 Vue.use(VueRouter);
 
@@ -76,6 +77,11 @@ export class RouterConfiguration {
                 name: 'share-info',
                 path: '/share-info/:ticker',
                 component: ShareInfoPage
+            },
+            {
+                name: 'bond-info',
+                path: '/bond-info/:isin',
+                component: BondInfoPage
             },
             {
                 name: 'portfolio-settings',
