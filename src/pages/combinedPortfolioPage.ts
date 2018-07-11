@@ -12,7 +12,7 @@ import {BondPieChart} from '../components/charts/bondPieChart';
 import {PortfolioLineChart} from '../components/charts/portfolioLineChart';
 import {SectorsChart} from "../components/charts/sectorsChart";
 import {Inject} from "typescript-ioc";
-import {PortfolioService} from "../services/PortfolioService";
+import {PortfolioService} from "../services/portfolioService";
 import {CombinedPortfoliosTable} from "../components/combinedPortfoliosTable";
 import {DataPoint} from "highcharts";
 import {BigMoney} from "../types/bigMoney";

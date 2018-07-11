@@ -7,7 +7,7 @@ import {StoreType} from '../vuex/storeType';
 import {PortfolioSwitcher} from "../components/portfolioSwitcher";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
 import {Inject} from "typescript-ioc";
-import {ClientService} from "../services/ClientService";
+import {ClientService} from "../services/clientService";
 
 const mainStore = namespace(StoreType.MAIN);
 

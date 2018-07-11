@@ -2,7 +2,7 @@ import {Module, ActionContext} from 'vuex';
 import {MutationType} from './mutationType';
 import {Container} from 'typescript-ioc';
 import {ClientInfo, Portfolio} from '../types/types';
-import {PortfolioService} from '../services/PortfolioService';
+import {PortfolioService} from '../services/portfolioService';
 import {GetterType} from './getterType';
 import {Storage} from '../platform/services/storage';
 import {StoreKeys} from '../types/storeKeys';

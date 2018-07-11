@@ -5,7 +5,7 @@ import {StoreType} from "../vuex/storeType";
 import {namespace} from "vuex-class/lib/bindings";
 import {Watch} from 'vue-property-decorator';
 import {Inject} from 'typescript-ioc';
-import {ClientService} from '../services/ClientService';
+import {ClientService} from '../services/clientService';
 
 const MainStore = namespace(StoreType.MAIN);
 

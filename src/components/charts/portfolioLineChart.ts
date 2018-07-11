@@ -1,6 +1,6 @@
 import {UI} from '../../app/UI';
 import Component from 'vue-class-component';
-import {PortfolioService} from '../../services/PortfolioService';
+import {PortfolioService} from '../../services/portfolioService';
 import {Container} from 'typescript-ioc';
 import {Portfolio} from '../../types/types';
 import {StoreType} from '../../vuex/storeType';
