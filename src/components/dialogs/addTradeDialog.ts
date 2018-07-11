@@ -13,6 +13,7 @@ import {TradeDataHolder} from "../../types/trade/tradeDataHolder";
 import {TradeValue} from "../../types/trade/tradeValue";
 import {VueRouter} from "vue-router/types/router";
 import {MainStore} from "../../vuex/mainStore";
+import {TradeService} from "../../services/tradeService";
 
 
 @Component({
@@ -31,7 +32,8 @@ import {MainStore} from "../../vuex/mainStore";
                             </v-flex>
 
                             <v-flex xs12 sm6>
-                                <v-select :items="assetType.operations" v-model="operation" :return-object="true" label="Операция" item-text="description"></v-select>
+                                <v-select :items="assetType.operations" v-model="operation" :return-object="true" label="Операция"
+                                          item-text="description"></v-select>
                             </v-flex>
 
                             <v-flex v-if="shareAssetType" xs12>
@@ -78,7 +80,8 @@ import {MainStore} from "../../vuex/mainStore";
                                             :hide-details="true"
                                             prepend-icon="event"
                                             readonly></v-text-field>
-                                    <v-date-picker v-model="date" :no-title="true" locale="ru" :first-day-of-week="1" @input="$refs.dateMenu.save(date)"></v-date-picker>
+                                    <v-date-picker v-model="date" :no-title="true" locale="ru" :first-day-of-week="1"
+                                                   @input="$refs.dateMenu.save(date)"></v-date-picker>
                                 </v-menu>
                             </v-flex>
 
@@ -175,6 +178,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     @Inject
     private marketService: MarketService;
+    @Inject
+    private tradeService: TradeService;
 
     $refs: {
         dateMenu: any
@@ -363,9 +368,14 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         };
         console.log('ADD', trade);
         this.processState = true;
-        setTimeout(() => {
-            this.processState = false;
-        }, 5000);
+        await this.tradeService.saveTrade({
+            portfolioId: this.portfolio.id,
+            asset: this.assetType,
+            operation: this.operation,
+            createLinkedTrade: this.keepMoney,
+            fields: trade
+        });
+        this.processState = false;
         //this.close(true);
     }
 

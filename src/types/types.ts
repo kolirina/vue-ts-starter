@@ -1,4 +1,6 @@
 import {BaseChartDot, ColumnChartData, Dot, HighStockEventsGroup} from "./charts/types";
+import {AssetType} from "./assetType";
+import {Operation} from "./operation";
 
 export type _portfolioRow = {
     /** Прибыль */
@@ -404,4 +406,17 @@ export type TradeData = {
     moneyAmount: string,
     /** Валюта сделки */
     currency: string
+}
+
+export type TradeDataRequest = {
+    /** Идентификатор портфеля */
+    portfolioId: string,
+    /** Признак добавления связанной сделки по деньгам */
+    createLinkedTrade: boolean,
+    /** Актив сделки */
+    asset: AssetType,
+    /** Операция */
+    operation: Operation,
+    /** Поля, содержащию все необходимую информацию по сделке данного типа */
+    fields: TradeData
 }

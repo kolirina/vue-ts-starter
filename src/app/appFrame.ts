@@ -103,7 +103,7 @@ const mainStore = namespace(StoreType.MAIN);
                     </v-container>
                 </v-content>
                 <v-footer color="indigo" app inset>
-                    <span class="white--text">&copy; 2018</span>
+                    <span class="white--text" style="margin-left: 15px;">&copy; 2018</span>
                 </v-footer>
             </template>
         </v-app>

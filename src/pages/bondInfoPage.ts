@@ -82,13 +82,13 @@ import {BondPaymentsChart} from "../components/charts/bondPaymentsChart";
                 </v-card-text>
             </v-card>
             <div style="height: 20px"></div>
-            <v-card>
+            <v-card style="overflow: auto;">
                 <v-card-text>
                     <line-chart :data="history" :events-chart-data="events" :balloon-title="share.isin"></line-chart>
                 </v-card-text>
             </v-card>
             <div style="height: 20px"></div>
-            <v-card>
+            <v-card style="overflow: auto;">
                 <v-card-text>
                     <bond-payments-chart :data="paymentsData" title="Платежи по бумаге"></bond-payments-chart>
                 </v-card-text>

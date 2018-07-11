@@ -1,14 +1,9 @@
-import {Container, Singleton} from 'typescript-ioc';
+import {Singleton} from 'typescript-ioc';
 import {Service} from '../platform/decorators/service';
 import {HTTP} from '../platform/services/http';
-import {Storage} from '../platform/services/storage';
 import {Bond, BondInfo, Share, Stock, StockInfo} from "../types/types";
 import {BaseChartDot, ColumnChartData, ColumnDataSeries, Dot, EventChartData, HighStockEventData, HighStockEventsGroup} from "../types/charts/types";
-import {Decimal} from 'decimal.js';
 import {ChartUtils} from "../utils/ChartUtils";
-
-/** Сервис работы с localStorage */
-const localStorage: Storage = Container.get(Storage);
 
 @Service('MarketService')
 @Singleton
@@ -28,9 +23,9 @@ export class MarketService {
         const result = (await HTTP.INSTANCE.get<_stockInfo>(`/market/stock/${ticker}/info`)).data;
         return {
             stock: result.stock,
-            history: this.convertDots(result.historyJson),
-            dividends: result.dividendsJson,
-            events: this.convertStockEvents(result.dividendsJson, ticker)
+            history: this.convertDots(result.history),
+            dividends: result.dividends,
+            events: this.convertStockEvents(result.dividends, ticker)
         };
     }
 
@@ -38,16 +33,16 @@ export class MarketService {
         const result = (await HTTP.INSTANCE.get<_bondInfo>(`/market/bond/${isin}/info`)).data;
         return {
             bond: result.bond,
-            history: this.convertDots(result.historyJson),
-            payments: this.convertBondPayments(result.paymentsJson),
-            events: ChartUtils.processEventsChartData(result.paymentsJson)
+            history: this.convertDots(result.history),
+            payments: this.convertBondPayments(result.payments),
+            events: ChartUtils.processEventsChartData(result.payments)
         };
     }
 
-    private convertDots(dots: BaseChartDot[]): Dot[] {
+    private convertDots(dots: _baseChartDot[]): Dot[] {
         const result: Dot[] = [];
         dots.forEach(value => {
-            result.push([new Date(value.date).getTime(), new Decimal(value.amount).toNumber()]);
+            result.push([new Date(value.date).getTime(), value.amount]);
         });
         return result || [];
     }
@@ -79,7 +74,7 @@ export class MarketService {
                 name: current.description.substring(0, current.description.indexOf(':')),
                 data: []
             };
-            result[current.backgroundColor].data.push(new Decimal(current.description.substring(current.description.indexOf(" ") + 1, current.description.length)).toNumber());
+            result[current.backgroundColor].data.push(parseFloat(current.description.substring(current.description.indexOf(" ") + 1, current.description.length)));
             return result
         }, {} as { [key: string]: ColumnDataSeries });
         Object.keys(temp).forEach(key => {
@@ -94,9 +89,9 @@ type _stockInfo = {
     /** Акция */
     stock: Stock;
     /** История цены */
-    historyJson: BaseChartDot[];
+    history: _baseChartDot[];
     /** Дивиденды */
-    dividendsJson: BaseChartDot[];
+    dividends: BaseChartDot[];
 }
 
 /** Информация по акции */
@@ -104,7 +99,12 @@ type _bondInfo = {
     /** Облигация */
     bond: Bond;
     /** История цены */
-    historyJson: BaseChartDot[];
+    history: _baseChartDot[];
     /** Выплаты по бумаге */
-    paymentsJson: EventChartData[];
+    payments: EventChartData[];
+}
+
+export type _baseChartDot = {
+    date: string,
+    amount: number
 }

@@ -29,7 +29,7 @@ import {BtnReturn} from "./dialogs/customDialog";
                     <td class="text-xs-right">{{ props.item.percCurrShare | number }}</td>
                     <td class="justify-center layout px-0" @click.stop>
                         <v-menu transition="slide-y-transition" bottom left>
-                            <v-btn slot="activator" color="primary" flat icon dark class="purple">
+                            <v-btn slot="activator" color="primary" flat icon dark>
                                 <v-icon color="primary" small>fas fa-bars</v-icon>
                             </v-btn>
                             <v-list dense>

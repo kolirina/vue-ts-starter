@@ -48,7 +48,7 @@ const MainStore = namespace(StoreType.MAIN);
             <v-expansion-panel focusable expand :value="$uistate.historyPanel">
                 <v-expansion-panel-content :lazy="true" v-state="$uistate.HISTORY_PANEL">
                     <div slot="header">Стоимость портфеля</div>
-                    <v-card>
+                    <v-card style="overflow: auto;">
                         <v-card-text>
                             <portfolio-line-chart></portfolio-line-chart>
                         </v-card-text>
@@ -61,7 +61,7 @@ const MainStore = namespace(StoreType.MAIN);
             <v-expansion-panel focusable expand :value="$uistate.stockGraph">
                 <v-expansion-panel-content :lazy="true" v-state="$uistate.STOCK_CHART_PANEL">
                     <div slot="header">Состав портфеля акций</div>
-                    <v-card>
+                    <v-card style="overflow: auto;">
                         <v-card-text>
                             <stock-pie-chart></stock-pie-chart>
                         </v-card-text>
@@ -74,7 +74,7 @@ const MainStore = namespace(StoreType.MAIN);
             <v-expansion-panel v-if="portfolio.overview.bondPortfolio.rows.length > 0" focusable expand :value="$uistate.bondGraph">
                 <v-expansion-panel-content :lazy="true" v-state="$uistate.BOND_CHART_PANEL">
                     <div slot="header">Состав портфеля облигаций</div>
-                    <v-card>
+                    <v-card style="overflow: auto;">
                         <v-card-text>
                             <bond-pie-chart></bond-pie-chart>
                         </v-card-text>
@@ -87,7 +87,7 @@ const MainStore = namespace(StoreType.MAIN);
             <v-expansion-panel focusable expand :value="$uistate.sectorsGraph">
                 <v-expansion-panel-content :lazy="true" v-state="$uistate.SECTORS_PANEL">
                     <div slot="header">Отрасли</div>
-                    <v-card>
+                    <v-card style="overflow: auto;">
                         <v-card-text>
                             <sectors-chart></sectors-chart>
                         </v-card-text>

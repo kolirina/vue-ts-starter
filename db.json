@@ -20626,7 +20626,7 @@
       "formattedFacevalue": "1000.00",
       "name": "ОФЗ-ПК 29011 29/01/20"
     },
-    "historyJson": [
+    "history": [
       {
         "date": "2015-03-06",
         "amount": 93.55
@@ -24380,7 +24380,7 @@
         "amount": 101.93
       }
     ],
-    "paymentsJson": [
+    "payments": [
       {
         "date": "2015-08-05",
         "backgroundColor": "#C0A0FB",
