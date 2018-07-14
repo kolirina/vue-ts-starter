@@ -3,6 +3,7 @@ import {UI} from "../app/UI";
 import {ClientInfo} from "../types/types";
 import {StoreType} from "../vuex/storeType";
 import {namespace} from "vuex-class/lib/bindings";
+import {ChangePasswordDialog} from "../components/dialogs/changePasswordDialog";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -11,6 +12,21 @@ const MainStore = namespace(StoreType.MAIN);
     template: `
         <v-container fluid>
             Профиль
+            <v-card>
+                <v-card-text>
+                    <v-btn dark color="primary" @click.native="changePassword">
+                        Сменить пароль
+                    </v-btn>
+                    <div style="height: 50px"></div>
+                    <v-btn dark color="primary">
+                        Сменить email
+                    </v-btn>
+                    <div style="height: 50px"></div>
+                    <v-btn dark color="primary">
+                        Сменить имя пользователя
+                    </v-btn>
+                </v-card-text>
+            </v-card>
         </v-container>
     `
 })
@@ -21,5 +37,10 @@ export class ProfilePage extends UI {
 
     private async mounted(): Promise<void> {
 
+    }
+
+    private async changePassword(): Promise<void> {
+        const result = await new ChangePasswordDialog().show();
+        console.log(result);
     }
 }

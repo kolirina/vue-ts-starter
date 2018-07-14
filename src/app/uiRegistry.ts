@@ -3,7 +3,7 @@
  */
 import {UI} from "./UI";
 import Vuetify from 'vuetify';
-import VeeValidate from 'vee-validate';
+import VeeValidate, {Validator} from 'vee-validate';
 import Vue from "vue";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
 import {Dashboard} from "../components/dashboard";
@@ -17,6 +17,10 @@ import * as Cookies from "js-cookie";
 import {UiStateHelper} from "../utils/uiStateHelper";
 import {StateDirective} from "../platform/directives/stateDirective";
 import ElementUI from 'element-ui';
+import ru from '../platform/locale/ru'
+import {ruLocale} from "../platform/locale/veeValidateMessages";
+import IMask from 'imask';
+import {MaskDirective} from "../platform/directives/maskDirective";
 
 Highcharts3D(Highcharts);
 exporting(Highcharts);
@@ -28,9 +32,14 @@ export class UIRegistry {
      */
     static init(): boolean {
 
-        Vue.use(Vuetify);
-        Vue.use(VeeValidate);
-        Vue.use(ElementUI);
+        Vue.use(Vuetify, {
+            lang: {
+                locales: {ru},
+                current: 'ru'
+            }
+        });
+        UI.use(VeeValidate);
+        UI.use(ElementUI);
 
         // компоненты
         UI.component("dashboard", Dashboard);
@@ -45,6 +54,7 @@ export class UIRegistry {
 
         // директивы
         UI.directive(StateDirective.NAME, new StateDirective());
+        UI.directive(MaskDirective.NAME, new MaskDirective());
 
         Vue.mixin({
             beforeCreate() {
@@ -52,6 +62,11 @@ export class UIRegistry {
                 this.$uistate = UiStateHelper;
             }
         });
+
+        // устанавливаем формат даты по умолчанию
+        Validator.dictionary.setDateFormat("ru", "DD.MM.YYYY");
+        // устанавливаем локализованные сообщения
+        Validator.localize("ru", ruLocale);
 
         return true;
     }

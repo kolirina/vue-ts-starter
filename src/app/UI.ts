@@ -2,6 +2,7 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import {Emit, Model, Prop, Watch} from "vue-property-decorator";
 import {State, Getter, Action, Mutation, namespace} from 'vuex-class';
+import {ErrorBag, Validator} from "vee-validate";
 
 Component.registerHooks([
     "beforeRouteEnter",
@@ -18,6 +19,16 @@ export class UI extends Vue {
      * Глобальная шина событий
      */
     private static eventBus = new Vue();
+
+    /**
+     * Валидатор
+     */
+    $validator: Validator;
+
+    /**
+     * Ошибки валидации
+     */
+    protected $errors: ErrorBag;
 
     /**
      * Подписывает компонент на глобальное событие

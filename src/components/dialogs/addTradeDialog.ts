@@ -14,6 +14,7 @@ import {TradeValue} from "../../types/trade/tradeValue";
 import {VueRouter} from "vue-router/types/router";
 import {MainStore} from "../../vuex/mainStore";
 import {TradeService} from "../../services/tradeService";
+import {MaskOptions} from "imask";
 
 
 @Component({
@@ -49,7 +50,7 @@ import {TradeService} from "../../services/tradeService";
                                                 :hide-details="true"
                                                 :hide-no-data="true"
                                                 :no-filter="true"
-                                                prepend-icon="fas fa-building"
+                                                append-icon="fas fa-building"
                                                 :search-input.sync="searchQuery">
                                     <template slot="selection" slot-scope="data">
                                         {{ shareLabelSelected(data.item) }}
@@ -78,7 +79,7 @@ import {TradeService} from "../../services/tradeService";
                                             label="Дата"
                                             required
                                             :hide-details="true"
-                                            prepend-icon="event"
+                                            append-icon="event"
                                             readonly></v-text-field>
                                     <v-date-picker v-model="date" :no-title="true" locale="ru" :first-day-of-week="1"
                                                    @input="$refs.dateMenu.save(date)"></v-date-picker>
@@ -86,17 +87,17 @@ import {TradeService} from "../../services/tradeService";
                             </v-flex>
 
                             <v-flex v-if="shareAssetType" xs12>
-                                <v-text-field :label="priceLabel" v-model="price"
+                                <v-text-field :label="priceLabel" v-model="price" v-mask="priceMask"
                                               :hide-details="true"
                                               @keyup="calculateFee"
-                                              prepend-icon="fas fa-money-bill-alt"></v-text-field>
+                                              append-icon="fas fa-money-bill-alt"></v-text-field>
                             </v-flex>
 
                             <v-flex v-if="bondTrade" xs12>
                                 <v-text-field label="Номинал" v-model="facevalue"
                                               :hide-details="true"
                                               @keyup="calculateFee"
-                                              prepend-icon="fas fa-money-bill"></v-text-field>
+                                              append-icon="fas fa-money-bill"></v-text-field>
                             </v-flex>
                             <v-flex v-if="bondTrade" xs12>
                                 <v-layout wrap>
@@ -104,7 +105,7 @@ import {TradeService} from "../../services/tradeService";
                                         <v-text-field label="НКД" v-model="nkd"
                                                       :hide-details="true"
                                                       @keyup="calculateFee"
-                                                      prepend-icon="fas fa-money-bill-alt"></v-text-field>
+                                                      append-icon="fas fa-money-bill-alt"></v-text-field>
                                     </v-flex>
                                     <v-flex xs12 lg6>
                                         <v-tooltip top>
@@ -120,13 +121,13 @@ import {TradeService} from "../../services/tradeService";
                                               label="Количество" v-model="quantity"
                                               @keyup="calculateFee"
                                               :hint="lotSizeHint" persistent-hint
-                                              prepend-icon="fas fa-plus">
+                                              append-icon="fas fa-plus">
                                 </v-text-field>
                             </v-flex>
                             <v-flex xs12>
                                 <v-text-field v-if="shareAssetType"
                                               label="Комиссия" v-model="fee"
-                                              prepend-icon="fas fa-coins"
+                                              append-icon="fas fa-coins"
                                               hint="Для автоматического рассчета комиссии задайте значение в Настройках или введите значение суммарной комиссии">
                                 </v-text-field>
                             </v-flex>
@@ -135,7 +136,7 @@ import {TradeService} from "../../services/tradeService";
                                 <v-layout wrap>
                                     <v-flex xs12 lg8>
                                         <v-text-field label="Сумма" v-model="moneyAmount"
-                                                      prepend-icon="fas fa-money-bill-alt"></v-text-field>
+                                                      append-icon="fas fa-money-bill-alt"></v-text-field>
                                     </v-flex>
                                     <v-flex xs12 lg4>
                                         <v-select :items="currencyList" v-model="moneyCurrency" label="Валюта сделки"></v-select>
@@ -144,7 +145,7 @@ import {TradeService} from "../../services/tradeService";
                             </v-flex>
 
                             <v-flex xs12>
-                                <v-text-field label="Заметка" v-model="note" :counter="160" prepend-icon="fas fa-sticky-note"></v-text-field>
+                                <v-text-field label="Заметка" v-model="note" :counter="160" append-icon="fas fa-sticky-note"></v-text-field>
                             </v-flex>
                         </v-layout>
 
@@ -228,7 +229,13 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     private currency = 'RUB';
 
-    private priceMask = '9999.99';
+    private priceMask: MaskOptions = {
+        mask: Number,
+        min: -10000,
+        max: 10000,
+        scale: 2,
+        thousandsSeparator: ' '
+    };
 
     private searchQuery: string = null;
     /** Текущий объект таймера */
