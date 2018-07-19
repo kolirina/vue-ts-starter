@@ -13,7 +13,7 @@ export class TokenService {
      * @returns {Promise<void>}
      */
     async generateToken(username: string, validTill: string): Promise<string> {
-        return <string>(await HTTP.INSTANCE.get('/token/share-portfolio', {username, validTill})).data.token;
+        return <string>(await HTTP.INSTANCE.post('/token/share-portfolio', {username, validTill})).data.token;
     }
 }
 

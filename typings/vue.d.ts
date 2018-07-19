@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import {DefaultComputed, DefaultData, DefaultMethods, DefaultProps, PropsDefinition} from "vue/types/options";
 import Cookies from "js-cookie";
+import {RawLocation, Route} from "vue-router/types/router";
 
 declare module 'vue/types/vue' {
     interface Vue {
@@ -15,6 +16,12 @@ declare module 'vue/types/options' {
         $uistate?: UiStateHelper;
     }
 }
+export type NavigationGuard = (
+    to: Route,
+    from: Route,
+    next: Resolver
+) => any
+export type Resolver = (to?: RawLocation | false | ((vm: Vue) => any) | void) => void;
 
 declare interface UiStateHelper {
     stocksTablePanel: number;
