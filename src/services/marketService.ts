@@ -67,18 +67,32 @@ export class MarketService {
     private convertBondPayments(data: EventChartData[]): ColumnChartData {
         const series: ColumnDataSeries[] = [];
         const categoryNames: string[] = [];
+        const paymentTypes: { [key: string]: string } = {};
         const events: HighStockEventData[] = [];
-        const temp = data.reduce((result: { [key: string]: ColumnDataSeries }, current: EventChartData) => {
-            categoryNames.push(current.date);
-            result[current.backgroundColor] = result[current.backgroundColor] || {
-                name: current.description.substring(0, current.description.indexOf(':')),
-                data: []
-            };
-            result[current.backgroundColor].data.push(parseFloat(current.description.substring(current.description.indexOf(" ") + 1, current.description.length)));
-            return result
-        }, {} as { [key: string]: ColumnDataSeries });
-        Object.keys(temp).forEach(key => {
-            series.push(temp[key])
+        // собираем категории (даты выплат) и типы платежей
+        data.forEach(eventItem => {
+            categoryNames.push(eventItem.date);
+            // тип выплаты: купон, амортизация, погашение
+            const paymentType = eventItem.description.substring(0, eventItem.description.indexOf(':'));
+            paymentTypes[paymentType] = paymentType;
+        });
+
+        const result: { [key: string]: ColumnDataSeries } = {};
+        // раскладываем по массивам с пустыми блоками: Купон: [10, 20, 30, null], Амортизация: [null, null, null, 100]
+        data.forEach(eventItem => {
+            const paymentType = eventItem.description.substring(0, eventItem.description.indexOf(':'));
+            Object.keys(paymentTypes).forEach(key => {
+                result[key] = result[key] || {name: key, data: []};
+                const paymentType = eventItem.description.substring(0, eventItem.description.indexOf(':'));
+                if (key === paymentType) {
+                    result[key].data.push(parseFloat(eventItem.description.substring(eventItem.description.indexOf(" ") + 1, eventItem.description.length)));
+                } else {
+                    result[key].data.push(null);
+                }
+            });
+        });
+        Object.keys(result).forEach(key => {
+            series.push({name: key, data: result[key].data});
         });
         return {categoryNames, series};
     }

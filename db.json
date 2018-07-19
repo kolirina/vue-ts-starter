@@ -20,7 +20,7 @@
           "combined": true,
           "professionalMode": true,
           "iisType": "",
-          "broker": "",
+          "broker": "ПАО Открытие",
           "note": ""
         },
         {
@@ -12518,7 +12518,7 @@
     "accountType": "Брокерский",
     "professionalMode": true,
     "iisType": "",
-    "broker": "",
+    "broker": "ПАО Открытие",
     "note": ""
   },
   "overview-combined": {
@@ -24438,5 +24438,8 @@
         "graph": "g1"
       }
     ]
+  },
+  "share-portfolio-by-username": {
+    "token": "eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1MzIwMTIxMjAsInN1YiI6ImRzZnNkZnNkZiIsImlzcyI6IkZpcnN0VXNlciIsInBvcnRmb2xpb19pZCI6NDk5NywiZXhwIjoxNTMyNjE2ODQwfQ.bM2KHHSD3QjF0y0I_bWM42FxdYJNaj5XqOnNcHUBA9s"
   }
 }

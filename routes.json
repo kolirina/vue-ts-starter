@@ -28,5 +28,7 @@
   "/api/market/stock/:ticker/info": "/stock-info",
   "/api/market/bond/:isin/info": "/bond-info",
 
+  "/api/token/share-portfolio": "/share-portfolio-by-username",
+
   "/api/user/logout": "/logout"
 }

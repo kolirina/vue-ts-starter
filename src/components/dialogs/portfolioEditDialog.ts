@@ -64,7 +64,8 @@ import {MainStore} from "../../vuex/mainStore";
                                             required
                                             append-icon="event"
                                             readonly></v-text-field>
-                                    <v-date-picker v-model="openDate" :no-title="true" locale="ru" :first-day-of-week="1" @input="$refs.dateMenu.save(openDate)"></v-date-picker>
+                                    <v-date-picker v-model="openDate" :no-title="true" locale="ru" :first-day-of-week="1"
+                                                   @input="$refs.dateMenu.save(openDate)"></v-date-picker>
                                 </v-menu>
                             </v-flex>
 
@@ -93,7 +94,7 @@ import {MainStore} from "../../vuex/mainStore";
                     <v-spacer></v-spacer>
                     <v-btn color="info lighten-2" flat @click.native="cancel">Отмена</v-btn>
                     <v-btn :loading="processState" :disabled="processState" color="primary" light @click.native="savePortfolio">
-                        Добавить
+                        {{ editMode ? 'Сохранить' : 'Добавить'}}
                         <span slot="loader" class="custom-loader">
                         <v-icon color="blue">fas fa-spinner fa-spin</v-icon>
                       </span>
@@ -126,16 +127,14 @@ export class PortfolioEditDialog extends CustomDialog<PortfolioDialogData, boole
     private dateMenuValue = false;
     private currencyList = ['RUB', 'USD'];
     private accessTypes = [AccessTypes.PRIVATE, AccessTypes.PUBLIC];
-    private iisTypes = ['С вычетом на взносы', 'С вычетом на взносы'];
+    private iisTypes = ['С вычетом на взносы', 'С вычетом на доходы'];
     private accountTypes = ['Брокерский', 'ИИС'];
     private processState = false;
     private editMode = false;
 
     private mounted(): void {
-        console.log('PortfolioEditDialog');
         if (this.data.portfolioParams) {
             Object.assign(this, this.data.portfolioParams);
-            console.log(this.data.portfolioParams);
             this.editMode = true;
         }
         console.log(this.id, this.name);
