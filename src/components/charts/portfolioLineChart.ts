@@ -1,14 +1,14 @@
-import {UI} from '../../app/UI';
-import Component from 'vue-class-component';
-import {PortfolioService} from '../../services/portfolioService';
-import {Container} from 'typescript-ioc';
-import {Portfolio} from '../../types/types';
-import {StoreType} from '../../vuex/storeType';
-import {namespace} from 'vuex-class/lib/bindings';
 import Highcharts, {ChartObject, DataPoint, Gradient} from 'highcharts';
 import Highstock from 'highcharts/highstock';
+import {Container} from 'typescript-ioc';
+import Component from 'vue-class-component';
 import {Watch} from 'vue-property-decorator';
+import {namespace} from 'vuex-class/lib/bindings';
+import {UI} from '../../app/UI';
+import {PortfolioService} from '../../services/portfolioService';
 import {HighStockEventsGroup} from '../../types/charts/types';
+import {Portfolio} from '../../types/types';
+import {StoreType} from '../../vuex/storeType';
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -44,7 +44,7 @@ export class PortfolioLineChart extends UI {
 
     private chart: ChartObject = null;
 
-    private portfolioService = (<PortfolioService>Container.get(PortfolioService));
+    private portfolioService = (Container.get(PortfolioService) as PortfolioService);
 
     private async mounted(): Promise<void> {
         await this.doChart();

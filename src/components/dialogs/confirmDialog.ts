@@ -1,5 +1,5 @@
-import {BtnReturn, CustomDialog} from "./customDialog";
-import Component from "vue-class-component";
+import Component from 'vue-class-component';
+import {BtnReturn, CustomDialog} from './customDialog';
 
 /**
  * Диалог подтверждения

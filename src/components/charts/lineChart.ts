@@ -1,11 +1,11 @@
-import {UI} from '../../app/UI';
-import Component from 'vue-class-component';
 import Highcharts, {ChartObject, Gradient} from 'highcharts';
 import Highstock from 'highcharts/highstock';
-import {StoreType} from '../../vuex/storeType';
-import {namespace} from 'vuex-class/lib/bindings';
+import Component from 'vue-class-component';
 import {Prop, Watch} from 'vue-property-decorator';
+import {namespace} from 'vuex-class/lib/bindings';
+import {UI} from '../../app/UI';
 import {HighStockEventsGroup} from '../../types/charts/types';
+import {StoreType} from '../../vuex/storeType';
 
 const MainStore = namespace(StoreType.MAIN);
 

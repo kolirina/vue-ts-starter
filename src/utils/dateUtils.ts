@@ -1,5 +1,5 @@
 import * as moment from 'moment';
-import {Moment} from "moment";
+import {Moment} from 'moment';
 
 /**
  * Утилитный клас для работы с датами
@@ -12,7 +12,7 @@ export class DateUtils {
      * @return {boolean} {@code true} если переданная дата - текущий день, иначе {@code false}
      */
     static isCurrentDate(date: Moment): boolean {
-        return moment().startOf("day").isSame(date.clone().startOf("day"));
+        return moment().startOf('day').isSame(date.clone().startOf('day'));
     }
 
     /**
@@ -21,7 +21,7 @@ export class DateUtils {
      * @return {boolean} {@code true} если переданная дата находится в рамках текущего года, иначе {@code false}
      */
     static isCurrentYear(date: Moment): boolean {
-        return moment().startOf("year").isSame(date.clone().startOf("year"));
+        return moment().startOf('year').isSame(date.clone().startOf('year'));
     }
 
     /**
@@ -40,7 +40,7 @@ export class DateUtils {
      * @return {string} отформатированная дата
      */
     static formatDisplayDate(date: Moment, showYear = true): string {
-        return DateUtils.isCurrentDate(date) ? "Сегодня" :
+        return DateUtils.isCurrentDate(date) ? 'Сегодня' :
             date.format(!showYear || DateUtils.isCurrentYear(date) ? DateFormat.CURRENT_YEAR_FORMAT : DateFormat.ANOTHER_YEAR_FORMAT);
     }
 }
@@ -49,7 +49,7 @@ export class DateUtils {
  * Перечисление используемых форматов даты (см. {@link https://momentjs.com/docs/#/parsing/string-format/})
  */
 export enum DateFormat {
-    DATE = "L",  // DD.MM.YYYY
-    CURRENT_YEAR_FORMAT = "DD MMMM",
-    ANOTHER_YEAR_FORMAT = "DD MMMM YYYY"
+    DATE = 'L',  // DD.MM.YYYY
+    CURRENT_YEAR_FORMAT = 'DD MMMM',
+    ANOTHER_YEAR_FORMAT = 'DD MMMM YYYY'
 }

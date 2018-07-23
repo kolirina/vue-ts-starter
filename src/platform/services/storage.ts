@@ -1,11 +1,11 @@
-import {Singleton} from "typescript-ioc";
-import {Service} from "../decorators/service";
+import {Singleton} from 'typescript-ioc';
+import {Service} from '../decorators/service';
 
 /**
  * Сервис по работе с хранилищем браузера
  * Реализует LocalStorage либо inMemory object, в случае, если LocalStorage отключен клиентом
  */
-@Service("Storage")
+@Service('Storage')
 @Singleton
 export abstract class Storage {
 
@@ -25,7 +25,7 @@ export abstract class Storage {
     get<T>(key: string, defaultValue: T, session = false): T {
         const storage = this.getStorage(session);
         try {
-            const value = <T> JSON.parse(storage[key]);
+            const value = JSON.parse(storage[key]) as T;
             return value ? value : defaultValue;
         } catch (e) {
             return defaultValue;

@@ -1,11 +1,11 @@
-import {UI} from '../../app/UI';
-import Component from 'vue-class-component';
 import Highcharts, {ChartObject} from 'highcharts';
-import {Portfolio} from '../../types/types';
-import {StoreType} from '../../vuex/storeType';
-import {namespace} from 'vuex-class/lib/bindings';
+import Component from 'vue-class-component';
 import {Prop, Watch} from 'vue-property-decorator';
-import {ChartUtils} from "../../utils/ChartUtils";
+import {namespace} from 'vuex-class/lib/bindings';
+import {UI} from '../../app/UI';
+import {Portfolio} from '../../types/types';
+import {ChartUtils} from '../../utils/ChartUtils';
+import {StoreType} from '../../vuex/storeType';
 
 const MainStore = namespace(StoreType.MAIN);
 

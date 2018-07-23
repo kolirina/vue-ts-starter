@@ -1,10 +1,10 @@
-import {UI} from '../../app/UI';
-import Component from 'vue-class-component';
 import Highcharts, {ChartObject} from 'highcharts';
+import Component from 'vue-class-component';
+import {Prop, Watch} from 'vue-property-decorator';
+import {namespace} from 'vuex-class/lib/bindings';
+import {UI} from '../../app/UI';
 import {Portfolio} from '../../types/types';
 import {StoreType} from '../../vuex/storeType';
-import {namespace} from 'vuex-class/lib/bindings';
-import {Prop, Watch} from 'vue-property-decorator';
 
 const MainStore = namespace(StoreType.MAIN);
 

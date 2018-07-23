@@ -1,6 +1,6 @@
-import Decimal from "decimal.js";
-import {TradeDataHolder} from "./tradeDataHolder";
-import {BondTrade} from "./bondTrade";
+import Decimal from 'decimal.js';
+import {BondTrade} from './bondTrade';
+import {TradeDataHolder} from './tradeDataHolder';
 
 export class BondSellTrade extends BondTrade {
 

@@ -1,7 +1,7 @@
-import {UI} from '../../app/UI';
-import Component from 'vue-class-component';
 import Highcharts, {ChartObject} from 'highcharts';
+import Component from 'vue-class-component';
 import {Prop, Watch} from 'vue-property-decorator';
+import {UI} from '../../app/UI';
 
 @Component({
     // language=Vue

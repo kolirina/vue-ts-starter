@@ -1,10 +1,10 @@
-import {Singleton} from "typescript-ioc";
-import {Service} from "../decorators/service";
+import {Singleton} from 'typescript-ioc';
+import {Service} from '../decorators/service';
 
 /**
  * Сервис кэширования данных
  */
-@Service("Cache")
+@Service('Cache')
 @Singleton
 export class Cache {
 
@@ -15,7 +15,7 @@ export class Cache {
     }
 
     get<T>(key: string): T {
-        return <T> this.cache[key];
+        return this.cache[key] as T;
     }
 
     remove(key: string): void {

@@ -1,8 +1,8 @@
-import {BtnReturn, CustomDialog} from "./customDialog";
-import Component from "vue-class-component";
-import {ClientInfo} from "../../types/types";
-import {Container} from "typescript-ioc";
-import {TokenService} from "../../services/tokenService";
+import {Container} from 'typescript-ioc';
+import Component from 'vue-class-component';
+import {TokenService} from '../../services/tokenService';
+import {ClientInfo} from '../../types/types';
+import {BtnReturn, CustomDialog} from './customDialog';
 
 /**
  * Диалог получения кода для встраиваемого блока
@@ -127,9 +127,9 @@ export class SharePortfolioDialog extends CustomDialog<SharePortfolioDialogData,
     };
 
     private shareOptions: ShareOption[] = [
-        {name: "Обычный", value: ShareAccessType.DEFAULT_ACCESS},
-        {name: "Со сроком действия", value: ShareAccessType.BY_LINK},
-        {name: "Пользователю", value: ShareAccessType.BY_IDENTIFICATION}
+        {name: 'Обычный', value: ShareAccessType.DEFAULT_ACCESS},
+        {name: 'Со сроком действия', value: ShareAccessType.BY_LINK},
+        {name: 'Пользователю', value: ShareAccessType.BY_IDENTIFICATION}
     ];
 
     private shareOption = ShareAccessType.DEFAULT_ACCESS;
@@ -141,7 +141,7 @@ export class SharePortfolioDialog extends CustomDialog<SharePortfolioDialogData,
     private dashboardAccess = false;
     private date: Date = null;
     private dateMenuValue = false;
-    private userId = "";
+    private userId = '';
     private token: string = null;
 
     private async generateTokenLink(): Promise<void> {
@@ -160,15 +160,15 @@ export class SharePortfolioDialog extends CustomDialog<SharePortfolioDialogData,
 type ShareOption = {
     name: string,
     value: ShareAccessType
-}
+};
 
 export type SharePortfolioDialogData = {
     portfolioId: string,
     clientInfo: ClientInfo
-}
+};
 
 enum ShareAccessType {
-    DEFAULT_ACCESS = "DEFAULT_ACCESS",
-    BY_LINK = "BY_LINK",
-    BY_IDENTIFICATION = "BY_IDENTIFICATION"
+    DEFAULT_ACCESS = 'DEFAULT_ACCESS',
+    BY_LINK = 'BY_LINK',
+    BY_IDENTIFICATION = 'BY_IDENTIFICATION'
 }

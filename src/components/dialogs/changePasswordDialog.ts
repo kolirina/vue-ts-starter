@@ -1,6 +1,6 @@
-import {CustomDialog} from "./customDialog";
-import Component from "vue-class-component";
-import {Vue} from "vue/types/vue";
+import Component from 'vue-class-component';
+import {Vue} from 'vue/types/vue';
+import {CustomDialog} from './customDialog';
 
 /**
  * Диалог подтверждения
@@ -76,9 +76,9 @@ export class ChangePasswordDialog extends CustomDialog<void, string> {
     private showNewPassword = false;
     private showConfirmedPassword = false;
 
-    private password = "";
-    private newPassword = "";
-    private confirmedPassword = "";
+    private password = '';
+    private newPassword = '';
+    private confirmedPassword = '';
 
     // private passwordRules: [(value: string) => string | boolean] = [
     //     (value: string) => !!value || 'Name is required',

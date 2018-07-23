@@ -1,4 +1,4 @@
-import {BondTrade} from "./bondTrade";
+import {BondTrade} from './bondTrade';
 
 export class BondBuyTrade extends BondTrade {
 }

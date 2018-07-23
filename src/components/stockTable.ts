@@ -1,13 +1,13 @@
 import Component from 'vue-class-component';
 import {Prop} from 'vue-property-decorator';
 import {UI} from '../app/UI';
+import {AssetType} from '../types/assetType';
+import {Operation} from '../types/operation';
 import {StockPortfolioRow, TableHeader} from '../types/types';
-import {AddTradeDialog} from "./dialogs/addTradeDialog";
-import {StoreType} from "../vuex/storeType";
-import {Operation} from "../types/operation";
-import {AssetType} from "../types/assetType";
-import {ConfirmDialog} from "./dialogs/confirmDialog";
-import {BtnReturn} from "./dialogs/customDialog";
+import {StoreType} from '../vuex/storeType';
+import {AddTradeDialog} from './dialogs/addTradeDialog';
+import {ConfirmDialog} from './dialogs/confirmDialog';
+import {BtnReturn} from './dialogs/customDialog';
 
 @Component({
     // language=Vue
@@ -103,7 +103,7 @@ export class StockTable extends UI {
         {text: 'Прибыль', align: 'right', value: 'profit', sortable: false},
         {text: 'Прибыль, %', align: 'right', value: 'percProfit'},
         {text: 'Тек. доля', align: 'right', value: 'percCurrShare'},
-        {text: 'Действия', align: 'right', value: 'actions', sortable: false, width: "25"}
+        {text: 'Действия', align: 'right', value: 'actions', sortable: false, width: '25'}
     ];
 
     @Prop({default: [], required: true})

@@ -1,9 +1,9 @@
-import {UI} from "../app/UI";
-import Component from "vue-class-component";
-import {ClientInfo, Portfolio, PortfolioParams} from "../types/types";
-import {StoreType} from "../vuex/storeType";
-import {MutationType} from "../vuex/mutationType";
-import {Action, Getter, namespace} from "vuex-class/lib/bindings";
+import Component from 'vue-class-component';
+import {Action, Getter, namespace} from 'vuex-class/lib/bindings';
+import {UI} from '../app/UI';
+import {ClientInfo, Portfolio, PortfolioParams} from '../types/types';
+import {MutationType} from '../vuex/mutationType';
+import {StoreType} from '../vuex/storeType';
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -45,7 +45,6 @@ export class PortfolioSwitcher extends UI {
         await this.setCurrentPortfolio(selected.id);
         this.selected = selected;
     }
-
 
     private getPortfolioName(portfolio: PortfolioParams): string {
         return `${portfolio.name} (${portfolio.viewCurrency}), ${portfolio.access ? 'Публичный' : 'Закрытый'}`;

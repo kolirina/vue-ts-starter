@@ -1,12 +1,12 @@
-import {Module, ActionContext} from 'vuex';
-import {MutationType} from './mutationType';
 import {Container} from 'typescript-ioc';
-import {ClientInfo, Portfolio} from '../types/types';
-import {PortfolioService} from '../services/portfolioService';
-import {GetterType} from './getterType';
-import {Storage} from '../platform/services/storage';
-import {StoreKeys} from '../types/storeKeys';
+import {ActionContext, Module} from 'vuex';
 import {HTTP} from '../platform/services/http';
+import {Storage} from '../platform/services/storage';
+import {PortfolioService} from '../services/portfolioService';
+import {StoreKeys} from '../types/storeKeys';
+import {ClientInfo, Portfolio} from '../types/types';
+import {GetterType} from './getterType';
+import {MutationType} from './mutationType';
 
 /** Сервис работы с клиентом */
 const portfolioService: PortfolioService = Container.get(PortfolioService);
@@ -20,7 +20,7 @@ export class StateHolder {
     /** Текущий выбранный портфель */
     currentPortfolio: Portfolio = null;
     /** Версия стора */
-    version = '1.0'
+    version = '1.0';
 }
 
 const Getters = {

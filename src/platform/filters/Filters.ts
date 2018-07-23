@@ -1,6 +1,6 @@
-import {BigMoney} from "../../types/bigMoney";
 import {Decimal} from 'decimal.js';
-import {DateUtils} from "../../utils/dateUtils";
+import {BigMoney} from '../../types/bigMoney';
+import {DateUtils} from '../../utils/dateUtils';
 
 const DEFAULT_SCALE = 2;
 const MAX_SCALE = 3;
@@ -11,7 +11,7 @@ export class Filters {
 
     static formatMoneyAmount(value: string, needRound?: boolean, scale?: number) {
         if (!value) {
-            return "0.00";
+            return '0.00';
         }
         const amount = new BigMoney(value);
         if (needRound) {
@@ -23,7 +23,7 @@ export class Filters {
 
     static formatNumber(value: string) {
         if (!value) {
-            return "0.00";
+            return '0.00';
         }
         return DF.format(new Decimal(value).toDP(DEFAULT_SCALE, Decimal.ROUND_HALF_UP).toNumber());
 

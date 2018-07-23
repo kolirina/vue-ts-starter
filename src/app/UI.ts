@@ -1,15 +1,16 @@
-import Vue from "vue";
-import Component from "vue-class-component";
-import {Emit, Model, Prop, Watch} from "vue-property-decorator";
-import {State, Getter, Action, Mutation, namespace} from 'vuex-class';
-import {ErrorBag, Validator} from "vee-validate";
-import {Route} from "vue-router/types/router";
-import {Resolver} from "../../typings/vue";
+import {ErrorBag, Validator} from 'vee-validate';
+import Vue from 'vue';
+import Component from 'vue-class-component';
+import {Emit, Model, Prop, Watch} from 'vue-property-decorator';
+import {Route} from 'vue-router/types/router';
+import {Action, Getter, Mutation, namespace, State} from 'vuex-class';
+import {Resolver} from '../../typings/vue';
+import {UiStateHelper} from '../utils/uiStateHelper';
 
 Component.registerHooks([
-    "beforeRouteEnter",
-    "beforeRouteLeave",
-    "beforeRouteUpdate"
+    'beforeRouteEnter',
+    'beforeRouteLeave',
+    'beforeRouteUpdate'
 ]);
 
 export {Component, Emit, Model, Prop, Watch};
@@ -24,6 +25,8 @@ export class UI extends Vue implements IComponentLifecycle, IComponentRoutingLif
     $validator: Validator;
     /** Ошибки валидации */
     protected $errors: ErrorBag;
+    /** Состояние ui-элементов */
+    protected $uistate = UiStateHelper;
 
     /**
      * Подписывает компонент на глобальное событие

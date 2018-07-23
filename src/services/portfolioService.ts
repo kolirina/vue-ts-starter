@@ -1,13 +1,12 @@
+import {Decimal} from 'decimal.js';
 import {Container, Singleton} from 'typescript-ioc';
 import {Service} from '../platform/decorators/service';
-import {CombinedInfoRequest, Overview, Portfolio, PortfolioParams} from '../types/types';
 import {Cache} from '../platform/services/cache';
-import {Decimal} from 'decimal.js';
-
 import {HTTP} from '../platform/services/http';
 import {BigMoney} from '../types/bigMoney';
-import {EventChartData, HighStockEventsGroup, LineChartItem} from "../types/charts/types";
-import {ChartUtils} from "../utils/ChartUtils";
+import {EventChartData, HighStockEventsGroup, LineChartItem} from '../types/charts/types';
+import {CombinedInfoRequest, Overview, Portfolio, PortfolioParams} from '../types/types';
+import {ChartUtils} from '../utils/ChartUtils';
 
 const PORTFOLIOS_KEY = 'PORTFOLIOS';
 
@@ -15,7 +14,7 @@ const PORTFOLIOS_KEY = 'PORTFOLIOS';
 @Singleton
 export class PortfolioService {
 
-    private cacheService = (<Cache> Container.get(Cache));
+    private cacheService = (Container.get(Cache) as Cache);
 
     private cache: { [key: string]: Portfolio } = {};
 
@@ -28,11 +27,6 @@ export class PortfolioService {
             this.init();
         }
         return this.portfolio;
-    }
-
-    private init(): void {
-        this.cacheService.put(PORTFOLIOS_KEY, this.cache);
-        console.log('INIT PORTFOLIO SERVICE');
     }
 
     async getById(id: string): Promise<Portfolio> {
@@ -54,7 +48,7 @@ export class PortfolioService {
      */
     async getPortfolioOverviewCombined(request: CombinedInfoRequest): Promise<Overview> {
         // -------------------------------------- POST --------------------------------
-        const overview = <Overview>(await HTTP.INSTANCE.post(`/portfolios/overview-combined`, request)).data;
+        const overview = (await HTTP.INSTANCE.post(`/portfolios/overview-combined`, request)).data as Overview;
         // проставляем идентификаторы чтобы работали разворачиваютщиеся блоки в табилицах
         overview.stockPortfolio.rows.forEach((value, index) => value.id = index.toString());
         overview.bondPortfolio.rows.forEach((value, index) => value.id = index.toString());
@@ -62,10 +56,10 @@ export class PortfolioService {
     }
 
     async getCostChartCombined(request: CombinedInfoRequest): Promise<any> {
-        const data = <LineChartItem[]>(await HTTP.INSTANCE.post(`/portfolios/cost-chart-combined`, request)).data;
+        const data = (await HTTP.INSTANCE.post(`/portfolios/cost-chart-combined`, request)).data as LineChartItem[];
         const result: any[] = [];
         data.forEach(value => {
-            result.push([new Date(value.date).getTime(), new BigMoney(value.amount).amount.toDP(2, Decimal.ROUND_HALF_UP).toNumber()])
+            result.push([new Date(value.date).getTime(), new BigMoney(value.amount).amount.toDP(2, Decimal.ROUND_HALF_UP).toNumber()]);
         });
         return result;
     }
@@ -80,26 +74,11 @@ export class PortfolioService {
         await HTTP.INSTANCE.post(`/portfolios/${id}/combined`, combined);
     }
 
-    /**
-     * Возвращает данные по портфелю
-     * @param {string} id идентификатор портфеля
-     * @return {Promise<Portfolio>}
-     */
-    private async loadPortfolio(id: string): Promise<Portfolio> {
-        const portfolio = <PortfolioParams>(await HTTP.INSTANCE.get(`/portfolios/${id}`)).data;
-        const overview = <Overview>(await HTTP.INSTANCE.get(`/portfolios/${id}/overview`)).data;
-        // проставляем идентификаторы чтобы работали разворачиваютщиеся блоки в табилицах
-        overview.stockPortfolio.rows.forEach((value, index) => value.id = index.toString());
-        overview.bondPortfolio.rows.forEach((value, index) => value.id = index.toString());
-        const trades = (await HTTP.INSTANCE.get(`/portfolios/${id}/trades`)).data;
-        return {id, portfolioParams: portfolio, trades, overview};
-    }
-
     async getCostChart(id: string): Promise<any> {
-        const data = <LineChartItem[]>(await HTTP.INSTANCE.get(`/portfolios/${id}/cost-chart`)).data;
+        const data = (await HTTP.INSTANCE.get(`/portfolios/${id}/cost-chart`)).data as LineChartItem[];
         const result: any[] = [];
         data.forEach(value => {
-            result.push([new Date(value.date).getTime(), new BigMoney(value.amount).amount.toDP(2, Decimal.ROUND_HALF_UP).toNumber()])
+            result.push([new Date(value.date).getTime(), new BigMoney(value.amount).amount.toDP(2, Decimal.ROUND_HALF_UP).toNumber()]);
         });
         return result;
     }
@@ -109,12 +88,32 @@ export class PortfolioService {
     }
 
     async getEventsChartData(id: string): Promise<HighStockEventsGroup[]> {
-        const data = <EventChartData[]>(await HTTP.INSTANCE.get(`/portfolios/${id}/events-chart-data`)).data;
+        const data = (await HTTP.INSTANCE.get(`/portfolios/${id}/events-chart-data`)).data as EventChartData[];
         return ChartUtils.processEventsChartData(data);
     }
 
     async getEventsChartDataCombined(request: CombinedInfoRequest): Promise<HighStockEventsGroup[]> {
-        const data = <EventChartData[]>(await HTTP.INSTANCE.post(`/portfolios/events-chart-data-combined`, request)).data;
+        const data = (await HTTP.INSTANCE.post(`/portfolios/events-chart-data-combined`, request)).data as EventChartData[];
         return ChartUtils.processEventsChartData(data);
+    }
+
+    /**
+     * Возвращает данные по портфелю
+     * @param {string} id идентификатор портфеля
+     * @return {Promise<Portfolio>}
+     */
+    private async loadPortfolio(id: string): Promise<Portfolio> {
+        const portfolio = (await HTTP.INSTANCE.get(`/portfolios/${id}`)).data as PortfolioParams;
+        const overview = (await HTTP.INSTANCE.get(`/portfolios/${id}/overview`)).data as Overview;
+        // проставляем идентификаторы чтобы работали разворачиваютщиеся блоки в табилицах
+        overview.stockPortfolio.rows.forEach((value, index) => value.id = index.toString());
+        overview.bondPortfolio.rows.forEach((value, index) => value.id = index.toString());
+        const trades = (await HTTP.INSTANCE.get(`/portfolios/${id}/trades`)).data;
+        return {id, portfolioParams: portfolio, trades, overview};
+    }
+
+    private init(): void {
+        this.cacheService.put(PORTFOLIOS_KEY, this.cache);
+        console.log('INIT PORTFOLIO SERVICE');
     }
 }

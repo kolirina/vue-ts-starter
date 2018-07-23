@@ -1,4 +1,4 @@
-import {MoneyTrade} from "./moneyTrade";
+import {MoneyTrade} from './moneyTrade';
 
 export class MoneyDepositTrade extends MoneyTrade {
 }

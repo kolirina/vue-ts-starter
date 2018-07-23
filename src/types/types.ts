@@ -1,6 +1,6 @@
-import {BaseChartDot, ColumnChartData, Dot, HighStockEventsGroup} from "./charts/types";
-import {AssetType} from "./assetType";
-import {Operation} from "./operation";
+import {AssetType} from './assetType';
+import {BaseChartDot, ColumnChartData, Dot, HighStockEventsGroup} from './charts/types';
+import {Operation} from './operation';
 
 export type _portfolioRow = {
     /** Прибыль */
@@ -11,11 +11,11 @@ export type _portfolioRow = {
     currCost: string,
 
     assetType: string
-}
+};
 
 export type AssetRow = _portfolioRow & {
     type: string
-}
+};
 
 export type TradeRow = {
     id: string,
@@ -30,7 +30,7 @@ export type TradeRow = {
     price: string,
     fee: string,
     note?: string
-}
+};
 
 export type _shareRow = _portfolioRow & {
     /** Стоимость продаж */
@@ -74,7 +74,7 @@ export type _shareRow = _portfolioRow & {
      * Для тех случаев когда нет этого значения у самой акции или при конвертации валют
      */
     decimals: string
-}
+};
 
 export type StockPortfolioSumRow = _shareRow & {
     /**
@@ -102,7 +102,7 @@ export type BondPortfolioSumRow = _shareRow & {
     buyNkd: string,
     /** Полученный при продаже НКД */
     sellNkd: string
-}
+};
 
 export type StockPortfolioRow = StockPortfolioSumRow & {
 
@@ -122,7 +122,7 @@ export type StockPortfolioRow = StockPortfolioSumRow & {
     isShort: string,
     /** Количество полных лотов по бумаге в портфеле */
     lotCounts: string
-}
+};
 
 export type BondPortfolioRow = BondPortfolioSumRow & {
     /** Идентификатор */
@@ -158,31 +158,31 @@ export type BondPortfolioRow = BondPortfolioSumRow & {
     firstBuy: string,
 
     lastBuy: string
-}
+};
 
 export type Overview = {
     dashboardData: DashboardData,
     assetRows: AssetRow[],
     stockPortfolio: StockPortfolio,
     bondPortfolio: BondPortfolio
-}
+};
 
 export type StockPortfolio = {
     sumRow: StockPortfolioSumRow,
     rows: StockPortfolioRow[]
-}
+};
 
 export type BondPortfolio = {
     sumRow: BondPortfolioSumRow,
     rows: BondPortfolioRow[]
-}
+};
 
 export type Portfolio = {
     id: string,
     portfolioParams: PortfolioParams,
     trades: TradeRow[],
     overview: Overview
-}
+};
 
 export type TableHeader = {
     text: string,
@@ -191,7 +191,7 @@ export type TableHeader = {
     value: string
     class?: string[] | string;
     width?: string;
-}
+};
 
 export type DashboardData = {
     currentCost: string,
@@ -204,7 +204,7 @@ export type DashboardData = {
     yearYieldWithoutDividendsAndCoupons: string,
     dailyChanges: string,
     dailyChangesPercent: string
-}
+};
 
 export type DashboardBrick = {
     name: string,
@@ -213,7 +213,7 @@ export type DashboardBrick = {
     secondValueDesc?: string,
     color: string,
     icon: string
-}
+};
 
 export type PortfolioParams = {
     id: string,
@@ -225,12 +225,12 @@ export type PortfolioParams = {
     professionalMode: boolean,
     openDate: string,
     combined: boolean
-}
+};
 
 export class ClientInfo {
 
     token: string;
-    user: Client
+    user: Client;
 }
 
 export type Client = {
@@ -243,7 +243,7 @@ export type Client = {
     portfolios: PortfolioParams[],
     referralAwardType: string,
     promoCode: string
-}
+};
 
 export type Share = {
     /** Идентификатору бумаги в системе */
@@ -268,7 +268,7 @@ export type Share = {
     name: string;
     /** Тикер */
     ticker: string;
-}
+};
 
 /**
  * Сущность акции
@@ -308,13 +308,13 @@ export type Stock = Share & {
     issueCapitalization: string;
     /** Идентификатор эмитента на сайте биржи */
     moexId: string;
-}
+};
 
 export type Sector = {
     name: string;
     parent: Sector;
     root: boolean;
-}
+};
 
 export type Bond = Share & {
     /** Идентификатор облигации */
@@ -345,7 +345,7 @@ export type Bond = Share & {
     isRepaid: boolean;
     /** Абсолютная текущая цена облигации без учета НКД */
     absolutePrice: string;
-}
+};
 
 /** Информация по акции */
 export type StockInfo = {
@@ -357,7 +357,7 @@ export type StockInfo = {
     dividends: BaseChartDot[];
     /** События. В данном случае дивиденды */
     events: HighStockEventsGroup;
-}
+};
 
 /** Информация по облигации */
 export type BondInfo = {
@@ -369,17 +369,17 @@ export type BondInfo = {
     payments: ColumnChartData;
     /** События. В данном случае дивиденды */
     events: HighStockEventsGroup[];
-}
+};
 
 export type LoginRequest = {
     username: string,
     password: string
-}
+};
 
 export type CombinedInfoRequest = {
     ids: string[],
     viewCurrency: string
-}
+};
 
 export type TradeData = {
     /** Тикер */
@@ -406,7 +406,7 @@ export type TradeData = {
     moneyAmount: string,
     /** Валюта сделки */
     currency: string
-}
+};
 
 export type TradeDataRequest = {
     /** Идентификатор портфеля */
@@ -419,4 +419,4 @@ export type TradeDataRequest = {
     operation: Operation,
     /** Поля, содержащию все необходимую информацию по сделке данного типа */
     fields: TradeData
-}
+};

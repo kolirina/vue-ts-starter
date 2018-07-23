@@ -1,13 +1,13 @@
-import Component from "vue-class-component";
-import {Prop} from "vue-property-decorator";
-import {UI} from "../app/UI";
-import {TableHeader, TradeRow} from "../types/types";
-import {Operation} from "../types/operation";
-import {AddTradeDialog} from "./dialogs/addTradeDialog";
-import {StoreType} from "../vuex/storeType";
-import {AssetType} from "../types/assetType";
-import {ConfirmDialog} from "./dialogs/confirmDialog";
-import {BtnReturn} from "./dialogs/customDialog";
+import Component from 'vue-class-component';
+import {Prop} from 'vue-property-decorator';
+import {UI} from '../app/UI';
+import {AssetType} from '../types/assetType';
+import {Operation} from '../types/operation';
+import {TableHeader, TradeRow} from '../types/types';
+import {StoreType} from '../vuex/storeType';
+import {AddTradeDialog} from './dialogs/addTradeDialog';
+import {ConfirmDialog} from './dialogs/confirmDialog';
+import {BtnReturn} from './dialogs/customDialog';
 
 @Component({
     // language=Vue

@@ -1,21 +1,20 @@
-import Component from "vue-class-component";
-import {CustomDialog} from "./customDialog";
-import {AssetType} from "../../types/assetType";
-import {Operation} from "../../types/operation";
-import {Watch} from "vue-property-decorator";
-import {Portfolio, Share, TradeData} from "../../types/types";
-import {Inject} from "typescript-ioc";
-import {MarketService} from "../../services/marketService";
-import Decimal from "decimal.js";
-import {BigMoney} from "../../types/bigMoney";
-import {TradeMap} from "../../types/trade/tradeMap";
-import {TradeDataHolder} from "../../types/trade/tradeDataHolder";
-import {TradeValue} from "../../types/trade/tradeValue";
-import {VueRouter} from "vue-router/types/router";
-import {MainStore} from "../../vuex/mainStore";
-import {TradeService} from "../../services/tradeService";
-import {MaskOptions} from "imask";
-
+import Decimal from 'decimal.js';
+import {MaskOptions} from 'imask';
+import {Inject} from 'typescript-ioc';
+import Component from 'vue-class-component';
+import {Watch} from 'vue-property-decorator';
+import {VueRouter} from 'vue-router/types/router';
+import {MarketService} from '../../services/marketService';
+import {TradeService} from '../../services/tradeService';
+import {AssetType} from '../../types/assetType';
+import {BigMoney} from '../../types/bigMoney';
+import {Operation} from '../../types/operation';
+import {TradeDataHolder} from '../../types/trade/tradeDataHolder';
+import {TradeMap} from '../../types/trade/tradeMap';
+import {TradeValue} from '../../types/trade/tradeValue';
+import {Portfolio, Share, TradeData} from '../../types/types';
+import {MainStore} from '../../vuex/mainStore';
+import {CustomDialog} from './customDialog';
 
 @Component({
     // language=Vue
@@ -177,14 +176,14 @@ import {MaskOptions} from "imask";
 })
 export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> implements TradeDataHolder {
 
+    $refs: {
+        dateMenu: any
+    };
+
     @Inject
     private marketService: MarketService;
     @Inject
     private tradeService: TradeService;
-
-    $refs: {
-        dateMenu: any
-    };
 
     private portfolio: Portfolio = null;
 
@@ -250,12 +249,12 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         console.log('ADD TRADE DIALOG2', this.data);
     }
 
-    @Watch("assetType")
+    @Watch('assetType')
     private onAssetTypeChange(newValue: AssetType): void {
         this.operation = this.assetType.operations[0];
     }
 
-    @Watch("searchQuery")
+    @Watch('searchQuery')
     private async onSearch(): Promise<void> {
         console.log('SEARCH', this.searchQuery);
         if (!this.searchQuery || this.searchQuery.length <= 2) {
@@ -307,8 +306,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private get keepMoneyLabel(): string {
-        const toPort = "Зачислить деньги";
-        const fromPort = "Списать деньги";
+        const toPort = 'Зачислить деньги';
+        const fromPort = 'Списать деньги';
         return Operation.BUY === this.operation || Operation.WITHDRAW === this.operation || Operation.LOSS === this.operation ? fromPort : toPort;
     }
 
@@ -320,12 +319,12 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         return [Operation.AMORTIZATION, Operation.COUPON, Operation.DIVIDEND].includes(this.operation) ? 'Начисление' : 'Цена';
     }
 
-    @Watch("share")
+    @Watch('share')
     private shareSelect(): void {
         console.log('SELECT SHARE', this.share);
         // при очистке поля автокомплита
         if (!this.share) {
-            this.price = "";
+            this.price = '';
             return;
         }
         this.price = new BigMoney(this.share.price).amount.toString();
@@ -373,7 +372,13 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             moneyAmount: this.total,
             currency: this.currency
         };
-        console.log('ADD', trade);
+        console.log('ADD', JSON.stringify({
+            portfolioId: this.portfolio.id,
+            asset: this.assetType,
+            operation: this.operation,
+            createLinkedTrade: this.keepMoney,
+            fields: trade
+        }));
         this.processState = true;
         await this.tradeService.saveTrade({
             portfolioId: this.portfolio.id,
@@ -383,7 +388,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             fields: trade
         });
         this.processState = false;
-        //this.close(true);
+        // this.close(true);
     }
 
     private get shareAssetType(): boolean {
@@ -391,13 +396,14 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private get bondTrade(): boolean {
-        return this.assetType === AssetType.BOND && this.operation != Operation.COUPON && this.operation != Operation.AMORTIZATION;
+        return this.assetType === AssetType.BOND && this.operation !== Operation.COUPON && this.operation !== Operation.AMORTIZATION;
     }
 
     private get moneyTrade(): boolean {
         return this.assetType === AssetType.MONEY;
     }
 
+    // tslint:disable
     getShare(): Share {
         return this.share;
     }
@@ -445,6 +451,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     getCurrency(): string {
         return this.currency;
     }
+
+    // tslint:enable
 }
 
 export type TradeDialogData = {
@@ -454,4 +462,4 @@ export type TradeDialogData = {
     share?: Share,
     operation?: Operation,
     assetType?: AssetType
-}
+};

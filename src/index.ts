@@ -1,7 +1,7 @@
+import {AppFrame} from './app/appFrame';
+import {UIRegistry} from './app/uiRegistry';
 import {RouterConfiguration} from './router/routerConfiguration';
 import {VuexConfiguration} from './vuex/vuexConfiguration';
-import {UIRegistry} from './app/uiRegistry';
-import {AppFrame} from "./app/appFrame";
 
 const initialized = UIRegistry.init();
 const router = RouterConfiguration.getRouter();

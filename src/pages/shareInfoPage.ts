@@ -1,10 +1,10 @@
-import Component from "vue-class-component";
-import {UI} from "../app/UI";
-import {Share} from "../types/types";
-import {Inject} from "typescript-ioc";
-import {MarketService} from "../services/marketService";
-import {BaseChartDot, Dot, HighStockEventsGroup} from "../types/charts/types";
-import {DividendChart} from "../components/charts/dividendChart";
+import {Inject} from 'typescript-ioc';
+import Component from 'vue-class-component';
+import {UI} from '../app/UI';
+import {DividendChart} from '../components/charts/dividendChart';
+import {MarketService} from '../services/marketService';
+import {BaseChartDot, Dot, HighStockEventsGroup} from '../types/charts/types';
+import {Share} from '../types/types';
 
 @Component({
     // language=Vue

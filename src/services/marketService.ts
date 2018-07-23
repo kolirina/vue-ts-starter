@@ -1,9 +1,9 @@
 import {Singleton} from 'typescript-ioc';
 import {Service} from '../platform/decorators/service';
 import {HTTP} from '../platform/services/http';
-import {Bond, BondInfo, Share, Stock, StockInfo} from "../types/types";
-import {BaseChartDot, ColumnChartData, ColumnDataSeries, Dot, EventChartData, HighStockEventData, HighStockEventsGroup} from "../types/charts/types";
-import {ChartUtils} from "../utils/ChartUtils";
+import {BaseChartDot, ColumnChartData, ColumnDataSeries, Dot, EventChartData, HighStockEventData, HighStockEventsGroup} from '../types/charts/types';
+import {Bond, BondInfo, Share, Stock, StockInfo} from '../types/types';
+import {ChartUtils} from '../utils/ChartUtils';
 
 @Service('MarketService')
 @Singleton
@@ -50,18 +50,18 @@ export class MarketService {
     private convertStockEvents(events: BaseChartDot[], ticker: string): HighStockEventsGroup {
         const data: HighStockEventData[] = [];
         events.forEach(dot => {
-            data.push({text: `Дивиденд ${ticker} на сумму ${dot.amount}`, title: "D", x: new Date(dot.date).getTime()})
+            data.push({text: `Дивиденд ${ticker} на сумму ${dot.amount}`, title: 'D', x: new Date(dot.date).getTime()});
         });
         return {
             type: 'flags',
             data: data,
             onSeries: 'dataseries',
             shape: 'circlepin',
-            color: "#93D8FF",
-            fillColor: "#93D8FF",
+            color: '#93D8FF',
+            fillColor: '#93D8FF',
             stackDistance: 20,
             width: 10
-        }
+        };
     }
 
     private convertBondPayments(data: EventChartData[]): ColumnChartData {
@@ -85,7 +85,7 @@ export class MarketService {
                 result[key] = result[key] || {name: key, data: []};
                 const paymentType = eventItem.description.substring(0, eventItem.description.indexOf(':'));
                 if (key === paymentType) {
-                    result[key].data.push(parseFloat(eventItem.description.substring(eventItem.description.indexOf(" ") + 1, eventItem.description.length)));
+                    result[key].data.push(parseFloat(eventItem.description.substring(eventItem.description.indexOf(' ') + 1, eventItem.description.length)));
                 } else {
                     result[key].data.push(null);
                 }
@@ -106,7 +106,7 @@ type _stockInfo = {
     history: _baseChartDot[];
     /** Дивиденды */
     dividends: BaseChartDot[];
-}
+};
 
 /** Информация по акции */
 type _bondInfo = {
@@ -116,9 +116,9 @@ type _bondInfo = {
     history: _baseChartDot[];
     /** Выплаты по бумаге */
     payments: EventChartData[];
-}
+};
 
 export type _baseChartDot = {
     date: string,
     amount: number
-}
+};

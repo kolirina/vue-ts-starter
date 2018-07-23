@@ -1,5 +1,5 @@
-import {BtnReturn, CustomDialog} from "./customDialog";
-import Component from "vue-class-component";
+import Component from 'vue-class-component';
+import {BtnReturn, CustomDialog} from './customDialog';
 
 /**
  * Диалог получения кода для встраиваемого блока
@@ -7,7 +7,7 @@ import Component from "vue-class-component";
 @Component({
     // language=Vue
     template: `
-        <v-dialog v-model="showed" persistent max-width="650px">
+        <v-dialog v-model="showed" max-width="650px">
             <v-card>
                 <v-card-title class="headline">Настроить встраиваемые блоки</v-card-title>
                 <v-card-text>
@@ -21,9 +21,6 @@ import Component from "vue-class-component";
 
                     <v-textarea :readonly="true" :value="embeddedCode" :rows="2" :hide-details="true" style="font-size: 14px"></v-textarea>
                 </v-card-text>
-                <v-card-actions>
-                    <v-btn @click.native="close" color="primary">OK</v-btn>
-                </v-card-actions>
             </v-card>
         </v-dialog>
     `
@@ -31,22 +28,22 @@ import Component from "vue-class-component";
 export class EmbeddedBlocksDialog extends CustomDialog<string, BtnReturn> {
 
     private embeddedOptions: EmbeddedOption[] = [
-        {name: "Диаграмма по акциям и ETF", value: "stocks-diagram"},
-        {name: "Таблица облигаций", value: "bonds-table"},
-        {name: "Диаграмма по облигациям", value: "bonds-diagram"},
-        {name: "График суммарной стоимости портфеля", value: "portfolio-history-chart"},
-        {name: "Таблица со сделками", value: "trades-table"}
+        {name: 'Диаграмма по акциям и ETF', value: 'stocks-diagram'},
+        {name: 'Таблица облигаций', value: 'bonds-table'},
+        {name: 'Диаграмма по облигациям', value: 'bonds-diagram'},
+        {name: 'График суммарной стоимости портфеля', value: 'portfolio-history-chart'},
+        {name: 'Таблица со сделками', value: 'trades-table'}
     ];
 
     private embeddedOption = this.embeddedOptions[0];
 
     private get embeddedCode(): string {
-        return `<iframe src="${window.location.protocol}//${window.location.host}/${this.data}/${this.embeddedOption.value}" 
-style="height: 600px; width: 100%; margin: 10px 0; display: block;" frameborder="0"></iframe>`
+        return `<iframe src="${window.location.protocol}//${window.location.host}/${this.data}/${this.embeddedOption.value}"
+style="height: 600px; width: 100%; margin: 10px 0; display: block;" frameborder="0"></iframe>`;
     }
 }
 
 type EmbeddedOption = {
     name: string,
     value: string
-}
+};

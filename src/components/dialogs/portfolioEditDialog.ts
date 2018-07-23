@@ -1,8 +1,8 @@
-import Component from "vue-class-component";
-import {CustomDialog} from "./customDialog";
-import {PortfolioParams} from "../../types/types";
-import {VueRouter} from "vue-router/types/router";
-import {MainStore} from "../../vuex/mainStore";
+import Component from 'vue-class-component';
+import {VueRouter} from 'vue-router/types/router';
+import {PortfolioParams} from '../../types/types';
+import {MainStore} from '../../vuex/mainStore';
+import {CustomDialog} from './customDialog';
 
 @Component({
     // language=Vue
@@ -40,7 +40,7 @@ import {MainStore} from "../../vuex/mainStore";
                             <v-flex xs12>
                                 <v-select :items="currencyList" v-model="viewCurrency" label="Валюта портфеля"
                                           :persistent-hint="true"
-                                          hint="Валюта, в которой происходит расчет всех показателей. Активы, приобретенные в другой валюте 
+                                          hint="Валюта, в которой происходит расчет всех показателей. Активы, приобретенные в другой валюте
                                           будут конвертированы по курсу на дату совершения сделки.">
                                 </v-select>
                             </v-flex>
@@ -111,17 +111,17 @@ export class PortfolioEditDialog extends CustomDialog<PortfolioDialogData, boole
         dateMenu: any
     };
 
-    private id = "";
-    private name = "";
-    private viewCurrency = "RUB";
+    private id = '';
+    private name = '';
+    private viewCurrency = 'RUB';
     private access = false;
-    private fixFee = "";
-    private openDate = "";
-    private accountType = "Брокерский";
+    private fixFee = '';
+    private openDate = '';
+    private accountType = 'Брокерский';
     private professionalMode = false;
-    private iisType = "С вычетом на взносы";
-    private broker = "";
-    private note = "";
+    private iisType = 'С вычетом на взносы';
+    private broker = '';
+    private note = '';
     private combined = false;
 
     private dateMenuValue = false;
@@ -166,17 +166,17 @@ export class PortfolioEditDialog extends CustomDialog<PortfolioDialogData, boole
 }
 
 class AccessTypes {
-    static readonly PUBLIC = {value: true, label: "Публичный"};
-    static readonly PRIVATE = {value: false, label: "Закрытый"};
+    static readonly PUBLIC = {value: true, label: 'Публичный'};
+    static readonly PRIVATE = {value: false, label: 'Закрытый'};
 }
 
 type AccessType = {
     value: boolean,
     label: string
-}
+};
 
 export type PortfolioDialogData = {
     store: MainStore,
     router: VueRouter,
     portfolioParams?: PortfolioParams
-}
+};

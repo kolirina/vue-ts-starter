@@ -12,9 +12,28 @@
     "indent": [
       true
     ],
+    "ordered-imports": true,
+    "trailing-comma": false,
+    /** По умолчанию public - модификатор доступа и его указывать не нужно */
+    "member-access": [
+      true,
+      "no-public"
+    ],
+    /** Схема расположения объектов как для java классов */
+    "member-ordering": {
+      "options": {
+        "order": "fields-first"
+      }
+    },
     "interface-name": [
       false
     ],
+    /** Максимальная длина строки - 180 символов. */
+    "max-line-length": {
+      "options": [
+        180
+      ]
+    },
     "arrow-parens": false,
     // Pending fix for shorthand property names.
     "object-literal-sort-keys": false,
@@ -28,7 +47,12 @@
     /** Файл не должен заканчиваться символом переноса строки */
     "eofline": false,
     /* Разрешаем расширять базовые правила нашими */
-    "curly": true
+    "curly": true,
+    /** Включение консоли */
+    "no-console": [
+      "log",
+      "error"
+    ]
   },
   "rulesDirectory": []
 }

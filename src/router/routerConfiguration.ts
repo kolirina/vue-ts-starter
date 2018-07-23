@@ -1,20 +1,20 @@
+import {Container} from 'typescript-ioc';
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import {NavigationGuard, Route, RouteConfig} from 'vue-router/types/router';
+import {BondInfoPage} from '../pages/bondInfoPage';
+import {CombinedPortfolioPage} from '../pages/combinedPortfolioPage';
+import {ImportExportPage} from '../pages/importExportPage';
+import {NotificationsPage} from '../pages/notificationsPage';
 import {PortfolioPage} from '../pages/portfolioPage';
-import {TradesPage} from '../pages/tradesPage';
+import {ProfilePage} from '../pages/profilePage';
+import {PromoCodesPage} from '../pages/promoCodesPage';
 import {SettingsPage} from '../pages/settingsPage';
-import {Container} from 'typescript-ioc';
-import {Storage} from '../platform/services/storage'
-import {CombinedPortfolioPage} from "../pages/combinedPortfolioPage";
-import {LogoutService} from "../services/logoutService";
-import {ImportExportPage} from "../pages/importExportPage";
-import {ProfilePage} from "../pages/profilePage";
-import {TariffsPage} from "../pages/tariffsPage";
-import {PromoCodesPage} from "../pages/promoCodesPage";
-import {NotificationsPage} from "../pages/notificationsPage";
-import {ShareInfoPage} from "../pages/shareInfoPage";
-import {BondInfoPage} from "../pages/bondInfoPage";
+import {ShareInfoPage} from '../pages/shareInfoPage';
+import {TariffsPage} from '../pages/tariffsPage';
+import {TradesPage} from '../pages/tradesPage';
+import {Storage} from '../platform/services/storage';
+import {LogoutService} from '../services/logoutService';
 
 Vue.use(VueRouter);
 
@@ -49,7 +49,7 @@ export class RouterConfiguration {
             {
                 path: '/logout',
                 name: 'logout',
-                beforeEnter: () => (<LogoutService> Container.get(LogoutService)).logout()
+                beforeEnter: () => (Container.get(LogoutService) as LogoutService).logout()
             },
             {
                 path: '*',

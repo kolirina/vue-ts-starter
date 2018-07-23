@@ -1,8 +1,8 @@
-import {UI} from '../../app/UI';
-import Component from 'vue-class-component';
 import Highcharts, {ChartObject} from 'highcharts';
+import Component from 'vue-class-component';
 import {Prop, Watch} from 'vue-property-decorator';
-import {ColumnChartData} from "../../types/charts/types";
+import {UI} from '../../app/UI';
+import {ColumnChartData} from '../../types/charts/types';
 
 @Component({
     // language=Vue
@@ -37,7 +37,7 @@ export class BondPaymentsChart extends UI {
     private chart: ChartObject = null;
 
     private async mounted(): Promise<void> {
-        console.log("BOND", this.data);
+        console.log('BOND', this.data);
         await this.draw();
     }
 

@@ -1,11 +1,11 @@
-import Component from "vue-class-component";
-import {Prop} from "vue-property-decorator";
-import {UI} from "../app/UI";
-import {AssetRow, TableHeader} from "../types/types";
-import {StoreType} from "../vuex/storeType";
-import {AddTradeDialog} from "./dialogs/addTradeDialog";
-import {AssetType} from "../types/assetType";
-import {Operation} from "../types/operation";
+import Component from 'vue-class-component';
+import {Prop} from 'vue-property-decorator';
+import {UI} from '../app/UI';
+import {AssetType} from '../types/assetType';
+import {Operation} from '../types/operation';
+import {AssetRow, TableHeader} from '../types/types';
+import {StoreType} from '../vuex/storeType';
+import {AddTradeDialog} from './dialogs/addTradeDialog';
 
 @Component({
     // language=Vue
@@ -48,7 +48,7 @@ export class AssetTable extends UI {
         {text: 'Текущая стоимость', align: 'center', value: 'currCost'},
         {text: 'Прибыль', align: 'center', value: 'profit'},
         {text: 'Текущая доля', align: 'center', value: 'percCurrShare'},
-        {text: 'Действия', align: 'center', value: 'name', sortable: false, width: "25"}
+        {text: 'Действия', align: 'center', value: 'name', sortable: false, width: '25'}
     ];
 
     @Prop({default: [], required: true})

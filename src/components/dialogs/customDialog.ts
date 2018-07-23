@@ -1,4 +1,4 @@
-import {UI} from "../../app/UI";
+import {UI} from '../../app/UI';
 
 export class CustomDialog<ParamType, ReturnType> extends UI {
 
@@ -17,13 +17,13 @@ export class CustomDialog<ParamType, ReturnType> extends UI {
             this.data = data;
         }
         const workspace = document.body;
-        const dialog = this.$mount(workspace.appendChild(document.createElement("div"))).$el;
+        const dialog = this.$mount(workspace.appendChild(document.createElement('div'))).$el;
         this.showed = true;
         console.log('DATA', data);
         return new Promise<ReturnType>((resolve, reject) => {
             let dialogResult: ReturnType = this.responseByDefault;
             // // регистрируем обработчик события на закрытие диалога
-            this.$on("close", (result: ReturnType | MouseEvent) => {
+            this.$on('close', (result: ReturnType | MouseEvent) => {
                 if (!(result instanceof MouseEvent)) {
                     dialogResult = result as ReturnType;
                 }
@@ -48,18 +48,18 @@ export class CustomDialog<ParamType, ReturnType> extends UI {
      * @param result возвращаемое значение
      */
     protected close(result?: ReturnType | MouseEvent): void {
-        this.$emit("close", result);
+        this.$emit('close', result);
     }
 
     private bindListeners(): void {
         if (CustomDialog.instances.length === 0) {
-            document.body.addEventListener("keyup", this.onEscapeListener);
+            document.body.addEventListener('keyup', this.onEscapeListener);
         }
     }
 
     private unbindListeners(): void {
         if (CustomDialog.instances.length === 0) {
-            document.body.removeEventListener("keyup", this.onEscapeListener);
+            document.body.removeEventListener('keyup', this.onEscapeListener);
         }
     }
 
@@ -90,5 +90,5 @@ export class CustomDialog<ParamType, ReturnType> extends UI {
 }
 
 export enum BtnReturn {
-    YES = "YES", NO = "NO", CANCEL = "CANCEL"
+    YES = 'YES', NO = 'NO', CANCEL = 'CANCEL'
 }

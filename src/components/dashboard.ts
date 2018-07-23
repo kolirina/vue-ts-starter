@@ -1,8 +1,8 @@
 import Component from 'vue-class-component';
-import {UI} from '../app/UI';
 import {Prop, Watch} from 'vue-property-decorator';
+import {UI} from '../app/UI';
+import {Filters} from '../platform/filters/Filters';
 import {DashboardBrick, DashboardData} from '../types/types';
-import {Filters} from "../platform/filters/Filters";
 
 @Component({
     // language=Vue
@@ -70,7 +70,6 @@ export class Dashboard extends UI {
 
     private created(): void {
         this.fillBricks(this.data);
-        console.log('DASHBOARD: ', this.blocks);
     }
 
     private fillBricks(newValue: DashboardData): void {

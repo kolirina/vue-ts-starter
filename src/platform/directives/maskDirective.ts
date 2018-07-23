@@ -1,6 +1,6 @@
-import {DirectiveOptions} from "vue/types/options";
-import {VNodeDirective} from "vue/types/vnode";
-import {InputMask, MaskOptions} from "imask";
+import {InputMask, MaskOptions} from 'imask';
+import {DirectiveOptions} from 'vue/types/options';
+import {VNodeDirective} from 'vue/types/vnode';
 
 /**
  * Директива для управления состоянием UI-элементов
@@ -8,32 +8,8 @@ import {InputMask, MaskOptions} from "imask";
 export class MaskDirective implements DirectiveOptions {
 
     /** Имя директивы */
-    static NAME = "mask";
+    static NAME = 'mask';
 
-    bind(el: HTMLElement, binding: VNodeDirective) {
-        if (!binding.value) {
-            return;
-        }
-        MaskDirective.initMask(MaskDirective.getInputElement(el), binding.value as MaskOptions);
-    }
-
-    update(el: HTMLElement, binding: VNodeDirective) {
-        const options = binding.value as MaskOptions;
-        console.log('UPDATE', binding, MaskDirective.getInputElement(el));
-        if (options) {
-            if ((el as any).maskRef) {
-                (el as any).maskRef.updateOptions(options)
-            } else {
-                MaskDirective.initMask(MaskDirective.getInputElement(el), options)
-            }
-        } else {
-            MaskDirective.destroyMask(MaskDirective.getInputElement(el));
-        }
-    }
-
-    unbind(el: HTMLElement) {
-        MaskDirective.destroyMask(MaskDirective.getInputElement(el));
-    }
 
     private static fireEvent(el: HTMLInputElement, eventName: string, data: any) {
         const e = document.createEvent('CustomEvent');
@@ -42,7 +18,7 @@ export class MaskDirective implements DirectiveOptions {
     }
 
     private static initMask(el: HTMLInputElement, opts: MaskOptions) {
-        console.log("BIND", opts, el);
+        console.log('BIND', opts, el);
         const inputMask = new InputMask(el, opts);
         inputMask.on('accept', () => {
             MaskDirective.fireEvent(el, 'accept', (el as any).maskRef);
@@ -51,7 +27,7 @@ export class MaskDirective implements DirectiveOptions {
             MaskDirective.fireEvent(el, 'complete', (el as any).maskRef);
         });
         (el as any).maskRef = inputMask;
-        console.log("IM", inputMask);
+        console.log('IM', inputMask);
     }
 
     private static destroyMask(el: HTMLInputElement) {
@@ -65,11 +41,36 @@ export class MaskDirective implements DirectiveOptions {
         if (element.tagName.toLocaleUpperCase() !== 'INPUT') {
             const els = element.getElementsByTagName('input');
             if (els.length !== 1) {
-                throw new Error("mask directive requires 1 input, found " + els.length)
+                throw new Error('mask directive requires 1 input, found ' + els.length);
             } else {
                 return els[0];
             }
         }
         return element as HTMLInputElement;
+    }
+
+    bind(el: HTMLElement, binding: VNodeDirective) {
+        if (!binding.value) {
+            return;
+        }
+        MaskDirective.initMask(MaskDirective.getInputElement(el), binding.value as MaskOptions);
+    }
+
+    update(el: HTMLElement, binding: VNodeDirective) {
+        const options = binding.value as MaskOptions;
+        console.log('UPDATE', binding, MaskDirective.getInputElement(el));
+        if (options) {
+            if ((el as any).maskRef) {
+                (el as any).maskRef.updateOptions(options);
+            } else {
+                MaskDirective.initMask(MaskDirective.getInputElement(el), options);
+            }
+        } else {
+            MaskDirective.destroyMask(MaskDirective.getInputElement(el));
+        }
+    }
+
+    unbind(el: HTMLElement) {
+        MaskDirective.destroyMask(MaskDirective.getInputElement(el));
     }
 }

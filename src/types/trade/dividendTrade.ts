@@ -1,4 +1,4 @@
-import {CalculationTrade} from "./calculationTrade";
+import {CalculationTrade} from './calculationTrade';
 
-export class DividendTrade extends CalculationTrade{
+export class DividendTrade extends CalculationTrade {
 }

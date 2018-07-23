@@ -1,16 +1,17 @@
 import Component from 'vue-class-component';
+import {namespace} from 'vuex-class/lib/bindings';
 import {UI} from '../app/UI';
 import {AssetTable} from '../components/assetTable';
-import {Portfolio} from '../types/types';
-import {StockTable} from '../components/stockTable';
-import {StoreType} from '../vuex/storeType';
-import {namespace} from 'vuex-class/lib/bindings';
 import {BondTable} from '../components/bondTable';
 import {BarChart} from '../components/charts/barChart';
-import {StockPieChart} from '../components/charts/stockPieChart';
 import {BondPieChart} from '../components/charts/bondPieChart';
 import {PortfolioLineChart} from '../components/charts/portfolioLineChart';
-import {SectorsChart} from "../components/charts/sectorsChart";
+import {SectorsChart} from '../components/charts/sectorsChart';
+import {StockPieChart} from '../components/charts/stockPieChart';
+import {StockTable} from '../components/stockTable';
+import {Portfolio} from '../types/types';
+import {UiStateHelper} from "../utils/uiStateHelper";
+import {StoreType} from '../vuex/storeType';
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -111,6 +112,5 @@ export class PortfolioPage extends UI {
         setTimeout(() => {
             this.loading = false;
         }, 4000);
-        console.log("PORTFOLIO PAGE", this.$uistate.stocksTablePanel);
     }
 }

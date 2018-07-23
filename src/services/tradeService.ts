@@ -1,8 +1,8 @@
+import axios from 'axios';
 import {Container, Singleton} from 'typescript-ioc';
 import {Service} from '../platform/decorators/service';
 import {Storage} from '../platform/services/storage';
-import {TradeDataRequest} from "../types/types";
-import axios from 'axios';
+import {TradeDataRequest} from '../types/types';
 
 /** Сервис работы с localStorage */
 const localStorage: Storage = Container.get(Storage);

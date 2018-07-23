@@ -10,8 +10,8 @@ const messages = {
     credit_card: (field: string) => `Поле должно быть действительным номером карты`,
     date_between: (field: string, min?: number, max?: number) => `Поле должно быть между ${min} и ${max}.`,
     date_format: (field: string, format?: string) => `Поле должно быть в формате ${format}.`,
-    decimal: (field: string, [decimals = "*"] = []) => `Поле должно быть числовым и может содержать ${decimals === "*"
-        ? "" : decimals} десятичных числа.`,
+    decimal: (field: string, [decimals = '*'] = []) => `Поле должно быть числовым и может содержать ${decimals === '*'
+        ? '' : decimals} десятичных числа.`,
     digits: (field: string, length?: number) => `Поле должно быть числовым и точно содержать ${length} цифры.`,
     dimensions: (field: string, width?: number, height?: number) => `Поле должно быть ${width} пикселей на ${height} пикселей.`,
     email: (field: string) => `Поле должно быть действительным электронным адресом.`,
@@ -33,7 +33,7 @@ const messages = {
 };
 
 export const ruLocale = {
-    name: "ru",
+    name: 'ru',
     messages,
     attributes: {}
 };

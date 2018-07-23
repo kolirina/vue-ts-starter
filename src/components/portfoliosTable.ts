@@ -1,13 +1,13 @@
-import Component from "vue-class-component";
-import {Prop} from "vue-property-decorator";
-import {UI} from "../app/UI";
-import {ClientInfo, PortfolioParams, TableHeader} from "../types/types";
-import {PortfolioEditDialog} from "./dialogs/portfolioEditDialog";
-import {StoreType} from "../vuex/storeType";
-import {ConfirmDialog} from "./dialogs/confirmDialog";
-import {namespace} from "vuex-class/lib/bindings";
-import {EmbeddedBlocksDialog} from "./dialogs/embeddedBlocksDialog";
-import {SharePortfolioDialog} from "./dialogs/sharePortfolioDialog";
+import Component from 'vue-class-component';
+import {Prop} from 'vue-property-decorator';
+import {namespace} from 'vuex-class/lib/bindings';
+import {UI} from '../app/UI';
+import {ClientInfo, PortfolioParams, TableHeader} from '../types/types';
+import {StoreType} from '../vuex/storeType';
+import {ConfirmDialog} from './dialogs/confirmDialog';
+import {EmbeddedBlocksDialog} from './dialogs/embeddedBlocksDialog';
+import {PortfolioEditDialog} from './dialogs/portfolioEditDialog';
+import {SharePortfolioDialog} from './dialogs/sharePortfolioDialog';
 
 const MainStore = namespace(StoreType.MAIN);
 

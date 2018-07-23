@@ -1,13 +1,13 @@
-import {UI} from './UI';
+import {Inject} from 'typescript-ioc';
 import Component from 'vue-class-component';
-import {MutationType} from '../vuex/mutationType';
-import {ClientInfo, LoginRequest, Portfolio} from '../types/types';
 import {namespace} from 'vuex-class/lib/bindings';
+import {AddTradeDialog} from '../components/dialogs/addTradeDialog';
+import {PortfolioSwitcher} from '../components/portfolioSwitcher';
+import {ClientService} from '../services/clientService';
+import {ClientInfo, Portfolio} from '../types/types';
+import {MutationType} from '../vuex/mutationType';
 import {StoreType} from '../vuex/storeType';
-import {PortfolioSwitcher} from "../components/portfolioSwitcher";
-import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
-import {Inject} from "typescript-ioc";
-import {ClientService} from "../services/clientService";
+import {UI} from './UI';
 
 const mainStore = namespace(StoreType.MAIN);
 
@@ -69,7 +69,7 @@ const mainStore = namespace(StoreType.MAIN);
                                     </v-list-tile-content>
                                 </v-list-tile>
                             </v-list-group>
-                            
+
                             <v-list-tile v-else :key="item.action" :to="{name: item.action, params: item.params}">
                                 <v-list-tile-action>
                                     <v-icon small>{{ item.icon }}</v-icon>
@@ -141,7 +141,7 @@ export class AppFrame extends UI {
      */
     private cachedPages = ['PortfolioPage'];
 
-    private drawer: boolean = false;
+    private drawer = false;
 
     private mainSection: NavBarItem[] = [
         {title: 'Портфель', action: 'portfolio', icon: 'fas fa-briefcase'},
@@ -165,7 +165,6 @@ export class AppFrame extends UI {
         if (this.$store.state[StoreType.MAIN].clientInfo) {
             this.isInitialized = true;
         }
-        console.log('created APP FRAME', this.isInitialized);
     }
 
     private async login(): Promise<void> {
@@ -191,8 +190,7 @@ export class AppFrame extends UI {
     }
 
     private logout(): void {
-        console.log('logout');
-        this.$router.push({name: 'logout'})
+        this.$router.push({name: 'logout'});
     }
 
     private closeMessage(): void {
@@ -214,4 +212,4 @@ export type NavBarItem = {
     active?: boolean,
     subMenu?: NavBarItem[],
     params?: { [key: string]: string}
-}
+};

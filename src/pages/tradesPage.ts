@@ -1,9 +1,9 @@
-import Component from "vue-class-component";
-import {UI} from "../app/UI";
-import {Portfolio} from "../types/types";
-import {TradesTable} from "../components/tradesTable";
-import {StoreType} from "../vuex/storeType";
-import {namespace} from "vuex-class/lib/bindings";
+import Component from 'vue-class-component';
+import {namespace} from 'vuex-class/lib/bindings';
+import {UI} from '../app/UI';
+import {TradesTable} from '../components/tradesTable';
+import {Portfolio} from '../types/types';
+import {StoreType} from '../vuex/storeType';
 
 const MainStore = namespace(StoreType.MAIN);
 
