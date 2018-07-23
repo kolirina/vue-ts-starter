@@ -58,7 +58,6 @@ export class UIRegistry {
 
         UI.mixin({
             beforeCreate() {
-                this.$cookies = Cookies;
                 this.$uistate = UiStateHelper;
             }
         });

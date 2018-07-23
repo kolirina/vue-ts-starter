@@ -23,10 +23,10 @@ export class UI extends Vue implements IComponentLifecycle, IComponentRoutingLif
     private static eventBus = new Vue();
     /** Валидатор */
     $validator: Validator;
+    /** Состояние ui-элементов */
+    $uistate: UiStateHelper;
     /** Ошибки валидации */
     protected $errors: ErrorBag;
-    /** Состояние ui-элементов */
-    protected $uistate = UiStateHelper;
 
     /**
      * Подписывает компонент на глобальное событие
