@@ -1,18 +1,24 @@
 import Component from 'vue-class-component';
 import {Prop} from 'vue-property-decorator';
 import {UI} from '../app/UI';
-import {AssetType} from '../types/assetType';
+import {BondPortfolioRow, Portfolio, TableHeader} from '../types/types';
 import {Operation} from '../types/operation';
-import {BondPortfolioRow, TableHeader} from '../types/types';
-import {StoreType} from '../vuex/storeType';
 import {AddTradeDialog} from './dialogs/addTradeDialog';
+import {StoreType} from '../vuex/storeType';
+import {AssetType} from '../types/assetType';
 import {ConfirmDialog} from './dialogs/confirmDialog';
 import {BtnReturn} from './dialogs/customDialog';
+import {namespace} from 'vuex-class/lib/bindings';
+import {Inject} from 'typescript-ioc';
+import {TradeService} from '../services/tradeService';
+import {ShareTradesDialog} from './dialogs/shareTradesDialog';
+
+const MainStore = namespace(StoreType.MAIN);
 
 @Component({
     // language=Vue
     template: `
-        <v-data-table :headers="headers" :items="rows" item-key="id" :loading="loading" hide-actions>
+        <v-data-table :headers="headers" :items="rows" item-key="id" hide-actions>
             <v-progress-linear slot="progress" color="blue" indeterminate></v-progress-linear>
             <template slot="items" slot-scope="props">
                 <tr @click="props.expanded = !props.expanded">
@@ -30,7 +36,7 @@ import {BtnReturn} from './dialogs/customDialog';
                                 <v-icon color="primary" small>fas fa-bars</v-icon>
                             </v-btn>
                             <v-list dense>
-                                <v-list-tile @click="">
+                                <v-list-tile @click="openShareTradesDialog(props.item.bond.ticker)">
                                     <v-list-tile-title>
                                         <v-icon color="primary" small>fas fa-list-alt</v-icon>
                                         Все сделки
@@ -122,6 +128,12 @@ import {BtnReturn} from './dialogs/customDialog';
 })
 export class BondTable extends UI {
 
+    @Inject
+    private tradeService: TradeService;
+
+    @MainStore.Getter
+    private portfolio: Portfolio;
+
     private headers: TableHeader[] = [
         {text: 'Компания', align: 'left', sortable: false, value: 'company'},
         {text: 'Тикер', align: 'left', value: 'ticker'},
@@ -137,10 +149,11 @@ export class BondTable extends UI {
     @Prop({default: [], required: true})
     private rows: BondPortfolioRow[];
 
-    @Prop({default: false})
-    private loading: boolean;
-
     private operation = Operation;
+
+    private async openShareTradesDialog(ticker: string): Promise<void> {
+        await new ShareTradesDialog().show({trades: await this.tradeService.getShareTrades(this.portfolio.id, ticker), ticker});
+    }
 
     private async openTradeDialog(bondRow: BondPortfolioRow, operation: Operation): Promise<void> {
         await new AddTradeDialog().show({

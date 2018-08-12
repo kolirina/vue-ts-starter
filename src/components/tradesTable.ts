@@ -1,13 +1,14 @@
 import Component from 'vue-class-component';
 import {Prop} from 'vue-property-decorator';
 import {UI} from '../app/UI';
-import {AssetType} from '../types/assetType';
-import {Operation} from '../types/operation';
 import {TableHeader, TradeRow} from '../types/types';
-import {StoreType} from '../vuex/storeType';
+import {Operation} from '../types/operation';
 import {AddTradeDialog} from './dialogs/addTradeDialog';
+import {StoreType} from '../vuex/storeType';
+import {AssetType} from '../types/assetType';
 import {ConfirmDialog} from './dialogs/confirmDialog';
 import {BtnReturn} from './dialogs/customDialog';
+import {TradeUtils} from '../utils/tradeUtils';
 
 @Component({
     // language=Vue
@@ -26,8 +27,8 @@ import {BtnReturn} from './dialogs/customDialog';
                     <td>{{ props.item.operationLabel }}</td>
                     <td class="text-xs-center">{{ props.item.date | date('L') }}</td>
                     <td class="text-xs-right">{{ props.item.quantity }}</td>
-                    <td class="text-xs-right">{{ props.item.price | amount(true) }}</td>
-                    <td class="text-xs-right">{{ props.item.fee | amount(true) }}</td>
+                    <td class="text-xs-right">{{ getPrice(props.item) }}</td>
+                    <td class="text-xs-right">{{ getFee(props.item) }}</td>
                     <td class="text-xs-right">{{ props.item.signedTotal | amount(true) }}</td>
                     <td class="justify-center layout px-0" @click.stop>
                         <v-menu transition="slide-y-transition" bottom left>
@@ -129,5 +130,21 @@ export class TradesTable extends UI {
 
     private async deleteTrade(tradeRow: TradeRow): Promise<void> {
         console.log('TODO DELETE TRADE', tradeRow);
+    }
+
+    private getPrice(trade: TradeRow): string {
+        return TradeUtils.getPrice(trade);
+    }
+
+    private getFee(trade: TradeRow): string {
+        return TradeUtils.getFee(trade);
+    }
+
+    private percentPrice(trade: TradeRow): boolean {
+        return TradeUtils.percentPrice(trade);
+    }
+
+    private moneyPrice(trade: TradeRow): boolean {
+        return TradeUtils.moneyPrice(trade);
     }
 }

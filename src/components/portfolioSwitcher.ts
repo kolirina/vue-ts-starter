@@ -11,7 +11,7 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <div v-if="portfolios" class="text-xs-center">
-            <v-menu offset-y>
+            <v-menu offset-y transition="slide-y-transition">
                 <v-btn slot="activator" color="primary" dark>{{ getPortfolioName(selected) }}</v-btn>
                 <v-list style="max-height: 500px; overflow-x: auto;">
                     <v-list-tile v-for="(portfolio, index) in portfolios" :key="index" @click="onSelect(portfolio)">

@@ -4,7 +4,7 @@ export interface TradeDataHolder {
 
     getShare(): Share;
 
-    getDate(): Date;
+    getDate(): string;
 
     getQuantity(): number;
 

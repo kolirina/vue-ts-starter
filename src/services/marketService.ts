@@ -19,6 +19,16 @@ export class MarketService {
         return result || [];
     }
 
+    async searchBonds(query: string): Promise<Share[]> {
+        console.log('searchBonds');
+        const result: Share[] = (await HTTP.INSTANCE.get('/market/bonds/search', {
+            params: {
+                query
+            }
+        })).data;
+        return result || [];
+    }
+
     async getStockInfo(ticker: string): Promise<StockInfo> {
         const result = (await HTTP.INSTANCE.get<_stockInfo>(`/market/stock/${ticker}/info`)).data;
         return {
@@ -29,8 +39,8 @@ export class MarketService {
         };
     }
 
-    async getBondInfo(isin: string): Promise<BondInfo> {
-        const result = (await HTTP.INSTANCE.get<_bondInfo>(`/market/bond/${isin}/info`)).data;
+    async getBondInfo(secid: string): Promise<BondInfo> {
+        const result = (await HTTP.INSTANCE.get<_bondInfo>(`/market/bond/${secid}/info`)).data;
         return {
             bond: result.bond,
             history: this.convertDots(result.history),

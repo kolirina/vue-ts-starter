@@ -1,8 +1,8 @@
-import axios from 'axios';
 import {Container, Singleton} from 'typescript-ioc';
 import {Service} from '../platform/decorators/service';
 import {Storage} from '../platform/services/storage';
-import {TradeDataRequest} from '../types/types';
+import {ErrorInfo, TradeDataRequest, TradeRow} from '../types/types';
+import {HTTP} from '../platform/services/http';
 
 /** Сервис работы с localStorage */
 const localStorage: Storage = Container.get(Storage);
@@ -11,7 +11,21 @@ const localStorage: Storage = Container.get(Storage);
 @Singleton
 export class TradeService {
 
-    async saveTrade(req: TradeDataRequest): Promise<void> {
-        const result = await axios.post('localhost:8080/api/trades', req);
+    async saveTrade(req: TradeDataRequest): Promise<ErrorInfo> {
+        let result = null;
+        await HTTP.INSTANCE.post('/trades', req).catch(reason => {
+            result = reason.data;
+        });
+        return result;
+    }
+
+    /**
+     * Загружает и возвращает сделки по тикеру в портфеле
+     * @param {string} id идентификатор портфеля
+     * @param {string} ticker тикер
+     * @returns {Promise<TradeRow[]>}
+     */
+    async getShareTrades(id: string, ticker: string): Promise<TradeRow[]> {
+        return await (await HTTP.INSTANCE.get(`/trades/${id}/${ticker}`)).data as TradeRow[];
     }
 }

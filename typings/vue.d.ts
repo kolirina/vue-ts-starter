@@ -19,7 +19,6 @@ export type NavigationGuard = (to: Route, from: Route, next: Resolver) => any;
 
 export type Resolver = (to?: RawLocation | false | ((vm: Vue) => any) | void) => void;
 
-/** Класс для управления состоянием ui-элементов */
 export class UiStateHelper {
     static stocksTablePanel: number[];
     static bondsTablePanel: number[];

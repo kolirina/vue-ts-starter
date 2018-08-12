@@ -83,7 +83,7 @@ export class Dashboard extends UI {
         this.blocks[1] = {
             name: 'Суммарная прибыль',
             mainValue: Filters.formatMoneyAmount(newValue.profit, true),
-            secondValue: Filters.formatMoneyAmount(newValue.profitWithoutDividendsAndCoupons, true),
+            secondValue: newValue.percentProfit,
             secondValueDesc: 'без дивидендов и купонов',
             color: 'orange',
             icon: 'fas fa-money-bill-alt'

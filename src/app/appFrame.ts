@@ -97,9 +97,11 @@ const mainStore = namespace(StoreType.MAIN);
 
                 <v-content>
                     <v-container fluid>
-                        <!--<keep-alive :include="cachedPages">-->
-                        <router-view></router-view>
-                        <!--</keep-alive>-->
+                        <v-fade-transition mode="out-in">
+                            <!--<keep-alive :include="cachedPages">-->
+                            <router-view></router-view>
+                            <!--</keep-alive>-->
+                        </v-fade-transition>
                     </v-container>
                 </v-content>
                 <v-footer color="indigo" app inset>
@@ -211,5 +213,5 @@ export type NavBarItem = {
     icon: string,
     active?: boolean,
     subMenu?: NavBarItem[],
-    params?: { [key: string]: string}
+    params?: { [key: string]: string }
 };

@@ -10,7 +10,7 @@ import {BtnReturn, CustomDialog} from './customDialog';
 @Component({
     // language=Vue
     template: `
-        <v-dialog v-model="showed" persistent max-width="650px">
+        <v-dialog v-model="showed" max-width="650px">
             <v-card>
                 <v-card-title class="headline">Настройка доступа к портфелю</v-card-title>
                 <v-card-text>

@@ -1,13 +1,19 @@
 import Component from 'vue-class-component';
 import {Prop} from 'vue-property-decorator';
 import {UI} from '../app/UI';
-import {AssetType} from '../types/assetType';
-import {Operation} from '../types/operation';
-import {StockPortfolioRow, TableHeader} from '../types/types';
-import {StoreType} from '../vuex/storeType';
+import {Portfolio, StockPortfolioRow, TableHeader} from '../types/types';
 import {AddTradeDialog} from './dialogs/addTradeDialog';
+import {StoreType} from '../vuex/storeType';
+import {Operation} from '../types/operation';
+import {AssetType} from '../types/assetType';
 import {ConfirmDialog} from './dialogs/confirmDialog';
 import {BtnReturn} from './dialogs/customDialog';
+import {TradeService} from '../services/tradeService';
+import {Inject} from 'typescript-ioc';
+import {namespace} from 'vuex-class/lib/bindings';
+import {ShareTradesDialog} from './dialogs/shareTradesDialog';
+
+const MainStore = namespace(StoreType.MAIN);
 
 @Component({
     // language=Vue
@@ -33,7 +39,7 @@ import {BtnReturn} from './dialogs/customDialog';
                                 <v-icon color="primary" small>fas fa-bars</v-icon>
                             </v-btn>
                             <v-list dense>
-                                <v-list-tile @click="">
+                                <v-list-tile @click="openShareTradesDialog(props.item.stock.ticker)">
                                     <v-list-tile-title>
                                         <v-icon color="primary" small>fas fa-list-alt</v-icon>
                                         Все сделки
@@ -92,6 +98,12 @@ import {BtnReturn} from './dialogs/customDialog';
 })
 export class StockTable extends UI {
 
+    @Inject
+    private tradeService: TradeService;
+
+    @MainStore.Getter
+    private portfolio: Portfolio;
+
     private operation = Operation;
 
     private headers: TableHeader[] = [
@@ -111,6 +123,10 @@ export class StockTable extends UI {
 
     @Prop({default: false})
     private loading: boolean;
+
+    private async openShareTradesDialog(ticker: string): Promise<void> {
+        await new ShareTradesDialog().show({trades: await this.tradeService.getShareTrades(this.portfolio.id, ticker), ticker});
+    }
 
     private async openTradeDialog(stockRow: StockPortfolioRow, operation: Operation): Promise<void> {
         await new AddTradeDialog().show({

@@ -20,6 +20,7 @@ export type AssetRow = _portfolioRow & {
 export type TradeRow = {
     id: string,
     date: string,
+    asset: string,
     operation: string,
     operationLabel: string,
     currency: string,
@@ -29,7 +30,9 @@ export type TradeRow = {
     quantity: string,
     price: string,
     fee: string,
-    note?: string
+    note?: string,
+    moneyPrice?: string,
+    bondPrice?: string
 };
 
 export type _shareRow = _portfolioRow & {
@@ -385,7 +388,7 @@ export type TradeData = {
     /** Тикер */
     ticker: string,
     /** Дата */
-    date: Date,
+    date: string,
     /** Количество */
     quantity: number,
     /** Цена */
@@ -414,9 +417,21 @@ export type TradeDataRequest = {
     /** Признак добавления связанной сделки по деньгам */
     createLinkedTrade: boolean,
     /** Актив сделки */
-    asset: AssetType,
+    asset: string,
     /** Операция */
-    operation: Operation,
+    operation: string,
     /** Поля, содержащию все необходимую информацию по сделке данного типа */
     fields: TradeData
 };
+
+export type ErrorInfo = {
+    errorCode: string,
+    errorMessage: string,
+    fields: ErrorFieldInfo[]
+}
+
+export type ErrorFieldInfo = {
+    name: string,
+    errorCode: string,
+    errorMessage: string
+}

@@ -13,9 +13,9 @@ export class LogoutService {
 
     async logout(): Promise<void> {
         console.log('BEFORE LOGOUT');
+        await HTTP.INSTANCE.post('/user/logout');
         localStorage.delete(StoreKeys.STORE_KEY);
         localStorage.delete(StoreKeys.TOKEN_KEY);
-        await HTTP.INSTANCE.post('/user/logout');
         window.location.reload(true);
     }
 }
