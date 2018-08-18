@@ -1,5 +1,5 @@
 import Component from 'vue-class-component';
-import {Prop} from 'vue-property-decorator';
+import {Prop, Watch} from 'vue-property-decorator';
 import {UI} from '../app/UI';
 import {TableHeader, TradeRow} from '../types/types';
 import {Operation} from '../types/operation';
@@ -13,11 +13,14 @@ import {TradeUtils} from '../utils/tradeUtils';
 @Component({
     // language=Vue
     template: `
-        <v-data-table :headers="headers" :items="trades" item-key="id" hide-actions>
+        <v-data-table :headers="headers" :items="trades" item-key="id" :pagination.sync="tradePagination.pagination"
+                      :total-items="tradePagination.totalTrades"
+                      :loading="tradePagination.loading" hide-actions>
             <template slot="items" slot-scope="props">
                 <tr @click="props.expanded = !props.expanded">
                     <td>
-                        <router-link v-if="props.item.asset === 'STOCK'" :to="{name: 'share-info', params: {ticker: props.item.ticker}}">{{ props.item.ticker }}
+                        <router-link v-if="props.item.asset === 'STOCK'" :to="{name: 'share-info', params: {ticker: props.item.ticker}}">{{
+                            props.item.ticker }}
                         </router-link>
                         <router-link v-if="props.item.asset === 'BOND'" :to="{name: 'bond-info', params: {isin: props.item.ticker}}">{{ props.item.ticker }}
                         </router-link>
@@ -90,13 +93,19 @@ import {TradeUtils} from '../utils/tradeUtils';
                     <v-card-text>{{ props.item.comment }}</v-card-text>
                 </v-card>
             </template>
+
+            <template slot="no-data">
+                <v-alert :value="true" color="info" icon="info">
+                    Добавьте свою первую сделку и она отобразится здесь
+                </v-alert>
+            </template>
         </v-data-table>
     `
 })
 export class TradesTable extends UI {
 
     private headers: TableHeader[] = [
-        {text: 'Тикер/ISIN', align: 'left', sortable: false, value: 'ticker'},
+        {text: 'Тикер/ISIN', align: 'left', value: 'ticker'},
         {text: 'Название', align: 'left', value: 'name'},
         {text: 'Операция', align: 'left', value: 'operationLabel'},
         {text: 'Дата', align: 'center', value: 'date'},
@@ -109,7 +118,16 @@ export class TradesTable extends UI {
     @Prop({default: [], required: true})
     private trades: TradeRow[];
 
+    @Prop({required: true, type: Object})
+    private tradePagination: TradePagination;
+
+    /** Текущая операция */
     private operation = Operation;
+
+    @Watch("trades")
+    private onTradesUpdate(trades: TradeRow[]): void {
+        this.trades = trades;
+    }
 
     private async openTradeDialog(tradeRow: TradeRow, operation: Operation): Promise<void> {
         await new AddTradeDialog().show({
@@ -147,4 +165,18 @@ export class TradesTable extends UI {
     private moneyPrice(trade: TradeRow): boolean {
         return TradeUtils.moneyPrice(trade);
     }
+}
+
+export type TradePagination = {
+    pagination: Pagination,
+    totalTrades: number,
+    loading: boolean
+}
+
+export type Pagination = {
+    descending: boolean,
+    page: number,
+    rowsPerPage: number,
+    sortBy: string,
+    totalItems: number
 }

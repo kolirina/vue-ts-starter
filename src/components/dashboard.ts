@@ -13,16 +13,16 @@ import {DashboardBrick, DashboardData} from '../types/types';
             </v-card-title>
             <v-container fluid>
                 <v-layout row>
-                    <v-flex class="headline">
+                    <div class="headline">
                         <v-icon>{{ block.icon }}</v-icon>
-                        <span>{{ block.mainValue }}</span>
-                    </v-flex>
+                        <span><b>{{ block.mainValue }}</b></span>
+                    </div>
                 </v-layout>
-                <v-layout row :align-start="true" :align-content-start="true">
-                    <v-flex>
-                        <span>{{ block.secondValue }}</span>
+                <v-layout row>
+                    <div>
+                        <span><b>{{ block.secondValue }}</b> </span>
                         <span>{{ block.secondValueDesc }}</span>
-                    </v-flex>
+                    </div>
                 </v-layout>
             </v-container>
         </v-card>

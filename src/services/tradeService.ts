@@ -28,4 +28,18 @@ export class TradeService {
     async getShareTrades(id: string, ticker: string): Promise<TradeRow[]> {
         return await (await HTTP.INSTANCE.get(`/trades/${id}/${ticker}`)).data as TradeRow[];
     }
+
+    /**
+     * Загружает и возвращает сделки по тикеру в портфеле
+     * @param {string} id идентификатор портфеля
+     * @param {string} ticker тикер
+     * @returns {Promise<TradeRow[]>}
+     */
+    async loadTrades(id: string, offset = 0, limit = 50, sortColumn: string, descending = false): Promise<TradeRow[]> {
+        return (await HTTP.INSTANCE.get(`/trades/${id}`, {
+            params: {
+                offset, limit, sortColumn: sortColumn ? sortColumn.toUpperCase() : null, descending
+            }
+        })).data as TradeRow[];
+    }
 }

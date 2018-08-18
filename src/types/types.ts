@@ -167,7 +167,8 @@ export type Overview = {
     dashboardData: DashboardData,
     assetRows: AssetRow[],
     stockPortfolio: StockPortfolio,
-    bondPortfolio: BondPortfolio
+    bondPortfolio: BondPortfolio,
+    totalTradesCount: number
 };
 
 export type StockPortfolio = {
