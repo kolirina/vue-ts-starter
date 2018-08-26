@@ -16,7 +16,7 @@ const MainStore = namespace(StoreType.MAIN);
         <v-container v-if="portfolio" fluid>
             <dashboard :data="portfolio.overview.dashboardData"></dashboard>
             <trades-table :trades="trades" :trade-pagination="tradePagination"></trades-table>
-            <v-container v-if="totalTrades > 0">
+            <v-container v-if="pages > 0">
                 <v-layout align-center justify-center row>
                     <v-pagination v-model="page" :length="pages"></v-pagination>
                 </v-layout>
@@ -41,7 +41,7 @@ export class TradesPage extends UI {
 
     private pageSize = 50;
 
-    private pages = 10;
+    private pages = 0;
 
     private pagination: any = {
         descending: false,
@@ -61,8 +61,7 @@ export class TradesPage extends UI {
 
     async created(): Promise<void> {
         await this.loadTrades();
-        this.totalTrades = this.portfolio.overview.totalTradesCount;
-        this.pages = parseInt(String(this.totalTrades / this.pageSize), 10);
+        this.calculatePagination();
     }
 
     @Watch('page')
@@ -73,11 +72,17 @@ export class TradesPage extends UI {
     @Watch('portfolio')
     private async onPortfolioChange(): Promise<void> {
         await this.loadTrades();
+        this.calculatePagination();
     }
 
     @Watch('tradePagination.pagination', {deep: true})
     private async onTradePaginationChange(): Promise<void> {
         await this.loadTrades();
+    }
+
+    private calculatePagination(): void {
+        this.totalTrades = this.portfolio.overview.totalTradesCount;
+        this.pages = parseInt(String(this.totalTrades / this.pageSize), 10);
     }
 
     private async loadTrades(): Promise<void> {
