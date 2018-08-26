@@ -108,8 +108,7 @@ export class PortfolioService {
         // проставляем идентификаторы чтобы работали разворачиваютщиеся блоки в табилицах
         overview.stockPortfolio.rows.forEach((value, index) => value.id = index.toString());
         overview.bondPortfolio.rows.forEach((value, index) => value.id = index.toString());
-        const trades = (await HTTP.INSTANCE.get(`/portfolios/${id}/trades`)).data;
-        return {id, portfolioParams: portfolio, trades, overview};
+        return {id, portfolioParams: portfolio, overview};
     }
 
     private init(): void {

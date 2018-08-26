@@ -184,7 +184,6 @@ export type BondPortfolio = {
 export type Portfolio = {
     id: string,
     portfolioParams: PortfolioParams,
-    trades: TradeRow[],
     overview: Overview
 };
 

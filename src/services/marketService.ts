@@ -60,7 +60,7 @@ export class MarketService {
     private convertStockEvents(events: BaseChartDot[], ticker: string): HighStockEventsGroup {
         const data: HighStockEventData[] = [];
         events.forEach(dot => {
-            data.push({text: `Дивиденд ${ticker} на сумму ${dot.amount}`, title: 'D', x: new Date(dot.date).getTime()});
+            data.push({text: `Дивиденд на сумму ${dot.amount}`, title: 'D', x: new Date(dot.date).getTime()});
         });
         return {
             type: 'flags',

@@ -16,7 +16,7 @@ const MainStore = namespace(StoreType.MAIN);
         <v-container v-if="portfolio" fluid>
             <dashboard :data="portfolio.overview.dashboardData"></dashboard>
             <trades-table :trades="trades" :trade-pagination="tradePagination"></trades-table>
-            <v-container v-if="pages > 0">
+            <v-container v-if="pages > 1">
                 <v-layout align-center justify-center row>
                     <v-pagination v-model="page" :length="pages"></v-pagination>
                 </v-layout>
