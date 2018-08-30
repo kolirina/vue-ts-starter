@@ -74,6 +74,15 @@ export class PortfolioService {
         await HTTP.INSTANCE.post(`/portfolios/${id}/combined`, combined);
     }
 
+    /**
+     * Устанавливает выбранный портфель по умолчанию
+     * @param {string} id идентификатор портфеля по умолчанию
+     * @return {Promise<void>}
+     */
+    async setDefaultPortfolio(id: string): Promise<void> {
+        await HTTP.INSTANCE.post(`/portfolios/${id}/default`);
+    }
+
     async getCostChart(id: string): Promise<any> {
         const data = (await HTTP.INSTANCE.get(`/portfolios/${id}/cost-chart`)).data as LineChartItem[];
         const result: any[] = [];

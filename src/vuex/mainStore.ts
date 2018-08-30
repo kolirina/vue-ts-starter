@@ -53,6 +53,7 @@ const Actions = {
         console.log('ACTION SET USER', clientInfo, context);
     },
     [MutationType.SET_CURRENT_PORTFOLIO](context: ActionContext<StateHolder, void>, id: string): Promise<Portfolio> {
+        portfolioService.setDefaultPortfolio(id).then();
         return new Promise<Portfolio>((resolve) => {
             portfolioService.getById(id).then((portfolio: Portfolio) => {
                 console.log('ACTION SET PORTFOLIO', portfolio, context);
