@@ -4,7 +4,7 @@ import {Prop, Watch} from 'vue-property-decorator';
 import {namespace} from 'vuex-class/lib/bindings';
 import {UI} from '../../app/UI';
 import {Portfolio} from '../../types/types';
-import {ChartUtils} from '../../utils/ChartUtils';
+import {ChartUtils} from '../../utils/chartUtils';
 import {StoreType} from '../../vuex/storeType';
 
 const MainStore = namespace(StoreType.MAIN);

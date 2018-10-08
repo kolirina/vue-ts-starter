@@ -18,7 +18,7 @@ import {BigMoney} from '../types/bigMoney';
 import {HighStockEventsGroup, SectorChartData} from '../types/charts/types';
 import {CombinedData} from '../types/eventObjects';
 import {ClientInfo, Overview} from '../types/types';
-import {ChartUtils} from '../utils/ChartUtils';
+import {ChartUtils} from '../utils/chartUtils';
 import {StoreType} from '../vuex/storeType';
 
 const MainStore = namespace(StoreType.MAIN);

@@ -1,0 +1,12 @@
+// Компонент открытия системного диалога выбора файлов
+
+.file-link {
+  display: inline;
+
+  .file-link__text {
+    cursor: pointer;
+    color: #1f83c8;
+
+    &:hover {text-decoration: underline;}
+  }
+}

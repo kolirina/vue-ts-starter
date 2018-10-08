@@ -1,0 +1,10 @@
+// Компонент добавления файлов перетаскиванием
+
+.file-drop-area {
+  border-radius: $form-element--border-radius;
+  border: 1px dashed #c9cdd0;
+
+  &.drag-over {
+    background-color: rgba($main-color-1, .3);
+  }
+}

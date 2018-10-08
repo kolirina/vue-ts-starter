@@ -3,7 +3,7 @@ import {Service} from '../platform/decorators/service';
 import {HTTP} from '../platform/services/http';
 import {BaseChartDot, ColumnChartData, ColumnDataSeries, Dot, EventChartData, HighStockEventData, HighStockEventsGroup} from '../types/charts/types';
 import {Bond, BondInfo, Share, Stock, StockInfo} from '../types/types';
-import {ChartUtils} from '../utils/ChartUtils';
+import {ChartUtils} from '../utils/chartUtils';
 
 @Service('MarketService')
 @Singleton

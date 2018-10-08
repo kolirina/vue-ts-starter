@@ -1,7 +1,7 @@
 import axios, {AxiosInstance} from 'axios';
-import {Storage} from './storage';
 import {Container} from 'typescript-ioc';
 import {StoreKeys} from '../../types/storeKeys';
+import {Storage} from './storage';
 
 /** Сервис работы с localStorage */
 const localStorage: Storage = Container.get(Storage);

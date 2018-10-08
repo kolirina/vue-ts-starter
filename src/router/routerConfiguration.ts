@@ -4,14 +4,14 @@ import VueRouter from 'vue-router';
 import {NavigationGuard, Route, RouteConfig} from 'vue-router/types/router';
 import {BondInfoPage} from '../pages/bondInfoPage';
 import {CombinedPortfolioPage} from '../pages/combinedPortfolioPage';
-import {ImportExportPage} from '../pages/importExportPage';
-import {NotificationsPage} from '../pages/notificationsPage';
 import {PortfolioPage} from '../pages/portfolioPage';
-import {ProfilePage} from '../pages/profilePage';
-import {PromoCodesPage} from '../pages/promoCodesPage';
-import {SettingsPage} from '../pages/settingsPage';
+import {ImportPage} from '../pages/settings/importPage';
+import {NotificationsPage} from '../pages/settings/notificationsPage';
+import {ProfilePage} from '../pages/settings/profilePage';
+import {PromoCodesPage} from '../pages/settings/promoCodesPage';
+import {SettingsPage} from '../pages/settings/settingsPage';
+import {TariffsPage} from '../pages/settings/tariffsPage';
 import {ShareInfoPage} from '../pages/shareInfoPage';
-import {TariffsPage} from '../pages/tariffsPage';
 import {TradesPage} from '../pages/tradesPage';
 import {Storage} from '../platform/services/storage';
 import {LogoutService} from '../services/logoutService';
@@ -91,7 +91,7 @@ export class RouterConfiguration {
             {
                 name: 'import-export',
                 path: '/import-export',
-                component: ImportExportPage
+                component: ImportPage
             },
             {
                 name: 'profile',

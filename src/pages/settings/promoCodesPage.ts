@@ -2,10 +2,10 @@ import {Inject} from 'typescript-ioc';
 import Component from 'vue-class-component';
 import {Watch} from 'vue-property-decorator';
 import {namespace} from 'vuex-class/lib/bindings';
-import {UI} from '../app/UI';
-import {ClientService} from '../services/clientService';
-import {ClientInfo} from '../types/types';
-import {StoreType} from '../vuex/storeType';
+import {UI} from '../../app/UI';
+import {ClientService} from '../../services/clientService';
+import {ClientInfo} from '../../types/types';
+import {StoreType} from '../../vuex/storeType';
 
 const MainStore = namespace(StoreType.MAIN);
 

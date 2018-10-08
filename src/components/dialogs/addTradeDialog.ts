@@ -416,25 +416,25 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             });
             if (!errors) {
                 this.close(true);
-                this.$notify({
-                    title: 'Выполнено',
-                    message: 'Сделка успешно добавлена',
-                    type: 'success'
-                });
+                // this.$notify({
+                //     title: 'Выполнено',
+                //     message: 'Сделка успешно добавлена',
+                //     type: 'success'
+                // });
                 return;
             }
             // иначе обрабатываем ошибки валидации с сервера и отображаем
-            for (let errorInfo of errors.fields) {
+            for (const errorInfo of errors.fields) {
                 console.log('M', errorInfo);
                 this.$validator.errors.add({field: errorInfo.name, msg: errorInfo.errorMessage});
             }
         } catch (e) {
             console.log('e', e);
-            this.$notify({
-                title: 'Ошибка',
-                message: 'Ошибка при добавлении сделки',
-                type: 'error'
-            });
+            // this.$notify({
+            //     title: 'Ошибка',
+            //     message: 'Ошибка при добавлении сделки',
+            //     type: 'error'
+            // });
             return;
         } finally {
             this.processState = false;

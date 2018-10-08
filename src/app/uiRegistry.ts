@@ -1,7 +1,6 @@
 /**
  * Реестр стандартных UI-компонтентов, фильтров и директив
  */
-import ElementUI from 'element-ui';
 import Highcharts from 'highcharts';
 import Highcharts3D from 'highcharts-3d';
 import exporting from 'highcharts/modules/exporting';
@@ -39,7 +38,6 @@ export class UIRegistry {
             }
         });
         UI.use(VeeValidate);
-        UI.use(ElementUI);
 
         // компоненты
         UI.component('dashboard', Dashboard);

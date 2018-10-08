@@ -6,7 +6,7 @@ import {HTTP} from '../platform/services/http';
 import {BigMoney} from '../types/bigMoney';
 import {EventChartData, HighStockEventsGroup, LineChartItem} from '../types/charts/types';
 import {CombinedInfoRequest, Overview, Portfolio, PortfolioParams} from '../types/types';
-import {ChartUtils} from '../utils/ChartUtils';
+import {ChartUtils} from '../utils/chartUtils';
 
 const PORTFOLIOS_KEY = 'PORTFOLIOS';
 
