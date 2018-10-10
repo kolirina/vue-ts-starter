@@ -13,6 +13,8 @@ import {LineChart} from "../components/charts/lineChart";
 import {PieChart} from "../components/charts/pieChart";
 import {Dashboard} from "../components/dashboard";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
+import {FileDropArea} from "../components/file-upload/fileDropArea";
+import {FileLink} from "../components/file-upload/fileLink";
 import {MaskDirective} from "../platform/directives/maskDirective";
 import {StateDirective} from "../platform/directives/stateDirective";
 import {Filters} from "../platform/filters/Filters";
@@ -44,6 +46,8 @@ export class UIRegistry {
         UI.component("add-trade-dialog", AddTradeDialog);
         UI.component("pie-chart", PieChart);
         UI.component("line-chart", LineChart);
+        UI.component("file-drop-area", FileDropArea);
+        UI.component("file-link", FileLink);
 
         // фильтры
         UI.filter("amount", Filters.formatMoneyAmount);

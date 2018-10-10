@@ -1,0 +1,68 @@
+input[type="search"] {
+  -webkit-appearance: none;
+}
+
+// Отступы =============================================================================================================
+
+.margT24 {margin-top: 24px !important}
+.margT40 {margin-top: 40px}
+
+.margL8 {margin-left: 8px  !important}
+.margL16 {margin-left: 16px  !important}
+.margL24 {margin-left: 24px  !important}
+
+.margR8 {margin-right: 8px}
+.margR16 {margin-right: 16px}
+
+.margB8 {margin-bottom: 8px}
+.margB16 {margin-bottom: 16px}
+.margB30 {margin-bottom: 30px}
+.margB32 {margin-bottom: 32px}
+.margB35 {margin-bottom: 35px}
+.margB64 {margin-bottom: 64px}
+
+.margT20 {margin-top: 20px}
+
+// Ширина ==============================================================================================================
+
+.maxW0 {max-width: 0}
+.w100pc {width: 100%}
+
+.w140 {width: 140px}
+.w200 {width: 200px}
+.w250 {width: 250px}
+.w275 {width: 275px !important;}
+.w470 {width: 470px}
+.w506 {width: 506px}
+
+// Троеточие в конце неумещающегося текста (слова не переносятся)
+.ellipsis {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.bold {font-weight: bold}
+
+.underline {text-decoration: underline;}
+
+
+// Форматирование текста ===============================================================================================
+
+.alignR {text-align: right}
+.alignC {text-align: center}
+
+.breakWord {word-wrap: break-word !important}
+
+
+// Размер текста =======================================================================================================
+
+.fs24 {font-size: 24px}
+
+
+
+// Другое ==============================================================================================================
+
+.block {display: block !important}
+.floatR {float: right !important}
+.overflowV {overflow: visible}

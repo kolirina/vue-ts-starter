@@ -36,5 +36,6 @@ export class ImportPage extends UI {
      * @param {FileList} fileList список файлов
      */
     private onFileAdd(fileList: File[]): void {
+        console.log(fileList);
     }
 }

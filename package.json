@@ -20,6 +20,7 @@
     "@types/js-cookie": "^2.1.0",
     "axios": "^0.18.0",
     "decimal.js": "^10.0.1",
+    "font-awesome": "^4.7.0",
     "highcharts": "^6.1.0",
     "highcharts-3d": "^0.1.7",
     "imask": "^3.4.0",

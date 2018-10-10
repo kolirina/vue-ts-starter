@@ -32,7 +32,7 @@ gulp.task('assets', () => {
 
 // Компиляция SCSS
 gulp.task('css', () =>
-    gulp.src('./src/assets/scss/*.scss')
+    gulp.src('./src/assets/scss/index.scss')
         .pipe(sass({outputStyle: 'compressed'}))
         .pipe(minifyCSS())
         .pipe(gulp.dest('dist/css')));
@@ -42,7 +42,8 @@ gulp.task("build", ["sripts", "css", "assets"]);
 
 gulp.task('default', ['build', "css", "assets"], () => {
     gulp.watch(['src/**/*.ts'], ['build']);
-    gulp.watch(['"srs/**/*.scss"'], ['css']);
+    gulp.watch(['srs/**/*.scss'], ['css']);
+    gulp.watch(['*.html'], ['assets']);
 });
 
 const onError = (error) => {
