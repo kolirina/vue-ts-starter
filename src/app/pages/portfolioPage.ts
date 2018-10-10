@@ -1,17 +1,17 @@
-import Component from 'vue-class-component';
-import {namespace} from 'vuex-class/lib/bindings';
-import {ui} from '../app/ui';
-import {AssetTable} from '../components/assetTable';
-import {BondTable} from '../components/bondTable';
-import {BarChart} from '../components/charts/barChart';
-import {BondPieChart} from '../components/charts/bondPieChart';
-import {PortfolioLineChart} from '../components/charts/portfolioLineChart';
-import {SectorsChart} from '../components/charts/sectorsChart';
-import {StockPieChart} from '../components/charts/stockPieChart';
-import {StockTable} from '../components/stockTable';
-import {Portfolio} from '../types/types';
+import Component from "vue-class-component";
+import {namespace} from "vuex-class/lib/bindings";
+import {UI} from "../app/ui";
+import {AssetTable} from "../components/assetTable";
+import {BondTable} from "../components/bondTable";
+import {BarChart} from "../components/charts/barChart";
+import {BondPieChart} from "../components/charts/bondPieChart";
+import {PortfolioLineChart} from "../components/charts/portfolioLineChart";
+import {SectorsChart} from "../components/charts/sectorsChart";
+import {StockPieChart} from "../components/charts/stockPieChart";
+import {StockTable} from "../components/stockTable";
+import {Portfolio} from "../types/types";
 import {UiStateHelper} from "../utils/uiStateHelper";
-import {StoreType} from '../vuex/storeType';
+import {StoreType} from "../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -99,14 +99,14 @@ const MainStore = namespace(StoreType.MAIN);
     `,
     components: {AssetTable, StockTable, BondTable, BarChart, StockPieChart, BondPieChart, PortfolioLineChart, SectorsChart}
 })
-export class PortfolioPage extends ui {
+export class PortfolioPage extends UI {
 
     @MainStore.Getter
     private portfolio: Portfolio;
 
     private loading = false;
 
-    private mounted(): void {
+    mounted(): void {
         this.loading = true;
 
         setTimeout(() => {

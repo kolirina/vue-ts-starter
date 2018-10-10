@@ -1,6 +1,6 @@
-import {DirectiveOptions} from 'vue/types/options';
-import {VNodeDirective} from 'vue/types/vnode';
-import {UiStateHelper} from '../../utils/uiStateHelper';
+import {DirectiveOptions} from "vue/types/options";
+import {VNodeDirective} from "vue/types/vnode";
+import {UiStateHelper} from "../../utils/uiStateHelper";
 
 /**
  * Директива для управления состоянием UI-элементов
@@ -8,7 +8,7 @@ import {UiStateHelper} from '../../utils/uiStateHelper';
 export class StateDirective implements DirectiveOptions {
 
     /** Имя директивы */
-    static NAME = 'state';
+    static NAME = "state";
 
     /**
      * Биндит событие для сохранения состояния UI-элементов
@@ -16,6 +16,6 @@ export class StateDirective implements DirectiveOptions {
      * @param {VNodeDirective} binding  контекст связывания
      */
     bind(el: HTMLElement, binding: VNodeDirective): void {
-        el.addEventListener('click', () => UiStateHelper.toggleState(binding.value));
+        el.addEventListener("click", () => UiStateHelper.toggleState(binding.value));
     }
 }

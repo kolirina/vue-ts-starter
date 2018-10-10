@@ -1,17 +1,17 @@
-import Component from 'vue-class-component';
-import {Prop} from 'vue-property-decorator';
-import {ui} from '../app/ui';
-import {Portfolio, StockPortfolioRow, TableHeader} from '../types/types';
-import {AddTradeDialog} from './dialogs/addTradeDialog';
-import {StoreType} from '../vuex/storeType';
-import {Operation} from '../types/operation';
-import {AssetType} from '../types/assetType';
-import {ConfirmDialog} from './dialogs/confirmDialog';
-import {BtnReturn} from './dialogs/customDialog';
-import {TradeService} from '../services/tradeService';
-import {Inject} from 'typescript-ioc';
-import {namespace} from 'vuex-class/lib/bindings';
-import {ShareTradesDialog} from './dialogs/shareTradesDialog';
+import {Inject} from "typescript-ioc";
+import Component from "vue-class-component";
+import {Prop} from "vue-property-decorator";
+import {namespace} from "vuex-class/lib/bindings";
+import {UI} from "../app/ui";
+import {TradeService} from "../services/tradeService";
+import {AssetType} from "../types/assetType";
+import {Operation} from "../types/operation";
+import {Portfolio, StockPortfolioRow, TableHeader} from "../types/types";
+import {StoreType} from "../vuex/storeType";
+import {AddTradeDialog} from "./dialogs/addTradeDialog";
+import {ConfirmDialog} from "./dialogs/confirmDialog";
+import {BtnReturn} from "./dialogs/customDialog";
+import {ShareTradesDialog} from "./dialogs/shareTradesDialog";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -96,7 +96,7 @@ const MainStore = namespace(StoreType.MAIN);
         </v-data-table>
     `
 })
-export class StockTable extends ui {
+export class StockTable extends UI {
 
     @Inject
     private tradeService: TradeService;
@@ -107,15 +107,15 @@ export class StockTable extends ui {
     private operation = Operation;
 
     private headers: TableHeader[] = [
-        {text: 'Компания', align: 'left', sortable: false, value: 'company'},
-        {text: 'Тикер', align: 'left', value: 'ticker'},
-        {text: 'Ср. цена', align: 'right', value: 'avgBuy'},
-        {text: 'Тек. цена', align: 'right', value: 'currPrice'},
-        {text: 'Тек. стоимость', align: 'right', value: 'currCost', sortable: false},
-        {text: 'Прибыль', align: 'right', value: 'profit', sortable: false},
-        {text: 'Прибыль, %', align: 'right', value: 'percProfit'},
-        {text: 'Тек. доля', align: 'right', value: 'percCurrShare'},
-        {text: 'Действия', align: 'right', value: 'actions', sortable: false, width: '25'}
+        {text: "Компания", align: "left", sortable: false, value: "company"},
+        {text: "Тикер", align: "left", value: "ticker"},
+        {text: "Ср. цена", align: "right", value: "avgBuy"},
+        {text: "Тек. цена", align: "right", value: "currPrice"},
+        {text: "Тек. стоимость", align: "right", value: "currCost", sortable: false},
+        {text: "Прибыль", align: "right", value: "profit", sortable: false},
+        {text: "Прибыль, %", align: "right", value: "percProfit"},
+        {text: "Тек. доля", align: "right", value: "percCurrShare"},
+        {text: "Действия", align: "right", value: "actions", sortable: false, width: "25"}
     ];
 
     @Prop({default: [], required: true})
@@ -141,7 +141,7 @@ export class StockTable extends ui {
     private async deleteAllTrades(stockRow: StockPortfolioRow): Promise<void> {
         const result = await new ConfirmDialog().show(`Вы уверены, что хотите удалить все сделки по ценной бумаге?`);
         if (result === BtnReturn.YES) {
-            console.log('TODO DELETE ALL TRADES');
+            console.log("TODO DELETE ALL TRADES");
         }
     }
 }

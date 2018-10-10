@@ -1,9 +1,9 @@
-import Component from 'vue-class-component';
-import {namespace} from 'vuex-class/lib/bindings';
-import {ui} from '../../app/ui';
-import {ChangePasswordDialog} from '../../components/dialogs/changePasswordDialog';
-import {ClientInfo} from '../../types/types';
-import {StoreType} from '../../vuex/storeType';
+import Component from "vue-class-component";
+import {namespace} from "vuex-class/lib/bindings";
+import {UI} from "../../app/ui";
+import {ChangePasswordDialog} from "../../components/dialogs/changePasswordDialog";
+import {ClientInfo} from "../../types/types";
+import {StoreType} from "../../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -30,12 +30,12 @@ const MainStore = namespace(StoreType.MAIN);
         </v-container>
     `
 })
-export class ProfilePage extends ui {
+export class ProfilePage extends UI {
 
     @MainStore.Getter
     private clientInfo: ClientInfo;
 
-    private async mounted(): Promise<void> {
+    async mounted(): Promise<void> {
 
     }
 

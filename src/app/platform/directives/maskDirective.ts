@@ -1,6 +1,6 @@
-import {InputMask, MaskOptions} from 'imask';
-import {DirectiveOptions} from 'vue/types/options';
-import {VNodeDirective} from 'vue/types/vnode';
+import {InputMask, MaskOptions} from "imask";
+import {DirectiveOptions} from "vue/types/options";
+import {VNodeDirective} from "vue/types/vnode";
 
 /**
  * Директива для управления состоянием UI-элементов
@@ -8,26 +8,25 @@ import {VNodeDirective} from 'vue/types/vnode';
 export class MaskDirective implements DirectiveOptions {
 
     /** Имя директивы */
-    static NAME = 'mask';
-
+    static NAME = "mask";
 
     private static fireEvent(el: HTMLInputElement, eventName: string, data: any) {
-        const e = document.createEvent('CustomEvent');
+        const e = document.createEvent("CustomEvent");
         e.initCustomEvent(eventName, true, true, data);
         el.dispatchEvent(e);
     }
 
     private static initMask(el: HTMLInputElement, opts: MaskOptions) {
-        console.log('BIND', opts, el);
+        console.log("BIND", opts, el);
         const inputMask = new InputMask(el, opts);
-        inputMask.on('accept', () => {
-            MaskDirective.fireEvent(el, 'accept', (el as any).maskRef);
+        inputMask.on("accept", () => {
+            MaskDirective.fireEvent(el, "accept", (el as any).maskRef);
         });
-        inputMask.on('complete', () => {
-            MaskDirective.fireEvent(el, 'complete', (el as any).maskRef);
+        inputMask.on("complete", () => {
+            MaskDirective.fireEvent(el, "complete", (el as any).maskRef);
         });
         (el as any).maskRef = inputMask;
-        console.log('IM', inputMask);
+        console.log("IM", inputMask);
     }
 
     private static destroyMask(el: HTMLInputElement) {
@@ -38,10 +37,10 @@ export class MaskDirective implements DirectiveOptions {
     }
 
     private static getInputElement(element: HTMLElement): HTMLInputElement {
-        if (element.tagName.toLocaleUpperCase() !== 'INPUT') {
-            const els = element.getElementsByTagName('input');
+        if (element.tagName.toLocaleUpperCase() !== "INPUT") {
+            const els = element.getElementsByTagName("input");
             if (els.length !== 1) {
-                throw new Error('mask directive requires 1 input, found ' + els.length);
+                throw new Error("mask directive requires 1 input, found " + els.length);
             } else {
                 return els[0];
             }
@@ -58,7 +57,7 @@ export class MaskDirective implements DirectiveOptions {
 
     update(el: HTMLElement, binding: VNodeDirective) {
         const options = binding.value as MaskOptions;
-        console.log('UPDATE', binding, MaskDirective.getInputElement(el));
+        console.log("UPDATE", binding, MaskDirective.getInputElement(el));
         if (options) {
             if ((el as any).maskRef) {
                 (el as any).maskRef.updateOptions(options);

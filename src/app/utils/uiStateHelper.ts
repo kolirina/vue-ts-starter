@@ -1,24 +1,24 @@
-import {Container} from 'typescript-ioc';
-import {Storage} from '../platform/services/storage';
+import {Container} from "typescript-ioc";
+import {Storage} from "../platform/services/storage";
 
 const localStorage: Storage = Container.get(Storage);
 
 export class UiStateHelper {
 
-    static readonly STOCKS = 'stocks_panel';
-    static readonly HISTORY_PANEL = 'history_chart';
-    static readonly STOCK_CHART_PANEL = 'stocksChartPanel';
-    static readonly BOND_CHART_PANEL = 'bondsChartPanel';
-    static readonly SECTORS_PANEL = 'sectorsPanel';
-    static readonly BONDS = 'bonds_panel';
-    static readonly YEAR_DIV_LIST = 'yearDivListAccordion';
-    static readonly DIV_LIST = 'divListAccordion';
-    static readonly SUM_YEAR_DIVIDENDS = 'sumYearDividendsAccordion';
-    static readonly SUM_DIVS = 'sumDivsAccordion';
-    static readonly COMBINED_CONTROL_PANEL = 'combinedControlPanel';
-    static readonly INVESTMENTS_SETTINGS_PANEL = 'investmentsSettingsPanel';
-    static readonly REFERRAL_STATISTICS_PANEL = 'referralStatistics';
-    static readonly EVENTS_CALENDAR = 'events_calendar';
+    static readonly STOCKS = "stocks_panel";
+    static readonly HISTORY_PANEL = "history_chart";
+    static readonly STOCK_CHART_PANEL = "stocksChartPanel";
+    static readonly BOND_CHART_PANEL = "bondsChartPanel";
+    static readonly SECTORS_PANEL = "sectorsPanel";
+    static readonly BONDS = "bonds_panel";
+    static readonly YEAR_DIV_LIST = "yearDivListAccordion";
+    static readonly DIV_LIST = "divListAccordion";
+    static readonly SUM_YEAR_DIVIDENDS = "sumYearDividendsAccordion";
+    static readonly SUM_DIVS = "sumDivsAccordion";
+    static readonly COMBINED_CONTROL_PANEL = "combinedControlPanel";
+    static readonly INVESTMENTS_SETTINGS_PANEL = "investmentsSettingsPanel";
+    static readonly REFERRAL_STATISTICS_PANEL = "referralStatistics";
+    static readonly EVENTS_CALENDAR = "events_calendar";
 
     static set stocksTablePanel(value: number[]) {
         localStorage.set(UiStateHelper.STOCKS, value);

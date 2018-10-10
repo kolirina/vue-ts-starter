@@ -1,19 +1,19 @@
-import {Container, Singleton} from 'typescript-ioc';
-import {Service} from '../platform/decorators/service';
-import {Storage} from '../platform/services/storage';
-import {ErrorInfo, TradeDataRequest, TradeRow} from '../types/types';
-import {HTTP} from '../platform/services/http';
+import {Container, Singleton} from "typescript-ioc";
+import {Service} from "../platform/decorators/service";
+import {HTTP} from "../platform/services/http";
+import {Storage} from "../platform/services/storage";
+import {ErrorInfo, TradeDataRequest, TradeRow} from "../types/types";
 
 /** Сервис работы с localStorage */
 const localStorage: Storage = Container.get(Storage);
 
-@Service('TradeService')
+@Service("TradeService")
 @Singleton
 export class TradeService {
 
     async saveTrade(req: TradeDataRequest): Promise<ErrorInfo> {
         let result = null;
-        await HTTP.INSTANCE.post('/trades', req).catch(reason => {
+        await HTTP.INSTANCE.post("/trades", req).catch(reason => {
             result = reason.data;
         });
         return result;

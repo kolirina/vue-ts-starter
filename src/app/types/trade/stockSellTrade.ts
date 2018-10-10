@@ -1,6 +1,6 @@
-import Decimal from 'decimal.js';
-import {StockTrade} from './stockTrade';
-import {TradeDataHolder} from './tradeDataHolder';
+import Decimal from "decimal.js";
+import {StockTrade} from "./stockTrade";
+import {TradeDataHolder} from "./tradeDataHolder";
 
 export class StockSellTrade extends StockTrade {
 

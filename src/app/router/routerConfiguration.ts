@@ -5,6 +5,7 @@ import {NavigationGuard, Route, RouteConfig} from "vue-router/types/router";
 import {BondInfoPage} from "../pages/bondInfoPage";
 import {CombinedPortfolioPage} from "../pages/combinedPortfolioPage";
 import {PortfolioPage} from "../pages/portfolioPage";
+import {ExportPage} from "../pages/settings/exportPage";
 import {ImportPage} from "../pages/settings/importPage";
 import {NotificationsPage} from "../pages/settings/notificationsPage";
 import {ProfilePage} from "../pages/settings/profilePage";
@@ -15,7 +16,6 @@ import {ShareInfoPage} from "../pages/shareInfoPage";
 import {TradesPage} from "../pages/tradesPage";
 import {Storage} from "../platform/services/storage";
 import {LogoutService} from "../services/logoutService";
-import {ExportPage} from "../pages/settings/exportPage";
 
 Vue.use(VueRouter);
 

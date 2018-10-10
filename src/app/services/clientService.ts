@@ -1,10 +1,10 @@
-import axios from 'axios';
-import {Singleton} from 'typescript-ioc';
-import {Service} from '../platform/decorators/service';
-import {HTTP} from '../platform/services/http';
-import {ClientInfo, LoginRequest} from '../types/types';
+import axios from "axios";
+import {Singleton} from "typescript-ioc";
+import {Service} from "../platform/decorators/service";
+import {HTTP} from "../platform/services/http";
+import {ClientInfo, LoginRequest} from "../types/types";
 
-@Service('ClientService')
+@Service("ClientService")
 @Singleton
 export class ClientService {
 
@@ -13,9 +13,9 @@ export class ClientService {
     async getClientInfo(request: LoginRequest): Promise<ClientInfo> {
         if (!this.clientInfo) {
             // ------------------------------ POST ------------------------------------------
-            const result = await axios.post('/api/user/login', request);
+            const result = await axios.post("/api/user/login", request);
             this.clientInfo = await result.data as ClientInfo;
-            console.log('INIT CLIENT SERVICE', this.clientInfo);
+            console.log("INIT CLIENT SERVICE", this.clientInfo);
         }
         return this.clientInfo;
     }

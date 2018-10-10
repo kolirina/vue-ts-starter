@@ -1,8 +1,8 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
-import createPersistedState from 'vuex-persistedstate';
-import {MainStore} from './mainStore';
-import {StoreType} from './storeType';
+import Vue from "vue";
+import Vuex from "vuex";
+import createPersistedState from "vuex-persistedstate";
+import {MainStore} from "./mainStore";
+import {StoreType} from "./storeType";
 
 Vue.use(Vuex);
 

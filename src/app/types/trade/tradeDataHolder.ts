@@ -1,4 +1,4 @@
-import {Share} from '../types';
+import {Share} from "../types";
 
 export interface TradeDataHolder {
 

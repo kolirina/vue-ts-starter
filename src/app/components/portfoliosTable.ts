@@ -1,13 +1,13 @@
-import Component from 'vue-class-component';
-import {Prop} from 'vue-property-decorator';
-import {namespace} from 'vuex-class/lib/bindings';
-import {ui} from '../app/ui';
-import {ClientInfo, PortfolioParams, TableHeader} from '../types/types';
-import {StoreType} from '../vuex/storeType';
-import {ConfirmDialog} from './dialogs/confirmDialog';
-import {EmbeddedBlocksDialog} from './dialogs/embeddedBlocksDialog';
-import {PortfolioEditDialog} from './dialogs/portfolioEditDialog';
-import {SharePortfolioDialog} from './dialogs/sharePortfolioDialog';
+import Component from "vue-class-component";
+import {Prop} from "vue-property-decorator";
+import {namespace} from "vuex-class/lib/bindings";
+import {UI} from "../app/ui";
+import {ClientInfo, PortfolioParams, TableHeader} from "../types/types";
+import {StoreType} from "../vuex/storeType";
+import {ConfirmDialog} from "./dialogs/confirmDialog";
+import {EmbeddedBlocksDialog} from "./dialogs/embeddedBlocksDialog";
+import {PortfolioEditDialog} from "./dialogs/portfolioEditDialog";
+import {SharePortfolioDialog} from "./dialogs/sharePortfolioDialog";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -92,18 +92,18 @@ const MainStore = namespace(StoreType.MAIN);
         </v-data-table>
     `
 })
-export class PortfoliosTable extends ui {
+export class PortfoliosTable extends UI {
 
     @MainStore.Getter
     private clientInfo: ClientInfo;
 
     private headers: TableHeader[] = [
-        {text: 'Название', align: 'left', value: 'name'},
-        {text: '', align: 'center', value: '', sortable: false, width: '100'},
-        {text: 'Фикс. комиссия', align: 'right', value: 'fixFee', width: '50'},
-        {text: 'Валюта', align: 'center', value: 'viewCurrency'},
-        {text: 'Тип счета', align: 'center', value: 'accountType'},
-        {text: 'Дата открытия', align: 'center', value: 'openDate'}
+        {text: "Название", align: "left", value: "name"},
+        {text: "", align: "center", value: "", sortable: false, width: "100"},
+        {text: "Фикс. комиссия", align: "right", value: "fixFee", width: "50"},
+        {text: "Валюта", align: "center", value: "viewCurrency"},
+        {text: "Тип счета", align: "center", value: "accountType"},
+        {text: "Дата открытия", align: "center", value: "openDate"}
     ];
 
     @Prop({default: [], required: true})

@@ -1,6 +1,6 @@
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
-import {ui} from "../../app/ui";
+import {UI} from "../../app/ui";
 import {ClientInfo} from "../../types/types";
 import {StoreType} from "../../vuex/storeType";
 
@@ -13,21 +13,28 @@ const MainStore = namespace(StoreType.MAIN);
             Импорт сделок
             <v-card>
                 <v-card-text>
-
+                    <div class="attachments">
+                        <file-drop-area @drop="onFileAdd" class="attachments-file-drop">
+                            <div class="attachments-file-drop__content">
+                                Перетащите<br>
+                                или <file-link @select="onFileAdd" multiple>загрузите</file-link> файл
+                            </div>
+                        </file-drop-area>
+                    </div>
                 </v-card-text>
             </v-card>
         </v-container>
     `
 })
-export class ImportPage extends ui {
+export class ImportPage extends UI {
 
     @MainStore.Getter
     private clientInfo: ClientInfo;
 
-    private async mounted(): Promise<void> {
-    }
-
-    private onChange(file: any, fileList: any): void {
-        console.log(file, fileList);
+    /**
+     * Событие при добавлении вложений
+     * @param {FileList} fileList список файлов
+     */
+    private onFileAdd(fileList: File[]): void {
     }
 }

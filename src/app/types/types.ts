@@ -1,6 +1,4 @@
-import {AssetType} from './assetType';
-import {BaseChartDot, ColumnChartData, Dot, HighStockEventsGroup} from './charts/types';
-import {Operation} from './operation';
+import {BaseChartDot, ColumnChartData, Dot, HighStockEventsGroup} from "./charts/types";
 
 export type _portfolioRow = {
     /** Прибыль */
@@ -299,7 +297,7 @@ export type Stock = Share & {
     yield5: string;
     /** Див.доходность за все время */
     yieldAll: string;
-    /**доля акции в индексе */
+    /** доля акции в индексе */
     weight: string;
     color: string;
     /** Признак что акция привилегированная */
@@ -428,10 +426,10 @@ export type ErrorInfo = {
     errorCode: string,
     errorMessage: string,
     fields: ErrorFieldInfo[]
-}
+};
 
 export type ErrorFieldInfo = {
     name: string,
     errorCode: string,
     errorMessage: string
-}
+};

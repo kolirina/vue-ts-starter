@@ -3,5 +3,5 @@
  */
 export enum StoreType {
     /** Основное хранилище */
-    MAIN = 'MAIN'
+    MAIN = "MAIN"
 }

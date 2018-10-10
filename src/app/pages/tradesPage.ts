@@ -1,12 +1,12 @@
-import Component from 'vue-class-component';
-import {namespace} from 'vuex-class/lib/bindings';
-import {ui} from '../app/ui';
-import {TradePagination, TradesTable} from '../components/tradesTable';
-import {Portfolio, TradeRow} from '../types/types';
-import {StoreType} from '../vuex/storeType';
-import {Inject} from 'typescript-ioc';
-import {TradeService} from '../services/tradeService';
-import {Watch} from 'vue-property-decorator';
+import {Inject} from "typescript-ioc";
+import Component from "vue-class-component";
+import {Watch} from "vue-property-decorator";
+import {namespace} from "vuex-class/lib/bindings";
+import {UI} from "../app/ui";
+import {TradePagination, TradesTable} from "../components/tradesTable";
+import {TradeService} from "../services/tradeService";
+import {Portfolio, TradeRow} from "../types/types";
+import {StoreType} from "../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -25,7 +25,7 @@ const MainStore = namespace(StoreType.MAIN);
     `,
     components: {TradesTable}
 })
-export class TradesPage extends ui {
+export class TradesPage extends UI {
 
     @MainStore.Getter
     private portfolio: Portfolio;
@@ -47,7 +47,7 @@ export class TradesPage extends ui {
         descending: false,
         page: this.page,
         rowsPerPage: this.pageSize,
-        sortBy: 'ticker',
+        sortBy: "ticker",
         totalItems: this.totalTrades
     };
 
@@ -64,18 +64,18 @@ export class TradesPage extends ui {
         this.calculatePagination();
     }
 
-    @Watch('page')
+    @Watch("page")
     private async onPageChange(): Promise<void> {
         await this.loadTrades();
     }
 
-    @Watch('portfolio')
+    @Watch("portfolio")
     private async onPortfolioChange(): Promise<void> {
         await this.loadTrades();
         this.calculatePagination();
     }
 
-    @Watch('tradePagination.pagination', {deep: true})
+    @Watch("tradePagination.pagination", {deep: true})
     private async onTradePaginationChange(): Promise<void> {
         await this.loadTrades();
     }
@@ -87,7 +87,8 @@ export class TradesPage extends ui {
 
     private async loadTrades(): Promise<void> {
         this.tradePagination.loading = true;
-        this.trades = await this.tradeService.loadTrades(this.portfolio.id, this.pageSize * (this.page - 1), this.pageSize, this.tradePagination.pagination.sortBy, this.tradePagination.pagination.descending);
+        this.trades = await this.tradeService.loadTrades(this.portfolio.id, this.pageSize * (this.page - 1),
+            this.pageSize, this.tradePagination.pagination.sortBy, this.tradePagination.pagination.descending);
         this.tradePagination.loading = false;
     }
 }

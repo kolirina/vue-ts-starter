@@ -1,16 +1,16 @@
-import {Decimal} from 'decimal.js';
-import {Container, Singleton} from 'typescript-ioc';
-import {Service} from '../platform/decorators/service';
-import {Cache} from '../platform/services/cache';
-import {HTTP} from '../platform/services/http';
-import {BigMoney} from '../types/bigMoney';
-import {EventChartData, HighStockEventsGroup, LineChartItem} from '../types/charts/types';
-import {CombinedInfoRequest, Overview, Portfolio, PortfolioParams} from '../types/types';
-import {ChartUtils} from '../utils/chartUtils';
+import {Decimal} from "decimal.js";
+import {Container, Singleton} from "typescript-ioc";
+import {Service} from "../platform/decorators/service";
+import {Cache} from "../platform/services/cache";
+import {HTTP} from "../platform/services/http";
+import {BigMoney} from "../types/bigMoney";
+import {EventChartData, HighStockEventsGroup, LineChartItem} from "../types/charts/types";
+import {CombinedInfoRequest, Overview, Portfolio, PortfolioParams} from "../types/types";
+import {ChartUtils} from "../utils/chartUtils";
 
-const PORTFOLIOS_KEY = 'PORTFOLIOS';
+const PORTFOLIOS_KEY = "PORTFOLIOS";
 
-@Service('PortfolioService')
+@Service("PortfolioService")
 @Singleton
 export class PortfolioService {
 
@@ -32,12 +32,12 @@ export class PortfolioService {
     async getById(id: string): Promise<Portfolio> {
         let portfolio = this.cache[id];
         if (!portfolio) {
-            console.log('load portfolio: ', id);
+            console.log("load portfolio: ", id);
             portfolio = await this.loadPortfolio(id);
             this.cache[id] = portfolio;
             return portfolio;
         }
-        console.log('return portfolio: ', id);
+        console.log("return portfolio: ", id);
         return portfolio;
     }
 
@@ -122,6 +122,6 @@ export class PortfolioService {
 
     private init(): void {
         this.cacheService.put(PORTFOLIOS_KEY, this.cache);
-        console.log('INIT PORTFOLIO SERVICE');
+        console.log("INIT PORTFOLIO SERVICE");
     }
 }

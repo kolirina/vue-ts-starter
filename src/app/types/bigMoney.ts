@@ -1,4 +1,4 @@
-import {Decimal} from 'decimal.js';
+import {Decimal} from "decimal.js";
 
 export class BigMoney {
 
@@ -8,7 +8,7 @@ export class BigMoney {
 
     constructor(private value: string) {
         if (value) {
-            const ar = value.split(' ');
+            const ar = value.split(" ");
             this._amount = new Decimal(ar[1]);
             this._currency = ar[0];
         }

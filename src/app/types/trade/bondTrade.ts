@@ -1,6 +1,6 @@
-import {Decimal} from 'decimal.js';
-import {Trade} from './trade';
-import {TradeDataHolder} from './tradeDataHolder';
+import {Decimal} from "decimal.js";
+import {Trade} from "./trade";
+import {TradeDataHolder} from "./tradeDataHolder";
 
 export class BondTrade implements Trade {
 
@@ -11,15 +11,15 @@ export class BondTrade implements Trade {
 
     totalWithoutFee(holder: TradeDataHolder): string {
         console.log(holder);
-        let nkd = new Decimal('0');
+        let nkd = new Decimal("0");
         if (holder.getNkd()) {
             if (holder.isPerOne()) {
                 nkd = new Decimal(holder.getNkd());
-            } else if (holder.getQuantity() && holder.getQuantity() != 0) {
+            } else if (holder.getQuantity() && holder.getQuantity() !== 0) {
                 nkd = new Decimal(holder.getNkd()).dividedBy(new Decimal(holder.getQuantity())).toDP(2, Decimal.ROUND_HALF_UP);
             }
         }
-        return new Decimal(holder.getFacevalue() ? holder.getFacevalue() : '1000').mul(new Decimal(holder.getPrice())).dividedBy(100)
+        return new Decimal(holder.getFacevalue() ? holder.getFacevalue() : "1000").mul(new Decimal(holder.getPrice())).dividedBy(100)
             .plus(nkd).mul(new Decimal(holder.getQuantity())).toString();
     }
 

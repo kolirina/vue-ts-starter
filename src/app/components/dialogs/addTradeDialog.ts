@@ -251,7 +251,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private currentTimer: number = null;
     private processState = false;
 
-    private mounted(): void {
+    mounted(): void {
         this.portfolio = (this.data.store as any).currentPortfolio;
         this.share = this.data.share || null;
         this.assetType = this.data.assetType || AssetType.STOCK;

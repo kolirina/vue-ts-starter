@@ -1,8 +1,11 @@
 export class EventUtils {
 
+    private constructor() {
+    }
+
     // Ctrl либо Cmd для macOS
     static isControlKey(event: KeyboardEvent) {
-        return event.ctrlKey || event.metaKey || event.key === 'Control';
+        return event.ctrlKey || event.metaKey || event.key === "Control";
     }
 
     static isDeletion(event: KeyboardEvent) {
@@ -21,13 +24,13 @@ export class EventUtils {
     }
 
     static getClipboardData = (event: ClipboardEvent | DragEvent) => {
-        if (event.type === 'drop') {
-            return (event as DragEvent).dataTransfer.getData('text');
+        if (event.type === "drop") {
+            return (event as DragEvent).dataTransfer.getData("text");
         }
         event = event as ClipboardEvent;
         return event.clipboardData
-            ? event.clipboardData.getData('text/plain')
-            : (window as any).clipboardData.getData('Text');
+            ? event.clipboardData.getData("text/plain")
+            : (window as any).clipboardData.getData("Text");
     }
 
     /**
@@ -39,6 +42,6 @@ export class EventUtils {
      */
     static addEventListener(element: HTMLElement, events: string,
                             callback: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void {
-        events.split(' ').forEach((event: string) => element.addEventListener(event, callback));
+        events.split(" ").forEach((event: string) => element.addEventListener(event, callback));
     }
 }

@@ -1,10 +1,10 @@
-import Component from 'vue-class-component';
-import {namespace} from 'vuex-class/lib/bindings';
-import {ui} from '../../app/ui';
-import {PortfolioEditDialog} from '../../components/dialogs/portfolioEditDialog';
-import {PortfoliosTable} from '../../components/portfoliosTable';
-import {ClientInfo, PortfolioParams} from '../../types/types';
-import {StoreType} from '../../vuex/storeType';
+import Component from "vue-class-component";
+import {namespace} from "vuex-class/lib/bindings";
+import {UI} from "../../app/ui";
+import {PortfolioEditDialog} from "../../components/dialogs/portfolioEditDialog";
+import {PortfoliosTable} from "../../components/portfoliosTable";
+import {ClientInfo, PortfolioParams} from "../../types/types";
+import {StoreType} from "../../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -21,14 +21,14 @@ const MainStore = namespace(StoreType.MAIN);
     `,
     components: {PortfoliosTable}
 })
-export class SettingsPage extends ui {
+export class SettingsPage extends UI {
 
     @MainStore.Getter
     private clientInfo: ClientInfo;
 
     private portfolios: PortfolioParams[] = null;
 
-    private async mounted(): Promise<void> {
+    async mounted(): Promise<void> {
         this.portfolios = this.clientInfo.user.portfolios;
     }
 

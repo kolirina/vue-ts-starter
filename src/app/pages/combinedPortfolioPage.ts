@@ -1,25 +1,25 @@
-import {Decimal} from 'decimal.js';
-import {DataPoint} from 'highcharts';
-import {Inject} from 'typescript-ioc';
-import Component from 'vue-class-component';
-import {namespace} from 'vuex-class/lib/bindings';
-import {ui} from '../app/ui';
-import {AssetTable} from '../components/assetTable';
-import {BondTable} from '../components/bondTable';
-import {BarChart} from '../components/charts/barChart';
-import {BondPieChart} from '../components/charts/bondPieChart';
-import {PortfolioLineChart} from '../components/charts/portfolioLineChart';
-import {SectorsChart} from '../components/charts/sectorsChart';
-import {StockPieChart} from '../components/charts/stockPieChart';
-import {CombinedPortfoliosTable} from '../components/combinedPortfoliosTable';
-import {StockTable} from '../components/stockTable';
-import {PortfolioService} from '../services/portfolioService';
-import {BigMoney} from '../types/bigMoney';
-import {HighStockEventsGroup, SectorChartData} from '../types/charts/types';
-import {CombinedData} from '../types/eventObjects';
-import {ClientInfo, Overview} from '../types/types';
-import {ChartUtils} from '../utils/chartUtils';
-import {StoreType} from '../vuex/storeType';
+import {Decimal} from "decimal.js";
+import {DataPoint} from "highcharts";
+import {Inject} from "typescript-ioc";
+import Component from "vue-class-component";
+import {namespace} from "vuex-class/lib/bindings";
+import {UI} from "../app/ui";
+import {AssetTable} from "../components/assetTable";
+import {BondTable} from "../components/bondTable";
+import {BarChart} from "../components/charts/barChart";
+import {BondPieChart} from "../components/charts/bondPieChart";
+import {PortfolioLineChart} from "../components/charts/portfolioLineChart";
+import {SectorsChart} from "../components/charts/sectorsChart";
+import {StockPieChart} from "../components/charts/stockPieChart";
+import {CombinedPortfoliosTable} from "../components/combinedPortfoliosTable";
+import {StockTable} from "../components/stockTable";
+import {PortfolioService} from "../services/portfolioService";
+import {BigMoney} from "../types/bigMoney";
+import {HighStockEventsGroup, SectorChartData} from "../types/charts/types";
+import {CombinedData} from "../types/eventObjects";
+import {ClientInfo, Overview} from "../types/types";
+import {ChartUtils} from "../utils/chartUtils";
+import {StoreType} from "../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -135,7 +135,7 @@ const MainStore = namespace(StoreType.MAIN);
     `,
     components: {AssetTable, StockTable, BondTable, BarChart, StockPieChart, BondPieChart, PortfolioLineChart, SectorsChart, CombinedPortfoliosTable}
 })
-export class CombinedPortfolioPage extends ui {
+export class CombinedPortfolioPage extends UI {
 
     @MainStore.Getter
     private clientInfo: ClientInfo;
@@ -144,7 +144,7 @@ export class CombinedPortfolioPage extends ui {
     private portfolioService: PortfolioService;
 
     private overview: Overview = null;
-    private viewCurrency = 'RUB';
+    private viewCurrency = "RUB";
 
     private lineChartData: any[] = [];
     private eventsChartData: HighStockEventsGroup[] = [];
@@ -152,7 +152,7 @@ export class CombinedPortfolioPage extends ui {
     private bondPieChartData: DataPoint[] = [];
     private sectorsChartData: SectorChartData = null;
 
-    private async created(): Promise<void> {
+    async created(): Promise<void> {
         await this.doCombinedPortfolio();
     }
 
@@ -172,7 +172,7 @@ export class CombinedPortfolioPage extends ui {
 
     private doStockPieChartData(): DataPoint[] {
         const data: DataPoint[] = [];
-        this.overview.stockPortfolio.rows.filter(value => value.currCost != '0').forEach(row => {
+        this.overview.stockPortfolio.rows.filter(value => value.currCost != "0").forEach(row => {
             data.push({
                 name: row.stock.shortname,
                 y: new Decimal(new BigMoney(row.currCost).amount.abs().toString()).toDP(2, Decimal.ROUND_HALF_UP).toNumber()
@@ -183,7 +183,7 @@ export class CombinedPortfolioPage extends ui {
 
     private doBondPieChartData(): DataPoint[] {
         const data: DataPoint[] = [];
-        this.overview.bondPortfolio.rows.filter(value => value.currCost != '0').forEach(row => {
+        this.overview.bondPortfolio.rows.filter(value => value.currCost != "0").forEach(row => {
             data.push({
                 name: row.bond.shortname,
                 y: new Decimal(new BigMoney(row.currCost).amount.abs().toString()).toDP(2, Decimal.ROUND_HALF_UP).toNumber()

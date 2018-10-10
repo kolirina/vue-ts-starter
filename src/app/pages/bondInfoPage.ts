@@ -1,10 +1,10 @@
-import {Inject} from 'typescript-ioc';
-import Component from 'vue-class-component';
-import {ui} from '../app/ui';
-import {BondPaymentsChart} from '../components/charts/bondPaymentsChart';
-import {MarketService} from '../services/marketService';
-import {ColumnChartData, Dot, HighStockEventsGroup} from '../types/charts/types';
-import {Share} from '../types/types';
+import {Inject} from "typescript-ioc";
+import Component from "vue-class-component";
+import {UI} from "../app/ui";
+import {BondPaymentsChart} from "../components/charts/bondPaymentsChart";
+import {MarketService} from "../services/marketService";
+import {ColumnChartData, Dot, HighStockEventsGroup} from "../types/charts/types";
+import {Share} from "../types/types";
 
 @Component({
     // language=Vue
@@ -97,7 +97,7 @@ import {Share} from '../types/types';
     `,
     components: {BondPaymentsChart}
 })
-export class BondInfoPage extends ui {
+export class BondInfoPage extends UI {
 
     @Inject
     private marketService: MarketService;
@@ -107,7 +107,7 @@ export class BondInfoPage extends ui {
     private paymentsData: ColumnChartData = null;
     private events: HighStockEventsGroup[] = [];
 
-    private async created(): Promise<void> {
+    async created(): Promise<void> {
         const isin = this.$route.params.isin;
         if (isin) {
             const result = await this.marketService.getBondInfo(isin);

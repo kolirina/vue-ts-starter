@@ -2,7 +2,7 @@
  * Сущность сделки, добавялемой пользователем (либо через ручной ввод, либо через импорт).
  * Определяет все необходимые и достаточные поля для занесения сделки в портфель.
  */
-import {TradeDataHolder} from './tradeDataHolder';
+import {TradeDataHolder} from "./tradeDataHolder";
 
 export interface Trade {
 

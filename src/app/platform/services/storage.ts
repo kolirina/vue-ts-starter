@@ -1,11 +1,11 @@
-import {Singleton} from 'typescript-ioc';
-import {Service} from '../decorators/service';
+import {Singleton} from "typescript-ioc";
+import {Service} from "../decorators/service";
 
 /**
  * Сервис по работе с хранилищем браузера
  * Реализует LocalStorage либо inMemory object, в случае, если LocalStorage отключен клиентом
  */
-@Service('Storage')
+@Service("Storage")
 @Singleton
 export abstract class Storage {
 

@@ -1,10 +1,10 @@
-import {Inject} from 'typescript-ioc';
-import Component from 'vue-class-component';
-import {ui} from '../app/ui';
-import {DividendChart} from '../components/charts/dividendChart';
-import {MarketService} from '../services/marketService';
-import {BaseChartDot, Dot, HighStockEventsGroup} from '../types/charts/types';
-import {Share} from '../types/types';
+import {Inject} from "typescript-ioc";
+import Component from "vue-class-component";
+import {UI} from "../app/ui";
+import {DividendChart} from "../components/charts/dividendChart";
+import {MarketService} from "../services/marketService";
+import {BaseChartDot, Dot, HighStockEventsGroup} from "../types/charts/types";
+import {Share} from "../types/types";
 
 @Component({
     // language=Vue
@@ -121,7 +121,7 @@ import {Share} from '../types/types';
     `,
     components: {DividendChart}
 })
-export class ShareInfoPage extends ui {
+export class ShareInfoPage extends UI {
 
     @Inject
     private marketService: MarketService;
@@ -131,7 +131,7 @@ export class ShareInfoPage extends ui {
     private dividends: BaseChartDot[] = [];
     private events: HighStockEventsGroup[] = [];
 
-    private async created(): Promise<void> {
+    async created(): Promise<void> {
         const ticker = this.$route.params.ticker;
         if (ticker) {
             const result = await this.marketService.getStockInfo(ticker);

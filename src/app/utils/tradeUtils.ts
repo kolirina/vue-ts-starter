@@ -1,11 +1,11 @@
-import {TradeRow} from '../types/types';
-import {AssetType} from '../types/assetType';
-import {Filters} from '../platform/filters/Filters';
-import {Operation} from '../types/operation';
+import {Filters} from "../platform/filters/Filters";
+import {AssetType} from "../types/assetType";
+import {Operation} from "../types/operation";
+import {TradeRow} from "../types/types";
 
 export class TradeUtils {
 
-    private TradeUtils() {
+    private constructor() {
     }
 
     static getPrice(trade: TradeRow): string {

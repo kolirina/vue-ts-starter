@@ -1,14 +1,14 @@
-import Component from 'vue-class-component';
-import {Prop, Watch} from 'vue-property-decorator';
-import {ui} from '../app/ui';
-import {TableHeader, TradeRow} from '../types/types';
-import {Operation} from '../types/operation';
-import {AddTradeDialog} from './dialogs/addTradeDialog';
-import {StoreType} from '../vuex/storeType';
-import {AssetType} from '../types/assetType';
-import {ConfirmDialog} from './dialogs/confirmDialog';
-import {BtnReturn} from './dialogs/customDialog';
-import {TradeUtils} from '../utils/tradeUtils';
+import Component from "vue-class-component";
+import {Prop, Watch} from "vue-property-decorator";
+import {UI} from "../app/ui";
+import {AssetType} from "../types/assetType";
+import {Operation} from "../types/operation";
+import {TableHeader, TradeRow} from "../types/types";
+import {TradeUtils} from "../utils/tradeUtils";
+import {StoreType} from "../vuex/storeType";
+import {AddTradeDialog} from "./dialogs/addTradeDialog";
+import {ConfirmDialog} from "./dialogs/confirmDialog";
+import {BtnReturn} from "./dialogs/customDialog";
 
 @Component({
     // language=Vue
@@ -102,17 +102,17 @@ import {TradeUtils} from '../utils/tradeUtils';
         </v-data-table>
     `
 })
-export class TradesTable extends ui {
+export class TradesTable extends UI {
 
     private headers: TableHeader[] = [
-        {text: 'Тикер/ISIN', align: 'left', value: 'ticker'},
-        {text: 'Название', align: 'left', value: 'name'},
-        {text: 'Операция', align: 'left', value: 'operationLabel'},
-        {text: 'Дата', align: 'center', value: 'date'},
-        {text: 'Количество', align: 'right', value: 'quantity', sortable: false},
-        {text: 'Цена', align: 'right', value: 'price', sortable: false},
-        {text: 'Комиссия', align: 'right', value: 'fee'},
-        {text: 'Итого', align: 'right', value: 'signedTotal'}
+        {text: "Тикер/ISIN", align: "left", value: "ticker"},
+        {text: "Название", align: "left", value: "name"},
+        {text: "Операция", align: "left", value: "operationLabel"},
+        {text: "Дата", align: "center", value: "date"},
+        {text: "Количество", align: "right", value: "quantity", sortable: false},
+        {text: "Цена", align: "right", value: "price", sortable: false},
+        {text: "Комиссия", align: "right", value: "fee"},
+        {text: "Итого", align: "right", value: "signedTotal"}
     ];
 
     @Prop({default: [], required: true})
@@ -142,12 +142,12 @@ export class TradesTable extends ui {
     private async deleteAllTrades(tradeRow: TradeRow): Promise<void> {
         const result = await new ConfirmDialog().show(`Вы уверены, что хотите удалить все сделки по ценной бумаге?`);
         if (result === BtnReturn.YES) {
-            console.log('TODO DELETE ALL TRADES');
+            console.log("TODO DELETE ALL TRADES");
         }
     }
 
     private async deleteTrade(tradeRow: TradeRow): Promise<void> {
-        console.log('TODO DELETE TRADE', tradeRow);
+        console.log("TODO DELETE TRADE", tradeRow);
     }
 
     private getPrice(trade: TradeRow): string {
@@ -171,7 +171,7 @@ export type TradePagination = {
     pagination: Pagination,
     totalTrades: number,
     loading: boolean
-}
+};
 
 export type Pagination = {
     descending: boolean,
@@ -179,4 +179,4 @@ export type Pagination = {
     rowsPerPage: number,
     sortBy: string,
     totalItems: number
-}
+};

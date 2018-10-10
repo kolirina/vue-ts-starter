@@ -1,9 +1,9 @@
-import Component from 'vue-class-component';
-import {Action, Getter, namespace} from 'vuex-class/lib/bindings';
-import {ui} from '../app/ui';
-import {ClientInfo, Portfolio, PortfolioParams} from '../types/types';
-import {MutationType} from '../vuex/mutationType';
-import {StoreType} from '../vuex/storeType';
+import Component from "vue-class-component";
+import {Action, Getter, namespace} from "vuex-class/lib/bindings";
+import {UI} from "../app/ui";
+import {ClientInfo, Portfolio, PortfolioParams} from "../types/types";
+import {MutationType} from "../vuex/mutationType";
+import {StoreType} from "../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -22,7 +22,7 @@ const MainStore = namespace(StoreType.MAIN);
         </div>
     `
 })
-export class PortfolioSwitcher extends ui {
+export class PortfolioSwitcher extends UI {
 
     @MainStore.Getter
     private clientInfo: ClientInfo;
@@ -36,7 +36,7 @@ export class PortfolioSwitcher extends ui {
 
     private selected: PortfolioParams = null;
 
-    private async created(): Promise<void> {
+    async created(): Promise<void> {
         this.portfolios = this.clientInfo.user.portfolios;
         this.selected = this.getSelected();
     }
@@ -47,7 +47,7 @@ export class PortfolioSwitcher extends ui {
     }
 
     private getPortfolioName(portfolio: PortfolioParams): string {
-        return `${portfolio.name} (${portfolio.viewCurrency}), ${portfolio.access ? 'Публичный' : 'Закрытый'}`;
+        return `${portfolio.name} (${portfolio.viewCurrency}), ${portfolio.access ? "Публичный" : "Закрытый"}`;
     }
 
     private getSelected(id?: string): PortfolioParams {

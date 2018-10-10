@@ -55,7 +55,7 @@ if (!String.prototype.trim) {
      * @returns {string} обрезанная строка
      */
     String.prototype.trim = function(): string {
-        return this.replace(/^\s+|\s+$/g, '');
+        return this.replace(/^\s+|\s+$/g, "");
     };
 }
 
@@ -73,7 +73,7 @@ String.prototype.isEmpty = function(): boolean {
  * @returns {boolean} {@code true} строка соответствует регулярному выражению, {@code false} иначе
  */
 String.prototype.matches = function(regExp: string): boolean {
-    return !!this.match('^' + regExp + '$');
+    return !!this.match("^" + regExp + "$");
 };
 
 /**
@@ -83,10 +83,10 @@ String.prototype.matches = function(regExp: string): boolean {
  * @returns {string} результирующая строка
  */
 String.prototype.replaceAll = function(regExp: string, replace: string): string {
-    if (typeof regExp !== 'string') {
-        throw new Error('Regular expression must be initialized with string literal');
+    if (typeof regExp !== "string") {
+        throw new Error("Regular expression must be initialized with string literal");
     }
-    return this.replace(new RegExp(regExp, 'g'), replace);
+    return this.replace(new RegExp(regExp, "g"), replace);
 };
 
 /**
@@ -94,7 +94,7 @@ String.prototype.replaceAll = function(regExp: string, replace: string): string 
  * @returns {string} результирующая строка
  */
 String.prototype.deleteWhiteSpaces = function(): string {
- return this.replaceAll(' ', '');
+ return this.replaceAll(" ", "");
 };
 
 /**
@@ -121,5 +121,5 @@ String.prototype.compareTo = function(str: string): number {
  * @returns {string} результирующая строка
  */
 String.prototype.escapeSpecChars = function(): string {
-    return this.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, '\\$1');
+    return this.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
 };

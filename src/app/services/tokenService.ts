@@ -1,8 +1,8 @@
-import {Singleton} from 'typescript-ioc';
-import {Service} from '../platform/decorators/service';
-import {HTTP} from '../platform/services/http';
+import {Singleton} from "typescript-ioc";
+import {Service} from "../platform/decorators/service";
+import {HTTP} from "../platform/services/http";
 
-@Service('TokenService')
+@Service("TokenService")
 @Singleton
 export class TokenService {
 
@@ -13,7 +13,7 @@ export class TokenService {
      * @returns {Promise<void>}
      */
     async generateToken(username: string, validTill: string): Promise<string> {
-        return (await HTTP.INSTANCE.post('/token/share-portfolio', {username, validTill})).data.token;
+        return (await HTTP.INSTANCE.post("/token/share-portfolio", {username, validTill})).data.token;
     }
 }
 

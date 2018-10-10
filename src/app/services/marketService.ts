@@ -1,17 +1,17 @@
-import {Singleton} from 'typescript-ioc';
-import {Service} from '../platform/decorators/service';
-import {HTTP} from '../platform/services/http';
-import {BaseChartDot, ColumnChartData, ColumnDataSeries, Dot, EventChartData, HighStockEventData, HighStockEventsGroup} from '../types/charts/types';
-import {Bond, BondInfo, Share, Stock, StockInfo} from '../types/types';
-import {ChartUtils} from '../utils/chartUtils';
+import {Singleton} from "typescript-ioc";
+import {Service} from "../platform/decorators/service";
+import {HTTP} from "../platform/services/http";
+import {BaseChartDot, ColumnChartData, ColumnDataSeries, Dot, EventChartData, HighStockEventData, HighStockEventsGroup} from "../types/charts/types";
+import {Bond, BondInfo, Share, Stock, StockInfo} from "../types/types";
+import {ChartUtils} from "../utils/chartUtils";
 
-@Service('MarketService')
+@Service("MarketService")
 @Singleton
 export class MarketService {
 
     async searchStocks(query: string): Promise<Share[]> {
-        console.log('searchStocks');
-        const result: Share[] = (await HTTP.INSTANCE.get('/market/stocks/search', {
+        console.log("searchStocks");
+        const result: Share[] = (await HTTP.INSTANCE.get("/market/stocks/search", {
             params: {
                 query
             }
@@ -20,8 +20,8 @@ export class MarketService {
     }
 
     async searchBonds(query: string): Promise<Share[]> {
-        console.log('searchBonds');
-        const result: Share[] = (await HTTP.INSTANCE.get('/market/bonds/search', {
+        console.log("searchBonds");
+        const result: Share[] = (await HTTP.INSTANCE.get("/market/bonds/search", {
             params: {
                 query
             }
@@ -60,15 +60,15 @@ export class MarketService {
     private convertStockEvents(events: BaseChartDot[], ticker: string): HighStockEventsGroup {
         const data: HighStockEventData[] = [];
         events.forEach(dot => {
-            data.push({text: `Дивиденд на сумму ${dot.amount}`, title: 'D', x: new Date(dot.date).getTime()});
+            data.push({text: `Дивиденд на сумму ${dot.amount}`, title: "D", x: new Date(dot.date).getTime()});
         });
         return {
-            type: 'flags',
+            type: "flags",
             data: data,
-            onSeries: 'dataseries',
-            shape: 'circlepin',
-            color: '#93D8FF',
-            fillColor: '#93D8FF',
+            onSeries: "dataseries",
+            shape: "circlepin",
+            color: "#93D8FF",
+            fillColor: "#93D8FF",
             stackDistance: 20,
             width: 10
         };
@@ -83,19 +83,19 @@ export class MarketService {
         data.forEach(eventItem => {
             categoryNames.push(eventItem.date);
             // тип выплаты: купон, амортизация, погашение
-            const paymentType = eventItem.description.substring(0, eventItem.description.indexOf(':'));
+            const paymentType = eventItem.description.substring(0, eventItem.description.indexOf(":"));
             paymentTypes[paymentType] = paymentType;
         });
 
         const result: { [key: string]: ColumnDataSeries } = {};
         // раскладываем по массивам с пустыми блоками: Купон: [10, 20, 30, null], Амортизация: [null, null, null, 100]
         data.forEach(eventItem => {
-            const paymentType = eventItem.description.substring(0, eventItem.description.indexOf(':'));
+            const paymentType = eventItem.description.substring(0, eventItem.description.indexOf(":"));
             Object.keys(paymentTypes).forEach(key => {
                 result[key] = result[key] || {name: key, data: []};
-                const paymentType = eventItem.description.substring(0, eventItem.description.indexOf(':'));
+                const paymentType = eventItem.description.substring(0, eventItem.description.indexOf(":"));
                 if (key === paymentType) {
-                    result[key].data.push(parseFloat(eventItem.description.substring(eventItem.description.indexOf(' ') + 1, eventItem.description.length)));
+                    result[key].data.push(parseFloat(eventItem.description.substring(eventItem.description.indexOf(" ") + 1, eventItem.description.length)));
                 } else {
                     result[key].data.push(null);
                 }

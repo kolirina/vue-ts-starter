@@ -1,12 +1,12 @@
-import {Container} from 'typescript-ioc';
-import {ActionContext, Module} from 'vuex';
-import {HTTP} from '../platform/services/http';
-import {Storage} from '../platform/services/storage';
-import {PortfolioService} from '../services/portfolioService';
-import {StoreKeys} from '../types/storeKeys';
-import {ClientInfo, Portfolio} from '../types/types';
-import {GetterType} from './getterType';
-import {MutationType} from './mutationType';
+import {Container} from "typescript-ioc";
+import {ActionContext, Module} from "vuex";
+import {HTTP} from "../platform/services/http";
+import {Storage} from "../platform/services/storage";
+import {PortfolioService} from "../services/portfolioService";
+import {StoreKeys} from "../types/storeKeys";
+import {ClientInfo, Portfolio} from "../types/types";
+import {GetterType} from "./getterType";
+import {MutationType} from "./mutationType";
 
 /** Сервис работы с клиентом */
 const portfolioService: PortfolioService = Container.get(PortfolioService);
@@ -20,7 +20,7 @@ export class StateHolder {
     /** Текущий выбранный портфель */
     currentPortfolio: Portfolio = null;
     /** Версия стора */
-    version = '1.0';
+    version = "1.0";
 }
 
 const Getters = {
@@ -50,13 +50,13 @@ const Actions = {
         localStorage.set(StoreKeys.TOKEN_KEY, clientInfo.token);
         HTTP.init();
         context.commit(MutationType.SET_CLIENT_INFO, clientInfo);
-        console.log('ACTION SET USER', clientInfo, context);
+        console.log("ACTION SET USER", clientInfo, context);
     },
     [MutationType.SET_CURRENT_PORTFOLIO](context: ActionContext<StateHolder, void>, id: string): Promise<Portfolio> {
         portfolioService.setDefaultPortfolio(id).then();
         return new Promise<Portfolio>((resolve) => {
             portfolioService.getById(id).then((portfolio: Portfolio) => {
-                console.log('ACTION SET PORTFOLIO', portfolio, context);
+                console.log("ACTION SET PORTFOLIO", portfolio, context);
                 context.commit(MutationType.SET_CURRENT_PORTFOLIO, portfolio);
                 resolve(portfolio);
             });

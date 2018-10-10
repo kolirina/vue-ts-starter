@@ -1,7 +1,7 @@
-import axios, {AxiosInstance} from 'axios';
-import {Container} from 'typescript-ioc';
-import {StoreKeys} from '../../types/storeKeys';
-import {Storage} from './storage';
+import axios, {AxiosInstance} from "axios";
+import {Container} from "typescript-ioc";
+import {StoreKeys} from "../../types/storeKeys";
+import {Storage} from "./storage";
 
 /** Сервис работы с localStorage */
 const localStorage: Storage = Container.get(Storage);
@@ -15,8 +15,8 @@ export class HTTP {
         HTTP._INSTANCE = axios.create({
             baseURL: `${window.location.protocol}//${window.location.host}/api`,
             headers: {
-                Authorization: token ? `Bearer ${token}` : '',
-                'Content-Type': 'application/json'
+                Authorization: token ? `Bearer ${token}` : "",
+                "Content-Type": "application/json"
             }
         });
     }

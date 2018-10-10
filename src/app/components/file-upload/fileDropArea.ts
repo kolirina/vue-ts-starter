@@ -41,7 +41,6 @@ export class FileDropArea extends UI {
         });
 
         // обработка события drop. См. https://gitlab.com/meno/dropzone/blob/master/src/dropzone.js
-        // tslint:disable-next-line
         EventUtils.addEventListener(this.$el, "drop", (e: any): void => {
             if (!e.dataTransfer) {
                 return;

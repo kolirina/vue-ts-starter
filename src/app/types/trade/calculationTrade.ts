@@ -1,6 +1,6 @@
-import {Decimal} from 'decimal.js';
-import {Trade} from './trade';
-import {TradeDataHolder} from './tradeDataHolder';
+import {Decimal} from "decimal.js";
+import {Trade} from "./trade";
+import {TradeDataHolder} from "./tradeDataHolder";
 
 export class CalculationTrade implements Trade {
 
@@ -9,7 +9,7 @@ export class CalculationTrade implements Trade {
     }
 
     totalWithoutFee(holder: TradeDataHolder): string {
-        if (holder.getPrice() && holder.getQuantity() && holder.getQuantity() != 0) {
+        if (holder.getPrice() && holder.getQuantity() && holder.getQuantity() !== 0) {
             let amount = new Decimal(holder.getPrice());
             const quantity = new Decimal(holder.getQuantity());
             if (!holder.isPerOne()) {

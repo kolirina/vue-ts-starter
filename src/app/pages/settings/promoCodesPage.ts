@@ -1,11 +1,11 @@
-import {Inject} from 'typescript-ioc';
-import Component from 'vue-class-component';
-import {Watch} from 'vue-property-decorator';
-import {namespace} from 'vuex-class/lib/bindings';
-import {ui} from '../../app/ui';
-import {ClientService} from '../../services/clientService';
-import {ClientInfo} from '../../types/types';
-import {StoreType} from '../../vuex/storeType';
+import {Inject} from "typescript-ioc";
+import Component from "vue-class-component";
+import {Watch} from "vue-property-decorator";
+import {namespace} from "vuex-class/lib/bindings";
+import {UI} from "../../app/ui";
+import {ClientService} from "../../services/clientService";
+import {ClientInfo} from "../../types/types";
+import {StoreType} from "../../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -42,7 +42,7 @@ const MainStore = namespace(StoreType.MAIN);
         </v-container>
     `
 })
-export class PromoCodesPage extends ui {
+export class PromoCodesPage extends UI {
 
     @MainStore.Getter
     private clientInfo: ClientInfo;
@@ -50,13 +50,13 @@ export class PromoCodesPage extends ui {
     @Inject
     private clientService: ClientService;
 
-    private async mounted(): Promise<void> {
+    async mounted(): Promise<void> {
 
     }
 
-    @Watch('clientInfo.user.referralAwardType')
+    @Watch("clientInfo.user.referralAwardType")
     private async onReferralAwardTypeChange(): Promise<void> {
-        console.log('change', this.clientInfo.user.referralAwardType);
+        console.log("change", this.clientInfo.user.referralAwardType);
         await this.clientService.changeReferralAwardType(this.clientInfo.user.referralAwardType);
     }
 

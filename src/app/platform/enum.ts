@@ -11,7 +11,7 @@ export function Enum(idProperty?: string) {
     return function <T extends Function, V>(target: T): T {
         if ((target as any).__enumMap__ || (target as any).__enumValues__) {
             const enumName = (target as any).prototype.constructor.name;
-            throw new Error('Перечисление ' + enumName + ' уже инициализировано');
+            throw new Error("Перечисление " + enumName + " уже инициализировано");
         }
         const enumMap: any = {};
         const enumMapByName: any = {};
@@ -24,31 +24,31 @@ export function Enum(idProperty?: string) {
                 let id;
                 if (idProperty) {
                     id = (value as any)[idProperty];
-                    if (typeof id !== 'string' && typeof id !== 'number') {
+                    if (typeof id !== "string" && typeof id !== "number") {
                         const enumName = (target as any).prototype.constructor.name;
-                        throw new Error('Значение свойства ' + idProperty + ' в элементе перечисления ' + enumName + '.' + key +
-                            ' не является строкой или числом: ' + id);
+                        throw new Error("Значение свойства " + idProperty + " в элементе перечисления " + enumName + "." + key +
+                            " не является строкой или числом: " + id);
                     }
                 } else {
                     id = key;
                 }
                 if (enumMap[id]) {
                     const enumName = (target as any).prototype.constructor.name;
-                    throw new Error('В перечислении ' + enumName + ' уже существует элемент с идентификатором ' + id + ': ' +
-                        enumName + '.' + enumMap[id].__enumName__);
+                    throw new Error("В перечислении " + enumName + " уже существует элемент с идентификатором " + id + ": " +
+                        enumName + "." + enumMap[id].__enumName__);
                 }
                 enumMap[id] = value;
                 enumMapByName[key] = value;
                 enumValues.push(value);
-                Object.defineProperty(value, '__enumName__', {value: key});
+                Object.defineProperty(value, "__enumName__", {value: key});
                 Object.freeze(value);
             }
         }
         Object.freeze(enumMap);
         Object.freeze(enumValues);
-        Object.defineProperty(target, '__enumMap__', {value: enumMap});
-        Object.defineProperty(target, '__enumMapByName__', {value: enumMapByName});
-        Object.defineProperty(target, '__enumValues__', {value: enumValues});
+        Object.defineProperty(target, "__enumMap__", {value: enumMap});
+        Object.defineProperty(target, "__enumMapByName__", {value: enumMapByName});
+        Object.defineProperty(target, "__enumValues__", {value: enumValues});
         Object.freeze(target);
         return target;
     };
@@ -59,7 +59,7 @@ export function Enum(idProperty?: string) {
  */
 export interface IStaticEnum<T> {
 
-    new(): {enumName: string};
+    new(): { enumName: string };
 
     values(): ReadonlyArray<T>;
 
@@ -80,7 +80,7 @@ class Enumerable {
         const clazz = this.constructor as any;
         if (clazz.__enumMap__ || clazz.__enumValues__ || clazz.__enumMapByName__) {
             const enumName = clazz.name;
-            throw new Error('Запрещено создавать элементы перечисления ' + enumName + ' вне самого перечисления');
+            throw new Error("Запрещено создавать элементы перечисления " + enumName + " вне самого перечисления");
         }
     }
 
@@ -92,7 +92,7 @@ class Enumerable {
     static values(): ReadonlyArray<any> {
         if (!(this as any).__enumValues__) {
             const enumName = (this as any).prototype.constructor.name;
-            throw new Error('Перечисление ' + enumName + ' не инициализировано. Необходимо добавить к классу декоратор @Enum.');
+            throw new Error("Перечисление " + enumName + " не инициализировано. Необходимо добавить к классу декоратор @Enum.");
         }
         return (this as any).__enumValues__;
     }
@@ -108,12 +108,12 @@ class Enumerable {
     static valueOf(id: string | number): any {
         if (!(this as any).__enumMap__) {
             const enumName = (this as any).prototype.constructor.name;
-            throw new Error('Перечисление ' + enumName + ' не инициализировано. Необходимо добавить к классу декоратор @Enum.');
+            throw new Error("Перечисление " + enumName + " не инициализировано. Необходимо добавить к классу декоратор @Enum.");
         }
         const value = (this as any).__enumMap__[id];
         if (!value) {
             const enumName = (this as any).prototype.constructor.name;
-            throw new Error('В перечислении ' + enumName + ' не существует элемента с идентификатором ' + id);
+            throw new Error("В перечислении " + enumName + " не существует элемента с идентификатором " + id);
         }
         return value;
     }
@@ -128,12 +128,12 @@ class Enumerable {
     static valueByName(name: string): any {
         if (!(this as any).__enumMapByName__) {
             const enumName = (this as any).prototype.constructor.name;
-            throw new Error('Перечисление ' + enumName + ' не инициализировано. Необходимо добавить к классу декоратор @Enum.');
+            throw new Error("Перечисление " + enumName + " не инициализировано. Необходимо добавить к классу декоратор @Enum.");
         }
         const value = (this as any).__enumMapByName__[name];
         if (!value) {
             const enumName = (this as any).prototype.constructor.name;
-            throw new Error('В перечислении ' + enumName + ' не существует элемента с наименованием ' + name);
+            throw new Error("В перечислении " + enumName + " не существует элемента с наименованием " + name);
         }
         return value;
     }
@@ -146,4 +146,5 @@ class Enumerable {
     }
 }
 
-export const EnumType = class extends Enumerable {};
+export const EnumType = class extends Enumerable {
+};

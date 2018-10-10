@@ -1,9 +1,9 @@
 /**
  * Кнопка, которую можно перевести в режим ввода текста
  */
-import Component from 'vue-class-component';
-import {Model, Prop, Watch} from 'vue-property-decorator';
-import {ui} from '../app/ui';
+import Component from "vue-class-component";
+import {Model, Prop, Watch} from "vue-property-decorator";
+import {UI} from "../app/ui";
 
 @Component({
     // language=Vue
@@ -39,7 +39,7 @@ import {ui} from '../app/ui';
         </div>
     `
 })
-export class InputButton extends ui {
+export class InputButton extends UI {
 
     $refs: {
         /** Поле ввода */
@@ -47,7 +47,7 @@ export class InputButton extends ui {
     };
 
     /** Значение поля ввода */
-    @Model('input', {type: String, required: true})
+    @Model("input", {type: String, required: true})
     private value: string;
 
     /**
@@ -62,7 +62,7 @@ export class InputButton extends ui {
     private initValue: string;
 
     /** Текст на кнопке */
-    @Prop({type: String, default: ''})
+    @Prop({type: String, default: ""})
     private text: string;
 
     /** Максимальная длина текста в поле ввода */
@@ -70,11 +70,11 @@ export class InputButton extends ui {
     private maxLength: number;
 
     /** Текст для отображения на фоне поля ввода */
-    @Prop({type: String, default: ''})
+    @Prop({type: String, default: ""})
     private placeholder: string;
 
     /** Класс иконки для отображения на кнопке отправки */
-    @Prop({type: String, default: 'fa-check'})
+    @Prop({type: String, default: "fa-check"})
     private iconClass: string;
 
     /** Отображать ли компонент в режиме выполнения операции */
@@ -85,10 +85,10 @@ export class InputButton extends ui {
      * Обрабатывает изменение параметра отображения компонента в режиме ввода текста
      * @param {boolean} newInputMode новое значение параметра
      */
-    @Watch('inputMode')
+    @Watch("inputMode")
     private onInputModeChange(newInputMode: boolean): void {
         if (newInputMode) {
-            this.$emit('input', this.initValue);
+            this.$emit("input", this.initValue);
             this.$nextTick(() => {
                 const input = this.$refs.input;
                 input.focus();
@@ -104,7 +104,7 @@ export class InputButton extends ui {
         if (this.progress) {
             return;
         }
-        this.$emit('update:inputMode', false);
+        this.$emit("update:inputMode", false);
     }
 
     /**
@@ -117,7 +117,7 @@ export class InputButton extends ui {
         if (this.value && this.value !== this.initValue) {
             return;
         }
-        this.$emit('update:inputMode', false);
+        this.$emit("update:inputMode", false);
     }
 
     /**
@@ -130,6 +130,6 @@ export class InputButton extends ui {
         if (!this.value) {
             return;
         }
-        this.$emit('submit', this.value);
+        this.$emit("submit", this.value);
     }
 }
