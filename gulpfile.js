@@ -8,6 +8,7 @@ const sass = require('gulp-sass');
 const webpack = require('webpack-stream');
 var compiler = require('webpack');
 const gutil = require('gulp-util');
+const rename = require('gulp-rename');
 const notifier = require('node-notifier');
 
 gulp.task('sripts', () =>
@@ -25,6 +26,18 @@ gulp.task('sripts', () =>
 gulp.task('assets', () => {
     gulp.src('./src/assets/favicons/*.*')
         .pipe(gulp.dest('dist/favicons'));
+
+    gulp.src('./node_modules/@fortawesome/fontawesome-free/css/all.css')
+        .pipe(rename("fontawesome.css"))
+        .pipe(minifyCSS())
+        .pipe(gulp.dest('dist/css'));
+
+    gulp.src('./node_modules/vuetify/dist/vuetify.css')
+        .pipe(minifyCSS())
+        .pipe(gulp.dest('dist/css'));
+
+    gulp.src('./node_modules/@fortawesome/fontawesome-free/webfonts/*.*')
+        .pipe(gulp.dest('dist/webfonts'));
 
     return gulp.src('./index.html')
         .pipe(gulp.dest('dist'));
