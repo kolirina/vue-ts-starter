@@ -1,0 +1,30 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html">
+
+    <p>
+        Перейдите на сайт<h:outputLink value="https://www.tinkoff.ru/">https://www.tinkoff.ru</h:outputLink>,
+        в правой панели выберите <b>Брокерский счет</b>. Перейдите на вкладку <b>О счете</b>
+        далее вкладка <b>Отчеты и справки</b>.
+        <br></br>
+        <p:lightBox styleClass="imagebox">
+            <h:outputLink value="/main/settings/import_instructions/tinkoff/1.png" title="Главное окно">
+                <h:graphicImage value="/main/settings/import_instructions/tinkoff/1.png" style="height: 104px; width: 178px"/>
+            </h:outputLink>
+        </p:lightBox>
+        Убедитесь что подготавливаите отчет в формате Тинькофф банка.
+        Настройте параметры отчета:
+        <ul>
+            <li>Укажите месяц</li>
+            <li>Год</li>
+            <li>Нажмите кнопку <b><i>Скачать</i></b></li>
+        </ul>
+        <p:lightBox styleClass="imagebox">
+            <h:outputLink value="/main/settings/import_instructions/tinkoff/2.png" title="отчет">
+                <h:graphicImage value="/main/settings/import_instructions/tinkoff/2.png" style="height: 104px; width: 178px"/>
+            </h:outputLink>
+        </p:lightBox>
+        Полученный файл используйте для импорта.
+    </p>
+</ui:composition>

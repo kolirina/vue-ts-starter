@@ -1,0 +1,32 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html">
+    <p>
+        Зайти в Личный кабинет, нажать на "Отчетность", выбрать "Отчетность (БКС Россия)" если работаем с Московской биржей.
+        <p:lightBox styleClass="imagebox">
+            <h:outputLink value="/main/settings/import_instructions/bcs/1.jpg" title="меню">
+                <h:graphicImage value="/main/settings/import_instructions/bcs/1.jpg" style="height: 77px; width: 210px"/>
+            </h:outputLink>
+        </p:lightBox>
+        В строке с типом отчета можно выбрать ежедневный, ежемесячный и с начала текущего месяца.
+        <p:lightBox styleClass="imagebox">
+            <h:outputLink value="/main/settings/import_instructions/bcs/2.jpg" title="отчеты1">
+                <h:graphicImage value="/main/settings/import_instructions/bcs/2.jpg" style="height: 77px; width: 160px"/>
+            </h:outputLink>
+        </p:lightBox>
+        В ежемесячном типе отчета можно выбрать период по месяцам и годам. С начала текущего месяца отчет нужно запрашивать, нажав на "Запросить".
+        Ниже будут представлены отчеты за выбранный период времени.
+        <p:lightBox styleClass="imagebox">
+            <h:outputLink value="/main/settings/import_instructions/bcs/3.jpg" title="отчеты2">
+                <h:graphicImage value="/main/settings/import_instructions/bcs/3.jpg" style="height: 77px; width: 160px"/>
+            </h:outputLink>
+        </p:lightBox>
+        Выбираем нужный, открываем, и он скачивается в формате xls.
+        <p:lightBox styleClass="imagebox">
+            <h:outputLink value="/main/settings/import_instructions/bcs/4.jpg" title="отчеты3">
+                <h:graphicImage value="/main/settings/import_instructions/bcs/4.jpg" style="height: 77px; width: 160px"/>
+            </h:outputLink>
+        </p:lightBox>
+    </p>
+</ui:composition>

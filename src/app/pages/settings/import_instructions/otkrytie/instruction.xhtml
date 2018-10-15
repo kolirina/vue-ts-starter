@@ -1,0 +1,32 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html">
+
+    <p>
+        Перейдите в личный кабинет брокера, в раздел <b>Отчеты и Налоги</b>. Перейдите на вкладку <b>Официальная отчетность</b>
+        далее вкладка <b>Отчеты и справки</b>.
+        <br></br>
+        Настройте параметры отчета:
+        <ul>
+            <li><i>Тип отчета / справки</i> выберите пункт <i>Брокерский отчет</i></li>
+            <li>Выберите нужный инвестиционный счет</li>
+            <li>Портфель</li>
+            <li>Укажите период</li>
+            <li>Укажите формат отчета <b><i>xml</i></b></li>
+            <li>Нажмите кнопку <b><i>Заказать отчет / справку</i></b></li>
+        </ul>
+        <p:lightBox styleClass="imagebox">
+            <h:outputLink value="/main/settings/import_instructions/otkrytie/1.png" title="Главное окно">
+                <h:graphicImage value="/main/settings/import_instructions/otkrytie/1.png" style="height: 77px; width: 100px"/>
+            </h:outputLink>
+        </p:lightBox>
+        После успешного формирования отчета он появится в таблице ниже в статусе готово.
+        <p:lightBox styleClass="imagebox">
+            <h:outputLink value="/main/settings/import_instructions/otkrytie/2.png" title="меню">
+                <h:graphicImage value="/main/settings/import_instructions/otkrytie/2.png" style="height: 77px; width: 320px"/>
+            </h:outputLink>
+        </p:lightBox>
+        Полученный файл используйте для импорта.
+    </p>
+</ui:composition>
