@@ -433,3 +433,7 @@ export type ErrorFieldInfo = {
     errorCode: string,
     errorMessage: string
 };
+
+export enum Status {
+    SUCCESS, WARN, ERROR
+}

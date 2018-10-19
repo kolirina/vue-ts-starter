@@ -2,8 +2,9 @@ import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
-import {ImportService} from "../../services/importService";
-import {ClientInfo, Portfolio} from "../../types/types";
+import {ImportGeneralErrorDialog} from "../../components/dialogs/importGeneralErrorDialog";
+import {ImportResponse, ImportService} from "../../services/importService";
+import {ClientInfo, Portfolio, Status} from "../../types/types";
 import {StoreType} from "../../vuex/storeType";
 import {ImportInstructions} from "./importInstructions";
 
@@ -25,7 +26,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </p>
                         <p>
                             Если в списке нет вашего брокера или терминала, вы всегда можете осуществить импорт через универсальный формат
-                            <p:commandLink value="CSV" onclick="selectCsvFormat('INTELINVEST')"/>
+                            <a @click="selectedProvider = providers.INTELINVEST">CSV</a>
                             или обратиться к нам через обратную связь, по <a href="mailto:web@intelinvest.ru" target="_blank">почте</a> или
                             в группе <a href="http://vk.com/intelinvest" target="_blank">вконтакте</a>.
                         </p>
@@ -35,7 +36,7 @@ const MainStore = namespace(StoreType.MAIN);
                              :class="['item', provider.toLowerCase(), selectedProvider === provider ? 'active' : '']"></div>
                     </div>
 
-                    <import-instructions :provider="selectedProvider"></import-instructions>
+                    <import-instructions :provider="selectedProvider" @selectProvider="onSelectProvider"></import-instructions>
 
                     <div class="attachments">
                         <file-drop-area @drop="onFileAdd" class="attachments-file-drop">
@@ -84,18 +85,34 @@ export class ImportPage extends UI {
     }
 
     private async uploadFile(): Promise<void> {
-        if (this.files && this.files.length) {
+        if (this.files && this.files.length && this.selectedProvider) {
             const data = new FormData();
             this.files.forEach(file => data.append("files", file, file.name));
-            await this.importService.importReport("INTELINVEST", this.portfolio.id, data);
+            // const response = await this.importService.importReport(this.selectedProvider, this.portfolio.id, data);
+            // this.handleUploadResponse(response);
+            this.handleUploadResponse({} as ImportResponse);
         }
+    }
+
+    private async handleUploadResponse(response: ImportResponse): Promise<void> {
+        response.generalError = "Неверный формат отчета";
+        if (response.generalError) {
+            await new ImportGeneralErrorDialog().show({generalError: response.generalError});
+        }
+    }
+
+    /**
+     * Обрабатывает событие выбора провайдера из стороннего компонента
+     * @param provider выбранный провайдер
+     */
+    private onSelectProvider(provider: DealsImportProvider): void {
+        this.selectedProvider = provider;
     }
 }
 
 /** Форматы поддерживаемых брокеров и отчетов */
 export enum DealsImportProvider {
     ALFADIRECT = "ALFADIRECT",
-    QUIK = "QUIK",
     ITINVEST = "ITINVEST",
     OTKRYTIE = "OTKRYTIE",
     ZERICH = "ZERICH",
@@ -112,5 +129,6 @@ export enum DealsImportProvider {
     TINKOFF = "TINKOFF",
     NETTRADER = "NETTRADER",
     INTELINVEST = "INTELINVEST",
-    ATON = "ATON"
+    ATON = "ATON",
+    QUIK = "QUIK"
 }

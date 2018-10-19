@@ -1,12 +1,28 @@
 # intelinvest frontend
 
-development mode
+development mode with webpack
 
 ```
 npm run build -- --watch
 ```
 
-start local json-server
+development mode with gulp (recommended)
+
+```
+gulp --env dep
+```
+or
+```
+gulp --env dep
+```
+to start prod version build
+
+##build project
+```
+gulp build
+```
+
+##start local json-server
 
 ```
 json-server --watch db.json --routes routes.json --port 8080
