@@ -7,13 +7,14 @@ npm run build -- --watch
 ```
 
 development mode with gulp (recommended)
+В этом режиме запустится browserSync, по умолчанию порт 3000
 
 ```
-gulp --env dep
+gulp --env development
 ```
-or
+перейти
 ```
-gulp --env dep
+http://localhost:3000/frontend/index.html#/portfolio
 ```
 to start prod version build
 

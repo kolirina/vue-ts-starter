@@ -19,7 +19,6 @@ const MainStore = namespace(StoreType.MAIN);
             <v-card>
                 <v-card-text>
                     <div class="import-wrapper">
-                        <!--<h:form>-->
                         <h1>Импорт сделок</h1>
                         <p>
                             Здесь вы можете быстро перенести все ваши сделки в автоматическом режиме. Для этого выберите вашего брокера или торговый терминал и

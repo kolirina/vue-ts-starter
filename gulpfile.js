@@ -10,6 +10,8 @@ const compiler = require('webpack');
 const gutil = require('gulp-util');
 const rename = require('gulp-rename');
 const notifier = require('node-notifier');
+const browserSync = require('browser-sync');
+const reload = browserSync.reload;
 const webpackConfig = require('./webpack.config.js');
 
 const TARGET_DIR = args.env === "development" ? "C:/_workspace/intelinvest_repo/intelinvest_maven/target/intelinvest_maven-2.0/frontend" : "dist";
@@ -30,7 +32,8 @@ gulp.task('scripts', () => {
         .on('error', function handleError() {
             this.emit('end'); // Recover from errors
         })
-        .pipe(gulp.dest(TARGET_DIR));
+        .pipe(gulp.dest(TARGET_DIR))
+        .pipe(reload({stream: true}));
 });
 
 gulp.task('assets', () => {
@@ -53,7 +56,8 @@ gulp.task('assets', () => {
         .pipe(gulp.dest(TARGET_DIR + '/img'));
 
     return gulp.src('./index.html')
-        .pipe(gulp.dest(TARGET_DIR));
+        .pipe(gulp.dest(TARGET_DIR))
+        .pipe(reload({stream: true}));
 });
 
 // Компиляция SCSS
@@ -61,13 +65,20 @@ gulp.task('css', () =>
     gulp.src('./src/assets/scss/index.scss')
         .pipe(sass({outputStyle: 'compressed'}))
         .pipe(minifyCSS())
-        .pipe(gulp.dest(TARGET_DIR + '/css')));
+        .pipe(gulp.dest(TARGET_DIR + '/css'))
+        .pipe(reload({stream: true})));
 
 // Основной таск сборки
 gulp.task("build", ["scripts", "css", "assets"]);
 
 /** Таск с watch */
 gulp.task('default', ['build', "css", "assets"], () => {
+    browserSync.init({
+        proxy: "localhost:8080",
+        port: 3000,
+        open: true,
+        notify: false
+    });
     gulp.watch(['src/**/*.ts'], ['build']);
     gulp.watch(['src/assets/scss/**/*.scss'], ['css']);
     gulp.watch(['*.html'], ['assets']);

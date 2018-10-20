@@ -10,10 +10,9 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-container fluid>
-            Экспорт
             <v-card>
                 <v-card-text>
-
+                    <h1>Экспорт сделок</h1>
                 </v-card-text>
             </v-card>
         </v-container>
