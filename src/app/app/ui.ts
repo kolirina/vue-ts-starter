@@ -16,8 +16,7 @@ Component.registerHooks([
 export {Component, Emit, Model, Prop, Watch};
 export {Action, Getter, Mutation, namespace, State};
 
-// @ts-ignore: TS2559: Type 'UI' has no properties in common with type 'IComponentLifecycle'.
-export class UI extends Vue implements IComponentLifecycle, IComponentRoutingLifecycle {
+export class UI extends Vue {
 
     /** Глобальная шина событий */
     private static eventBus = new Vue();

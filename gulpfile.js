@@ -10,12 +10,15 @@ const compiler = require('webpack');
 const gutil = require('gulp-util');
 const rename = require('gulp-rename');
 const notifier = require('node-notifier');
+const webpackConfig = require('./webpack.config.js');
 
-const TARGET_DIR = args.env === "dev" ? "C:/_workspace/intelinvest_repo/intelinvest_maven/target/intelinvest_maven-2.0/frontend" : "dist";
+const TARGET_DIR = args.env === "development" ? "C:/_workspace/intelinvest_repo/intelinvest_maven/target/intelinvest_maven-2.0/frontend" : "dist";
+webpackConfig.mode = args.env;
+webpackConfig.watch = args.watch;
 
-gulp.task('scripts', () =>
-    gulp.src('./src/index.ts')
-        .pipe(webpack(require('./webpack.config.js')), compiler, (err, stats) => {
+gulp.task('scripts', () => {
+    return gulp.src('./src/index.ts')
+        .pipe(webpack(webpackConfig), compiler, (err, stats) => {
             if (error) { // кажется еще не сталкивался с этой ошибкой
                 onError(error);
             } else if (stats.hasErrors()) { // ошибки в самой сборке, к примеру "не удалось найти модуль по заданному пути"
@@ -23,7 +26,12 @@ gulp.task('scripts', () =>
             } else {
                 onSuccess(stats.toString(statsLog));
             }
-        }).pipe(gulp.dest(TARGET_DIR)));
+        })
+        .on('error', function handleError() {
+            this.emit('end'); // Recover from errors
+        })
+        .pipe(gulp.dest(TARGET_DIR));
+});
 
 gulp.task('assets', () => {
     gulp.src('./src/assets/favicons/*.*')

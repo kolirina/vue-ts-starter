@@ -42,6 +42,16 @@ export class PortfolioService {
     }
 
     /**
+     * Перезагружает портфель
+     * @param id идентификатор портфеля
+     */
+    async reloadPortfolio(id: string): Promise<Portfolio> {
+        const portfolio = await this.loadPortfolio(id);
+        this.cache[id] = portfolio;
+        return portfolio;
+    }
+
+    /**
      * Возвращает данные по комбинированному портфелю
      * @param request
      * @return {Promise<>}

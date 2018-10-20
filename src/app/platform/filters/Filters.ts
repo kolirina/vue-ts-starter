@@ -1,6 +1,6 @@
 import {Decimal} from "decimal.js";
 import {BigMoney} from "../../types/bigMoney";
-import {DateUtils} from "../../utils/dateUtils";
+import {DateFormat, DateUtils} from "../../utils/dateUtils";
 
 const DEFAULT_SCALE = 2;
 const MAX_SCALE = 3;
@@ -35,7 +35,23 @@ export class Filters {
      * @param {string} format      формат отображаемой даты
      * @returns {string} отформатированая дата
      */
-    static formatDate(date: string, format: string): string {
+    static formatDate(date: string, format = DateFormat.DATE): string {
         return DateUtils.parseDate(date).format(format);
+    }
+
+    static declension(count: number, one: string, two: string, five: string) {
+        count = Math.abs(count);
+        count %= 100;
+        if (count >= 5 && count <= 20) {
+            return five;
+        }
+        count %= 10;
+        if (count == 1) {
+            return one;
+        }
+        if (count >= 2 && count <= 4) {
+            return two;
+        }
+        return five;
     }
 }

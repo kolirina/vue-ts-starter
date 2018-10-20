@@ -15,6 +15,7 @@ const mainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-app id="inspire" light>
+            <vue-snotify></vue-snotify>
             <template v-if="!isInitialized">
                 <v-content>
                     <v-container fluid fill-height>

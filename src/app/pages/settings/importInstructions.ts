@@ -138,7 +138,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </div>
             </div>
 
-            <div class="common-instructions">
+            <div v-if="provider" class="common-instructions">
                 <p v-if="provider !== providers.ATON" style="margin-top: 30px;">
                     Из отчета будут импортированы записи по сделками с ценными бумагами и движения денежных средств.
                     Дивиденды, купоны, амортизация и погашение будут автоматически добавлены при успешном импорте.
@@ -158,8 +158,7 @@ const MainStore = namespace(StoreType.MAIN);
                 <p v-if="portfolio.overview.totalTradesCount" style="text-align: center;padding: 20px;">
                     <b>
                         Последняя зарегистрированная сделка в портфеле от
-                        <!-- TODO дата последней сделки -->
-                        <i>ДАТА ПОСЛЕДНЕЙ СДЕЛКИ</i>.
+                        <i>{{ lastTradeDate | date }}</i>.
                         Во избежание задвоений загружайте отчет со сделками позже этой даты.
                     </b>
                 </p>
@@ -179,15 +178,16 @@ export class ImportInstructions extends UI {
     private portfolio: Portfolio;
     /** Провайдеры отчетов */
     private providers = DealsImportProvider;
-    @Prop({required: true})
-    private provider: DealsImportProvider = null;
+    @Prop()
+    private provider: DealsImportProvider;
+    @Prop({type: String})
+    private lastTradeDate: string;
 
     /**
      * Отправляет событие выбора провайдера
      * @param provider
      */
     private selectProvider(provider: DealsImportProvider): void {
-        this.provider = provider;
         this.$emit("selectProvider", provider);
     }
 }

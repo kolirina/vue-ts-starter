@@ -52,7 +52,7 @@ export class DateUtils {
  * Перечисление используемых форматов даты (см. {@link https://momentjs.com/docs/#/parsing/string-format/})
  */
 export enum DateFormat {
-    DATE = "L",  // DD.MM.YYYY
+    DATE = "DD.MM.YYYY",
     CURRENT_YEAR_FORMAT = "DD MMMM",
     ANOTHER_YEAR_FORMAT = "DD MMMM YYYY"
 }

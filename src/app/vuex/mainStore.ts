@@ -40,6 +40,9 @@ const Mutations = {
     },
     [MutationType.SET_CURRENT_PORTFOLIO](state: StateHolder, portfolio: Portfolio): void {
         state.currentPortfolio = portfolio;
+    },
+    [MutationType.RELOAD_PORTFOLIO](state: StateHolder, portfolio: Portfolio): void {
+        state.currentPortfolio = portfolio;
     }
 };
 
@@ -59,6 +62,15 @@ const Actions = {
                 console.log("ACTION SET PORTFOLIO", portfolio, context);
                 context.commit(MutationType.SET_CURRENT_PORTFOLIO, portfolio);
                 resolve(portfolio);
+            });
+        });
+    },
+    [MutationType.RELOAD_PORTFOLIO](context: ActionContext<StateHolder, void>, id: string): Promise<void> {
+        return new Promise<void>((resolve) => {
+            portfolioService.reloadPortfolio(id).then((portfolio: Portfolio) => {
+                console.log("ACTION RELOAD_PORTFOLIO", portfolio, context);
+                context.commit(MutationType.RELOAD_PORTFOLIO, portfolio);
+                resolve();
             });
         });
     }

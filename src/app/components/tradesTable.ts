@@ -28,7 +28,7 @@ import {BtnReturn} from "./dialogs/customDialog";
                     </td>
                     <td>{{ props.item.companyName }}</td>
                     <td>{{ props.item.operationLabel }}</td>
-                    <td class="text-xs-center">{{ props.item.date | date('L') }}</td>
+                    <td class="text-xs-center">{{ props.item.date | date }}</td>
                     <td class="text-xs-right">{{ props.item.quantity }}</td>
                     <td class="text-xs-right">{{ getPrice(props.item) }}</td>
                     <td class="text-xs-right">{{ getFee(props.item) }}</td>

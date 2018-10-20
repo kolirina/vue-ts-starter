@@ -4,15 +4,15 @@
 import Highcharts from "highcharts";
 import Highcharts3D from "highcharts-3d";
 import exporting from "highcharts/modules/exporting";
-import IMask from "imask";
-import * as Cookies from "js-cookie";
 import VeeValidate, {Validator} from "vee-validate";
 import Vue from "vue";
+import Snotify, {SnotifyPosition} from "vue-snotify";
 import Vuetify from "vuetify";
 import {LineChart} from "../components/charts/lineChart";
 import {PieChart} from "../components/charts/pieChart";
 import {Dashboard} from "../components/dashboard";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
+import {ImageDialog} from "../components/dialogs/imageDialog";
 import {FileDropArea} from "../components/file-upload/fileDropArea";
 import {FileLink} from "../components/file-upload/fileLink";
 import {MaskDirective} from "../platform/directives/maskDirective";
@@ -22,7 +22,6 @@ import ru from "../platform/locale/ru";
 import {ruLocale} from "../platform/locale/veeValidateMessages";
 import {UiStateHelper} from "../utils/uiStateHelper";
 import {UI} from "./ui";
-import {ImageDialog} from "../components/dialogs/imageDialog";
 
 Highcharts3D(Highcharts);
 exporting(Highcharts);
@@ -41,6 +40,19 @@ export class UIRegistry {
             }
         });
         UI.use(VeeValidate);
+        Vue.use(Snotify, {
+            global: {
+                maxOnScreen: 3,
+                preventDuplicates: true
+            },
+            toast: {
+                position: SnotifyPosition.rightTop,
+                timeout: 3000,
+                showProgressBar: true,
+                closeOnClick: false,
+                pauseOnHover: true
+            }
+        });
 
         // компоненты
         UI.component("dashboard", Dashboard);
@@ -55,6 +67,7 @@ export class UIRegistry {
         UI.filter("amount", Filters.formatMoneyAmount);
         UI.filter("number", Filters.formatNumber);
         UI.filter("date", Filters.formatDate);
+        UI.filter("declension", Filters.declension);
 
         // директивы
         UI.directive(StateDirective.NAME, new StateDirective());

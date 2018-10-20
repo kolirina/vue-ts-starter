@@ -166,7 +166,11 @@ export type Overview = {
     assetRows: AssetRow[],
     stockPortfolio: StockPortfolio,
     bondPortfolio: BondPortfolio,
-    totalTradesCount: number
+    totalTradesCount: number,
+    /** Дата первой сделки в портфеле. Может быть null если в портфеле еще ни одной сделки */
+    firstTradeDate: string,
+    /** Дата последней сделки в портфеле. Может быть null если в портфеле еще ни одной сделки */
+    lastTradeDate: string
 };
 
 export type StockPortfolio = {
@@ -435,5 +439,7 @@ export type ErrorFieldInfo = {
 };
 
 export enum Status {
-    SUCCESS, WARN, ERROR
+    SUCCESS = "SUCCESS",
+    WARN = "WARN",
+    ERROR = "ERROR"
 }

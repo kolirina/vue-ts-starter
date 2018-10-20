@@ -2,9 +2,11 @@ import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
+import {ImportErrorsDialog} from "../../components/dialogs/importErrorsDialog";
 import {ImportGeneralErrorDialog} from "../../components/dialogs/importGeneralErrorDialog";
 import {ImportResponse, ImportService} from "../../services/importService";
 import {ClientInfo, Portfolio, Status} from "../../types/types";
+import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 import {ImportInstructions} from "./importInstructions";
 
@@ -50,7 +52,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </div>
                     <div v-if="files.length">
                         <ul>
-                            <li v-for="file in files" :key="file">{{ file.name }}</li>
+                            <li v-for="(file, index) in files" :key="index">{{ file.name }}</li>
                         </ul>
                     </div>
                     <v-btn color="primary" @click="uploadFile">Загрузить</v-btn>
@@ -66,6 +68,8 @@ export class ImportPage extends UI {
     private clientInfo: ClientInfo;
     @MainStore.Getter
     private portfolio: Portfolio;
+    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
+    private reloadPortfolio: (id: string) => Promise<void>;
     @Inject
     private importService: ImportService;
     /** Файлы для импорта */
@@ -88,16 +92,29 @@ export class ImportPage extends UI {
         if (this.files && this.files.length && this.selectedProvider) {
             const data = new FormData();
             this.files.forEach(file => data.append("files", file, file.name));
-            // const response = await this.importService.importReport(this.selectedProvider, this.portfolio.id, data);
-            // this.handleUploadResponse(response);
-            this.handleUploadResponse({} as ImportResponse);
+            const response = await this.importService.importReport(this.selectedProvider, this.portfolio.id, data);
+            await this.handleUploadResponse(response);
         }
     }
 
     private async handleUploadResponse(response: ImportResponse): Promise<void> {
-        response.generalError = "Неверный формат отчета";
+        console.log(response);
+        if (response.status === Status.ERROR) {
+            this.$snotify.error(response.message, "Ошибка");
+            return;
+        }
         if (response.generalError) {
-            await new ImportGeneralErrorDialog().show({generalError: response.generalError});
+            await new ImportGeneralErrorDialog().show({generalError: response.generalError, router: this.$router});
+            return;
+        }
+        if (response.errors && response.errors.length) {
+            await new ImportErrorsDialog().show({
+                errors: response.errors, router: this.$router,
+                validatedTradesCount: response.validatedTradesCount
+            });
+        }
+        if (response.validatedTradesCount) {
+            await this.reloadPortfolio(this.portfolio.id);
         }
     }
 

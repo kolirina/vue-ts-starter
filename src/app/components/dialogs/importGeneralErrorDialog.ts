@@ -1,4 +1,5 @@
 import Component from "vue-class-component";
+import {VueRouter} from "vue-router/types/router";
 import {CustomDialog} from "./customDialog";
 
 /**
@@ -26,11 +27,7 @@ import {CustomDialog} from "./customDialog";
                         </p>
 
                         <div>
-                            <span>Попробуйте указать начальные</span>
-                            <i class="fa fa-balance-scale"/>
-                            <v-btn color="primary" dark>
-                                балансы
-                            </v-btn>
+                            <span>Попробуйте указать </span><a @click="goToBalances">начальные балансы </a><i class="fa fa-balance-scale"/>
                             <span>для быстрого старта</span>
                             <v-tooltip bottom>
                                 <i slot="activator" class="fa fa-question-circle"/>
@@ -40,6 +37,7 @@ import {CustomDialog} from "./customDialog";
                     </div>
                 </v-card-text>
                 <v-card-actions>
+                    <v-spacer></v-spacer>
                     <v-btn color="primary" @click.native="close" dark small>
                         Закрыть
                     </v-btn>
@@ -49,8 +47,14 @@ import {CustomDialog} from "./customDialog";
     `
 })
 export class ImportGeneralErrorDialog extends CustomDialog<ImportGeneralErrorDialogData, void> {
+
+    private goToBalances(): void {
+        this.data.router.push("trades");
+        this.close();
+    }
 }
 
 export type ImportGeneralErrorDialogData = {
-    generalError: string
+    generalError: string,
+    router: VueRouter
 };
