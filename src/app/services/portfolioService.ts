@@ -5,7 +5,7 @@ import {Cache} from "../platform/services/cache";
 import {HTTP} from "../platform/services/http";
 import {BigMoney} from "../types/bigMoney";
 import {EventChartData, HighStockEventsGroup, LineChartItem} from "../types/charts/types";
-import {CombinedInfoRequest, Overview, Portfolio, PortfolioParams} from "../types/types";
+import {CombinedInfoRequest, Overview, Portfolio, PortfolioBackup, PortfolioParams} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
 
 const PORTFOLIOS_KEY = "PORTFOLIOS";
@@ -114,6 +114,14 @@ export class PortfolioService {
     async getEventsChartDataCombined(request: CombinedInfoRequest): Promise<HighStockEventsGroup[]> {
         const data = (await HTTP.INSTANCE.post(`/portfolios/events-chart-data-combined`, request)).data as EventChartData[];
         return ChartUtils.processEventsChartData(data);
+    }
+
+    async getPortfolioBackup(userId: string): Promise<PortfolioBackup> {
+        return (await HTTP.INSTANCE.get(`/portfolios/${userId}/backup`)).data as PortfolioBackup;
+    }
+
+    async saveOrUpdatePortfolioBackup(userId: string, portfolioBackup: PortfolioBackup): Promise<void> {
+        await HTTP.INSTANCE.post(`/portfolios/${userId}/backup`, portfolioBackup);
     }
 
     /**

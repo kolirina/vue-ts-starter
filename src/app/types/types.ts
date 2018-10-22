@@ -232,6 +232,16 @@ export type PortfolioParams = {
     combined: boolean
 };
 
+/** Описание бэкапа портфеля */
+export interface PortfolioBackup {
+    /** Идентификатор бэкапа */
+    id?: string;
+    /** список идентификаторов портфелей */
+    portfolioIds: string[];
+    /** Список дней для создания бэкапа */
+    days: number[];
+}
+
 export class ClientInfo {
 
     token: string;
@@ -242,13 +252,21 @@ export type Client = {
     id: string,
     username: string,
     email: string,
-    tariff: string,
+    tariff: Tariff,
     paidTill: string,
+    emailConfirmed: string,
     currentPortfolioId: string,
     portfolios: PortfolioParams[],
     referralAwardType: string,
     promoCode: string
 };
+
+export enum Tariff {
+    FREE = "FREE",
+    STANDART = "STANDART",
+    PRO = "PRO",
+    TRIAL = "TRIAL"
+}
 
 export type Share = {
     /** Идентификатору бумаги в системе */
