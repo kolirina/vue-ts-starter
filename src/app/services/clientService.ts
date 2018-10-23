@@ -37,6 +37,15 @@ export class ClientService {
     async changePassword(request: ChangePasswordRequest): Promise<void> {
         await HTTP.INSTANCE.post(`/user/change-password`, request);
     }
+
+    /**
+     * Отправляет запрос на смену имени пользователя
+     * @param request запрос на смену пароля пользователя
+     * @returns {Promise<void>}
+     */
+    async changeUsername(request: ChangeUsernameRequest): Promise<void> {
+        await HTTP.INSTANCE.post(`/user/change-username`, request);
+    }
 }
 
 /** Запрос на смену пароля пользователя */
@@ -49,4 +58,12 @@ export interface ChangePasswordRequest {
     newPassword: string;
     /** Повтор нового пароля пользователя */
     confirmPassword: string;
+}
+
+/** Запрос на смену имени пользователя */
+export interface ChangeUsernameRequest {
+    /** Идентификатор пользователя */
+    id: string;
+    /** Новое имя пользователя пользователя */
+    username: string;
 }

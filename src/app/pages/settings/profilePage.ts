@@ -1,7 +1,9 @@
+import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
 import {ChangePasswordDialog} from "../../components/dialogs/changePasswordDialog";
+import {ClientService} from "../../services/clientService";
 import {ClientInfo} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {StoreType} from "../../vuex/storeType";
@@ -34,6 +36,9 @@ export class ProfilePage extends UI {
 
     @MainStore.Getter
     private clientInfo: ClientInfo;
+    /** Сервис для работы с данными клиента */
+    @Inject
+    private clientService: ClientService;
     /** Имя пользователя */
     private username = "";
     /** email пользователя */
@@ -67,7 +72,13 @@ export class ProfilePage extends UI {
      * Обрабатывает смену имени пользователя
      * @param username
      */
-    private onUserNameChange(username: string): void {
+    private async onUserNameChange(username: string): Promise<void> {
         this.username = CommonUtils.isBlank(username) ? this.clientInfo.user.username : username;
+        // отправляем запрос только если действительно поменяли
+        if (this.username !== this.clientInfo.user.username) {
+            await this.clientService.changeUsername({id: this.clientInfo.user.id, username: this.username});
+            this.clientInfo.user.username = this.username;
+            this.$snotify.success("Новое имя пользователя успешно сохранено");
+        }
     }
 }
