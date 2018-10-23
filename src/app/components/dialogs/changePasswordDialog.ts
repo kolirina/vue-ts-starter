@@ -1,5 +1,8 @@
+import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {Vue} from "vue/types/vue";
+import {ClientService} from "../../services/clientService";
+import {ClientInfo} from "../../types/types";
 import {CustomDialog} from "./customDialog";
 
 /**
@@ -58,18 +61,22 @@ import {CustomDialog} from "./customDialog";
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="primary" :disabled="!valid" @click.native="checkAndApply">Сменить</v-btn>
-                    <v-btn @click.native="close">Отмена</v-btn>
+                    <v-btn color="primary" :disabled="!valid" @click.native="validateAndChangePassword" small>Сменить</v-btn>
+                    <v-btn @click.native="close" small>Отмена</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
     `
 })
-export class ChangePasswordDialog extends CustomDialog<void, string> {
+export class ChangePasswordDialog extends CustomDialog<ClientInfo, string> {
 
     $refs: {
         form: Vue;
     };
+
+    /** Сервис для работы с пользователем */
+    @Inject
+    private clientService: ClientService;
 
     private valid = false;
     private showPassword = false;
@@ -80,16 +87,20 @@ export class ChangePasswordDialog extends CustomDialog<void, string> {
     private newPassword = "";
     private confirmedPassword = "";
 
-    // private passwordRules: [(value: string) => string | boolean] = [
-    //     (value: string) => !!value || 'Name is required',
-    //     (value: string) => value.length <= 10 || 'Name must be less than 10 characters'
-    // ];
-
-    private async checkAndApply(): Promise<void> {
+    /**
+     * Отправляет запрос на смену пароля пользователя
+     */
+    private async validateAndChangePassword(): Promise<void> {
         const result = await this.$validator.validateAll();
-        console.log(result);
         if (result) {
-            this.close(this.confirmedPassword);
+            await this.clientService.changePassword({
+                email: this.data.user.email,
+                password: this.password,
+                newPassword: this.newPassword,
+                confirmPassword: this.confirmedPassword
+            });
+            this.$snotify.success("Пароль успешно изменен");
+            this.close();
         }
     }
 }

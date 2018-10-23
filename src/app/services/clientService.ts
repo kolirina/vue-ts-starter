@@ -28,4 +28,25 @@ export class ClientService {
     async changeReferralAwardType(type: string): Promise<void> {
         await HTTP.INSTANCE.post(`/user/promo-code`, type);
     }
+
+    /**
+     * Отправляет запрос на смену пароля пользователя
+     * @param request запрос на смену пароля пользователя
+     * @returns {Promise<void>}
+     */
+    async changePassword(request: ChangePasswordRequest): Promise<void> {
+        await HTTP.INSTANCE.post(`/user/change-password`, request);
+    }
+}
+
+/** Запрос на смену пароля пользователя */
+export interface ChangePasswordRequest {
+    /** E-mail пользователя */
+    email: string;
+    /** Текущий пароль пользователя */
+    password: string;
+    /** Новый пароль пользователя */
+    newPassword: string;
+    /** Повтор нового пароля пользователя */
+    confirmPassword: string;
 }

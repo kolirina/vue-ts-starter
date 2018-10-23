@@ -18,7 +18,7 @@ const MainStore = namespace(StoreType.MAIN);
             <v-card>
                 <v-card-text>
                     <div class="trades-export-wrapper">
-                        <h1>Экспорт сделок</h1>
+                        <h4 class="display-1">Экспорт сделок</h4>
                         <p>
                             Выгрузите сделки вашего текущего портфеля в csv или json формате.
                             Данный файл содержит полную информацию о всех сделках и является полностью совместимым для обратного импорта в сервис.

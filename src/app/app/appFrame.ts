@@ -2,6 +2,7 @@ import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
+import {ErrorHandler} from "../components/errorHandler";
 import {PortfolioSwitcher} from "../components/portfolioSwitcher";
 import {ClientService} from "../services/clientService";
 import {ClientInfo, Portfolio} from "../types/types";
@@ -16,6 +17,7 @@ const mainStore = namespace(StoreType.MAIN);
     template: `
         <v-app id="inspire" light>
             <vue-snotify></vue-snotify>
+            <error-handler></error-handler>
             <template v-if="!isInitialized">
                 <v-content>
                     <v-container fluid fill-height>
@@ -111,7 +113,7 @@ const mainStore = namespace(StoreType.MAIN);
             </template>
         </v-app>
     `,
-    components: {PortfolioSwitcher}
+    components: {PortfolioSwitcher, ErrorHandler}
 })
 export class AppFrame extends UI {
 

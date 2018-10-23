@@ -22,6 +22,7 @@ import ru from "../platform/locale/ru";
 import {ruLocale} from "../platform/locale/veeValidateMessages";
 import {UiStateHelper} from "../utils/uiStateHelper";
 import {UI} from "./ui";
+import {InplaceInput} from "../components/inplaceInput";
 
 Highcharts3D(Highcharts);
 exporting(Highcharts);
@@ -62,6 +63,7 @@ export class UIRegistry {
         UI.component("file-drop-area", FileDropArea);
         UI.component("file-link", FileLink);
         UI.component("image-dialog", ImageDialog);
+        UI.component("inplace-input", InplaceInput);
 
         // фильтры
         UI.filter("amount", Filters.formatMoneyAmount);

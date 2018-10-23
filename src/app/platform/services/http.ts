@@ -1,5 +1,8 @@
 import axios, {AxiosInstance} from "axios";
 import {Container} from "typescript-ioc";
+import {UI} from "../../app/ui";
+import {LogoutService} from "../../services/logoutService";
+import {EventType} from "../../types/eventType";
 import {StoreKeys} from "../../types/storeKeys";
 import {Storage} from "./storage";
 
@@ -19,6 +22,18 @@ export class HTTP {
                 "Content-Type": "application/json"
             }
         });
+        HTTP._INSTANCE.interceptors.response.use((response) => response,
+            (error): Promise<any> => {
+                if (error.response.status === 401) {
+                    (Container.get(LogoutService) as LogoutService).logout();
+                }
+                let message: string = error;
+                if (error.response.data && error.response.data.errorMessage) {
+                    message = error.response.data.errorMessage;
+                }
+                UI.emit(EventType.HANDLE_ERROR, message ? new Error(message) : error);
+                return Promise.reject(message ? new Error(message) : error);
+            });
     }
 
     static get INSTANCE(): AxiosInstance {

@@ -5,14 +5,17 @@
  * @param descriptor дескриптор метода
  * @return новый дескриптор метода
  */
+import {UI} from "../../app/ui";
+import {EventType} from "../../types/eventType";
+
 export function CatchErrors(target: any, propertyKey: string, descriptor: TypedPropertyDescriptor<(...args: any[]) => void | Promise<void>>):
     TypedPropertyDescriptor<(...args: any[]) => Promise<void>> {
     const originalMethod = descriptor.value;
-    descriptor.value = async function (...args: any[]) {
+    descriptor.value = async function(...args: any[]) {
         try {
             return await originalMethod.apply(this, args);
         } catch (error) {
-            // UI.emit(GlobalEvent.HANDLE_ERROR, error);
+            UI.emit(EventType.HANDLE_ERROR, error);
             window.console.error(error);
         }
     };
