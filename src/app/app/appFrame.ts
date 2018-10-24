@@ -53,7 +53,7 @@ const mainStore = namespace(StoreType.MAIN);
             </template>
 
             <template v-else>
-                <v-navigation-drawer v-model="drawer" fixed clipped app>
+                <v-navigation-drawer v-model="drawer" clipped app>
                     <v-divider></v-divider>
                     <v-list dense>
                         <template v-for="item in mainSection">
@@ -107,7 +107,7 @@ const mainStore = namespace(StoreType.MAIN);
                         </v-fade-transition>
                     </v-container>
                 </v-content>
-                <v-footer color="indigo" app inset>
+                <v-footer color="indigo" inset>
                     <span class="white--text" style="margin-left: 15px;">&copy; 2018</span>
                 </v-footer>
             </template>

@@ -64,8 +64,14 @@ export class ProfilePage extends UI {
      * Обабатывает смену email пользователя
      * @param email
      */
-    private onEmailChange(email: string): void {
+    private async onEmailChange(email: string): Promise<void> {
         this.email = CommonUtils.isBlank(email) ? this.clientInfo.user.email : email;
+        // отправляем запрос только если действительно поменяли
+        if (this.email !== this.clientInfo.user.email) {
+            await this.clientService.changeEmail({id: this.clientInfo.user.id, email: this.email});
+            this.clientInfo.user.email = this.email;
+            this.$snotify.success("Вам отправлено письмо с подтверждением на новый адрес эл. почты");
+        }
     }
 
     /**

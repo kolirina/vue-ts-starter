@@ -28,8 +28,8 @@ export class HTTP {
                     (Container.get(LogoutService) as LogoutService).logout();
                 }
                 let message: string = error;
-                if (error.response.data && error.response.data.errorMessage) {
-                    message = error.response.data.errorMessage;
+                if (error.response.data && error.response.data.message) {
+                    message = error.response.data.message;
                 }
                 UI.emit(EventType.HANDLE_ERROR, message ? new Error(message) : error);
                 return Promise.reject(message ? new Error(message) : error);

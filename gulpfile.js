@@ -14,8 +14,8 @@ const browserSync = require('browser-sync');
 const reload = browserSync.reload;
 const webpackConfig = require('./webpack.config.js');
 
-const TARGET_DIR = args.env === "development" ? "C:/_workspace/intelinvest_repo/intelinvest_maven/target/intelinvest_maven-2.0/frontend" : "dist";
-webpackConfig.mode = args.env;
+const TARGET_DIR = "dist";
+webpackConfig.mode = args.env || "production";
 webpackConfig.watch = args.watch;
 
 gulp.task('scripts', () => {
@@ -61,12 +61,13 @@ gulp.task('assets', () => {
 });
 
 // Компиляция SCSS
-gulp.task('css', () =>
-    gulp.src('./src/assets/scss/index.scss')
+gulp.task('css', () => {
+    return gulp.src('./src/assets/scss/index.scss')
         .pipe(sass({outputStyle: 'compressed'}))
         .pipe(minifyCSS())
         .pipe(gulp.dest(TARGET_DIR + '/css'))
-        .pipe(reload({stream: true})));
+        .pipe(reload({stream: true}));
+});
 
 // Основной таск сборки
 gulp.task("build", ["scripts", "css", "assets"]);
@@ -77,7 +78,8 @@ gulp.task('default', ['build', "css", "assets"], () => {
         proxy: "localhost:8080",
         port: 3000,
         open: true,
-        notify: false
+        notify: false,
+        serveStatic: [TARGET_DIR]
     });
     gulp.watch(['src/**/*.ts'], ['build']);
     gulp.watch(['src/assets/scss/**/*.scss'], ['css']);

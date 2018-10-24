@@ -70,7 +70,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-data-table>
 
                         <v-btn-toggle v-model="selectedDays" multiple dark>
-                            <v-btn v-for="day in days" :value="day" :key="day" color="primary">
+                            <v-btn v-for="day in days" :value="day" :key="day" color="info">
                                 {{ day }}
                             </v-btn>
                         </v-btn-toggle>

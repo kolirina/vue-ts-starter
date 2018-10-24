@@ -12,21 +12,10 @@ export class ClientService {
 
     async getClientInfo(request: LoginRequest): Promise<ClientInfo> {
         if (!this.clientInfo) {
-            // ------------------------------ POST ------------------------------------------
             const result = await axios.post("/api/user/login", request);
             this.clientInfo = await result.data as ClientInfo;
-            console.log("INIT CLIENT SERVICE", this.clientInfo);
         }
         return this.clientInfo;
-    }
-
-    /**
-     * Отправляет запрос на смену типа вознаграждения промо-кода
-     * @param {string} type
-     * @returns {Promise<void>}
-     */
-    async changeReferralAwardType(type: string): Promise<void> {
-        await HTTP.INSTANCE.post(`/user/promo-code`, type);
     }
 
     /**
@@ -45,6 +34,15 @@ export class ClientService {
      */
     async changeUsername(request: ChangeUsernameRequest): Promise<void> {
         await HTTP.INSTANCE.post(`/user/change-username`, request);
+    }
+
+    /**
+     * Отправляет запрос на смену E-mail пользователя
+     * @param request запрос на смену E-mail пользователя
+     * @returns {Promise<void>}
+     */
+    async changeEmail(request: ChangeEmailRequest): Promise<void> {
+        await HTTP.INSTANCE.post(`/user/change-email`, request);
     }
 }
 
@@ -66,4 +64,12 @@ export interface ChangeUsernameRequest {
     id: string;
     /** Новое имя пользователя пользователя */
     username: string;
+}
+
+/** Запрос на смену E-mail пользователя */
+export interface ChangeEmailRequest {
+    /** Идентификатор пользователя */
+    id: string;
+    /** E-mail пользователя */
+    email: string;
 }

@@ -1,31 +1,14 @@
 # intelinvest frontend
 
-development mode with webpack
-
-```
-npm run build -- --watch
-```
-
-development mode with gulp (recommended)
+development mode with gulp
 В этом режиме запустится browserSync, по умолчанию порт 3000
 
 ```
 gulp --env development
 ```
-перейти
-```
-http://localhost:3000/frontend/index.html#/portfolio
-```
-to start prod version build
+Содержимое папки dist будет раздаваться, все запросы будут проксироваться на localhost:8080 (по умолчанию)
 
-##build project
+##build production bundle
 ```
-gulp build
+gulp build --env production
 ```
-
-##start local json-server
-
-```
-json-server --watch db.json --routes routes.json --port 8080
-```
-
