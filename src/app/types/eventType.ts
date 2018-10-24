@@ -1,0 +1,4 @@
+export enum EventType {
+    PORTFOLIO_SWITCHED = "PORTFOLIO_SWITCHED",
+    HANDLE_ERROR = "HANDLE_ERROR"
+}

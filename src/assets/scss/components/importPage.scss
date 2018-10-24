@@ -1,0 +1,107 @@
+.import-wrapper {
+  margin: 25px;
+}
+
+.providers {
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  .item {
+    height: 110px;
+    width: 110px;
+    background-size: 100px 100px;
+    margin: 10px;
+    display: flex;
+    filter: grayscale(1);
+    box-shadow: 0 1px 2.5px 0 rgba(0, 0, 0, 0.26), 0 1px 5px 0 rgba(0, 0, 0, 0.16);
+    transition: background-color 0.3s;
+  }
+
+  .active {
+    filter: none;
+    box-shadow: 0 1px 20px 2px rgba(0,0,0,.26), 0 1px 5px 0 rgba(0,0,0,.16);
+    transition: background-color 0.3s;
+    padding: 10px;
+  }
+
+  .alfadirect {
+    background: url("../img/fileimport/alfadirect.png") center no-repeat white;
+    background-size: 100px 100px;
+  }
+  .itinvest {
+    background: url("../img/fileimport/itinvest.png") center no-repeat white;
+    background-size: 100px 100px;
+  }
+  .otkrytie {
+    background: url("../img/fileimport/otkrytie.png") center no-repeat white;
+    background-size: 100px 100px;
+  }
+  .zerich {
+    background: url("../img/fileimport/zerich.png") center no-repeat white;
+    background-size: 100px 100px;
+  }
+  .psbank {
+    background: url("../img/fileimport/psbank.png") center no-repeat white;
+    background-size: 100px 100px;
+  }
+  .bcs {
+    background: url("../img/fileimport/bcs.png") center no-repeat white;
+    background-size: 100px 100px;
+  }
+  .bcs_cyprus {
+    background: url("../img/fileimport/bcs_cyprus.png") center no-repeat white;
+    background-size: 100px 100px;
+  }
+  .finam {
+    background: url("../img/fileimport/finam.png") center no-repeat white;
+    background-size: 100px 100px;
+  }
+  .freedom_finance {
+    background: url("../img/fileimport/freedom.png") center no-repeat white;
+    background-size: 100px 100px;
+  }
+  .kitfinance {
+    background: url("../img/fileimport/kit-finance.png") center no-repeat white;
+    background-size: 100px 100px;
+  }
+  .uralsib {
+    background: url("../img/fileimport/uralsib.png") center no-repeat white;
+    background-size: 100px 100px;
+  }
+  .sberbank {
+    background: url("../img/fileimport/sberbank.png") center no-repeat white;
+    background-size: 100px 100px;
+  }
+  .vtb24 {
+    background: url("../img/fileimport/vtb24.png") center no-repeat white;
+    background-size: 100px 100px;
+  }
+  .interactive_brokers {
+    background: url("../img/fileimport/interactivebrokers.png") center no-repeat white;
+    background-size: 100px 100px;
+  }
+  .tinkoff {
+    background: url("../img/fileimport/tinkoff.png") center no-repeat white;
+    background-size: 100px 100px;
+  }
+  .nettrader {
+    background: url("../img/fileimport/nettrader.png") center no-repeat white;
+    background-size: 100px 100px;
+  }
+  .aton {
+    background: url("../img/fileimport/aton.png") center no-repeat white;
+    background-size: 100px 100px;
+  }
+  .intelinvest {
+    background: url("../img/fileimport/intelinvest.png") center no-repeat white;
+    background-size: 100px 100px;
+  }
+  .quik {
+    background: url("../img/fileimport/quik.png") center no-repeat white;
+    background-size: 100px 100px;
+  }
+}

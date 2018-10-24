@@ -1,0 +1,70 @@
+// Вложения
+.attachments {
+  margin: 0 10px 0;
+  min-height: 100px;
+
+  .attachments-file-drop {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 80px;
+
+    .attachments-file-drop__content {
+      padding-left: 46px;
+      //background: url('../img/icons/attachments/icon-attachment.svg') no-repeat left center;
+    }
+  }
+
+  .attachments__title {
+    font-weight: 500;
+    margin-bottom: 24px;
+  }
+
+  .attachments-hint {
+    font-size: 12px;
+    color: #b6bbbf;
+    text-align: left;
+    margin: 12px 0 32px;
+  }
+
+  .attach {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+
+    + .attach {margin-top: 16px}
+
+    > div {
+      display: inline-flex;
+      position: relative;
+      padding-left: 40px;
+
+      &:before {
+        content: '';
+        position: absolute;
+        width: 32px;
+        height: 32px;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+    }
+
+    .icon-close {
+      font-size: 20px;
+      opacity: 0.5;
+      margin-left: 5px;
+
+      &:hover {
+        opacity: 1;
+        cursor: pointer;
+      }
+    }
+
+    .attach__name {
+      max-width: 182px;
+      @extend .ellipsis;
+    }
+  }
+}

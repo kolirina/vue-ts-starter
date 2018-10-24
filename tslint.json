@@ -5,9 +5,11 @@
   ],
   "jsRules": {},
   "rules": {
+    "no-empty": false,
+    "no-unused-expression": false,
     "quotemark": [
       true,
-      "single"
+      "double"
     ],
     "indent": [
       true
@@ -56,6 +58,5 @@
       "log",
       "error"
     ]
-  },
-  "rulesDirectory": []
+  }
 }
