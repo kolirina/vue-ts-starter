@@ -42,6 +42,7 @@
     // Pending fix for shorthand property names.
     "object-literal-sort-keys": false,
     "object-literal-key-quotes": false,
+    "no-bitwise": false,
     "strictPropertyInitialization": false,
     /** Явно типы указывать не нужно для переменных и для инициализируемых параметров */
     "no-inferrable-types": true,

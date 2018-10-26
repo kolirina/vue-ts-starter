@@ -46,6 +46,16 @@ export class DateUtils {
         return DateUtils.isCurrentDate(date) ? "Сегодня" :
             date.format(!showYear || DateUtils.isCurrentYear(date) ? DateFormat.CURRENT_YEAR_FORMAT : DateFormat.ANOTHER_YEAR_FORMAT);
     }
+
+    /**
+     * Форматирование даты для отображения
+     * @param date дата
+     * @param format формат
+     * @return {string} отформатированная дата
+     */
+    static formatDate(date: Moment, format = DateFormat.DATE): string {
+        return date.format(format);
+    }
 }
 
 /**

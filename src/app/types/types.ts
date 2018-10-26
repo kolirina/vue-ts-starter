@@ -1,4 +1,5 @@
 import {BaseChartDot, ColumnChartData, Dot, HighStockEventsGroup} from "./charts/types";
+import {Tariff} from "./tariff";
 
 export type _portfolioRow = {
     /** Прибыль */
@@ -249,24 +250,47 @@ export class ClientInfo {
 }
 
 export type Client = {
+    /** Идентификатор пользователя */
     id: string,
+    /** Логин пользователя */
     username: string,
+    /** email пользователя */
     email: string,
+    /** Тариф */
     tariff: Tariff,
+    /** Дата, до которой оплачен тариф */
     paidTill: string,
+    /** Признак подтвержденного email */
     emailConfirmed: string,
+    /** Текущий идентификатор портфеля */
     currentPortfolioId: string,
+    /** Список портфелей */
     portfolios: PortfolioParams[],
+    /** Тип вознаграждения за реферальную программу */
     referralAwardType: string,
-    promoCode: string
+    /** Промо-код пользователя */
+    promoCode: string,
+    /** Признак блокировки аккаунта */
+    blocked: boolean;
+    /** Алиас для реферальной ссылки */
+    referralAlias: string;
+    /** Сумма подлежащая выплате по реферальной программе */
+    earnedTotalAmount: string;
+    /** Срок действия скидки */
+    nextPurchaseDiscountExpired: string;
+    /** Индивидуальная скидка на следующую покупку в системе */
+    nextPurchaseDiscount: number;
+    /** Количество портфелей в профиле пользователя */
+    portfoliosCount: number;
+    /** Общее количество ценнных бумаг в составе всех портфелей */
+    sharesCount: number;
+    /** Присутствуют ли во всех портфелях пользователя сделки по иностранным акциям */
+    foreignShares: boolean;
+    /** Сумма выплаченного вознаграждения реферреру за партнерскую программу */
+    referrerRepaidTotalAmount: string;
+    /** Сумма причитаемого вознаграждения реферреру за партнерскую программу */
+    referrerEarnedTotalAmount: string;
 };
-
-export enum Tariff {
-    FREE = "FREE",
-    STANDART = "STANDART",
-    PRO = "PRO",
-    TRIAL = "TRIAL"
-}
 
 export type Share = {
     /** Идентификатору бумаги в системе */

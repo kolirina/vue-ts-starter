@@ -5,9 +5,10 @@ import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
 import {ExportService} from "../../services/exportService";
 import {PortfolioService} from "../../services/portfolioService";
-import {ClientInfo, Portfolio, PortfolioBackup, PortfolioParams, TableHeader, Tariff} from "../../types/types";
+import {ClientInfo, Portfolio, PortfolioBackup, PortfolioParams, TableHeader} from "../../types/types";
 import {DateUtils} from "../../utils/dateUtils";
 import {StoreType} from "../../vuex/storeType";
+import {Tariff} from "../../types/tariff";
 
 const MainStore = namespace(StoreType.MAIN);
 
