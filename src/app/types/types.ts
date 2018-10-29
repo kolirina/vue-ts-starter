@@ -257,7 +257,7 @@ export type Client = {
     /** email пользователя */
     email: string,
     /** Тариф */
-    tariff: Tariff,
+    tariff: string,
     /** Дата, до которой оплачен тариф */
     paidTill: string,
     /** Признак подтвержденного email */

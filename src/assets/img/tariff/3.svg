@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="33px" height="33px" viewBox="0 0 33 33" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 43.1 (39012) - http://www.bohemiancoding.com/sketch -->
+    <title>Group 6</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M5,17.4002456 C5,8.00128681 10.6054688,0.0820330659 13,0.000613890984 C15.3945313,-0.0808052839 21,7.94783335 21,17.4002456 C21,26.8526578 18.0909091,29 18.0909091,29 L7.90909091,29 C7.90909091,29 5,26.7992043 5,17.4002456 Z" id="path-1"></path>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="prices" transform="translate(-826.000000, -234.000000)">
+            <g id="Group-8" transform="translate(820.000000, 227.000000)">
+                <g id="Group-6" transform="translate(23.000000, 23.000000) rotate(45.000000) translate(-23.000000, -23.000000) translate(10.000000, 4.000000)">
+                    <path d="M5.81818182,18 C-0.00617812172,18 1.34559031e-13,27 1.34559031e-13,27 L8,26.3076923 C8,26.3076923 11.3725759,18 5.81818182,18 Z" id="Path-11" stroke="#495867" stroke-width="2"></path>
+                    <path d="M22.830874,18 C17.0065141,18 17.0126922,27 17.0126922,27 L25.0126922,26.3076923 C25.0126922,26.3076923 28.3852682,18 22.830874,18 Z" id="Path-11" stroke="#495867" stroke-width="2" transform="translate(21.500000, 22.500000) scale(-1, 1) translate(-21.500000, -22.500000) "></path>
+                    <path d="M13,38 C13,38 16,36.6568542 16,35 C16,33.3431458 14.6568542,32 13,32 C11.3431458,32 10,33.3431458 10,35 C10,36.6568542 13,38 13,38 Z" id="Oval-3" stroke="#495867" stroke-width="2"></path>
+                    <mask id="mask-2" fill="white">
+                        <use xlink:href="#path-1"></use>
+                    </mask>
+                    <use id="Rectangle-3" stroke="#495867" stroke-width="2" fill="#FFFFFF" xlink:href="#path-1"></use>
+                    <path d="M8.36666667,5 L16.9966668,5" id="Line" stroke="#495867" stroke-width="2" stroke-linecap="square" mask="url(#mask-2)"></path>
+                    <circle id="Oval-2" stroke="#495867" stroke-width="2" mask="url(#mask-2)" cx="13" cy="13" r="2"></circle>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

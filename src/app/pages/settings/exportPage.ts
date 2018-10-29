@@ -161,8 +161,9 @@ export class ExportPage extends UI {
      * Возвращает признак доступности для загрузки файла со сделками
      */
     private isDownloadNotAllowed(): boolean {
-        return this.clientInfo.user.tariff === Tariff.TRIAL ||
-            (moment().isAfter(DateUtils.parseDate(this.clientInfo.user.paidTill)) && this.clientInfo.user.tariff !== Tariff.FREE);
+        const userTariff = Tariff.valueByName(this.clientInfo.user.tariff);
+        return userTariff === Tariff.TRIAL ||
+            (moment().isAfter(DateUtils.parseDate(this.clientInfo.user.paidTill)) && userTariff !== Tariff.FREE);
     }
 
     /**
