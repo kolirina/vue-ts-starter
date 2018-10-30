@@ -2,6 +2,7 @@ import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
+import {FeedbackDialog} from "../components/dialogs/feedbackDialog";
 import {ErrorHandler} from "../components/errorHandler";
 import {PortfolioSwitcher} from "../components/portfolioSwitcher";
 import {ClientService} from "../services/clientService";
@@ -10,7 +11,7 @@ import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {UI} from "./ui";
 
-const mainStore = namespace(StoreType.MAIN);
+const MainStore = namespace(StoreType.MAIN);
 
 @Component({
     // language=Vue
@@ -109,21 +110,35 @@ const mainStore = namespace(StoreType.MAIN);
                 </v-content>
                 <v-footer color="indigo" inset>
                     <span class="white--text" style="margin-left: 15px;">&copy; 2018</span>
+                    <v-spacer></v-spacer>
+                    <v-tooltip top>
+                        <a slot="activator" class="white--text margR16 decorationNone" href="https://telegram.me/intelinvestSupportBot">
+                            Telegram <i class="fab fa-telegram"></i>
+                        </a>
+                        <span>Оперативная связь с нами</span>
+                    </v-tooltip>
+
+                    <v-tooltip top>
+                        <a slot="activator" class="white--text margR16" @click="openFeedBackDialog">Обратная связь <i class="fas fa-envelope"></i></a>
+                        <span>Напишите нам по email</span>
+                    </v-tooltip>
                 </v-footer>
             </template>
-        </v-app>
-    `,
-    components: {PortfolioSwitcher, ErrorHandler}
+        </v-app>`,
+    components: {PortfolioSwitcher, ErrorHandler, FeedbackDialog}
 })
 export class AppFrame extends UI {
 
     @Inject
     private clientService: ClientService;
 
-    @mainStore.Action(MutationType.SET_CLIENT_INFO)
+    @MainStore.Getter
+    private clientInfo: ClientInfo;
+
+    @MainStore.Action(MutationType.SET_CLIENT_INFO)
     private loadUser: (clientInfo: ClientInfo) => Promise<void>;
 
-    @mainStore.Action(MutationType.SET_CURRENT_PORTFOLIO)
+    @MainStore.Action(MutationType.SET_CURRENT_PORTFOLIO)
     private setCurrentPortfolio: (id: string) => Promise<Portfolio>;
 
     private username: string = null;
@@ -207,6 +222,10 @@ export class AppFrame extends UI {
 
     private async openDialog(): Promise<void> {
         await new AddTradeDialog().show({store: this.$store.state[StoreType.MAIN], router: this.$router});
+    }
+
+    private async openFeedBackDialog(): Promise<void> {
+        await new FeedbackDialog().show(this.clientInfo);
     }
 }
 
