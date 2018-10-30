@@ -33,7 +33,7 @@ import {CustomDialog} from "./customDialog";
                             </v-flex>
 
                             <v-flex xs12 sm12>
-                                <v-select :items="feedbackTypes" v-model="feedbackType" :return-object="true" label="Тема"></v-select>
+                                <v-select :items="feedbackTypes" v-model="feedbackType" item-value="type" item-text="name" label="Тема"></v-select>
                             </v-flex>
 
                             <v-flex xs12 sm12>
@@ -60,7 +60,10 @@ export class FeedbackDialog extends CustomDialog<ClientInfo, void> {
     @Inject
     private feedbackService: FeedbackService;
     /** Темы сообщения */
-    private feedbackTypes = [FeedbackType.FEATURE_REQUEST, FeedbackType.ERROR, FeedbackType.OTHER];
+    private feedbackTypes = [
+        {type: FeedbackType.FEATURE_REQUEST, name: "Ошибка в работе"},
+        {type: FeedbackType.ERROR, name: "Предложение о доработке"},
+        {type: FeedbackType.OTHER, name: "Другое"}];
     /** Текст сообщения */
     private message = "";
     /** Имя пользователя */
@@ -68,7 +71,7 @@ export class FeedbackDialog extends CustomDialog<ClientInfo, void> {
     /** Эл. почта пользователя */
     private email = "";
     /** Выбранная тема сообщения */
-    private feedbackType: FeedbackType = FeedbackType.FEATURE_REQUEST;
+    private feedbackType = this.feedbackTypes[1].type;
 
     /**
      * Инициализация данных диалога
