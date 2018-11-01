@@ -30,7 +30,12 @@ export interface FeedbackRequest {
 
 /** Тип вопроса по обратной связи */
 export enum FeedbackType {
-    ERROR = "Ошибка в работе",
-    FEATURE_REQUEST = "Предложение о доработке",
-    OTHER = "Другое"
+    ERROR,
+    FEATURE_REQUEST,
+    OTHER
+}
+
+export interface FeedbackReason {
+    type: FeedbackType;
+    name: string;
 }
