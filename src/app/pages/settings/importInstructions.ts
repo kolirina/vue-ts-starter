@@ -139,14 +139,6 @@ const MainStore = namespace(StoreType.MAIN);
             </div>
 
             <div v-if="provider" class="common-instructions">
-                <p v-if="provider !== providers.ATON" style="margin-top: 30px;">
-                    Из отчета будут импортированы записи по сделками с ценными бумагами и движения денежных средств.
-                    Дивиденды, купоны, амортизация и погашение будут автоматически добавлены при успешном импорте.
-                </p>
-                <p>
-                    После импорта проверьте остатки по денежным средствам в портфеле, при необходимости,
-                    исполните начисления в разделе События (при наличии).
-                </p>
                 <!-- Не отображаем блок про Квик если он уже выбран -->
                 <p v-if="provider !== providers.QUIK">
                     Если у вас возникли сложности при загрузке отчетов брокера и вы используете Quik,
@@ -158,7 +150,7 @@ const MainStore = namespace(StoreType.MAIN);
                 <p v-if="portfolio.overview.totalTradesCount" style="text-align: center;padding: 20px;">
                     <b>
                         Последняя зарегистрированная сделка в портфеле от
-                        <i>{{ lastTradeDate | date }}</i>.
+                        {{ lastTradeDate | date }}.
                         Во избежание задвоений загружайте отчет со сделками позже этой даты.
                     </b>
                 </p>
