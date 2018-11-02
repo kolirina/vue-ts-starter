@@ -3,9 +3,9 @@ import Component from "vue-class-component";
 import {Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
-import {TradePagination, TradesTable} from "../components/tradesTable";
+import {TradesTable} from "../components/tradesTable";
 import {TradeService} from "../services/tradeService";
-import {Portfolio, TradeRow} from "../types/types";
+import {Pagination, Portfolio, TablePagination, TradeRow} from "../types/types";
 import {StoreType} from "../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -43,7 +43,7 @@ export class TradesPage extends UI {
 
     private pages = 0;
 
-    private pagination: any = {
+    private pagination: Pagination = {
         descending: false,
         page: this.page,
         rowsPerPage: this.pageSize,
@@ -51,9 +51,9 @@ export class TradesPage extends UI {
         totalItems: this.totalTrades
     };
 
-    private tradePagination: TradePagination = {
+    private tradePagination: TablePagination = {
         pagination: this.pagination,
-        totalTrades: this.totalTrades,
+        totalItems: this.totalTrades,
         loading: this.loading
     };
 

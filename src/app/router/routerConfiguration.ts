@@ -1,10 +1,11 @@
 import {Container} from "typescript-ioc";
 import Vue from "vue";
 import VueRouter from "vue-router";
-import {NavigationGuard, Route, RouteConfig} from "vue-router/types/router";
+import {RouteConfig} from "vue-router/types/router";
 import {BondInfoPage} from "../pages/bondInfoPage";
 import {CombinedPortfolioPage} from "../pages/combinedPortfolioPage";
 import {PortfolioPage} from "../pages/portfolioPage";
+import {QuotesPage} from "../pages/quotes/quotesPage";
 import {ExportPage} from "../pages/settings/exportPage";
 import {ImportPage} from "../pages/settings/importPage";
 import {NotificationsPage} from "../pages/settings/notificationsPage";
@@ -73,6 +74,11 @@ export class RouterConfiguration {
                 name: "combined-portfolio",
                 path: "/combined-portfolio",
                 component: CombinedPortfolioPage
+            },
+            {
+                name: "quotes",
+                path: "/quotes",
+                component: QuotesPage
             },
             {
                 name: "share-info",

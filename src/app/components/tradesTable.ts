@@ -3,7 +3,7 @@ import {Prop, Watch} from "vue-property-decorator";
 import {UI} from "../app/ui";
 import {AssetType} from "../types/assetType";
 import {Operation} from "../types/operation";
-import {TableHeader, TradeRow} from "../types/types";
+import {TableHeader, TablePagination, TradeRow} from "../types/types";
 import {TradeUtils} from "../utils/tradeUtils";
 import {StoreType} from "../vuex/storeType";
 import {AddTradeDialog} from "./dialogs/addTradeDialog";
@@ -14,7 +14,7 @@ import {BtnReturn} from "./dialogs/customDialog";
     // language=Vue
     template: `
         <v-data-table :headers="headers" :items="trades" item-key="id" :pagination.sync="tradePagination.pagination"
-                      :total-items="tradePagination.totalTrades"
+                      :total-items="tradePagination.totalElements"
                       :loading="tradePagination.loading" hide-actions>
             <template slot="items" slot-scope="props">
                 <tr @click="props.expanded = !props.expanded">
@@ -119,7 +119,7 @@ export class TradesTable extends UI {
     private trades: TradeRow[];
 
     @Prop({required: true, type: Object})
-    private tradePagination: TradePagination;
+    private tradePagination: TablePagination;
 
     /** Текущая операция */
     private operation = Operation;
@@ -166,17 +166,3 @@ export class TradesTable extends UI {
         return TradeUtils.moneyPrice(trade);
     }
 }
-
-export type TradePagination = {
-    pagination: Pagination,
-    totalTrades: number,
-    loading: boolean
-};
-
-export type Pagination = {
-    descending: boolean,
-    page: number,
-    rowsPerPage: number,
-    sortBy: string,
-    totalItems: number
-};

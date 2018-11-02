@@ -66,6 +66,10 @@ export class AssetTable extends UI {
                 return "Рубли";
             case "DOLLARS":
                 return "Доллары";
+            case "EURO":
+                return "Евро";
+            case "ETF":
+                return "ETF";
         }
         throw new Error("Неизвестный тип актива: " + type);
     }

@@ -2,7 +2,7 @@ import {Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {HTTP} from "../platform/services/http";
 import {BaseChartDot, ColumnChartData, ColumnDataSeries, Dot, EventChartData, HighStockEventData, HighStockEventsGroup} from "../types/charts/types";
-import {Bond, BondInfo, Share, Stock, StockInfo} from "../types/types";
+import {Bond, BondInfo, PageableResponse, Share, Stock, StockInfo} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
 
 @Service("MarketService")
@@ -47,6 +47,28 @@ export class MarketService {
             payments: this.convertBondPayments(result.payments),
             events: ChartUtils.processEventsChartData(result.payments)
         };
+    }
+
+    /**
+     * Загружает и возвращает список акций
+     */
+    async loadStocks(offset = 0, pageSize = 50, sortColumn: string, descending = false): Promise<PageableResponse<Stock>> {
+        return (await HTTP.INSTANCE.get(`/market/stocks`, {
+            params: {
+                pageSize, offset, sortColumn: sortColumn ? sortColumn.toUpperCase() : null, descending
+            }
+        })).data as PageableResponse<Stock>;
+    }
+
+    /**
+     * Загружает и возвращает список облигаций
+     */
+    async loadBonds(offset = 0, pageSize = 50, sortColumn: string, descending = false): Promise<PageableResponse<Bond>> {
+        return (await HTTP.INSTANCE.get(`/market/bonds`, {
+            params: {
+                pageSize, offset, sortColumn: sortColumn ? sortColumn.toUpperCase() : null, descending
+            }
+        })).data as PageableResponse<Bond>;
     }
 
     private convertDots(dots: _baseChartDot[]): Dot[] {

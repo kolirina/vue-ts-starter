@@ -485,3 +485,35 @@ export enum Status {
     WARN = "WARN",
     ERROR = "ERROR"
 }
+
+export type Pagination = {
+    descending: boolean,
+    page: number,
+    rowsPerPage: number,
+    sortBy: string,
+    totalItems: number
+};
+
+export type TablePagination = {
+    pagination: Pagination,
+    totalItems: number,
+    loading: boolean
+};
+
+/** Сущность постраничного ответа */
+export interface PageableResponse<T> {
+    /** Список элементов */
+    content: T[];
+    /** Всего элементов */
+    totalItems: number;
+    /** Количество страниц */
+    pages: number;
+    /** Размер страницы */
+    pageSize: number;
+    /** Номер страницы */
+    pageNumber: number;
+    /** Сортировка */
+    descending: boolean;
+    /** Смещение */
+    offset: number;
+}
