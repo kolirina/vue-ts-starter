@@ -61,8 +61,8 @@ export class FeedbackDialog extends CustomDialog<ClientInfo, void> {
     private feedbackService: FeedbackService;
     /** Темы сообщения */
     private feedbackTypes = [
-        {type: FeedbackType.FEATURE_REQUEST, name: "Ошибка в работе"},
-        {type: FeedbackType.ERROR, name: "Предложение о доработке"},
+        {type: FeedbackType.ERROR, name: "Ошибка в работе"},
+        {type: FeedbackType.FEATURE_REQUEST, name: "Предложение о доработке"},
         {type: FeedbackType.OTHER, name: "Другое"}];
     /** Текст сообщения */
     private message = "";
@@ -93,6 +93,7 @@ export class FeedbackDialog extends CustomDialog<ClientInfo, void> {
         }
         await this.feedbackService.sendFeedback({username: this.username, email: this.email, feedbackType: this.feedbackType, message: this.message});
         this.$snotify.info("Письмо успешно отправлено. Мы ответим вам в течение 24 часов");
+        this.close();
     }
 
     /**

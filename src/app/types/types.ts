@@ -517,3 +517,19 @@ export interface PageableResponse<T> {
     /** Смещение */
     offset: number;
 }
+
+/** Информация о валюте */
+export interface Currency {
+    /** Идентификатор */
+    id: string;
+    /** Числовой код валюты */
+    numCode: string;
+    /** Буквенный код валюты */
+    charCode: string;
+    /** Номинал валюты */
+    nominal: string;
+    /** Название валюты */
+    name: string;
+    /** Курс валюты */
+    value: string;
+}

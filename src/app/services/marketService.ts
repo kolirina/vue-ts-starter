@@ -2,7 +2,7 @@ import {Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {HTTP} from "../platform/services/http";
 import {BaseChartDot, ColumnChartData, ColumnDataSeries, Dot, EventChartData, HighStockEventData, HighStockEventsGroup} from "../types/charts/types";
-import {Bond, BondInfo, PageableResponse, Share, Stock, StockInfo} from "../types/types";
+import {Bond, BondInfo, Currency, PageableResponse, Share, Stock, StockInfo} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
 
 @Service("MarketService")
@@ -69,6 +69,13 @@ export class MarketService {
                 pageSize, offset, sortColumn: sortColumn ? sortColumn.toUpperCase() : null, descending
             }
         })).data as PageableResponse<Bond>;
+    }
+
+    /**
+     * Загружает и возвращает список валюты
+     */
+    async loadCurrencies(): Promise<Currency[]> {
+        return (await HTTP.INSTANCE.get(`/market/currency`)).data as Currency[];
     }
 
     private convertDots(dots: _baseChartDot[]): Dot[] {

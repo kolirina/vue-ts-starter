@@ -111,7 +111,8 @@ export class BondQuotes extends UI {
         {text: "След. купон", align: "center", value: "nextcoupon", width: "60"},
         {text: "Номинал", align: "right", value: "facevalue", width: "60"},
         {text: "Дюрация", align: "right", value: "duration", width: "60"},
-        {text: "Профиль эмитента", align: "center", value: "profile", width: "60", sortable: false}
+        {text: "Профиль эмитента", align: "center", value: "profile", width: "60", sortable: false},
+        {text: "Меню", value: "", align: "center", width: "30", sortable: false}
     ];
 
     private loading = false;

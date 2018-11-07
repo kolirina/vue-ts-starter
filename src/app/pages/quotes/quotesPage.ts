@@ -5,6 +5,7 @@ import {Portfolio} from "../../types/types";
 import {StoreType} from "../../vuex/storeType";
 import {BondQuotes} from "./bondQuotes";
 import {StockQuotes} from "./stockQuotes";
+import {CurrencyQuotes} from "./currencyQuotes";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -18,6 +19,9 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-tab>
                 <v-tab>
                     Облигации
+                </v-tab>
+                <v-tab>
+                    Валюты
                 </v-tab>
 
                 <v-tab-item lazy>
@@ -34,10 +38,17 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-card-text>
                     </v-card>
                 </v-tab-item>
+                <v-tab-item lazy>
+                    <v-card flat>
+                        <v-card-text>
+                            <currency-quotes></currency-quotes>
+                        </v-card-text>
+                    </v-card>
+                </v-tab-item>
             </v-tabs>
         </v-container>
     `,
-    components: {StockQuotes, BondQuotes}
+    components: {StockQuotes, BondQuotes, CurrencyQuotes}
 })
 export class QuotesPage extends UI {
 

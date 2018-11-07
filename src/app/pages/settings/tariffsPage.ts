@@ -57,7 +57,8 @@ const MainStore = namespace(StoreType.MAIN);
                         </div>
 
                         <p v-if="isDiscountApplied()" class="promotion" style="color: black">
-                            Совершите покупку с вашей персональной скидкой <b>{{ clientInfo.user.nextPurchaseDiscount }}%</b>!
+                            Совершите покупку с вашей персональной скидкой <b>{{ clientInfo.user.nextPurchaseDiscount }}%</b>! (срок действия скидки до {{
+                            clientInfo.user.nextPurchaseDiscountExpired | date }})
                         </p>
 
                         <div class="tab" id="planTabs">

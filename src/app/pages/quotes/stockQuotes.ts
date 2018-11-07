@@ -93,7 +93,8 @@ export class StockQuotes extends UI {
         {text: "Изменение", align: "left", value: "change", width: "70"},
         {text: "Размер лота", align: "right", value: "lotsize", width: "45", sortable: false},
         {text: "Рейтинг", align: "center", value: "rating", width: "240"},
-        {text: "Профиль эмитента", align: "right", value: "profile", width: "60", sortable: false}
+        {text: "Профиль эмитента", align: "right", value: "profile", width: "60", sortable: false},
+        {text: "Меню", value: "", align: "center", width: "30", sortable: false}
     ];
 
     private loading = false;
