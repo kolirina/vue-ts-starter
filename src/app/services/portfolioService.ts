@@ -124,6 +124,14 @@ export class PortfolioService {
         await HTTP.INSTANCE.post(`/portfolios/${userId}/backup`, portfolioBackup);
     }
 
+    async getCurrentMoney(portfolioId: string): Promise<string> {
+        return (await HTTP.INSTANCE.get(`/portfolios/${portfolioId}/current-money`)).data;
+    }
+
+    async saveOrUpdateCurrentMoney(portfolioId: string, currentMoney: string): Promise<void> {
+        await HTTP.INSTANCE.post(`/portfolios/${portfolioId}/current-money`, {currentMoney});
+    }
+
     /**
      * Возвращает данные по портфелю
      * @param {string} id идентификатор портфеля

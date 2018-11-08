@@ -13,8 +13,10 @@ export class ImportService {
      * @param portfolioId
      * @param report
      */
-    async importReport(provider: string, portfolioId: string, report: FormData): Promise<ImportResponse> {
-        return (await HTTP.INSTANCE.post(`/import/${provider}/to/${portfolioId}`, report)).data as ImportResponse;
+    async importReport(provider: string, portfolioId: string, report: FormData, importRequest: ImportRequest): Promise<ImportResponse> {
+        return (await HTTP.INSTANCE.post(`/import/${provider}/to/${portfolioId}`, report, {
+            params: importRequest
+        })).data as ImportResponse;
     }
 }
 
@@ -38,4 +40,16 @@ export interface DealImportError {
     dealDate: string;
     /** Тикер бумаги сделки */
     dealTicker: string;
+}
+
+/** Параметры для импорта отчетов */
+export interface ImportRequest {
+    /** Признак создания связанных сделок */
+    linkTrades: boolean;
+    /** Признак автоматического рассчета комиссии по сделкам */
+    autoCommission: boolean;
+    /** Призак автоисполнения Событий по сделкам из отчета */
+    autoEvents: boolean;
+    /** Признак отображения диалога для ввода баланса портфеля после импорта */
+    confirmMoneyBalance: boolean;
 }

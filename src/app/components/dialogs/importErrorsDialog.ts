@@ -22,7 +22,8 @@ import {CustomDialog} from "./customDialog";
                     </v-toolbar-items>
                 </v-toolbar>
                 <v-card-text>
-                    <h4>Успешно добавлено {{ data.validatedTradesCount }} {{ data.validatedTradesCount | declension("сделка", "сделки", "сделок") }}.</h4>
+                    <h4>Успешно {{ data.validatedTradesCount | declension("добавлена", "добавлено", "добавлено") }}
+                        {{ data.validatedTradesCount }} {{ data.validatedTradesCount | declension("сделка", "сделки", "сделок") }}.</h4>
                     <h4>Не получилось импортировать отчет?</h4>
                     <div>
                         <span>Попробуйте указать </span><a @click="goToBalances">начальные балансы </a><i class="fa fa-balance-scale"/>
@@ -37,7 +38,7 @@ import {CustomDialog} from "./customDialog";
                     <v-data-table :headers="headers" :items="data.errors" hide-actions>
                         <template slot="items" slot-scope="props">
                             <tr>
-                                <td class="text-xs-left">{{ props.item.dealDate | date }}</td>
+                                <td class="text-xs-left"><span v-if="props.item.dealDate">{{ props.item.dealDate | date }}</span></td>
                                 <td class="text-xs-left">{{ props.item.dealTicker }}</td>
                                 <td class="text-xs-left">{{ props.item.message }}</td>
                             </tr>
