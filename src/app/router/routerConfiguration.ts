@@ -4,6 +4,7 @@ import VueRouter from "vue-router";
 import {RouteConfig} from "vue-router/types/router";
 import {BondInfoPage} from "../pages/bondInfoPage";
 import {CombinedPortfolioPage} from "../pages/combinedPortfolioPage";
+import {EventsPage} from "../pages/eventsPage";
 import {PortfolioPage} from "../pages/portfolioPage";
 import {QuotesPage} from "../pages/quotes/quotesPage";
 import {ExportPage} from "../pages/settings/exportPage";
@@ -64,6 +65,11 @@ export class RouterConfiguration {
                 name: "portfolio",
                 path: "/portfolio",
                 component: PortfolioPage
+            },
+            {
+                name: "events",
+                path: "/events",
+                component: EventsPage
             },
             {
                 name: "trades",

@@ -80,11 +80,7 @@ import {Share} from "../types/types";
                         <tr>
                             <td>Рейтинг</td>
                             <td>
-                                <el-rate
-                                        :value="share.rating"
-                                        disabled
-                                        text-color="#ff9900">
-                                </el-rate>
+                                <v-rating v-model="share.rating" dense readonly></v-rating>
                             </td>
                         </tr>
                         <tr>
