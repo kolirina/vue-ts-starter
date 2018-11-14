@@ -15,8 +15,8 @@ const reload = browserSync.reload;
 const webpackConfig = require('./webpack.config.js');
 
 const TARGET_DIR = "dist";
-webpackConfig.mode = args.env || "production";
-webpackConfig.watch = args.watch;
+webpackConfig.mode = args.env || "development";
+// webpackConfig.watch = webpackConfig.mode === "development";
 
 gulp.task('scripts', () => {
     return gulp.src('./src/index.ts')
@@ -84,7 +84,7 @@ gulp.task('default', ['build', "css", "assets"], () => {
         notify: false,
         serveStatic: [TARGET_DIR]
     });
-    gulp.watch(['src/**/*.ts'], ['build']);
+    gulp.watch(['src/**/*.ts'], ['scripts']);
     gulp.watch(['src/assets/scss/**/*.scss'], ['css']);
     gulp.watch(['*.html'], ['assets']);
 });

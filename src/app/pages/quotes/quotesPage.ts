@@ -4,8 +4,8 @@ import {UI} from "../../app/ui";
 import {Portfolio} from "../../types/types";
 import {StoreType} from "../../vuex/storeType";
 import {BondQuotes} from "./bondQuotes";
-import {StockQuotes} from "./stockQuotes";
 import {CurrencyQuotes} from "./currencyQuotes";
+import {StockQuotes} from "./stockQuotes";
 
 const MainStore = namespace(StoreType.MAIN);
 
