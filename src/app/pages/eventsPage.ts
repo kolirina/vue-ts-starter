@@ -3,10 +3,12 @@ import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
-import {EventService, ShareEvent} from "../services/eventService";
+import {ConfirmDialog} from "../components/dialogs/confirmDialog";
+import {BtnReturn} from "../components/dialogs/customDialog";
+import {EventsAggregateInfo, EventService, ShareEvent} from "../services/eventService";
 import {AssetType} from "../types/assetType";
 import {Operation} from "../types/operation";
-import {Portfolio, TableHeader, TradeRow} from "../types/types";
+import {Portfolio, TableHeader} from "../types/types";
 import {StoreType} from "../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -15,41 +17,96 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-container v-if="portfolio" fluid>
-            <dashboard :data="portfolio.overview.dashboardData"></dashboard>
+            <v-toolbar dark color="primary">
+                <v-toolbar-title class="white--text">Новые события</v-toolbar-title>
 
-            <v-data-table :headers="headers" :items="events" item-key="id" :loading="loading" hide-actions>
-                <template slot="items" slot-scope="props">
-                    <tr>
-                        <td>{{ props.item.label }}</td>
-                        <td>{{ props.item.share.shortname }}</td>
-                        <td>
-                            <router-link v-if="props.item.type === 'DIVIDEND'" :to="{name: 'share-info', params: {ticker: props.item.share.ticker}}">
-                                {{ props.item.share.ticker }}
-                            </router-link>
-                            <router-link v-if="props.item.type !== 'DIVIDEND'" :to="{name: 'bond-info', params: {isin: props.item.share.ticker}}">
-                                {{ props.item.share.ticker }}
-                            </router-link>
-                        </td>
-                        <td class="text-xs-center">{{ props.item.date | date }}</td>
-                        <td class="text-xs-right">{{ props.item.period }}</td>
-                        <td class="text-xs-right">{{ props.item.cleanAmount | amount(true) }}</td>
-                        <td class="justify-center layout px-0">
-                            <v-btn color="primary" @click="openTradeDialog(props.item)" flat icon dark>
-                                <v-icon color="primary" small>fas fa-plus</v-icon>
-                            </v-btn>
-                            <v-btn color="primary" flat icon dark>
-                                <v-icon color="primary" small>fas fa-trash-alt</v-icon>
-                            </v-btn>
-                        </td>
-                    </tr>
-                </template>
+                <v-spacer></v-spacer>
+            </v-toolbar>
 
-                <template slot="no-data">
-                    <v-alert :value="true" color="info" icon="info">
-                        Добавьте свою первую сделку чтобы мы могли предложить вам события
-                    </v-alert>
-                </template>
-            </v-data-table>
+            <v-card>
+                <v-card-text>
+                    <div v-if="eventsAggregateInfo" class="eventsControls">
+                        <v-btn color="primary" @click.native="confirmDeleteAllEvents" dark small>
+                            Удалить все
+                        </v-btn>
+                        <v-btn color="primary" @click.native="executeAllEvents" dark small>
+                            Исполнить все
+                        </v-btn>
+                        <div>
+                            <v-btn color="primary" @click.native="executeAllEventsWithoutMoney" dark small>
+                                Исполнить все без зачисления денег
+                            </v-btn>
+                            <v-tooltip :max-width="250" top>
+                                <i slot="activator" class="far fa-question-circle"></i>
+                                <span>
+                                    Полезно, если вы хотите быстро учесть все начисления в доходности портфеля, а текущий баланс укажете самостоятельно.
+                                </span>
+                            </v-tooltip>
+                        </div>
+                    </div>
+
+                    <div class="eventsAggregateInfo" v-if="eventsAggregateInfo">
+                        <span class="item-block">
+                            <span class="eventLegend dividend"/>
+                            <span :class="portfolio.portfolioParams.viewCurrency.toLowerCase()">Дивиденды {{ eventsAggregateInfo.totalDividendsAmount }} </span>
+                        </span>
+
+                        <span class="item-block">
+                            <span class="eventLegend coupon"/>
+                            <span :class="portfolio.portfolioParams.viewCurrency.toLowerCase()">Купоны {{ eventsAggregateInfo.totalCouponsAmount }} </span>
+                        </span>
+
+                        <span class="item-block">
+                            <span class="eventLegend amortization"/>
+                            <span :class="portfolio.portfolioParams.viewCurrency.toLowerCase()">Амортизация {{ eventsAggregateInfo.totalAmortizationsAmount }} </span>
+                        </span>
+
+                        <span class="item-block">
+                            <span class="eventLegend repayment"/>
+                            <span :class="portfolio.portfolioParams.viewCurrency.toLowerCase()">Поагешния {{ eventsAggregateInfo.totalRepaymentsAmount }} </span>
+                        </span>
+
+                        <span class="item-block">
+                            <span class="eventLegend custom"/>
+                            <span :class="portfolio.portfolioParams.viewCurrency.toLowerCase()">Всего выплат {{ eventsAggregateInfo.totalAmount }} </span>
+                        </span>
+                    </div>
+
+                    <v-data-table :headers="headers" :items="events" item-key="id" :loading="loading" hide-actions>
+                        <template slot="items" slot-scope="props">
+                            <tr>
+                                <td>{{ props.item.label }}</td>
+                                <td>{{ props.item.share.shortname }}</td>
+                                <td>
+                                    <router-link v-if="props.item.type === 'DIVIDEND'" :to="{name: 'share-info', params: {ticker: props.item.share.ticker}}">
+                                        {{ props.item.share.ticker }}
+                                    </router-link>
+                                    <router-link v-if="props.item.type !== 'DIVIDEND'" :to="{name: 'bond-info', params: {isin: props.item.share.ticker}}">
+                                        {{ props.item.share.ticker }}
+                                    </router-link>
+                                </td>
+                                <td class="text-xs-center">{{ props.item.date | date }}</td>
+                                <td class="text-xs-right">{{ props.item.period }}</td>
+                                <td class="text-xs-right">{{ props.item.cleanAmount | amount(true) }}</td>
+                                <td class="justify-center layout px-0">
+                                    <v-btn color="primary" @click="openTradeDialog(props.item)" flat icon dark>
+                                        <v-icon color="primary" small>fas fa-plus</v-icon>
+                                    </v-btn>
+                                    <v-btn color="primary" flat icon dark>
+                                        <v-icon color="primary" small>fas fa-trash-alt</v-icon>
+                                    </v-btn>
+                                </td>
+                            </tr>
+                        </template>
+
+                        <template slot="no-data">
+                            <v-alert :value="true" color="info" icon="info">
+                                {{ emptyTableText }}
+                            </v-alert>
+                        </template>
+                    </v-data-table>
+                </v-card-text>
+            </v-card>
         </v-container>
     `
 })
@@ -63,6 +120,7 @@ export class EventsPage extends UI {
     private loading = false;
     /** События */
     private events: ShareEvent[] = [];
+    private eventsAggregateInfo: EventsAggregateInfo = null;
     /** Зголовки таблицы */
     private headers: TableHeader[] = [
         {text: "Событие", align: "left", value: "label", width: "100"},
@@ -85,7 +143,9 @@ export class EventsPage extends UI {
 
     private async loadEvents(): Promise<void> {
         this.loading = true;
-        this.events = await this.eventService.getEvents(this.portfolio.id);
+        const eventsResponse = await this.eventService.getEvents(this.portfolio.id);
+        this.events = eventsResponse.events;
+        this.eventsAggregateInfo = eventsResponse.eventsAggregateInfo;
         this.loading = false;
     }
 
@@ -98,5 +158,31 @@ export class EventsPage extends UI {
             operation,
             assetType: operation === Operation.DIVIDEND ? AssetType.STOCK : AssetType.BOND
         });
+    }
+
+    private async confirmDeleteAllEvents(): Promise<void> {
+        const result = await new ConfirmDialog().show("Вы уверены что хотите удалить все начисления?");
+        if (result === BtnReturn.YES) {
+            await this.eventService.deleteAllEvents(this.portfolio.id);
+            await this.loadEvents();
+            this.$snotify.info("Начисления успешно удалены");
+        }
+    }
+
+    private async executeAllEventsWithoutMoney(): Promise<void> {
+        await this.eventService.executeAllEvents(this.portfolio.id, false);
+        await this.loadEvents();
+        this.$snotify.info("Начисления успешно исполнены");
+    }
+
+    private async executeAllEvents(): Promise<void> {
+        await this.eventService.executeAllEvents(this.portfolio.id, true);
+        await this.loadEvents();
+        this.$snotify.info("Начисления успешно исполнены");
+    }
+
+    private get emptyTableText(): string {
+        return this.portfolio.overview.totalTradesCount !== 0 ? "Новых событий по вашим бумагам еще не появилось" :
+            "Добавьте свою первую сделку чтобы мы могли предложить вам события";
     }
 }

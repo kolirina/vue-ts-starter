@@ -41,6 +41,7 @@
     "vuex-persistedstate": "^2.5.4"
   },
   "devDependencies": {
+    "browser-sync": "^2.26.3",
     "css-loader": "^1.0.0",
     "gulp": "3.9.1",
     "gulp-concat": "2.6.1",
@@ -52,7 +53,6 @@
     "gulp-typescript": "4.0.2",
     "gulp-uglify": "3.0.1",
     "gulp-util": "^3.0.8",
-    "browser-sync": "^2.26.3",
     "mini-css-extract-plugin": "^0.4.3",
     "node-notifier": "^5.2.1",
     "ts-loader": "^5.2.1",

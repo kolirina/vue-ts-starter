@@ -11,8 +11,27 @@ export class EventService {
      * Возвращает список событий пользователя
      * @param portfolioId идентификатор портфеля
      */
-    async getEvents(portfolioId: string): Promise<ShareEvent[]> {
-        return (await HTTP.INSTANCE.get(`/event/list/${portfolioId}`)).data;
+    async getEvents(portfolioId: string): Promise<EventsResponse> {
+        return (await HTTP.INSTANCE.get(`/events/list/${portfolioId}`)).data;
+    }
+
+    /**
+     * Исполняет все события пользователя с зачислением денег или без
+     * @param portfolioId идентификатор портфеля
+     * @param withMoney признак исполнения событий с зачислением денег
+     */
+    async executeAllEvents(portfolioId: string, withMoney: boolean): Promise<void> {
+        await HTTP.INSTANCE.post(`/events/list/${portfolioId}/execute`, null, {
+            params: {withMoney}
+        });
+    }
+
+    /**
+     * Удаляет все события пользователя
+     * @param portfolioId идентификатор портфеля
+     */
+    async deleteAllEvents(portfolioId: string): Promise<void> {
+        await HTTP.INSTANCE.post(`/events/list/${portfolioId}/delete`);
     }
 }
 
@@ -44,4 +63,26 @@ export interface ShareEvent {
     label: string;
     /** Тип события */
     type: string;
+}
+
+/** Информация о событиях портфеля */
+export interface EventsResponse {
+    /** Список событий */
+    events: ShareEvent[];
+    /** Агрегированная информация по событиям */
+    eventsAggregateInfo: EventsAggregateInfo;
+}
+
+/** Агрегированная информация по событиям */
+export interface EventsAggregateInfo {
+    /** Сумма начислений событий по дивидендам */
+    totalDividendsAmount: string;
+    /** Сумма начислений событий по купонам */
+    totalCouponsAmount: string;
+    /** Сумма начислений событий по амортизации */
+    totalAmortizationsAmount: string;
+    /** Сумма начислений событий по погашениям */
+    totalRepaymentsAmount: string;
+    /** Сумма начислений событий по всем событиям */
+    totalAmount: string;
 }
