@@ -1,23 +1,24 @@
-import {Container} from "typescript-ioc";
+import { Container } from "typescript-ioc";
 import Vue from "vue";
 import VueRouter from "vue-router";
-import {RouteConfig} from "vue-router/types/router";
-import {BondInfoPage} from "../pages/bondInfoPage";
-import {CombinedPortfolioPage} from "../pages/combinedPortfolioPage";
-import {EventsPage} from "../pages/eventsPage";
-import {PortfolioPage} from "../pages/portfolioPage";
-import {QuotesPage} from "../pages/quotes/quotesPage";
-import {ExportPage} from "../pages/settings/exportPage";
-import {ImportPage} from "../pages/settings/importPage";
-import {NotificationsPage} from "../pages/settings/notificationsPage";
-import {ProfilePage} from "../pages/settings/profilePage";
-import {PromoCodesPage} from "../pages/settings/promoCodesPage";
-import {SettingsPage} from "../pages/settings/settingsPage";
-import {TariffsPage} from "../pages/settings/tariffsPage";
-import {ShareInfoPage} from "../pages/shareInfoPage";
-import {TradesPage} from "../pages/tradesPage";
-import {Storage} from "../platform/services/storage";
-import {LogoutService} from "../services/logoutService";
+import { RouteConfig } from "vue-router/types/router";
+import { BondInfoPage } from "../pages/bondInfoPage";
+import { CombinedPortfolioPage } from "../pages/combinedPortfolioPage";
+import { EventsPage } from "../pages/eventsPage";
+import { PortfolioPage } from "../pages/portfolioPage";
+import { QuotesPage } from "../pages/quotes/quotesPage";
+import { ExportPage } from "../pages/settings/exportPage";
+import { ImportPage } from "../pages/settings/importPage";
+import { NotificationsPage } from "../pages/settings/notificationsPage";
+import { ProfilePage } from "../pages/settings/profilePage";
+import { PromoCodesPage } from "../pages/settings/promoCodesPage";
+import { SettingsPage } from "../pages/settings/settingsPage";
+import { TariffsPage } from "../pages/settings/tariffsPage";
+import { ShareInfoPage } from "../pages/shareInfoPage";
+import { TradesPage } from "../pages/tradesPage";
+import { Storage } from "../platform/services/storage";
+import { LogoutService } from "../services/logoutService";
+import { HelpPage } from "../pages/helpPage";
 
 Vue.use(VueRouter);
 
@@ -100,6 +101,11 @@ export class RouterConfiguration {
                 name: "portfolio-settings",
                 path: "/portfolio-settings",
                 component: SettingsPage
+            },
+            {
+                name: "help",
+                path: "/help",
+                component: HelpPage
             },
             {
                 name: "export",

@@ -180,7 +180,8 @@ export class AppFrame extends UI {
                 {title: "Промо-коды", action: "promo-codes", icon: "fas fa-heart"},
                 {title: "Уведомления", action: "notifications", icon: "fas fa-bell"}
             ]
-        }
+        },
+        {title: "Справка", action: "help", icon: "far fa-question-circle"},
     ];
 
     async created(): Promise<void> {
