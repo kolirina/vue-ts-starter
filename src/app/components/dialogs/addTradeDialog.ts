@@ -261,7 +261,12 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     @Watch("assetType")
     private onAssetTypeChange(newValue: AssetType): void {
-        this.operation = this.assetType.operations[0];
+        if (this.data.operation === undefined) {
+            this.operation = this.assetType.operations[0];
+        }
+        else {
+            this.operation = this.data.operation;
+        }
     }
 
     @Watch("searchQuery")
