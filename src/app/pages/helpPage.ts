@@ -1,53 +1,57 @@
+/* 
+* TODO: Исправить скринкасты
+* TODO: Сделать страницу Пользовательское соглашение /terms-of-use
+*/
+
 import Component from "vue-class-component";
 import {UI} from "../app/ui";
-
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
 import {FeedbackDialog} from "../components/dialogs/feedbackDialog";
 import {StoreType} from "../vuex/storeType";
 import {AssetType} from "../types/assetType";
 import {Operation} from "../types/operation";
-import {EnumType} from "../platform/enum";
 
 @Component({
+    // language=Vue
     template: `
-        <v-container fluid>
+        <v-container fluid class="selectable">
             <h1>Справка по работе сервиса</h1>
             <span>
                 <ul>
-                    <li><a href="#about">О сервисе</a></li>
-                    <li><a href="#trades_add">Добавление сделок</a></li>
-                    <li><a href="#balances">Текущие остатки</a></li>
-                    <li><a href="#import">Импорт сделок</a></li>
-                    <li><a href="#export">Экспорт данных</a></li>
-                    <li><a href="#portfolio">Страница Портфель</a></li>
+                    <li><a href="#about" @click.stop="$vuetify.goTo('#about', { offset: -64 })">О сервисе</a></li>
+                    <li><a href="#trades_add" @click.stop="$vuetify.goTo('#trades_add', { offset: -64 })">Добавление сделок</a></li>
+                    <li><a href="#balances" @click.stop="$vuetify.goTo('#balances', { offset: -64 })">Текущие остатки</a></li>
+                    <li><a href="#import" @click.stop="$vuetify.goTo('#import', { offset: -64 })">Импорт сделок</a></li>
+                    <li><a href="#export" @click.stop="$vuetify.goTo('#export', { offset: -64 })">Экспорт данных</a></li>
+                    <li><a href="#portfolio" @click.stop="$vuetify.goTo('#portfolio', { offset: -64 })">Страница Портфель</a></li>
                     <li>
-                        <a href="#trades">Страница Сделки</a>
+                        <a href="#trades" @click.stop="$vuetify.goTo('#trades', { offset: -64 })">Страница Сделки</a>
                         <ul>
-                            <li><a href="#add_fee">Добавление комиссий и расходов</a></li>
+                            <li><a href="#add_fee" @click.stop="$vuetify.goTo('#add_fee', { offset: -64 })">Добавление комиссий и расходов</a></li>
                         </ul>
                     </li>
-                    <li><a href="#analytics">Страница Аналитика</a></li>
-                    <li><a href="#events">Страница События</a></li>
-                    <li><a href="#investments">Страница Инвестиции</a></li>
-                    <li><a href="#combined_portfolio">Страница Составной портфель</a></li>
-                    <li><a href="#dividends">Страница Дивиденды</a></li>
+                    <li><a href="#analytics" @click.stop="$vuetify.goTo('#analytics', { offset: -64 })">Страница Аналитика</a></li>
+                    <li><a href="#events" @click.stop="$vuetify.goTo('#events', { offset: -64 })">Страница События</a></li>
+                    <li><a href="#investments" @click.stop="$vuetify.goTo('#investments', { offset: -64 })">Страница Инвестиции</a></li>
+                    <li><a href="#combined_portfolio" @click.stop="$vuetify.goTo('#combined_portfolio', { offset: -64 })">Страница Составной портфель</a></li>
+                    <li><a href="#dividends" @click.stop="$vuetify.goTo('#dividends', { offset: -64 })">Страница Дивиденды</a></li>
                     <li>
-                        <a href="#settings">Настройки</a>
+                        <a href="#settings" @click.stop="$vuetify.goTo('#settings', { offset: -64 })">Настройки</a>
                         <ul>
-                            <li><a href="#settings_portfolio">Управление портфелями</a></li>
-                            <li><a href="#settings_user">Настройки пользователя</a></li>
-                            <li><a href="#settings_public">Публичный доступ</a></li>
-                            <li><a href="#tariffs_public">Тарифы</a></li>
-                            <li><a href="#settings_promo_codes">Промо-коды</a></li>
-                            <li><a href="#settings_notifications">Уведомления</a></li>
+                            <li><a href="#settings_portfolio" @click.stop="$vuetify.goTo('#settings_portfolio', { offset: -64 })">Управление портфелями</a></li>
+                            <li><a href="#settings_user" @click.stop="$vuetify.goTo('#settings_user', { offset: -64 })">Настройки пользователя</a></li>
+                            <li><a href="#settings_public" @click.stop="$vuetify.goTo('#settings_public', { offset: -64 })">Публичный доступ</a></li>
+                            <li><a href="#tariffs_public" @click.stop="$vuetify.goTo('#tariffs_public', { offset: -64 })">Тарифы</a></li>
+                            <li><a href="#settings_promo_codes" @click.stop="$vuetify.goTo('#settings_promo_codes', { offset: -64 })">Промо-коды</a></li>
+                            <li><a href="#settings_notifications" @click.stop="$vuetify.goTo('#settings_notifications', { offset: -64 })">Уведомления</a></li>
                         </ul>
                     </li>
-                    <li><a href="#help">Вопросы и помощь</a></li>
-                    <li><a href="#privacy">Соглашение</a></li>
+                    <li><a href="#help" @click.stop="$vuetify.goTo('#help', { offset: -64 })">Вопросы и помощь</a></li>
+                    <li><a href="#privacy" @click.stop="$vuetify.goTo('#privacy', { offset: -64 })">Соглашение</a></li>
                 </ul>
             </span>
             <span>
-                <a id="about"><h1>О сервисе</h1></a>
+                <h1 id="about">О сервисе</h1>
                 <span>
                     Сервис позволяет учитывать <a href="#add_stock">акции</a>, <a href="#add_bond">облигации</a>, ETF, ПИФы,
                     валюты, драгоценные металлы и любые виды активов.
@@ -74,12 +78,17 @@ import {EnumType} from "../platform/enum";
                     Сервисом удобно пользоваться как в web-версии, так и с мобильных устройств. Мы поддерживаем как ios, так и android.
                     Скачать приложения вы можете по указанным ссылкам.
                     <div style="margin-top: 30px;">
-                        <a href="https://itunes.apple.com/ru/app/intelinvest-%D1%83%D1%87%D0%B5%D1%82-%D0%B8%D0%BD%D0%B2%D0%B5%D1%81%D1%82%D0%B8%D1%86%D0%B8%D0%B9/id1422478197?mt=8" title="Загрузите приложение в App Store" target="_blank"><img src="./img/help/app-store-badge.svg" alt="pic" style="height: 52px;margin-right: 10px; margin-left: 10px" class="pic"></a>
-                        <a href="https://play.google.com/store/apps/details?id=ru.intelinvest.portfolio" title="Загрузите приложение в Google Play" target="_blank"><img src="./img/help/google-play-badge.svg" alt="pic" style="height: 52px;margin-right: 10px; margin-left: 10px"></a>
+                        <a href="https://itunes.apple.com/ru/app/intelinvest-%D1%83%D1%87%D0%B5%D1%82-%D0%B8%D0%BD%D0%B2%D0%B5%D1%81%D1%82%D0%B8%D1%86%D0%B8%D0%B9
+                                                                /id1422478197?mt=8" title="Загрузите приложение в App Store" target="_blank">
+                                <img src="./img/help/app-store-badge.svg" alt="pic" style="height: 52px;margin-right: 10px; margin-left: 10px" class="pic">
+                        </a>
+                        <a href="https://play.google.com/store/apps/details?id=ru.intelinvest.portfolio" title="Загрузите приложение в Google Play" target="_blank">
+                            <img src="./img/help/google-play-badge.svg" alt="pic" style="height: 52px;margin-right: 10px; margin-left: 10px">
+                        </a>
                     </div>
                 </span>
 
-                <a id="trades_add"><h1>Добавление сделок</h1></a>
+                <h1 id="trades_add">Добавление сделок</h1>
                 <span>
                     <p>
                         В правом верхнем углу расположена кнопка добавления сделок
@@ -96,7 +105,7 @@ import {EnumType} from "../platform/enum";
                     <img src="./img/help/success_operation.png">
                     <p>
                         По умолчанию установлен чекбокс <img src="./img/help/checkbox.png"> "Cписать деньги" ("Зачислить деньги"),
-                        который определяет, будет ли сопровождаться сделка списанием с денежного счета на сумму покупки (или пополенением счета на сумму продажи).
+                        который определяет, будет ли сопровождаться сделка списанием с денежного счета на сумму покупки (или пополнением счета на сумму продажи).
                         При этом сделка по деньгам будет связана с основной сделкой, при редактировании основной сделки по бумаге, сделка
                         по денежным средствам будет обновлена автоматически.
                         Сумму доступных денежных средств в портфеле можно увидеть ниже (например, Доступно: <b>12 280.56</b>).
@@ -106,31 +115,31 @@ import {EnumType} from "../platform/enum";
                         Примеры внесения сделок вы можете посмотреть ниже.
                     </p>
                     <div class="deal-demo-block">
-                        <a id="add_stock"><h4>Покупка акции</h4></a><img src="./img/help/add_stock.gif">
+                        <h4 id="add_stock">Покупка акции</h4><img src="./img/help/add_stock.gif">
                     </div>
                     <div class="deal-demo-block">
-                        <a id="add_bond"><h4>Покупка облигации</h4></a><img src="./img/help/add_bond.gif">
+                        <h4 id="add_bond">Покупка облигации</h4><img src="./img/help/add_bond.gif">
                     </div>
                     <div class="deal-demo-block">
-                        <a id="add_dividend"><h4>Добавление дивиденда</h4></a><img src="./img/help/add_dividend.gif">
+                        <h4 id="add_dividend">Добавление дивиденда</h4><img src="./img/help/add_dividend.gif">
                     </div>
                     <div class="deal-demo-block">
-                        <a id="add_coupon"><h4>Добавление купонной выплаты</h4></a><img src="./img/help/add_coupon.gif">
+                        <h4 id="add_coupon">Добавление купонной выплаты</h4><img src="./img/help/add_coupon.gif">
                     </div>
                     <div class="deal-demo-block">
-                        <a id="add_money"><h4>Пополнение денежного счета</h4></a><img src="./img/help/add_money.gif">
+                        <h4 id="add_money">Пополнение денежного счета</h4><img src="./img/help/add_money.gif">
                     </div>
                     <div style="clear: both"></div>
                 </span>
 
-                <a id="balances"><h1>Текущие остатки портфеля</h1></a>
+                <h1 id="balances">Текущие остатки портфеля</h1>
                 <span>
                     Эта <a href="/#/balances">функция</a> полезна,
                     если у вас нет полной истории сделок или вы хотите быстро начать работу с новым портфелем.
                     Вы можете не заносить все сделки, а только указать текущее состояние портфеля и текущие остатки денежных средств на счете брокера.
                 </span>
 
-                <a id="import"><h1>Импорт сделок</h1></a>
+                <h1 id="import">Импорт сделок</h1>
                 <span>
                     Для более удобного переноса истории ваших сделок, сервис поддерживает автоматический импорт сделок из популярных терминалов
                     и распространенных брокеров. После выбора в меню вашего брокера или терминала, вам будет показана подробная инструкция по получению отчета.
@@ -142,7 +151,7 @@ import {EnumType} from "../platform/enum";
                     <p>
                         Для начала проверьте формат файла. Для каждого брокера описаны инструкции по форматам.
                         Внимательно прочитайте информацию во всплывающем окне. Там написаны причины, по которым импорт не проходит.
-                        Сделки по бумагам с нераспознанными тикерами необходимо довности вручную через
+                        Сделки по бумагам с не распознанными тикерами необходимо довнести вручную через
                         <a href="/#/balances">диалог ввода текущих остатков портфеля</a>.
                     </p>
                     <p>
@@ -152,7 +161,7 @@ import {EnumType} from "../platform/enum";
                         Для всех брокеров и терминалов, кроме АТОНа и ВТБ, импортируются только сделки купли-продажи ценных бумаг.
                         Связанные сделки по деньгам на списание/внесение при этом не создаются, так как это не влияет на расчет показателей портфеля. При завершении импорта
                         мы просим указать текущий остаток денежных средств в портфеле, на основании которого создается корректирующая сделка внесения/списания денег, чтобы
-                        стоимость портфеля соотвествовала действительности.
+                        стоимость портфеля соответствовала действительности.
                     </p>
                     <p>
                         Прибыль по дивидендам и купонам и амортизации начисляется в портфель автоматически на основе наших данных. Если после импорта вы не обнаружили в списке сделок
@@ -164,12 +173,12 @@ import {EnumType} from "../platform/enum";
                         фиксированный процент комиссии от суммы сделки, в таком случае комиссия при импорте будет применена ко всем сделкам автоматически.
                     </p>
                     <p>
-                        Если в портфеле имелась иная прибыль/убыток помимо начислений и комиссий брокера (например, доход по РЕПО, налог, комссиия депозитария), вы можете внести их
-                        вручную через добавление сделки Деньги -&gt; Расход/Доход. Выключите при этом флаг "Списать/Начислить деньги", так как денежный остаток портфеля после импорта актуален.
+                        Если в портфеле имелась иная прибыль/убыток помимо начислений и комиссий брокера (например, доход по РЕПО, налог, комссия депозитария), вы можете внести их
+                        вручную через добавление сделки Деньги -&gt; Расход/Доход. Выключите при этом флаг "Списать/Зачислить деньги", так как денежный остаток портфеля после импорта актуален.
                     </p>
                 </span>
 
-                <a id="export"><h1>Экспорт сделок</h1></a>
+                <h1 id="export">Экспорт сделок</h1>
                 <span>
                     Чтобы воспользоваться экспортом, перейдите в меню Настройки -&gt;
                     <a href="/#/export">Экспорт</a>
@@ -178,7 +187,7 @@ import {EnumType} from "../platform/enum";
                     Таким образом, вы сможете восстановить утерянные сделки либо старую версию портфеля при неудачном импорте.
                 </span>
 
-                <a id="portfolio"><h1>Страница Портфель</h1></a>
+                <h1 id="portfolio">Страница Портфель</h1>
                 <span>
                     <p>
                         Здесь представлена подробная информацию по текущему состоянию выбранного
@@ -210,12 +219,12 @@ import {EnumType} from "../platform/enum";
                     </p>
                     <p>
                         Для таблиц предусмотрена возможность фильтрации, сортировки и отображения произвольного набора колонок.
-                        Вы включаете отображение только тех колонкок, которые хотите видеть. Разворачивающиеся панели и таблицы сохраняют свое состояние, поэтому при следующем входе,
+                        Вы включаете отображение только тех колонок, которые хотите видеть. Разворачивающиеся панели и таблицы сохраняют свое состояние, поэтому при следующем входе,
                         будут отображены те колонки, которые вы отметили.
                     </p>
                 </span>
 
-                <a id="trades"><h1>Страница Сделки</h1></a>
+                <h1 id="trades">Страница Сделки</h1>
                 <span>
                     На этой <a href="/#/trades">странице</a> вы можете просмотреть все ваши сделки по текущему портфелю.
                     Для таблицы сделок также доступно сохранение состояния отображаемых колонок, сортировка и фильтрация.
@@ -227,7 +236,7 @@ import {EnumType} from "../platform/enum";
                     При разворачивании строки таблицы в доступно редактирование заметки к сделке.
                 </span>
 
-                <a id="add_fee"><h1>Добавление комиссий, расходов и доходов</h1></a>
+                <h1 id="add_fee">Добавление комиссий, расходов и доходов</h1>
                 <span>
                     Существует два основных вида сделок:
                     
@@ -245,11 +254,11 @@ import {EnumType} from "../platform/enum";
                     Чекбокс "Списать / Зачислить на счет" включен по умолчанию, означает, что также будет добавлена сделка влияющая на остаток денежных средств на счете.
 
                     Сделки Ввод / Вывод непосредственно на прибыль не влияют, но влияют на остаток денежных средств на счете. Если вы считаете что какие-то категории
-                    расходов по портфелю не стоит учитывать в прибыли, вы можете внести сделку по Выводу денежных средст со счета, чтобы денежные остатки в системе
+                    расходов по портфелю не стоит учитывать в прибыли, вы можете внести сделку по Выводу денежных средств со счета, чтобы денежные остатки в системе
                     совпадали с таковыми у вашего брокера.
                 </span>
 
-                <a id="analytics"><h1>Страница Аналитика</h1></a>
+                <h1 id="analytics">Страница Аналитика</h1>
                 <span>
                     <a href="/#/analytics">Здесь</a>
                     представлена аналитическая информация по портфелю и по текущему состоянию рынка.
@@ -260,7 +269,7 @@ import {EnumType} from "../platform/enum";
                     Ниже представлена таблица и карта отображающая текущее состояние рынка на основе индекса ММВБ.
                 </span>
 
-                <a id="events"><h1>Страница События</h1></a>
+                <h1 id="events">Страница События</h1>
                 <span>
                     <a href="/#/events">Здесь</a>
                     отображаются текущие начисления
@@ -280,7 +289,7 @@ import {EnumType} from "../platform/enum";
                     позволяет самостоятельно добавить событие, выбрать дату и указать комментарий.
                 </span>
 
-                <a id="investments"><h1>Страница Инвестиции</h1></a>
+                <h1 id="investments">Страница Инвестиции</h1>
                 <span>
                     На этой странице представлена суммарная информация по всем вашим портфелям.
                     Также вы можете добавить для учета любые виды инвестиций, с указанием категории
@@ -296,14 +305,14 @@ import {EnumType} from "../platform/enum";
                     для которых вы настроили автоматическое получение цены и для активов с предустановленными настройками)
                 </span>
 
-                <a id="combined_portfolio"><h1>Страница Составной портфель</h1></a>
+                <h1 id="combined_portfolio">Страница Составной портфель</h1>
                 <span>
                     На этой странице вы можете объединить для просмотра
                     несколько портфелей в один, и проанализировать состав и доли каждой акции, если, например, она входит
                     в состав нескольких портфелей.
                 </span>
 
-                <a id="dividends"><h1>Страница Дивиденды</h1></a>
+                <h1 id="dividends">Страница Дивиденды</h1>
                 <span>
                     <a href="/#/dividends">Здесь</a>
                     представлено четыре таблицы.
@@ -318,7 +327,7 @@ import {EnumType} from "../platform/enum";
                     Позволяет оценить тенденцию дивидендной доходности портфеля.
                 </span>
 
-                <a id="settings"><h1>Настройки</h1></a>
+                <h1 id="settings">Настройки</h1>
                 <span>
                     <ul>
                         <li>
@@ -414,21 +423,21 @@ import {EnumType} from "../platform/enum";
                     </ul>
                 </span>
 
-                <a id="help"><h1>Вопросы и помощь</h1></a>
+                <h1 id="help">Вопросы и помощь</h1>
                 <span>
                     <p>
                         Если у Вас есть вопросы или предложения по работе сайта,
                         Вы можете написать нам по эл.почте
-                        <a @click="openFeedBackDialog">web@intelinvest.ru<v-icon small>fa fa-envelope</v-icon></a>
+                        <a @click="openFeedBackDialog"><i class="fas fa-envelope"></i>web@intelinvest.ru</a>
                         или задать вопрос на канале
                         <a href="https://telegram.me/intelinvestSupportBot" title="Задайте вопрос в Telegram" target="_blank">
-                            telegram 
-                            <v-icon small>fab fa-telegram</v-icon>
+                            telegram
+                            <i class="fab fa-telegram"></i>
                         </a>
                         наши специалисты с радостью вам ответят и помогут.
                     </p>
                 </span>
-                <a id="privacy"><h1>Соглашение</h1></a>
+                <h1 id="privacy">Соглашение</h1>
                 <span>
                     <a href="/terms-of-use" target="_blank">Пользовательское соглашение</a>
                 </span>
@@ -450,6 +459,7 @@ export class HelpPage extends UI {
                                 assetType
                             });
     }
+
     /* Диалог обратной связи */
     private async openFeedBackDialog(): Promise<void> {
         await new FeedbackDialog().show(this.$root.$store.state[StoreType.MAIN].clientInfo);

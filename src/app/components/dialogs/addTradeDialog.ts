@@ -263,8 +263,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private onAssetTypeChange(newValue: AssetType): void {
         if (this.data.operation === undefined) {
             this.operation = this.assetType.operations[0];
-        }
-        else {
+        } else {
             this.operation = this.data.operation;
         }
     }
