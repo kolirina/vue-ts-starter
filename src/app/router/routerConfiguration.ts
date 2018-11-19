@@ -18,6 +18,7 @@ import {ShareInfoPage} from "../pages/shareInfoPage";
 import {TradesPage} from "../pages/tradesPage";
 import {Storage} from "../platform/services/storage";
 import {LogoutService} from "../services/logoutService";
+import {HelpPage} from "../pages/helpPage";
 
 Vue.use(VueRouter);
 
@@ -100,6 +101,11 @@ export class RouterConfiguration {
                 name: "portfolio-settings",
                 path: "/portfolio-settings",
                 component: SettingsPage
+            },
+            {
+                name: "help",
+                path: "/help",
+                component: HelpPage
             },
             {
                 name: "export",
