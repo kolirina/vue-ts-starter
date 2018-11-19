@@ -1,8 +1,14 @@
 import Component from "vue-class-component";
 import {UI} from "../app/ui";
 
+import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
+import {FeedbackDialog} from "../components/dialogs/feedbackDialog";
+import {StoreType} from "../vuex/storeType";
+import {AssetType} from "../types/assetType";
+import {Operation} from "../types/operation";
+import {EnumType} from "../platform/enum";
+
 @Component({
-    // language=Vue
     template: `
         <v-container fluid>
             <h1>Справка по работе сервиса</h1>
@@ -51,9 +57,9 @@ import {UI} from "../app/ui";
                     вести учет комиссий и расходов для каждого портфеля в отдельности.
                     <p>
                         Совсем скоро у Вас будет возможность задать вопросы авторам сервиса лично на
-                        <a href="https://red-circule.com/courses/1142?ref=cacb61">предстоящем вебинаре</a>,
+                        <a href="https://red-circule.com/courses/1142?ref=cacb61" target="_blank">предстоящем вебинаре</a>,
                         посвященном учету инвестиций. Вебинар проводится в рамках сотрудничества со
-                        <a href="https://red-circule.com/">Школой Московской Биржи</a> и состоится 21 ноября.
+                        <a href="https://red-circule.com/" target="_blank">Школой Московской Биржи</a> и состоится 21 ноября.
                         Регистрация по ссылке ниже:
                     </p>
                     <!-- <div id="redcircule-course-1142"></div>
@@ -68,7 +74,8 @@ import {UI} from "../app/ui";
                     Сервисом удобно пользоваться как в web-версии, так и с мобильных устройств. Мы поддерживаем как ios, так и android.
                     Скачать приложения вы можете по указанным ссылкам.
                     <div style="margin-top: 30px;">
-                        <a href="https://itunes.apple.com/ru/app/intelinvest-%D1%83%D1%87%D0%B5%D1%82-%D0%B8%D0%BD%D0%B2%D0%B5%D1%81%D1%82%D0%B8%D1%86%D0%B8%D0%B9/id1422478197?mt=8" title="Загрузите приложение в App Store" target="_blank"><img src="/resources/images/app-store-badge.svg" alt="pic" style="height: 52px;margin-right: 10px; margin-left: 10px" class="pic"></a><a href="https://play.google.com/store/apps/details?id=ru.intelinvest.portfolio" title="Загрузите приложение в Google Play" target="_blank"><img src="/resources/images/google-play-badge.svg" alt="pic" style="height: 52px;margin-right: 10px; margin-left: 10px"></a>
+                        <a href="https://itunes.apple.com/ru/app/intelinvest-%D1%83%D1%87%D0%B5%D1%82-%D0%B8%D0%BD%D0%B2%D0%B5%D1%81%D1%82%D0%B8%D1%86%D0%B8%D0%B9/id1422478197?mt=8" title="Загрузите приложение в App Store" target="_blank"><img src="./img/help/app-store-badge.svg" alt="pic" style="height: 52px;margin-right: 10px; margin-left: 10px" class="pic"></a>
+                        <a href="https://play.google.com/store/apps/details?id=ru.intelinvest.portfolio" title="Загрузите приложение в Google Play" target="_blank"><img src="./img/help/google-play-badge.svg" alt="pic" style="height: 52px;margin-right: 10px; margin-left: 10px"></a>
                     </div>
                 </span>
 
@@ -76,17 +83,19 @@ import {UI} from "../app/ui";
                 <span>
                     <p>
                         В правом верхнем углу расположена кнопка добавления сделок
-                            <i class="topbar-icon material-icons"></i>.
-                        При нажатии открывается диалоговое окно, где можно выбрать тип вносимой сделки (Акция, Облигация, Деньги)
+                        <v-btn icon @click.native.stop="openDialog()">
+                            <v-icon>add_circle_outline</v-icon>
+                        </v-btn>
+                        . При нажатии открывается диалоговое окно, где можно выбрать тип вносимой сделки (Акция, Облигация, Деньги)
                         и действие, в зависимости от типа сделки. Для акции это - Купить, Продать, Дивиденд;
                         для облигации - Купить, Продать, Погашение, Купон, Амортизация,
                         для денег - Внести, Вывести, Доход, Расход.
                         При внесении сделки автоматически подставляется на введенную дату для акции - цена, для облигации - цена, номинал, НКД.
                         При вводе количества рассчитывается размер суммы сделки, с учетом комиссии.
                     </p>
-                    <img src="/resources/images/help/success_operation.png">
+                    <img src="./img/help/success_operation.png">
                     <p>
-                        По умолчанию установлен чекбокс <img src="/resources/images/help/checkbox.png"> "Cписать деньги" ("Зачислить деньги"),
+                        По умолчанию установлен чекбокс <img src="./img/help/checkbox.png"> "Cписать деньги" ("Зачислить деньги"),
                         который определяет, будет ли сопровождаться сделка списанием с денежного счета на сумму покупки (или пополенением счета на сумму продажи).
                         При этом сделка по деньгам будет связана с основной сделкой, при редактировании основной сделки по бумаге, сделка
                         по денежным средствам будет обновлена автоматически.
@@ -97,26 +106,26 @@ import {UI} from "../app/ui";
                         Примеры внесения сделок вы можете посмотреть ниже.
                     </p>
                     <div class="deal-demo-block">
-                        <a id="add_stock"><h4>Покупка акции</h4></a><img src="/resources/images/help/add_stock.gif">
+                        <a id="add_stock"><h4>Покупка акции</h4></a><img src="./img/help/add_stock.gif">
                     </div>
                     <div class="deal-demo-block">
-                        <a id="add_bond"><h4>Покупка облигации</h4></a><img src="/resources/images/help/add_bond.gif">
+                        <a id="add_bond"><h4>Покупка облигации</h4></a><img src="./img/help/add_bond.gif">
                     </div>
                     <div class="deal-demo-block">
-                        <a id="add_dividend"><h4>Добавление дивиденда</h4></a><img src="/resources/images/help/add_dividend.gif">
+                        <a id="add_dividend"><h4>Добавление дивиденда</h4></a><img src="./img/help/add_dividend.gif">
                     </div>
                     <div class="deal-demo-block">
-                        <a id="add_coupon"><h4>Добавление купонной выплаты</h4></a><img src="/resources/images/help/add_coupon.gif">
+                        <a id="add_coupon"><h4>Добавление купонной выплаты</h4></a><img src="./img/help/add_coupon.gif">
                     </div>
                     <div class="deal-demo-block">
-                        <a id="add_money"><h4>Пополнение денежного счета</h4></a><img src="/resources/images/help/add_money.gif">
+                        <a id="add_money"><h4>Пополнение денежного счета</h4></a><img src="./img/help/add_money.gif">
                     </div>
                     <div style="clear: both"></div>
                 </span>
 
                 <a id="balances"><h1>Текущие остатки портфеля</h1></a>
                 <span>
-                    Эта <a>функция</a> полезна,
+                    Эта <a href="/#/balances">функция</a> полезна,
                     если у вас нет полной истории сделок или вы хотите быстро начать работу с новым портфелем.
                     Вы можете не заносить все сделки, а только указать текущее состояние портфеля и текущие остатки денежных средств на счете брокера.
                 </span>
@@ -126,7 +135,7 @@ import {UI} from "../app/ui";
                     Для более удобного переноса истории ваших сделок, сервис поддерживает автоматический импорт сделок из популярных терминалов
                     и распространенных брокеров. После выбора в меню вашего брокера или терминала, вам будет показана подробная инструкция по получению отчета.
                     Чтобы воспользоваться импортом, перейдите в меню Настройки -&gt;
-                    <a>Импорт и экспорт</a>
+                    <a href="/#/import">Импорт</a>
                     <p>
                         <b>Что делать, если отчет не загружается?</b>
                     </p>
@@ -134,7 +143,7 @@ import {UI} from "../app/ui";
                         Для начала проверьте формат файла. Для каждого брокера описаны инструкции по форматам.
                         Внимательно прочитайте информацию во всплывающем окне. Там написаны причины, по которым импорт не проходит.
                         Сделки по бумагам с нераспознанными тикерами необходимо довности вручную через
-                        <a>диалог ввода текущих остатков портфеля</a>.
+                        <a href="/#/balances">диалог ввода текущих остатков портфеля</a>.
                     </p>
                     <p>
                         <b>Как устроен импорт?</b>
@@ -163,7 +172,7 @@ import {UI} from "../app/ui";
                 <a id="export"><h1>Экспорт сделок</h1></a>
                 <span>
                     Чтобы воспользоваться экспортом, перейдите в меню Настройки -&gt;
-                    <a>Экспорт данных</a>
+                    <a href="/#/export">Экспорт</a>
                     В разделе можно настроить резервную копию своих портфелей. Вы выбираете нужный портфель (или портфели), добавляете в таблицу и настраиваете расписание.
                     На почту в выбранные дни будут приходить письма с вложениями, содержащие csv-файлы в формате Intelinvest.
                     Таким образом, вы сможете восстановить утерянные сделки либо старую версию портфеля при неудачном импорте.
@@ -172,15 +181,17 @@ import {UI} from "../app/ui";
                 <a id="portfolio"><h1>Страница Портфель</h1></a>
                 <span>
                     <p>
-                        Здесь представлена подробная информацию по текущему состоянию выбранного <a>портфеля</a> и ценным бумагам,
+                        Здесь представлена подробная информацию по текущему состоянию выбранного
+                        <a href="/#/portfolio">портфеля</a>
+                        и ценным бумагам,
                         выходящим в его состав. В интерактивных информерах сверху представлены наиболее важные показатели: текущая суммарная стоимость,
                         доход и годовая доходность портфеля, в также изменение стоимости портфеля за текущий день. Ниже расположена таблица с основными
                         типами активов (акции, облигации, деньги), их суммарными стоимостями и размером доли в портфеле.
                     </p>
-                    <img src="/resources/images/help/table_menu.png">
+                    <img src="./img/help/table_menu.png">
                     <p>
                         Более подробная информация по акциям и облигациям представлена в блоках ниже.
-                        Нажмите на кнопку <img src="/resources/images/help/context-menu.png">
+                        Нажмите на кнопку <img src="./img/help/context-menu.png">
                         напротив каждой бумаги чтобы просмотреть доступные с ней действия.
                         Можно быстро купить, продать или внести начисление по дивиденду или купону,
                         причем данные будут автоматически заполнены с учетом выбранной бумаги.
@@ -188,10 +199,10 @@ import {UI} from "../app/ui";
                     </p>
                     <p style="clear: both">
                         Также есть возможность просмотреть дополнительную информацию по каждой позиции в портфеле.
-                        Для этого необходимо развернуть строку в таблице нажатием на кнопку <img src="/resources/images/help/row-expansion.png">
+                        Для этого необходимо развернуть строку в таблице нажатием на кнопку <img src="./img/help/row-expansion.png">
                         слева. Там же есть возможность задания целевых показателей (Максимальное время нахождения бумаги в портфеле, Целевая цена, Stop-loss цена) для акции.
                         В таблице по Облигациям дополнительно предусмотрена возможность подписаться на уведомления о выплате купонов.
-                        Для этого необходимо проставить чекбокс <img src="/resources/images/help/checkbox.png">.
+                        Для этого необходимо проставить чекбокс <img src="./img/help/checkbox.png">.
                     </p>
                     <p>
                         Для каждой таблицы предусмотрена диаграмма распределения активов в портфеле по долям. На графике стоимости портфеля можно дополнительно включить отображение сделок.
@@ -220,20 +231,14 @@ import {UI} from "../app/ui";
                 <span>
                     Существует два основных вида сделок:
                     
-                        <b><a><span>Доход</span></a>
-                        </b>
-                        /
-                        <b><a><span>Расход</span></a>
-                        </b> 
-                        или
-                        <b><a>
-                            <span>Ввод</span></a>
-                        </b>
-                        /
-                        <b><a>
-                            <span>Вывод</span></a>
-                        </b>.
-
+                    <b><a @click.stop="openDialog(assetType.MONEY, operation.INCOME)"><span>Доход</span></a></b>
+                    /
+                    <b><a @click.stop="openDialog(assetType.MONEY, operation.LOSS)"><span>Расход</span></a></b>
+                    или
+                    <b><a @click.stop="openDialog(assetType.MONEY, operation.DEPOSIT)"><span>Внести</span></a></b>
+                    /
+                    <b><a @click.stop="openDialog(assetType.MONEY, operation.WITHDRAW)"><span>Вывести</span></a></b>
+                    .
                     Сделки Доход / Расход влияют на прибыль, и отражаются на доходности портфеля. Например, вы можете учеть комиссию
                     депозитарию за перевод бумаг от одного брокера к другому, абонентскую плату или другие виды расходов, связанных с ведением портфеля, внеся сделку типа Расход.
                     А, например, полученные проценты по займам РЕПО, вы можете внести как Доход.
@@ -414,10 +419,7 @@ import {UI} from "../app/ui";
                     <p>
                         Если у Вас есть вопросы или предложения по работе сайта,
                         Вы можете написать нам по эл.почте
-                        <a href="mailto:web@intelinvest.ru">
-                            <v-icon small>fa fa-envelope</v-icon>
-                            web@intelinvest.ru
-                        </a>
+                        <a @click="openFeedBackDialog">web@intelinvest.ru<v-icon small>fa fa-envelope</v-icon></a>
                         или задать вопрос на канале
                         <a href="https://telegram.me/intelinvestSupportBot" title="Задайте вопрос в Telegram" target="_blank">
                             telegram 
@@ -436,4 +438,20 @@ import {UI} from "../app/ui";
 })
 export class HelpPage extends UI {
 
+    private assetType = AssetType;
+    private operation = Operation;
+
+    /* Диалог добавления сделок */
+    private async openDialog(assetType: AssetType, operation: Operation): Promise<void> {
+        await new AddTradeDialog().show({
+                                store: this.$root.$store.state[StoreType.MAIN],
+                                router: this.$root.$router,
+                                operation,
+                                assetType
+                            });
+    }
+    /* Диалог обратной связи */
+    private async openFeedBackDialog(): Promise<void> {
+        await new FeedbackDialog().show(this.$root.$store.state[StoreType.MAIN].clientInfo);
+    }
 }
