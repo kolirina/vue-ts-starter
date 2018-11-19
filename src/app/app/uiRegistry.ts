@@ -15,6 +15,7 @@ import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
 import {ImageDialog} from "../components/dialogs/imageDialog";
 import {FileDropArea} from "../components/file-upload/fileDropArea";
 import {FileLink} from "../components/file-upload/fileLink";
+import {InplaceInput} from "../components/inplaceInput";
 import {MaskDirective} from "../platform/directives/maskDirective";
 import {StateDirective} from "../platform/directives/stateDirective";
 import {Filters} from "../platform/filters/Filters";
@@ -22,7 +23,6 @@ import ru from "../platform/locale/ru";
 import {ruLocale} from "../platform/locale/veeValidateMessages";
 import {UiStateHelper} from "../utils/uiStateHelper";
 import {UI} from "./ui";
-import {InplaceInput} from "../components/inplaceInput";
 
 Highcharts3D(Highcharts);
 exporting(Highcharts);

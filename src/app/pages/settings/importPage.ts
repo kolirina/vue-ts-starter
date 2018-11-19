@@ -4,14 +4,14 @@ import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
 import {ImportErrorsDialog} from "../../components/dialogs/importErrorsDialog";
 import {ImportGeneralErrorDialog} from "../../components/dialogs/importGeneralErrorDialog";
+import {ImportSuccessDialog} from "../../components/dialogs/importSuccessDialog";
 import {Filters} from "../../platform/filters/Filters";
 import {ImportResponse, ImportService} from "../../services/importService";
+import {PortfolioService} from "../../services/portfolioService";
 import {ClientInfo, Portfolio, Status} from "../../types/types";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 import {ImportInstructions} from "./importInstructions";
-import {ImportSuccessDialog} from "../../components/dialogs/importSuccessDialog";
-import {PortfolioService} from "../../services/portfolioService";
 
 const MainStore = namespace(StoreType.MAIN);
 

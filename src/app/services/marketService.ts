@@ -122,8 +122,8 @@ export class MarketService {
             const paymentType = eventItem.description.substring(0, eventItem.description.indexOf(":"));
             Object.keys(paymentTypes).forEach(key => {
                 result[key] = result[key] || {name: key, data: []};
-                const paymentType = eventItem.description.substring(0, eventItem.description.indexOf(":"));
-                if (key === paymentType) {
+                const pt = eventItem.description.substring(0, eventItem.description.indexOf(":"));
+                if (key === pt) {
                     result[key].data.push(parseFloat(eventItem.description.substring(eventItem.description.indexOf(" ") + 1, eventItem.description.length)));
                 } else {
                     result[key].data.push(null);

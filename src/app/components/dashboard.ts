@@ -63,13 +63,13 @@ export class Dashboard extends UI {
 
     private blocks: DashboardBrick[] = [];
 
+    created(): void {
+        this.fillBricks(this.data);
+    }
+
     @Watch("data")
     private onBlockChange(newValue: DashboardData): void {
         this.fillBricks(newValue);
-    }
-
-    created(): void {
-        this.fillBricks(this.data);
     }
 
     private fillBricks(newValue: DashboardData): void {
