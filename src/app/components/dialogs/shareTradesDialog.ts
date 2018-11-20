@@ -75,5 +75,4 @@ export class ShareTradesDialog extends CustomDialog<ShareTradesDialogData, void>
 export type ShareTradesDialogData = {
     trades: TradeRow[],
     ticker: string
-}
-
+};

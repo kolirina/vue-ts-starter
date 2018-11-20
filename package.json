@@ -5,6 +5,7 @@
   "description": "Frontend for intelinvest.ru",
   "main": "index.js",
   "scripts": {
+    "tslint": "tslint --project tsconfig.json -r tslint.json",
     "build": "webpack --mode=development",
     "build-prod": "webpack --mode=production",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -35,7 +36,7 @@
     "vue-property-decorator": "^6.0.0",
     "vue-router": "^3.0.1",
     "vue-snotify": "^3.2.1",
-    "vuetify": "^1.3.5",
+    "vuetify": "^1.3.8",
     "vuex": "^3.0.1",
     "vuex-class": "^0.3.1",
     "vuex-persistedstate": "^2.5.4"

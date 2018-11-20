@@ -172,7 +172,7 @@ export class CombinedPortfolioPage extends UI {
 
     private doStockPieChartData(): DataPoint[] {
         const data: DataPoint[] = [];
-        this.overview.stockPortfolio.rows.filter(value => value.currCost != "0").forEach(row => {
+        this.overview.stockPortfolio.rows.filter(value => value.currCost !== "0").forEach(row => {
             data.push({
                 name: row.stock.shortname,
                 y: new Decimal(new BigMoney(row.currCost).amount.abs().toString()).toDP(2, Decimal.ROUND_HALF_UP).toNumber()
@@ -183,7 +183,7 @@ export class CombinedPortfolioPage extends UI {
 
     private doBondPieChartData(): DataPoint[] {
         const data: DataPoint[] = [];
-        this.overview.bondPortfolio.rows.filter(value => value.currCost != "0").forEach(row => {
+        this.overview.bondPortfolio.rows.filter(value => value.currCost !== "0").forEach(row => {
             data.push({
                 name: row.bond.shortname,
                 y: new Decimal(new BigMoney(row.currCost).amount.abs().toString()).toDP(2, Decimal.ROUND_HALF_UP).toNumber()
