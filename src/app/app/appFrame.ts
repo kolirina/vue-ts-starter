@@ -3,6 +3,7 @@ import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
 import {FeedbackDialog} from "../components/dialogs/feedbackDialog";
+import {NotificationUpdateDialog, DlgReturn} from "../components/dialogs/notificationUpdateDialog";
 import {ErrorHandler} from "../components/errorHandler";
 import {PortfolioSwitcher} from "../components/portfolioSwitcher";
 import {ClientService} from "../services/clientService";
@@ -10,6 +11,7 @@ import {ClientInfo, Portfolio} from "../types/types";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {UI} from "./ui";
+import moment from "moment";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -91,6 +93,9 @@ const MainStore = namespace(StoreType.MAIN);
                     <v-toolbar-title>INTELINVEST</v-toolbar-title>
                     <v-spacer></v-spacer>
                     <portfolio-switcher></portfolio-switcher>
+                    <v-btn icon v-if="!isNotifyAccepted" @click.native.stop="openNotificationUpdateDialog">
+                        <v-icon class="faa-vertical animated">whatshot</v-icon>
+                    </v-btn>
                     <v-btn icon @click.native.stop="openDialog">
                         <v-icon>add_circle_outline</v-icon>
                     </v-btn>
@@ -135,11 +140,17 @@ export class AppFrame extends UI {
     @MainStore.Getter
     private clientInfo: ClientInfo;
 
+    @MainStore.Getter
+    private lastNotificationUpdatesDate: string;
+
     @MainStore.Action(MutationType.SET_CLIENT_INFO)
     private loadUser: (clientInfo: ClientInfo) => Promise<void>;
 
     @MainStore.Action(MutationType.SET_CURRENT_PORTFOLIO)
     private setCurrentPortfolio: (id: string) => Promise<Portfolio>;
+
+    @MainStore.Mutation(MutationType.ACCEPT_NOTIFICATION_UPDATE)
+    private setLastNotificationsDate: (date: string) => void;
 
     private username: string = null;
 
@@ -153,6 +164,9 @@ export class AppFrame extends UI {
 
     private isInitialized = false;
 
+    /* Пользователь уведомлен об обновлениях */
+    private isNotifyAccepted = false;
+    
     /**
      * Названия кэшируемых компонентов (страниц). В качестве названия необходимо указывать либо имя файла компонента (это его name)
      * или название компонента если он зарегистрирован в uiRegistry через UI.component.
@@ -188,6 +202,9 @@ export class AppFrame extends UI {
         // если удалось восстановить state, значит все уже загружено
         if (this.$store.state[StoreType.MAIN].clientInfo) {
             this.isInitialized = true;
+            if (this.lastNotificationUpdatesDate) {
+                this.isNotifyAccepted = moment(this.lastNotificationUpdatesDate).isSameOrAfter(NotificationUpdateDialog.DATE);
+            }
         }
     }
 
@@ -225,6 +242,16 @@ export class AppFrame extends UI {
 
     private async openDialog(): Promise<void> {
         await new AddTradeDialog().show({store: this.$store.state[StoreType.MAIN], router: this.$router});
+    }
+
+    private async openNotificationUpdateDialog(): Promise<void> {
+        let dlgReturn = await new NotificationUpdateDialog().show(this.$store.state[StoreType.MAIN]);
+        if (dlgReturn === DlgReturn.ACCEPTED) {
+            this.setLastNotificationsDate(NotificationUpdateDialog.DATE);
+            this.isNotifyAccepted = true;
+        } else if (dlgReturn === DlgReturn.SHOW_FEEDBACK) {
+            await new FeedbackDialog().show(this.clientInfo);
+        }
     }
 
     private async openFeedBackDialog(): Promise<void> {

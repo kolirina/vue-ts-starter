@@ -19,6 +19,8 @@ export class StateHolder {
     clientInfo: ClientInfo = null;
     /** Текущий выбранный портфель */
     currentPortfolio: Portfolio = null;
+    /** Дата уведомления об обновлении сервиса */
+    lastNotificationUpdatesDate: string = null;
     /** Версия стора */
     version = "1.0";
 }
@@ -29,6 +31,9 @@ const Getters = {
     },
     [GetterType.CLIENT_INFO](state: StateHolder): ClientInfo {
         return state.clientInfo;
+    },
+    [GetterType.LAST_NOTE_UPDATE](state: StateHolder): string {
+        return state.lastNotificationUpdatesDate;
     }
 };
 
@@ -43,6 +48,10 @@ const Mutations = {
     },
     [MutationType.RELOAD_PORTFOLIO](state: StateHolder, portfolio: Portfolio): void {
         state.currentPortfolio = portfolio;
+    },
+    /** Мутатор проставлящий информацию о просмотре уведомления об обновлениях */
+    [MutationType.ACCEPT_NOTIFICATION_UPDATE](state: StateHolder, lastNotificationUpdatesDate: string): void {
+        state.lastNotificationUpdatesDate = lastNotificationUpdatesDate;
     }
 };
 
