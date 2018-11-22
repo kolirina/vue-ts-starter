@@ -13,6 +13,7 @@ import {StoreType} from "../vuex/storeType";
 import {UI} from "./ui";
 import {BtnReturn} from "../components/dialogs/customDialog.ts";
 import {UiStateHelper} from "../utils/uiStateHelper";
+import { Watch } from "vue-property-decorator";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -161,7 +162,10 @@ export class AppFrame extends UI {
     private isInitialized = false;
 
     /* Пользователь уведомлен об обновлениях */
-    private isNotifyAccepted = false;
+    // private isNotifyAccepted = false;
+    private get isNotifyAccepted(): boolean {
+        return UiStateHelper.lastUpdateNotification === NotificationUpdateDialog.DATE;
+      }
     
     /**
      * Названия кэшируемых компонентов (страниц). В качестве названия необходимо указывать либо имя файла компонента (это его name)
@@ -198,9 +202,6 @@ export class AppFrame extends UI {
         // если удалось восстановить state, значит все уже загружено
         if (this.$store.state[StoreType.MAIN].clientInfo) {
             this.isInitialized = true;
-            if (UiStateHelper.lastUpdateNotification) {
-                this.isNotifyAccepted = UiStateHelper.lastUpdateNotification === NotificationUpdateDialog.DATE;
-            }
         }
     }
 
@@ -244,7 +245,7 @@ export class AppFrame extends UI {
         let dlgReturn = await new NotificationUpdateDialog().show();
         if (dlgReturn === BtnReturn.YES) {
             UiStateHelper.lastUpdateNotification = NotificationUpdateDialog.DATE;
-            this.isNotifyAccepted = true;
+            // this.isNotifyAccepted = true;
         } else if (dlgReturn === BtnReturn.SHOW_FEEDBACK) {
             await new FeedbackDialog().show(this.clientInfo);
         }
