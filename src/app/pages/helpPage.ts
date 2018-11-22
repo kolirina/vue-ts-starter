@@ -428,7 +428,7 @@ import {Operation} from "../types/operation";
                     <p>
                         Если у Вас есть вопросы или предложения по работе сайта,
                         Вы можете написать нам по эл.почте
-                        <a @click="openFeedBackDialog()"><i class="fas fa-envelope"></i>web@intelinvest.ru</a>
+                        <a @click="openFeedBackDialog"><i class="fas fa-envelope"></i>web@intelinvest.ru</a>
                         или задать вопрос на канале
                         <a href="https://telegram.me/intelinvestSupportBot" title="Задайте вопрос в Telegram" target="_blank">
                             telegram

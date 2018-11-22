@@ -11,9 +11,7 @@ import {ClientInfo, Portfolio} from "../types/types";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {UI} from "./ui";
-import moment from "moment";
 import {BtnReturn} from "../components/dialogs/customDialog.ts";
-
 import {UiStateHelper} from "../utils/uiStateHelper";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -143,9 +141,6 @@ export class AppFrame extends UI {
 
     @MainStore.Getter
     private clientInfo: ClientInfo;
-
-    @MainStore.Getter
-    private lastNotificationUpdatesDate: string;
 
     @MainStore.Action(MutationType.SET_CLIENT_INFO)
     private loadUser: (clientInfo: ClientInfo) => Promise<void>;

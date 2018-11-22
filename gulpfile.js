@@ -45,7 +45,11 @@ gulp.task('assets', () => {
         .pipe(minifyCSS())
         .pipe(gulp.dest(TARGET_DIR + '/css'));
 
-    gulp.src('./node_modules/vuetify/dist/vuetify.css')
+    gulp.src('./node_modules/font-awesome-animation/dist/font-awesome-animation.css')
+        .pipe(minifyCSS())
+        .pipe(gulp.dest(TARGET_DIR + '/css'));
+
+        gulp.src('./node_modules/vuetify/dist/vuetify.css')
         .pipe(minifyCSS())
         .pipe(gulp.dest(TARGET_DIR + '/css'));
 
