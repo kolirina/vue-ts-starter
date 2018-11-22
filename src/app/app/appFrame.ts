@@ -198,7 +198,7 @@ export class AppFrame extends UI {
         // если удалось восстановить state, значит все уже загружено
         if (this.$store.state[StoreType.MAIN].clientInfo) {
             this.isInitialized = true;
-            if (this.lastNotificationUpdatesDate) {
+            if (UiStateHelper.lastUpdateNotification) {
                 this.isNotifyAccepted = UiStateHelper.lastUpdateNotification === NotificationUpdateDialog.DATE;
             }
         }
