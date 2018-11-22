@@ -3,7 +3,7 @@ import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
 import {FeedbackDialog} from "../components/dialogs/feedbackDialog";
-import {NotificationUpdateDialog, DlgReturn} from "../components/dialogs/notificationUpdateDialog";
+import {NotificationUpdateDialog} from "../components/dialogs/notificationUpdateDialog";
 import {ErrorHandler} from "../components/errorHandler";
 import {PortfolioSwitcher} from "../components/portfolioSwitcher";
 import {ClientService} from "../services/clientService";
@@ -12,6 +12,9 @@ import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {UI} from "./ui";
 import moment from "moment";
+import {BtnReturn} from "../components/dialogs/customDialog.ts";
+
+import {UiStateHelper} from "../utils/uiStateHelper";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -93,7 +96,8 @@ const MainStore = namespace(StoreType.MAIN);
                     <v-toolbar-title>INTELINVEST</v-toolbar-title>
                     <v-spacer></v-spacer>
                     <portfolio-switcher></portfolio-switcher>
-                    <v-btn icon v-if="!isNotifyAccepted" @click.native.stop="openNotificationUpdateDialog">
+                    <v-btn icon v-if="!isNotifyAccepted"
+                                @click.native.stop="openNotificationUpdateDialog">
                         <v-icon class="faa-vertical animated">whatshot</v-icon>
                     </v-btn>
                     <v-btn icon @click.native.stop="openDialog">
@@ -149,9 +153,6 @@ export class AppFrame extends UI {
     @MainStore.Action(MutationType.SET_CURRENT_PORTFOLIO)
     private setCurrentPortfolio: (id: string) => Promise<Portfolio>;
 
-    @MainStore.Mutation(MutationType.ACCEPT_NOTIFICATION_UPDATE)
-    private setLastNotificationsDate: (date: string) => void;
-
     private username: string = null;
 
     private password: string = null;
@@ -203,7 +204,7 @@ export class AppFrame extends UI {
         if (this.$store.state[StoreType.MAIN].clientInfo) {
             this.isInitialized = true;
             if (this.lastNotificationUpdatesDate) {
-                this.isNotifyAccepted = moment(this.lastNotificationUpdatesDate).isSameOrAfter(NotificationUpdateDialog.DATE);
+                this.isNotifyAccepted = UiStateHelper.lastUpdateNotification === NotificationUpdateDialog.DATE;
             }
         }
     }
@@ -245,11 +246,11 @@ export class AppFrame extends UI {
     }
 
     private async openNotificationUpdateDialog(): Promise<void> {
-        let dlgReturn = await new NotificationUpdateDialog().show(this.$store.state[StoreType.MAIN]);
-        if (dlgReturn === DlgReturn.ACCEPTED) {
-            this.setLastNotificationsDate(NotificationUpdateDialog.DATE);
+        let dlgReturn = await new NotificationUpdateDialog().show();
+        if (dlgReturn === BtnReturn.YES) {
+            UiStateHelper.lastUpdateNotification = NotificationUpdateDialog.DATE;
             this.isNotifyAccepted = true;
-        } else if (dlgReturn === DlgReturn.SHOW_FEEDBACK) {
+        } else if (dlgReturn === BtnReturn.SHOW_FEEDBACK) {
             await new FeedbackDialog().show(this.clientInfo);
         }
     }

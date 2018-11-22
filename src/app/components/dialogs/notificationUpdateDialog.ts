@@ -1,6 +1,5 @@
 import Component from "vue-class-component";
-import {CustomDialog} from "./customDialog";
-import {MainStore} from "../../vuex/mainStore";
+import {CustomDialog, BtnReturn} from "./customDialog";
 
 @Component({
     // language=Vue
@@ -65,19 +64,15 @@ import {MainStore} from "../../vuex/mainStore";
         </v-dialog> 
     `
 })
-export class NotificationUpdateDialog extends CustomDialog<MainStore, string> {
+export class NotificationUpdateDialog extends CustomDialog<void, BtnReturn> {
 
     static readonly DATE: string = '2018-10-05';
 
-    private async acceptAndClose(): Promise<void> {
-        this.close(DlgReturn.ACCEPTED);
+    private acceptAndClose(): void {
+        this.close(BtnReturn.YES);
     }
 
-    private async openFeedBackDialog(): Promise<void> {
-        this.close(DlgReturn.SHOW_FEEDBACK);
+    private openFeedBackDialog(): void {
+        this.close(BtnReturn.SHOW_FEEDBACK);
     }
-}
-
-export enum DlgReturn {
-    ACCEPTED = "ACCEPTED", NOT_ACCEPTED = "NOT_ACCEPTED", SHOW_FEEDBACK = "SHOW_FEEDBACK"
 }
