@@ -5,6 +5,7 @@ import {Watch} from "vue-property-decorator";
 import {UI} from "../app/ui";
 // import {StoreType} from "../vuex/storeType";
 import { MarketService } from "../services/marketService";
+import {BigMoney} from "../types/bigMoney";
 import {Share} from "../types/types";
 
 // const MainStore = namespace(StoreType.MAIN);
@@ -33,6 +34,7 @@ import {Share} from "../types/types";
                                 append-icon="fas fa-building"
                                 cache-items
                                 clearable
+                                dense
                                 name="share"
                                 required
                                 :error-messages="errors.collect('share')"
@@ -42,6 +44,12 @@ import {Share} from "../types/types";
                                 :no-data-text="notFoundLabel"
                                 :no-filter="true"
                                 :search-input.sync="searchQuery">
+                    <template slot="selection" slot-scope="data">
+                        {{ shareLabelSelected(data.item) }}
+                    </template>
+                    <template slot="item" slot-scope="data">
+                        {{ shareLabelListItem(data.item) }}
+                    </template>
                 </v-autocomplete>
             </v-flex>
         </v-card-text>
@@ -78,11 +86,7 @@ export class BalancesPage extends UI {
         const delay = new Promise((resolve, reject) => {
             this.currentTimer = setTimeout(async () => {
                 try {
-                    this.filteredShares = [
-                        ...await this.marketService.searchStocks(this.searchQuery),
-                        ...await this.marketService.searchBonds(this.searchQuery)
-                    ];
-                    console.log("filtered bonds", this.filteredShares);
+                    this.filteredShares = await this.marketService.searchStocks(this.searchQuery);
                     this.shareSearch = false;
                 } catch (error) {
                     reject(error);
@@ -100,5 +104,17 @@ export class BalancesPage extends UI {
             this.shareSearch = false;
             throw error;
         }
+    }
+
+    private shareLabelListItem(share: Share): string {
+        if ((share as any) === this.notFoundLabel) {
+            return this.notFoundLabel;
+        }
+        const price = new BigMoney(share.price);
+        return `${share.ticker} (${share.shortname}), ${price.amount.toString()} ${price.currency}`;
+    }
+
+    private shareLabelSelected(share: Share): string {
+        return `${share.ticker} (${share.shortname})`;
     }
 }
