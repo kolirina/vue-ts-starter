@@ -1,0 +1,159 @@
+<v-dialog v-model="showed" persistent max-width="700px">
+    <v-card>
+        <v-card-title>
+            <span class="headline">Добавление сделки</span>
+        </v-card-title>
+        <v-card-text>
+            <v-container grid-list-md>
+                <v-layout wrap>
+                    <v-flex xs12 sm6>
+                        <v-select :items="assetTypes" v-model="assetType" :return-object="true" label="Тип актива" item-text="description"></v-select>
+                    </v-flex>
+
+                    <v-flex xs12 sm6>
+                        <v-select :items="assetType.operations" v-model="operation" :return-object="true" label="Операция"
+                                    item-text="description"></v-select>
+                    </v-flex>
+
+                    <v-flex v-if="shareAssetType" xs12>
+                        <v-autocomplete :items="filteredShares"
+                                        v-model="share"
+                                        label="Тикер / Название компании"
+                                        :loading="shareSearch"
+                                        :no-data-text="notFoundLabel"
+                                        clearable
+                                        cache-items
+                                        required
+                                        name="share"
+                                        :error-messages="errors.collect('share')"
+                                        dense
+                                        :hide-no-data="true"
+                                        :no-filter="true"
+                                        append-icon="fas fa-building"
+                                        :search-input.sync="searchQuery">
+                            <template slot="selection" slot-scope="data">
+                                {{ shareLabelSelected(data.item) }}
+                            </template>
+                            <template slot="item" slot-scope="data">
+                                {{ shareLabelListItem(data.item) }}
+                            </template>
+                        </v-autocomplete>
+                    </v-flex>
+
+                    <v-flex xs12>
+                        <v-menu
+                                ref="dateMenu"
+                                :close-on-content-click="false"
+                                v-model="dateMenuValue"
+                                :nudge-right="40"
+                                :return-value.sync="date"
+                                lazy
+                                transition="scale-transition"
+                                offset-y
+                                full-width
+                                min-width="290px">
+                            <v-text-field
+                                    slot="activator"
+                                    v-model="date"
+                                    label="Дата"
+                                    required
+                                    append-icon="event"
+                                    readonly></v-text-field>
+                            <v-date-picker v-model="date" :no-title="true" locale="ru" :first-day-of-week="1"
+                                            @input="$refs.dateMenu.save(date)"></v-date-picker>
+                        </v-menu>
+                    </v-flex>
+
+                    <v-flex v-if="shareAssetType" xs12>
+                        <v-text-field :label="priceLabel" v-model="price" v-mask="priceMask"
+                                        name="price"
+                                        v-validate="'required'"
+                                        :error-messages="errors.collect('price')"
+                                        @keyup="calculateFee"
+                                        append-icon="fas fa-money-bill-alt"></v-text-field>
+                    </v-flex>
+
+                    <v-flex v-if="bondTrade" xs12>
+                        <v-text-field label="Номинал" v-model="facevalue"
+                                        @keyup="calculateFee"
+                                        append-icon="fas fa-money-bill"></v-text-field>
+                    </v-flex>
+                    <v-flex v-if="bondTrade" xs12>
+                        <v-layout wrap>
+                            <v-flex xs12 lg6>
+                                <v-text-field label="НКД" v-model="nkd"
+                                                @keyup="calculateFee"
+                                                append-icon="fas fa-money-bill-alt"></v-text-field>
+                            </v-flex>
+                        </v-layout>
+                    </v-flex>
+                    <v-flex v-if="calculationAssetType || bondTrade" xs12>
+                        <v-layout wrap>
+                            <v-flex xs12 lg6>
+                                <v-tooltip top>
+                                    <v-checkbox slot="activator" label="Начисление на одну бумагу" v-model="perOne"></v-checkbox>
+                                    <span>Отключите если вносите сумму начисления</span>
+                                </v-tooltip>
+                            </v-flex>
+                        </v-layout>
+                    </v-flex>
+
+                    <v-flex xs12>
+                        <v-text-field v-if="shareAssetType"
+                                        label="Количество" v-model="quantity"
+                                        @keyup="calculateFee"
+                                        :hint="lotSizeHint" persistent-hint
+                                        name="quantity"
+                                        v-validate="'required'"
+                                        :error-messages="errors.collect('quantity')"
+                                        append-icon="fas fa-plus">
+                        </v-text-field>
+                    </v-flex>
+                    <v-flex xs12>
+                        <v-text-field v-if="shareAssetType && !calculationAssetType"
+                                        label="Комиссия" v-model="fee"
+                                        append-icon="fas fa-coins"
+                                        hint="Для автоматического рассчета комиссии задайте значение в Настройках или введите значение суммарной комиссии">
+                        </v-text-field>
+                    </v-flex>
+
+                    <v-flex v-if="moneyTrade" xs12>
+                        <v-layout wrap>
+                            <v-flex xs12 lg8>
+                                <v-text-field label="Сумма" v-model="moneyAmount"
+                                                append-icon="fas fa-money-bill-alt"></v-text-field>
+                            </v-flex>
+                            <v-flex xs12 lg4>
+                                <v-select :items="currencyList" v-model="moneyCurrency" label="Валюта сделки"></v-select>
+                            </v-flex>
+                        </v-layout>
+                    </v-flex>
+
+                    <v-flex xs12>
+                        <v-text-field label="Заметка" v-model="note" :counter="160" append-icon="fas fa-sticky-note"></v-text-field>
+                    </v-flex>
+                </v-layout>
+
+                <v-layout wrap>
+                    <v-flex xs12 lg6>
+                        <span class="body-2">Сумма сделки: </span><span v-if="total"><b class="title">{{ total }} {{ currency }}</b></span>
+                    </v-flex>
+                    <v-flex xs12 lg6>
+                        <v-checkbox :label="keepMoneyLabel" v-model="keepMoney"></v-checkbox>
+                    </v-flex>
+                </v-layout>
+            </v-container>
+            <small>* обозначает обязательные поля</small>
+        </v-card-text>
+        <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="info lighten-2" flat @click.native="cancel">Отмена</v-btn>
+            <v-btn :loading="processState" :disabled="processState" color="primary" dark @click.native="addTrade">
+                Добавить
+                <span slot="loader" class="custom-loader">
+                <v-icon light>fas fa-spinner fa-spin</v-icon>
+                </span>
+            </v-btn>
+        </v-card-actions>
+    </v-card>
+</v-dialog>

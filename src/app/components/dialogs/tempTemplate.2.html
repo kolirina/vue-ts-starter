@@ -1,0 +1,25 @@
+<v-container>
+    <v-card>
+        <v-card-title>
+            <span class="headline">Текущие остатки портфеля</span>
+        </v-card-title>
+        <v-card-text>
+            <v-flex >
+                    <p>
+                        Перечислите все ценные бумаги и денежные остатки в составе портфеля.
+                        Старайтесь указывать верную дату и цену покупки бумаг - это повысит точность расчетов.
+                    </p>
+                    <p>
+                        Добавить ценную бумагу
+                    </p>
+            </v-flex>
+            <v-flex >
+                <v-autocomplete label="Тикер / Название ценный бумаги"
+                                append-icon="fas fa-building"
+                                clearable>
+
+                </v-autocomplete>
+            </v-flex>
+        </v-card-text>
+    </v-card>
+</v-container>
