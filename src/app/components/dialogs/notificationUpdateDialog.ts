@@ -56,7 +56,7 @@ import {BtnReturn, CustomDialog} from "./customDialog";
                     </v-btn>
                 </v-card-actions>
             </v-card>
-        </v-dialog> 
+        </v-dialog>
     `
 })
 export class NotificationUpdateDialog extends CustomDialog<void, BtnReturn> {

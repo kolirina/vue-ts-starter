@@ -9,9 +9,9 @@ import {ErrorHandler} from "../components/errorHandler";
 import {PortfolioSwitcher} from "../components/portfolioSwitcher";
 import {ClientService} from "../services/clientService";
 import {ClientInfo, Portfolio} from "../types/types";
+import {UiStateHelper} from "../utils/uiStateHelper";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
-import {UiStateHelper} from "../utils/uiStateHelper";
 import {UI} from "./ui";
 
 const MainStore = namespace(StoreType.MAIN);
