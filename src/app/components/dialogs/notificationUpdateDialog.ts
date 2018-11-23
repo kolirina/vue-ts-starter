@@ -1,5 +1,5 @@
 import Component from "vue-class-component";
-import {CustomDialog, BtnReturn} from "./customDialog";
+import {BtnReturn, CustomDialog} from "./customDialog";
 
 @Component({
     // language=Vue
@@ -19,7 +19,6 @@ import {CustomDialog, BtnReturn} from "./customDialog";
                     <v-container class="selectable">
                                 Сервисом стало удобно пользоваться не только в web-версии, а также и с мобильных устройств. Мы поддерживаем как ios, так и android.
                                 Скачать приложения вы можете по указанным ссылкам.
-                        
                                 <div style="margin-top: 15px;">
                                 <a href="https://itunes.apple.com/ru/app/intelinvest-%D1%83%D1%87%D0%B5%D1%82-%D0%B8%D0%BD%D0%B2%D0%B5%D1%81%D1%82%D0%B8%D1%86%D0%B8%D0%B9
                                                                 /id1422478197?mt=8" title="Загрузите приложение в App Store" target="_blank">
@@ -29,17 +28,13 @@ import {CustomDialog, BtnReturn} from "./customDialog";
                                     <img src="./img/help/google-play-badge.svg" alt="pic" style="height: 52px;margin-right: 10px; margin-left: 10px">
                                 </a>
                                 </div>
-                        
                                 <p>
                                     Добавили более 1800 ETF, торгующихся на американском рынке.
                                 </p>
-                        
                                 <p>
                                     Исправили добавление событий
                                 </p>
-                        
                                 Желаем вам доходных инвестиций, команда Intelinvest
-                        
                                 <div style="margin-bottom: 15px; margin-top: 10px;">
                                     Все вопросы и предложения, как всегда, через форму
                                     <a href="#" @click="openFeedBackDialog" style="cursor: pointer;">
@@ -66,7 +61,7 @@ import {CustomDialog, BtnReturn} from "./customDialog";
 })
 export class NotificationUpdateDialog extends CustomDialog<void, BtnReturn> {
 
-    static readonly DATE: string = '2018-10-05';
+    static readonly DATE: string = "2018-10-05";
 
     private acceptAndClose(): void {
         this.close(BtnReturn.YES);

@@ -2,6 +2,7 @@ import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
+import {BtnReturn} from "../components/dialogs/customDialog.ts";
 import {FeedbackDialog} from "../components/dialogs/feedbackDialog";
 import {NotificationUpdateDialog} from "../components/dialogs/notificationUpdateDialog";
 import {ErrorHandler} from "../components/errorHandler";
@@ -10,9 +11,8 @@ import {ClientService} from "../services/clientService";
 import {ClientInfo, Portfolio} from "../types/types";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
-import {UI} from "./ui";
-import {BtnReturn} from "../components/dialogs/customDialog.ts";
 import {UiStateHelper} from "../utils/uiStateHelper";
+import {UI} from "./ui";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -163,7 +163,6 @@ export class AppFrame extends UI {
     /* Пользователь уведомлен об обновлениях */
     private isNotifyAccepted = false;
 
-    
     /**
      * Названия кэшируемых компонентов (страниц). В качестве названия необходимо указывать либо имя файла компонента (это его name)
      * или название компонента если он зарегистрирован в uiRegistry через UI.component.
@@ -240,7 +239,7 @@ export class AppFrame extends UI {
     }
 
     private async openNotificationUpdateDialog(): Promise<void> {
-        let dlgReturn = await new NotificationUpdateDialog().show();
+        const dlgReturn = await new NotificationUpdateDialog().show();
         if (dlgReturn === BtnReturn.YES) {
             UiStateHelper.lastUpdateNotification = NotificationUpdateDialog.DATE;
             this.isNotifyAccepted = true;

@@ -90,5 +90,5 @@ export class CustomDialog<ParamType, ReturnType> extends UI {
 }
 
 export enum BtnReturn {
-    YES = "YES", NO = "NO", CANCEL = "CANCEL", SHOW_FEEDBACK = 'SHOW_FEEDBACK'
+    YES = "YES", NO = "NO", CANCEL = "CANCEL", SHOW_FEEDBACK = "SHOW_FEEDBACK"
 }
