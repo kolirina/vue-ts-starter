@@ -4,7 +4,7 @@ import {CustomDialog, BtnReturn} from "./customDialog";
 @Component({
     // language=Vue
     template: `
-        <v-dialog v-model="showed" max-width="550px">
+        <v-dialog v-model="showed" max-width="650px">
             <v-card>
                 <v-toolbar dark color="primary">
                     <v-toolbar-title><b>Обновления сервиса</b></v-toolbar-title>
