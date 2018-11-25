@@ -20,6 +20,24 @@
 
                 </v-autocomplete>
             </v-flex>
+            <v-flex>
+                
+            </v-flex>
+            <v-text-field  v-model="date"
+                            slot="activator"
+                            label="Дата покупки"
+                            required
+                            append-icon="event"
+                            readonly>
+            </v-text-field>
+            <v-flex>
+                <v-date-picker v-model="date"
+                                locale="ru"
+                                :no-title="true"
+                                :first-day-of-week="1"
+                                @input="$refs.dateMenu.save(date)">
+                </v-date-picker>
+            </v-flex>
         </v-card-text>
     </v-card>
 </v-container>

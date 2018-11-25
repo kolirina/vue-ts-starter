@@ -52,6 +52,31 @@ import {Share} from "../types/types";
                     </template>
                 </v-autocomplete>
             </v-flex>
+            <v-flex>
+                <v-menu v-model="dateMenuValue"
+                        ref="dateMenu"
+                        :close-on-content-click="false"
+                        :return-value.sync="date"
+                        lazy
+                        transition="scale-transition"
+                        offset-y
+                        full-width
+                        min-width="290px">
+                    <v-text-field  v-model="date"
+                                    slot="activator"
+                                    label="Дата покупки"
+                                    required
+                                    append-icon="event"
+                                    readonly>
+                    </v-text-field>
+                    <v-date-picker v-model="date"
+                                    locale="ru"
+                                    :no-title="true"
+                                    :first-day-of-week="1"
+                                    @input="$refs.dateMenu.save(date)">
+                    </v-date-picker>
+                </v-menu>
+            </v-flex>
         </v-card-text>
     </v-card>
 </v-container>
@@ -61,6 +86,10 @@ export class BalancesPage extends UI {
 
     @Inject
     private marketService: MarketService
+
+    private date = "";
+
+    private dateMenuValue = false;
 
     private filteredShares: Share[] = [];
 
