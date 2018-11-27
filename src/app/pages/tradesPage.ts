@@ -6,6 +6,7 @@ import {UI} from "../app/ui";
 import {TradesTable} from "../components/tradesTable";
 import {TradeService} from "../services/tradeService";
 import {Pagination, Portfolio, TablePagination, TradeRow} from "../types/types";
+import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -15,7 +16,7 @@ const MainStore = namespace(StoreType.MAIN);
     template: `
         <v-container v-if="portfolio" fluid>
             <dashboard :data="portfolio.overview.dashboardData"></dashboard>
-            <trades-table :trades="trades" :trade-pagination="tradePagination"></trades-table>
+            <trades-table :trades="trades" :trade-pagination="tradePagination" @delete="onDelete"></trades-table>
             <v-container v-if="pages > 1">
                 <v-layout align-center justify-center row>
                     <v-pagination v-model="page" :length="pages"></v-pagination>
@@ -29,7 +30,8 @@ export class TradesPage extends UI {
 
     @MainStore.Getter
     private portfolio: Portfolio;
-
+    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
+    private reloadPortfolio: (id: string) => Promise<void>;
     @Inject
     private tradeService: TradeService;
 
@@ -78,6 +80,13 @@ export class TradesPage extends UI {
     @Watch("tradePagination.pagination", {deep: true})
     private async onTradePaginationChange(): Promise<void> {
         await this.loadTrades();
+    }
+
+    private async onDelete(tradeRow: TradeRow): Promise<void> {
+        await this.tradeService.deleteTrade({portfolioId: this.portfolio.id, tradeId: tradeRow.id});
+        await this.reloadPortfolio(this.portfolio.id);
+        this.calculatePagination();
+        this.$snotify.info(`Операция '${tradeRow.operationLabel}' по бумаге ${tradeRow.ticker} была успешно удалена`);
     }
 
     private calculatePagination(): void {
