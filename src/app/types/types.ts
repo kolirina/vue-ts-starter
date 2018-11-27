@@ -357,6 +357,11 @@ export type Stock = Share & {
     moexId: string;
 };
 
+export type StockHistoryResponce = {
+    stock: Stock;
+    date: string;
+};
+
 export type Sector = {
     name: string;
     parent: Sector;
