@@ -2,7 +2,7 @@ var path = require('path');
 var webpack = require('webpack');
 
 module.exports = {
-    mode: "development",
+    mode: process.env.NODE_ENV,
     entry: './src/index.ts',
     output: {
         path: path.resolve(__dirname, './dist'),
@@ -55,13 +55,6 @@ if (process.env.NODE_ENV === 'production') {
         new webpack.DefinePlugin({
             'process.env': {
                 NODE_ENV: '"production"'
-            }
-        }),
-        new webpack.optimize.DedupePlugin(),
-        new webpack.optimize.UglifyJsPlugin({
-            sourceMap: true,
-            compress: {
-                warnings: false
             }
         }),
         new webpack.optimize.AggressiveMergingPlugin(),

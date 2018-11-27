@@ -1,6 +1,12 @@
 /**
  * Сборка проекта
  */
+const MODES = {
+    p: "production",
+    d: "development"
+};
+const TARGET_DIR = "dist";
+
 const args = require('yargs').argv;
 const gulp = require("gulp");
 const minifyCSS = require('gulp-csso');
@@ -12,10 +18,14 @@ const rename = require('gulp-rename');
 const notifier = require('node-notifier');
 const browserSync = require('browser-sync');
 const reload = browserSync.reload;
+const buildMode = MODES[args.env] || "development";
+const env = require('gulp-env');
+env({
+    vars: {
+        NODE_ENV: buildMode
+    }
+});
 const webpackConfig = require('./webpack.config.js');
-
-const TARGET_DIR = "dist";
-webpackConfig.mode = args.env || "development";
 // webpackConfig.watch = webpackConfig.mode === "development";
 
 gulp.task('scripts', () => {
