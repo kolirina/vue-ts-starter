@@ -42,4 +42,38 @@ export class TradeService {
             }
         })).data as TradeRow[];
     }
+
+    /**
+     * Отправляет запрос на удаление сделки
+     * @param deleteTradeRequest запрос на удаление сделки
+     */
+    async deleteTrade(deleteTradeRequest: DeleteTradeRequest): Promise<void> {
+        HTTP.INSTANCE.post("/trades/delete", deleteTradeRequest);
+    }
+
+    /**
+     * Отправляет запрос на удаление всех сделок
+     * @param deleteTradeRequest запрос на удаление всех сделок
+     */
+    async deleteAllTrades(deleteTradeRequest: DeleteAllTradeRequest): Promise<void> {
+        HTTP.INSTANCE.post("/trades/deleteAll", deleteTradeRequest);
+    }
+}
+
+/** Поля, содержащие информацию для удаления сделки */
+export interface DeleteTradeRequest {
+    /** Идентификатор сделки */
+    tradeId: string;
+    /** Идентификатор портфеля */
+    portfolioId: string;
+}
+
+/** Поля, содержащие информацию для удаления всех сделок по бумаге */
+export interface DeleteAllTradeRequest {
+    /** Тип актива */
+    assetType: string;
+    /** Тикер */
+    ticker: string;
+    /** Идентификатор портфеля */
+    portfolioId: string;
 }

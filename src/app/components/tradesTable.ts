@@ -7,14 +7,12 @@ import {TableHeader, TablePagination, TradeRow} from "../types/types";
 import {TradeUtils} from "../utils/tradeUtils";
 import {StoreType} from "../vuex/storeType";
 import {AddTradeDialog} from "./dialogs/addTradeDialog";
-import {ConfirmDialog} from "./dialogs/confirmDialog";
-import {BtnReturn} from "./dialogs/customDialog";
 
 @Component({
     // language=Vue
     template: `
         <v-data-table :headers="headers" :items="trades" item-key="id" :pagination.sync="tradePagination.pagination"
-                      :total-items="tradePagination.totalElements"
+                      :total-items="tradePagination.totalItems"
                       :loading="tradePagination.loading" hide-actions>
             <template slot="items" slot-scope="props">
                 <tr @click="props.expanded = !props.expanded">
@@ -76,7 +74,7 @@ import {BtnReturn} from "./dialogs/customDialog";
                                     </v-list-tile-title>
                                 </v-list-tile>
                                 <v-divider></v-divider>
-                                <v-list-tile @click="deleteAllTrades(props.item)">
+                                <v-list-tile @click="deleteTrade(props.item)">
                                     <v-list-tile-title>
                                         <v-icon color="primary" small>fas fa-trash-alt</v-icon>
                                         Удалить
@@ -112,7 +110,8 @@ export class TradesTable extends UI {
         {text: "Количество", align: "right", value: "quantity", sortable: false},
         {text: "Цена", align: "right", value: "price", sortable: false},
         {text: "Комиссия", align: "right", value: "fee"},
-        {text: "Итого", align: "right", value: "signedTotal"}
+        {text: "Итого", align: "right", value: "signedTotal"},
+        {text: "Действия", align: "right", value: "actions", sortable: false, width: "25"}
     ];
 
     @Prop({default: [], required: true})
@@ -139,15 +138,8 @@ export class TradesTable extends UI {
         });
     }
 
-    private async deleteAllTrades(tradeRow: TradeRow): Promise<void> {
-        const result = await new ConfirmDialog().show(`Вы уверены, что хотите удалить все сделки по ценной бумаге?`);
-        if (result === BtnReturn.YES) {
-            console.log("TODO DELETE ALL TRADES");
-        }
-    }
-
     private async deleteTrade(tradeRow: TradeRow): Promise<void> {
-        console.log("TODO DELETE TRADE", tradeRow);
+        this.$emit("delete", tradeRow);
     }
 
     private getPrice(trade: TradeRow): string {
