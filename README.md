@@ -10,5 +10,5 @@ gulp
 
 ##build prod bundle
 ```
-gulp build --env production
+gulp build --env p
 ```
