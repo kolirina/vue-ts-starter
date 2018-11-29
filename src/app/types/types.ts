@@ -399,6 +399,11 @@ export type Bond = Share & {
     absolutePrice: string;
 };
 
+export type BondHistoryResponce = {
+    bond: Bond;
+    date: string;
+};
+
 /** Информация по акции */
 export type StockInfo = {
     /** Акция */
