@@ -15,6 +15,7 @@ import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
 import {ImageDialog} from "../components/dialogs/imageDialog";
 import {FileDropArea} from "../components/file-upload/fileDropArea";
 import {FileLink} from "../components/file-upload/fileLink";
+import IINumberField from "../components/iiNumberField";
 import {InplaceInput} from "../components/inplaceInput";
 import {MaskDirective} from "../platform/directives/maskDirective";
 import {StateDirective} from "../platform/directives/stateDirective";
@@ -64,6 +65,8 @@ export class UIRegistry {
         UI.component("file-link", FileLink);
         UI.component("image-dialog", ImageDialog);
         UI.component("inplace-input", InplaceInput);
+        /* Компонент с маской для десятичных дробей */
+        UI.component("ii-number-field", IINumberField);
 
         // фильтры
         UI.filter("amount", Filters.formatMoneyAmount);
