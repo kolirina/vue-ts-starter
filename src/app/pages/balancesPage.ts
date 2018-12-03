@@ -262,9 +262,9 @@ export class BalancesPage extends UI implements TradeDataHolder {
 
     private quantity: number = null;
 
-    private share: Share = null;
-
     private searchQuery: string = null;
+
+    private share: Share = null;
 
     private shareSearch = false;
 
