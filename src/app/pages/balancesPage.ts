@@ -1,10 +1,9 @@
 import Decimal from "decimal.js";
-import {MaskOptions} from "imask";
 import * as moment from "moment";
 import {Inject} from "typescript-ioc";
+import {namespace} from "vuex-class/lib/bindings";
 import Component from "vue-class-component";
 import {Watch} from "vue-property-decorator";
-import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
 import {AssetTable} from "../components/assetTable";
 import {StockTable} from "../components/stockTable";
@@ -20,7 +19,6 @@ import {TradeValue} from "../types/trade/tradeValue";
 import {Share, Portfolio, TradeData, StockHistoryResponce} from "../types/types";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
-
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -38,7 +36,6 @@ const MainStore = namespace(StoreType.MAIN);
                     <v-card-text>
                             <p>Перечислите все ценные бумаги и денежные остатки в составе портфеля.</p>
                             <p>Старайтесь указывать верную дату и цену покупки бумаг - это повысит точность расчетов.</p>
-                            <ii-number-field label="Цена акции"></ii-number-field>
                     </v-card-text>
                 </v-card>
             </v-flex>
@@ -99,36 +96,37 @@ const MainStore = namespace(StoreType.MAIN);
                                     </v-menu>
                                 </v-flex>
                                 <v-flex class="subtitle" v-if="closePrice !== null">
-                                    Цена закрытия: <b>{{ closePrice.amount }} {{ closePrice.currency }}</b>
+                                    Цена закрытия: <b>{{ closePrice.amount.toString() }} {{ closePrice.currency }}</b>
                                     <v-btn color="success"
-                                            @click.native="price = closePrice.amount"
+                                            @click.native="price = closePrice.amount.toString()"
                                     >
                                         Указать в цене сделки
                                     </v-btn>
                                 </v-flex>
                                 <v-flex>
                                     Укажите среднюю цену покупки или стоимость позиции
-                                    <v-text-field v-mask="priceMask"
-                                                    v-model="price"
-                                                    append-icon="fas fa-money-bill-alt"
-                                                    label="Цена акции"
-                                                    name="price"
-                                                    @keyup="calculateTotal"
-                                    ></v-text-field>
+                                    <ii-number-field v-model="price"
+                                                        append-icon="fas fa-money-bill-alt"
+                                                        label="Цена акции"
+                                                        name="price"
+                                                        @keyup="calculateTotal"
+                                    ></ii-number-field>
                                 </v-flex>
                                 <v-flex>
-                                    <v-text-field v-model="quantity"
+                                    <ii-number-field v-model="quantity"
                                                     append-icon="fas fa-plus"
+                                                    decimals="0"
                                                     label="Количество"
                                                     name="quantity"
                                                     @keyup="calculateTotal"
-                                    ></v-text-field>
-                                    <v-text-field v-model="total"
+                                    ></ii-number-field>
+                                    <ii-number-field v-model="total"
                                                     append-icon="fas fa-money-bill-alt"
+                                                    decimals="2"
                                                     label="Стоимость позиции"
                                                     name="total"
                                                     @change="calculatePrice"
-                                    ></v-text-field>
+                                    ></ii-number-field>
                                 </v-flex>
                             </v-form>
                         </v-card-text>
@@ -155,10 +153,11 @@ const MainStore = namespace(StoreType.MAIN);
                                 <v-flex xs12>
                                     <v-layout wrap>
                                         <v-flex xs12 lg8>
-                                            <v-text-field v-model="moneyField"
+                                            <ii-number-field v-model="moneyField"
                                                             append-icon="fas fa-money-bill-alt"
+                                                            decimals="2"
                                                             label="Сумма" 
-                                            ></v-text-field>
+                                            ></ii-number-field>
                                         </v-flex>
                                         <v-flex xs12 lg4>
                                             <v-select v-model="moneyCurrency"
@@ -214,11 +213,11 @@ export class BalancesPage extends UI implements TradeDataHolder {
     };
 
     @Inject
-    private marketService: MarketService
-    
+    private marketService: MarketService;
+
     @Inject
     private marketHistoryService: MarketHistoryService;
-    
+
     @Inject
     private tradeService: TradeService;
 
@@ -270,14 +269,6 @@ export class BalancesPage extends UI implements TradeDataHolder {
     private processState = false;
 
     private price: string = null;
-
-    private priceMask: MaskOptions = {
-        mask: Number,
-        min: -10000,
-        max: 10000,
-        scale: 2,
-        thousandsSeparator: " "
-    };
 
     private quantity: number = null;
 
