@@ -1,22 +1,19 @@
 import Decimal from "decimal.js";
 import * as moment from "moment";
 import {Inject} from "typescript-ioc";
+import {Component, Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
-import Component from "vue-class-component";
-import {Watch} from "vue-property-decorator";
 import {UI} from "../app/ui";
 import {AssetTable} from "../components/assetTable";
 import {StockTable} from "../components/stockTable";
-import {MarketService} from "../services/marketService";
 import {MarketHistoryService} from "../services/marketHistoryService";
+import {MarketService} from "../services/marketService";
 import {TradeService} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
 import {Operation} from "../types/operation";
 import {TradeDataHolder} from "../types/trade/tradeDataHolder";
-import {TradeMap} from "../types/trade/tradeMap";
-import {TradeValue} from "../types/trade/tradeValue";
-import {Share, Portfolio, TradeData, StockHistoryResponce} from "../types/types";
+import {Portfolio, Share, TradeData} from "../types/types";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 
@@ -156,7 +153,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             <ii-number-field v-model="moneyField"
                                                             append-icon="fas fa-money-bill-alt"
                                                             decimals="2"
-                                                            label="Сумма" 
+                                                            label="Сумма"
                                             ></ii-number-field>
                                         </v-flex>
                                         <v-flex xs12 lg4>
@@ -282,6 +279,54 @@ export class BalancesPage extends UI implements TradeDataHolder {
 
     private valid = true;
 
+    getShare(): Share {
+        return this.share;
+    }
+
+    getDate(): string {
+        return this.date;
+    }
+
+    getQuantity(): number {
+        return this.quantity;
+    }
+
+    getPrice(): string {
+        return this.price;
+    }
+
+    getFacevalue(): string {
+        return this.facevalue;
+    }
+
+    getNkd(): string {
+        return this.nkd;
+    }
+
+    getFee(): string {
+        return this.fee;
+    }
+
+    getNote(): string {
+        return this.note;
+    }
+
+    isKeepMoney(): boolean {
+        return this.keepMoney;
+    }
+
+    isPerOne(): boolean {
+        return this.perOne;
+    }
+
+    getMoneyAmount(): string {
+        return this.moneyAmount;
+    }
+
+    getCurrency(): string {
+        return this.currency;
+    }
+
     @Watch("searchQuery")
     private async onSearch(): Promise<void> {
         console.log("SEARCH", this.searchQuery);
@@ -390,57 +435,8 @@ export class BalancesPage extends UI implements TradeDataHolder {
         }
     }
 
-
     private moneyTrade(isMoneyTrade: boolean) {
-        (isMoneyTrade)? this.assetType = AssetType.MONEY : this.assetType = AssetType.STOCK;
-    }
-
-    getShare(): Share {
-        return this.share;
-    }
-
-    getDate(): string {
-        return this.date;
-    }
-
-    getQuantity(): number {
-        return this.quantity;
-    }
-
-    getPrice(): string {
-        return this.price;
-    }
-
-    getFacevalue(): string {
-        return this.facevalue;
-    }
-
-    getNkd(): string {
-        return this.nkd;
-    }
-
-    getFee(): string {
-        return this.fee;
-    }
-
-    getNote(): string {
-        return this.note;
-    }
-
-    isKeepMoney(): boolean {
-        return this.keepMoney;
-    }
-
-    isPerOne(): boolean {
-        return this.perOne;
-    }
-
-    getMoneyAmount(): string {
-        return this.moneyAmount;
-    }
-
-    getCurrency(): string {
-        return this.currency;
+        (isMoneyTrade) ? this.assetType = AssetType.MONEY : this.assetType = AssetType.STOCK;
     }
 
     private isValid(): boolean {

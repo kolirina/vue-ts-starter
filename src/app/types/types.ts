@@ -357,7 +357,7 @@ export type Stock = Share & {
     moexId: string;
 };
 
-export type StockHistoryResponce = {
+export type StockHistoryResponse = {
     stock: Stock;
     date: string;
 };
@@ -399,7 +399,7 @@ export type Bond = Share & {
     absolutePrice: string;
 };
 
-export type BondHistoryResponce = {
+export type BondHistoryResponse = {
     bond: Bond;
     date: string;
 };
