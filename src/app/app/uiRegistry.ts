@@ -15,7 +15,7 @@ import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
 import {ImageDialog} from "../components/dialogs/imageDialog";
 import {FileDropArea} from "../components/file-upload/fileDropArea";
 import {FileLink} from "../components/file-upload/fileLink";
-import IINumberField from "../components/iiNumberField";
+import {IINumberField} from "../components/iiNumberField";
 import {InplaceInput} from "../components/inplaceInput";
 import {MaskDirective} from "../platform/directives/maskDirective";
 import {StateDirective} from "../platform/directives/stateDirective";
