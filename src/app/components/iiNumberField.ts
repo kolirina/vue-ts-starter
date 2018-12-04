@@ -7,8 +7,7 @@ import NumberMask from "../mixins/numberMask";
     name: "ii-number-field",
     mixins: [NumberMask]
 })
-export default
-class IINumberField extends Vue {
+export class IINumberField extends Vue {
 
     private get internalValue() {
         return (this as any).lazyValue;
