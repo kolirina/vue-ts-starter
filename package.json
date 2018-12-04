@@ -56,6 +56,7 @@
     "gulp-typescript": "4.0.2",
     "gulp-uglify": "3.0.1",
     "gulp-util": "^3.0.8",
+    "lodash.camelcase": "^4.3.0",
     "mini-css-extract-plugin": "^0.4.3",
     "node-notifier": "^5.2.1",
     "style-loader": "^0.23.1",
