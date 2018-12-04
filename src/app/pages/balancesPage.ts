@@ -23,7 +23,6 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
     <v-container fluid>
-        <v-container grid-list-md>
             <v-layout column wrap>
             <dashboard :data="portfolio.overview.dashboardData"></dashboard>
             <v-flex xs12>
@@ -38,9 +37,11 @@ const MainStore = namespace(StoreType.MAIN);
                             <v-flex d-flex xs5>
                                 <v-layout column wrap>
                                     <div class="title">Добавить ценную бумагу</div>
-                                    <v-form ref="stockForm" v-model="valid" lazy-validation>
+                                    <v-form ref="stockForm" v-model="stockFormIsValid" lazy-validation>
                                         <v-flex>
                                             <v-autocomplete v-model="share"
+                                                            required
+                                                            :rules="rulesShare"
                                                             label="Тикер | Название ценной бумаги"
                                                             append-icon="fas fa-building"
                                                             cache-items
@@ -74,6 +75,8 @@ const MainStore = namespace(StoreType.MAIN);
                                                     :return-value.sync="date"
                                             >
                                                 <v-text-field  v-model="date"
+                                                                required
+                                                                :rules="rulesDate"
                                                                 slot="activator"
                                                                 label="Дата покупки"
                                                                 append-icon="event"
@@ -89,44 +92,50 @@ const MainStore = namespace(StoreType.MAIN);
                                         </v-flex>
                                         <v-flex class="subtitle" v-if="closePrice !== null">
                                             Цена закрытия: <b>{{ closePrice.amount.toString() }} {{ closePrice.currency }}</b>
-                                            <v-btn color="success"
+                                            <v-icon color="primary"
+                                                    title="указать в цене сделки"
+                                                    style="cursor: pointer"
                                                     @click.native="price = closePrice.amount.toString()"
-                                            >
-                                                Указать в цене сделки
-                                            </v-btn>
-                                        </v-flex>
+                                            >fas fa-arrow-alt-circle-down</v-icon>
+                                         </v-flex>
                                         <v-flex>
-                                            Укажите среднюю цену покупки или стоимость позиции
                                             <ii-number-field v-model="price"
                                                                 append-icon="fas fa-money-bill-alt"
                                                                 label="Цена акции"
+                                                                messages="укажите цену акции или стоимость сделки"
                                                                 name="price"
+                                                                required
+                                                                :rules="rulesPrice"
                                                                 @keyup="calculateTotal"
                                             ></ii-number-field>
                                         </v-flex>
                                         <v-flex>
                                             <ii-number-field v-model="quantity"
-                                                            append-icon="fas fa-plus"
-                                                            decimals="0"
-                                                            label="Количество"
-                                                            name="quantity"
-                                                            @keyup="calculateTotal"
+                                                                required
+                                                                :rules="rulesQuantity"
+                                                                append-icon="fas fa-plus"
+                                                                decimals="0"
+                                                                label="Количество"
+                                                                name="quantity"
+                                                                @keyup="calculateTotal"
                                             ></ii-number-field>
                                             <ii-number-field v-model="total"
-                                                            append-icon="fas fa-money-bill-alt"
-                                                            decimals="2"
-                                                            label="Стоимость позиции"
-                                                            name="total"
-                                                            @change="calculatePrice"
+                                                                append-icon="fas fa-money-bill-alt"
+                                                                decimals="2"
+                                                                label="Стоимость позиции"
+                                                                messages="укажите цену акции или стоимость сделки"
+                                                                name="total"
+                                                                required
+                                                                :rules="rulesPrice"
+                                                                @change="calculatePrice"
                                             ></ii-number-field>
                                         </v-flex>
                                     </v-form>
                                     <v-spacer></v-spacer>
                                     <div>
                                         <v-btn color="primary"
-                                                dark
                                                 :loading="processState"
-                                                :disabled="processState"
+                                                :disabled="!stockFormIsValid || processState"
                                                 @click.native="addStock()"
                                         >
                                             Добавить
@@ -140,17 +149,20 @@ const MainStore = namespace(StoreType.MAIN);
                             <v-flex d-flex xs5>
                                 <v-layout column wrap>
                                     <div class="title">Добавить остатки денежных средств</div>
-                                    <v-form ref="moneyForm" v-model="valid" lazy-validation>
+                                    <v-form ref="moneyForm" v-model="moneyFormIsValid" lazy-validation>
                                         <v-flex xs12>
                                             <v-layout wrap>
                                                 <v-flex xs12 lg8>
                                                     <ii-number-field v-model="moneyField"
-                                                                    append-icon="fas fa-money-bill-alt"
-                                                                    decimals="2"
-                                                                    label="Сумма"
+                                                                        requered
+                                                                        :rules="rulesMoney"
+                                                                        append-icon="fas fa-money-bill-alt"
+                                                                        decimals="2"
+                                                                        label="Сумма"
                                                     ></ii-number-field>
                                                 </v-flex>
-                                                <v-flex xs12 lg4>
+                                                <v-spacer></v-spacer>
+                                                <v-flex xs12 lg3>
                                                     <v-select v-model="moneyCurrency"
                                                                 label="Валюта сделки"
                                                                 :items="currencyList"></v-select>
@@ -158,12 +170,10 @@ const MainStore = namespace(StoreType.MAIN);
                                             </v-layout>
                                         </v-flex>
                                     </v-form>
-                                    <v-spacer></v-spacer>
                                     <div>
                                         <v-btn color="primary"
-                                            dark
                                             :loading="processState"
-                                            :disabled="processState"
+                                            :disabled="!moneyFormIsValid || processState"
                                             @click.native="addMoney()"
                                         >
                                             Добавить
@@ -179,7 +189,6 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-card>
             </v-flex>
         </v-layout>
-        </v-container>
         <asset-table :assets="portfolio.overview.assetRows"></asset-table>
         <div style="height: 50px"></div>
         <v-expansion-panel focusable expand>
@@ -246,6 +255,8 @@ export class BalancesPage extends UI implements TradeDataHolder {
 
     private moneyCurrency = "RUB";
 
+    private moneyFormIsValid = true;
+
     private nkd: string = null;
 
     private note: string = null;
@@ -259,6 +270,18 @@ export class BalancesPage extends UI implements TradeDataHolder {
     private processState = false;
 
     private price: string = null;
+
+    private rulesDate = [(val: string) => !!val || "выберите дату"];
+
+    private rulesMoney = [(val: string) => !!val || "укажите цену акции или стоимость сделки"];
+
+    private rulesPrice = [(val: string) => !!val || "укажите цену акции или стоимость сделки"];
+
+    private rulesShare = [(val: string) => !!val || "выберите акцию"];
+
+    private rulesQuantity = [(val: string) => !!val || "укажите количество"];
+
+    private stockFormIsValid = true;
 
     private quantity: number = null;
 
@@ -361,20 +384,27 @@ export class BalancesPage extends UI implements TradeDataHolder {
     }
 
     private async addStock(): Promise<void> {
+        if (!this.$refs.stockForm.validate()) {
+            return;
+        }
         this.assetType = AssetType.STOCK;
         this.operation = Operation.BUY;
         this.moneyAmount = this.total;
+        console.log("typeof ", typeof this.$refs.dateMenu);
         await this.addTrade();
-        this.$refs.stockForm.reset();
+        await this.$refs.stockForm.reset();
         this.date = moment().format("YYYY-MM-DD");
     }
 
     private async addMoney(): Promise<void> {
+        if (!this.$refs.moneyForm.validate()) {
+            return;
+        }
         this.assetType = AssetType.MONEY;
         this.operation = Operation.DEPOSIT;
         this.moneyAmount = this.moneyField;
         await this.addTrade();
-        this.$refs.moneyForm.reset();
+        await this.$refs.moneyForm.reset();
     }
 
     private async addTrade(): Promise<void> {
@@ -426,10 +456,6 @@ export class BalancesPage extends UI implements TradeDataHolder {
         if (this.isValid()) {
             this.total = new Decimal(this.getPrice()).mul(new Decimal(this.getQuantity())).toString();
         }
-    }
-
-    private moneyTrade(isMoneyTrade: boolean) {
-        (isMoneyTrade) ? this.assetType = AssetType.MONEY : this.assetType = AssetType.STOCK;
     }
 
     private isValid(): boolean {

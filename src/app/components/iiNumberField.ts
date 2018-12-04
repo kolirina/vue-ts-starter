@@ -1,6 +1,6 @@
 import {Component, Vue} from "vue-property-decorator";
 import VTextField from "vuetify/lib/components/VTextField/VTextField";
-import NumberMask from "../mixins/numberMask";
+import {NumberMask} from "../mixins/numberMask";
 
 @Component({
     extends: VTextField,
