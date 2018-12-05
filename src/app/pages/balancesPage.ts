@@ -5,6 +5,7 @@ import {Component, Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
 import {AssetTable} from "../components/assetTable";
+import {BalancesTable} from "../components/balancesTable";
 import {StockTable} from "../components/stockTable";
 import {MarketHistoryService} from "../services/marketHistoryService";
 import {MarketService} from "../services/marketService";
@@ -22,17 +23,29 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-    <v-container fluid>
+    <v-container fluid class="selectable">
             <v-layout column wrap>
-            <dashboard :data="portfolio.overview.dashboardData"></dashboard>
             <v-flex xs12>
                 <v-card>
                     <v-card-title>
                         <span class="headline">Текущие остатки портфеля</span>
                     </v-card-title>
                     <v-card-text>
-                        <p>Перечислите все ценные бумаги и денежные остатки в составе портфеля.</p>
-                        <p>Старайтесь указывать верную дату и цену покупки бумаг - это повысит точность расчетов.</p>
+                        <p>Перечислите все ценные бумаги и денежные остатки в составе портфеля.
+                        Старайтесь указывать верную дату и цену покупки бумаг - это повысит точность расчетов.</p>
+                        <p>
+                            Для максимальной гибкости (чтобы учесть облигации, повторные покупки, дивиденды) вы можете поочередно занести
+                            <a href="#/trades">все сделки портфеля</a>
+                            <v-tooltip :max-width="250" top>
+                                <i slot="activator" class="far fa-question-circle"></i>
+                                <span>
+                                    Через диалог добавления сделки добавляйте одна за другой все события портфеля:
+                                    ввод и вывод денег, покупка и продажа бумаг, дивиденды, купоны, уплаченные налоги.
+                                    Это наиболее долгий способ заполнить портфель, но в то же время максимально точный и гибкий.
+                                </span>
+                            </v-tooltip>
+                        </p>
+                        <div style="height: 50px"/>
                         <v-layout row wrap justify-space-around>
                             <v-flex d-flex xs5>
                                 <v-layout column wrap>
@@ -90,25 +103,6 @@ const MainStore = namespace(StoreType.MAIN);
                                                 ></v-date-picker>
                                             </v-menu>
                                         </v-flex>
-                                        <v-flex class="subtitle" v-if="closePrice !== null">
-                                            Цена закрытия: <b>{{ closePrice.amount.toString() }} {{ closePrice.currency }}</b>
-                                            <v-icon color="primary"
-                                                    title="указать в цене сделки"
-                                                    style="cursor: pointer"
-                                                    @click.native="price = closePrice.amount.toString()"
-                                            >fas fa-arrow-alt-circle-down</v-icon>
-                                         </v-flex>
-                                        <v-flex>
-                                            <ii-number-field v-model="price"
-                                                                append-icon="fas fa-money-bill-alt"
-                                                                label="Цена акции"
-                                                                messages="укажите цену акции или стоимость сделки"
-                                                                name="price"
-                                                                required
-                                                                :rules="rulesPrice"
-                                                                @keyup="calculateTotal"
-                                            ></ii-number-field>
-                                        </v-flex>
                                         <v-flex>
                                             <ii-number-field v-model="quantity"
                                                                 required
@@ -117,9 +111,32 @@ const MainStore = namespace(StoreType.MAIN);
                                                                 decimals="0"
                                                                 label="Количество"
                                                                 name="quantity"
-                                                                @keyup="calculateTotal"
+                                                                @keyup="calculateOnQuantity"
+                                                                @change="changeOnQuantity"
                                             ></ii-number-field>
-                                            <ii-number-field v-model="total"
+                                        </v-flex>
+                                        <v-flex class="subtitle" v-if="closePrice !== null">
+                                            Цена закрытия: <b>{{ closePrice.amount.toString() }} {{ closePrice.currencySymbol }}</b>
+                                            <v-icon color="primary"
+                                                    title="указать в цене сделки"
+                                                    style="cursor: pointer"
+                                                    @click.native="price = closePrice.amount.toString(); calculateOnPrice()"
+                                            >fas fa-arrow-alt-circle-down</v-icon>
+                                        </v-flex>
+                                        <v-layout wrap>
+                                            <v-flex>
+                                            <ii-number-field v-model="price"
+                                                                append-icon="fas fa-money-bill-alt"
+                                                                label="Цена акции"
+                                                                messages="укажите цену акции или стоимость сделки"
+                                                                name="price"
+                                                                required
+                                                                :rules="rulesPrice"
+                                                                @keyup="calculateOnPrice"
+                                            ></ii-number-field>
+                                            </v-flex>
+                                            <v-flex/>
+                                             <ii-number-field v-model="total"
                                                                 append-icon="fas fa-money-bill-alt"
                                                                 decimals="2"
                                                                 label="Стоимость позиции"
@@ -127,9 +144,10 @@ const MainStore = namespace(StoreType.MAIN);
                                                                 name="total"
                                                                 required
                                                                 :rules="rulesPrice"
-                                                                @change="calculatePrice"
+                                                                @keyup="calculateOnTotal"
+                                                                @change="changeOnTotal"
                                             ></ii-number-field>
-                                        </v-flex>
+                                        </v-layout>
                                     </v-form>
                                     <v-spacer></v-spacer>
                                     <div>
@@ -189,19 +207,15 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-card>
             </v-flex>
         </v-layout>
-        <asset-table :assets="portfolio.overview.assetRows"></asset-table>
-        <div style="height: 50px"></div>
-        <v-expansion-panel focusable expand>
-            <v-expansion-panel-content :lazy="true">
-                <div slot="header">Акции</div>
-                <v-card>
-                    <stock-table :rows="portfolio.overview.stockPortfolio.rows" :loading="processState"></stock-table>
-                </v-card>
-            </v-expansion-panel-content>
-        </v-expansion-panel>
+        <v-card>
+            <v-card-text class="text-xs-center title">
+                Текущая стоимость портфеля: <a href="#/portfolio" style="text-decoration: none">{{currentCost}}</a>
+            </v-card-text>
+        </v-card>
+        <balances-table :loading="processState"/>
     </v-container>
     `,
-    components: {AssetTable, StockTable}
+    components: {AssetTable, BalancesTable, StockTable}
 })
 export class BalancesPage extends UI implements TradeDataHolder {
 
@@ -228,11 +242,17 @@ export class BalancesPage extends UI implements TradeDataHolder {
 
     private assetType = AssetType.STOCK;
 
+    private changedQuantity = false;
+
+    private changedPrice = false;
+
+    private changedTotal = false;
+
     private closePrice: BigMoney = null;
 
     private currency = "RUB";
 
-    private currencyList = ["RUB", "USD"];
+    private currencyList = ["RUB", "EUR", "USD"];
 
     /** Текущий объект таймера */
     private currentTimer: number = null;
@@ -247,7 +267,7 @@ export class BalancesPage extends UI implements TradeDataHolder {
 
     private filteredShares: Share[] = [];
 
-    private keepMoney = true;
+    private keepMoney = false;
 
     private moneyField: string = null;
 
@@ -432,6 +452,7 @@ export class BalancesPage extends UI implements TradeDataHolder {
                 fields: trade
             });
             if (!errors) {
+                this.$snotify.success("Баланс успешно сохранен...");
                 return;
             }
             for (const errorInfo of errors.fields) {
@@ -447,14 +468,50 @@ export class BalancesPage extends UI implements TradeDataHolder {
         }
     }
 
-    private calculatePrice(): void {
-        this.price = new Decimal(this.total).dividedBy(new Decimal(this.quantity)).toDecimalPlaces(2, Decimal.ROUND_DOWN).toString();
-        this.total = new Decimal(this.price).mul(new Decimal(this.quantity)).toString();
+    private calculateOnQuantity(): void {
+        this.changedQuantity = true;
+        if (this.changedTotal) {
+            this.changedPrice = false;
+            this.price = new Decimal(this.total).dividedBy(new Decimal(this.quantity)).toDecimalPlaces(6, Decimal.ROUND_HALF_UP).toString();
+        } else if (this.changedPrice) {
+            this.total = new Decimal(this.getPrice()).mul(new Decimal(this.getQuantity())).toString();
+        }
     }
 
-    private calculateTotal(): void {
-        if (this.isValid()) {
+    private calculateOnPrice(): void {
+        this.changedPrice = true;
+        if (this.changedQuantity) {
+            this.changedTotal = false;
             this.total = new Decimal(this.getPrice()).mul(new Decimal(this.getQuantity())).toString();
+        }
+    }
+
+    private calculateOnTotal(): void {
+        this.changedTotal = true;
+        if (this.changedQuantity) {
+            this.changedPrice = false;
+            this.price = new Decimal(this.total).dividedBy(new Decimal(this.quantity)).toDecimalPlaces(6, Decimal.ROUND_HALF_UP).toString();
+        }
+    }
+
+    private changeOnQuantity(): void {
+        this.changedQuantity = true;
+        if (this.changedTotal) {
+            this.changedPrice = false;
+            this.price = new Decimal(this.total).dividedBy(new Decimal(this.quantity)).toDecimalPlaces(6, Decimal.ROUND_HALF_UP).toString();
+            this.total = new Decimal(this.price).mul(new Decimal(this.quantity)).toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toString();
+        } else if (this.changedPrice) {
+            this.total = new Decimal(this.getPrice()).mul(new Decimal(this.getQuantity())).toString();
+            this.total = new Decimal(this.price).mul(new Decimal(this.quantity)).toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toString();
+        }
+    }
+
+    private changeOnTotal(): void {
+        if (this.changedQuantity) {
+            this.changedPrice = false;
+            this.changedTotal = true;
+            this.price = new Decimal(this.total).dividedBy(new Decimal(this.quantity)).toDecimalPlaces(6, Decimal.ROUND_HALF_UP).toString();
+            this.total = new Decimal(this.price).mul(new Decimal(this.quantity)).toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toString();
         }
     }
 
@@ -476,5 +533,10 @@ export class BalancesPage extends UI implements TradeDataHolder {
 
     private get shareTicker(): string {
         return this.share ? this.share.ticker : null;
+    }
+
+    private get currentCost(): string {
+        const currentCost = new BigMoney(this.portfolio.overview.dashboardData.currentCost);
+        return `${currentCost.amount.toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toString()} ${currentCost.currencySymbol}`;
     }
 }
