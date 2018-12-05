@@ -4,15 +4,13 @@ import {Prop, Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
 import {TradeService} from "../services/tradeService";
-import {AssetType} from "../types/assetType";
+import {BigMoney} from "../types/bigMoney";
 import {Operation} from "../types/operation";
 import {AssetRow, Portfolio, StockPortfolioRow, TableHeader} from "../types/types";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
-import {AddTradeDialog} from "./dialogs/addTradeDialog";
 import {ConfirmDialog} from "./dialogs/confirmDialog";
 import {BtnReturn} from "./dialogs/customDialog";
-import {ShareTradesDialog} from "./dialogs/shareTradesDialog";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -26,14 +24,13 @@ const MainStore = namespace(StoreType.MAIN);
                     <td><span>{{ props.item.company}}</span>
                     </td>
                     <td>
-                        <router-link :to="{name: 'share-info', params: {ticker: props.item.ticker}}">{{ props.item.ticker }}</router-link>
+                        <router-link v-if="props.item.ticker" :to="{name: 'share-info', params: {ticker: props.item.ticker}}">{{ props.item.ticker }}</router-link>
                     </td>
-                    <td class="text-xs-right">{{ props.item.quantity | number }}</td>
-                    <td class="text-xs-right">{{ props.item.avgBuy | amount }}</td>
-                    <td class="text-xs-right">{{ props.item.currPrice| amount(true) }}</td>
+                    <td class="text-xs-right">{{ props.item.quantity }}</td>
+                    <td class="text-xs-right"><span v-if="props.item.type === 'STOCK'">{{ props.item.avgBuy | amount }}</span></td>
+                    <td class="text-xs-right">{{ props.item.currCost | amount}}</td>
                     <td class="justify-center layout px-0" @click.stop>
-                        <v-menu transition="slide-y-transition" bottom left>
-                        </v-menu>
+                        <v-icon v-if="props.item.type === 'STOCK'" color="primary" small @click="deleteAllTrades(props.item)">fas fa-trash-alt</v-icon>
                     </td>
                 </tr>
             </template>
@@ -67,164 +64,123 @@ export class BalancesTable extends UI {
     @Prop({default: false})
     private loading: boolean;
 
-    private async deleteAllTrades(stockRow: StockPortfolioRow): Promise<void> {
+    @Prop({default: [], required: true})
+    private stocks: StockPortfolioRow[];
+
+    @Prop({default: [], required: true})
+    private assets: AssetRow[];
+
+    private async deleteAllTrades(stockRow: BalancesTableRow): Promise<void> {
         const result = await new ConfirmDialog().show(`Вы уверены, что хотите удалить все сделки по ценной бумаге?`);
         if (result === BtnReturn.YES) {
             await this.tradeService.deleteAllTrades({
                 assetType: "STOCK",
-                ticker: stockRow.stock.ticker,
+                ticker: stockRow.ticker,
                 portfolioId: this.portfolio.id
             });
             await this.reloadPortfolio(this.portfolio.id);
         }
     }
 
-    private set rows(balancesTableRows: BalancesTableRow[]) {
-        this.balancesTableRow = [];
-        for (const row of this.portfolio.overview.stockPortfolio.rows) {
-            this.balancesTableRow.push({
-                id: row.id,
-                type: "STOCK",
-                company: row.stock.shortname,
-                ticker: row.stock.ticker,
-                quantity: row.quantity,
-                avgBuy: row.avgBuy,
-                currCost: row.currCost
-            });
-        }
-        console.log("!!!", this.portfolio.overview.assetRows);
-        for (const row of this.portfolio.overview.assetRows) {
-            if (row.type = "EURO") {
-                this.balancesTableRow.push({
-                    id: "",
-                    type: "EURO",
-                    company: "Евро",
-                    ticker: "",
-                    quantity: "",
-                    avgBuy: "",
-                    currCost: row.currCost
-                });
-            } else if (row.type = "RUBLES") {
-                this.balancesTableRow.push({
-                    id: "",
-                    type: "RUBLES",
-                    company: "Рубль",
-                    ticker: "",
-                    quantity: "",
-                    avgBuy: "",
-                    currCost: row.currCost
-                });
-            } else if (row.type = "DOLLARS") {
-                this.balancesTableRow.push({
-                    id: "",
-                    type: "DOLLARS",
-                    company: "Доллар США",
-                    ticker: "",
-                    quantity: "",
-                    avgBuy: "",
-                    currCost: row.currCost
-                });
-            }
-        }
-    }
-
     @Watch("portfolio")
-    private async onPortfolioChange() {
-        // this.rows = this.balancesTableRow;
+    private onPortfolioChange() {
         this.balancesTableRow = [];
-        for (const row of await this.portfolio.overview.stockPortfolio.rows) {
+        for (const row of this.stocks) {
             this.balancesTableRow.push({
                 id: row.id,
                 type: "STOCK",
                 company: row.stock.shortname,
                 ticker: row.stock.ticker,
-                quantity: row.quantity,
+                quantity: parseInt(row.quantity, 10),
                 avgBuy: row.avgBuy,
                 currCost: row.currCost
             });
         }
-        console.log("!!!", await this.portfolio.overview.assetRows);
-        for (const row of await this.portfolio.overview.assetRows) {
-            if (row.type = "EURO") {
-                this.balancesTableRow.push({
-                    id: "",
-                    type: "EURO",
-                    company: "Евро",
-                    ticker: "",
-                    quantity: "",
-                    avgBuy: "",
-                    currCost: row.currCost
-                });
-            } else if (row.type = "RUBLES") {
-                this.balancesTableRow.push({
-                    id: "",
-                    type: "RUBLES",
-                    company: "Рубль",
-                    ticker: "",
-                    quantity: "",
-                    avgBuy: "",
-                    currCost: row.currCost
-                });
-            } else if (row.type = "DOLLARS") {
-                this.balancesTableRow.push({
-                    id: "",
-                    type: "DOLLARS",
-                    company: "Доллар США",
-                    ticker: "",
-                    quantity: "",
-                    avgBuy: "",
-                    currCost: row.currCost
-                });
+        for (const row of this.assets) {
+            if (row.assetType === "MONEY") {
+                const currCost = new BigMoney(row.currCost);
+                if (currCost.currency === "EUR") {
+                    this.balancesTableRow.push({
+                        id: "",
+                        type: "EURO",
+                        company: "Евро",
+                        ticker: "",
+                        quantity: null,
+                        avgBuy: "",
+                        currCost: row.currCost
+                    });
+                } else if (currCost.currency === "RUB") {
+                    this.balancesTableRow.push({
+                        id: "",
+                        type: "RUBLE",
+                        company: "Рубль",
+                        ticker: "",
+                        quantity: null,
+                        avgBuy: "",
+                        currCost: row.currCost
+                    });
+                } else if (currCost.currency === "USD") {
+                    this.balancesTableRow.push({
+                        id: "",
+                        type: "DOLLAR",
+                        company: "Доллар США",
+                        ticker: "",
+                        quantity: null,
+                        avgBuy: "",
+                        currCost: row.currCost
+                    });
+                }
             }
         }
     }
 
     private get rows(): BalancesTableRow[] {
-        // = this.portfolio.overview.stockPortfolio.rows;
         this.balancesTableRow = [];
-        for (const row of this.portfolio.overview.stockPortfolio.rows) {
+        for (const row of this.stocks) {
             this.balancesTableRow.push({
                 id: row.id,
                 type: "STOCK",
                 company: row.stock.shortname,
                 ticker: row.stock.ticker,
-                quantity: row.quantity,
+                quantity: parseInt(row.quantity, 10),
                 avgBuy: row.avgBuy,
                 currCost: row.currCost
             });
         }
-        console.log("!!!", this.portfolio.overview.assetRows);
-        for (const row of this.portfolio.overview.assetRows) {
-            if (row.type = "EURO") {
-                this.balancesTableRow.push({
-                    id: "",
-                    type: "EURO",
-                    company: "Евро",
-                    ticker: "",
-                    quantity: "",
-                    avgBuy: "",
-                    currCost: row.currCost
-                });
-            } else if (row.type = "RUBLES") {
-                this.balancesTableRow.push({
-                    id: "",
-                    type: "RUBLES",
-                    company: "Рубль",
-                    ticker: "",
-                    quantity: "",
-                    avgBuy: "",
-                    currCost: row.currCost
-                });
-            } else if (row.type = "DOLLARS") {
-                this.balancesTableRow.push({
-                    id: "",
-                    type: "DOLLARS",
-                    company: "Доллар США",
-                    ticker: "",
-                    quantity: "",
-                    avgBuy: "",
-                    currCost: row.currCost
-                });
+        for (const row of this.assets) {
+            if (row.assetType === "MONEY") {
+                const currCost = new BigMoney(row.currCost);
+                if (currCost.currency === "EUR") {
+                    this.balancesTableRow.push({
+                        id: "",
+                        type: "EURO",
+                        company: "Евро",
+                        ticker: "",
+                        quantity: null,
+                        avgBuy: "",
+                        currCost: row.currCost
+                    });
+                } else if (currCost.currency === "RUB") {
+                    this.balancesTableRow.push({
+                        id: "",
+                        type: "RUBLE",
+                        company: "Рубль",
+                        ticker: "",
+                        quantity: null,
+                        avgBuy: "",
+                        currCost: row.currCost
+                    });
+                } else if (currCost.currency === "USD") {
+                    this.balancesTableRow.push({
+                        id: "",
+                        type: "DOLLAR",
+                        company: "Доллар США",
+                        ticker: "",
+                        quantity: null,
+                        avgBuy: "",
+                        currCost: row.currCost
+                    });
+                }
             }
         }
         return this.balancesTableRow;
@@ -236,7 +192,7 @@ type BalancesTableRow = {
     type: string,
     company: string,
     ticker: string,
-    quantity: string,
+    quantity: number,
     avgBuy: string,
     currCost: string
-}
+};

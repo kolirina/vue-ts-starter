@@ -212,7 +212,7 @@ const MainStore = namespace(StoreType.MAIN);
                 Текущая стоимость портфеля: <a href="#/portfolio" style="text-decoration: none">{{currentCost}}</a>
             </v-card-text>
         </v-card>
-        <balances-table :loading="processState"/>
+        <balances-table :assets="portfolio.overview.assetRows" :stocks="portfolio.overview.stockPortfolio.rows" :loading="processState"/>
     </v-container>
     `,
     components: {AssetTable, BalancesTable, StockTable}
@@ -536,7 +536,11 @@ export class BalancesPage extends UI implements TradeDataHolder {
     }
 
     private get currentCost(): string {
+        /* TODO утилиту разработать для красоты отображения длинных чисел */
         const currentCost = new BigMoney(this.portfolio.overview.dashboardData.currentCost);
-        return `${currentCost.amount.toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toString()} ${currentCost.currencySymbol}`;
+        const ar = currentCost.amount.toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toString().split(".");
+        const floorPart = ar[0].replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, "$1 ");
+        const decimalPart = ar[1];
+        return `${floorPart}.${decimalPart} ${currentCost.currencySymbol}`;
     }
 }
