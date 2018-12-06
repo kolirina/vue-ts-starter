@@ -211,7 +211,9 @@ const MainStore = namespace(StoreType.MAIN);
             <v-card-text class="text-xs-center title">
                 Текущая стоимость портфеля:
                 <a href="#/portfolio" style="text-decoration: none">
-                    <span :class="portfolio.portfolioParams.viewCurrency.toLowerCase()">{{currentCost | amount(true)}}</span>
+                    <span :class="portfolio.portfolioParams.viewCurrency.toLowerCase()">
+                        {{ this.portfolio.overview.dashboardData.currentCost | amount(true) }}
+                    </span>
                 </a>
             </v-card-text>
         </v-card>
@@ -542,15 +544,5 @@ export class BalancesPage extends UI implements TradeDataHolder {
 
     private get shareTicker(): string {
         return this.share ? this.share.ticker : null;
-    }
-
-    private get currentCost(): string {
-        /* TODO утилиту разработать для красоты отображения длинных чисел */
-        // const currentCost = new BigMoney(this.portfolio.overview.dashboardData.currentCost);
-        // const ar = currentCost.amount.toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toString().split(".");
-        // const floorPart = ar[0].replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, "$1 ");
-        // const decimalPart = ar[1];
-        // return `${floorPart}.${decimalPart} ${currentCost.currencySymbol}`;
-        return this.portfolio.overview.dashboardData.currentCost
     }
 }
