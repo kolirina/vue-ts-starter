@@ -209,7 +209,10 @@ const MainStore = namespace(StoreType.MAIN);
         </v-layout>
         <v-card>
             <v-card-text class="text-xs-center title">
-                Текущая стоимость портфеля: <a href="#/portfolio" style="text-decoration: none">{{currentCost}}</a>
+                Текущая стоимость портфеля:
+                <a href="#/portfolio" style="text-decoration: none">
+                    <span :class="portfolio.portfolioParams.viewCurrency.toLowerCase()">{{currentCost | amount(true)}}</span>
+                </a>
             </v-card-text>
         </v-card>
         <balances-table :assets="portfolio.overview.assetRows" :stocks="portfolio.overview.stockPortfolio.rows" :loading="processState"/>
@@ -365,7 +368,6 @@ export class BalancesPage extends UI implements TradeDataHolder {
 
     @Watch("searchQuery")
     private async onSearch(): Promise<void> {
-        console.log("SEARCH", this.searchQuery);
         if (!this.searchQuery || this.searchQuery.length <= 2) {
             return;
         }
@@ -410,7 +412,6 @@ export class BalancesPage extends UI implements TradeDataHolder {
         this.assetType = AssetType.STOCK;
         this.operation = Operation.BUY;
         this.moneyAmount = this.total;
-        console.log("typeof ", typeof this.$refs.dateMenu);
         await this.addTrade();
         await this.$refs.stockForm.reset();
         this.date = moment().format("YYYY-MM-DD");
@@ -452,15 +453,13 @@ export class BalancesPage extends UI implements TradeDataHolder {
                 fields: trade
             });
             if (!errors) {
-                this.$snotify.success("Баланс успешно сохранен...");
+                this.$snotify.info("Баланс успешно сохранен");
                 return;
             }
             for (const errorInfo of errors.fields) {
-                console.log("M", errorInfo);
                 this.$validator.errors.add({field: errorInfo.name, msg: errorInfo.errorMessage});
             }
         } catch (e) {
-            console.log("e", e);
             return;
         } finally {
             this.processState = false;
@@ -469,54 +468,64 @@ export class BalancesPage extends UI implements TradeDataHolder {
     }
 
     private calculateOnQuantity(): void {
-        this.changedQuantity = true;
-        if (this.changedTotal) {
+        !!this.quantity ? this.changedQuantity = true : this.changedQuantity = false;
+        if (this.changedQuantity && this.changedTotal) {
             this.changedPrice = false;
             this.price = new Decimal(this.total).dividedBy(new Decimal(this.quantity)).toDecimalPlaces(6, Decimal.ROUND_HALF_UP).toString();
-        } else if (this.changedPrice) {
+        } else if (this.changedQuantity && this.changedPrice) {
             this.total = new Decimal(this.getPrice()).mul(new Decimal(this.getQuantity())).toString();
+        } else if (!this.changedQuantity && this.changedTotal) {
+            this.changedPrice = false;
+            this.price = "";
+        } else if (!this.changedQuantity && this.changedPrice) {
+            this.total = "";
         }
     }
 
     private calculateOnPrice(): void {
-        this.changedPrice = true;
-        if (this.changedQuantity) {
+        !!this.price ? this.changedPrice = true : this.changedPrice = false;
+        if (this.changedPrice && this.changedQuantity) {
             this.changedTotal = false;
             this.total = new Decimal(this.getPrice()).mul(new Decimal(this.getQuantity())).toString();
+        } else {
+            this.changedTotal = false;
+            this.total = "";
         }
     }
 
     private calculateOnTotal(): void {
-        this.changedTotal = true;
-        if (this.changedQuantity) {
+        !!this.total ? this.changedTotal = true : this.changedTotal = false;
+        if (this.changedTotal && this.changedQuantity) {
             this.changedPrice = false;
             this.price = new Decimal(this.total).dividedBy(new Decimal(this.quantity)).toDecimalPlaces(6, Decimal.ROUND_HALF_UP).toString();
+        } else {
+            this.changedPrice = false;
+            this.price = "";
         }
     }
 
     private changeOnQuantity(): void {
-        this.changedQuantity = true;
-        if (this.changedTotal) {
+        !!this.quantity ? this.changedQuantity = true : this.changedQuantity = false;
+        if (this.changedQuantity && this.changedTotal) {
             this.changedPrice = false;
             this.price = new Decimal(this.total).dividedBy(new Decimal(this.quantity)).toDecimalPlaces(6, Decimal.ROUND_HALF_UP).toString();
             this.total = new Decimal(this.price).mul(new Decimal(this.quantity)).toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toString();
-        } else if (this.changedPrice) {
+        } else if (this.changedQuantity && this.changedPrice) {
             this.total = new Decimal(this.getPrice()).mul(new Decimal(this.getQuantity())).toString();
             this.total = new Decimal(this.price).mul(new Decimal(this.quantity)).toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toString();
         }
     }
 
     private changeOnTotal(): void {
-        if (this.changedQuantity) {
+        !!this.total ? this.changedTotal = true : this.changedTotal = false;
+        if (this.changedTotal && this.changedQuantity) {
             this.changedPrice = false;
-            this.changedTotal = true;
             this.price = new Decimal(this.total).dividedBy(new Decimal(this.quantity)).toDecimalPlaces(6, Decimal.ROUND_HALF_UP).toString();
             this.total = new Decimal(this.price).mul(new Decimal(this.quantity)).toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toString();
+        } else {
+            this.changedPrice = false;
+            this.price = "";
         }
-    }
-
-    private isValid(): boolean {
-        return !(!this.price || !this.quantity);
     }
 
     private shareLabelListItem(share: Share): string {
@@ -537,10 +546,11 @@ export class BalancesPage extends UI implements TradeDataHolder {
 
     private get currentCost(): string {
         /* TODO утилиту разработать для красоты отображения длинных чисел */
-        const currentCost = new BigMoney(this.portfolio.overview.dashboardData.currentCost);
-        const ar = currentCost.amount.toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toString().split(".");
-        const floorPart = ar[0].replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, "$1 ");
-        const decimalPart = ar[1];
-        return `${floorPart}.${decimalPart} ${currentCost.currencySymbol}`;
+        // const currentCost = new BigMoney(this.portfolio.overview.dashboardData.currentCost);
+        // const ar = currentCost.amount.toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toString().split(".");
+        // const floorPart = ar[0].replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, "$1 ");
+        // const decimalPart = ar[1];
+        // return `${floorPart}.${decimalPart} ${currentCost.currencySymbol}`;
+        return this.portfolio.overview.dashboardData.currentCost
     }
 }

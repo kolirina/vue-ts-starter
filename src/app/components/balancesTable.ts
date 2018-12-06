@@ -28,7 +28,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </td>
                     <td class="text-xs-right">{{ props.item.quantity }}</td>
                     <td class="text-xs-right"><span v-if="props.item.type === 'STOCK'">{{ props.item.avgBuy | amount }}</span></td>
-                    <td class="text-xs-right">{{ props.item.currCost | amount}}</td>
+                    <td class="text-xs-right">{{ props.item.currCost | amount(true)}}</td>
                     <td class="justify-center layout px-0" @click.stop>
                         <v-icon v-if="props.item.type === 'STOCK'" color="primary" small @click="deleteAllTrades(props.item)">fas fa-trash-alt</v-icon>
                     </td>
