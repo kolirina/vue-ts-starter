@@ -7,6 +7,7 @@ import {TradeService} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
 import {Operation} from "../types/operation";
 import {BondPortfolioRow, Portfolio, TableHeader} from "../types/types";
+import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {AddTradeDialog} from "./dialogs/addTradeDialog";
 import {ConfirmDialog} from "./dialogs/confirmDialog";
@@ -134,6 +135,9 @@ export class BondTable extends UI {
     @MainStore.Getter
     private portfolio: Portfolio;
 
+    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
+    private reloadPortfolio: (id: string) => Promise<void>;
+
     private headers: TableHeader[] = [
         {text: "Компания", align: "left", sortable: false, value: "company"},
         {text: "Тикер", align: "left", value: "ticker"},
@@ -168,7 +172,12 @@ export class BondTable extends UI {
     private async deleteAllTrades(bondRow: BondPortfolioRow): Promise<void> {
         const result = await new ConfirmDialog().show(`Вы уверены, что хотите удалить все сделки по ценной бумаге?`);
         if (result === BtnReturn.YES) {
-            console.log("TODO DELETE ALL TRADES");
+            await this.tradeService.deleteAllTrades({
+                assetType: "BOND",
+                ticker: bondRow.bond.ticker,
+                portfolioId: this.portfolio.id
+            });
+            await this.reloadPortfolio(this.portfolio.id);
         }
     }
 }

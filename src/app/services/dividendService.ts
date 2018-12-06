@@ -21,7 +21,7 @@ export class DividendService {
      * @param deleteTradeRequest запрос на удаление сделки
      */
     async deleteTrade(deleteTradeRequest: DeleteTradeRequest): Promise<void> {
-        HTTP.INSTANCE.post("/dividends/delete", deleteTradeRequest);
+        await HTTP.INSTANCE.post("/dividends/delete", deleteTradeRequest);
     }
 
     /**
@@ -29,7 +29,7 @@ export class DividendService {
      * @param deleteTradeRequest запрос на удаление всех сделок
      */
     async deleteAllTrades(deleteTradeRequest: DeleteAllDividendsTradeRequest): Promise<void> {
-        HTTP.INSTANCE.post("/dividends/deleteAll", deleteTradeRequest);
+        await HTTP.INSTANCE.post("/dividends/deleteAll", deleteTradeRequest);
     }
 }
 

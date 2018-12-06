@@ -2,6 +2,7 @@ import {Container} from "typescript-ioc";
 import Vue from "vue";
 import VueRouter from "vue-router";
 import {RouteConfig} from "vue-router/types/router";
+import {BalancesPage} from "../pages/balancesPage";
 import {BondInfoPage} from "../pages/bondInfoPage";
 import {CombinedPortfolioPage} from "../pages/combinedPortfolioPage";
 import {DividendsPage} from "../pages/dividendsPage";
@@ -142,6 +143,11 @@ export class RouterConfiguration {
                 name: "notifications",
                 path: "/notifications",
                 component: NotificationsPage
+            },
+            {
+                name: "balances",
+                path: "/balances",
+                component: BalancesPage
             }
         ];
     }

@@ -21,4 +21,10 @@ export class BigMoney {
     get currency(): string {
         return this.currencyValue;
     }
+
+    get currencySymbol(): string {
+        return this.currencyValue === "RUB" ? "₽" :
+                this.currencyValue === "EUR" ? "€" :
+                this.currencyValue === "USD" ? "$" : "";
+    }
 }

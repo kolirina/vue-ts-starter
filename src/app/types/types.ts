@@ -357,6 +357,11 @@ export type Stock = Share & {
     moexId: string;
 };
 
+export type StockHistoryResponse = {
+    stock: Stock;
+    date: string;
+};
+
 export type Sector = {
     name: string;
     parent: Sector;
@@ -392,6 +397,11 @@ export type Bond = Share & {
     isRepaid: boolean;
     /** Абсолютная текущая цена облигации без учета НКД */
     absolutePrice: string;
+};
+
+export type BondHistoryResponse = {
+    bond: Bond;
+    date: string;
 };
 
 /** Информация по акции */

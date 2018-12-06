@@ -7,6 +7,7 @@ import {TradeService} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
 import {Operation} from "../types/operation";
 import {Portfolio, StockPortfolioRow, TableHeader} from "../types/types";
+import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {AddTradeDialog} from "./dialogs/addTradeDialog";
 import {ConfirmDialog} from "./dialogs/confirmDialog";
@@ -104,6 +105,9 @@ export class StockTable extends UI {
     @MainStore.Getter
     private portfolio: Portfolio;
 
+    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
+    private reloadPortfolio: (id: string) => Promise<void>;
+
     private operation = Operation;
 
     private headers: TableHeader[] = [
@@ -141,7 +145,12 @@ export class StockTable extends UI {
     private async deleteAllTrades(stockRow: StockPortfolioRow): Promise<void> {
         const result = await new ConfirmDialog().show(`Вы уверены, что хотите удалить все сделки по ценной бумаге?`);
         if (result === BtnReturn.YES) {
-            console.log("TODO DELETE ALL TRADES");
+            await this.tradeService.deleteAllTrades({
+                assetType: "STOCK",
+                ticker: stockRow.stock.ticker,
+                portfolioId: this.portfolio.id
+            });
+            await this.reloadPortfolio(this.portfolio.id);
         }
     }
 }

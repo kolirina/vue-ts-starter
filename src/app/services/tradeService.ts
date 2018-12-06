@@ -48,7 +48,7 @@ export class TradeService {
      * @param deleteTradeRequest запрос на удаление сделки
      */
     async deleteTrade(deleteTradeRequest: DeleteTradeRequest): Promise<void> {
-        HTTP.INSTANCE.post("/trades/delete", deleteTradeRequest);
+        await HTTP.INSTANCE.post("/trades/delete", deleteTradeRequest);
     }
 
     /**
@@ -56,7 +56,7 @@ export class TradeService {
      * @param deleteTradeRequest запрос на удаление всех сделок
      */
     async deleteAllTrades(deleteTradeRequest: DeleteAllTradeRequest): Promise<void> {
-        HTTP.INSTANCE.post("/trades/deleteAll", deleteTradeRequest);
+        await HTTP.INSTANCE.post("/trades/deleteAll", deleteTradeRequest);
     }
 }
 
