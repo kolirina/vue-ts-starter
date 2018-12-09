@@ -22,7 +22,7 @@ import {StockLink} from "../components/stockLink";
 import {MaskDirective} from "../platform/directives/maskDirective";
 import {StateDirective} from "../platform/directives/stateDirective";
 import {Filters} from "../platform/filters/Filters";
-import ru from "../platform/locale/ru";
+import {RU} from "../platform/locale/ru";
 import {ruLocale} from "../platform/locale/veeValidateMessages";
 import {UiStateHelper} from "../utils/uiStateHelper";
 import {UI} from "./ui";
@@ -39,7 +39,7 @@ export class UIRegistry {
 
         Vue.use(Vuetify, {
             lang: {
-                locales: {ru},
+                locales: {"ru": RU},
                 current: "ru"
             }
         });

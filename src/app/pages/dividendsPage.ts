@@ -5,12 +5,12 @@ import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
 import {DividendDashboardComponent} from "../components/dividendDashboardComponent";
 import {DividendsByTickerTable} from "../components/dividendsByTickerTable";
+import {DividendsByYearAndTickerTable} from "../components/dividendsByYearAndTickerTable";
 import {DividendsByYearTable} from "../components/dividendsByYearTable";
+import {DividendTradesTable} from "../components/dividendTradesTable";
 import {DividendAggregateInfo, DividendService} from "../services/dividendService";
 import {Portfolio} from "../types/types";
 import {StoreType} from "../vuex/storeType";
-import {DividendsByYearAndTickerTable} from "../components/dividendsByYearAndTickerTable";
-import {DividendTradesTable} from "../components/dividendTradesTable";
 
 const MainStore = namespace(StoreType.MAIN);
 
