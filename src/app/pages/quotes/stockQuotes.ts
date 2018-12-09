@@ -23,9 +23,7 @@ const MainStore = namespace(StoreType.MAIN);
                 <template slot="items" slot-scope="props">
                     <tr>
                         <td class="text-xs-left">
-                            <router-link :to="{name: 'share-info', params: {ticker: props.item.ticker}}">
-                                {{ props.item.ticker }}
-                            </router-link>
+                            <stock-link :ticker="props.item.ticker"></stock-link>
                         </td>
                         <td class="text-xs-left">{{ props.item.shortname }}</td>
                         <td class="text-xs-right">{{ props.item.price | amount(true) }}</td>

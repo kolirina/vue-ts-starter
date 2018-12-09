@@ -8,6 +8,7 @@ import VeeValidate, {Validator} from "vee-validate";
 import Vue from "vue";
 import Snotify, {SnotifyPosition} from "vue-snotify";
 import Vuetify from "vuetify";
+import {BondLink} from "../components/bondLink";
 import {LineChart} from "../components/charts/lineChart";
 import {PieChart} from "../components/charts/pieChart";
 import {Dashboard} from "../components/dashboard";
@@ -17,6 +18,7 @@ import {FileDropArea} from "../components/file-upload/fileDropArea";
 import {FileLink} from "../components/file-upload/fileLink";
 import {IINumberField} from "../components/iiNumberField";
 import {InplaceInput} from "../components/inplaceInput";
+import {StockLink} from "../components/stockLink";
 import {MaskDirective} from "../platform/directives/maskDirective";
 import {StateDirective} from "../platform/directives/stateDirective";
 import {Filters} from "../platform/filters/Filters";
@@ -65,6 +67,8 @@ export class UIRegistry {
         UI.component("file-link", FileLink);
         UI.component("image-dialog", ImageDialog);
         UI.component("inplace-input", InplaceInput);
+        UI.component("stock-link", StockLink);
+        UI.component("bond-link", BondLink);
         /* Компонент с маской для десятичных дробей */
         UI.component("ii-number-field", IINumberField);
 

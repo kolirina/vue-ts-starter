@@ -24,7 +24,9 @@ const MainStore = namespace(StoreType.MAIN);
             <template slot="items" slot-scope="props">
                 <tr @click="props.expanded = !props.expanded">
                     <td>{{ props.item.bond.shortname }}</td>
-                    <td>{{ props.item.bond.ticker }}</td>
+                    <td>
+                        <bond-link :ticker="props.item.bond.ticker"></bond-link>
+                    </td>
                     <td class="text-xs-right">{{ props.item.avgBuy | number }}</td>
                     <td class="text-xs-right">{{ props.item.currPrice | number }}</td>
                     <td class="text-xs-right">{{ props.item.currCost | amount(true) }}</td>
@@ -147,7 +149,7 @@ export class BondTable extends UI {
         {text: "Прибыль", align: "right", value: "profit", sortable: false},
         {text: "Прибыль, %", align: "right", value: "percProfit"},
         {text: "Тек. доля", align: "right", value: "percCurrShare"},
-        {text: "Действия", align: "right", value: "actions", sortable: false, width: "25"}
+        {text: "Действия", align: "center", value: "actions", sortable: false, width: "25"}
     ];
 
     @Prop({default: [], required: true})

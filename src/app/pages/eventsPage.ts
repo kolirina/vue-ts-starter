@@ -78,12 +78,9 @@ const MainStore = namespace(StoreType.MAIN);
                                 <td>{{ props.item.label }}</td>
                                 <td>{{ props.item.share.shortname }}</td>
                                 <td>
-                                    <router-link v-if="props.item.type === 'DIVIDEND'" :to="{name: 'share-info', params: {ticker: props.item.share.ticker}}">
-                                        {{ props.item.share.ticker }}
-                                    </router-link>
-                                    <router-link v-if="props.item.type !== 'DIVIDEND'" :to="{name: 'bond-info', params: {isin: props.item.share.ticker}}">
-                                        {{ props.item.share.ticker }}
-                                    </router-link>
+                                    <stock-link v-if="props.item.type === 'DIVIDEND'" :ticker="props.item.share.ticker"></stock-link>
+
+                                    <bond-link v-if="props.item.type !== 'DIVIDEND'" :ticker="props.item.share.ticker"></bond-link>
                                 </td>
                                 <td class="text-xs-center">{{ props.item.date | date }}</td>
                                 <td class="text-xs-right">{{ props.item.period }}</td>

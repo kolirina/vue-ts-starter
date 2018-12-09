@@ -17,11 +17,8 @@ import {AddTradeDialog} from "./dialogs/addTradeDialog";
             <template slot="items" slot-scope="props">
                 <tr @click="props.expanded = !props.expanded">
                     <td>
-                        <router-link v-if="props.item.asset === 'STOCK'" :to="{name: 'share-info', params: {ticker: props.item.ticker}}">{{
-                            props.item.ticker }}
-                        </router-link>
-                        <router-link v-if="props.item.asset === 'BOND'" :to="{name: 'bond-info', params: {isin: props.item.ticker}}">{{ props.item.ticker }}
-                        </router-link>
+                        <stock-link v-if="props.item.asset === 'STOCK'" :ticker="props.item.ticker"></stock-link>
+                        <bond-link v-if="props.item.asset === 'BOND'" :ticker="props.item.ticker"></bond-link>
                         <span v-if="props.item.asset === 'MONEY'">{{ props.item.ticker }}</span>
                     </td>
                     <td>{{ props.item.companyName }}</td>
@@ -111,7 +108,7 @@ export class TradesTable extends UI {
         {text: "Цена", align: "right", value: "price", sortable: false},
         {text: "Комиссия", align: "right", value: "fee"},
         {text: "Итого", align: "right", value: "signedTotal"},
-        {text: "Действия", align: "right", value: "actions", sortable: false, width: "25"}
+        {text: "Действия", align: "center", value: "actions", sortable: false, width: "25"}
     ];
 
     @Prop({default: [], required: true})
