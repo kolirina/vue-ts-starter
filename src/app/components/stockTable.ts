@@ -26,7 +26,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <td><span>{{ props.item.stock.shortname }}</span> <span>{{ props.item.stock.change }}%</span>
                     </td>
                     <td>
-                        <router-link :to="{name: 'share-info', params: {ticker: props.item.stock.ticker}}">{{ props.item.stock.ticker }}</router-link>
+                        <stock-link :ticker="props.item.stock.ticker"></stock-link>
                     </td>
                     <td class="text-xs-right">{{ props.item.avgBuy | amount }}</td>
                     <td class="text-xs-right">{{ props.item.currPrice| amount(true) }}</td>
@@ -119,7 +119,7 @@ export class StockTable extends UI {
         {text: "Прибыль", align: "right", value: "profit", sortable: false},
         {text: "Прибыль, %", align: "right", value: "percProfit"},
         {text: "Тек. доля", align: "right", value: "percCurrShare"},
-        {text: "Действия", align: "right", value: "actions", sortable: false, width: "25"}
+        {text: "Действия", align: "center", value: "actions", sortable: false, width: "25"}
     ];
 
     @Prop({default: [], required: true})

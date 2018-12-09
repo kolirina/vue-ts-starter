@@ -38,6 +38,8 @@
     },
     /** Разрешаем столько классов в одном файле, сколько требуется */
     "max-classes-per-file": false,
+    /** Отключаем экспорт класса по умолчанию */
+    "no-default-export": true,
     "arrow-parens": false,
     // Pending fix for shorthand property names.
     "object-literal-sort-keys": false,

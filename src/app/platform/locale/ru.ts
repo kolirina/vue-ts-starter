@@ -1,4 +1,4 @@
-export default {
+export const RU = {
     dataIterator: {
         rowsPerPageText: "Записей на странице:",
         rowsPerPageAll: "Все",

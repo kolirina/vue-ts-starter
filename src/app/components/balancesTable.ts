@@ -24,7 +24,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <td><span>{{ props.item.company}}</span>
                     </td>
                     <td>
-                        <router-link v-if="props.item.ticker" :to="{name: 'share-info', params: {ticker: props.item.ticker}}">{{ props.item.ticker }}</router-link>
+                        <stock-link v-if="props.item.ticker" :ticker="props.item.ticker"></stock-link>
                     </td>
                     <td class="text-xs-right">{{ props.item.quantity }}</td>
                     <td class="text-xs-right"><span v-if="props.item.type === 'STOCK'">{{ props.item.avgBuy | amount }}</span></td>

@@ -81,6 +81,8 @@ export interface DividendInfo {
     year: string;
     /** Тикер */
     ticker: string;
+    /** Краткое название эмитента */
+    shortName: string;
 }
 
 /** Строка с информацией о суммарных дивидендых выплатах за год */
