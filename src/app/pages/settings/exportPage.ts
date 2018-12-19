@@ -3,10 +3,11 @@ import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
+import {ClientInfo} from "../../services/clientService";
 import {ExportService} from "../../services/exportService";
-import {PortfolioService} from "../../services/portfolioService";
+import {PortfolioParams, PortfolioService} from "../../services/portfolioService";
 import {Tariff} from "../../types/tariff";
-import {ClientInfo, Portfolio, PortfolioBackup, PortfolioParams, TableHeader} from "../../types/types";
+import {Portfolio, PortfolioBackup, TableHeader} from "../../types/types";
 import {DateUtils} from "../../utils/dateUtils";
 import {StoreType} from "../../vuex/storeType";
 
@@ -161,7 +162,7 @@ export class ExportPage extends UI {
      * Возвращает признак доступности для загрузки файла со сделками
      */
     private isDownloadNotAllowed(): boolean {
-        const userTariff = Tariff.valueByName(this.clientInfo.user.tariff);
+        const userTariff = this.clientInfo.user.tariff;
         return userTariff === Tariff.TRIAL ||
             (moment().isAfter(DateUtils.parseDate(this.clientInfo.user.paidTill)) && userTariff !== Tariff.FREE);
     }

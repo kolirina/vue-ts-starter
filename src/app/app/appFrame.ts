@@ -2,13 +2,13 @@ import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
-import {BtnReturn} from "../components/dialogs/customDialog.ts";
+import {BtnReturn} from "../components/dialogs/customDialog";
 import {FeedbackDialog} from "../components/dialogs/feedbackDialog";
 import {NotificationUpdateDialog} from "../components/dialogs/notificationUpdateDialog";
 import {ErrorHandler} from "../components/errorHandler";
 import {PortfolioSwitcher} from "../components/portfolioSwitcher";
-import {ClientService} from "../services/clientService";
-import {ClientInfo, Portfolio} from "../types/types";
+import {ClientInfo, ClientService} from "../services/clientService";
+import {Portfolio} from "../types/types";
 import {UiStateHelper} from "../utils/uiStateHelper";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
@@ -95,7 +95,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <v-spacer></v-spacer>
                     <portfolio-switcher></portfolio-switcher>
                     <v-btn icon v-if="!isNotifyAccepted"
-                                @click.native.stop="openNotificationUpdateDialog">
+                           @click.native.stop="openNotificationUpdateDialog">
                         <v-icon class="faa-vertical animated">whatshot</v-icon>
                     </v-btn>
                     <v-btn icon @click.native.stop="openDialog">

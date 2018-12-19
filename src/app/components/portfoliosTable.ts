@@ -1,10 +1,14 @@
+import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {Prop} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
-import {ClientInfo, PortfolioParams, TableHeader} from "../types/types";
+import {ClientInfo} from "../services/clientService";
+import {PortfolioParams, PortfolioService} from "../services/portfolioService";
+import {TableHeader} from "../types/types";
 import {StoreType} from "../vuex/storeType";
 import {ConfirmDialog} from "./dialogs/confirmDialog";
+import {BtnReturn} from "./dialogs/customDialog";
 import {EmbeddedBlocksDialog} from "./dialogs/embeddedBlocksDialog";
 import {PortfolioEditDialog} from "./dialogs/portfolioEditDialog";
 import {SharePortfolioDialog} from "./dialogs/sharePortfolioDialog";
@@ -24,7 +28,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </td>
                     <td class="text-xs-right">{{ props.item.fixFee }}</td>
                     <td class="text-xs-center">{{ props.item.viewCurrency }}</td>
-                    <td class="text-xs-center">{{ props.item.accountType }}</td>
+                    <td class="text-xs-center">{{ props.item.accountType.description }}</td>
                     <td class="text-xs-center">{{ props.item.openDate }}</td>
                     <td class="justify-center layout px-0">
                         <v-btn icon class="mx-0" @click.stop="openDialogForEdit(props.item)">
@@ -96,6 +100,8 @@ export class PortfoliosTable extends UI {
 
     @MainStore.Getter
     private clientInfo: ClientInfo;
+    @Inject
+    private portfolioService: PortfolioService;
 
     private headers: TableHeader[] = [
         {text: "Название", align: "left", value: "name"},
@@ -103,7 +109,8 @@ export class PortfoliosTable extends UI {
         {text: "Фикс. комиссия", align: "right", value: "fixFee", width: "50"},
         {text: "Валюта", align: "center", value: "viewCurrency"},
         {text: "Тип счета", align: "center", value: "accountType"},
-        {text: "Дата открытия", align: "center", value: "openDate"}
+        {text: "Дата открытия", align: "center", value: "openDate"},
+        {text: "Меню", value: "", align: "center", width: "30", sortable: false}
     ];
 
     @Prop({default: [], required: true})
@@ -117,6 +124,9 @@ export class PortfoliosTable extends UI {
         const result = await new ConfirmDialog().show(`Вы собираетесь удалить портфель. ${portfolio.name}
                                               Все сделки по акциям, облигациям и дивиденды,
                                               связанные с этим портфелем будут удалены.`);
+        if (result === BtnReturn.YES) {
+            await this.portfolioService.deletePortfolio(portfolio.id);
+        }
         console.log(result);
     }
 

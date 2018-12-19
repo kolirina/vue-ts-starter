@@ -3,9 +3,8 @@ import Component from "vue-class-component";
 import {Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
-import {ClientService} from "../../services/clientService";
+import {ClientInfo, ClientService} from "../../services/clientService";
 import {PromoCodeService, PromoCodeStatistics} from "../../services/promoCodeService";
-import {ClientInfo} from "../../types/types";
 import {StoreType} from "../../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -53,19 +52,19 @@ const MainStore = namespace(StoreType.MAIN);
                                             <div class="statistics__label">Всего привлеченных пользователей:</div>
                                             <span class="statistics__value">{{ promoCodeStatistics.referralCount }}</span>
 
-                                            <div class="statistics__label">Из них хоть раз оплативших: </div>
+                                            <div class="statistics__label">Из них хоть раз оплативших:</div>
                                             <span class="statistics__value">{{ promoCodeStatistics.hasPaymentsReferralCount }}</span>
 
-                                            <div class="statistics__label">Всего оплат пользователей: </div>
+                                            <div class="statistics__label">Всего оплат пользователей:</div>
                                             <span class="statistics__value">{{ promoCodeStatistics.referralPaymentTotalAmount }}</span>
 
-                                            <div class="statistics__label">Всего заработано: </div>
+                                            <div class="statistics__label">Всего заработано:</div>
                                             <span class="statistics__value">{{ promoCodeStatistics.referrerPaymentsTotal }}</span>
 
-                                            <div class="statistics__label">Всего выплачено: </div>
+                                            <div class="statistics__label">Всего выплачено:</div>
                                             <span class="statistics__value">{{ promoCodeStatistics.referrerPaymentsTotalPaid }}</span>
 
-                                            <div class="statistics__label">Остаток для выплаты: </div>
+                                            <div class="statistics__label">Остаток для выплаты:</div>
                                             <span class="statistics__value">{{ promoCodeStatistics.referrerPaymentsTotalUnpaid }}</span>
                                         </div>
                                     </v-card>

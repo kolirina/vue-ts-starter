@@ -2,14 +2,15 @@ import {Container} from "typescript-ioc";
 import {ActionContext, Module} from "vuex";
 import {HTTP} from "../platform/services/http";
 import {Storage} from "../platform/services/storage";
-import {PortfolioService} from "../services/portfolioService";
+import {ClientInfo} from "../services/clientService";
+import {OverviewService} from "../services/overviewService";
 import {StoreKeys} from "../types/storeKeys";
-import {ClientInfo, Portfolio} from "../types/types";
+import {Portfolio} from "../types/types";
 import {GetterType} from "./getterType";
 import {MutationType} from "./mutationType";
 
 /** Сервис работы с клиентом */
-const portfolioService: PortfolioService = Container.get(PortfolioService);
+const overviewService: OverviewService = Container.get(OverviewService);
 /** Сервис работы с localStorage */
 const localStorage: Storage = Container.get(Storage);
 
@@ -56,9 +57,9 @@ const Actions = {
         console.log("ACTION SET USER", clientInfo, context);
     },
     [MutationType.SET_CURRENT_PORTFOLIO](context: ActionContext<StateHolder, void>, id: string): Promise<Portfolio> {
-        portfolioService.setDefaultPortfolio(id).then();
+        overviewService.setDefaultPortfolio(id).then();
         return new Promise<Portfolio>((resolve) => {
-            portfolioService.getById(id).then((portfolio: Portfolio) => {
+            overviewService.getById(id).then((portfolio: Portfolio) => {
                 console.log("ACTION SET PORTFOLIO", portfolio, context);
                 context.commit(MutationType.SET_CURRENT_PORTFOLIO, portfolio);
                 resolve(portfolio);
@@ -67,7 +68,7 @@ const Actions = {
     },
     [MutationType.RELOAD_PORTFOLIO](context: ActionContext<StateHolder, void>, id: string): Promise<void> {
         return new Promise<void>((resolve) => {
-            portfolioService.reloadPortfolio(id).then((portfolio: Portfolio) => {
+            overviewService.reloadPortfolio(id).then((portfolio: Portfolio) => {
                 console.log("ACTION RELOAD_PORTFOLIO", portfolio, context);
                 context.commit(MutationType.RELOAD_PORTFOLIO, portfolio);
                 resolve();

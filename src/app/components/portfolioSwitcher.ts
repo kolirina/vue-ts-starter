@@ -1,7 +1,9 @@
 import Component from "vue-class-component";
-import {Action, Getter, namespace} from "vuex-class/lib/bindings";
+import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
-import {ClientInfo, Portfolio, PortfolioParams} from "../types/types";
+import {ClientInfo} from "../services/clientService";
+import {PortfolioParams} from "../services/portfolioService";
+import {Portfolio} from "../types/types";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 

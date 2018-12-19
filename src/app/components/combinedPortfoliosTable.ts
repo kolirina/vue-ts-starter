@@ -1,7 +1,8 @@
 import Component from "vue-class-component";
 import {Prop} from "vue-property-decorator";
 import {UI} from "../app/ui";
-import {PortfolioParams, TableHeader} from "../types/types";
+import {PortfolioParams} from "../services/portfolioService";
+import {TableHeader} from "../types/types";
 
 @Component({
     // language=Vue

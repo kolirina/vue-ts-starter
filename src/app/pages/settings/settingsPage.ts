@@ -1,9 +1,12 @@
+import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
 import {PortfolioEditDialog} from "../../components/dialogs/portfolioEditDialog";
 import {PortfoliosTable} from "../../components/portfoliosTable";
-import {ClientInfo, PortfolioParams} from "../../types/types";
+import {ClientInfo} from "../../services/clientService";
+import {PortfolioParams, PortfolioService} from "../../services/portfolioService";
+import {EventType} from "../../types/eventType";
 import {StoreType} from "../../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -25,11 +28,20 @@ export class SettingsPage extends UI {
 
     @MainStore.Getter
     private clientInfo: ClientInfo;
-
+    @Inject
+    private portfolioService: PortfolioService;
     private portfolios: PortfolioParams[] = null;
+
+    created(): void {
+        UI.on(EventType.PORTFOLIO_CREATED, async () => this.refreshPortfolios());
+    }
 
     async mounted(): Promise<void> {
         this.portfolios = this.clientInfo.user.portfolios;
+    }
+
+    async refreshPortfolios(): Promise<void> {
+        console.log("UPD");
     }
 
     private async openDialog(): Promise<void> {

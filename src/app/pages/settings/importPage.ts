@@ -6,9 +6,10 @@ import {ImportErrorsDialog} from "../../components/dialogs/importErrorsDialog";
 import {ImportGeneralErrorDialog} from "../../components/dialogs/importGeneralErrorDialog";
 import {ImportSuccessDialog} from "../../components/dialogs/importSuccessDialog";
 import {Filters} from "../../platform/filters/Filters";
+import {ClientInfo} from "../../services/clientService";
 import {ImportResponse, ImportService} from "../../services/importService";
-import {PortfolioService} from "../../services/portfolioService";
-import {ClientInfo, Portfolio, Status} from "../../types/types";
+import {OverviewService} from "../../services/overviewService";
+import {Portfolio, Status} from "../../types/types";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 import {ImportInstructions} from "./importInstructions";
@@ -162,7 +163,7 @@ export class ImportPage extends UI {
     @Inject
     private importService: ImportService;
     @Inject
-    private portfolioService: PortfolioService;
+    private overviewService: OverviewService;
     /** Файлы для импорта */
     private files: File[] = [];
     /** Провайдеры отчетов */
@@ -242,14 +243,14 @@ export class ImportPage extends UI {
             const firstWord = Filters.declension(response.validatedTradesCount, "Добавлена", "Добавлено", "Добавлено");
             const secondWord = Filters.declension(response.validatedTradesCount, "сделка", "сделки", "сделок");
             if (this.confirmMoneyBalance) {
-                const currentMoneyRemainder = await this.portfolioService.getCurrentMoney(this.portfolio.id);
+                const currentMoneyRemainder = await this.overviewService.getCurrentMoney(this.portfolio.id);
                 const enteredMoneyRemainder = await new ImportSuccessDialog().show({
                     currentMoneyRemainder,
                     router: this.$router,
                     store: this.$store.state[StoreType.MAIN],
                     importResult: response
                 });
-                await this.portfolioService.saveOrUpdateCurrentMoney(this.portfolio.id, enteredMoneyRemainder);
+                await this.overviewService.saveOrUpdateCurrentMoney(this.portfolio.id, enteredMoneyRemainder);
                 this.$router.push("portfolio");
                 this.$snotify.info(`${firstWord} ${secondWord}`, "Результат импорта");
             } else {

@@ -3,8 +3,7 @@ import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
 import {ChangePasswordDialog} from "../../components/dialogs/changePasswordDialog";
-import {ClientService} from "../../services/clientService";
-import {ClientInfo} from "../../types/types";
+import {ClientInfo, ClientService} from "../../services/clientService";
 import {CommonUtils} from "../../utils/commonUtils";
 import {StoreType} from "../../vuex/storeType";
 

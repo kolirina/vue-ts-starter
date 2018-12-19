@@ -4,10 +4,10 @@ import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
+import {ClientInfo} from "../../services/clientService";
 import {TariffService} from "../../services/tariffService";
 import {Permission} from "../../types/permission";
 import {Tariff} from "../../types/tariff";
-import {ClientInfo} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {DateUtils} from "../../utils/dateUtils";
 import {StoreType} from "../../vuex/storeType";
@@ -321,7 +321,7 @@ export class TariffsPage extends UI {
     }
 
     private isSelected(tariff: Tariff): boolean {
-        let userTariff = Tariff.valueByName(this.clientInfo.user.tariff);
+        let userTariff = this.clientInfo.user.tariff;
         if (userTariff === Tariff.TRIAL) {
             userTariff = Tariff.PRO;
         }

@@ -1,7 +1,7 @@
 import {Container} from "typescript-ioc";
 import Component from "vue-class-component";
+import {ClientInfo} from "../../services/clientService";
 import {TokenService} from "../../services/tokenService";
-import {ClientInfo} from "../../types/types";
 import {BtnReturn, CustomDialog} from "./customDialog";
 
 /**
