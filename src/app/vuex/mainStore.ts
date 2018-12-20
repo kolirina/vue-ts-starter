@@ -4,6 +4,7 @@ import {HTTP} from "../platform/services/http";
 import {Storage} from "../platform/services/storage";
 import {ClientInfo} from "../services/clientService";
 import {OverviewService} from "../services/overviewService";
+import {PortfolioParams, PortfolioService} from "../services/portfolioService";
 import {StoreKeys} from "../types/storeKeys";
 import {Portfolio} from "../types/types";
 import {GetterType} from "./getterType";
@@ -11,6 +12,8 @@ import {MutationType} from "./mutationType";
 
 /** Сервис работы с клиентом */
 const overviewService: OverviewService = Container.get(OverviewService);
+/** Сервис работы с портфелями клиента */
+const portfolioService: PortfolioService = Container.get(PortfolioService);
 /** Сервис работы с localStorage */
 const localStorage: Storage = Container.get(Storage);
 
@@ -44,6 +47,9 @@ const Mutations = {
     },
     [MutationType.RELOAD_PORTFOLIO](state: StateHolder, portfolio: Portfolio): void {
         state.currentPortfolio = portfolio;
+    },
+    [MutationType.RELOAD_PORTFOLIOS](state: StateHolder, portfolios: PortfolioParams[]): void {
+        state.clientInfo.user.portfolios = [...portfolios];
     }
 };
 
@@ -71,6 +77,15 @@ const Actions = {
             overviewService.reloadPortfolio(id).then((portfolio: Portfolio) => {
                 console.log("ACTION RELOAD_PORTFOLIO", portfolio, context);
                 context.commit(MutationType.RELOAD_PORTFOLIO, portfolio);
+                resolve();
+            });
+        });
+    },
+    [MutationType.RELOAD_PORTFOLIOS](context: ActionContext<StateHolder, void>): Promise<void> {
+        return new Promise<void>((resolve) => {
+            portfolioService.getPortfolios().then((portfolios: PortfolioParams[]) => {
+                console.log("ACTION RELOAD_PORTFOLIOS", portfolios, context);
+                context.commit(MutationType.RELOAD_PORTFOLIOS, portfolios);
                 resolve();
             });
         });

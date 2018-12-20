@@ -75,13 +75,13 @@ import {CustomDialog} from "./customDialog";
                             </v-flex>
 
                             <v-flex xs12>
-                                <v-select :items="accountTypes" v-model="portfolioParams.accountType" menu-props="returnValue" item-text="description" label="Тип счета"></v-select>
+                                <v-select :items="accountTypes" v-model="portfolioParams.accountType" :return-object="true" item-text="description"
+                                          label="Тип счета"></v-select>
                             </v-flex>
 
                             <v-flex xs12>
-                                <v-select v-if="portfolioParams.accountType === 'ИИС'" :items="iisTypes" v-model="portfolioParams.iisType" menu-props="returnValue"
-                                          item-text="description"
-                                          label="Тип вычета"></v-select>
+                                <v-select v-if="portfolioParams.accountType === 'IIS'" :items="iisTypes"
+                                          v-model="portfolioParams.iisType" :return-object="true" item-text="description" label="Тип вычета"></v-select>
                             </v-flex>
 
                             <v-flex xs12>
@@ -127,6 +127,7 @@ export class PortfolioEditDialog extends CustomDialog<PortfolioDialogData, boole
     private currencyList = ["RUB", "USD", "EUR"];
     private accessTypes = [AccessTypes.PRIVATE, AccessTypes.PUBLIC];
     private iisTypes = IisType.values();
+    private accountType = PortfolioAccountType;
     private accountTypes = PortfolioAccountType.values();
     private processState = false;
     private editMode = false;
@@ -148,7 +149,6 @@ export class PortfolioEditDialog extends CustomDialog<PortfolioDialogData, boole
                 accountType: PortfolioAccountType.BROKERAGE
             };
         }
-        console.log(this.portfolioParams);
     }
 
     private cancel(): void {
@@ -158,7 +158,7 @@ export class PortfolioEditDialog extends CustomDialog<PortfolioDialogData, boole
     private async savePortfolio(): Promise<void> {
         this.processState = true;
         const result = await this.portfolioService.createOrUpdatePortfolio(this.portfolioParams);
-        this.$snotify.info(`Портфель успешно  ${this.portfolioParams.id ? "изменен" : "создан"}`);
+        this.$snotify.info(`Портфель успешно ${this.portfolioParams.id ? "изменен" : "создан"}`);
         this.processState = false;
         UI.emit(EventType.PORTFOLIO_CREATED, result);
         this.close(true);

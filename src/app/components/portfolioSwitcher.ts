@@ -12,11 +12,11 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <div v-if="portfolios" class="text-xs-center">
+        <div v-if="clientInfo && clientInfo.user" class="text-xs-center">
             <v-menu offset-y transition="slide-y-transition">
                 <v-btn slot="activator" color="primary">{{ getPortfolioName(selected) }}</v-btn>
                 <v-list style="max-height: 500px; overflow-x: auto;">
-                    <v-list-tile v-for="(portfolio, index) in portfolios" :key="index" @click="onSelect(portfolio)">
+                    <v-list-tile v-for="(portfolio, index) in clientInfo.user.portfolios" :key="index" @click="onSelect(portfolio)">
                         <v-list-tile-title>{{ getPortfolioName(portfolio) }}</v-list-tile-title>
                     </v-list-tile>
                 </v-list>
@@ -30,33 +30,22 @@ export class PortfolioSwitcher extends UI {
     private clientInfo: ClientInfo;
     @MainStore.Getter
     private portfolio: Portfolio;
-
     @MainStore.Action(MutationType.SET_CURRENT_PORTFOLIO)
     private setCurrentPortfolio: (id: string) => Promise<Portfolio>;
 
-    private portfolios: PortfolioParams[] = null;
-
-    private selected: PortfolioParams = null;
-
-    async created(): Promise<void> {
-        this.portfolios = this.clientInfo.user.portfolios;
-        this.selected = this.getSelected();
-    }
-
     private async onSelect(selected: PortfolioParams): Promise<void> {
         await this.setCurrentPortfolio(selected.id);
-        this.selected = selected;
     }
 
     private getPortfolioName(portfolio: PortfolioParams): string {
         return `${portfolio.name} (${portfolio.viewCurrency}), ${portfolio.access ? "Публичный" : "Закрытый"}`;
     }
 
-    private getSelected(id?: string): PortfolioParams {
+    private get selected(): PortfolioParams {
         const currentPortfolioId = this.portfolio.id;
-        const portfolio = this.portfolios.find(p => p.id === currentPortfolioId);
+        const portfolio = this.clientInfo.user.portfolios.find(p => p.id === currentPortfolioId);
         if (!portfolio) {
-            return this.portfolios[0];
+            return this.clientInfo.user.portfolios[0];
         }
         return portfolio;
     }

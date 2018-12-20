@@ -40,7 +40,7 @@ export class EventUtils {
      * @param {EventListenerOrEventListenerObject} callback обработчик событий
      * @param {boolean | AddEventListenerOptions} options   дополнительные опции к событию
      */
-    static addEventListener(element: HTMLElement, events: string,
+    static addEventListener(element: Element, events: string,
                             callback: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void {
         events.split(" ").forEach((event: string) => element.addEventListener(event, callback));
     }

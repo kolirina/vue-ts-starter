@@ -39,6 +39,17 @@ export class PortfolioService {
         await HTTP.INSTANCE.post(`/portfolios/${userId}/backup`, portfolioBackup);
     }
 
+    async getPortfolios(): Promise<PortfolioParams[]> {
+        const portfolios: PortfolioParamsResponse[] = (await HTTP.INSTANCE.get(`/${this.ENDPOINT_BASE}`)).data;
+        return portfolios.map(item => {
+            return {
+                ...item,
+                accountType: item.accountType ? PortfolioAccountType.valueByName(item.accountType) : null,
+                iisType: item.iisType ? IisType.valueByName(item.iisType) : null
+            } as PortfolioParams;
+        });
+    }
+
     async createOrUpdatePortfolio(portfolio: PortfolioParams): Promise<PortfolioParams> {
         return portfolio.id ? this.updatePortfolio(portfolio) : this.createPortfolio(portfolio);
     }
@@ -57,7 +68,12 @@ export class PortfolioService {
             fixFee: portfolio.fixFee,
             note: portfolio.note
         };
-        return (await HTTP.INSTANCE.post(`/${this.ENDPOINT_BASE}`, request)).data;
+        const item = (await HTTP.INSTANCE.post(`/${this.ENDPOINT_BASE}`, request)).data;
+        return {
+            ...item,
+            accountType: item.accountType ? PortfolioAccountType.valueByName(item.accountType) : null,
+            iisType: item.iisType ? IisType.valueByName(item.iisType) : null
+        } as PortfolioParams;
     }
 
     async updatePortfolio(portfolio: PortfolioParams): Promise<PortfolioParams> {
@@ -80,7 +96,13 @@ export class PortfolioService {
             note: portfolio.note,
             combined: portfolio.combined
         };
-        return await (await HTTP.INSTANCE.put(`/${this.ENDPOINT_BASE}`, request)).data;
+        console.log(portfolio, request);
+        const item = await (await HTTP.INSTANCE.put(`/${this.ENDPOINT_BASE}`, request)).data;
+        return {
+            ...item,
+            accountType: item.accountType ? PortfolioAccountType.valueByName(item.accountType) : null,
+            iisType: item.iisType ? IisType.valueByName(item.iisType) : null
+        } as PortfolioParams;
     }
 
     async deletePortfolio(portfolioId: string): Promise<void> {

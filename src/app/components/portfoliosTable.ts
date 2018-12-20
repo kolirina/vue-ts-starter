@@ -6,6 +6,7 @@ import {UI} from "../app/ui";
 import {ClientInfo} from "../services/clientService";
 import {PortfolioParams, PortfolioService} from "../services/portfolioService";
 import {TableHeader} from "../types/types";
+import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {ConfirmDialog} from "./dialogs/confirmDialog";
 import {BtnReturn} from "./dialogs/customDialog";
@@ -100,6 +101,8 @@ export class PortfoliosTable extends UI {
 
     @MainStore.Getter
     private clientInfo: ClientInfo;
+    @MainStore.Action(MutationType.RELOAD_PORTFOLIOS)
+    private reloadPortfolios: () => Promise<void>;
     @Inject
     private portfolioService: PortfolioService;
 
@@ -126,8 +129,9 @@ export class PortfoliosTable extends UI {
                                               связанные с этим портфелем будут удалены.`);
         if (result === BtnReturn.YES) {
             await this.portfolioService.deletePortfolio(portfolio.id);
+            await this.reloadPortfolios();
+            this.$snotify.info("Портфель успешно удален");
         }
-        console.log(result);
     }
 
     private publicLink(id: string): string {
