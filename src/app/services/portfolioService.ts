@@ -40,7 +40,7 @@ export class PortfolioService {
     }
 
     async getPortfolioShareUrl(request: GenerateShareUrlRequest): Promise<string> {
-        return (await HTTP.INSTANCE.post(`/${this.ENDPOINT_BASE}/token`, request)).data;
+        return (await HTTP.INSTANCE.post(`/${this.ENDPOINT_BASE}/public-url`, request)).data;
     }
 
     async getPortfolios(): Promise<PortfolioParams[]> {
