@@ -157,10 +157,10 @@ export class PortfolioEditDialog extends CustomDialog<PortfolioDialogData, boole
 
     private async savePortfolio(): Promise<void> {
         this.processState = true;
-        const result = await this.portfolioService.createOrUpdatePortfolio(this.portfolioParams);
+        await this.portfolioService.createOrUpdatePortfolio(this.portfolioParams);
         this.$snotify.info(`Портфель успешно ${this.portfolioParams.id ? "изменен" : "создан"}`);
         this.processState = false;
-        UI.emit(EventType.PORTFOLIO_CREATED, result);
+        UI.emit(EventType.PORTFOLIO_CREATED);
         this.close(true);
     }
 }

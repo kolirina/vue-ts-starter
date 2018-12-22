@@ -29,7 +29,7 @@ export class PortfolioService {
 
     private cacheService = (Container.get(Cache) as Cache);
 
-    private cache: { [key: string]: Portfolio } = {};
+    private cache: { [key: string]: string } = {};
 
     async getPortfolioBackup(userId: string): Promise<PortfolioBackup> {
         return (await HTTP.INSTANCE.get(`/portfolios/${userId}/backup`)).data as PortfolioBackup;
@@ -37,6 +37,10 @@ export class PortfolioService {
 
     async saveOrUpdatePortfolioBackup(userId: string, portfolioBackup: PortfolioBackup): Promise<void> {
         await HTTP.INSTANCE.post(`/portfolios/${userId}/backup`, portfolioBackup);
+    }
+
+    async getPortfolioShareUrl(request: GenerateShareUrlRequest): Promise<string> {
+        return (await HTTP.INSTANCE.post(`/${this.ENDPOINT_BASE}/token`, request)).data;
     }
 
     async getPortfolios(): Promise<PortfolioParams[]> {
@@ -96,7 +100,7 @@ export class PortfolioService {
             note: portfolio.note,
             combined: portfolio.combined
         };
-        console.log(portfolio, request);
+
         const item = await (await HTTP.INSTANCE.put(`/${this.ENDPOINT_BASE}`, request)).data;
         return {
             ...item,
@@ -110,7 +114,7 @@ export class PortfolioService {
     }
 
     async createPortfolioCopy(portfolioId: string): Promise<PortfolioParams> {
-        const response: PortfolioParamsResponse = (await HTTP.INSTANCE.post(`/${this.ENDPOINT_BASE}/copy/${portfolioId}`)).data;
+        const response: PortfolioParamsResponse = (await HTTP.INSTANCE.get(`/${this.ENDPOINT_BASE}/copy/${portfolioId}`)).data;
         return {
             ...response,
             accountType: response.accountType ? PortfolioAccountType.valueByName(response.accountType) : null,
@@ -225,4 +229,16 @@ export interface PortfolioParams extends BasePortfolioParams {
     accountType: PortfolioAccountType;
     /** Тип ИИС */
     iisType?: IisType;
+}
+
+/** Запрос на получение url для доступа к портфеля */
+export interface GenerateShareUrlRequest {
+    /** Идентификатор портфеля */
+    id: string;
+    /** Срок действия доступа */
+    expiredDate: string;
+    /** Тип открытия доступа к портфелю */
+    sharePortfolioType: string;
+    /** Имя пользователя в системе */
+    userName: string;
 }

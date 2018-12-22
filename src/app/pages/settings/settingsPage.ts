@@ -5,7 +5,7 @@ import {UI} from "../../app/ui";
 import {PortfolioEditDialog} from "../../components/dialogs/portfolioEditDialog";
 import {PortfoliosTable} from "../../components/portfoliosTable";
 import {ClientInfo} from "../../services/clientService";
-import {PortfolioService} from "../../services/portfolioService";
+import {PortfolioParams, PortfolioService} from "../../services/portfolioService";
 import {EventType} from "../../types/eventType";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
@@ -31,11 +31,14 @@ export class SettingsPage extends UI {
     private clientInfo: ClientInfo;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIOS)
     private reloadPortfolios: () => Promise<void>;
+    @MainStore.Mutation(MutationType.UPDATE_PORTFOLIO)
+    private updatePortfolio: (portfolio: PortfolioParams) => Promise<void>;
     @Inject
     private portfolioService: PortfolioService;
 
     created(): void {
         UI.on(EventType.PORTFOLIO_CREATED, async () => this.reloadPortfolios());
+        UI.on(EventType.PORTFOLIO_UPDATED, async ($event) => this.updatePortfolio($event));
     }
 
     private async openDialog(): Promise<void> {

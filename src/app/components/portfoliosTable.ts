@@ -5,6 +5,7 @@ import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
 import {ClientInfo} from "../services/clientService";
 import {PortfolioParams, PortfolioService} from "../services/portfolioService";
+import {EventType} from "../types/eventType";
 import {TableHeader} from "../types/types";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
@@ -38,6 +39,9 @@ const MainStore = namespace(StoreType.MAIN);
                         <v-btn icon class="mx-0" @click.stop="deletePortfolio(props.item)">
                             <v-icon color="pink">delete</v-icon>
                         </v-btn>
+                        <v-btn icon class="mx-0" @click.stop="clonePortfolio(props.item.id)">
+                            <v-icon color="blue">far fa-clone</v-icon>
+                        </v-btn>
                     </td>
                 </tr>
             </template>
@@ -54,6 +58,24 @@ const MainStore = namespace(StoreType.MAIN);
                             </thead>
                             <tbody>
                             <tr>
+                                <td>Профессиональный режим</td>
+                                <td style="display: flex;align-items: center;">
+                                    <v-tooltip top style="height: 30px;">
+                                        <v-checkbox slot="activator" label="Профессиональный режим"
+                                                    @change="onProfessionalModeChange(props.item)"
+                                                    v-model="props.item.professionalMode"></v-checkbox>
+                                        <span>
+                                            Профессиональный режим включает дополнительные возможности, необходимые опытным инвесторам:
+                                            <ul>
+                                                <li>возможность уходить в минус по деньгам (маржинальное кредитование)</li>
+                                                <li>возможность открытия коротких позиций</li>
+                                                <li>возможность учета времени заключения сделки</li>
+                                            </ul>
+                                        </span>
+                                    </v-tooltip>
+                                </td>
+                            </tr>
+                            <tr>
                                 <td>Время с момента открытия</td>
                                 <td>{{ props.item.openDate }}</td>
                             </tr>
@@ -64,7 +86,7 @@ const MainStore = namespace(StoreType.MAIN);
                             <tr>
                                 <td>Настройка доступа</td>
                                 <td>
-                                    <v-btn dark color="primary" @click.native="openSharePortfolioDialog(props.item.id)" small>
+                                    <v-btn dark color="primary" @click.native="openSharePortfolioDialog(props.item)" small>
                                         Настройка доступа
                                     </v-btn>
                                 </td>
@@ -134,6 +156,12 @@ export class PortfoliosTable extends UI {
         }
     }
 
+    private async clonePortfolio(id: string): Promise<void> {
+        await this.portfolioService.createPortfolioCopy(id);
+        this.$snotify.info("Копия портфеля успешно создана");
+        UI.emit(EventType.PORTFOLIO_CREATED);
+    }
+
     private publicLink(id: string): string {
         return `${window.location.protocol}//${window.location.host}/public-portfolio/${id}/?ref=${this.clientInfo.user.id}`;
     }
@@ -150,7 +178,13 @@ export class PortfoliosTable extends UI {
         await new EmbeddedBlocksDialog().show(id);
     }
 
-    private async openSharePortfolioDialog(id: string): Promise<void> {
-        await new SharePortfolioDialog().show({portfolioId: id, clientInfo: this.clientInfo});
+    private async openSharePortfolioDialog(portfolio: PortfolioParams): Promise<void> {
+        await new SharePortfolioDialog().show({portfolio: portfolio, clientInfo: this.clientInfo});
+    }
+
+    private async onProfessionalModeChange(portfolio: PortfolioParams): Promise<void> {
+        const result = await this.portfolioService.updatePortfolio(portfolio);
+        this.$snotify.info(`Профессиональный режим для портфеля ${result.professionalMode ? "включен" : "выключен"}`);
+        UI.emit(EventType.PORTFOLIO_UPDATED, result);
     }
 }
