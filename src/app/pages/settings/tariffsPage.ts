@@ -28,7 +28,7 @@ const MainStore = namespace(StoreType.MAIN);
 
                         <div class="subtitle">
                             <p>
-                                У вас подключен план {{ clientInfo.user.tariff }} до
+                                У вас подключен план {{ clientInfo.user.tariff.description }} до
                                 <b>
                                     <span>{{ clientInfo.user.paidTill | date }}</span>
                                     <span v-if="isSubscriptionExpired()">(срок подписки истек)</span>

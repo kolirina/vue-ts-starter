@@ -28,7 +28,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 <v-text-field :value="refLink" class="headline" readonly box label="Реферальная ссылка"></v-text-field>
 
                                 <div>В благодарность за рекомендации мы предоставляем два вида вознаграждений на выбор:</div>
-                                <v-btn-toggle v-model="clientInfo.user.referralAwardType" dark class="promo-code-type">
+                                <v-btn-toggle v-model="clientInfo.user.referralAwardType" dark class="promo-code-type" mandatory>
                                     <v-btn value="SUBSCRIPTION" color="info">
                                         Подписка
                                     </v-btn>

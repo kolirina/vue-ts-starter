@@ -12,7 +12,7 @@ export class PromoCodeService {
      * @returns {Promise<void>}
      */
     async changeReferralAwardType(type: string): Promise<void> {
-        await HTTP.INSTANCE.post(`/user/promo-code`, type);
+        await HTTP.INSTANCE.post(`/promo-code`, type);
     }
 
     /**
