@@ -1,10 +1,16 @@
+import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {Prop} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
-import {ClientInfo, PortfolioParams, TableHeader} from "../types/types";
+import {ClientInfo} from "../services/clientService";
+import {PortfolioParams, PortfolioService} from "../services/portfolioService";
+import {EventType} from "../types/eventType";
+import {TableHeader} from "../types/types";
+import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {ConfirmDialog} from "./dialogs/confirmDialog";
+import {BtnReturn} from "./dialogs/customDialog";
 import {EmbeddedBlocksDialog} from "./dialogs/embeddedBlocksDialog";
 import {PortfolioEditDialog} from "./dialogs/portfolioEditDialog";
 import {SharePortfolioDialog} from "./dialogs/sharePortfolioDialog";
@@ -24,7 +30,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </td>
                     <td class="text-xs-right">{{ props.item.fixFee }}</td>
                     <td class="text-xs-center">{{ props.item.viewCurrency }}</td>
-                    <td class="text-xs-center">{{ props.item.accountType }}</td>
+                    <td class="text-xs-center">{{ props.item.accountType.description }}</td>
                     <td class="text-xs-center">{{ props.item.openDate }}</td>
                     <td class="justify-center layout px-0">
                         <v-btn icon class="mx-0" @click.stop="openDialogForEdit(props.item)">
@@ -32,6 +38,9 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-btn>
                         <v-btn icon class="mx-0" @click.stop="deletePortfolio(props.item)">
                             <v-icon color="pink">delete</v-icon>
+                        </v-btn>
+                        <v-btn icon class="mx-0" @click.stop="clonePortfolio(props.item.id)">
+                            <v-icon color="blue">far fa-clone</v-icon>
                         </v-btn>
                     </td>
                 </tr>
@@ -49,6 +58,24 @@ const MainStore = namespace(StoreType.MAIN);
                             </thead>
                             <tbody>
                             <tr>
+                                <td>Профессиональный режим</td>
+                                <td style="display: flex;align-items: center;">
+                                    <v-tooltip top style="height: 30px;">
+                                        <v-checkbox slot="activator" label="Профессиональный режим"
+                                                    @change="onProfessionalModeChange(props.item)"
+                                                    v-model="props.item.professionalMode"></v-checkbox>
+                                        <span>
+                                            Профессиональный режим включает дополнительные возможности, необходимые опытным инвесторам:
+                                            <ul>
+                                                <li>возможность уходить в минус по деньгам (маржинальное кредитование)</li>
+                                                <li>возможность открытия коротких позиций</li>
+                                                <li>возможность учета времени заключения сделки</li>
+                                            </ul>
+                                        </span>
+                                    </v-tooltip>
+                                </td>
+                            </tr>
+                            <tr>
                                 <td>Время с момента открытия</td>
                                 <td>{{ props.item.openDate }}</td>
                             </tr>
@@ -59,7 +86,7 @@ const MainStore = namespace(StoreType.MAIN);
                             <tr>
                                 <td>Настройка доступа</td>
                                 <td>
-                                    <v-btn dark color="primary" @click.native="openSharePortfolioDialog(props.item.id)" small>
+                                    <v-btn dark color="primary" @click.native="openSharePortfolioDialog(props.item)" small>
                                         Настройка доступа
                                     </v-btn>
                                 </td>
@@ -96,6 +123,10 @@ export class PortfoliosTable extends UI {
 
     @MainStore.Getter
     private clientInfo: ClientInfo;
+    @MainStore.Action(MutationType.RELOAD_PORTFOLIOS)
+    private reloadPortfolios: () => Promise<void>;
+    @Inject
+    private portfolioService: PortfolioService;
 
     private headers: TableHeader[] = [
         {text: "Название", align: "left", value: "name"},
@@ -103,7 +134,8 @@ export class PortfoliosTable extends UI {
         {text: "Фикс. комиссия", align: "right", value: "fixFee", width: "50"},
         {text: "Валюта", align: "center", value: "viewCurrency"},
         {text: "Тип счета", align: "center", value: "accountType"},
-        {text: "Дата открытия", align: "center", value: "openDate"}
+        {text: "Дата открытия", align: "center", value: "openDate"},
+        {text: "Меню", value: "", align: "center", width: "30", sortable: false}
     ];
 
     @Prop({default: [], required: true})
@@ -117,7 +149,17 @@ export class PortfoliosTable extends UI {
         const result = await new ConfirmDialog().show(`Вы собираетесь удалить портфель. ${portfolio.name}
                                               Все сделки по акциям, облигациям и дивиденды,
                                               связанные с этим портфелем будут удалены.`);
-        console.log(result);
+        if (result === BtnReturn.YES) {
+            await this.portfolioService.deletePortfolio(portfolio.id);
+            await this.reloadPortfolios();
+            this.$snotify.info("Портфель успешно удален");
+        }
+    }
+
+    private async clonePortfolio(id: string): Promise<void> {
+        await this.portfolioService.createPortfolioCopy(id);
+        this.$snotify.info("Копия портфеля успешно создана");
+        UI.emit(EventType.PORTFOLIO_CREATED);
     }
 
     private publicLink(id: string): string {
@@ -136,7 +178,13 @@ export class PortfoliosTable extends UI {
         await new EmbeddedBlocksDialog().show(id);
     }
 
-    private async openSharePortfolioDialog(id: string): Promise<void> {
-        await new SharePortfolioDialog().show({portfolioId: id, clientInfo: this.clientInfo});
+    private async openSharePortfolioDialog(portfolio: PortfolioParams): Promise<void> {
+        await new SharePortfolioDialog().show({portfolio: portfolio, clientInfo: this.clientInfo});
+    }
+
+    private async onProfessionalModeChange(portfolio: PortfolioParams): Promise<void> {
+        const result = await this.portfolioService.updatePortfolio(portfolio);
+        this.$snotify.info(`Профессиональный режим для портфеля ${result.professionalMode ? "включен" : "выключен"}`);
+        UI.emit(EventType.PORTFOLIO_UPDATED, result);
     }
 }

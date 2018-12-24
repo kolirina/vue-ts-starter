@@ -3,7 +3,7 @@ import * as tinkoff from "../../assets/js/tinkoff";
 import {Service} from "../platform/decorators/service";
 import {HTTP} from "../platform/services/http";
 import {Tariff} from "../types/tariff";
-import {ClientInfo} from "../types/types";
+import {ClientInfo} from "./clientService";
 
 @Service("TariffService")
 @Singleton

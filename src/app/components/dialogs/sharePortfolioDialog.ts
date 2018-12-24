@@ -1,11 +1,16 @@
-import {Container} from "typescript-ioc";
+import * as moment from "moment";
+import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
-import {TokenService} from "../../services/tokenService";
-import {ClientInfo} from "../../types/types";
+import {UI} from "../../app/ui";
+import {ClientInfo} from "../../services/clientService";
+import {PortfolioParams, PortfolioService} from "../../services/portfolioService";
+import {EventType} from "../../types/eventType";
+import {CommonUtils} from "../../utils/commonUtils";
+import {DateFormat, DateUtils} from "../../utils/dateUtils";
 import {BtnReturn, CustomDialog} from "./customDialog";
 
 /**
- * Диалог получения кода для встраиваемого блока
+ * Диалог получения ссылки публичного портфеля
  */
 @Component({
     // language=Vue
@@ -17,8 +22,8 @@ import {BtnReturn, CustomDialog} from "./customDialog";
                     <v-container fluid class="pa-0">
                         <v-layout row wrap>
                             <v-flex xs12>
-                                <v-btn-toggle v-model="shareOption" style="display: flex">
-                                    <v-btn v-for="item in shareOptions" :value="item.value" :key="item.value" color="primary" small
+                                <v-btn-toggle v-model="shareOption" style="display: flex" dark mandatory>
+                                    <v-btn v-for="item in shareOptions" :value="item.value" :key="item.value" color="info" small
                                            style="width: 33.33%;width:calc(100%  /3)">
                                         {{ item.name }}
                                     </v-btn>
@@ -50,7 +55,7 @@ import {BtnReturn, CustomDialog} from "./customDialog";
 
                         <v-layout row wrap>
                             <v-flex xs12>
-                                <v-text-field :value="shareOption === 'DEFAULT_ACCESS' ? publicLink : tokenLink" :readonly="true"></v-text-field>
+                                <v-text-field :value="link" placeholder="url для доступа к портфелю" readonly></v-text-field>
                             </v-flex>
                         </v-layout>
 
@@ -79,7 +84,7 @@ import {BtnReturn, CustomDialog} from "./customDialog";
                                         :close-on-content-click="false"
                                         v-model="dateMenuValue"
                                         :nudge-right="40"
-                                        :return-value.sync="date"
+                                        :return-value.sync="expiredDate"
                                         lazy
                                         transition="scale-transition"
                                         offset-y
@@ -87,13 +92,13 @@ import {BtnReturn, CustomDialog} from "./customDialog";
                                         min-width="290px">
                                     <v-text-field
                                             slot="activator"
-                                            v-model="date"
+                                            v-model="expiredDate"
                                             label="Срок действия токена до"
                                             required
                                             append-icon="event"
                                             readonly></v-text-field>
-                                    <v-date-picker v-model="date" :no-title="true" locale="ru" :first-day-of-week="1"
-                                                   @input="$refs.dateMenu.save(date)"></v-date-picker>
+                                    <v-date-picker v-model="expiredDate" :no-title="true" locale="ru" :first-day-of-week="1"
+                                                   @input="$refs.dateMenu.save(expiredDate)"></v-date-picker>
                                 </v-menu>
                             </v-flex>
                         </v-layout>
@@ -104,17 +109,21 @@ import {BtnReturn, CustomDialog} from "./customDialog";
                             </v-flex>
                         </v-layout>
 
-                        <v-layout v-if="shareOption !== 'DEFAULT_ACCESS'" row wrap>
+                        <v-layout row wrap>
                             <v-flex xs12>
-                                <v-btn color="primary" block small @click="generateTokenLink">
+                                <v-btn v-if="shareOption !== 'DEFAULT_ACCESS'" color="primary" block small @click="generateTokenLink">
                                     Сгенерировать ссылку
+                                </v-btn>
+                                <v-btn v-else color="primary" block small @click="savePublicParams">
+                                    Сохранить настройки доступа
                                 </v-btn>
                             </v-flex>
                         </v-layout>
                     </v-container>
                 </v-card-text>
                 <v-card-actions>
-                    <v-btn @click.native="close" color="primary" small>Закрыть</v-btn>
+                    <v-spacer></v-spacer>
+                    <v-btn color="info lighten-2" flat @click.native="close">Отмена</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -126,6 +135,9 @@ export class SharePortfolioDialog extends CustomDialog<SharePortfolioDialogData,
         dateMenu: any
     };
 
+    @Inject
+    private portfolioService: PortfolioService;
+
     private shareOptions: ShareOption[] = [
         {name: "Обычный", value: ShareAccessType.DEFAULT_ACCESS},
         {name: "Со сроком действия", value: ShareAccessType.BY_LINK},
@@ -134,26 +146,63 @@ export class SharePortfolioDialog extends CustomDialog<SharePortfolioDialogData,
 
     private shareOption = ShareAccessType.DEFAULT_ACCESS;
 
-    private access = false;
+    private access = true;
     private divAccess = false;
     private tradeAccess = false;
     private lineDataAccess = false;
     private dashboardAccess = false;
-    private date: Date = null;
+    private expiredDate: string = DateUtils.formatDate(moment().add(7, "days"), DateFormat.DATE2);
     private dateMenuValue = false;
     private userId = "";
-    private token: string = null;
+    private shareUrlsCache: { [key: string]: string } = {
+        [ShareAccessType.DEFAULT_ACCESS]: null,
+        [ShareAccessType.BY_LINK]: null,
+        [ShareAccessType.BY_IDENTIFICATION]: null
+    };
 
     private async generateTokenLink(): Promise<void> {
-        this.token = await Container.get(TokenService).generateToken(this.data.clientInfo.user.username, this.date);
+        const isValid = this.isValid();
+        if (!isValid) {
+            return;
+        }
+        this.shareUrlsCache[this.shareOption] = await this.portfolioService.getPortfolioShareUrl({
+            id: this.data.portfolio.id, sharePortfolioType: this.shareOption, userName: this.userId, expiredDate: this.expiredDate
+        });
     }
 
-    private get publicLink(): string {
-        return `${window.location.protocol}//${window.location.host}/public-portfolio/${this.data.portfolioId}/?ref=${this.data.clientInfo.user.id}`;
+    private async savePublicParams(): Promise<void> {
+        const result = await this.portfolioService.updatePortfolio({
+            ...this.data.portfolio,
+            access: this.access,
+            tradesAccess: this.tradeAccess,
+            dividendsAccess: this.divAccess,
+            dashboardAccess: this.dashboardAccess,
+            lineDataAccess: this.lineDataAccess
+        });
+        this.$snotify.info("Настройки доступа к портфелю успешно изменены");
+        UI.emit(EventType.PORTFOLIO_UPDATED, result);
     }
 
-    private get tokenLink(): string {
-        return this.token ? `${window.location.protocol}//${window.location.host}/share/portfolio/${this.token}` : "";
+    private get link(): string {
+        if (this.shareOption === ShareAccessType.DEFAULT_ACCESS) {
+            return `${window.location.protocol}//${window.location.host}/public-portfolio/${this.data.portfolio.id}/?ref=${this.data.clientInfo.user.id}`;
+        }
+        return this.shareUrlsCache[this.shareOption];
+    }
+
+    private isValid(): boolean {
+        if (this.shareOption === ShareAccessType.DEFAULT_ACCESS) {
+            return true;
+        }
+        if (this.expiredDate === null || moment().isAfter(DateUtils.parseDate(this.expiredDate))) {
+            this.$snotify.warning("Срок действия токена должна быть больше текущей даты");
+            return false;
+        }
+        if (this.shareOption === ShareAccessType.BY_IDENTIFICATION && CommonUtils.isBlank(this.userId)) {
+            this.$snotify.warning("Идентификатор пользователя должен быть заполнен");
+            return false;
+        }
+        return true;
     }
 }
 
@@ -163,7 +212,7 @@ type ShareOption = {
 };
 
 export type SharePortfolioDialogData = {
-    portfolioId: string,
+    portfolio: PortfolioParams,
     clientInfo: ClientInfo
 };
 

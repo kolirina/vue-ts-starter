@@ -1,5 +1,5 @@
+import {PortfolioParams} from "../services/portfolioService";
 import {BaseChartDot, ColumnChartData, Dot, HighStockEventsGroup} from "./charts/types";
-import {Tariff} from "./tariff";
 
 export type _portfolioRow = {
     /** Прибыль */
@@ -221,18 +221,6 @@ export type DashboardBrick = {
     icon: string
 };
 
-export type PortfolioParams = {
-    id: string,
-    name: string,
-    access: boolean,
-    fixFee: string,
-    viewCurrency: string,
-    accountType: string,
-    professionalMode: boolean,
-    openDate: string,
-    combined: boolean
-};
-
 /** Описание бэкапа портфеля */
 export interface PortfolioBackup {
     /** Идентификатор бэкапа */
@@ -242,55 +230,6 @@ export interface PortfolioBackup {
     /** Список дней для создания бэкапа */
     days: number[];
 }
-
-export class ClientInfo {
-
-    token: string;
-    user: Client;
-}
-
-export type Client = {
-    /** Идентификатор пользователя */
-    id: string,
-    /** Логин пользователя */
-    username: string,
-    /** email пользователя */
-    email: string,
-    /** Тариф */
-    tariff: string,
-    /** Дата, до которой оплачен тариф */
-    paidTill: string,
-    /** Признак подтвержденного email */
-    emailConfirmed: string,
-    /** Текущий идентификатор портфеля */
-    currentPortfolioId: string,
-    /** Список портфелей */
-    portfolios: PortfolioParams[],
-    /** Тип вознаграждения за реферальную программу */
-    referralAwardType: string,
-    /** Промо-код пользователя */
-    promoCode: string,
-    /** Признак блокировки аккаунта */
-    blocked: boolean;
-    /** Алиас для реферальной ссылки */
-    referralAlias: string;
-    /** Сумма подлежащая выплате по реферальной программе */
-    earnedTotalAmount: string;
-    /** Срок действия скидки */
-    nextPurchaseDiscountExpired: string;
-    /** Индивидуальная скидка на следующую покупку в системе */
-    nextPurchaseDiscount: number;
-    /** Количество портфелей в профиле пользователя */
-    portfoliosCount: number;
-    /** Общее количество ценнных бумаг в составе всех портфелей */
-    sharesCount: number;
-    /** Присутствуют ли во всех портфелях пользователя сделки по иностранным акциям */
-    foreignShares: boolean;
-    /** Сумма выплаченного вознаграждения реферреру за партнерскую программу */
-    referrerRepaidTotalAmount: string;
-    /** Сумма причитаемого вознаграждения реферреру за партнерскую программу */
-    referrerEarnedTotalAmount: string;
-};
 
 export type Share = {
     /** Идентификатору бумаги в системе */
