@@ -14,10 +14,10 @@
  * (c) ООО "Интеллектуальные инвестиции", 2018
  */
 
-import {Container, Singleton} from "typescript-ioc";
+import {Singleton} from "typescript-ioc";
+import {EditShareNoteDialogData} from "../components/dialogs/editShareNoteDialog";
 import {Service} from "../platform/decorators/service";
 import {Enum, EnumType, IStaticEnum} from "../platform/enum";
-import {Cache} from "../platform/services/cache";
 import {HTTP} from "../platform/services/http";
 import {Portfolio, PortfolioBackup} from "../types/types";
 
@@ -27,37 +27,58 @@ export class PortfolioService {
 
     private readonly ENDPOINT_BASE = "portfolio-info";
 
-    private cacheService = (Container.get(Cache) as Cache);
-
-    private cache: { [key: string]: string } = {};
-
+    /**
+     * Возвращает данные по бэкапу портфеля
+     * @param userId идентификатор пользователя
+     */
     async getPortfolioBackup(userId: string): Promise<PortfolioBackup> {
         return (await HTTP.INSTANCE.get(`/portfolios/${userId}/backup`)).data as PortfolioBackup;
     }
 
+    /**
+     * Отправляет запрос на создание/обновление данных бэкапа портфеля
+     * @param userId идентификатор пользователя
+     * @param portfolioBackup идентификатор портфеля
+     */
     async saveOrUpdatePortfolioBackup(userId: string, portfolioBackup: PortfolioBackup): Promise<void> {
         await HTTP.INSTANCE.post(`/portfolios/${userId}/backup`, portfolioBackup);
     }
 
+    /**
+     * Возвращает url для публичного доступа к портфелю
+     * @param request запрос
+     */
     async getPortfolioShareUrl(request: GenerateShareUrlRequest): Promise<string> {
         return (await HTTP.INSTANCE.post(`/${this.ENDPOINT_BASE}/public-url`, request)).data;
     }
 
+    /**
+     * Возвращает список портфелей пользователя
+     */
     async getPortfolios(): Promise<PortfolioParams[]> {
         const portfolios: PortfolioParamsResponse[] = (await HTTP.INSTANCE.get(`/${this.ENDPOINT_BASE}`)).data;
         return portfolios.map(item => {
             return {
                 ...item,
                 accountType: item.accountType ? PortfolioAccountType.valueByName(item.accountType) : null,
-                iisType: item.iisType ? IisType.valueByName(item.iisType) : null
+                iisType: item.iisType ? IisType.valueByName(item.iisType) : null,
+                shareNotes: item.shareNotes ? item.shareNotes : {}
             } as PortfolioParams;
         });
     }
 
+    /**
+     * Отправляет запрос на создание нового портфеля или обновление
+     * @param portfolio портфель
+     */
     async createOrUpdatePortfolio(portfolio: PortfolioParams): Promise<PortfolioParams> {
         return portfolio.id ? this.updatePortfolio(portfolio) : this.createPortfolio(portfolio);
     }
 
+    /**
+     * Отправляет запрос на создание нового портфеля и возвращает созданную сущность
+     * @param portfolio портфель
+     */
     async createPortfolio(portfolio: PortfolioParams): Promise<PortfolioParams> {
         const request: CreatePortfolioRequest = {
             name: portfolio.name,
@@ -80,6 +101,10 @@ export class PortfolioService {
         } as PortfolioParams;
     }
 
+    /**
+     * Обновляет портфель
+     * @param portfolio портфель
+     */
     async updatePortfolio(portfolio: PortfolioParams): Promise<PortfolioParams> {
         const request: UpdatePortfolioRequest = {
             id: portfolio.id,
@@ -109,10 +134,30 @@ export class PortfolioService {
         } as PortfolioParams;
     }
 
+    /**
+     * Удаляет портфель
+     * @param portfolioId идентификатор портфеля
+     */
     async deletePortfolio(portfolioId: string): Promise<void> {
         await (await HTTP.INSTANCE.delete(`/${this.ENDPOINT_BASE}/${portfolioId}`));
     }
 
+    /**
+     * Обновляет заметки по бумагам в портфеле
+     * @param portfolio портфель
+     * @param data заметка по бумагам
+     */
+    async updateShareNotes(portfolio: Portfolio, data: EditShareNoteDialogData): Promise<void> {
+        const shareNotes = portfolio.portfolioParams.shareNotes || {};
+        shareNotes[data.ticker] = data.note;
+        await (await HTTP.INSTANCE.put(`/${this.ENDPOINT_BASE}/${portfolio.id}/shareNotes`, shareNotes));
+        portfolio.portfolioParams.shareNotes = shareNotes;
+    }
+
+    /**
+     * Отправляет запрос на создание копии портфеля
+     * @param portfolioId идентификатор портфеля
+     */
     async createPortfolioCopy(portfolioId: string): Promise<PortfolioParams> {
         const response: PortfolioParamsResponse = (await HTTP.INSTANCE.get(`/${this.ENDPOINT_BASE}/copy/${portfolioId}`)).data;
         return {
@@ -179,6 +224,8 @@ export interface BasePortfolioParams {
     openDate: string;
     /** Флаг указывающий на участие портфеля в комбинированном расчете */
     combined?: boolean;
+    /** Заметки по бумагам в портфеле */
+    shareNotes?: { [key: string]: string };
 }
 
 /** Запрос на создание портфеля */
@@ -208,7 +255,37 @@ export interface CreatePortfolioRequest {
 }
 
 /** Запрос на обновление портфеля */
-export interface UpdatePortfolioRequest extends BasePortfolioParams {
+export interface UpdatePortfolioRequest {
+    /** Идентификатор портфеля */
+    id: string;
+    /** Название портфеля */
+    name: string;
+    /** Публичный доступ к портфелю */
+    access: boolean;
+    /** Доступ к разделу Дивиденды в публичном портфеле */
+    dividendsAccess?: boolean;
+    /** Доступ к разделу Сделки в публичном портфеле */
+    tradesAccess?: boolean;
+    /** Доступ к графику стоимости в публичном портфеле */
+    lineDataAccess?: boolean;
+    /** Доступ к дашборду в публичном портфеле */
+    dashboardAccess?: boolean;
+    /** Профессиональный режим */
+    professionalMode?: boolean;
+    /** Идентификатор брокера */
+    brokerId?: number;
+    /** Основная валюта портфеля */
+    viewCurrency: string;
+    /** Альтернативная валюта портфеля */
+    alternativeViewCurrency?: string;
+    /** Фиксированная комиссия портфеля в % */
+    fixFee?: string;
+    /** Заметка к портфелю */
+    note?: string;
+    /** Дата открытия счета */
+    openDate: string;
+    /** Флаг указывающий на участие портфеля в комбинированном расчете */
+    combined?: boolean;
     /** Тип аккаунта */
     accountType: string;
     /** Тип ИИС */

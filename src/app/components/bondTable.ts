@@ -3,6 +3,7 @@ import Component from "vue-class-component";
 import {Prop} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
+import {PortfolioService} from "../services/portfolioService";
 import {TradeService} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
 import {Operation} from "../types/operation";
@@ -12,6 +13,7 @@ import {StoreType} from "../vuex/storeType";
 import {AddTradeDialog} from "./dialogs/addTradeDialog";
 import {ConfirmDialog} from "./dialogs/confirmDialog";
 import {BtnReturn} from "./dialogs/customDialog";
+import {EditShareNoteDialog} from "./dialogs/editShareNoteDialog";
 import {ShareTradesDialog} from "./dialogs/shareTradesDialog";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -43,6 +45,12 @@ const MainStore = namespace(StoreType.MAIN);
                                     <v-list-tile-title>
                                         <v-icon color="primary" small>fas fa-list-alt</v-icon>
                                         Все сделки
+                                    </v-list-tile-title>
+                                </v-list-tile>
+                                <v-list-tile @click="openEditShareNoteDialog(props.item.bond.ticker)">
+                                    <v-list-tile-title>
+                                        <v-icon color="primary" small>fas fa-sticky-note</v-icon>
+                                        Заметка
                                     </v-list-tile-title>
                                 </v-list-tile>
                                 <v-divider></v-divider>
@@ -133,10 +141,10 @@ export class BondTable extends UI {
 
     @Inject
     private tradeService: TradeService;
-
+    @Inject
+    private portfolioService: PortfolioService;
     @MainStore.Getter
     private portfolio: Portfolio;
-
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
     private reloadPortfolio: (id: string) => Promise<void>;
 
@@ -169,6 +177,18 @@ export class BondTable extends UI {
             operation,
             assetType: AssetType.BOND
         });
+    }
+
+    /**
+     * Обновляет заметки по бумага в портфеле
+     * @param ticker тикер по которому редактируется заметка
+     */
+    private async openEditShareNoteDialog(ticker: string): Promise<void> {
+        const result = await new EditShareNoteDialog().show({ticker, note: this.portfolio.portfolioParams.shareNotes[ticker]});
+        if (result) {
+            await this.portfolioService.updateShareNotes(this.portfolio, result);
+            this.$snotify.info(`Заметка по бумаге ${ticker} была успешно сохранена`);
+        }
     }
 
     private async deleteAllTrades(bondRow: BondPortfolioRow): Promise<void> {
