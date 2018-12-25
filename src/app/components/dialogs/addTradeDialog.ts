@@ -46,7 +46,6 @@ import {CustomDialog} from "./customDialog";
                                                 :loading="shareSearch"
                                                 :no-data-text="notFoundLabel"
                                                 clearable
-                                                cache-items
                                                 required
                                                 name="share"
                                                 :error-messages="errors.collect('share')"
@@ -89,7 +88,7 @@ import {CustomDialog} from "./customDialog";
                             </v-flex>
 
                             <v-flex v-if="shareAssetType" xs12>
-                                <v-text-field :label="priceLabel" v-model="price" v-mask="priceMask"
+                                <v-text-field :label="priceLabel" v-model="price"
                                               name="price"
                                               v-validate="'required'"
                                               :error-messages="errors.collect('price')"
@@ -238,14 +237,6 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     private currency = "RUB";
 
-    private priceMask: MaskOptions = {
-        mask: Number,
-        min: -10000,
-        max: 10000,
-        scale: 2,
-        thousandsSeparator: " "
-    };
-
     private searchQuery: string = null;
     /** Текущий объект таймера */
     private currentTimer: number = null;
@@ -271,10 +262,11 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     @Watch("searchQuery")
     private async onSearch(): Promise<void> {
         console.log("SEARCH", this.searchQuery);
+        clearTimeout(this.currentTimer);
         if (!this.searchQuery || this.searchQuery.length <= 2) {
+            this.shareSearch = false;
             return;
         }
-        clearTimeout(this.currentTimer);
         this.shareSearch = true;
         const delay = new Promise((resolve, reject) => {
             this.currentTimer = setTimeout(async () => {
@@ -283,7 +275,6 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
                         this.filteredShares = await this.marketService.searchStocks(this.searchQuery);
                     } else if (this.assetType === AssetType.BOND) {
                         this.filteredShares = await this.marketService.searchBonds(this.searchQuery);
-                        console.log("filtered bonds", this.filteredShares);
                     }
                     this.shareSearch = false;
                 } catch (error) {
