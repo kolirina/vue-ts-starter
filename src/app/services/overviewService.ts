@@ -134,7 +134,8 @@ export class OverviewService {
         const portfolio = {
             ...portfolioResponse,
             accountType: portfolioResponse.accountType ? PortfolioAccountType.valueByName(portfolioResponse.accountType) : null,
-            iisType: portfolioResponse.iisType ? IisType.valueByName(portfolioResponse.iisType) : null
+            iisType: portfolioResponse.iisType ? IisType.valueByName(portfolioResponse.iisType) : null,
+            shareNotes: portfolioResponse.shareNotes ? portfolioResponse.shareNotes : {}
         } as PortfolioParams;
         const overview = (await HTTP.INSTANCE.get(`/portfolios/${id}/overview`)).data as Overview;
         // проставляем идентификаторы чтобы работали разворачиваютщиеся блоки в табилицах

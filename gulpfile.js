@@ -87,10 +87,10 @@ gulp.task('css', () => {
 });
 
 // Основной таск сборки
-gulp.task("build", ["scripts", "css", "assets"]);
+gulp.task("build", gulp.parallel("scripts", "css", "assets"));
 
 /** Таск с watch */
-gulp.task('default', ['build', "css", "assets"], () => {
+gulp.task('default', gulp.series('build', () => {
     browserSync.init({
         proxy: "localhost:8080",
         port: 3000,
@@ -98,10 +98,10 @@ gulp.task('default', ['build', "css", "assets"], () => {
         notify: false,
         serveStatic: [TARGET_DIR]
     });
-    gulp.watch(['src/**/*.ts'], ['scripts']);
-    gulp.watch(['src/assets/scss/**/*.scss'], ['css']);
-    gulp.watch(['*.html'], ['assets']);
-});
+    gulp.watch(['src/**/*.ts'], gulp.parallel('scripts'));
+    gulp.watch(['src/assets/scss/**/*.scss'], gulp.parallel('css'));
+    gulp.watch(['*.html'], gulp.parallel('assets'));
+}));
 
 const onError = (error) => {
     let formattedError = new gutil.PluginError('webpack', error);

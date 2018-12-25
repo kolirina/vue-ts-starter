@@ -57,7 +57,6 @@ const MainStore = namespace(StoreType.MAIN);
                                                             :rules="rulesShare"
                                                             label="Тикер | Название ценной бумаги"
                                                             append-icon="fas fa-building"
-                                                            cache-items
                                                             clearable
                                                             dense
                                                             name="share"
@@ -370,10 +369,11 @@ export class BalancesPage extends UI implements TradeDataHolder {
 
     @Watch("searchQuery")
     private async onSearch(): Promise<void> {
+        clearTimeout(this.currentTimer);
         if (!this.searchQuery || this.searchQuery.length <= 2) {
+            this.shareSearch = false;
             return;
         }
-        clearTimeout(this.currentTimer);
         this.shareSearch = true;
         const delay = new Promise((resolve, reject) => {
             this.currentTimer = setTimeout(async () => {
