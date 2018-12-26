@@ -1,9 +1,9 @@
-import axios from "axios";
-import {Singleton} from "typescript-ioc";
+import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {HTTP} from "../platform/services/http";
+import {Storage} from "../platform/services/storage";
+import {StoreKeys} from "../types/storeKeys";
 import {Tariff} from "../types/tariff";
-import {LoginRequest} from "../types/types";
 import {IisType, PortfolioAccountType, PortfolioParams, PortfolioParamsResponse} from "./portfolioService";
 
 @Service("ClientService")
@@ -12,16 +12,19 @@ export class ClientService {
 
     clientInfo: ClientInfo = null;
 
-    async getClientInfo(request: LoginRequest): Promise<ClientInfo> {
+    @Inject
+    private localStorage: Storage;
+
+    async getClientInfo(): Promise<ClientInfo> {
         if (!this.clientInfo) {
-            const result = await axios.post("/api/user/login", request);
-            const clientInfo: ClientInfoResponse = await result.data;
+            const result = await HTTP.INSTANCE.get("/user/info");
+            const clientInfo: ClientResponse = await result.data;
             this.clientInfo = {
-                token: clientInfo.token,
+                token: this.localStorage.get(StoreKeys.TOKEN_KEY, null),
                 user: {
-                    ...clientInfo.user,
-                    tariff: Tariff.valueByName(clientInfo.user.tariff),
-                    portfolios: clientInfo.user.portfolios.map(item => {
+                    ...clientInfo,
+                    tariff: Tariff.valueByName(clientInfo.tariff),
+                    portfolios: clientInfo.portfolios.map(item => {
                         return {
                             ...item,
                             accountType: item.accountType ? PortfolioAccountType.valueByName(item.accountType) : null,

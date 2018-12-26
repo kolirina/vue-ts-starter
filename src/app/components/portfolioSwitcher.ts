@@ -12,7 +12,7 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <div v-if="clientInfo && clientInfo.user" class="text-xs-center">
+        <div v-if="clientInfo && clientInfo.user && portfolio" class="text-xs-center">
             <v-menu offset-y transition="slide-y-transition">
                 <v-btn slot="activator" color="primary">{{ getPortfolioName(selected) }}</v-btn>
                 <v-list style="max-height: 500px; overflow-x: auto;">

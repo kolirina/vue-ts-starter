@@ -16,6 +16,6 @@ export class LogoutService {
         await HTTP.INSTANCE.post("/user/logout");
         localStorage.delete(StoreKeys.STORE_KEY);
         localStorage.delete(StoreKeys.TOKEN_KEY);
-        window.location.reload(true);
+        window.location.assign( "http://localhost:8080/auth.html");
     }
 }

@@ -2,6 +2,7 @@ import {Container} from "typescript-ioc";
 import Vue from "vue";
 import VueRouter from "vue-router";
 import {RouteConfig} from "vue-router/types/router";
+import {AuthComponent} from "../app/authComponent";
 import {BalancesPage} from "../pages/balancesPage";
 import {BondInfoPage} from "../pages/bondInfoPage";
 import {CombinedPortfolioPage} from "../pages/combinedPortfolioPage";
@@ -56,6 +57,11 @@ export class RouterConfiguration {
                 path: "/logout",
                 name: "logout",
                 beforeEnter: () => (Container.get(LogoutService) as LogoutService).logout()
+            },
+            {
+                name: "auth",
+                path: "/auth/:token",
+                component: AuthComponent
             },
             {
                 path: "*",
