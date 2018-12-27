@@ -212,6 +212,8 @@ export interface BasePortfolioParams {
     professionalMode?: boolean;
     /** Идентификатор брокера */
     brokerId?: number;
+    /** Название брокера */
+    brokerName?: string;
     /** Основная валюта портфеля */
     viewCurrency: string;
     /** Альтернативная валюта портфеля */

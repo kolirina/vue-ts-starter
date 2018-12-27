@@ -1,6 +1,7 @@
 import Component from "vue-class-component";
 import {Prop, Watch} from "vue-property-decorator";
 import {UI} from "../app/ui";
+import {TradeFields} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
 import {Operation} from "../types/operation";
 import {TableHeader, TablePagination, TradeRow} from "../types/types";
@@ -34,6 +35,12 @@ import {AddTradeDialog} from "./dialogs/addTradeDialog";
                                 <v-icon color="primary" small>fas fa-bars</v-icon>
                             </v-btn>
                             <v-list dense>
+                                <v-list-tile @click.stop="openEditTradeDialog(props.item)">
+                                    <v-list-tile-title>
+                                        <v-icon color="primary" small>fas fa-pencil-alt</v-icon>
+                                        Редактировать
+                                    </v-list-tile-title>
+                                </v-list-tile>
                                 <v-list-tile @click.stop="openTradeDialog(props.item, operation.BUY)">
                                     <v-list-tile-title>
                                         <v-icon color="primary" small>fas fa-plus</v-icon>
@@ -132,6 +139,28 @@ export class TradesTable extends UI {
             share: null,
             operation,
             assetType: AssetType.STOCK
+        });
+    }
+
+    private async openEditTradeDialog(tradeRow: TradeRow): Promise<void> {
+        const trade: TradeFields = {
+            ticker: tradeRow.ticker,
+            date: tradeRow.date,
+            quantity: parseInt(tradeRow.quantity, 10),
+            price: tradeRow.price,
+            facevalue: null,
+            nkd: null,
+            perOne: null,
+            fee: tradeRow.fee,
+            note: tradeRow.note,
+            keepMoney: false,
+            moneyAmount: tradeRow.moneyPrice,
+            currency: tradeRow.currency
+        };
+        await new AddTradeDialog().show({
+            store: this.$store.state[StoreType.MAIN],
+            router: this.$router,
+            tradeData: trade
         });
     }
 

@@ -148,6 +148,9 @@ export class AppFrame extends UI {
     @MainStore.Action(MutationType.SET_CURRENT_PORTFOLIO)
     private setCurrentPortfolio: (id: string) => Promise<Portfolio>;
 
+    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
+    private reloadPortfolio: (id: string) => Promise<void>;
+
     private username: string = null;
 
     private password: string = null;
@@ -236,7 +239,10 @@ export class AppFrame extends UI {
     }
 
     private async openDialog(): Promise<void> {
-        await new AddTradeDialog().show({store: this.$store.state[StoreType.MAIN], router: this.$router});
+        const result = await new AddTradeDialog().show({store: this.$store.state[StoreType.MAIN], router: this.$router});
+        if (result) {
+            await this.reloadPortfolio(this.$store.state[StoreType.MAIN].clientInfo.user.currentPortfolioId);
+        }
     }
 
     private async openNotificationUpdateDialog(): Promise<void> {

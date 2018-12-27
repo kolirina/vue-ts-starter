@@ -9,12 +9,12 @@ import {BalancesTable} from "../components/balancesTable";
 import {StockTable} from "../components/stockTable";
 import {MarketHistoryService} from "../services/marketHistoryService";
 import {MarketService} from "../services/marketService";
-import {TradeService} from "../services/tradeService";
+import {TradeFields, TradeService} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
 import {Operation} from "../types/operation";
 import {TradeDataHolder} from "../types/trade/tradeDataHolder";
-import {Portfolio, Share, TradeData} from "../types/types";
+import {Portfolio, Share} from "../types/types";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 
@@ -431,7 +431,7 @@ export class BalancesPage extends UI implements TradeDataHolder {
     }
 
     private async addTrade(): Promise<void> {
-        const trade: TradeData = {
+        const trade: TradeFields = {
             ticker: this.shareTicker,
             date: this.getDate(),
             quantity: this.getQuantity(),
@@ -455,6 +455,7 @@ export class BalancesPage extends UI implements TradeDataHolder {
                 fields: trade
             });
             if (!errors) {
+                await this.reloadPortfolio(this.portfolio.id);
                 this.$snotify.info("Баланс успешно сохранен");
                 return;
             }
@@ -465,7 +466,6 @@ export class BalancesPage extends UI implements TradeDataHolder {
             return;
         } finally {
             this.processState = false;
-            await this.reloadPortfolio(this.portfolio.id);
         }
     }
 
