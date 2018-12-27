@@ -377,46 +377,6 @@ export type CombinedInfoRequest = {
     viewCurrency: string
 };
 
-export type TradeData = {
-    /** Тикер */
-    ticker: string,
-    /** Дата */
-    date: string,
-    /** Количество */
-    quantity: number,
-    /** Цена */
-    price: string,
-    /** Номинал */
-    facevalue: string,
-    /** НКД */
-    nkd: string,
-    /** Признак начисления на одну бумагу */
-    perOne: boolean,
-    /** Комиссия */
-    fee: string,
-    /** Заметка */
-    note: string,
-    /** Признак списания/зачисления денег */
-    keepMoney: boolean,
-    /** Сумма денег для списания/зачисления */
-    moneyAmount: string,
-    /** Валюта сделки */
-    currency: string
-};
-
-export type TradeDataRequest = {
-    /** Идентификатор портфеля */
-    portfolioId: string,
-    /** Признак добавления связанной сделки по деньгам */
-    createLinkedTrade: boolean,
-    /** Актив сделки */
-    asset: string,
-    /** Операция */
-    operation: string,
-    /** Поля, содержащию все необходимую информацию по сделке данного типа */
-    fields: TradeData
-};
-
 export type ErrorInfo = {
     errorCode: string,
     errorMessage: string,

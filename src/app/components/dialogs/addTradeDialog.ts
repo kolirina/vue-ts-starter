@@ -1,21 +1,17 @@
 import Decimal from "decimal.js";
-import {MaskOptions} from "imask";
-import {Moment} from "moment";
-import * as moment from "moment";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {Watch} from "vue-property-decorator";
 import {VueRouter} from "vue-router/types/router";
 import {MarketService} from "../../services/marketService";
-import {TradeService} from "../../services/tradeService";
+import {TradeFields, TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
 import {BigMoney} from "../../types/bigMoney";
 import {Operation} from "../../types/operation";
 import {TradeDataHolder} from "../../types/trade/tradeDataHolder";
 import {TradeMap} from "../../types/trade/tradeMap";
 import {TradeValue} from "../../types/trade/tradeValue";
-import {Bond, Portfolio, Share, TradeData} from "../../types/types";
-import {DateFormat} from "../../utils/dateUtils";
+import {Bond, Portfolio, Share} from "../../types/types";
 import {MainStore} from "../../vuex/mainStore";
 import {CustomDialog} from "./customDialog";
 
@@ -386,7 +382,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         // if (!result) {
         //     return;
         // }
-        const trade: TradeData = {
+        const trade: TradeFields = {
             ticker: this.shareTicker,
             date: this.getDate(),
             quantity: this.getQuantity(),
@@ -410,12 +406,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
                 fields: trade
             });
             if (!errors) {
+                this.$snotify.info("Сделка успешно добавлена", "Выполнено");
                 this.close(true);
-                // this.$notify({
-                //     title: 'Выполнено',
-                //     message: 'Сделка успешно добавлена',
-                //     type: 'success'
-                // });
                 return;
             }
             // иначе обрабатываем ошибки валидации с сервера и отображаем
@@ -517,7 +509,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 export type TradeDialogData = {
     store: MainStore,
     router: VueRouter,
-    tradeData?: TradeData,
+    tradeData?: TradeFields,
     share?: Share,
     operation?: Operation,
     assetType?: AssetType
