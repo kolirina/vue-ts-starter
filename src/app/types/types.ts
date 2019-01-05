@@ -17,21 +17,40 @@ export type AssetRow = _portfolioRow & {
 };
 
 export type TradeRow = {
+    /** Идентификатор сделки */
     id: string,
+    /** Дата */
     date: string,
+    /** Тип актива */
     asset: string,
+    /** Операция */
     operation: string,
+    /** Описание операции */
     operationLabel: string,
+    /** Валюта */
     currency: string,
+    /** Итоговая сумма сделки */
     signedTotal: string
+    /** Тикер */
     ticker?: string,
+    /** Название компании */
     companyName?: string,
+    /** Количество */
     quantity: string,
+    /** Идентификатор сделки */
     price: string,
+    /** Комиссия по сделке */
     fee: string,
+    /** Заметка */
     note?: string,
+    /** Цена, выраженная в деньгах. Для акций, начислений, дивидендов */
     moneyPrice?: string,
+    /** Цена, выраженная в процентах. Для облигаций */
     bondPrice?: string
+    /** Идентификатор связанной сделки по списанию/зачислению денежных средств. Может быть null, если у сделки нет связи */
+    moneyTradeId?: string;
+    /** Идентификатор связанной родительской сделки. Может быть null, если у сделки нет связи */
+    parentTradeId?: string;
 };
 
 export type _shareRow = _portfolioRow & {

@@ -21,6 +21,16 @@
       true,
       "no-public"
     ],
+    "typedef": [
+      true,
+      "call-signature",
+      "arrow-call-signature",
+      "parameter",
+      "arrow-parameter",
+      "property-declaration",
+      "variable-declaration",
+      "member-variable-declaration"
+    ],
     /** Схема расположения объектов как для java классов */
     "member-ordering": {
       "options": {
