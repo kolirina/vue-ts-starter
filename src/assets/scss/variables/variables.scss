@@ -1,6 +1,12 @@
 //
 // Подключение переменных.
 
+// Screen Breakpoints
+$xs-breakpoint: 600px;
+$sm-breakpoint: 960px;
+$md-breakpoint: 1264px;
+$lg-breakpoint: 1904px;
+
 // Colors
 $main-color-1: #ffd66e;
 $main-color-2: #1f83c8;
@@ -16,3 +22,69 @@ $dropdown--box-shadow:  0 3px 6px 0 rgba(0,0,0,.15);
 
 // Цвет фона страницы
 $body--background-color: #f1f3f6;
+
+
+
+
+/* Цвет фона */
+$main--bg-color: #f7f9fb;
+
+/* Цветовая тема общая*/
+$theme-color-dark-blue: #040427;
+
+/* Основной шрифт */
+$main--font-family: "Open Sans";
+$main--font-size: 13px;
+
+/* Dashboard */
+$dashboard--bg-color: #040427;
+$dashboard--green-color: #91da4a;
+$dashboard--red-color: #d0021b;
+/* Большие цифры */
+$dashbord--big-num--font-family: "Gilroy Bold";
+$dashbord--big-num--font-weight: bold; /* ?Семейство */
+$dashbord--big-num--font-size: 26px;
+$dashbord--big-num--font-color: #ffffff;
+/* Верхняя строка цифры */
+$dashbord--string--font-family: "Gilroy Semibold";
+$dashbord--string--font-weight: normal; /* ?Семейство */
+$dashbord--string--font-size: 13px;
+$dashbord--string--font-color: #D0D0D7;
+/* Нижние цифры */
+$dashbord--num--font-family: "Gilroy Semibold";
+$dashbord--num--font-weight: normal; /* ?Семейство */
+$dashbord--num--font-size: 13px;
+$dashbord--num--font-color: #55556D;
+/* */
+$dashbord--icon-circle--color: #202F2E;
+
+/* Таблица */
+/* Шрифт заголовка таблицы */
+$table--title--font-family: "Open Sans Bold";
+$table--title--font-size: 18px;
+$table--title--font-color: #040427;
+/* Шрифт хедера таблицы */
+$table--header--font-family: "Open Sans";
+$table--header--font-size: 12px;
+$table--header--font-color: #4f5d75;
+/* Шрифт текста */
+$table--text--font-family: "Open Sans";
+$table--text--font-size: 13px;
+$table--text--font-color: #040427;
+/* Шрифт чисел */
+$table--num-column--font-family: "Open Sans Semibold";
+$table--num--font-size: 13px;
+$table--num--font-color: #040427;
+/* Зеленые числа */
+$table--num--green-color: #6cc11a;
+/* Красные числа */
+$table--num--green-color: #ff3e70;
+
+/* Экспандер таблицы */
+$expand-table-color: #b0b4c2;
+
+/* Навигация */
+$navbar--item--font-family: "Open Sans Semibold";
+$navbar--item--font-size: 13px;
+$navbar--item--font-color: #a1a6b6;
+$navbar--select--item--font-color: #3b6ec9;
