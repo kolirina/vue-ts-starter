@@ -7,7 +7,7 @@ import {DashboardBrick, DashboardData} from "../types/types";
 @Component({
     // language=Vue
     template: `
-        <v-card dark class="dashboard-card" v-bind:class="{ 'dashboard-border': !block.hasNotBorderLeft }">
+        <v-card dark class="dashboard-card" :class="{ 'dashboard-border': !block.hasNotBorderLeft }">
             <v-card-title primary-title class="pb-2 dashboard-card-string">
                 <div>{{ block.name }}</div>
             </v-card-title>

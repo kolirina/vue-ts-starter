@@ -8,7 +8,7 @@ import {DashboardBrick} from "../types/types";
 @Component({
     // language=Vue
     template: `
-        <v-card dark class="dashboard-card" v-bind:class="{ 'dashboard-border': !block.hasNotBorderLeft }">
+        <v-card dark class="dashboard-card" :class="{ 'dashboard-border': !block.hasNotBorderLeft }">
         <v-card-title primary-title class="pb-2 dashboard-card-string">
                 <div>{{ block.name }}</div>
             </v-card-title>
@@ -18,7 +18,7 @@ import {DashboardBrick} from "../types/types";
                         <span><b>{{ block.mainValue }}</b></span>
                     </div>
                 </v-layout>
-                <v-layout row>
+                <v-layout row class="mx-0 dashboard-card-small-nums">
                     <div>
                         <span><b>{{ block.secondValue }}</b> </span>
                         <span>{{ block.secondValueDesc }}</span>
