@@ -67,7 +67,11 @@ export class LineChart extends UI {
         this.chart = Highstock.stockChart(this.$refs.container, {
             chart: {
                 zoomType: "x",
-                backgroundColor: null
+                backgroundColor: null,
+                style: {
+                    fontFamily: "\"Open Sans\" sans-serif",
+                    fontSize: "12px"
+                }
             },
             title: {
                 text: this.title
@@ -80,6 +84,7 @@ export class LineChart extends UI {
                 gridLineWidth: 1,
                 labels: {
                     style: {
+                        fontFamily: "\"Open Sans\" sans-serif",
                         fontSize: "12px"
                     }
                 }
