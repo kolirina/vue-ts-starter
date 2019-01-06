@@ -8,18 +8,17 @@ import {DashboardBrick} from "../types/types";
 @Component({
     // language=Vue
     template: `
-        <v-card dark :color="block.color">
-            <v-card-title primary-title>
+        <v-card dark class="dashboard-card" :class="{ 'dashboard-border': !block.hasNotBorderLeft }">
+        <v-card-title primary-title class="pb-2 dashboard-card-string">
                 <div>{{ block.name }}</div>
             </v-card-title>
-            <v-container fluid>
-                <v-layout row>
+            <v-container fluid pl-3 pt-0>
+                <v-layout row class="mx-0 py-2 dashboard-card-big-nums">
                     <div class="headline">
-                        <v-icon>{{ block.icon }}</v-icon>
                         <span><b>{{ block.mainValue }}</b></span>
                     </div>
                 </v-layout>
-                <v-layout row>
+                <v-layout row class="mx-0 dashboard-card-small-nums">
                     <div>
                         <span><b>{{ block.secondValue }}</b> </span>
                         <span>{{ block.secondValueDesc }}</span>
@@ -38,8 +37,8 @@ export class DashboardBrickComponent extends UI {
 @Component({
     // language=Vue
     template: `
-        <v-container v-if="data" grid-list-md text-xs-center fluid>
-            <v-layout row wrap>
+        <v-container v-if="data"px-0 grid-list-md text-xs-center fluid>
+            <v-layout class="dashboard-wrap px-4"  row wrap>
                 <v-flex xl6 lg6 md6 sm12 xs12>
                     <dashboard-brick-component :block="blocks[0]"></dashboard-brick-component>
                 </v-flex>
@@ -72,16 +71,13 @@ export class DividendDashboardComponent extends UI {
             name: "Всего получено дивидендов",
             mainValue: Filters.formatMoneyAmount(newValue.dividendsTotal, true),
             secondValue: Filters.formatMoneyAmount(newValue.dividendsTotalInAlternativeCurrency, true),
-            color: "blue",
-            icon: "fas fa-briefcase"
+            hasNotBorderLeft: true
         };
         this.blocks[1] = {
             name: "Дивидендная доходность",
             mainValue: newValue.avgProfit,
             secondValue: newValue.lastYearYield,
             secondValueDesc: "Прибыль за последний год",
-            color: "orange",
-            icon: "fas fa-money-bill-alt"
         };
     }
 }

@@ -50,12 +50,6 @@ const MainStore = namespace(StoreType.MAIN);
                 <v-card flat>
                     <v-card-text>
                         <table>
-                            <thead>
-                            <tr>
-                                <th style="width: 250px"></th>
-                                <th></th>
-                            </tr>
-                            </thead>
                             <tbody>
                             <tr>
                                 <td>Профессиональный режим</td>
@@ -81,7 +75,7 @@ const MainStore = namespace(StoreType.MAIN);
                             </tr>
                             <tr>
                                 <td>Брокер</td>
-                                <td>{{props.item.broker}}</td>
+                                <td>{{props.item.brokerName}}</td>
                             </tr>
                             <tr>
                                 <td>Настройка доступа</td>
