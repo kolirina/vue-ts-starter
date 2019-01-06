@@ -1,0 +1,81 @@
+.dashboard {
+  &-wrap {
+    background-color: $dashboard--bg-color;
+  }
+
+  &-card {
+    background-color: inherit !important;
+    box-shadow: none !important;
+    height: 100%;
+  }
+
+  &-card-big-nums {
+    font-family: $dashbord--big-num--font-family;
+    font-size: $dashbord--big-num--font-size;
+    font-weight: $dashbord--big-num--font-weight;
+    color: $dashbord--big-num--font-color;
+  }
+
+  &-card-string {
+    font-family: $dashbord--string--font-family;
+    font-size: $dashbord--string--font-size;
+    font-weight: $dashbord--string--font-weight;
+    color: $dashbord--string--font-color;
+  }
+
+  &-card-small-nums {
+    font-family: $dashbord--num--font-family;
+    font-size: $dashbord--num--font-size;
+    font-weight: $dashbord--num--font-weight;
+    color: $dashbord--num--font-color;
+  }
+
+  &-summary-income {
+    display: flex;
+    align-items: center;
+
+    &-icon {
+      background-color: $dashbord--icon-circle--color;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      i {
+        font-size: 20px;
+        font-weight: bold;
+      }
+      
+    }
+    &.arrow-up &-icon i {
+      color: $dashboard--green-color !important;
+    }
+    &.arrow-down &-icon i {
+      color: $dashboard--red-color !important;
+    }
+
+    &-text {
+      margin-left: 12px;
+      font-size: 16px;
+      font-family: 'Gilroy Semibold';
+    }
+
+    &.arrow-up &-text {
+      color: $dashboard--green-color !important;
+    }
+    &.arrow-down &-text {
+      color: $dashboard--red-color !important;
+    }
+  }
+
+
+  &-border {
+    border-left: 1px solid #fff;
+
+    @media(max-width: $md-breakpoint) {
+      border-left: none;
+    }
+  }
+}
