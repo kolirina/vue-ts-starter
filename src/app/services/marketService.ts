@@ -52,7 +52,7 @@ export class MarketService {
     /**
      * Загружает и возвращает список акций
      */
-    async loadStocks(offset = 0, pageSize = 50, sortColumn: string, descending = false): Promise<PageableResponse<Stock>> {
+    async loadStocks(offset: number = 0, pageSize: number = 50, sortColumn: string, descending: boolean = false): Promise<PageableResponse<Stock>> {
         return (await HTTP.INSTANCE.get(`/market/stocks`, {
             params: {
                 pageSize, offset, sortColumn: sortColumn ? sortColumn.toUpperCase() : null, descending
@@ -63,7 +63,7 @@ export class MarketService {
     /**
      * Загружает и возвращает список облигаций
      */
-    async loadBonds(offset = 0, pageSize = 50, sortColumn: string, descending = false): Promise<PageableResponse<Bond>> {
+    async loadBonds(offset: number = 0, pageSize: number = 50, sortColumn: string, descending: boolean = false): Promise<PageableResponse<Bond>> {
         return (await HTTP.INSTANCE.get(`/market/bonds`, {
             params: {
                 pageSize, offset, sortColumn: sortColumn ? sortColumn.toUpperCase() : null, descending

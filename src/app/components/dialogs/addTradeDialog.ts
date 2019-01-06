@@ -264,8 +264,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             return;
         }
         this.shareSearch = true;
-        const delay = new Promise((resolve, reject) => {
-            this.currentTimer = setTimeout(async () => {
+        const delay = new Promise((resolve, reject): void => {
+            this.currentTimer = setTimeout(async (): Promise<void> => {
                 try {
                     if (this.assetType === AssetType.STOCK) {
                         this.filteredShares = await this.marketService.searchStocks(this.searchQuery);

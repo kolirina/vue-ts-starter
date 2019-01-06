@@ -43,7 +43,7 @@ export class TradeService {
      * @param {string} ticker тикер
      * @returns {Promise<TradeRow[]>}
      */
-    async loadTrades(id: string, offset = 0, limit = 50, sortColumn: string, descending = false): Promise<TradeRow[]> {
+    async loadTrades(id: string, offset: number = 0, limit: number = 50, sortColumn: string, descending: boolean = false): Promise<TradeRow[]> {
         return (await HTTP.INSTANCE.get(`/trades/${id}`, {
             params: {
                 offset, limit, sortColumn: sortColumn ? sortColumn.toUpperCase() : null, descending
