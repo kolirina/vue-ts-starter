@@ -96,7 +96,7 @@ export class Dashboard extends UI {
             mainValue: Filters.formatMoneyAmount(newValue.profit, true),
             secondValue: newValue.percentProfit,
             isSummaryIncome: {
-                isUpward: parseInt(newValue.percentProfit) > 0
+                isUpward: parseInt(newValue.percentProfit, 10) > 0
             }
         };
         this.blocks[2] = {
