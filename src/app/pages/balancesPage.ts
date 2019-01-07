@@ -23,201 +23,202 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-    <v-container fluid class="selectable">
+        <v-container fluid class="selectable">
             <v-layout column wrap>
-            <v-flex xs12>
-                <v-card>
-                    <v-card-title>
-                        <span class="headline">Текущие остатки портфеля</span>
-                    </v-card-title>
-                    <v-card-text>
-                        <p>Перечислите все ценные бумаги и денежные остатки в составе портфеля.
-                        Старайтесь указывать верную дату и цену покупки бумаг - это повысит точность расчетов.</p>
-                        <p>
-                            Для максимальной гибкости (чтобы учесть облигации, повторные покупки, дивиденды) вы можете поочередно занести
-                            <a href="#/trades">все сделки портфеля</a>
-                            <v-tooltip :max-width="250" top>
-                                <i slot="activator" class="far fa-question-circle"></i>
-                                <span>
+                <v-flex xs12>
+                    <v-card>
+                        <v-card-title>
+                            <span class="headline">Текущие остатки портфеля</span>
+                        </v-card-title>
+                        <v-card-text>
+                            <p>Перечислите все ценные бумаги и денежные остатки в составе портфеля.
+                                Старайтесь указывать верную дату и цену покупки бумаг - это повысит точность расчетов.</p>
+                            <p>
+                                Для максимальной гибкости (чтобы учесть облигации, повторные покупки, дивиденды) вы можете поочередно занести
+                                <a href="#/trades">все сделки портфеля</a>
+                                <v-tooltip :max-width="250" top>
+                                    <i slot="activator" class="far fa-question-circle"></i>
+                                    <span>
                                     Через диалог добавления сделки добавляйте одна за другой все события портфеля:
                                     ввод и вывод денег, покупка и продажа бумаг, дивиденды, купоны, уплаченные налоги.
                                     Это наиболее долгий способ заполнить портфель, но в то же время максимально точный и гибкий.
                                 </span>
-                            </v-tooltip>
-                        </p>
-                        <div style="height: 50px"/>
-                        <v-layout row wrap justify-space-around>
-                            <v-flex d-flex xs5>
-                                <v-layout column wrap>
-                                    <div class="title">Добавить ценную бумагу</div>
-                                    <v-form ref="stockForm" v-model="stockFormIsValid" lazy-validation>
-                                        <v-flex>
-                                            <v-autocomplete v-model="share"
-                                                            required
-                                                            :rules="rulesShare"
-                                                            label="Тикер | Название ценной бумаги"
-                                                            append-icon="fas fa-building"
-                                                            clearable
-                                                            dense
-                                                            name="share"
-                                                            :hide-no-data="true"
-                                                            :items="filteredShares"
-                                                            :loading="shareSearch"
-                                                            :no-data-text="notFoundLabel"
-                                                            :no-filter="true"
-                                                            :search-input.sync="searchQuery"
-                                            >
-                                                <template slot="selection" slot-scope="data">
-                                                    {{ shareLabelSelected(data.item) }}
-                                                </template>
-                                                <template slot="item" slot-scope="data">
-                                                    {{ shareLabelListItem(data.item) }}
-                                                </template>
-                                            </v-autocomplete>
-                                        </v-flex>
-                                        <v-flex>
-                                            <v-menu v-model="dateMenuValue"
-                                                    full-width
-                                                    lazy
-                                                    min-width="290px"
-                                                    offset-y
-                                                    ref="dateMenu"
-                                                    transition="scale-transition"
-                                                    :close-on-content-click="false"
-                                                    :return-value.sync="date"
-                                            >
-                                                <v-text-field  v-model="date"
-                                                                required
-                                                                :rules="rulesDate"
-                                                                slot="activator"
-                                                                label="Дата покупки"
-                                                                append-icon="event"
-                                                                readonly
-                                                ></v-text-field>
-                                                <v-date-picker v-model="date"
-                                                                locale="ru"
-                                                                :no-title="true"
-                                                                :first-day-of-week="1"
-                                                                @input="$refs.dateMenu.save(date)"
-                                                ></v-date-picker>
-                                            </v-menu>
-                                        </v-flex>
-                                        <v-flex>
-                                            <ii-number-field v-model="quantity"
-                                                                required
-                                                                :rules="rulesQuantity"
-                                                                append-icon="fas fa-plus"
-                                                                decimals="0"
-                                                                label="Количество"
-                                                                name="quantity"
-                                                                @keyup="calculateOnQuantity"
-                                                                @change="changeOnQuantity"
-                                            ></ii-number-field>
-                                        </v-flex>
-                                        <v-flex class="subtitle" v-if="closePrice !== null">
-                                            Цена закрытия: <b>{{ closePrice.amount.toString() }} {{ closePrice.currencySymbol }}</b>
-                                            <v-icon color="primary"
-                                                    title="указать в цене сделки"
-                                                    style="cursor: pointer"
-                                                    @click.native="price = closePrice.amount.toString(); calculateOnPrice()"
-                                            >fas fa-arrow-alt-circle-down</v-icon>
-                                        </v-flex>
-                                        <v-layout wrap>
+                                </v-tooltip>
+                            </p>
+                            <div style="height: 50px"/>
+                            <v-layout row wrap justify-space-around>
+                                <v-flex d-flex xs5>
+                                    <v-layout column wrap>
+                                        <div class="title">Добавить ценную бумагу</div>
+                                        <v-form ref="stockForm" v-model="stockFormIsValid" lazy-validation>
                                             <v-flex>
-                                            <ii-number-field v-model="price"
-                                                                append-icon="fas fa-money-bill-alt"
-                                                                label="Цена акции"
-                                                                messages="укажите цену акции или стоимость сделки"
-                                                                name="price"
+                                                <v-autocomplete v-model="share"
                                                                 required
-                                                                :rules="rulesPrice"
-                                                                @keyup="calculateOnPrice"
-                                            ></ii-number-field>
+                                                                :rules="rulesShare"
+                                                                label="Тикер | Название ценной бумаги"
+                                                                append-icon="fas fa-building"
+                                                                clearable
+                                                                dense
+                                                                name="share"
+                                                                :hide-no-data="true"
+                                                                :items="filteredShares"
+                                                                :loading="shareSearch"
+                                                                :no-data-text="notFoundLabel"
+                                                                :no-filter="true"
+                                                                :search-input.sync="searchQuery"
+                                                >
+                                                    <template slot="selection" slot-scope="data">
+                                                        {{ shareLabelSelected(data.item) }}
+                                                    </template>
+                                                    <template slot="item" slot-scope="data">
+                                                        {{ shareLabelListItem(data.item) }}
+                                                    </template>
+                                                </v-autocomplete>
                                             </v-flex>
-                                            <v-flex/>
-                                             <ii-number-field v-model="total"
-                                                                append-icon="fas fa-money-bill-alt"
-                                                                decimals="2"
-                                                                label="Стоимость позиции"
-                                                                messages="укажите цену акции или стоимость сделки"
-                                                                name="total"
-                                                                required
-                                                                :rules="rulesPrice"
-                                                                @keyup="calculateOnTotal"
-                                                                @change="changeOnTotal"
-                                            ></ii-number-field>
-                                        </v-layout>
-                                    </v-form>
-                                    <v-spacer></v-spacer>
-                                    <div>
-                                        <v-btn color="primary"
-                                                :loading="processState"
-                                                :disabled="!stockFormIsValid || processState"
-                                                @click.native="addStock()"
-                                        >
-                                            Добавить
-                                            <span slot="loader" class="custom-loader">
-                                                <v-icon light>fas fa-spinner fa-spin</v-icon>
-                                            </span>
-                                        </v-btn>
-                                    </div>
-                                </v-layout>
-                            </v-flex>
-                            <v-flex d-flex xs5>
-                                <v-layout column wrap>
-                                    <div class="title">Добавить остатки денежных средств</div>
-                                    <v-form ref="moneyForm" v-model="moneyFormIsValid" lazy-validation>
-                                        <v-flex xs12>
+                                            <v-flex>
+                                                <v-menu v-model="dateMenuValue"
+                                                        full-width
+                                                        lazy
+                                                        min-width="290px"
+                                                        offset-y
+                                                        ref="dateMenu"
+                                                        transition="scale-transition"
+                                                        :close-on-content-click="false"
+                                                        :return-value.sync="date"
+                                                >
+                                                    <v-text-field v-model="date"
+                                                                  required
+                                                                  :rules="rulesDate"
+                                                                  slot="activator"
+                                                                  label="Дата покупки"
+                                                                  append-icon="event"
+                                                                  readonly
+                                                    ></v-text-field>
+                                                    <v-date-picker v-model="date"
+                                                                   locale="ru"
+                                                                   :no-title="true"
+                                                                   :first-day-of-week="1"
+                                                                   @input="$refs.dateMenu.save(date)"
+                                                    ></v-date-picker>
+                                                </v-menu>
+                                            </v-flex>
+                                            <v-flex>
+                                                <ii-number-field v-model="quantity"
+                                                                 required
+                                                                 :rules="rulesQuantity"
+                                                                 append-icon="fas fa-plus"
+                                                                 decimals="0"
+                                                                 label="Количество"
+                                                                 name="quantity"
+                                                                 @keyup="calculateOnQuantity"
+                                                                 @change="changeOnQuantity"
+                                                ></ii-number-field>
+                                            </v-flex>
+                                            <v-flex class="subtitle" v-if="closePrice !== null">
+                                                Цена закрытия: <b>{{ closePrice.amount.toString() }} {{ closePrice.currencySymbol }}</b>
+                                                <v-icon color="primary"
+                                                        title="указать в цене сделки"
+                                                        style="cursor: pointer"
+                                                        @click.native="price = closePrice.amount.toString(); calculateOnPrice()"
+                                                >fas fa-arrow-alt-circle-down
+                                                </v-icon>
+                                            </v-flex>
                                             <v-layout wrap>
-                                                <v-flex xs12 lg8>
-                                                    <ii-number-field v-model="moneyField"
-                                                                        requered
-                                                                        :rules="rulesMoney"
-                                                                        append-icon="fas fa-money-bill-alt"
-                                                                        decimals="2"
-                                                                        label="Сумма"
+                                                <v-flex>
+                                                    <ii-number-field v-model="price"
+                                                                     append-icon="fas fa-money-bill-alt"
+                                                                     label="Цена акции"
+                                                                     messages="укажите цену акции или стоимость сделки"
+                                                                     name="price"
+                                                                     required
+                                                                     :rules="rulesPrice"
+                                                                     @keyup="calculateOnPrice"
                                                     ></ii-number-field>
                                                 </v-flex>
-                                                <v-spacer></v-spacer>
-                                                <v-flex xs12 lg3>
-                                                    <v-select v-model="moneyCurrency"
-                                                                label="Валюта сделки"
-                                                                :items="currencyList"></v-select>
-                                                </v-flex>
+                                                <v-flex/>
+                                                <ii-number-field v-model="total"
+                                                                 append-icon="fas fa-money-bill-alt"
+                                                                 decimals="2"
+                                                                 label="Стоимость позиции"
+                                                                 messages="укажите цену акции или стоимость сделки"
+                                                                 name="total"
+                                                                 required
+                                                                 :rules="rulesPrice"
+                                                                 @keyup="calculateOnTotal"
+                                                                 @change="changeOnTotal"
+                                                ></ii-number-field>
                                             </v-layout>
-                                        </v-flex>
-                                    </v-form>
-                                    <div>
-                                        <v-btn color="primary"
-                                            :loading="processState"
-                                            :disabled="!moneyFormIsValid || processState"
-                                            @click.native="addMoney()"
-                                        >
-                                            Добавить
-                                            <span slot="loader" class="custom-loader">
+                                        </v-form>
+                                        <v-spacer></v-spacer>
+                                        <div>
+                                            <v-btn color="primary"
+                                                   :loading="processState"
+                                                   :disabled="!stockFormIsValid || processState"
+                                                   @click.native="addStock()"
+                                            >
+                                                Добавить
+                                                <span slot="loader" class="custom-loader">
                                                 <v-icon light>fas fa-spinner fa-spin</v-icon>
                                             </span>
-                                        </v-btn>
-                                    </div>
-                                </v-layout>
-                            </v-flex>
-                        </v-layout>
-                    </v-card-text>
-                </v-card>
-            </v-flex>
-        </v-layout>
-        <v-card>
-            <v-card-text class="text-xs-center title">
-                Текущая стоимость портфеля:
-                <a href="#/portfolio" style="text-decoration: none">
+                                            </v-btn>
+                                        </div>
+                                    </v-layout>
+                                </v-flex>
+                                <v-flex d-flex xs5>
+                                    <v-layout column wrap>
+                                        <div class="title">Добавить остатки денежных средств</div>
+                                        <v-form ref="moneyForm" v-model="moneyFormIsValid" lazy-validation>
+                                            <v-flex xs12>
+                                                <v-layout wrap>
+                                                    <v-flex xs12 lg8>
+                                                        <ii-number-field v-model="moneyField"
+                                                                         requered
+                                                                         :rules="rulesMoney"
+                                                                         append-icon="fas fa-money-bill-alt"
+                                                                         decimals="2"
+                                                                         label="Сумма"
+                                                        ></ii-number-field>
+                                                    </v-flex>
+                                                    <v-spacer></v-spacer>
+                                                    <v-flex xs12 lg3>
+                                                        <v-select v-model="moneyCurrency"
+                                                                  label="Валюта сделки"
+                                                                  :items="currencyList"></v-select>
+                                                    </v-flex>
+                                                </v-layout>
+                                            </v-flex>
+                                        </v-form>
+                                        <div>
+                                            <v-btn color="primary"
+                                                   :loading="processState"
+                                                   :disabled="!moneyFormIsValid || processState"
+                                                   @click.native="addMoney()"
+                                            >
+                                                Добавить
+                                                <span slot="loader" class="custom-loader">
+                                                <v-icon light>fas fa-spinner fa-spin</v-icon>
+                                            </span>
+                                            </v-btn>
+                                        </div>
+                                    </v-layout>
+                                </v-flex>
+                            </v-layout>
+                        </v-card-text>
+                    </v-card>
+                </v-flex>
+            </v-layout>
+            <v-card>
+                <v-card-text class="text-xs-center title">
+                    Текущая стоимость портфеля:
+                    <a href="#/portfolio" style="text-decoration: none">
                     <span :class="portfolio.portfolioParams.viewCurrency.toLowerCase()">
                         {{ this.portfolio.overview.dashboardData.currentCost | amount(true) }}
                     </span>
-                </a>
-            </v-card-text>
-        </v-card>
-        <balances-table :assets="portfolio.overview.assetRows" :stocks="portfolio.overview.stockPortfolio.rows" :loading="processState"/>
-    </v-container>
+                    </a>
+                </v-card-text>
+            </v-card>
+            <balances-table :assets="portfolio.overview.assetRows" :stocks="portfolio.overview.stockPortfolio.rows" :loading="processState"/>
+        </v-container>
     `,
     components: {AssetTable, BalancesTable, StockTable}
 })
@@ -295,15 +296,15 @@ export class BalancesPage extends UI implements TradeDataHolder {
 
     private price: string = null;
 
-    private rulesDate = [(val: string) => !!val || "выберите дату"];
+    private rulesDate = [(val: string): boolean | string => !!val || "выберите дату"];
 
-    private rulesMoney = [(val: string) => !!val || "укажите цену акции или стоимость сделки"];
+    private rulesMoney = [(val: string): boolean | string => !!val || "укажите цену акции или стоимость сделки"];
 
-    private rulesPrice = [(val: string) => !!val || "укажите цену акции или стоимость сделки"];
+    private rulesPrice = [(val: string): boolean | string => !!val || "укажите цену акции или стоимость сделки"];
 
-    private rulesShare = [(val: string) => !!val || "выберите акцию"];
+    private rulesShare = [(val: string): boolean | string => !!val || "выберите акцию"];
 
-    private rulesQuantity = [(val: string) => !!val || "укажите количество"];
+    private rulesQuantity = [(val: string): boolean | string => !!val || "укажите количество"];
 
     private stockFormIsValid = true;
 
@@ -375,8 +376,8 @@ export class BalancesPage extends UI implements TradeDataHolder {
             return;
         }
         this.shareSearch = true;
-        const delay = new Promise((resolve, reject) => {
-            this.currentTimer = setTimeout(async () => {
+        const delay = new Promise((resolve, reject): void => {
+            this.currentTimer = setTimeout(async (): Promise<void> => {
                 try {
                     this.filteredShares = await this.marketService.searchStocks(this.searchQuery);
                     this.shareSearch = false;

@@ -9,16 +9,16 @@ import {NumberMask} from "../mixins/numberMask";
 })
 export class IINumberField extends Vue {
 
-    private get internalValue() {
+    private get internalValue(): any {
         return (this as any).lazyValue;
     }
 
-    private set internalValue(val) {
+    private set internalValue(val: any) {
         (this as any).lazyValue = (this as any).unmaskText((this as any).maskText((this as any).unmaskText(val)));
         (this as any).setSelectionRange();
     }
 
-    private onInput(e: any) {
+    private onInput(e: any): void {
         (this as any).internalChange = true;
         (this as any).resetSelections(e.target);
         (this as any).internalValue = e.target.value;

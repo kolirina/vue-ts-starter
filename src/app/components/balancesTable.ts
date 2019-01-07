@@ -83,7 +83,7 @@ export class BalancesTable extends UI {
     }
 
     @Watch("portfolio")
-    private onPortfolioChange() {
+    private onPortfolioChange(): void {
         this.balancesTableRow = [];
         for (const row of this.stocks) {
             this.balancesTableRow.push({

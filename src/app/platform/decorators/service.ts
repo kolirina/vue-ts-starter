@@ -5,6 +5,7 @@
  * @return {<T extends Function>(target: T) => T} конструктор
  * @constructor
  */
+// tslint:disable-next-line
 export function Service(className: string) {
     // tslint:disable-next-line
     return function <T extends Function>(target: T): T {

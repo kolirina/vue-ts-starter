@@ -8,7 +8,7 @@ import {isMaskDelimiter, maskText as _maskText, unmaskText as _unmaskText} from 
 })
 export class NumberMask extends Vue {
 
-    @Prop({type: String, default: "6" })
+    @Prop({type: String, default: "6"})
     decimals: string;
 
     private maskText(text: string): string {
@@ -46,7 +46,7 @@ export class NumberMask extends Vue {
         return text ? text.replace(new RegExp(/ /, "g"), "") : text;
     }
 
-    private resetSelections(input: any) {
+    private resetSelections(input: any): void {
         if (!input.selectionEnd) {
             return;
         }
@@ -63,7 +63,7 @@ export class NumberMask extends Vue {
         }
     }
 
-    private updateRange() {
+    private updateRange(): void {
         if (!(this as any).$refs.input) {
             return;
         }
