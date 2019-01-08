@@ -21,6 +21,22 @@
       true,
       "no-public"
     ],
+    /** Обязательное указание типов для возвращаемого результата */
+    "typedef": [
+      true,
+      "call-signature",
+      "arrow-call-signature",
+      "parameter",
+      //"arrow-parameter",
+      "property-declaration"
+    ],
+    /** Явно типы указывать не нужно для переменных и для инициализируемых параметров */
+    "no-inferrable-types": [
+      true,
+      "ignore-params",
+      "ignore-properties"
+    ],
+    "use-default-type-parameter": true,
     /** Схема расположения объектов как для java классов */
     "member-ordering": {
       "options": {
@@ -38,14 +54,14 @@
     },
     /** Разрешаем столько классов в одном файле, сколько требуется */
     "max-classes-per-file": false,
+    /** Отключаем экспорт класса по умолчанию */
+    "no-default-export": true,
     "arrow-parens": false,
     // Pending fix for shorthand property names.
     "object-literal-sort-keys": false,
     "object-literal-key-quotes": false,
     "no-bitwise": false,
     "strictPropertyInitialization": false,
-    /** Явно типы указывать не нужно для переменных и для инициализируемых параметров */
-    "no-inferrable-types": true,
     /** Краткий стиль указания свойств в JSON объекте делаем необязательным */
     "object-literal-shorthand": false,
     /** Разрешаем указывать и типы и интерфейсы */

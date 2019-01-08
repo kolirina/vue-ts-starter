@@ -2,9 +2,12 @@ import {Container} from "typescript-ioc";
 import Vue from "vue";
 import VueRouter from "vue-router";
 import {RouteConfig} from "vue-router/types/router";
+import {BalancesPage} from "../pages/balancesPage";
 import {BondInfoPage} from "../pages/bondInfoPage";
 import {CombinedPortfolioPage} from "../pages/combinedPortfolioPage";
+import {DividendsPage} from "../pages/dividendsPage";
 import {EventsPage} from "../pages/eventsPage";
+import {HelpPage} from "../pages/helpPage";
 import {PortfolioPage} from "../pages/portfolioPage";
 import {QuotesPage} from "../pages/quotes/quotesPage";
 import {ExportPage} from "../pages/settings/exportPage";
@@ -41,7 +44,7 @@ export class RouterConfiguration {
             RouterConfiguration.router = new VueRouter({
                 base: "/",
                 routes: RouterConfiguration.createRoutes(),
-                scrollBehavior: (() => ({x: 0, y: 0}))
+                scrollBehavior: ((): any => ({x: 0, y: 0}))
             });
         }
         return RouterConfiguration.router;
@@ -52,11 +55,11 @@ export class RouterConfiguration {
             {
                 path: "/logout",
                 name: "logout",
-                beforeEnter: () => (Container.get(LogoutService) as LogoutService).logout()
+                beforeEnter: (): Promise<void> => (Container.get(LogoutService) as LogoutService).logout()
             },
             {
                 path: "*",
-                beforeEnter: () => {
+                beforeEnter: (): void => {
                     console.log("BEFORE ENTER");
                 },
                 redirect: "/portfolio"
@@ -70,6 +73,11 @@ export class RouterConfiguration {
                 name: "events",
                 path: "/events",
                 component: EventsPage
+            },
+            {
+                name: "dividends",
+                path: "/dividends",
+                component: DividendsPage
             },
             {
                 name: "trades",
@@ -102,6 +110,11 @@ export class RouterConfiguration {
                 component: SettingsPage
             },
             {
+                name: "help",
+                path: "/help",
+                component: HelpPage
+            },
+            {
                 name: "export",
                 path: "/export",
                 component: ExportPage
@@ -130,6 +143,11 @@ export class RouterConfiguration {
                 name: "notifications",
                 path: "/notifications",
                 component: NotificationsPage
+            },
+            {
+                name: "balances",
+                path: "/balances",
+                component: BalancesPage
             }
         ];
     }

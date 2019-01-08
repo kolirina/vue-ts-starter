@@ -13,11 +13,12 @@ import {SectorsChart} from "../components/charts/sectorsChart";
 import {StockPieChart} from "../components/charts/stockPieChart";
 import {CombinedPortfoliosTable} from "../components/combinedPortfoliosTable";
 import {StockTable} from "../components/stockTable";
-import {PortfolioService} from "../services/portfolioService";
+import {ClientInfo} from "../services/clientService";
+import {OverviewService} from "../services/overviewService";
 import {BigMoney} from "../types/bigMoney";
 import {HighStockEventsGroup, SectorChartData} from "../types/charts/types";
 import {CombinedData} from "../types/eventObjects";
-import {ClientInfo, Overview} from "../types/types";
+import {Overview} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
 import {StoreType} from "../vuex/storeType";
 
@@ -44,7 +45,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 <v-btn color="info" @click.stop="doCombinedPortfolio">Сформировать</v-btn>
                             </v-flex>
                             <v-flex xs6>
-                                <v-select :items="['RUB', 'USD']" v-model="viewCurrency" label="Валюта представления" @change="doCombinedPortfolio"
+                                <v-select :items="['RUB', 'USD', 'EUR']" v-model="viewCurrency" label="Валюта представления" @change="doCombinedPortfolio"
                                           single-line></v-select>
                             </v-flex>
                         </v-layout>
@@ -141,7 +142,7 @@ export class CombinedPortfolioPage extends UI {
     private clientInfo: ClientInfo;
 
     @Inject
-    private portfolioService: PortfolioService;
+    private overviewService: OverviewService;
 
     private overview: Overview = null;
     private viewCurrency = "RUB";
@@ -158,21 +159,21 @@ export class CombinedPortfolioPage extends UI {
 
     private async doCombinedPortfolio(): Promise<void> {
         const ids = this.clientInfo.user.portfolios.filter(value => value.combined).map(value => value.id);
-        this.overview = await this.portfolioService.getPortfolioOverviewCombined({ids: ids, viewCurrency: this.viewCurrency});
-        this.lineChartData = await this.portfolioService.getCostChartCombined({ids: ids, viewCurrency: this.viewCurrency});
-        this.eventsChartData = await this.portfolioService.getEventsChartDataCombined({ids: ids, viewCurrency: this.viewCurrency});
+        this.overview = await this.overviewService.getPortfolioOverviewCombined({ids: ids, viewCurrency: this.viewCurrency});
+        this.lineChartData = await this.overviewService.getCostChartCombined({ids: ids, viewCurrency: this.viewCurrency});
+        this.eventsChartData = await this.overviewService.getEventsChartDataCombined({ids: ids, viewCurrency: this.viewCurrency});
         this.stockPieChartData = this.doStockPieChartData();
         this.bondPieChartData = this.doBondPieChartData();
         this.sectorsChartData = ChartUtils.doSectorsChartData(this.overview);
     }
 
     private async onSetCombined(data: CombinedData): Promise<void> {
-        await this.portfolioService.setCombinedFlag(data.id, data.combined);
+        await this.overviewService.setCombinedFlag(data.id, data.combined);
     }
 
     private doStockPieChartData(): DataPoint[] {
         const data: DataPoint[] = [];
-        this.overview.stockPortfolio.rows.filter(value => value.currCost != "0").forEach(row => {
+        this.overview.stockPortfolio.rows.filter(value => value.currCost !== "0").forEach(row => {
             data.push({
                 name: row.stock.shortname,
                 y: new Decimal(new BigMoney(row.currCost).amount.abs().toString()).toDP(2, Decimal.ROUND_HALF_UP).toNumber()
@@ -183,7 +184,7 @@ export class CombinedPortfolioPage extends UI {
 
     private doBondPieChartData(): DataPoint[] {
         const data: DataPoint[] = [];
-        this.overview.bondPortfolio.rows.filter(value => value.currCost != "0").forEach(row => {
+        this.overview.bondPortfolio.rows.filter(value => value.currCost !== "0").forEach(row => {
             data.push({
                 name: row.bond.shortname,
                 y: new Decimal(new BigMoney(row.currCost).amount.abs().toString()).toDP(2, Decimal.ROUND_HALF_UP).toNumber()

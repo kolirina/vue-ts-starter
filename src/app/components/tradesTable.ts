@@ -1,29 +1,25 @@
 import Component from "vue-class-component";
 import {Prop, Watch} from "vue-property-decorator";
 import {UI} from "../app/ui";
+import {TradeFields} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
 import {Operation} from "../types/operation";
 import {TableHeader, TablePagination, TradeRow} from "../types/types";
 import {TradeUtils} from "../utils/tradeUtils";
 import {StoreType} from "../vuex/storeType";
 import {AddTradeDialog} from "./dialogs/addTradeDialog";
-import {ConfirmDialog} from "./dialogs/confirmDialog";
-import {BtnReturn} from "./dialogs/customDialog";
 
 @Component({
     // language=Vue
     template: `
         <v-data-table :headers="headers" :items="trades" item-key="id" :pagination.sync="tradePagination.pagination"
-                      :total-items="tradePagination.totalElements"
+                      :total-items="tradePagination.totalItems"
                       :loading="tradePagination.loading" hide-actions>
             <template slot="items" slot-scope="props">
                 <tr @click="props.expanded = !props.expanded">
                     <td>
-                        <router-link v-if="props.item.asset === 'STOCK'" :to="{name: 'share-info', params: {ticker: props.item.ticker}}">{{
-                            props.item.ticker }}
-                        </router-link>
-                        <router-link v-if="props.item.asset === 'BOND'" :to="{name: 'bond-info', params: {isin: props.item.ticker}}">{{ props.item.ticker }}
-                        </router-link>
+                        <stock-link v-if="props.item.asset === 'STOCK'" :ticker="props.item.ticker"></stock-link>
+                        <bond-link v-if="props.item.asset === 'BOND'" :ticker="props.item.ticker"></bond-link>
                         <span v-if="props.item.asset === 'MONEY'">{{ props.item.ticker }}</span>
                     </td>
                     <td>{{ props.item.companyName }}</td>
@@ -39,6 +35,12 @@ import {BtnReturn} from "./dialogs/customDialog";
                                 <v-icon color="primary" small>fas fa-bars</v-icon>
                             </v-btn>
                             <v-list dense>
+                                <v-list-tile @click.stop="openEditTradeDialog(props.item)">
+                                    <v-list-tile-title>
+                                        <v-icon color="primary" small>fas fa-pencil-alt</v-icon>
+                                        Редактировать
+                                    </v-list-tile-title>
+                                </v-list-tile>
                                 <v-list-tile @click.stop="openTradeDialog(props.item, operation.BUY)">
                                     <v-list-tile-title>
                                         <v-icon color="primary" small>fas fa-plus</v-icon>
@@ -76,7 +78,7 @@ import {BtnReturn} from "./dialogs/customDialog";
                                     </v-list-tile-title>
                                 </v-list-tile>
                                 <v-divider></v-divider>
-                                <v-list-tile @click="deleteAllTrades(props.item)">
+                                <v-list-tile @click="deleteTrade(props.item)">
                                     <v-list-tile-title>
                                         <v-icon color="primary" small>fas fa-trash-alt</v-icon>
                                         Удалить
@@ -112,7 +114,8 @@ export class TradesTable extends UI {
         {text: "Количество", align: "right", value: "quantity", sortable: false},
         {text: "Цена", align: "right", value: "price", sortable: false},
         {text: "Комиссия", align: "right", value: "fee"},
-        {text: "Итого", align: "right", value: "signedTotal"}
+        {text: "Итого", align: "right", value: "signedTotal"},
+        {text: "Действия", align: "center", value: "actions", sortable: false, width: "25"}
     ];
 
     @Prop({default: [], required: true})
@@ -139,15 +142,30 @@ export class TradesTable extends UI {
         });
     }
 
-    private async deleteAllTrades(tradeRow: TradeRow): Promise<void> {
-        const result = await new ConfirmDialog().show(`Вы уверены, что хотите удалить все сделки по ценной бумаге?`);
-        if (result === BtnReturn.YES) {
-            console.log("TODO DELETE ALL TRADES");
-        }
+    private async openEditTradeDialog(tradeRow: TradeRow): Promise<void> {
+        const trade: TradeFields = {
+            ticker: tradeRow.ticker,
+            date: tradeRow.date,
+            quantity: parseInt(tradeRow.quantity, 10),
+            price: tradeRow.price,
+            facevalue: null,
+            nkd: null,
+            perOne: null,
+            fee: tradeRow.fee,
+            note: tradeRow.note,
+            keepMoney: false,
+            moneyAmount: tradeRow.moneyPrice,
+            currency: tradeRow.currency
+        };
+        await new AddTradeDialog().show({
+            store: this.$store.state[StoreType.MAIN],
+            router: this.$router,
+            tradeData: trade
+        });
     }
 
     private async deleteTrade(tradeRow: TradeRow): Promise<void> {
-        console.log("TODO DELETE TRADE", tradeRow);
+        this.$emit("delete", tradeRow);
     }
 
     private getPrice(trade: TradeRow): string {

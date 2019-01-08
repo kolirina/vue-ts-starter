@@ -6,6 +6,7 @@
  * @return конструктор перечисления
  * @constructor
  */
+// tslint:disable-next-line
 export function Enum(idProperty?: string) {
     // tslint:disable-next-line
     return function <T extends Function, V>(target: T): T {

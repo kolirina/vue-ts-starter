@@ -1,21 +1,17 @@
 import Decimal from "decimal.js";
-import {MaskOptions} from "imask";
-import {Moment} from "moment";
-import * as moment from "moment";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {Watch} from "vue-property-decorator";
 import {VueRouter} from "vue-router/types/router";
 import {MarketService} from "../../services/marketService";
-import {TradeService} from "../../services/tradeService";
+import {TradeFields, TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
 import {BigMoney} from "../../types/bigMoney";
 import {Operation} from "../../types/operation";
 import {TradeDataHolder} from "../../types/trade/tradeDataHolder";
 import {TradeMap} from "../../types/trade/tradeMap";
 import {TradeValue} from "../../types/trade/tradeValue";
-import {Bond, Portfolio, Share, TradeData} from "../../types/types";
-import {DateFormat} from "../../utils/dateUtils";
+import {Bond, Portfolio, Share} from "../../types/types";
 import {MainStore} from "../../vuex/mainStore";
 import {CustomDialog} from "./customDialog";
 
@@ -46,7 +42,6 @@ import {CustomDialog} from "./customDialog";
                                                 :loading="shareSearch"
                                                 :no-data-text="notFoundLabel"
                                                 clearable
-                                                cache-items
                                                 required
                                                 name="share"
                                                 :error-messages="errors.collect('share')"
@@ -89,7 +84,7 @@ import {CustomDialog} from "./customDialog";
                             </v-flex>
 
                             <v-flex v-if="shareAssetType" xs12>
-                                <v-text-field :label="priceLabel" v-model="price" v-mask="priceMask"
+                                <v-text-field :label="priceLabel" v-model="price"
                                               name="price"
                                               v-validate="'required'"
                                               :error-messages="errors.collect('price')"
@@ -238,14 +233,6 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     private currency = "RUB";
 
-    private priceMask: MaskOptions = {
-        mask: Number,
-        min: -10000,
-        max: 10000,
-        scale: 2,
-        thousandsSeparator: " "
-    };
-
     private searchQuery: string = null;
     /** Текущий объект таймера */
     private currentTimer: number = null;
@@ -261,25 +248,29 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     @Watch("assetType")
     private onAssetTypeChange(newValue: AssetType): void {
-        this.operation = this.assetType.operations[0];
+        if (this.data.operation === undefined) {
+            this.operation = this.assetType.operations[0];
+        } else {
+            this.operation = this.data.operation;
+        }
     }
 
     @Watch("searchQuery")
     private async onSearch(): Promise<void> {
         console.log("SEARCH", this.searchQuery);
+        clearTimeout(this.currentTimer);
         if (!this.searchQuery || this.searchQuery.length <= 2) {
+            this.shareSearch = false;
             return;
         }
-        clearTimeout(this.currentTimer);
         this.shareSearch = true;
-        const delay = new Promise((resolve, reject) => {
-            this.currentTimer = setTimeout(async () => {
+        const delay = new Promise((resolve, reject): void => {
+            this.currentTimer = setTimeout(async (): Promise<void> => {
                 try {
                     if (this.assetType === AssetType.STOCK) {
                         this.filteredShares = await this.marketService.searchStocks(this.searchQuery);
                     } else if (this.assetType === AssetType.BOND) {
                         this.filteredShares = await this.marketService.searchBonds(this.searchQuery);
-                        console.log("filtered bonds", this.filteredShares);
                     }
                     this.shareSearch = false;
                 } catch (error) {
@@ -391,7 +382,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         // if (!result) {
         //     return;
         // }
-        const trade: TradeData = {
+        const trade: TradeFields = {
             ticker: this.shareTicker,
             date: this.getDate(),
             quantity: this.getQuantity(),
@@ -415,12 +406,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
                 fields: trade
             });
             if (!errors) {
+                this.$snotify.info("Сделка успешно добавлена", "Выполнено");
                 this.close(true);
-                // this.$notify({
-                //     title: 'Выполнено',
-                //     message: 'Сделка успешно добавлена',
-                //     type: 'success'
-                // });
                 return;
             }
             // иначе обрабатываем ошибки валидации с сервера и отображаем
@@ -522,7 +509,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 export type TradeDialogData = {
     store: MainStore,
     router: VueRouter,
-    tradeData?: TradeData,
+    tradeData?: TradeFields,
     share?: Share,
     operation?: Operation,
     assetType?: AssetType

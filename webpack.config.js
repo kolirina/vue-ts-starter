@@ -2,7 +2,7 @@ var path = require('path');
 var webpack = require('webpack');
 
 module.exports = {
-    mode: "development",
+    mode: process.env.NODE_ENV,
     entry: './src/index.ts',
     output: {
         path: path.resolve(__dirname, './dist'),
@@ -28,6 +28,10 @@ module.exports = {
                 options: {
                     name: '[name].[ext]?[hash]'
                 }
+            },
+            {
+                test: /\.styl$/,
+                loader: ['style-loader', 'css-loader', 'stylus-loader']
             }
         ]
     },
@@ -49,19 +53,12 @@ module.exports = {
 };
 
 if (process.env.NODE_ENV === 'production') {
-    module.exports.devtool = '#source-map';
+    module.exports.devtool = '';
     // http://vue-loader.vuejs.org/en/workflow/production.html
     module.exports.plugins.push(...[
         new webpack.DefinePlugin({
             'process.env': {
                 NODE_ENV: '"production"'
-            }
-        }),
-        new webpack.optimize.DedupePlugin(),
-        new webpack.optimize.UglifyJsPlugin({
-            sourceMap: true,
-            compress: {
-                warnings: false
             }
         }),
         new webpack.optimize.AggressiveMergingPlugin(),

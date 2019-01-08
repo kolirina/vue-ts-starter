@@ -1,5 +1,5 @@
+import {PortfolioParams} from "../services/portfolioService";
 import {BaseChartDot, ColumnChartData, Dot, HighStockEventsGroup} from "./charts/types";
-import {Tariff} from "./tariff";
 
 export type _portfolioRow = {
     /** Прибыль */
@@ -17,21 +17,40 @@ export type AssetRow = _portfolioRow & {
 };
 
 export type TradeRow = {
+    /** Идентификатор сделки */
     id: string,
+    /** Дата */
     date: string,
+    /** Тип актива */
     asset: string,
+    /** Операция */
     operation: string,
+    /** Описание операции */
     operationLabel: string,
+    /** Валюта */
     currency: string,
+    /** Итоговая сумма сделки */
     signedTotal: string
+    /** Тикер */
     ticker?: string,
+    /** Название компании */
     companyName?: string,
+    /** Количество */
     quantity: string,
+    /** Идентификатор сделки */
     price: string,
+    /** Комиссия по сделке */
     fee: string,
+    /** Заметка */
     note?: string,
+    /** Цена, выраженная в деньгах. Для акций, начислений, дивидендов */
     moneyPrice?: string,
+    /** Цена, выраженная в процентах. Для облигаций */
     bondPrice?: string
+    /** Идентификатор связанной сделки по списанию/зачислению денежных средств. Может быть null, если у сделки нет связи */
+    moneyTradeId?: string;
+    /** Идентификатор связанной родительской сделки. Может быть null, если у сделки нет связи */
+    parentTradeId?: string;
 };
 
 export type _shareRow = _portfolioRow & {
@@ -217,20 +236,10 @@ export type DashboardBrick = {
     mainValue: string,
     secondValue: string,
     secondValueDesc?: string,
-    color: string,
-    icon: string
-};
-
-export type PortfolioParams = {
-    id: string,
-    name: string,
-    access: boolean,
-    fixFee: string,
-    viewCurrency: string,
-    accountType: string,
-    professionalMode: boolean,
-    openDate: string,
-    combined: boolean
+    hasNotBorderLeft?: boolean,
+    isSummaryIncome?: {
+        isUpward: boolean
+    }
 };
 
 /** Описание бэкапа портфеля */
@@ -242,55 +251,6 @@ export interface PortfolioBackup {
     /** Список дней для создания бэкапа */
     days: number[];
 }
-
-export class ClientInfo {
-
-    token: string;
-    user: Client;
-}
-
-export type Client = {
-    /** Идентификатор пользователя */
-    id: string,
-    /** Логин пользователя */
-    username: string,
-    /** email пользователя */
-    email: string,
-    /** Тариф */
-    tariff: string,
-    /** Дата, до которой оплачен тариф */
-    paidTill: string,
-    /** Признак подтвержденного email */
-    emailConfirmed: string,
-    /** Текущий идентификатор портфеля */
-    currentPortfolioId: string,
-    /** Список портфелей */
-    portfolios: PortfolioParams[],
-    /** Тип вознаграждения за реферальную программу */
-    referralAwardType: string,
-    /** Промо-код пользователя */
-    promoCode: string,
-    /** Признак блокировки аккаунта */
-    blocked: boolean;
-    /** Алиас для реферальной ссылки */
-    referralAlias: string;
-    /** Сумма подлежащая выплате по реферальной программе */
-    earnedTotalAmount: string;
-    /** Срок действия скидки */
-    nextPurchaseDiscountExpired: string;
-    /** Индивидуальная скидка на следующую покупку в системе */
-    nextPurchaseDiscount: number;
-    /** Количество портфелей в профиле пользователя */
-    portfoliosCount: number;
-    /** Общее количество ценнных бумаг в составе всех портфелей */
-    sharesCount: number;
-    /** Присутствуют ли во всех портфелях пользователя сделки по иностранным акциям */
-    foreignShares: boolean;
-    /** Сумма выплаченного вознаграждения реферреру за партнерскую программу */
-    referrerRepaidTotalAmount: string;
-    /** Сумма причитаемого вознаграждения реферреру за партнерскую программу */
-    referrerEarnedTotalAmount: string;
-};
 
 export type Share = {
     /** Идентификатору бумаги в системе */
@@ -357,6 +317,11 @@ export type Stock = Share & {
     moexId: string;
 };
 
+export type StockHistoryResponse = {
+    stock: Stock;
+    date: string;
+};
+
 export type Sector = {
     name: string;
     parent: Sector;
@@ -394,6 +359,11 @@ export type Bond = Share & {
     absolutePrice: string;
 };
 
+export type BondHistoryResponse = {
+    bond: Bond;
+    date: string;
+};
+
 /** Информация по акции */
 export type StockInfo = {
     /** Акция */
@@ -426,46 +396,6 @@ export type LoginRequest = {
 export type CombinedInfoRequest = {
     ids: string[],
     viewCurrency: string
-};
-
-export type TradeData = {
-    /** Тикер */
-    ticker: string,
-    /** Дата */
-    date: string,
-    /** Количество */
-    quantity: number,
-    /** Цена */
-    price: string,
-    /** Номинал */
-    facevalue: string,
-    /** НКД */
-    nkd: string,
-    /** Признак начисления на одну бумагу */
-    perOne: boolean,
-    /** Комиссия */
-    fee: string,
-    /** Заметка */
-    note: string,
-    /** Признак списания/зачисления денег */
-    keepMoney: boolean,
-    /** Сумма денег для списания/зачисления */
-    moneyAmount: string,
-    /** Валюта сделки */
-    currency: string
-};
-
-export type TradeDataRequest = {
-    /** Идентификатор портфеля */
-    portfolioId: string,
-    /** Признак добавления связанной сделки по деньгам */
-    createLinkedTrade: boolean,
-    /** Актив сделки */
-    asset: string,
-    /** Операция */
-    operation: string,
-    /** Поля, содержащию все необходимую информацию по сделке данного типа */
-    fields: TradeData
 };
 
 export type ErrorInfo = {

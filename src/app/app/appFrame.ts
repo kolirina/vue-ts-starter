@@ -2,11 +2,14 @@ import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
+import {BtnReturn} from "../components/dialogs/customDialog";
 import {FeedbackDialog} from "../components/dialogs/feedbackDialog";
+import {NotificationUpdateDialog} from "../components/dialogs/notificationUpdateDialog";
 import {ErrorHandler} from "../components/errorHandler";
 import {PortfolioSwitcher} from "../components/portfolioSwitcher";
-import {ClientService} from "../services/clientService";
-import {ClientInfo, Portfolio} from "../types/types";
+import {ClientInfo, ClientService} from "../services/clientService";
+import {Portfolio} from "../types/types";
+import {UiStateHelper} from "../utils/uiStateHelper";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {UI} from "./ui";
@@ -172,6 +175,9 @@ export class AppFrame extends UI {
     @MainStore.Action(MutationType.SET_CURRENT_PORTFOLIO)
     private setCurrentPortfolio: (id: string) => Promise<Portfolio>;
 
+    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
+    private reloadPortfolio: (id: string) => Promise<void>;
+
     private username: string = null;
 
     private password: string = null;
@@ -183,6 +189,9 @@ export class AppFrame extends UI {
     private severity = "info";
 
     private isInitialized = false;
+
+    /* Пользователь уведомлен об обновлениях */
+    private isNotifyAccepted = false;
 
     /**
      * Названия кэшируемых компонентов (страниц). В качестве названия необходимо указывать либо имя файла компонента (это его name)
@@ -200,6 +209,7 @@ export class AppFrame extends UI {
         {title: "Портфель", action: "portfolio", icon: "fas fa-briefcase"},
         {title: "Сделки", action: "trades", icon: "fas fa-list-alt"},
         {title: "События", action: "events", icon: "far fa-calendar-check"},
+        {title: "Дивиденды", action: "dividends", icon: "far fa-calendar-plus"},
         {title: "Комбинированный портфель", action: "combined-portfolio", icon: "fas fa-object-group"},
         {title: "Котировки", action: "quotes", icon: "fas fa-chart-area"},
         {title: "Информация", action: "share-info", params: {ticker: "GAZP"}, icon: "fas fa-info"}
@@ -216,13 +226,18 @@ export class AppFrame extends UI {
                 {title: "Уведомления", action: "notifications", icon: "fas fa-bell"}
             ]
         },
+<<<<<<< HEAD
         {title: "Профиль", action: "profile", icon: "fas fa-user"}
+=======
+        {title: "Справка", action: "help", icon: "far fa-question-circle"},
+>>>>>>> d617b63837bdc6231fa821819d7dcab6696c760d
     ];
 
     async created(): Promise<void> {
         // если удалось восстановить state, значит все уже загружено
         if (this.$store.state[StoreType.MAIN].clientInfo) {
             this.isInitialized = true;
+            this.isNotifyAccepted = UiStateHelper.lastUpdateNotification === NotificationUpdateDialog.DATE;
         }
     }
 
@@ -259,7 +274,20 @@ export class AppFrame extends UI {
     }
 
     private async openDialog(): Promise<void> {
-        await new AddTradeDialog().show({store: this.$store.state[StoreType.MAIN], router: this.$router});
+        const result = await new AddTradeDialog().show({store: this.$store.state[StoreType.MAIN], router: this.$router});
+        if (result) {
+            await this.reloadPortfolio(this.$store.state[StoreType.MAIN].clientInfo.user.currentPortfolioId);
+        }
+    }
+
+    private async openNotificationUpdateDialog(): Promise<void> {
+        const dlgReturn = await new NotificationUpdateDialog().show();
+        if (dlgReturn === BtnReturn.YES) {
+            UiStateHelper.lastUpdateNotification = NotificationUpdateDialog.DATE;
+            this.isNotifyAccepted = true;
+        } else if (dlgReturn === BtnReturn.SHOW_FEEDBACK) {
+            await new FeedbackDialog().show(this.clientInfo);
+        }
     }
 
     private async openFeedBackDialog(): Promise<void> {

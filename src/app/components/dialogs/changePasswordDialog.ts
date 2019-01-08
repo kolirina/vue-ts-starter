@@ -1,8 +1,7 @@
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {Vue} from "vue/types/vue";
-import {ClientService} from "../../services/clientService";
-import {ClientInfo} from "../../types/types";
+import {ClientInfo, ClientService} from "../../services/clientService";
 import {CustomDialog} from "./customDialog";
 
 /**

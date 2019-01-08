@@ -9,6 +9,7 @@ import {EventsAggregateInfo, EventService, ShareEvent} from "../services/eventSe
 import {AssetType} from "../types/assetType";
 import {Operation} from "../types/operation";
 import {Portfolio, TableHeader} from "../types/types";
+import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -78,12 +79,9 @@ const MainStore = namespace(StoreType.MAIN);
                                 <td>{{ props.item.label }}</td>
                                 <td>{{ props.item.share.shortname }}</td>
                                 <td>
-                                    <router-link v-if="props.item.type === 'DIVIDEND'" :to="{name: 'share-info', params: {ticker: props.item.share.ticker}}">
-                                        {{ props.item.share.ticker }}
-                                    </router-link>
-                                    <router-link v-if="props.item.type !== 'DIVIDEND'" :to="{name: 'bond-info', params: {isin: props.item.share.ticker}}">
-                                        {{ props.item.share.ticker }}
-                                    </router-link>
+                                    <stock-link v-if="props.item.type === 'DIVIDEND'" :ticker="props.item.share.ticker"></stock-link>
+
+                                    <bond-link v-if="props.item.type !== 'DIVIDEND'" :ticker="props.item.share.ticker"></bond-link>
                                 </td>
                                 <td class="text-xs-center">{{ props.item.date | date }}</td>
                                 <td class="text-xs-right">{{ props.item.period }}</td>
@@ -114,6 +112,8 @@ export class EventsPage extends UI {
 
     @MainStore.Getter
     private portfolio: Portfolio;
+    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
+    private reloadPortfolio: (id: string) => Promise<void>;
     @Inject
     private eventService: EventService;
     /** Признак загрузки данных */
@@ -151,13 +151,16 @@ export class EventsPage extends UI {
 
     private async openTradeDialog(event: ShareEvent): Promise<void> {
         const operation = Operation.valueByName(event.type);
-        await new AddTradeDialog().show({
+        const result = await new AddTradeDialog().show({
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
             share: event.share,
             operation,
             assetType: operation === Operation.DIVIDEND ? AssetType.STOCK : AssetType.BOND
         });
+        if (result) {
+            await this.reloadPortfolio(this.portfolio.id);
+        }
     }
 
     private async confirmDeleteAllEvents(): Promise<void> {

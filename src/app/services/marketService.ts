@@ -52,7 +52,7 @@ export class MarketService {
     /**
      * Загружает и возвращает список акций
      */
-    async loadStocks(offset = 0, pageSize = 50, sortColumn: string, descending = false): Promise<PageableResponse<Stock>> {
+    async loadStocks(offset: number = 0, pageSize: number = 50, sortColumn: string, descending: boolean = false): Promise<PageableResponse<Stock>> {
         return (await HTTP.INSTANCE.get(`/market/stocks`, {
             params: {
                 pageSize, offset, sortColumn: sortColumn ? sortColumn.toUpperCase() : null, descending
@@ -63,7 +63,7 @@ export class MarketService {
     /**
      * Загружает и возвращает список облигаций
      */
-    async loadBonds(offset = 0, pageSize = 50, sortColumn: string, descending = false): Promise<PageableResponse<Bond>> {
+    async loadBonds(offset: number = 0, pageSize: number = 50, sortColumn: string, descending: boolean = false): Promise<PageableResponse<Bond>> {
         return (await HTTP.INSTANCE.get(`/market/bonds`, {
             params: {
                 pageSize, offset, sortColumn: sortColumn ? sortColumn.toUpperCase() : null, descending
@@ -122,8 +122,8 @@ export class MarketService {
             const paymentType = eventItem.description.substring(0, eventItem.description.indexOf(":"));
             Object.keys(paymentTypes).forEach(key => {
                 result[key] = result[key] || {name: key, data: []};
-                const paymentType = eventItem.description.substring(0, eventItem.description.indexOf(":"));
-                if (key === paymentType) {
+                const pt = eventItem.description.substring(0, eventItem.description.indexOf(":"));
+                if (key === pt) {
                     result[key].data.push(parseFloat(eventItem.description.substring(eventItem.description.indexOf(" ") + 1, eventItem.description.length)));
                 } else {
                     result[key].data.push(null);

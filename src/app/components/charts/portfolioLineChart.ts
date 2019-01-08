@@ -5,7 +5,7 @@ import Component from "vue-class-component";
 import {Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
-import {PortfolioService} from "../../services/portfolioService";
+import {OverviewService} from "../../services/overviewService";
 import {HighStockEventsGroup} from "../../types/charts/types";
 import {Portfolio} from "../../types/types";
 import {StoreType} from "../../vuex/storeType";
@@ -44,15 +44,15 @@ export class PortfolioLineChart extends UI {
 
     private chart: ChartObject = null;
 
-    private portfolioService = (Container.get(PortfolioService) as PortfolioService);
+    private overviewService = Container.get(OverviewService);
 
     async mounted(): Promise<void> {
         await this.doChart();
     }
 
     private async doChart(): Promise<void> {
-        this.chartData = await this.portfolioService.getCostChart(this.portfolio.id);
-        this.eventsChartData = await this.portfolioService.getEventsChartDataWithDefaults(this.portfolio.id);
+        this.chartData = await this.overviewService.getCostChart(this.portfolio.id);
+        this.eventsChartData = await this.overviewService.getEventsChartDataWithDefaults(this.portfolio.id);
         await this.draw(this.chartData);
     }
 

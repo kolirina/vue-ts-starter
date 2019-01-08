@@ -19,6 +19,7 @@ export class UiStateHelper {
     static readonly INVESTMENTS_SETTINGS_PANEL = "investmentsSettingsPanel";
     static readonly REFERRAL_STATISTICS_PANEL = "referralStatistics";
     static readonly EVENTS_CALENDAR = "events_calendar";
+    static readonly LAST_UPDATE_NOTIFICATION = "last_update_notification";
 
     static set stocksTablePanel(value: number[]) {
         localStorage.set(UiStateHelper.STOCKS, value);
@@ -132,6 +133,13 @@ export class UiStateHelper {
         return [localStorage.get(UiStateHelper.EVENTS_CALENDAR, 0)];
     }
 
+    static set lastUpdateNotification(value: string) {
+        localStorage.set(UiStateHelper.LAST_UPDATE_NOTIFICATION, value);
+    }
+
+    static get lastUpdateNotification(): string {
+        return localStorage.get(UiStateHelper.LAST_UPDATE_NOTIFICATION, null);
+    }
     static toggleState(type: string): void {
         localStorage.set(type, 1 - localStorage.get(type, 0));
     }

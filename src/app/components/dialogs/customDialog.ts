@@ -20,7 +20,7 @@ export class CustomDialog<ParamType, ReturnType> extends UI {
         const dialog = this.$mount(workspace.appendChild(document.createElement("div"))).$el;
         this.showed = true;
         console.log("DATA", data);
-        return new Promise<ReturnType>((resolve, reject) => {
+        return new Promise<ReturnType>((resolve, reject): void => {
             let dialogResult: ReturnType = this.responseByDefault;
             // // регистрируем обработчик события на закрытие диалога
             this.$on("close", (result: ReturnType | MouseEvent) => {
@@ -90,5 +90,5 @@ export class CustomDialog<ParamType, ReturnType> extends UI {
 }
 
 export enum BtnReturn {
-    YES = "YES", NO = "NO", CANCEL = "CANCEL"
+    YES = "YES", NO = "NO", CANCEL = "CANCEL", SHOW_FEEDBACK = "SHOW_FEEDBACK"
 }

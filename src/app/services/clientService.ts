@@ -2,7 +2,9 @@ import axios from "axios";
 import {Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {HTTP} from "../platform/services/http";
-import {ClientInfo, LoginRequest} from "../types/types";
+import {Tariff} from "../types/tariff";
+import {LoginRequest} from "../types/types";
+import {IisType, PortfolioAccountType, PortfolioParams, PortfolioParamsResponse} from "./portfolioService";
 
 @Service("ClientService")
 @Singleton
@@ -13,7 +15,21 @@ export class ClientService {
     async getClientInfo(request: LoginRequest): Promise<ClientInfo> {
         if (!this.clientInfo) {
             const result = await axios.post("/api/user/login", request);
-            this.clientInfo = await result.data as ClientInfo;
+            const clientInfo: ClientInfoResponse = await result.data;
+            this.clientInfo = {
+                token: clientInfo.token,
+                user: {
+                    ...clientInfo.user,
+                    tariff: Tariff.valueByName(clientInfo.user.tariff),
+                    portfolios: clientInfo.user.portfolios.map(item => {
+                        return {
+                            ...item,
+                            accountType: item.accountType ? PortfolioAccountType.valueByName(item.accountType) : null,
+                            iisType: item.iisType ? IisType.valueByName(item.iisType) : null
+                        } as PortfolioParams;
+                    })
+                }
+            } as ClientInfo;
         }
         return this.clientInfo;
     }
@@ -44,6 +60,69 @@ export class ClientService {
     async changeEmail(request: ChangeEmailRequest): Promise<void> {
         await HTTP.INSTANCE.post(`/user/change-email`, request);
     }
+}
+
+export interface ClientInfo {
+    token: string;
+    user: Client;
+}
+
+export interface ClientInfoResponse {
+    token: string;
+    user: ClientResponse;
+}
+
+export interface BaseClient {
+    /** Идентификатор пользователя */
+    id: string;
+    /** Логин пользователя */
+    username: string;
+    /** email пользователя */
+    email: string;
+    /** Дата; до которой оплачен тариф */
+    paidTill: string;
+    /** Признак подтвержденного email */
+    emailConfirmed: string;
+    /** Текущий идентификатор портфеля */
+    currentPortfolioId: string;
+    /** Тип вознаграждения за реферальную программу */
+    referralAwardType: string;
+    /** Промо-код пользователя */
+    promoCode: string;
+    /** Признак блокировки аккаунта */
+    blocked: boolean;
+    /** Алиас для реферальной ссылки */
+    referralAlias: string;
+    /** Сумма подлежащая выплате по реферальной программе */
+    earnedTotalAmount: string;
+    /** Срок действия скидки */
+    nextPurchaseDiscountExpired: string;
+    /** Индивидуальная скидка на следующую покупку в системе */
+    nextPurchaseDiscount: number;
+    /** Количество портфелей в профиле пользователя */
+    portfoliosCount: number;
+    /** Общее количество ценнных бумаг в составе всех портфелей */
+    sharesCount: number;
+    /** Присутствуют ли во всех портфелях пользователя сделки по иностранным акциям */
+    foreignShares: boolean;
+    /** Сумма выплаченного вознаграждения реферреру за партнерскую программу */
+    referrerRepaidTotalAmount: string;
+    /** Сумма причитаемого вознаграждения реферреру за партнерскую программу */
+    referrerEarnedTotalAmount: string;
+}
+
+export interface ClientResponse extends BaseClient {
+    /** Список портфелей */
+    portfolios: PortfolioParamsResponse[];
+    /** Тариф */
+    tariff: string;
+}
+
+export interface Client extends BaseClient {
+    /** Список портфелей */
+    portfolios: PortfolioParams[];
+    /** Тариф */
+    tariff: Tariff;
 }
 
 /** Запрос на смену пароля пользователя */

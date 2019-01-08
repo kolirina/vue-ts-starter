@@ -3,14 +3,17 @@ import Component from "vue-class-component";
 import {Prop} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
+import {PortfolioService} from "../services/portfolioService";
 import {TradeService} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
 import {Operation} from "../types/operation";
 import {BondPortfolioRow, Portfolio, TableHeader} from "../types/types";
+import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {AddTradeDialog} from "./dialogs/addTradeDialog";
 import {ConfirmDialog} from "./dialogs/confirmDialog";
 import {BtnReturn} from "./dialogs/customDialog";
+import {EditShareNoteDialog} from "./dialogs/editShareNoteDialog";
 import {ShareTradesDialog} from "./dialogs/shareTradesDialog";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -23,7 +26,9 @@ const MainStore = namespace(StoreType.MAIN);
             <template slot="items" slot-scope="props">
                 <tr @click="props.expanded = !props.expanded">
                     <td>{{ props.item.bond.shortname }}</td>
-                    <td>{{ props.item.bond.ticker }}</td>
+                    <td>
+                        <bond-link :ticker="props.item.bond.ticker"></bond-link>
+                    </td>
                     <td class="text-xs-right">{{ props.item.avgBuy | number }}</td>
                     <td class="text-xs-right">{{ props.item.currPrice | number }}</td>
                     <td class="text-xs-right">{{ props.item.currCost | amount(true) }}</td>
@@ -40,6 +45,12 @@ const MainStore = namespace(StoreType.MAIN);
                                     <v-list-tile-title>
                                         <v-icon color="primary" small>fas fa-list-alt</v-icon>
                                         Все сделки
+                                    </v-list-tile-title>
+                                </v-list-tile>
+                                <v-list-tile @click="openEditShareNoteDialog(props.item.bond.ticker)">
+                                    <v-list-tile-title>
+                                        <v-icon color="primary" small>fas fa-sticky-note</v-icon>
+                                        Заметка
                                     </v-list-tile-title>
                                 </v-list-tile>
                                 <v-divider></v-divider>
@@ -130,9 +141,12 @@ export class BondTable extends UI {
 
     @Inject
     private tradeService: TradeService;
-
+    @Inject
+    private portfolioService: PortfolioService;
     @MainStore.Getter
     private portfolio: Portfolio;
+    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
+    private reloadPortfolio: (id: string) => Promise<void>;
 
     private headers: TableHeader[] = [
         {text: "Компания", align: "left", sortable: false, value: "company"},
@@ -143,7 +157,7 @@ export class BondTable extends UI {
         {text: "Прибыль", align: "right", value: "profit", sortable: false},
         {text: "Прибыль, %", align: "right", value: "percProfit"},
         {text: "Тек. доля", align: "right", value: "percCurrShare"},
-        {text: "Действия", align: "right", value: "actions", sortable: false, width: "25"}
+        {text: "Действия", align: "center", value: "actions", sortable: false, width: "25"}
     ];
 
     @Prop({default: [], required: true})
@@ -165,10 +179,27 @@ export class BondTable extends UI {
         });
     }
 
+    /**
+     * Обновляет заметки по бумага в портфеле
+     * @param ticker тикер по которому редактируется заметка
+     */
+    private async openEditShareNoteDialog(ticker: string): Promise<void> {
+        const result = await new EditShareNoteDialog().show({ticker, note: this.portfolio.portfolioParams.shareNotes[ticker]});
+        if (result) {
+            await this.portfolioService.updateShareNotes(this.portfolio, result);
+            this.$snotify.info(`Заметка по бумаге ${ticker} была успешно сохранена`);
+        }
+    }
+
     private async deleteAllTrades(bondRow: BondPortfolioRow): Promise<void> {
         const result = await new ConfirmDialog().show(`Вы уверены, что хотите удалить все сделки по ценной бумаге?`);
         if (result === BtnReturn.YES) {
-            console.log("TODO DELETE ALL TRADES");
+            await this.tradeService.deleteAllTrades({
+                assetType: "BOND",
+                ticker: bondRow.bond.ticker,
+                portfolioId: this.portfolio.id
+            });
+            await this.reloadPortfolio(this.portfolio.id);
         }
     }
 }

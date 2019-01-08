@@ -15,6 +15,6 @@ export class FileUtils {
      * @return список файлов
      */
     static fileListToFileArray(fileList: FileList): File[] {
-        return Array.prototype.map.call(fileList, (item: File) => item);
+        return Array.prototype.map.call(fileList, (item: File) => item) as File[];
     }
 }

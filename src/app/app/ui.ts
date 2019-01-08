@@ -32,7 +32,7 @@ export class UI extends Vue {
      * @param event    название события
      * @param callback обработчик события
      */
-    static on(event: string | string[], callback: (...args: any[]) => any) {
+    static on(event: string | string[], callback: (...args: any[]) => any): void {
         UI.eventBus.$on(event, callback);
     }
 
@@ -41,7 +41,7 @@ export class UI extends Vue {
      * @param event    название события
      * @param callback обработчик события
      */
-    static off(event?: string | string[], callback?: (...args: any[]) => any) {
+    static off(event?: string | string[], callback?: (...args: any[]) => any): void {
         UI.eventBus.$off(event, callback);
     }
 
@@ -50,7 +50,7 @@ export class UI extends Vue {
      * @param event событие
      * @param args  данные
      */
-    static emit(event: string, ...args: any[]) {
+    static emit(event: string, ...args: any[]): void {
         UI.eventBus.$emit(event, ...args);
     }
 

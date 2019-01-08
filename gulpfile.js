@@ -1,6 +1,12 @@
 /**
  * Сборка проекта
  */
+const MODES = {
+    p: "production",
+    d: "development"
+};
+const TARGET_DIR = "dist";
+
 const args = require('yargs').argv;
 const gulp = require("gulp");
 const minifyCSS = require('gulp-csso');
@@ -12,10 +18,14 @@ const rename = require('gulp-rename');
 const notifier = require('node-notifier');
 const browserSync = require('browser-sync');
 const reload = browserSync.reload;
+const buildMode = MODES[args.env] || "development";
+const env = require('gulp-env');
+env({
+    vars: {
+        NODE_ENV: buildMode
+    }
+});
 const webpackConfig = require('./webpack.config.js');
-
-const TARGET_DIR = "dist";
-webpackConfig.mode = args.env || "development";
 // webpackConfig.watch = webpackConfig.mode === "development";
 
 gulp.task('scripts', () => {
@@ -45,6 +55,10 @@ gulp.task('assets', () => {
         .pipe(minifyCSS())
         .pipe(gulp.dest(TARGET_DIR + '/css'));
 
+    gulp.src('./node_modules/font-awesome-animation/dist/font-awesome-animation.css')
+        .pipe(minifyCSS())
+        .pipe(gulp.dest(TARGET_DIR + '/css'));
+
     gulp.src('./node_modules/vuetify/dist/vuetify.css')
         .pipe(minifyCSS())
         .pipe(gulp.dest(TARGET_DIR + '/css'));
@@ -54,6 +68,9 @@ gulp.task('assets', () => {
 
     gulp.src('./src/assets/img/**/*.*')
         .pipe(gulp.dest(TARGET_DIR + '/img'));
+
+    gulp.src('./src/assets/fonts/**/*.*')
+        .pipe(gulp.dest(TARGET_DIR + '/fonts'));
 
     gulp.src('./src/assets/static/**/*.*')
         .pipe(gulp.dest(TARGET_DIR + '/static'));
@@ -73,10 +90,10 @@ gulp.task('css', () => {
 });
 
 // Основной таск сборки
-gulp.task("build", ["scripts", "css", "assets"]);
+gulp.task("build", gulp.parallel("scripts", "css", "assets"));
 
 /** Таск с watch */
-gulp.task('default', ['build', "css", "assets"], () => {
+gulp.task('default', gulp.series('build', () => {
     browserSync.init({
         // proxy: "localhost:8080",
         proxy: "http://test.intelinvest.ru/api",
@@ -85,10 +102,10 @@ gulp.task('default', ['build', "css", "assets"], () => {
         notify: false,
         serveStatic: [TARGET_DIR]
     });
-    gulp.watch(['src/**/*.ts'], ['scripts']);
-    gulp.watch(['src/assets/scss/**/*.scss'], ['css']);
-    gulp.watch(['*.html'], ['assets']);
-});
+    gulp.watch(['src/**/*.ts'], gulp.parallel('scripts'));
+    gulp.watch(['src/assets/scss/**/*.scss'], gulp.parallel('css'));
+    gulp.watch(['*.html'], gulp.parallel('assets'));
+}));
 
 const onError = (error) => {
     let formattedError = new gutil.PluginError('webpack', error);

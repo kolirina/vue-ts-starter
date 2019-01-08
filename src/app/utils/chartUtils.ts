@@ -37,8 +37,9 @@ export class ChartUtils {
         return {data, categories: categoryNames};
     }
 
-    static processEventsChartData(data: EventChartData[], flags = "flags", onSeries = "dataseries", shape = "circlepin", width = 10): HighStockEventsGroup[] {
-        const result: HighStockEventsGroup[] = [];
+    static processEventsChartData(data: EventChartData[], flags: string = "flags", onSeries: string = "dataseries",
+                                  shape: string = "circlepin", width: number = 10): HighStockEventsGroup[] {
+        const eventsGroups: HighStockEventsGroup[] = [];
         const events: HighStockEventData[] = [];
         const temp = data.reduce((result: { [key: string]: HighStockEventData[] }, current: EventChartData) => {
             result[current.backgroundColor] = result[current.backgroundColor] || [];
@@ -46,7 +47,7 @@ export class ChartUtils {
             return result;
         }, {} as { [key: string]: HighStockEventData[] });
         Object.keys(temp).forEach(key => {
-            result.push({
+            eventsGroups.push({
                 type: flags,
                 data: temp[key],
                 onSeries: onSeries,
@@ -57,6 +58,6 @@ export class ChartUtils {
                 width: width
             });
         });
-        return result;
+        return eventsGroups;
     }
 }

@@ -25,7 +25,7 @@ async function _start(resolve: () => void, reject: () => void): Promise<void> {
 }
 
 export function start(): void {
-    new Promise((resolve, reject) => {
+    new Promise((resolve, reject): void => {
         _start(resolve, reject);
     });
 }

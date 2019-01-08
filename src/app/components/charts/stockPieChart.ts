@@ -34,7 +34,7 @@ export class StockPieChart extends UI {
 
     private doStockPieChartData(): DataPoint[] {
         const data: DataPoint[] = [];
-        this.portfolio.overview.stockPortfolio.rows.filter(value => value.currCost != "0").forEach(row => {
+        this.portfolio.overview.stockPortfolio.rows.filter(value => value.currCost !== "0").forEach(row => {
             data.push({
                 name: row.stock.shortname,
                 y: new Decimal(new BigMoney(row.currCost).amount.abs().toString()).toDP(2, Decimal.ROUND_HALF_UP).toNumber()

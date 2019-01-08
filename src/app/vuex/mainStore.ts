@@ -2,13 +2,17 @@ import {Container} from "typescript-ioc";
 import {ActionContext, Module} from "vuex";
 import {HTTP} from "../platform/services/http";
 import {Storage} from "../platform/services/storage";
-import {PortfolioService} from "../services/portfolioService";
+import {ClientInfo} from "../services/clientService";
+import {OverviewService} from "../services/overviewService";
+import {PortfolioParams, PortfolioService} from "../services/portfolioService";
 import {StoreKeys} from "../types/storeKeys";
-import {ClientInfo, Portfolio} from "../types/types";
+import {Portfolio} from "../types/types";
 import {GetterType} from "./getterType";
 import {MutationType} from "./mutationType";
 
 /** Сервис работы с клиентом */
+const overviewService: OverviewService = Container.get(OverviewService);
+/** Сервис работы с портфелями клиента */
 const portfolioService: PortfolioService = Container.get(PortfolioService);
 /** Сервис работы с localStorage */
 const localStorage: Storage = Container.get(Storage);
@@ -43,6 +47,13 @@ const Mutations = {
     },
     [MutationType.RELOAD_PORTFOLIO](state: StateHolder, portfolio: Portfolio): void {
         state.currentPortfolio = portfolio;
+    },
+    [MutationType.RELOAD_PORTFOLIOS](state: StateHolder, portfolios: PortfolioParams[]): void {
+        state.clientInfo.user.portfolios = [...portfolios];
+    },
+    [MutationType.UPDATE_PORTFOLIO](state: StateHolder, portfolio: PortfolioParams): void {
+        const result = state.clientInfo.user.portfolios.filter(p => p.id !== portfolio.id);
+        state.clientInfo.user.portfolios = [...result, portfolio];
     }
 };
 
@@ -56,9 +67,9 @@ const Actions = {
         console.log("ACTION SET USER", clientInfo, context);
     },
     [MutationType.SET_CURRENT_PORTFOLIO](context: ActionContext<StateHolder, void>, id: string): Promise<Portfolio> {
-        portfolioService.setDefaultPortfolio(id).then();
-        return new Promise<Portfolio>((resolve) => {
-            portfolioService.getById(id).then((portfolio: Portfolio) => {
+        overviewService.setDefaultPortfolio(id).then();
+        return new Promise<Portfolio>((resolve): void => {
+            overviewService.getById(id).then((portfolio: Portfolio) => {
                 console.log("ACTION SET PORTFOLIO", portfolio, context);
                 context.commit(MutationType.SET_CURRENT_PORTFOLIO, portfolio);
                 resolve(portfolio);
@@ -66,10 +77,19 @@ const Actions = {
         });
     },
     [MutationType.RELOAD_PORTFOLIO](context: ActionContext<StateHolder, void>, id: string): Promise<void> {
-        return new Promise<void>((resolve) => {
-            portfolioService.reloadPortfolio(id).then((portfolio: Portfolio) => {
+        return new Promise<void>((resolve): void => {
+            overviewService.reloadPortfolio(id).then((portfolio: Portfolio): void => {
                 console.log("ACTION RELOAD_PORTFOLIO", portfolio, context);
                 context.commit(MutationType.RELOAD_PORTFOLIO, portfolio);
+                resolve();
+            });
+        });
+    },
+    [MutationType.RELOAD_PORTFOLIOS](context: ActionContext<StateHolder, void>): Promise<void> {
+        return new Promise<void>((resolve): void => {
+            portfolioService.getPortfolios().then((portfolios: PortfolioParams[]): void => {
+                console.log("ACTION RELOAD_PORTFOLIOS", portfolios, context);
+                context.commit(MutationType.RELOAD_PORTFOLIOS, portfolios);
                 resolve();
             });
         });
