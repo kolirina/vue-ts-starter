@@ -60,7 +60,7 @@ export class PieChart extends UI {
                 type: "pie",
                 backgroundColor: null,
                 style: {
-                    fontFamily: "\"Open Sans\" sans-serif",
+                    fontFamily: "\"OpenSans\" sans-serif",
                     fontSize: "12px"
                 }
             },

@@ -73,6 +73,7 @@ export class UIRegistry {
 
         // фильтры
         UI.filter("amount", Filters.formatMoneyAmount);
+        UI.filter("assetDesc", Filters.assetDesc);
         UI.filter("number", Filters.formatNumber);
         UI.filter("date", Filters.formatDate);
         UI.filter("declension", Filters.declension);
