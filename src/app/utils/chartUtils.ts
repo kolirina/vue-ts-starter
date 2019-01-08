@@ -37,7 +37,8 @@ export class ChartUtils {
         return {data, categories: categoryNames};
     }
 
-    static processEventsChartData(data: EventChartData[], flags = "flags", onSeries = "dataseries", shape = "circlepin", width = 10): HighStockEventsGroup[] {
+    static processEventsChartData(data: EventChartData[], flags: string = "flags", onSeries: string = "dataseries",
+                                  shape: string = "circlepin", width: number = 10): HighStockEventsGroup[] {
         const eventsGroups: HighStockEventsGroup[] = [];
         const events: HighStockEventData[] = [];
         const temp = data.reduce((result: { [key: string]: HighStockEventData[] }, current: EventChartData) => {

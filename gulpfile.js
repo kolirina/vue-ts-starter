@@ -69,6 +69,9 @@ gulp.task('assets', () => {
     gulp.src('./src/assets/img/**/*.*')
         .pipe(gulp.dest(TARGET_DIR + '/img'));
 
+    gulp.src('./src/assets/fonts/**/*.*')
+        .pipe(gulp.dest(TARGET_DIR + '/fonts'));
+
     gulp.src('./src/assets/static/**/*.*')
         .pipe(gulp.dest(TARGET_DIR + '/static'));
 
@@ -92,7 +95,7 @@ gulp.task("build", gulp.parallel("scripts", "css", "assets"));
 /** Таск с watch */
 gulp.task('default', gulp.series('build', () => {
     browserSync.init({
-        proxy: "localhost:8080",
+        proxy: "test.intelinvest.ru",
         port: 3000,
         open: true,
         notify: false,
