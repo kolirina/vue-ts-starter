@@ -78,7 +78,8 @@ gulp.task("build", ["scripts", "css", "assets"]);
 /** Таск с watch */
 gulp.task('default', ['build', "css", "assets"], () => {
     browserSync.init({
-        proxy: "localhost:8080",
+        // proxy: "localhost:8080",
+        proxy: "http://test.intelinvest.ru/api",
         port: 3000,
         open: true,
         notify: false,

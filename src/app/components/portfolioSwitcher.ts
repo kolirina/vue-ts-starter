@@ -10,16 +10,31 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <div v-if="portfolios" class="text-xs-center">
-            <v-menu offset-y transition="slide-y-transition">
-                <v-btn slot="activator" color="primary">{{ getPortfolioName(selected) }}</v-btn>
-                <v-list style="max-height: 500px; overflow-x: auto;">
-                    <v-list-tile v-for="(portfolio, index) in portfolios" :key="index" @click="onSelect(portfolio)">
-                        <v-list-tile-title>{{ getPortfolioName(portfolio) }}</v-list-tile-title>
-                    </v-list-tile>
-                </v-list>
-            </v-menu>
-        </div>
+        <v-list-tile v-if="portfolios" class="text-xs-center portfolios sidebar-list-item">
+            <v-list-tile-action class="sidebar-item-action">
+                <img src="img/sidebar/case.svg">
+            </v-list-tile-action>
+            <v-list-tile-content class="portfolio-content">
+                <v-menu offset-y transition="slide-y-transition" class="portfolios-menu">
+                    <div slot="activator" class="portfolios-inner-wrap">
+                        <div class="portfolios-inner-content">
+                            <span class="portfolios-name">{{ selected.name }}</span>
+                            <span class="portfolios-currency">{{ selected.viewCurrency }}</span>
+                        </div>
+                        <div class="portfolios-arrow">
+                            <v-icon>arrow_drop_down</v-icon>
+                        </div>
+                    </div>
+
+                    <v-list style="max-height: 500px; overflow-x: auto;">
+                        <v-list-tile v-for="(portfolio, index) in portfolios" :key="index" @click="onSelect(portfolio)">
+                            <v-list-tile-title>{{ getPortfolioName(portfolio) }}</v-list-tile-title>
+                        </v-list-tile>
+                    </v-list>
+                </v-menu>
+            </v-list-tile-content>
+
+        </v-list-tile>
     `
 })
 export class PortfolioSwitcher extends UI {
