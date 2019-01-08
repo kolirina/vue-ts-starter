@@ -68,7 +68,8 @@ export class PieChart extends UI {
                 text: this.title
             },
             tooltip: {
-                pointFormat: "<b>{point.y}</b> ({point.percentage:.1f}%)"
+                pointFormat: "<b>{point.y}, ({point.percentage:.2f}%)</b> <br/>{point.tickers}",
+                valueSuffix: " ₽"
             },
             plotOptions: {
                 pie: {
