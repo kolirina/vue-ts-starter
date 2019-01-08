@@ -5,6 +5,7 @@
   "description": "Frontend for intelinvest.ru",
   "main": "index.js",
   "scripts": {
+    "tslint": "tslint --project tsconfig.json -r tslint.json",
     "build": "webpack --mode=development",
     "build-prod": "webpack --mode=production",
     "test": "echo \"Error: no test specified\" && exit 1"

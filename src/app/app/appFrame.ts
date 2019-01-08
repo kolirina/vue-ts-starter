@@ -62,7 +62,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 <img src="img/sidebar/hamb.svg" class="hamburger" @click="mini = !mini" alt="">
                             </v-list-tile-action>
                         </v-list-tile>
-                        
+
                         <portfolio-switcher></portfolio-switcher>
 
                         <hr />
@@ -74,7 +74,8 @@ const MainStore = namespace(StoreType.MAIN);
                                         <v-list-tile-title>{{ item.title }}</v-list-tile-title>
                                     </v-list-tile-content>
                                 </v-list-tile>
-                                <v-list-tile active-class="sidebar-list-item-active" v-for="subItem in item.subMenu" :key="subItem.action" :to="{name: subItem.action, params: item.params}">
+                                <v-list-tile active-class="sidebar-list-item-active" v-for="subItem in item.subMenu" :key="subItem.action"
+                                    :to="{name: subItem.action, params: item.params}">
                                     <v-list-tile-content>
                                         <v-list-tile-title>{{ subItem.title }}</v-list-tile-title>
                                     </v-list-tile-content>
@@ -89,7 +90,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </template>
 
                         <hr v-if="!mini" />
-                        
+
                         <template v-if="!mini" v-for="item in secondSection">
 
                             <v-list-group class="sidebar-list-item" v-if="item.subMenu" v-model="item.active" :key="item.title" no-action>
@@ -98,7 +99,8 @@ const MainStore = namespace(StoreType.MAIN);
                                         <v-list-tile-title>{{ item.title }}</v-list-tile-title>
                                     </v-list-tile-content>
                                 </v-list-tile>
-                                <v-list-tile active-class="sidebar-list-item-active" v-for="subItem in item.subMenu" :key="subItem.action" :to="{name: subItem.action, params: item.params}">
+                                <v-list-tile active-class="sidebar-list-item-active" v-for="subItem in item.subMenu" :key="subItem.action"
+                                    :to="{name: subItem.action, params: item.params}">
                                     <v-list-tile-content>
                                         <v-list-tile-title>{{ subItem.title }}</v-list-tile-title>
                                     </v-list-tile-content>
@@ -121,7 +123,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 © 2018 Intelinvest
                             </v-list-tile-content>
                         </v-list-tile>
-                        
+
                         <div class="sidebar-dialog" :class="{open: !mini}" @click="openDialog">
                             <v-icon>add</v-icon>
                         </div>
@@ -215,7 +217,7 @@ export class AppFrame extends UI {
             ]
         },
         {title: "Профиль", action: "profile", icon: "fas fa-user"}
-    ]
+    ];
 
     async created(): Promise<void> {
         // если удалось восстановить state, значит все уже загружено
