@@ -1,12 +1,12 @@
 import Component from "vue-class-component";
 import {Prop, Watch} from "vue-property-decorator";
+import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
 import {Filters} from "../platform/filters/Filters";
 import {DividendDashboard} from "../services/dividendService";
 import {DashboardBrick} from "../types/types";
-import {StoreType} from "../vuex/storeType";
-import {namespace} from "vuex-class/lib/bindings";
 import {Portfolio} from "../types/types";
+import {StoreType} from "../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -90,7 +90,7 @@ export class DividendDashboardComponent extends UI {
             secondValue: newValue.lastYearYield,
             secondValueDesc: "Прибыль за последний год",
             mainCurrency,
-            secondCurrency: '%',
+            secondCurrency: "%",
         };
     }
 }

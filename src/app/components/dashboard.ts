@@ -1,11 +1,10 @@
 import Component from "vue-class-component";
 import {Prop, Watch} from "vue-property-decorator";
+import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
 import {Filters} from "../platform/filters/Filters";
-import {DashboardBrick, DashboardData} from "../types/types";
+import {DashboardBrick, DashboardData, Portfolio} from "../types/types";
 import {StoreType} from "../vuex/storeType";
-import {namespace} from "vuex-class/lib/bindings";
-import {Portfolio} from "../types/types";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -110,7 +109,7 @@ export class Dashboard extends UI {
                 isUpward: parseInt(newValue.percentProfit, 10) > 0
             },
             mainCurrency,
-            secondCurrency: '%',
+            secondCurrency: "%",
         };
         this.blocks[2] = {
             name: "Среднегодовая доходность",
@@ -118,14 +117,14 @@ export class Dashboard extends UI {
             secondValueDesc: "без дивидендов и купонов",
             secondValue: newValue.yearYieldWithoutDividendsAndCoupons,
             mainCurrency,
-            secondCurrency: '%',
+            secondCurrency: "%",
         };
         this.blocks[3] = {
             name: "Изменение за день",
             mainValue: Filters.formatMoneyAmount(newValue.dailyChanges, true),
             secondValue: Filters.formatNumber(newValue.dailyChangesPercent),
             mainCurrency,
-            secondCurrency: '%',
+            secondCurrency: "%",
         };
     }
 }
