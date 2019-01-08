@@ -226,11 +226,7 @@ export class AppFrame extends UI {
                 {title: "Уведомления", action: "notifications", icon: "fas fa-bell"}
             ]
         },
-<<<<<<< HEAD
         {title: "Профиль", action: "profile", icon: "fas fa-user"}
-=======
-        {title: "Справка", action: "help", icon: "far fa-question-circle"},
->>>>>>> d617b63837bdc6231fa821819d7dcab6696c760d
     ];
 
     async created(): Promise<void> {

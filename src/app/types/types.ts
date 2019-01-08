@@ -239,7 +239,9 @@ export type DashboardBrick = {
     hasNotBorderLeft?: boolean,
     isSummaryIncome?: {
         isUpward: boolean
-    }
+    },
+    mainCurrency: string,
+    secondCurrency: string,
 };
 
 /** Описание бэкапа портфеля */
