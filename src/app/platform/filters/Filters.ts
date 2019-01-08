@@ -9,6 +9,24 @@ const DF_NO_SCALE = new Intl.NumberFormat("ru", {maximumFractionDigits: MAX_SCAL
 
 export class Filters {
 
+    static assetDesc(type: string): string {
+        switch (type) {
+            case "STOCK":
+                return "Акции";
+            case "BOND":
+                return "Облигации";
+            case "RUBLES":
+                return "Рубли";
+            case "DOLLARS":
+                return "Доллары";
+            case "EURO":
+                return "Евро";
+            case "ETF":
+                return "ETF";
+        }
+        throw new Error("Неизвестный тип актива: " + type);
+    }
+
     static formatMoneyAmount(value: string, needRound?: boolean, scale?: number): string {
         if (!value) {
             return "0.00";

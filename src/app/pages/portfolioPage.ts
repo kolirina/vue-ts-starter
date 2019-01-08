@@ -3,6 +3,7 @@ import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
 import {AssetTable} from "../components/assetTable";
 import {BondTable} from "../components/bondTable";
+import {AssetChart} from "../components/charts/assetChart";
 import {BarChart} from "../components/charts/barChart";
 import {BondPieChart} from "../components/charts/bondPieChart";
 import {PortfolioLineChart} from "../components/charts/portfolioLineChart";
@@ -59,6 +60,19 @@ const MainStore = namespace(StoreType.MAIN);
 
             <div style="height: 50px"></div>
 
+            <v-expansion-panel focusable expand :value="$uistate.assetGraph">
+                <v-expansion-panel-content :lazy="true" v-state="$uistate.ASSET_CHART_PANEL">
+                    <div slot="header">Состав портфеля по активам</div>
+                    <v-card style="overflow: auto;">
+                        <v-card-text>
+                            <asset-chart/>
+                        </v-card-text>
+                    </v-card>
+                </v-expansion-panel-content>
+            </v-expansion-panel>
+
+            <div style="height: 50px" v-if="portfolio.overview.bondPortfolio.rows.length > 0"></div>
+
             <v-expansion-panel focusable expand :value="$uistate.stockGraph">
                 <v-expansion-panel-content :lazy="true" v-state="$uistate.STOCK_CHART_PANEL">
                     <div slot="header">Состав портфеля акций</div>
@@ -87,7 +101,7 @@ const MainStore = namespace(StoreType.MAIN);
 
             <v-expansion-panel focusable expand :value="$uistate.sectorsGraph">
                 <v-expansion-panel-content :lazy="true" v-state="$uistate.SECTORS_PANEL">
-                    <div slot="header">Отрасли</div>
+                    <div slot="header">Состав портфеля по секторам</div>
                     <v-card style="overflow: auto;">
                         <v-card-text>
                             <sectors-chart></sectors-chart>
@@ -97,7 +111,7 @@ const MainStore = namespace(StoreType.MAIN);
             </v-expansion-panel>
         </v-container>
     `,
-    components: {AssetTable, StockTable, BondTable, BarChart, StockPieChart, BondPieChart, PortfolioLineChart, SectorsChart}
+    components: {AssetTable, StockTable, BondTable, AssetChart, BarChart, StockPieChart, BondPieChart, PortfolioLineChart, SectorsChart}
 })
 export class PortfolioPage extends UI {
 

@@ -12,7 +12,7 @@ import {AddTradeDialog} from "./dialogs/addTradeDialog";
     template: `
         <v-data-table :headers="headers" :items="assets" hide-actions class="elevation-1">
             <template slot="items" slot-scope="props">
-                <td>{{ assetDesc(props.item.type) }}</td>
+                <td>{{ props.item.type | assetDesc }}</td>
                 <td class="text-xs-right">{{ props.item.currCost | amount(true) }}</td>
                 <td class="text-xs-right">{{ props.item.profit | amount(true) }}</td>
                 <td class="text-xs-right">{{ props.item.percCurrShare | number }}</td>
@@ -56,23 +56,23 @@ export class AssetTable extends UI {
 
     private operation = Operation;
 
-    private assetDesc(type: string): string {
-        switch (type) {
-            case "STOCK":
-                return "Акции";
-            case "BOND":
-                return "Облигации";
-            case "RUBLES":
-                return "Рубли";
-            case "DOLLARS":
-                return "Доллары";
-            case "EURO":
-                return "Евро";
-            case "ETF":
-                return "ETF";
-        }
-        throw new Error("Неизвестный тип актива: " + type);
-    }
+    // private assetDesc(type: string): string {
+    //     switch (type) {
+    //         case "STOCK":
+    //             return "Акции";
+    //         case "BOND":
+    //             return "Облигации";
+    //         case "RUBLES":
+    //             return "Рубли";
+    //         case "DOLLARS":
+    //             return "Доллары";
+    //         case "EURO":
+    //             return "Евро";
+    //         case "ETF":
+    //             return "ETF";
+    //     }
+    //     throw new Error("Неизвестный тип актива: " + type);
+    // }
 
     private async openTradeDialog(assetRow: AssetRow, operation: Operation): Promise<void> {
         await new AddTradeDialog().show({

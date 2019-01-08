@@ -37,7 +37,7 @@ export class BondPieChart extends UI {
         this.portfolio.overview.bondPortfolio.rows.filter(value => value.currCost !== "0").forEach(row => {
             data.push({
                 name: row.bond.shortname,
-                y: new Decimal(new BigMoney(row.currCost).amount.abs().toString()).toDP(2, Decimal.ROUND_HALF_UP).toNumber()
+                y: new BigMoney(row.currCost).amount.abs().toDP(2, Decimal.ROUND_HALF_UP).toNumber()
             });
         });
         return data;

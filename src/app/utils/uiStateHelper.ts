@@ -9,6 +9,7 @@ export class UiStateHelper {
     static readonly HISTORY_PANEL = "history_chart";
     static readonly STOCK_CHART_PANEL = "stocksChartPanel";
     static readonly BOND_CHART_PANEL = "bondsChartPanel";
+    static readonly ASSET_CHART_PANEL = "assetChartPanel";
     static readonly SECTORS_PANEL = "sectorsPanel";
     static readonly BONDS = "bonds_panel";
     static readonly YEAR_DIV_LIST = "yearDivListAccordion";
@@ -99,6 +100,13 @@ export class UiStateHelper {
 
     static get bondGraph(): number[] {
         return [localStorage.get(UiStateHelper.BOND_CHART_PANEL, 0)];
+    }
+    static set assetGraph(value: number[]) {
+        localStorage.set(UiStateHelper.ASSET_CHART_PANEL, value);
+    }
+
+    static get assetGraph(): number[] {
+        return [localStorage.get(UiStateHelper.ASSET_CHART_PANEL, 0)];
     }
 
     static set sectorsGraph(value: number[]) {
