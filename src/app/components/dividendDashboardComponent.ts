@@ -20,12 +20,12 @@ const MainStore = namespace(StoreType.MAIN);
             <v-container fluid pl-3 pt-0>
                 <v-layout row class="mx-0 py-2 dashboard-card-big-nums">
                     <div class="headline">
-                        <span :class="block.mainCurrency"><b>{{ block.mainValue }}</b></span>
+                        <span class="dashboard-currency" :class="block.mainCurrency"><b>{{ block.mainValue }}</b></span>
                     </div>
                 </v-layout>
                 <v-layout row class="mx-0 dashboard-card-small-nums">
                     <div>
-                        <span :class="block.secondCurrency"><b>{{ block.secondValue }} {{ (block.secondCurrency === '%') ? '%' : '' }}</b> </span>
+                        <span class="dashboard-currency" :class="block.secondCurrency"><b>{{ block.secondValue }}</b> </span>
                         <span>{{ block.secondValueDesc }}</span>
                     </div>
                 </v-layout>
@@ -90,7 +90,7 @@ export class DividendDashboardComponent extends UI {
             secondValue: newValue.lastYearYield,
             secondValueDesc: "Прибыль за последний год",
             mainCurrency,
-            secondCurrency: "%",
+            secondCurrency: "percent",
         };
     }
 }

@@ -18,24 +18,24 @@ const MainStore = namespace(StoreType.MAIN);
             <v-container fluid pl-3 pt-0>
                 <v-layout row class="mx-0 py-2 dashboard-card-big-nums">
                     <div class="headline">
-                        <span :class="block.mainCurrency"><b>{{ block.mainValue }}</b></span>
+                        <span class="dashboard-currency" :class="block.mainCurrency"><b>{{ block.mainValue }}</b></span>
                     </div>
                 </v-layout>
                 <v-layout row class="mx-0 dashboard-card-small-nums">
                     <div>
                         <template v-if="block.isSummaryIncome">
-                            <div class="dashboard-summary-income" :class="block.isSummaryIncome.isUpward ? 'arrow-up' : 'arrow-down'">
+                            <div class="dashboard-summary-income dashboard-currency" :class="block.isSummaryIncome.isUpward ? 'arrow-up' : 'arrow-down'">
                                 <div class="dashboard-summary-income-icon">
                                     <v-icon>{{ block.isSummaryIncome.isUpward ? 'arrow_upward' : 'arrow_downward' }}</v-icon>
                                 </div>
-                                <div class="dashboard-summary-income-text" :class="block.secondCurrency">
-                                    {{ block.secondValue }} {{ (block.secondCurrency === '%') ? '%' : '' }}
+                                <div class="dashboard-summary-income-text dashboard-currency" :class="block.secondCurrency">
+                                    {{ block.secondValue }}
                                 </div>
                             </div>
                         </template>
 
                         <template v-else>
-                            <span :class="block.secondCurrency"><b>{{ block.secondValue }} {{ (block.secondCurrency === '%') ? '%' : '' }}</b> </span>
+                            <span class="dashboard-currency" :class="block.secondCurrency"><b>{{ block.secondValue }}</b> </span>
                             <span>{{ block.secondValueDesc }} </span>
                         </template>
                     </div>
@@ -109,7 +109,7 @@ export class Dashboard extends UI {
                 isUpward: parseInt(newValue.percentProfit, 10) > 0
             },
             mainCurrency,
-            secondCurrency: "%",
+            secondCurrency: "percent",
         };
         this.blocks[2] = {
             name: "Среднегодовая доходность",
@@ -117,14 +117,14 @@ export class Dashboard extends UI {
             secondValueDesc: "без дивидендов и купонов",
             secondValue: newValue.yearYieldWithoutDividendsAndCoupons,
             mainCurrency,
-            secondCurrency: "%",
+            secondCurrency: "percent",
         };
         this.blocks[3] = {
             name: "Изменение за день",
             mainValue: Filters.formatMoneyAmount(newValue.dailyChanges, true),
             secondValue: Filters.formatNumber(newValue.dailyChangesPercent),
             mainCurrency,
-            secondCurrency: "%",
+            secondCurrency: "percent",
         };
     }
 }

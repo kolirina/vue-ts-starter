@@ -8,6 +8,8 @@
 
   hr {
     color: $sidebar-hr-color;
+    border: .5px solid;
+    background: $sidebar-hr-color;
   }
 
   &-list {
