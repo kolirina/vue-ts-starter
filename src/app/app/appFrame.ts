@@ -68,7 +68,7 @@ const MainStore = namespace(StoreType.MAIN);
 
                         <portfolio-switcher></portfolio-switcher>
 
-                        <hr />
+                        <hr/>
 
                         <template v-if="!mini" v-for="item in mainSection">
                             <v-list-group class="sidebar-list-item" v-if="item.subMenu" v-model="item.active" :key="item.title" no-action>
@@ -78,7 +78,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     </v-list-tile-content>
                                 </v-list-tile>
                                 <v-list-tile active-class="sidebar-list-item-active" v-for="subItem in item.subMenu" :key="subItem.action"
-                                    :to="{name: subItem.action, params: item.params}">
+                                             :to="{name: subItem.action, params: item.params}">
                                     <v-list-tile-content>
                                         <v-list-tile-title>{{ subItem.title }}</v-list-tile-title>
                                     </v-list-tile-content>
@@ -92,10 +92,9 @@ const MainStore = namespace(StoreType.MAIN);
                             </v-list-tile>
                         </template>
 
-                        <hr v-if="!mini" />
+                        <hr v-if="!mini"/>
 
                         <template v-if="!mini" v-for="item in secondSection">
-
                             <v-list-group class="sidebar-list-item" v-if="item.subMenu" v-model="item.active" :key="item.title" no-action>
                                 <v-list-tile slot="activator">
                                     <v-list-tile-content class="pl-3">
@@ -103,7 +102,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     </v-list-tile-content>
                                 </v-list-tile>
                                 <v-list-tile active-class="sidebar-list-item-active" v-for="subItem in item.subMenu" :key="subItem.action"
-                                    :to="{name: subItem.action, params: item.params}">
+                                             :to="{name: subItem.action, params: item.params}">
                                     <v-list-tile-content>
                                         <v-list-tile-title>{{ subItem.title }}</v-list-tile-title>
                                     </v-list-tile-content>
@@ -127,7 +126,7 @@ const MainStore = namespace(StoreType.MAIN);
                             </v-list-tile-content>
                         </v-list-tile>
 
-                        <div class="sidebar-dialog" :class="{open: !mini}" @click="openDialog">
+                        <div class="sidebar-dialog" :class="{open: !mini}" @click.stop="openDialog">
                             <v-icon>add</v-icon>
                         </div>
                     </v-list>
