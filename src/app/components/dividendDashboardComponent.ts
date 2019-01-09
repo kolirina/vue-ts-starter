@@ -1,9 +1,14 @@
 import Component from "vue-class-component";
 import {Prop, Watch} from "vue-property-decorator";
+import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
 import {Filters} from "../platform/filters/Filters";
 import {DividendDashboard} from "../services/dividendService";
 import {DashboardBrick} from "../types/types";
+import {Portfolio} from "../types/types";
+import {StoreType} from "../vuex/storeType";
+
+const MainStore = namespace(StoreType.MAIN);
 
 @Component({
     // language=Vue
@@ -15,12 +20,12 @@ import {DashboardBrick} from "../types/types";
             <v-container fluid pl-3 pt-0>
                 <v-layout row class="mx-0 py-2 dashboard-card-big-nums">
                     <div class="headline">
-                        <span><b>{{ block.mainValue }}</b></span>
+                        <span class="dashboard-currency" :class="block.mainCurrency"><b>{{ block.mainValue }}</b></span>
                     </div>
                 </v-layout>
                 <v-layout row class="mx-0 dashboard-card-small-nums">
                     <div>
-                        <span><b>{{ block.secondValue }}</b> </span>
+                        <span class="dashboard-currency" :class="block.secondCurrency"><b>{{ block.secondValue }}</b> </span>
                         <span>{{ block.secondValueDesc }}</span>
                     </div>
                 </v-layout>
@@ -51,6 +56,8 @@ export class DashboardBrickComponent extends UI {
     components: {DashboardBrickComponent}
 })
 export class DividendDashboardComponent extends UI {
+    @MainStore.Getter
+    private portfolio: Portfolio;
 
     @Prop({required: true})
     private data: DividendDashboard;
@@ -67,17 +74,23 @@ export class DividendDashboardComponent extends UI {
     }
 
     private fillBricks(newValue: DividendDashboard): void {
+        const mainCurrency = this.portfolio.portfolioParams.viewCurrency.toLowerCase();
+
         this.blocks[0] = {
             name: "Всего получено дивидендов",
             mainValue: Filters.formatMoneyAmount(newValue.dividendsTotal, true),
             secondValue: Filters.formatMoneyAmount(newValue.dividendsTotalInAlternativeCurrency, true),
-            hasNotBorderLeft: true
+            hasNotBorderLeft: true,
+            mainCurrency,
+            secondCurrency: mainCurrency,
         };
         this.blocks[1] = {
             name: "Дивидендная доходность",
             mainValue: newValue.avgProfit,
             secondValue: newValue.lastYearYield,
             secondValueDesc: "Прибыль за последний год",
+            mainCurrency,
+            secondCurrency: "percent",
         };
     }
 }

@@ -57,54 +57,80 @@ const MainStore = namespace(StoreType.MAIN);
             </template>
 
             <template v-else>
-                <v-navigation-drawer v-model="drawer" clipped app>
+                <v-navigation-drawer disable-resize-watcher fixed stateless class="sidebar" v-model="drawer" :mini-variant.sync="mini" app>
                     <v-divider></v-divider>
-                    <v-list dense>
-                        <template v-for="item in mainSection">
-                            <v-list-group v-if="item.subMenu" v-model="item.active" :key="item.title" :prepend-icon="item.icon" no-action>
+                    <v-list dense class="sidebar-list">
+                        <v-list-tile class="sidebar-list-item">
+                            <v-list-tile-action class="sidebar-item-action">
+                                <img src="img/sidebar/hamb.svg" class="hamburger" @click="mini = !mini" alt="">
+                            </v-list-tile-action>
+                        </v-list-tile>
+
+                        <portfolio-switcher></portfolio-switcher>
+
+                        <hr/>
+
+                        <template v-if="!mini" v-for="item in mainSection">
+                            <v-list-group class="sidebar-list-item" v-if="item.subMenu" v-model="item.active" :key="item.title" no-action>
                                 <v-list-tile slot="activator">
-                                    <v-list-tile-content>
+                                    <v-list-tile-content class="pl-3">
                                         <v-list-tile-title>{{ item.title }}</v-list-tile-title>
                                     </v-list-tile-content>
                                 </v-list-tile>
-                                <v-list-tile v-for="subItem in item.subMenu" :key="subItem.action" :to="{name: subItem.action, params: item.params}">
-                                    <v-list-tile-action>
-                                        <v-icon small>{{ subItem.icon }}</v-icon>
-                                    </v-list-tile-action>
+                                <v-list-tile active-class="sidebar-list-item-active" v-for="subItem in item.subMenu" :key="subItem.action"
+                                             :to="{name: subItem.action, params: item.params}">
                                     <v-list-tile-content>
                                         <v-list-tile-title>{{ subItem.title }}</v-list-tile-title>
                                     </v-list-tile-content>
                                 </v-list-tile>
                             </v-list-group>
 
-                            <v-list-tile v-else :key="item.action" :to="{name: item.action, params: item.params}">
-                                <v-list-tile-action>
-                                    <v-icon small>{{ item.icon }}</v-icon>
-                                </v-list-tile-action>
-                                <v-list-tile-content>
+                            <v-list-tile active-class="sidebar-list-item-active" class="sidebar-list-item" v-else :key="item.action" :to="{name: item.action, params: item.params}">
+                                <v-list-tile-content class="pl-3">
                                     <v-list-tile-title>{{ item.title }}</v-list-tile-title>
                                 </v-list-tile-content>
                             </v-list-tile>
                         </template>
+
+                        <hr v-if="!mini"/>
+
+                        <template v-if="!mini" v-for="item in secondSection">
+                            <v-list-group class="sidebar-list-item" v-if="item.subMenu" v-model="item.active" :key="item.title" no-action>
+                                <v-list-tile slot="activator">
+                                    <v-list-tile-content class="pl-3">
+                                        <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+                                    </v-list-tile-content>
+                                </v-list-tile>
+                                <v-list-tile active-class="sidebar-list-item-active" v-for="subItem in item.subMenu" :key="subItem.action"
+                                             :to="{name: subItem.action, params: item.params}">
+                                    <v-list-tile-content>
+                                        <v-list-tile-title>{{ subItem.title }}</v-list-tile-title>
+                                    </v-list-tile-content>
+                                </v-list-tile>
+                            </v-list-group>
+
+                            <v-list-tile active-class="sidebar-list-item-active" class="sidebar-list-item" v-else :key="item.action" :to="{name: item.action, params: item.params}">
+                                <v-list-tile-content class="pl-3">
+                                    <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+                                </v-list-tile-content>
+                            </v-list-tile>
+                        </template>
+
+                        <v-list-tile class="sidebar-list-item sidebar-logo">
+                            <v-list-tile-action class="sidebar-item-action sidebar-logo-img">
+                                <img src="img/sidebar/logo_grey.svg" @click="mini = !mini" alt="">
+                            </v-list-tile-action>
+
+                            <v-list-tile-content class="sidebar-logo-content">
+                                © 2018 Intelinvest
+                            </v-list-tile-content>
+                        </v-list-tile>
+
+                        <div class="sidebar-dialog" :class="{open: !mini}" @click.stop="openDialog">
+                            <v-icon>add</v-icon>
+                        </div>
                     </v-list>
                 </v-navigation-drawer>
-
-                <v-toolbar color="indigo" dark app clipped-left>
-                    <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
-                    <v-toolbar-title>INTELINVEST</v-toolbar-title>
-                    <v-spacer></v-spacer>
-                    <portfolio-switcher></portfolio-switcher>
-                    <v-btn icon v-if="!isNotifyAccepted"
-                           @click.native.stop="openNotificationUpdateDialog">
-                        <v-icon class="faa-vertical animated">whatshot</v-icon>
-                    </v-btn>
-                    <v-btn icon @click.native.stop="openDialog">
-                        <v-icon>add_circle_outline</v-icon>
-                    </v-btn>
-                    <v-btn icon @click="logout">
-                        <v-icon>exit_to_app</v-icon>
-                    </v-btn>
-                </v-toolbar>
 
                 <v-content>
                     <v-container fluid>
@@ -174,7 +200,9 @@ export class AppFrame extends UI {
      */
     private cachedPages = ["PortfolioPage"];
 
-    private drawer = false;
+    private drawer = true;
+
+    private mini = true;
 
     private mainSection: NavBarItem[] = [
         {title: "Портфель", action: "portfolio", icon: "fas fa-briefcase"},
@@ -183,19 +211,21 @@ export class AppFrame extends UI {
         {title: "Дивиденды", action: "dividends", icon: "far fa-calendar-plus"},
         {title: "Комбинированный портфель", action: "combined-portfolio", icon: "fas fa-object-group"},
         {title: "Котировки", action: "quotes", icon: "fas fa-chart-area"},
-        {title: "Информация", action: "share-info", params: {ticker: "GAZP"}, icon: "fas fa-info"},
+        {title: "Информация", action: "share-info", params: {ticker: "GAZP"}, icon: "fas fa-info"}
+    ];
+
+    private secondSection: NavBarItem[] = [
         {
             title: "Настройки", icon: "fas fa-cog", subMenu: [
                 {title: "Управление портфелями", action: "portfolio-settings", icon: "fas fa-suitcase"},
                 {title: "Импорт сделок", action: "import", icon: "fas fa-download"},
                 {title: "Экспорт сделок", action: "export", icon: "fas fa-upload"},
-                {title: "Профиль", action: "profile", icon: "fas fa-user"},
                 {title: "Тарифы", action: "tariffs", icon: "fas fa-credit-card"},
                 {title: "Промо-коды", action: "promo-codes", icon: "fas fa-heart"},
                 {title: "Уведомления", action: "notifications", icon: "fas fa-bell"}
             ]
         },
-        {title: "Справка", action: "help", icon: "far fa-question-circle"},
+        {title: "Профиль", action: "profile", icon: "fas fa-user"}
     ];
 
     async created(): Promise<void> {

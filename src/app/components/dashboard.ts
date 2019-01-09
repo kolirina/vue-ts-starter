@@ -1,8 +1,12 @@
 import Component from "vue-class-component";
 import {Prop, Watch} from "vue-property-decorator";
+import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
 import {Filters} from "../platform/filters/Filters";
-import {DashboardBrick, DashboardData} from "../types/types";
+import {DashboardBrick, DashboardData, Portfolio} from "../types/types";
+import {StoreType} from "../vuex/storeType";
+
+const MainStore = namespace(StoreType.MAIN);
 
 @Component({
     // language=Vue
@@ -14,25 +18,25 @@ import {DashboardBrick, DashboardData} from "../types/types";
             <v-container fluid pl-3 pt-0>
                 <v-layout row class="mx-0 py-2 dashboard-card-big-nums">
                     <div class="headline">
-                        <span><b>{{ block.mainValue }}</b></span>
+                        <span class="dashboard-currency" :class="block.mainCurrency"><b>{{ block.mainValue }}</b></span>
                     </div>
                 </v-layout>
                 <v-layout row class="mx-0 dashboard-card-small-nums">
                     <div>
                         <template v-if="block.isSummaryIncome">
-                            <div class="dashboard-summary-income" :class="block.isSummaryIncome.isUpward ? 'arrow-up' : 'arrow-down'">
+                            <div class="dashboard-summary-income dashboard-currency" :class="block.isSummaryIncome.isUpward ? 'arrow-up' : 'arrow-down'">
                                 <div class="dashboard-summary-income-icon">
                                     <v-icon>{{ block.isSummaryIncome.isUpward ? 'arrow_upward' : 'arrow_downward' }}</v-icon>
                                 </div>
-                                <div class="dashboard-summary-income-text">
+                                <div class="dashboard-summary-income-text dashboard-currency" :class="block.secondCurrency">
                                     {{ block.secondValue }}
                                 </div>
                             </div>
                         </template>
 
                         <template v-else>
-                            <span><b>{{ block.secondValue }}</b> </span>
-                            <span>{{ block.secondValueDesc }}</span>
+                            <span class="dashboard-currency" :class="block.secondCurrency"><b>{{ block.secondValue }}</b> </span>
+                            <span>{{ block.secondValueDesc }} </span>
                         </template>
                     </div>
                 </v-layout>
@@ -69,6 +73,8 @@ export class DashboardBrickComponent extends UI {
     components: {DashboardBrickComponent}
 })
 export class Dashboard extends UI {
+    @MainStore.Getter
+    private portfolio: Portfolio;
 
     @Prop({required: true})
     private data: DashboardData;
@@ -85,11 +91,15 @@ export class Dashboard extends UI {
     }
 
     private fillBricks(newValue: DashboardData): void {
+        const mainCurrency = this.portfolio.portfolioParams.viewCurrency.toLowerCase();
+
         this.blocks[0] = {
             name: "Суммарная стоимость",
             mainValue: Filters.formatMoneyAmount(newValue.currentCost, true),
             secondValue: Filters.formatMoneyAmount(newValue.currentCostInAlternativeCurrency, true),
-            hasNotBorderLeft: true
+            hasNotBorderLeft: true,
+            mainCurrency,
+            secondCurrency: mainCurrency,
         };
         this.blocks[1] = {
             name: "Суммарная прибыль",
@@ -97,18 +107,24 @@ export class Dashboard extends UI {
             secondValue: newValue.percentProfit,
             isSummaryIncome: {
                 isUpward: parseInt(newValue.percentProfit, 10) > 0
-            }
+            },
+            mainCurrency,
+            secondCurrency: "percent",
         };
         this.blocks[2] = {
             name: "Среднегодовая доходность",
             mainValue: newValue.yearYield,
             secondValueDesc: "без дивидендов и купонов",
             secondValue: newValue.yearYieldWithoutDividendsAndCoupons,
+            mainCurrency,
+            secondCurrency: "percent",
         };
         this.blocks[3] = {
             name: "Изменение за день",
             mainValue: Filters.formatMoneyAmount(newValue.dailyChanges, true),
             secondValue: Filters.formatNumber(newValue.dailyChangesPercent),
+            mainCurrency,
+            secondCurrency: "percent",
         };
     }
 }
