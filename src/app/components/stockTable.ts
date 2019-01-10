@@ -21,6 +21,7 @@ import {UI} from "../app/ui";
 import {PortfolioService} from "../services/portfolioService";
 import {TradeService} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
+import {BigMoney} from "../types/bigMoney";
 import {Operation} from "../types/operation";
 import {Portfolio, StockPortfolioRow, TableHeader} from "../types/types";
 import {MutationType} from "../vuex/mutationType";
@@ -40,17 +41,23 @@ const MainStore = namespace(StoreType.MAIN);
             <v-progress-linear slot="progress" color="blue" indeterminate></v-progress-linear>
             <template slot="items" slot-scope="props">
                 <tr @click="props.expanded = !props.expanded">
-                    <td><span>{{ props.item.stock.shortname }}</span> <span>{{ props.item.stock.change }}%</span>
+                    <td>
+                        <span>{{ props.item.stock.shortname }}</span>&nbsp;
+                        <span :class="[(props.item.stock.change >= 0) ? 'ii--green-markup' : 'ii--red-markup', 'ii-number-cell']">{{ props.item.stock.change }}&nbsp;%</span>
                     </td>
                     <td>
                         <stock-link :ticker="props.item.stock.ticker"></stock-link>
                     </td>
-                    <td class="text-xs-right">{{ props.item.avgBuy | amount }}</td>
-                    <td class="text-xs-right">{{ props.item.currPrice| amount(true) }}</td>
-                    <td class="text-xs-right">{{ props.item.currCost| amount(true) }}</td>
-                    <td class="text-xs-right">{{ props.item.profit| amount(true) }}</td>
-                    <td class="text-xs-right">{{ props.item.percProfit | number }}</td>
-                    <td class="text-xs-right">{{ props.item.percCurrShare | number }}</td>
+                    <td class="text-xs-right ii-number-cell">{{ props.item.avgBuy | amount }}</td>
+                    <td class="text-xs-right ii-number-cell">{{ props.item.currPrice| amount(true) }}</td>
+                    <td class="text-xs-right ii-number-cell">{{ props.item.currCost| amount(true) }}</td>
+                    <td :class="[( amount(props.item.profit) >= 0 ) ? 'ii--green-markup' : 'ii--red-markup', 'ii-number-cell', 'text-xs-right']">
+                        {{ props.item.profit| amount(true) }}
+                    </td>
+                    <td :class="[( Number(props.item.percProfit) >= 0 ) ? 'ii--green-markup' : 'ii--red-markup', 'ii-number-cell', 'text-xs-right']">
+                        {{ props.item.percProfit | number }}
+                    </td>
+                    <td class="text-xs-right ii-number-cell">{{ props.item.percCurrShare | number }}</td>
                     <td class="justify-center layout px-0" @click.stop>
                         <v-menu transition="slide-y-transition" bottom left>
                             <v-btn slot="activator" color="primary" flat icon dark>
@@ -187,5 +194,13 @@ export class StockTable extends UI {
             });
             await this.reloadPortfolio(this.portfolio.id);
         }
+    }
+
+    private amount(value: string): number {
+        if (!value) {
+            return 0.00;
+        }
+        const amount = new BigMoney(value);
+        return amount.amount.toNumber();
     }
 }

@@ -85,7 +85,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 </td>
                                 <td class="text-xs-center">{{ props.item.date | date }}</td>
                                 <td class="text-xs-right">{{ props.item.period }}</td>
-                                <td class="text-xs-right">{{ props.item.cleanAmount | amount(true) }}</td>
+                                <td class="text-xs-right ii-number-cell">{{ props.item.cleanAmount | amount(true) }}</td>
                                 <td class="justify-center layout px-0">
                                     <v-btn color="primary" @click="openTradeDialog(props.item)" flat icon dark>
                                         <v-icon color="primary" small>fas fa-plus</v-icon>

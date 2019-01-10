@@ -1,0 +1,32 @@
+.theme--light.v-data-iterator .v-data-iterator__actions,
+.theme--light.v-expansion-panel .v-expansion-panel__container .v-expansion-panel__header .v-expansion-panel__header__icon .v-icon,
+.theme--light.v-table thead th {
+    color: $table--header--font-color;
+}
+
+.theme--light.v-btn-toggle .v-btn,
+.theme--light.v-datatable thead th.column.sortable.active,
+.theme--light.v-datatable thead th.column.sortable.active .v-icon,
+.theme--light.v-datatable thead th.column.sortable:hover,
+.theme--light.v-small-dialog a {
+    color: $table--text--font-color;
+}
+
+.theme--light.v-table {
+    background-color: #fff;
+    color: $table--text--font-color;
+}
+
+.ii--red-markup {
+    font-family: "OpenSans Semibold";
+    color: $table--num--red-color;
+}
+
+.ii--green-markup {
+    font-family: "OpenSans Semibold";
+    color: $table--num--green-color;
+}
+
+.ii-number-cell {
+    font-family: "OpenSans Semibold";
+}

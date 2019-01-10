@@ -96,7 +96,7 @@ gulp.task("build", gulp.parallel("scripts", "css", "assets"));
 gulp.task('default', gulp.series('build', () => {
     browserSync.init({
         // proxy: "localhost:8080",
-        proxy: "http://test.intelinvest.ru/api",
+        proxy: "http://test.intelinvest.ru",
         port: 3000,
         open: true,
         notify: false,
