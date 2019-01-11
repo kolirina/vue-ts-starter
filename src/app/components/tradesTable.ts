@@ -25,10 +25,10 @@ import {AddTradeDialog} from "./dialogs/addTradeDialog";
                     <td>{{ props.item.companyName }}</td>
                     <td>{{ props.item.operationLabel }}</td>
                     <td class="text-xs-center">{{ props.item.date | date }}</td>
-                    <td class="text-xs-right">{{ props.item.quantity }}</td>
-                    <td class="text-xs-right">{{ getPrice(props.item) }}</td>
-                    <td class="text-xs-right">{{ getFee(props.item) }}</td>
-                    <td class="text-xs-right">{{ props.item.signedTotal | amount(true) }}</td>
+                    <td class="text-xs-right ii-number-cell">{{ props.item.quantity }}</td>
+                    <td class="text-xs-right ii-number-cell">{{ getPrice(props.item) }}</td>
+                    <td class="text-xs-right ii-number-cell">{{ getFee(props.item) }}</td>
+                    <td class="text-xs-right ii-number-cell">{{ props.item.signedTotal | amount(true) }}</td>
                     <td class="justify-center layout px-0" @click.stop>
                         <v-menu transition="slide-y-transition" bottom left>
                             <v-btn slot="activator" color="primary" flat icon dark>

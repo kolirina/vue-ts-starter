@@ -6,6 +6,7 @@ import {UI} from "../app/ui";
 import {PortfolioService} from "../services/portfolioService";
 import {TradeService} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
+import {BigMoney} from "../types/bigMoney";
 import {Operation} from "../types/operation";
 import {BondPortfolioRow, Portfolio, TableHeader} from "../types/types";
 import {MutationType} from "../vuex/mutationType";
@@ -29,12 +30,16 @@ const MainStore = namespace(StoreType.MAIN);
                     <td>
                         <bond-link :ticker="props.item.bond.ticker"></bond-link>
                     </td>
-                    <td class="text-xs-right">{{ props.item.avgBuy | number }}</td>
-                    <td class="text-xs-right">{{ props.item.currPrice | number }}</td>
-                    <td class="text-xs-right">{{ props.item.currCost | amount(true) }}</td>
-                    <td class="text-xs-right">{{ props.item.profit | amount(true) }}</td>
-                    <td class="text-xs-right">{{ props.item.percProfit | number }}</td>
-                    <td class="text-xs-right">{{ props.item.percCurrShare | number }}</td>
+                    <td class="text-xs-right ii-number-cell">{{ props.item.avgBuy | number }}</td>
+                    <td class="text-xs-right ii-number-cell">{{ props.item.currPrice | number }}</td>
+                    <td class="text-xs-right ii-number-cell">{{ props.item.currCost | amount(true) }}</td>
+                    <td :class="[( amount(props.item.profit) >= 0 ) ? 'ii--green-markup' : 'ii--red-markup', 'ii-number-cell', 'text-xs-right']">
+                        {{ props.item.profit | amount(true) }}
+                    </td>
+                    <td :class="[( Number(props.item.percProfit) >= 0 ) ? 'ii--green-markup' : 'ii--red-markup', 'ii-number-cell', 'text-xs-right']">
+                        {{ props.item.percProfit | number }}
+                    </td>
+                    <td class="text-xs-right ii-number-cell">{{ props.item.percCurrShare | number }}</td>
                     <td class="justify-center layout px-0" @click.stop>
                         <v-menu transition="slide-y-transition" bottom left>
                             <v-btn slot="activator" color="primary" flat icon dark>
@@ -201,5 +206,13 @@ export class BondTable extends UI {
             });
             await this.reloadPortfolio(this.portfolio.id);
         }
+    }
+
+    private amount(value: string): number {
+        if (!value) {
+            return 0.00;
+        }
+        const amount = new BigMoney(value);
+        return amount.amount.toNumber();
     }
 }

@@ -40,6 +40,7 @@ $theme-color-dark-blue: #040427;
 /* Основной шрифт */
 $main--font-family: "Open Sans";
 $main--font-size: 13px;
+$main--font-color: $theme-color-dark-blue;
 
 /* Dashboard */
 $dashboard--bg-color: #040427;
@@ -83,7 +84,7 @@ $table--num--font-color: #040427;
 /* Зеленые числа */
 $table--num--green-color: #6cc11a;
 /* Красные числа */
-$table--num--green-color: #ff3e70;
+$table--num--red-color: #ff3e70;
 
 /* Экспандер таблицы */
 $expand-table-color: #b0b4c2;

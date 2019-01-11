@@ -1,3 +1,8 @@
 .application {
     font-family: $main--font-family;
 }
+
+.theme--light.application {
+    background: $main--bg-color;
+    color: $main--font-color;
+}

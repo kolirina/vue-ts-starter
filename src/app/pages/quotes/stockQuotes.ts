@@ -26,9 +26,11 @@ const MainStore = namespace(StoreType.MAIN);
                             <stock-link :ticker="props.item.ticker"></stock-link>
                         </td>
                         <td class="text-xs-left">{{ props.item.shortname }}</td>
-                        <td class="text-xs-right">{{ props.item.price | amount(true) }}</td>
-                        <td class="text-xs-right">{{ props.item.change }}%</td>
-                        <td class="text-xs-right">{{ props.item.lotsize }}</td>
+                        <td class="text-xs-right ii-number-cell">{{ props.item.price | amount(true) }}</td>
+                        <td :class="[( Number(props.item.change) >= 0 ) ? 'ii--green-markup' : 'ii--red-markup', 'ii-number-cell', 'text-xs-right']">
+                            {{ props.item.change }}&nbsp;%
+                        </td>
+                        <td class="text-xs-right ii-number-cell">{{ props.item.lotsize }}</td>
                         <td class="text-xs-right">
                             <v-rating v-model="props.item.rating" dense readonly></v-rating>
                         </td>
