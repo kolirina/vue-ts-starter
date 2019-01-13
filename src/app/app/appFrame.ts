@@ -167,6 +167,8 @@ export class AppFrame extends UI {
 
     @MainStore.Getter
     private clientInfo: ClientInfo;
+    @MainStore.Getter
+    private portfolio: Portfolio;
 
     @MainStore.Action(MutationType.SET_CLIENT_INFO)
     private loadUser: (clientInfo: ClientInfo) => Promise<void>;
@@ -271,7 +273,7 @@ export class AppFrame extends UI {
     private async openDialog(): Promise<void> {
         const result = await new AddTradeDialog().show({store: this.$store.state[StoreType.MAIN], router: this.$router});
         if (result) {
-            await this.reloadPortfolio(this.$store.state[StoreType.MAIN].clientInfo.user.currentPortfolioId);
+            await this.reloadPortfolio(this.portfolio.id);
         }
     }
 

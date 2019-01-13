@@ -19,7 +19,8 @@ import {EditShareNoteDialogData} from "../components/dialogs/editShareNoteDialog
 import {Service} from "../platform/decorators/service";
 import {Enum, EnumType, IStaticEnum} from "../platform/enum";
 import {HTTP} from "../platform/services/http";
-import {Portfolio, PortfolioBackup} from "../types/types";
+import {CurrencyUnit, MapType, Portfolio, PortfolioBackup} from "../types/types";
+import {BigMoney} from "../types/bigMoney";
 
 @Service("PortfolioService")
 @Singleton
@@ -165,6 +166,15 @@ export class PortfolioService {
             accountType: response.accountType ? PortfolioAccountType.valueByName(response.accountType) : null,
             iisType: response.iisType ? IisType.valueByName(response.iisType) : null
         } as PortfolioParams;
+    }
+
+    /**
+     * Отправляет запрос на получение текущий остатков денежных средств в портфеле в разрезе по валютам
+     * @param portfolioId идентификатор портфеля
+     */
+    async getMoneyResiduals(portfolioId: string): Promise<MoneyResiduals> {
+        const response: MoneyResiduals = (await HTTP.INSTANCE.get(`/${this.ENDPOINT_BASE}/money-residuals/${portfolioId}`)).data;
+        return response;
     }
 }
 
@@ -320,4 +330,9 @@ export interface GenerateShareUrlRequest {
     sharePortfolioType: string;
     /** Имя пользователя в системе */
     userName: string;
+}
+
+export interface MoneyResiduals {
+    currency: string;
+    amount: string;
 }
