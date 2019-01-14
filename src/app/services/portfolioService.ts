@@ -14,17 +14,20 @@
  * (c) ООО "Интеллектуальные инвестиции", 2018
  */
 
-import {Singleton} from "typescript-ioc";
+import {Inject, Singleton} from "typescript-ioc";
 import {EditShareNoteDialogData} from "../components/dialogs/editShareNoteDialog";
 import {Service} from "../platform/decorators/service";
 import {Enum, EnumType, IStaticEnum} from "../platform/enum";
-import {HTTP} from "../platform/services/http";
-import {CurrencyUnit, MapType, Portfolio, PortfolioBackup} from "../types/types";
-import {BigMoney} from "../types/bigMoney";
+import {Http} from "../platform/services/http";
+import {Portfolio, PortfolioBackup} from "../types/types";
+import {MoneyResiduals} from "./portfolioService";
 
 @Service("PortfolioService")
 @Singleton
 export class PortfolioService {
+
+    @Inject
+    private http: Http;
 
     private readonly ENDPOINT_BASE = "portfolio-info";
 
@@ -33,7 +36,7 @@ export class PortfolioService {
      * @param userId идентификатор пользователя
      */
     async getPortfolioBackup(userId: string): Promise<PortfolioBackup> {
-        return (await HTTP.INSTANCE.get(`/portfolios/${userId}/backup`)).data as PortfolioBackup;
+        return this.http.get<PortfolioBackup>(`/portfolios/${userId}/backup`);
     }
 
     /**
@@ -42,7 +45,7 @@ export class PortfolioService {
      * @param portfolioBackup идентификатор портфеля
      */
     async saveOrUpdatePortfolioBackup(userId: string, portfolioBackup: PortfolioBackup): Promise<void> {
-        await HTTP.INSTANCE.post(`/portfolios/${userId}/backup`, portfolioBackup);
+        await this.http.post(`/portfolios/${userId}/backup`, portfolioBackup);
     }
 
     /**
@@ -50,14 +53,14 @@ export class PortfolioService {
      * @param request запрос
      */
     async getPortfolioShareUrl(request: GenerateShareUrlRequest): Promise<string> {
-        return (await HTTP.INSTANCE.post(`/${this.ENDPOINT_BASE}/public-url`, request)).data;
+        return this.http.post<string>(`/${this.ENDPOINT_BASE}/public-url`, request);
     }
 
     /**
      * Возвращает список портфелей пользователя
      */
     async getPortfolios(): Promise<PortfolioParams[]> {
-        const portfolios: PortfolioParamsResponse[] = (await HTTP.INSTANCE.get(`/${this.ENDPOINT_BASE}`)).data;
+        const portfolios: PortfolioParamsResponse[] = await this.http.get<PortfolioParamsResponse[]>(`/${this.ENDPOINT_BASE}`);
         return portfolios.map(item => {
             return {
                 ...item,
@@ -94,7 +97,7 @@ export class PortfolioService {
             fixFee: portfolio.fixFee,
             note: portfolio.note
         };
-        const item = (await HTTP.INSTANCE.post(`/${this.ENDPOINT_BASE}`, request)).data;
+        const item = await this.http.post<PortfolioParamsResponse>(`/${this.ENDPOINT_BASE}`, request);
         return {
             ...item,
             accountType: item.accountType ? PortfolioAccountType.valueByName(item.accountType) : null,
@@ -127,7 +130,7 @@ export class PortfolioService {
             combined: portfolio.combined
         };
 
-        const item = await (await HTTP.INSTANCE.put(`/${this.ENDPOINT_BASE}`, request)).data;
+        const item = await this.http.put<PortfolioParamsResponse>(`/${this.ENDPOINT_BASE}`, request);
         return {
             ...item,
             accountType: item.accountType ? PortfolioAccountType.valueByName(item.accountType) : null,
@@ -140,7 +143,7 @@ export class PortfolioService {
      * @param portfolioId идентификатор портфеля
      */
     async deletePortfolio(portfolioId: string): Promise<void> {
-        await (await HTTP.INSTANCE.delete(`/${this.ENDPOINT_BASE}/${portfolioId}`));
+        await this.http.delete(`/${this.ENDPOINT_BASE}/${portfolioId}`);
     }
 
     /**
@@ -151,7 +154,7 @@ export class PortfolioService {
     async updateShareNotes(portfolio: Portfolio, data: EditShareNoteDialogData): Promise<void> {
         const shareNotes = portfolio.portfolioParams.shareNotes || {};
         shareNotes[data.ticker] = data.note;
-        await (await HTTP.INSTANCE.put(`/${this.ENDPOINT_BASE}/${portfolio.id}/shareNotes`, shareNotes));
+        await (await this.http.put(`/${this.ENDPOINT_BASE}/${portfolio.id}/shareNotes`, shareNotes));
         portfolio.portfolioParams.shareNotes = shareNotes;
     }
 
@@ -160,7 +163,7 @@ export class PortfolioService {
      * @param portfolioId идентификатор портфеля
      */
     async createPortfolioCopy(portfolioId: string): Promise<PortfolioParams> {
-        const response: PortfolioParamsResponse = (await HTTP.INSTANCE.get(`/${this.ENDPOINT_BASE}/copy/${portfolioId}`)).data;
+        const response: PortfolioParamsResponse = await this.http.get<PortfolioParamsResponse>(`/${this.ENDPOINT_BASE}/copy/${portfolioId}`);
         return {
             ...response,
             accountType: response.accountType ? PortfolioAccountType.valueByName(response.accountType) : null,
@@ -173,8 +176,7 @@ export class PortfolioService {
      * @param portfolioId идентификатор портфеля
      */
     async getMoneyResiduals(portfolioId: string): Promise<MoneyResiduals> {
-        const response: MoneyResiduals = (await HTTP.INSTANCE.get(`/${this.ENDPOINT_BASE}/money-residuals/${portfolioId}`)).data;
-        return response;
+        return this.http.get<MoneyResiduals>(`/${this.ENDPOINT_BASE}/money-residuals/${portfolioId}`);
     }
 }
 

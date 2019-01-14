@@ -1,11 +1,14 @@
-import {Singleton} from "typescript-ioc";
+import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
-import {HTTP} from "../platform/services/http";
+import {Http} from "../platform/services/http";
 import {DeleteTradeRequest} from "./tradeService";
 
 @Service("DividendService")
 @Singleton
 export class DividendService {
+
+    @Inject
+    private http: Http;
 
     /**
      * Загружает и возвращает агрегированную информацию по дивидендам в портфеле
@@ -13,7 +16,7 @@ export class DividendService {
      * @returns {Promise<DividendAggregateInfo>}
      */
     async getDividendAggregateInfo(id: string): Promise<DividendAggregateInfo> {
-        return (await HTTP.INSTANCE.get(`/dividends/${id}/`)).data;
+        return this.http.get<DividendAggregateInfo>(`/dividends/${id}/`);
     }
 
     /**
@@ -21,7 +24,7 @@ export class DividendService {
      * @param deleteTradeRequest запрос на удаление сделки
      */
     async deleteTrade(deleteTradeRequest: DeleteTradeRequest): Promise<void> {
-        await HTTP.INSTANCE.post("/dividends/delete", deleteTradeRequest);
+        await this.http.post("/dividends/delete", deleteTradeRequest);
     }
 
     /**
@@ -29,7 +32,7 @@ export class DividendService {
      * @param deleteTradeRequest запрос на удаление всех сделок
      */
     async deleteAllTrades(deleteTradeRequest: DeleteAllDividendsTradeRequest): Promise<void> {
-        await HTTP.INSTANCE.post("/dividends/deleteAll", deleteTradeRequest);
+        await this.http.post("/dividends/deleteAll", deleteTradeRequest);
     }
 }
 

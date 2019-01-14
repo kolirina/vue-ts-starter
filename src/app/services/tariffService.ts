@@ -1,7 +1,7 @@
-import {Singleton} from "typescript-ioc";
+import {Inject, Singleton} from "typescript-ioc";
 import * as tinkoff from "../../assets/js/tinkoff";
 import {Service} from "../platform/decorators/service";
-import {HTTP} from "../platform/services/http";
+import {Http} from "../platform/services/http";
 import {Tariff} from "../types/tariff";
 import {ClientInfo} from "./clientService";
 
@@ -9,13 +9,16 @@ import {ClientInfo} from "./clientService";
 @Singleton
 export class TariffService {
 
+    @Inject
+    private http: Http;
+
     /**
      * Отправляет запрос на создание заказа для оплаты тарифа
      * @param tariff выбранный тариф
      * @param monthly признак оплаты за месяц
      */
     async makePayment(tariff: Tariff, monthly: boolean): Promise<PayTariffResponse> {
-        return (await HTTP.INSTANCE.post("/tariff/payment", {tariff: tariff.name, monthly})).data as PayTariffResponse;
+        return this.http.post<PayTariffResponse>("/tariff/payment", {tariff: tariff.name, monthly});
     }
 
     /**
@@ -23,7 +26,7 @@ export class TariffService {
      * @param promoCode промо-код
      */
     async applyPromoCode(promoCode: string): Promise<void> {
-        await HTTP.INSTANCE.post(`/tariff/apply-promo-code/${promoCode}`);
+        await this.http.post(`/tariff/apply-promo-code/${promoCode}`);
     }
 
     openPaymentFrame(order: PayTariffResponse, clientInfo: ClientInfo): void {

@@ -1,26 +1,29 @@
-import {Singleton} from "typescript-ioc";
+import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
-import {HTTP} from "../platform/services/http";
+import {Http} from "../platform/services/http";
 
 @Service("ExportService")
 @Singleton
 export class ExportService {
+
+    @Inject
+    private http: Http;
 
     /**
      * Скачивает файл со сделками в формате csv
      * @param portfolioId идентификатор портфеля
      */
     async exportTrades(portfolioId: string): Promise<any> {
-        const response = await HTTP.INSTANCE.get(`/export/${portfolioId}`, {responseType: "blob"});
+        const response = await this.http.get<Response>(`/export/${portfolioId}`);
         if (!window.navigator.msSaveOrOpenBlob) {
-            const blob = new Blob([response.data], {type: "text/plain"});
+            const blob = await response.blob();
             const link = document.createElement("a");
             link.href = window.URL.createObjectURL(blob);
             link.download = `trades_portfolio_${portfolioId}.csv`;
             link.click();
         } else {
             // BLOB FOR EXPLORER 11
-            window.navigator.msSaveOrOpenBlob(new Blob([response.data]), `trades_portfolio_${portfolioId}.csv`);
+            window.navigator.msSaveOrOpenBlob(await response.blob(), `trades_portfolio_${portfolioId}.csv`);
         }
     }
 
@@ -30,17 +33,17 @@ export class ExportService {
      * @param exportType тип отчета для экспорта
      */
     async exportReport(portfolioId: string, exportType: ExportType): Promise<any> {
-        const response = await HTTP.INSTANCE.get(`/export/${exportType}/${portfolioId}`, {responseType: "blob"});
+        const response = await this.http.get<Response>(`/export/${exportType}/${portfolioId}`);
         const fileName = this.getFileName(response.headers);
         if (!window.navigator.msSaveOrOpenBlob) {
-            const blob = new Blob([response.data]);
+            const blob = response.blob();
             const link = document.createElement("a");
             link.href = window.URL.createObjectURL(blob);
             link.download = fileName;
             link.click();
         } else {
             // BLOB FOR EXPLORER 11
-            window.navigator.msSaveOrOpenBlob(new Blob([response.data]), fileName);
+            window.navigator.msSaveOrOpenBlob(response.blob(), fileName);
         }
     }
 
@@ -48,9 +51,9 @@ export class ExportService {
      * Возвращает имя файла
      * @param headers заголовки ответа
      */
-    private getFileName(headers: { [key: string]: string }): string {
+    private getFileName(headers: Headers): string {
         try {
-            const contentDisposition = headers["content-disposition"];
+            const contentDisposition = (headers as any)["content-disposition"];
             return contentDisposition.substring(contentDisposition.indexOf("=") + 1).trim();
         } catch (e) {
             return "report.xlsx";

@@ -1,7 +1,6 @@
-import axios from "axios";
-import {Singleton} from "typescript-ioc";
+import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
-import {HTTP} from "../platform/services/http";
+import {Http} from "../platform/services/http";
 import {Tariff} from "../types/tariff";
 import {LoginRequest} from "../types/types";
 import {IisType, PortfolioAccountType, PortfolioParams, PortfolioParamsResponse} from "./portfolioService";
@@ -10,12 +9,14 @@ import {IisType, PortfolioAccountType, PortfolioParams, PortfolioParamsResponse}
 @Singleton
 export class ClientService {
 
-    clientInfo: ClientInfo = null;
+    @Inject
+    private http: Http;
+
+    private clientInfo: ClientInfo = null;
 
     async getClientInfo(request: LoginRequest): Promise<ClientInfo> {
         if (!this.clientInfo) {
-            const result = await axios.post("/api/user/login", request);
-            const clientInfo: ClientInfoResponse = await result.data;
+            const clientInfo = await this.http.post<ClientInfoResponse>("/user/login", request);
             this.clientInfo = {
                 token: clientInfo.token,
                 user: {
@@ -40,7 +41,7 @@ export class ClientService {
      * @returns {Promise<void>}
      */
     async changePassword(request: ChangePasswordRequest): Promise<void> {
-        await HTTP.INSTANCE.post(`/user/change-password`, request);
+        await this.http.post(`/user/change-password`, request);
     }
 
     /**
@@ -49,7 +50,7 @@ export class ClientService {
      * @returns {Promise<void>}
      */
     async changeUsername(request: ChangeUsernameRequest): Promise<void> {
-        await HTTP.INSTANCE.post(`/user/change-username`, request);
+        await this.http.post(`/user/change-username`, request);
     }
 
     /**
@@ -58,7 +59,7 @@ export class ClientService {
      * @returns {Promise<void>}
      */
     async changeEmail(request: ChangeEmailRequest): Promise<void> {
-        await HTTP.INSTANCE.post(`/user/change-email`, request);
+        await this.http.post(`/user/change-email`, request);
     }
 }
 

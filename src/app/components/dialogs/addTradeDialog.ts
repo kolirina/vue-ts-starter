@@ -378,23 +378,17 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         };
         this.processState = true;
         try {
-            const errors = await this.tradeService.saveTrade({
+            await this.tradeService.saveTrade({
                 portfolioId: this.portfolio.id,
                 asset: this.assetType.enumName,
                 operation: this.operation.enumName,
                 createLinkedTrade: this.keepMoney,
                 fields: trade
             });
-            if (!errors) {
-                this.$snotify.info("Сделка успешно добавлена", "Выполнено");
-                this.close(true);
-                return;
-            }
-            // иначе обрабатываем ошибки валидации с сервера и отображаем
-            for (const errorInfo of errors.fields) {
-                console.log("M", errorInfo);
-                this.$validator.errors.add({field: errorInfo.name, msg: errorInfo.errorMessage});
-            }
+            this.$snotify.info("Сделка успешно добавлена", "Выполнено");
+            this.close(true);
+            return;
+
         } catch (e) {
             console.log("e", e);
             // this.$notify({
@@ -402,6 +396,11 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             //     message: 'Ошибка при добавлении сделки',
             //     type: 'error'
             // });
+            // иначе обрабатываем ошибки валидации с сервера и отображаем
+            // for (const errorInfo of errors.fields) {
+            //     console.log("M", errorInfo);
+            //     this.$validator.errors.add({field: errorInfo.name, msg: errorInfo.errorMessage});
+            // }
             return;
         } finally {
             this.processState = false;

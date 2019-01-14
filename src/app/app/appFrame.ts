@@ -227,7 +227,8 @@ export class AppFrame extends UI {
                 {title: "Уведомления", action: "notifications", icon: "fas fa-bell"}
             ]
         },
-        {title: "Профиль", action: "profile", icon: "fas fa-user"}
+        {title: "Профиль", action: "profile", icon: "fas fa-user"},
+        {title: "Выход", action: "logout", icon: "exit_to_app"}
     ];
 
     async created(): Promise<void> {
@@ -258,10 +259,6 @@ export class AppFrame extends UI {
         }
         await this.setCurrentPortfolio(this.$store.state[StoreType.MAIN].clientInfo.user.currentPortfolioId);
         this.isInitialized = true;
-    }
-
-    private logout(): void {
-        this.$router.push({name: "logout"});
     }
 
     private closeMessage(): void {

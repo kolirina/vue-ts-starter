@@ -8,11 +8,11 @@
 import {UI} from "../../app/ui";
 import {EventType} from "../../types/eventType";
 
-export function CatchErrors(target: any, propertyKey: string, descriptor: TypedPropertyDescriptor<(...args: any[]) => void | Promise<void>>):
+export function CatchErrors(target: any, propertyKey: string, descriptor: TypedPropertyDescriptor<(...args: any[]) => Promise<void>>):
     TypedPropertyDescriptor<(...args: any[]) => Promise<void>> {
     const originalMethod = descriptor.value;
     // tslint:disable-next-line
-    descriptor.value = async function (...args: any[]) {
+    descriptor.value = async function(...args: any[]) {
         try {
             return await originalMethod.apply(this, args);
         } catch (error) {

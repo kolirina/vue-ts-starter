@@ -1,6 +1,5 @@
 import {Container} from "typescript-ioc";
 import {ActionContext, Module} from "vuex";
-import {HTTP} from "../platform/services/http";
 import {Storage} from "../platform/services/storage";
 import {ClientInfo} from "../services/clientService";
 import {OverviewService} from "../services/overviewService";
@@ -63,7 +62,6 @@ const Actions = {
     /** Дейстие проставляющие информацию о клиенте */
     [MutationType.SET_CLIENT_INFO](context: ActionContext<StateHolder, void>, clientInfo: ClientInfo): void {
         localStorage.set(StoreKeys.TOKEN_KEY, clientInfo.token);
-        HTTP.init();
         context.commit(MutationType.SET_CLIENT_INFO, clientInfo);
         console.log("ACTION SET USER", clientInfo, context);
     },

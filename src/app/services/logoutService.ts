@@ -1,21 +1,23 @@
-import {Container, Singleton} from "typescript-ioc";
+import {Container, Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
-import {HTTP} from "../platform/services/http";
+import {Http} from "../platform/services/http";
 import {Storage} from "../platform/services/storage";
 import {StoreKeys} from "../types/storeKeys";
-
-/** Сервис работы с localStorage */
-const localStorage: Storage = Container.get(Storage);
 
 @Service("LogoutService")
 @Singleton
 export class LogoutService {
 
+    @Inject
+    private http: Http;
+    @Inject
+    private localStorage: Storage;
+
     async logout(): Promise<void> {
         console.log("BEFORE LOGOUT");
-        await HTTP.INSTANCE.post("/user/logout");
-        localStorage.delete(StoreKeys.STORE_KEY);
-        localStorage.delete(StoreKeys.TOKEN_KEY);
+        await this.http.post("/user/logout");
+        this.localStorage.delete(StoreKeys.STORE_KEY);
+        this.localStorage.delete(StoreKeys.TOKEN_KEY);
         window.location.reload(true);
     }
 }

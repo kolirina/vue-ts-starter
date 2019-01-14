@@ -1,6 +1,6 @@
-import {Singleton} from "typescript-ioc";
+import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
-import {HTTP} from "../platform/services/http";
+import {Http} from "../platform/services/http";
 import {BaseChartDot, ColumnChartData, ColumnDataSeries, Dot, EventChartData, HighStockEventData, HighStockEventsGroup} from "../types/charts/types";
 import {Bond, BondInfo, Currency, PageableResponse, Share, Stock, StockInfo} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
@@ -9,28 +9,23 @@ import {ChartUtils} from "../utils/chartUtils";
 @Singleton
 export class MarketService {
 
+    @Inject
+    private http: Http;
+
     async searchStocks(query: string): Promise<Share[]> {
         console.log("searchStocks");
-        const result: Share[] = (await HTTP.INSTANCE.get("/market/stocks/search", {
-            params: {
-                query
-            }
-        })).data;
+        const result: Share[] = await this.http.get("/market/stocks/search", {query});
         return result || [];
     }
 
     async searchBonds(query: string): Promise<Share[]> {
         console.log("searchBonds");
-        const result: Share[] = (await HTTP.INSTANCE.get("/market/bonds/search", {
-            params: {
-                query
-            }
-        })).data;
+        const result: Share[] = await this.http.get("/market/bonds/search", {query});
         return result || [];
     }
 
     async getStockInfo(ticker: string): Promise<StockInfo> {
-        const result = (await HTTP.INSTANCE.get<_stockInfo>(`/market/stock/${ticker}/info`)).data;
+        const result = await this.http.get<_stockInfo>(`/market/stock/${ticker}/info`);
         return {
             stock: result.stock,
             history: this.convertDots(result.history),
@@ -40,7 +35,7 @@ export class MarketService {
     }
 
     async getBondInfo(secid: string): Promise<BondInfo> {
-        const result = (await HTTP.INSTANCE.get<_bondInfo>(`/market/bond/${secid}/info`)).data;
+        const result = await this.http.get<_bondInfo>(`/market/bond/${secid}/info`);
         return {
             bond: result.bond,
             history: this.convertDots(result.history),
@@ -53,29 +48,23 @@ export class MarketService {
      * Загружает и возвращает список акций
      */
     async loadStocks(offset: number = 0, pageSize: number = 50, sortColumn: string, descending: boolean = false): Promise<PageableResponse<Stock>> {
-        return (await HTTP.INSTANCE.get(`/market/stocks`, {
-            params: {
-                pageSize, offset, sortColumn: sortColumn ? sortColumn.toUpperCase() : null, descending
-            }
-        })).data as PageableResponse<Stock>;
+        return this.http.get<PageableResponse<Stock>>(`/market/stocks`,
+            {pageSize, offset, sortColumn: sortColumn ? sortColumn.toUpperCase() : null, descending});
     }
 
     /**
      * Загружает и возвращает список облигаций
      */
     async loadBonds(offset: number = 0, pageSize: number = 50, sortColumn: string, descending: boolean = false): Promise<PageableResponse<Bond>> {
-        return (await HTTP.INSTANCE.get(`/market/bonds`, {
-            params: {
-                pageSize, offset, sortColumn: sortColumn ? sortColumn.toUpperCase() : null, descending
-            }
-        })).data as PageableResponse<Bond>;
+        return this.http.get<PageableResponse<Bond>>(`/market/bonds`,
+            {pageSize, offset, sortColumn: sortColumn ? sortColumn.toUpperCase() : null, descending});
     }
 
     /**
      * Загружает и возвращает список валюты
      */
     async loadCurrencies(): Promise<Currency[]> {
-        return (await HTTP.INSTANCE.get(`/market/currency`)).data as Currency[];
+        return this.http.get<Currency[]>(`/market/currency`);
     }
 
     private convertDots(dots: _baseChartDot[]): Dot[] {

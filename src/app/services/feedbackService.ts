@@ -1,10 +1,13 @@
-import {Singleton} from "typescript-ioc";
+import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
-import {HTTP} from "../platform/services/http";
+import {Http} from "../platform/services/http";
 
 @Service("FeedbackService")
 @Singleton
 export class FeedbackService {
+
+    @Inject
+    private http: Http;
 
     /**
      * Отправляет запрос с обратной связью
@@ -12,7 +15,7 @@ export class FeedbackService {
      * @returns {Promise<void>}
      */
     async sendFeedback(request: FeedbackRequest): Promise<void> {
-        await HTTP.INSTANCE.post(`/feedback`, request);
+        await this.http.post(`/feedback`, request);
     }
 }
 

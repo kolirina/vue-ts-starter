@@ -1,5 +1,6 @@
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
+import {Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
@@ -49,27 +50,27 @@ const MainStore = namespace(StoreType.MAIN);
                     <div class="eventsAggregateInfo" v-if="eventsAggregateInfo">
                         <span class="item-block">
                             <span class="eventLegend dividend"/>
-                            <span :class="portfolio.portfolioParams.viewCurrency.toLowerCase()">Дивиденды {{ eventsAggregateInfo.totalDividendsAmount }} </span>
+                            <span :class="portfolio.portfolioParams.viewCurrency.toLowerCase()">Дивиденды {{ eventsAggregateInfo.totalDividendsAmount | number }} </span>
                         </span>
 
                         <span class="item-block">
                             <span class="eventLegend coupon"/>
-                            <span :class="portfolio.portfolioParams.viewCurrency.toLowerCase()">Купоны {{ eventsAggregateInfo.totalCouponsAmount }} </span>
+                            <span :class="portfolio.portfolioParams.viewCurrency.toLowerCase()">Купоны {{ eventsAggregateInfo.totalCouponsAmount | number }} </span>
                         </span>
 
                         <span class="item-block">
                             <span class="eventLegend amortization"/>
-                            <span :class="portfolio.portfolioParams.viewCurrency.toLowerCase()">Амортизация {{ eventsAggregateInfo.totalAmortizationsAmount }} </span>
+                            <span :class="portfolio.portfolioParams.viewCurrency.toLowerCase()">Амортизация {{ eventsAggregateInfo.totalAmortizationsAmount | number }} </span>
                         </span>
 
                         <span class="item-block">
                             <span class="eventLegend repayment"/>
-                            <span :class="portfolio.portfolioParams.viewCurrency.toLowerCase()">Поагешния {{ eventsAggregateInfo.totalRepaymentsAmount }} </span>
+                            <span :class="portfolio.portfolioParams.viewCurrency.toLowerCase()">Поагешния {{ eventsAggregateInfo.totalRepaymentsAmount | number }} </span>
                         </span>
 
                         <span class="item-block">
                             <span class="eventLegend custom"/>
-                            <span :class="portfolio.portfolioParams.viewCurrency.toLowerCase()">Всего выплат {{ eventsAggregateInfo.totalAmount }} </span>
+                            <span :class="portfolio.portfolioParams.viewCurrency.toLowerCase()">Всего выплат {{ eventsAggregateInfo.totalAmount | number }} </span>
                         </span>
                     </div>
 
@@ -138,6 +139,11 @@ export class EventsPage extends UI {
      * @inheritDoc
      */
     async created(): Promise<void> {
+        await this.loadEvents();
+    }
+
+    @Watch("portfolio")
+    private async onPortfolioChange(): Promise<void> {
         await this.loadEvents();
     }
 
