@@ -15,6 +15,7 @@
     justify-content: space-between;
     align-items: center;
     width: 100%;
+    padding-left: 10px;
   }
 
   &-name {
@@ -31,5 +32,29 @@
   &-inner-content {
     display: flex;
     flex-direction: column;
+  }
+
+  &-drop {
+    z-index: 100000000000000;
+  }
+
+  &-list {
+    max-height: 500px; 
+    overflow-x: auto;
+  }
+
+  &-list-tile {
+    & > a {
+      flex-direction: column;
+    }
+    .v-list__tile__title {
+      font-weight: bold;
+      font-size: 14px;
+    } 
+  }
+
+  &-list-icons {
+    width: 100%;
+    text-align: left;
   }
 }

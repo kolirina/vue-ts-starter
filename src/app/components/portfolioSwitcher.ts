@@ -18,10 +18,10 @@ const MainStore = namespace(StoreType.MAIN);
                 <img src="img/sidebar/case.svg">
             </v-list-tile-action>
             <v-list-tile-content class="portfolio-content">
-                <v-menu offset-y transition="slide-y-transition" class="portfolios-menu">
+                <v-menu offset-y transition="slide-y-transition" class="portfolios-drop portfolios-menu">
                     <div slot="activator" class="portfolios-inner-wrap">
                         <div class="portfolios-inner-content">
-                            <span class="portfolios-name">{{ selected.name }}</span>
+                            <span class="portfolios-name ellipsis">{{ selected.name }}</span>
                             <span class="portfolios-currency">{{ selected.viewCurrency }}</span>
                         </div>
                         <div class="portfolios-arrow">
@@ -29,9 +29,16 @@ const MainStore = namespace(StoreType.MAIN);
                         </div>
                     </div>
 
-                    <v-list style="max-height: 500px; overflow-x: auto;">
-                        <v-list-tile v-for="(portfolio, index) in portfolios" :key="index" @click="onSelect(portfolio)">
-                            <v-list-tile-title>{{ getPortfolioName(portfolio) }}</v-list-tile-title>
+                    <v-list class="portfolios-list">
+                        <v-list-tile v-for="(portfolio, index) in portfolios" class="portfolios-list-tile" :key="index" @click="onSelect(portfolio)">
+                            <v-list-tile-title class="ellipsis">{{ portfolio.name }}</v-list-tile-title>
+                            <div class="portfolios-list-icons">
+                                <i :class="portfolio.viewCurrency.toLowerCase()" title="Валюта"></i>
+                                <i v-if="portfolio.access" class="far fa-share-alt" title="Публичный"></i>
+                                <i v-else class="fas fa-share-alt" title="Приватный"></i>
+                                <i v-if="portfolio.professionalMode" class="fas fa-rocket" title="Профессиональный режим"></i>
+                            </div>
+
                         </v-list-tile>
                     </v-list>
                 </v-menu>
@@ -65,6 +72,7 @@ export class PortfolioSwitcher extends UI {
     }
 
     private getPortfolioName(portfolio: PortfolioParams): string {
+        
         return `${portfolio.name} (${portfolio.viewCurrency}), ${portfolio.access ? "Публичный" : "Закрытый"}`;
     }
 
