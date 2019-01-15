@@ -22,7 +22,12 @@ const MainStore = namespace(StoreType.MAIN);
                     <div slot="activator" class="portfolios-inner-wrap">
                         <div class="portfolios-inner-content">
                             <span class="portfolios-name ellipsis">{{ selected.name }}</span>
-                            <span class="portfolios-currency">{{ selected.viewCurrency }}</span>
+                            <div class="portfolios-list-icons">
+                                <i :class="selected.viewCurrency.toLowerCase()" title="Валюта"></i>
+                                <i v-if="selected.access" class="far fa-share-alt" title="Публичный"></i>
+                                <i v-else class="fas fa-share-alt" title="Приватный"></i>
+                                <i v-if="selected.professionalMode" class="fas fa-rocket" title="Профессиональный режим"></i>
+                            </div>
                         </div>
                         <div class="portfolios-arrow">
                             <v-icon>arrow_drop_down</v-icon>

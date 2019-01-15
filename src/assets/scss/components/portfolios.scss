@@ -56,5 +56,10 @@
   &-list-icons {
     width: 100%;
     text-align: left;
+    color: $sidebar-not-active-link-color;
+    font-size: 13px;
+    i {
+      margin-right: 7px;
+    }
   }
 }
