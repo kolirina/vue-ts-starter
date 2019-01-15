@@ -71,11 +71,6 @@ export class PortfolioSwitcher extends UI {
         this.selected = selected;
     }
 
-    private getPortfolioName(portfolio: PortfolioParams): string {
-        
-        return `${portfolio.name} (${portfolio.viewCurrency}), ${portfolio.access ? "Публичный" : "Закрытый"}`;
-    }
-
     private getSelected(id?: string): PortfolioParams {
         const currentPortfolioId = this.portfolio.id;
         const portfolio = this.portfolios.find(p => p.id === currentPortfolioId);
