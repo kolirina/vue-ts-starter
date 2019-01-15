@@ -25,7 +25,7 @@ const MainStore = namespace(StoreType.MAIN);
                             <div class="portfolios-list-icons">
                                 <i :class="selected.viewCurrency.toLowerCase()" title="Валюта"></i>
                                 <i v-if="selected.access" class="far fa-share-alt" title="Публичный"></i>
-                                <i v-else class="fas fa-share-alt" title="Приватный"></i>
+                                <i v-else class="far fa-eye-slash" title="Приватный"></i>
                                 <i v-if="selected.professionalMode" class="fas fa-rocket" title="Профессиональный режим"></i>
                             </div>
                         </div>
@@ -40,10 +40,9 @@ const MainStore = namespace(StoreType.MAIN);
                             <div class="portfolios-list-icons">
                                 <i :class="portfolio.viewCurrency.toLowerCase()" title="Валюта"></i>
                                 <i v-if="portfolio.access" class="far fa-share-alt" title="Публичный"></i>
-                                <i v-else class="fas fa-share-alt" title="Приватный"></i>
+                                <i v-else class="far fa-eye-slash" title="Приватный"></i>
                                 <i v-if="portfolio.professionalMode" class="fas fa-rocket" title="Профессиональный режим"></i>
                             </div>
-
                         </v-list-tile>
                     </v-list>
                 </v-menu>
