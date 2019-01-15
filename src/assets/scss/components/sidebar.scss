@@ -1,6 +1,4 @@
 .sidebar {
-  overflow: visible!important;
-
   .hamburger {
     cursor: pointer;
     width: 23px;
@@ -60,17 +58,20 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    position: absolute;
-    right: 14px;
+    position: fixed;
+    left: 14px;
     top: 150px;
     z-index: 99;
     cursor: pointer;
+    transition: .2s linear;
+
     &.open {
-      right: -26px;
+      left: 274px;
     }
 
     i {
       color: #fff!important;
     }
+
   }
 }
