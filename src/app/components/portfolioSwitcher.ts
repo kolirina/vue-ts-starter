@@ -24,7 +24,7 @@ const MainStore = namespace(StoreType.MAIN);
                             <span class="portfolios-name ellipsis">{{ selected.name }}</span>
                             <div class="portfolios-list-icons">
                                 <i :class="selected.viewCurrency.toLowerCase()" title="Валюта"></i>
-                                <i v-if="selected.access" class="far fa-share-alt" title="Публичный"></i>
+                                <i v-if="selected.access" class="fas fa-share-alt" title="Публичный"></i>
                                 <i v-else class="far fa-eye-slash" title="Приватный"></i>
                                 <i v-if="selected.professionalMode" class="fas fa-rocket" title="Профессиональный режим"></i>
                             </div>
@@ -39,7 +39,7 @@ const MainStore = namespace(StoreType.MAIN);
                             <v-list-tile-title class="ellipsis">{{ portfolio.name }}</v-list-tile-title>
                             <div class="portfolios-list-icons">
                                 <i :class="portfolio.viewCurrency.toLowerCase()" title="Валюта"></i>
-                                <i v-if="portfolio.access" class="far fa-share-alt" title="Публичный"></i>
+                                <i v-if="portfolio.access" class="fas fa-share-alt" title="Публичный"></i>
                                 <i v-else class="far fa-eye-slash" title="Приватный"></i>
                                 <i v-if="portfolio.professionalMode" class="fas fa-rocket" title="Профессиональный режим"></i>
                             </div>
