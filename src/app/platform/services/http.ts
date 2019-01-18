@@ -22,7 +22,7 @@ import {Service} from "../decorators/service";
 import {Storage} from "./storage";
 
 export type UrlParams = {
-    [key: string]: string | number | boolean
+    [key: string]: string | number | boolean | string[]
 };
 
 /**
@@ -158,9 +158,13 @@ export class Http {
      */
     private buildQuery(urlParams: UrlParams): string {
         return Object.keys(urlParams).reduce((query: string, key: string, idx: number, keys: string[]) => {
-            query += encodeURIComponent(key) + "=" + encodeURIComponent(String(urlParams[key]));
-            if (idx < keys.length - 1) {
-                query += "&";
+            if (urlParams[key] instanceof Array) {
+                query += this.arrayToQueryString(key, urlParams[key] as string[]);
+            } else {
+                query += encodeURIComponent(key) + "=" + encodeURIComponent(String(urlParams[key]));
+                if (idx < keys.length - 1) {
+                    query += "&";
+                }
             }
             return query;
         }, "?");
@@ -263,6 +267,19 @@ export class Http {
             statusText: response.statusText
         };
         return error;
+    }
+
+    /**
+     * Преобразует массив строк к виду key=value1&key=value2&key=value3 и т.д
+     * @param key
+     * @param urlPrams
+     */
+    private arrayToQueryString(key: string, urlPrams: string[]): string {
+        const out: string[] = [];
+        urlPrams.forEach((value: string, index: number): void => {
+            out.push(key + "=" + encodeURIComponent(urlPrams[index]));
+        });
+        return out.join("&");
     }
 }
 
