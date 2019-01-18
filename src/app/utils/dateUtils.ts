@@ -56,6 +56,14 @@ export class DateUtils {
     static formatDate(date: Moment, format: string = DateFormat.DATE): string {
         return date.format(format);
     }
+
+    /**
+     * Возвращает текущую дату
+     * @return {string} текущая дата в виде строки
+     */
+    static currentDate(): string {
+        return DateUtils.formatDate(moment(), DateFormat.DATE2);
+    }
 }
 
 /**

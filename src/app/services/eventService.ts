@@ -1,18 +1,21 @@
-import {Singleton} from "typescript-ioc";
+import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
-import {HTTP} from "../platform/services/http";
+import {Http} from "../platform/services/http";
 import {Share} from "../types/types";
 
 @Service("EventService")
 @Singleton
 export class EventService {
 
+    @Inject
+    private http: Http;
+
     /**
      * Возвращает список событий пользователя
      * @param portfolioId идентификатор портфеля
      */
     async getEvents(portfolioId: string): Promise<EventsResponse> {
-        return (await HTTP.INSTANCE.get(`/events/list/${portfolioId}`)).data;
+        return this.http.get<EventsResponse>(`/events/list/${portfolioId}`);
     }
 
     /**
@@ -21,9 +24,7 @@ export class EventService {
      * @param withMoney признак исполнения событий с зачислением денег
      */
     async executeAllEvents(portfolioId: string, withMoney: boolean): Promise<void> {
-        await HTTP.INSTANCE.post(`/events/list/${portfolioId}/execute`, null, {
-            params: {withMoney}
-        });
+        await this.http.post(`/events/list/${portfolioId}/execute`, null, {withMoney});
     }
 
     /**
@@ -31,7 +32,7 @@ export class EventService {
      * @param portfolioId идентификатор портфеля
      */
     async deleteAllEvents(portfolioId: string): Promise<void> {
-        await HTTP.INSTANCE.post(`/events/list/${portfolioId}/delete`);
+        await this.http.post(`/events/list/${portfolioId}/delete`);
     }
 }
 

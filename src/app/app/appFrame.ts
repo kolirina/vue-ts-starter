@@ -166,6 +166,8 @@ export class AppFrame extends UI {
 
     @MainStore.Getter
     private clientInfo: ClientInfo;
+    @MainStore.Getter
+    private portfolio: Portfolio;
 
     @MainStore.Action(MutationType.SET_CLIENT_INFO)
     private loadUser: (clientInfo: ClientInfo) => Promise<void>;
@@ -224,7 +226,8 @@ export class AppFrame extends UI {
                 {title: "Уведомления", action: "notifications", icon: "fas fa-bell"}
             ]
         },
-        {title: "Профиль", action: "profile", icon: "fas fa-user"}
+        {title: "Профиль", action: "profile", icon: "fas fa-user"},
+        {title: "Выход", action: "logout", icon: "exit_to_app"}
     ];
 
     async created(): Promise<void> {
@@ -257,10 +260,6 @@ export class AppFrame extends UI {
         this.isInitialized = true;
     }
 
-    private logout(): void {
-        this.$router.push({name: "logout"});
-    }
-
     private closeMessage(): void {
         this.showMessage = false;
         this.message = "";
@@ -270,7 +269,7 @@ export class AppFrame extends UI {
     private async openDialog(): Promise<void> {
         const result = await new AddTradeDialog().show({store: this.$store.state[StoreType.MAIN], router: this.$router});
         if (result) {
-            await this.reloadPortfolio(this.$store.state[StoreType.MAIN].clientInfo.user.currentPortfolioId);
+            await this.reloadPortfolio(this.portfolio.id);
         }
     }
 

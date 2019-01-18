@@ -1,22 +1,24 @@
-import {Singleton} from "typescript-ioc";
+import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
-import {HTTP} from "../platform/services/http";
+import {Http} from "../platform/services/http";
 import {Status} from "../types/types";
 
 @Service("ImportService")
 @Singleton
 export class ImportService {
 
+    @Inject
+    private http: Http;
+
     /**
      * Отправляет файлы на сервер
      * @param provider
      * @param portfolioId
      * @param report
+     * @param importRequest
      */
     async importReport(provider: string, portfolioId: string, report: FormData, importRequest: ImportRequest): Promise<ImportResponse> {
-        return (await HTTP.INSTANCE.post(`/import/${provider}/to/${portfolioId}`, report, {
-            params: importRequest
-        })).data as ImportResponse;
+        return this.http.post<ImportResponse>(`/import/${provider}/to/${portfolioId}`, report, importRequest as any, {headers: this.http.importHeaders});
     }
 }
 

@@ -13,7 +13,7 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-list-tile v-if="portfolios" class="text-xs-center portfolios sidebar-list-item">
+        <v-list-tile v-if="clientInfo.user.portfolios" class="text-xs-center portfolios sidebar-list-item">
             <v-list-tile-action class="sidebar-item-action">
                 <img src="img/sidebar/case.svg">
             </v-list-tile-action>
@@ -35,7 +35,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </div>
 
                     <v-list class="portfolios-list">
-                        <v-list-tile v-for="(portfolio, index) in portfolios" class="portfolios-list-tile" :key="index" @click="onSelect(portfolio)">
+                        <v-list-tile v-for="(portfolio, index) in clientInfo.user.portfolios" class="portfolios-list-tile" :key="index" @click="onSelect(portfolio)">
                             <v-list-tile-title class="ellipsis">{{ portfolio.name }}</v-list-tile-title>
                             <div class="portfolios-list-icons">
                                 <i :class="portfolio.viewCurrency.toLowerCase()" title="Валюта"></i>
@@ -61,12 +61,9 @@ export class PortfolioSwitcher extends UI {
     @MainStore.Action(MutationType.SET_CURRENT_PORTFOLIO)
     private setCurrentPortfolio: (id: string) => Promise<Portfolio>;
 
-    private portfolios: PortfolioParams[] = null;
-
     private selected: PortfolioParams = null;
 
     async created(): Promise<void> {
-        this.portfolios = this.clientInfo.user.portfolios;
         this.selected = this.getSelected();
     }
 
@@ -77,9 +74,9 @@ export class PortfolioSwitcher extends UI {
 
     private getSelected(id?: string): PortfolioParams {
         const currentPortfolioId = this.portfolio.id;
-        const portfolio = this.portfolios.find(p => p.id === currentPortfolioId);
+        const portfolio = this.clientInfo.user.portfolios.find(p => p.id === currentPortfolioId);
         if (!portfolio) {
-            return this.portfolios[0];
+            return this.clientInfo.user.portfolios[0];
         }
         return portfolio;
     }

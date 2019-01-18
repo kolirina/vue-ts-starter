@@ -20,7 +20,6 @@
     "@fortawesome/fontawesome-free": "^5.4.1",
     "@types/highcharts": "^5.0.22",
     "@types/js-cookie": "^2.1.0",
-    "axios": "^0.18.0",
     "decimal.js": "^10.0.1",
     "font-awesome": "^4.7.0",
     "font-awesome-animation": "^0.2.1",

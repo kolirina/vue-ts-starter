@@ -448,22 +448,20 @@ export class BalancesPage extends UI implements TradeDataHolder {
         };
         this.processState = true;
         try {
-            const errors = await this.tradeService.saveTrade({
+            await this.tradeService.saveTrade({
                 portfolioId: this.portfolio.id,
                 asset: this.assetType.enumName,
                 operation: this.operation.enumName,
                 createLinkedTrade: this.keepMoney,
                 fields: trade
             });
-            if (!errors) {
-                await this.reloadPortfolio(this.portfolio.id);
-                this.$snotify.info("Баланс успешно сохранен");
-                return;
-            }
-            for (const errorInfo of errors.fields) {
-                this.$validator.errors.add({field: errorInfo.name, msg: errorInfo.errorMessage});
-            }
+            await this.reloadPortfolio(this.portfolio.id);
+            this.$snotify.info("Баланс успешно сохранен");
+            return;
         } catch (e) {
+            // for (const errorInfo of errors.fields) {
+            //     this.$validator.errors.add({field: errorInfo.name, msg: errorInfo.errorMessage});
+            // }
             return;
         } finally {
             this.processState = false;
