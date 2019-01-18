@@ -32,7 +32,7 @@ const MainStore = namespace(StoreType.MAIN);
                         <div class="portfolios-arrow">
                             <v-icon>arrow_drop_down</v-icon>
                         </div>
-                    </div>
+                    </div> 
 
                     <v-list class="portfolios-list">
                         <v-list-tile v-for="(portfolio, index) in portfolios" class="portfolios-list-tile" :key="index" @click="onSelect(portfolio)">

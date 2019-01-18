@@ -4,7 +4,8 @@ import {Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
 import {TradesTable} from "../components/tradesTable";
-import {TradeService} from "../services/tradeService";
+import {TradesFilter} from "../components/tradesFilter";
+import {TradeService, TradesFilters} from "../services/tradeService";
 import {Pagination, Portfolio, TablePagination, TradeRow} from "../types/types";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
@@ -16,6 +17,9 @@ const MainStore = namespace(StoreType.MAIN);
     template: `
         <v-container v-if="portfolio" fluid>
             <dashboard :data="portfolio.overview.dashboardData"></dashboard>
+
+            <trades-filter :loadTrades="loadTrades"></trades-filter>
+
             <trades-table :trades="trades" :trade-pagination="tradePagination" @delete="onDelete"></trades-table>
             <v-container v-if="pages > 1">
                 <v-layout align-center justify-center row>
@@ -24,7 +28,7 @@ const MainStore = namespace(StoreType.MAIN);
             </v-container>
         </v-container>
     `,
-    components: {TradesTable}
+    components: {TradesTable, TradesFilter}
 })
 export class TradesPage extends UI {
 
@@ -94,10 +98,15 @@ export class TradesPage extends UI {
         this.pages = parseInt(String(this.totalTrades / this.pageSize), 10);
     }
 
-    private async loadTrades(): Promise<void> {
+    private async loadTrades(filters: TradesFilters = {}): Promise<void> {
         this.tradePagination.loading = true;
-        this.trades = await this.tradeService.loadTrades(this.portfolio.id, this.pageSize * (this.page - 1),
-            this.pageSize, this.tradePagination.pagination.sortBy, this.tradePagination.pagination.descending);
+        this.trades = await this.tradeService.loadTrades(
+            this.portfolio.id, 
+            this.pageSize * (this.page - 1),
+            this.pageSize, 
+            this.tradePagination.pagination.sortBy, 
+            this.tradePagination.pagination.descending,
+            filters);
         this.tradePagination.loading = false;
     }
 }

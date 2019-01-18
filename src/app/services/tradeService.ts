@@ -43,10 +43,10 @@ export class TradeService {
      * @param {string} ticker тикер
      * @returns {Promise<TradeRow[]>}
      */
-    async loadTrades(id: string, offset: number = 0, limit: number = 50, sortColumn: string, descending: boolean = false): Promise<TradeRow[]> {
+    async loadTrades(id: string, offset: number = 0, limit: number = 50, sortColumn: string, descending: boolean = false, filters: TradesFilters = {}): Promise<TradeRow[]> {
         return (await HTTP.INSTANCE.get(`/trades/${id}`, {
             params: {
-                offset, limit, sortColumn: sortColumn ? sortColumn.toUpperCase() : null, descending
+                offset, limit, sortColumn: sortColumn ? sortColumn.toUpperCase() : null, descending, ...filters
             }
         })).data as TradeRow[];
     }
@@ -153,4 +153,15 @@ export enum TableName {
     STOCK_TRADE = "STOCK_TRADE",
     BOND_TRADE = "BOND_TRADE",
     DIVIDEND_TRADE = "DIVIDEND_TRADE"
+}
+
+/**
+ * Фильтры сделок
+ */
+export interface TradesFilters {
+    listType?: string,
+    operation?: string[],
+    showMoneyTrades?: boolean,
+    showLinkedMoneyTrades?: boolean,
+    search?: string
 }
