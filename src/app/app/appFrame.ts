@@ -58,7 +58,6 @@ const MainStore = namespace(StoreType.MAIN);
 
             <template v-else>
                 <v-navigation-drawer disable-resize-watcher fixed stateless class="sidebar" v-model="drawer" :mini-variant.sync="mini" app>
-                    <v-divider></v-divider>
                     <v-list dense class="sidebar-list">
                         <v-list-tile class="sidebar-list-item">
                             <v-list-tile-action class="sidebar-item-action">
@@ -126,11 +125,11 @@ const MainStore = namespace(StoreType.MAIN);
                             </v-list-tile-content>
                         </v-list-tile>
 
-                        <div class="sidebar-dialog" :class="{open: !mini}" @click.stop="openDialog">
-                            <v-icon>add</v-icon>
-                        </div>
                     </v-list>
                 </v-navigation-drawer>
+                <div class="sidebar-dialog" :class="{open: !mini}" @click.stop="openDialog">
+                    <v-icon>add</v-icon>
+                </div>
 
                 <v-content>
                     <v-container fluid>
