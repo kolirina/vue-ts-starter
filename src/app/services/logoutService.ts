@@ -18,6 +18,6 @@ export class LogoutService {
         await this.http.post("/user/logout");
         this.localStorage.delete(StoreKeys.STORE_KEY);
         this.localStorage.delete(StoreKeys.TOKEN_KEY);
-        window.location.reload(true);
+        window.location.assign( "http://localhost:8080/auth.html");
     }
 }

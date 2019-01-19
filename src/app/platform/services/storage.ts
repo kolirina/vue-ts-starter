@@ -7,7 +7,7 @@ import {Service} from "../decorators/service";
  */
 @Service("Storage")
 @Singleton
-export abstract class Storage {
+export class Storage {
 
     /** localStorage, если он доступен, либо обычный объект */
     private storage = this.initLocalStorage();

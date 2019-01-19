@@ -12,27 +12,14 @@ export class ClientService {
     @Inject
     private http: Http;
 
-    private clientInfo: ClientInfo = null;
+    async login(request: LoginRequest): Promise<ClientInfo> {
+        const clientInfo = await this.http.post<ClientInfoResponse>("/user/login", request);
+        return this.mapClientInfoResponse(clientInfo);
+    }
 
-    async getClientInfo(request: LoginRequest): Promise<ClientInfo> {
-        if (!this.clientInfo) {
-            const clientInfo = await this.http.post<ClientInfoResponse>("/user/login", request);
-            this.clientInfo = {
-                token: clientInfo.token,
-                user: {
-                    ...clientInfo.user,
-                    tariff: Tariff.valueByName(clientInfo.user.tariff),
-                    portfolios: clientInfo.user.portfolios.map(item => {
-                        return {
-                            ...item,
-                            accountType: item.accountType ? PortfolioAccountType.valueByName(item.accountType) : null,
-                            iisType: item.iisType ? IisType.valueByName(item.iisType) : null
-                        } as PortfolioParams;
-                    })
-                }
-            } as ClientInfo;
-        }
-        return this.clientInfo;
+    async getClientInfo(): Promise<Client> {
+        const clientInfo = await this.http.get<ClientResponse>("/user/info");
+        return this.mapClientResponse(clientInfo);
     }
 
     /**
@@ -60,6 +47,37 @@ export class ClientService {
      */
     async changeEmail(request: ChangeEmailRequest): Promise<void> {
         await this.http.post(`/user/change-email`, request);
+    }
+
+    private mapClientInfoResponse(clientInfoResponse: ClientInfoResponse): ClientInfo {
+        return {
+            token: clientInfoResponse.token,
+            user: {
+                ...clientInfoResponse.user,
+                tariff: Tariff.valueByName(clientInfoResponse.user.tariff),
+                portfolios: clientInfoResponse.user.portfolios.map(item => {
+                    return {
+                        ...item,
+                        accountType: item.accountType ? PortfolioAccountType.valueByName(item.accountType) : null,
+                        iisType: item.iisType ? IisType.valueByName(item.iisType) : null
+                    } as PortfolioParams;
+                })
+            }
+        } as ClientInfo;
+    }
+
+    private mapClientResponse(clientResponse: ClientResponse): Client {
+        return {
+            ...clientResponse,
+            tariff: Tariff.valueByName(clientResponse.tariff),
+            portfolios: clientResponse.portfolios.map(item => {
+                return {
+                    ...item,
+                    accountType: item.accountType ? PortfolioAccountType.valueByName(item.accountType) : null,
+                    iisType: item.iisType ? IisType.valueByName(item.iisType) : null
+                } as PortfolioParams;
+            })
+        } as Client;
     }
 }
 

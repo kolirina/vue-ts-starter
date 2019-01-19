@@ -13,7 +13,7 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-list-tile v-if="clientInfo.user.portfolios" class="text-xs-center portfolios sidebar-list-item">
+        <v-list-tile class="text-xs-center portfolios sidebar-list-item">
             <v-list-tile-action class="sidebar-item-action">
                 <img src="img/sidebar/case.svg">
             </v-list-tile-action>
@@ -35,7 +35,8 @@ const MainStore = namespace(StoreType.MAIN);
                     </div>
 
                     <v-list class="portfolios-list">
-                        <v-list-tile v-for="(portfolio, index) in clientInfo.user.portfolios" class="portfolios-list-tile" :key="index" @click="onSelect(portfolio)">
+                        <v-list-tile v-for="(portfolio, index) in clientInfo.user.portfolios" class="portfolios-list-tile" :key="index"
+                                     @click="onSelect(portfolio)">
                             <v-list-tile-title class="ellipsis">{{ portfolio.name }}</v-list-tile-title>
                             <div class="portfolios-list-icons">
                                 <i :class="portfolio.viewCurrency.toLowerCase()" title="Валюта"></i>
@@ -72,7 +73,7 @@ export class PortfolioSwitcher extends UI {
         this.selected = selected;
     }
 
-    private getSelected(id?: string): PortfolioParams {
+    private getSelected(): PortfolioParams {
         const currentPortfolioId = this.portfolio.id;
         const portfolio = this.clientInfo.user.portfolios.find(p => p.id === currentPortfolioId);
         if (!portfolio) {
