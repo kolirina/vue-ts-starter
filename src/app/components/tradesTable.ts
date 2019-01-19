@@ -1,6 +1,7 @@
 import Component from "vue-class-component";
 import {Prop, Watch} from "vue-property-decorator";
 import {UI} from "../app/ui";
+import {TradeFields} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
 import {Operation} from "../types/operation";
 import {TableHeader, TablePagination, TradeRow} from "../types/types";
@@ -24,16 +25,22 @@ import {AddTradeDialog} from "./dialogs/addTradeDialog";
                     <td>{{ props.item.companyName }}</td>
                     <td>{{ props.item.operationLabel }}</td>
                     <td class="text-xs-center">{{ props.item.date | date }}</td>
-                    <td class="text-xs-right">{{ props.item.quantity }}</td>
-                    <td class="text-xs-right">{{ getPrice(props.item) }}</td>
-                    <td class="text-xs-right">{{ getFee(props.item) }}</td>
-                    <td class="text-xs-right">{{ props.item.signedTotal | amount(true) }}</td>
+                    <td class="text-xs-right ii-number-cell">{{ props.item.quantity }}</td>
+                    <td class="text-xs-right ii-number-cell">{{ getPrice(props.item) }}</td>
+                    <td class="text-xs-right ii-number-cell">{{ getFee(props.item) }}</td>
+                    <td class="text-xs-right ii-number-cell">{{ props.item.signedTotal | amount(true) }}</td>
                     <td class="justify-center layout px-0" @click.stop>
                         <v-menu transition="slide-y-transition" bottom left>
                             <v-btn slot="activator" color="primary" flat icon dark>
                                 <v-icon color="primary" small>fas fa-bars</v-icon>
                             </v-btn>
                             <v-list dense>
+                                <v-list-tile @click.stop="openEditTradeDialog(props.item)">
+                                    <v-list-tile-title>
+                                        <v-icon color="primary" small>fas fa-pencil-alt</v-icon>
+                                        Редактировать
+                                    </v-list-tile-title>
+                                </v-list-tile>
                                 <v-list-tile @click.stop="openTradeDialog(props.item, operation.BUY)">
                                     <v-list-tile-title>
                                         <v-icon color="primary" small>fas fa-plus</v-icon>
@@ -132,6 +139,28 @@ export class TradesTable extends UI {
             share: null,
             operation,
             assetType: AssetType.STOCK
+        });
+    }
+
+    private async openEditTradeDialog(tradeRow: TradeRow): Promise<void> {
+        const trade: TradeFields = {
+            ticker: tradeRow.ticker,
+            date: tradeRow.date,
+            quantity: parseInt(tradeRow.quantity, 10),
+            price: tradeRow.price,
+            facevalue: null,
+            nkd: null,
+            perOne: null,
+            fee: tradeRow.fee,
+            note: tradeRow.note,
+            keepMoney: false,
+            moneyAmount: tradeRow.moneyPrice,
+            currency: tradeRow.currency
+        };
+        await new AddTradeDialog().show({
+            store: this.$store.state[StoreType.MAIN],
+            router: this.$router,
+            tradeData: trade
         });
     }
 

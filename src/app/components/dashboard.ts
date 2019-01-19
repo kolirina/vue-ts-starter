@@ -1,27 +1,43 @@
 import Component from "vue-class-component";
 import {Prop, Watch} from "vue-property-decorator";
+import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
 import {Filters} from "../platform/filters/Filters";
-import {DashboardBrick, DashboardData} from "../types/types";
+import {DashboardBrick, DashboardData, Portfolio} from "../types/types";
+import {StoreType} from "../vuex/storeType";
+
+const MainStore = namespace(StoreType.MAIN);
 
 @Component({
     // language=Vue
     template: `
-        <v-card dark :color="block.color">
-            <v-card-title primary-title>
+        <v-card dark class="dashboard-card" :class="{ 'dashboard-border': !block.hasNotBorderLeft }">
+            <v-card-title primary-title class="pb-2 dashboard-card-string">
                 <div>{{ block.name }}</div>
             </v-card-title>
-            <v-container fluid>
-                <v-layout row>
+            <v-container fluid pl-3 pt-0>
+                <v-layout row class="mx-0 py-2 dashboard-card-big-nums">
                     <div class="headline">
-                        <v-icon>{{ block.icon }}</v-icon>
-                        <span><b>{{ block.mainValue }}</b></span>
+                        <span class="dashboard-currency" :class="block.mainCurrency"><b>{{ block.mainValue }}</b></span>
                     </div>
                 </v-layout>
-                <v-layout row>
+                <v-layout row class="mx-0 dashboard-card-small-nums">
                     <div>
-                        <span><b>{{ block.secondValue }}</b> </span>
-                        <span>{{ block.secondValueDesc }}</span>
+                        <template v-if="block.isSummaryIncome">
+                            <div class="dashboard-summary-income dashboard-currency" :class="block.isSummaryIncome.isUpward ? 'arrow-up' : 'arrow-down'">
+                                <div class="dashboard-summary-income-icon">
+                                    <v-icon>{{ block.isSummaryIncome.isUpward ? 'arrow_upward' : 'arrow_downward' }}</v-icon>
+                                </div>
+                                <div class="dashboard-summary-income-text dashboard-currency" :class="block.secondCurrency">
+                                    {{ block.secondValue }}
+                                </div>
+                            </div>
+                        </template>
+
+                        <template v-else>
+                            <span class="dashboard-currency" :class="block.secondCurrency"><b>{{ block.secondValue }}</b> </span>
+                            <span>{{ block.secondValueDesc }} </span>
+                        </template>
                     </div>
                 </v-layout>
             </v-container>
@@ -37,8 +53,8 @@ export class DashboardBrickComponent extends UI {
 @Component({
     // language=Vue
     template: `
-        <v-container v-if="data" grid-list-md text-xs-center fluid>
-            <v-layout row wrap>
+        <v-container v-if="data" px-0 grid-list-md text-xs-center fluid>
+            <v-layout class="dashboard-wrap px-4" row wrap>
                 <v-flex xl3 lg3 md6 sm12 xs12>
                     <dashboard-brick-component :block="blocks[0]"></dashboard-brick-component>
                 </v-flex>
@@ -57,6 +73,8 @@ export class DashboardBrickComponent extends UI {
     components: {DashboardBrickComponent}
 })
 export class Dashboard extends UI {
+    @MainStore.Getter
+    private portfolio: Portfolio;
 
     @Prop({required: true})
     private data: DashboardData;
@@ -73,34 +91,40 @@ export class Dashboard extends UI {
     }
 
     private fillBricks(newValue: DashboardData): void {
+        const mainCurrency = this.portfolio.portfolioParams.viewCurrency.toLowerCase();
+
         this.blocks[0] = {
             name: "Суммарная стоимость",
             mainValue: Filters.formatMoneyAmount(newValue.currentCost, true),
             secondValue: Filters.formatMoneyAmount(newValue.currentCostInAlternativeCurrency, true),
-            color: "blue",
-            icon: "fas fa-briefcase"
+            hasNotBorderLeft: true,
+            mainCurrency,
+            secondCurrency: mainCurrency,
         };
         this.blocks[1] = {
             name: "Суммарная прибыль",
             mainValue: Filters.formatMoneyAmount(newValue.profit, true),
             secondValue: newValue.percentProfit,
-            secondValueDesc: "без дивидендов и купонов",
-            color: "orange",
-            icon: "fas fa-money-bill-alt"
+            isSummaryIncome: {
+                isUpward: parseInt(newValue.percentProfit, 10) > 0
+            },
+            mainCurrency,
+            secondCurrency: "percent",
         };
         this.blocks[2] = {
             name: "Среднегодовая доходность",
             mainValue: newValue.yearYield,
+            secondValueDesc: "без дивидендов и купонов",
             secondValue: newValue.yearYieldWithoutDividendsAndCoupons,
-            color: "green",
-            icon: "fas fa-chart-bar"
+            mainCurrency,
+            secondCurrency: "percent",
         };
         this.blocks[3] = {
             name: "Изменение за день",
             mainValue: Filters.formatMoneyAmount(newValue.dailyChanges, true),
             secondValue: Filters.formatNumber(newValue.dailyChangesPercent),
-            color: "red",
-            icon: "fas fa-hand-holding-usd"
+            mainCurrency,
+            secondCurrency: "percent",
         };
     }
 }

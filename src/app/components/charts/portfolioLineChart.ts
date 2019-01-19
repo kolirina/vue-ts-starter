@@ -1,10 +1,11 @@
 import Highcharts, {ChartObject, DataPoint, Gradient} from "highcharts";
 import Highstock from "highcharts/highstock";
-import {Container} from "typescript-ioc";
+import {Container, Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
+import {CatchErrors} from "../../platform/decorators/catchErrors";
 import {OverviewService} from "../../services/overviewService";
 import {HighStockEventsGroup} from "../../types/charts/types";
 import {Portfolio} from "../../types/types";
@@ -36,16 +37,15 @@ export class PortfolioLineChart extends UI {
         container: HTMLElement
     };
 
+    @Inject
+    private overviewService: OverviewService;
     @MainStore.Getter
     private portfolio: Portfolio;
-
     private chartData: any[] = [];
     private eventsChartData: HighStockEventsGroup[] = [];
-
     private chart: ChartObject = null;
 
-    private overviewService = Container.get(OverviewService);
-
+    @CatchErrors
     async mounted(): Promise<void> {
         await this.doChart();
     }

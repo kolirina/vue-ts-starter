@@ -4,6 +4,7 @@ import {Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
 import {TradesTable} from "../components/tradesTable";
+import {CatchErrors} from "../platform/decorators/catchErrors";
 import {TradeService} from "../services/tradeService";
 import {Pagination, Portfolio, TablePagination, TradeRow} from "../types/types";
 import {MutationType} from "../vuex/mutationType";
@@ -82,6 +83,7 @@ export class TradesPage extends UI {
         await this.loadTrades();
     }
 
+    @CatchErrors
     private async onDelete(tradeRow: TradeRow): Promise<void> {
         await this.tradeService.deleteTrade({portfolioId: this.portfolio.id, tradeId: tradeRow.id});
         await this.reloadPortfolio(this.portfolio.id);
@@ -94,6 +96,7 @@ export class TradesPage extends UI {
         this.pages = parseInt(String(this.totalTrades / this.pageSize), 10);
     }
 
+    @CatchErrors
     private async loadTrades(): Promise<void> {
         this.tradePagination.loading = true;
         this.trades = await this.tradeService.loadTrades(this.portfolio.id, this.pageSize * (this.page - 1),

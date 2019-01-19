@@ -175,7 +175,7 @@ export class ExportPage extends UI {
         const portfolioIds = this.selectedPortfolios.map(portfolio => portfolio.id);
         const pb: PortfolioBackup = {id: this.portfolioBackup.id, days, portfolioIds};
         await this.portfolioService.saveOrUpdatePortfolioBackup(this.clientInfo.user.id, pb);
-        this.$snotify.success("Настройки бэкапа успешно обновлены");
+        this.$snotify.info("Настройки бэкапа успешно обновлены");
     }
 
     private get selectedDays(): string[] {

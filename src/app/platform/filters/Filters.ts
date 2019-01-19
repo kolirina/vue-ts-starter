@@ -9,7 +9,25 @@ const DF_NO_SCALE = new Intl.NumberFormat("ru", {maximumFractionDigits: MAX_SCAL
 
 export class Filters {
 
-    static formatMoneyAmount(value: string, needRound?: boolean, scale?: number) {
+    static assetDesc(type: string): string {
+        switch (type) {
+            case "STOCK":
+                return "Акции";
+            case "BOND":
+                return "Облигации";
+            case "RUBLES":
+                return "Рубли";
+            case "DOLLARS":
+                return "Доллары";
+            case "EURO":
+                return "Евро";
+            case "ETF":
+                return "ETF";
+        }
+        throw new Error("Неизвестный тип актива: " + type);
+    }
+
+    static formatMoneyAmount(value: string, needRound?: boolean, scale?: number): string {
         if (!value) {
             return "0.00";
         }
@@ -21,7 +39,7 @@ export class Filters {
         }
     }
 
-    static formatNumber(value: string) {
+    static formatNumber(value: string): string {
         if (!value) {
             return "0.00";
         }
@@ -35,11 +53,11 @@ export class Filters {
      * @param {string} format      формат отображаемой даты
      * @returns {string} отформатированая дата
      */
-    static formatDate(date: string, format = DateFormat.DATE): string {
+    static formatDate(date: string, format: string = DateFormat.DATE): string {
         return DateUtils.parseDate(date).format(format);
     }
 
-    static declension(count: number, one: string, two: string, five: string) {
+    static declension(count: number, one: string, two: string, five: string): string {
         count = Math.abs(count);
         count %= 100;
         if (count >= 5 && count <= 20) {

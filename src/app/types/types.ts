@@ -1,3 +1,4 @@
+import {Enum, EnumType, IStaticEnum} from "../platform/enum";
 import {PortfolioParams} from "../services/portfolioService";
 import {BaseChartDot, ColumnChartData, Dot, HighStockEventsGroup} from "./charts/types";
 
@@ -17,21 +18,40 @@ export type AssetRow = _portfolioRow & {
 };
 
 export type TradeRow = {
+    /** Идентификатор сделки */
     id: string,
+    /** Дата */
     date: string,
+    /** Тип актива */
     asset: string,
+    /** Операция */
     operation: string,
+    /** Описание операции */
     operationLabel: string,
+    /** Валюта */
     currency: string,
+    /** Итоговая сумма сделки */
     signedTotal: string
+    /** Тикер */
     ticker?: string,
+    /** Название компании */
     companyName?: string,
+    /** Количество */
     quantity: string,
+    /** Идентификатор сделки */
     price: string,
+    /** Комиссия по сделке */
     fee: string,
+    /** Заметка */
     note?: string,
+    /** Цена, выраженная в деньгах. Для акций, начислений, дивидендов */
     moneyPrice?: string,
+    /** Цена, выраженная в процентах. Для облигаций */
     bondPrice?: string
+    /** Идентификатор связанной сделки по списанию/зачислению денежных средств. Может быть null, если у сделки нет связи */
+    moneyTradeId?: string;
+    /** Идентификатор связанной родительской сделки. Может быть null, если у сделки нет связи */
+    parentTradeId?: string;
 };
 
 export type _shareRow = _portfolioRow & {
@@ -217,8 +237,12 @@ export type DashboardBrick = {
     mainValue: string,
     secondValue: string,
     secondValueDesc?: string,
-    color: string,
-    icon: string
+    hasNotBorderLeft?: boolean,
+    isSummaryIncome?: {
+        isUpward: boolean
+    },
+    mainCurrency: string,
+    secondCurrency: string,
 };
 
 /** Описание бэкапа портфеля */
@@ -377,46 +401,6 @@ export type CombinedInfoRequest = {
     viewCurrency: string
 };
 
-export type TradeData = {
-    /** Тикер */
-    ticker: string,
-    /** Дата */
-    date: string,
-    /** Количество */
-    quantity: number,
-    /** Цена */
-    price: string,
-    /** Номинал */
-    facevalue: string,
-    /** НКД */
-    nkd: string,
-    /** Признак начисления на одну бумагу */
-    perOne: boolean,
-    /** Комиссия */
-    fee: string,
-    /** Заметка */
-    note: string,
-    /** Признак списания/зачисления денег */
-    keepMoney: boolean,
-    /** Сумма денег для списания/зачисления */
-    moneyAmount: string,
-    /** Валюта сделки */
-    currency: string
-};
-
-export type TradeDataRequest = {
-    /** Идентификатор портфеля */
-    portfolioId: string,
-    /** Признак добавления связанной сделки по деньгам */
-    createLinkedTrade: boolean,
-    /** Актив сделки */
-    asset: string,
-    /** Операция */
-    operation: string,
-    /** Поля, содержащию все необходимую информацию по сделке данного типа */
-    fields: TradeData
-};
-
 export type ErrorInfo = {
     errorCode: string,
     errorMessage: string,
@@ -481,4 +465,21 @@ export interface Currency {
     name: string;
     /** Курс валюты */
     value: string;
+}
+
+/** Перечислению доступных валют */
+@Enum("code")
+export class CurrencyUnit extends (EnumType as IStaticEnum<CurrencyUnit>) {
+
+    static readonly RUB = new CurrencyUnit("RUB", "Рубль");
+    static readonly USD = new CurrencyUnit("USD", "Доллар");
+    static readonly EUR = new CurrencyUnit("EUR", "Евро");
+
+    private constructor(public code: string, public description: string) {
+        super();
+    }
+}
+
+export interface MapType {
+    [key: string]: string;
 }

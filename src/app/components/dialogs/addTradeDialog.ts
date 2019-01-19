@@ -1,21 +1,19 @@
 import Decimal from "decimal.js";
-import {MaskOptions} from "imask";
-import {Moment} from "moment";
-import * as moment from "moment";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {Watch} from "vue-property-decorator";
 import {VueRouter} from "vue-router/types/router";
 import {MarketService} from "../../services/marketService";
-import {TradeService} from "../../services/tradeService";
+import {MoneyResiduals, PortfolioService} from "../../services/portfolioService";
+import {TradeFields, TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
 import {BigMoney} from "../../types/bigMoney";
 import {Operation} from "../../types/operation";
 import {TradeDataHolder} from "../../types/trade/tradeDataHolder";
 import {TradeMap} from "../../types/trade/tradeMap";
 import {TradeValue} from "../../types/trade/tradeValue";
-import {Bond, Portfolio, Share, TradeData} from "../../types/types";
-import {DateFormat} from "../../utils/dateUtils";
+import {Bond, CurrencyUnit, Portfolio, Share} from "../../types/types";
+import {DateUtils} from "../../utils/dateUtils";
 import {MainStore} from "../../vuex/mainStore";
 import {CustomDialog} from "./customDialog";
 
@@ -27,15 +25,15 @@ import {CustomDialog} from "./customDialog";
                 <v-card-title>
                     <span class="headline">Добавление сделки</span>
                 </v-card-title>
-                <v-card-text>
-                    <v-container grid-list-md>
+                <v-card-text class="paddT0">
+                    <v-container grid-list-md class="paddT0">
                         <v-layout wrap>
                             <v-flex xs12 sm6>
-                                <v-select :items="assetTypes" v-model="assetType" :return-object="true" label="Тип актива" item-text="description"></v-select>
+                                <v-select :items="assetTypes" v-model="assetType" :return-object="true" label="Тип актива" item-text="description" dense hide-details></v-select>
                             </v-flex>
 
                             <v-flex xs12 sm6>
-                                <v-select :items="assetType.operations" v-model="operation" :return-object="true" label="Операция"
+                                <v-select :items="assetType.operations" v-model="operation" :return-object="true" label="Операция" dense hide-details
                                           item-text="description"></v-select>
                             </v-flex>
 
@@ -52,7 +50,6 @@ import {CustomDialog} from "./customDialog";
                                                 dense
                                                 :hide-no-data="true"
                                                 :no-filter="true"
-                                                append-icon="fas fa-building"
                                                 :search-input.sync="searchQuery">
                                     <template slot="selection" slot-scope="data">
                                         {{ shareLabelSelected(data.item) }}
@@ -80,7 +77,6 @@ import {CustomDialog} from "./customDialog";
                                             v-model="date"
                                             label="Дата"
                                             required
-                                            append-icon="event"
                                             readonly></v-text-field>
                                     <v-date-picker v-model="date" :no-title="true" locale="ru" :first-day-of-week="1"
                                                    @input="$refs.dateMenu.save(date)"></v-date-picker>
@@ -88,25 +84,34 @@ import {CustomDialog} from "./customDialog";
                             </v-flex>
 
                             <v-flex v-if="shareAssetType" xs12>
-                                <v-text-field :label="priceLabel" v-model="price"
-                                              name="price"
-                                              v-validate="'required'"
-                                              :error-messages="errors.collect('price')"
-                                              @keyup="calculateFee"
-                                              append-icon="fas fa-money-bill-alt"></v-text-field>
+                                <ii-number-field :label="priceLabel" v-model="price"
+                                                 name="price"
+                                                 decimals="2"
+                                                 v-validate="'required'"
+                                                 :error-messages="errors.collect('price')"
+                                                 @keyup="calculateFee">
+                                </ii-number-field>
                             </v-flex>
 
                             <v-flex v-if="bondTrade" xs12>
-                                <v-text-field label="Номинал" v-model="facevalue"
-                                              @keyup="calculateFee"
-                                              append-icon="fas fa-money-bill"></v-text-field>
+                                <ii-number-field label="Номинал" v-model="facevalue"
+                                                 @keyup="calculateFee"
+                                                 decimals="2"
+                                                 name="facevalue"
+                                                 v-validate="'required'"
+                                                 :error-messages="errors.collect('facevalue')">
+                                </ii-number-field>
                             </v-flex>
                             <v-flex v-if="bondTrade" xs12>
                                 <v-layout wrap>
                                     <v-flex xs12 lg6>
-                                        <v-text-field label="НКД" v-model="nkd"
-                                                      @keyup="calculateFee"
-                                                      append-icon="fas fa-money-bill-alt"></v-text-field>
+                                        <ii-number-field label="НКД" v-model="nkd"
+                                                         @keyup="calculateFee"
+                                                         decimals="2"
+                                                         name="nkd"
+                                                         v-validate="'required'"
+                                                         :error-messages="errors.collect('nkd')">
+                                        </ii-number-field>
                                     </v-flex>
                                 </v-layout>
                             </v-flex>
@@ -122,29 +127,28 @@ import {CustomDialog} from "./customDialog";
                             </v-flex>
 
                             <v-flex xs12>
-                                <v-text-field v-if="shareAssetType"
-                                              label="Количество" v-model="quantity"
-                                              @keyup="calculateFee"
-                                              :hint="lotSizeHint" persistent-hint
-                                              name="quantity"
-                                              v-validate="'required'"
-                                              :error-messages="errors.collect('quantity')"
-                                              append-icon="fas fa-plus">
-                                </v-text-field>
+                                <ii-number-field v-if="shareAssetType"
+                                                 label="Количество" v-model="quantity"
+                                                 @keyup="calculateFee"
+                                                 :hint="lotSizeHint" persistent-hint
+                                                 name="quantity"
+                                                 decimals="0"
+                                                 v-validate="'required'"
+                                                 :error-messages="errors.collect('quantity')">
+                                </ii-number-field>
                             </v-flex>
                             <v-flex xs12>
-                                <v-text-field v-if="shareAssetType && !calculationAssetType"
-                                              label="Комиссия" v-model="fee"
-                                              append-icon="fas fa-coins"
-                                              hint="Для автоматического рассчета комиссии задайте значение в Настройках или введите значение суммарной комиссии">
-                                </v-text-field>
+                                <ii-number-field v-if="shareAssetType && !calculationAssetType"
+                                                 label="Комиссия" v-model="fee"
+                                                 decimals="2"
+                                                 hint="Для автоматического рассчета комиссии задайте значение в Настройках или введите значение суммарной комиссии">
+                                </ii-number-field>
                             </v-flex>
 
                             <v-flex v-if="moneyTrade" xs12>
                                 <v-layout wrap>
                                     <v-flex xs12 lg8>
-                                        <v-text-field label="Сумма" v-model="moneyAmount"
-                                                      append-icon="fas fa-money-bill-alt"></v-text-field>
+                                        <ii-number-field label="Сумма" v-model="moneyAmount" decimals="2"></ii-number-field>
                                     </v-flex>
                                     <v-flex xs12 lg4>
                                         <v-select :items="currencyList" v-model="moneyCurrency" label="Валюта сделки"></v-select>
@@ -153,15 +157,16 @@ import {CustomDialog} from "./customDialog";
                             </v-flex>
 
                             <v-flex xs12>
-                                <v-text-field label="Заметка" v-model="note" :counter="160" append-icon="fas fa-sticky-note"></v-text-field>
+                                <v-text-field label="Заметка" v-model="note" :counter="160"></v-text-field>
                             </v-flex>
                         </v-layout>
 
                         <v-layout wrap>
                             <v-flex xs12 lg6>
-                                <span class="body-2">Сумма сделки: </span><span v-if="total"><b class="title">{{ total }} {{ currency }}</b></span>
+                                <span class="body-2">Сумма сделки: </span><span v-if="total"><b class="title">{{ total | number }} {{ currency }}</b></span>
                             </v-flex>
                             <v-flex xs12 lg6>
+                                <span class="body-2">Доступно: </span><span v-if="moneyResiduals"><b class="title">{{ moneyResidual | amount }} {{ currency }}</b></span>
                                 <v-checkbox :label="keepMoneyLabel" v-model="keepMoney"></v-checkbox>
                             </v-flex>
                         </v-layout>
@@ -171,7 +176,7 @@ import {CustomDialog} from "./customDialog";
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn color="info lighten-2" flat @click.native="cancel">Отмена</v-btn>
-                    <v-btn :loading="processState" :disabled="processState" color="primary" dark @click.native="addTrade">
+                    <v-btn :loading="processState" :disabled="!isValid || processState" color="primary" dark @click.native="addTrade">
                         Добавить
                         <span slot="loader" class="custom-loader">
                         <v-icon light>fas fa-spinner fa-spin</v-icon>
@@ -193,6 +198,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private marketService: MarketService;
     @Inject
     private tradeService: TradeService;
+    @Inject
+    private portfolioService: PortfolioService;
 
     private portfolio: Portfolio = null;
 
@@ -204,7 +211,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     private operation = Operation.BUY;
 
-    private currencyList = ["RUB", "USD"];
+    private currencyList = CurrencyUnit.values().map(c => c.code);
 
     private moneyCurrency = "RUB";
 
@@ -212,7 +219,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     private filteredShares: Share[] = [];
 
-    private date = ""; // moment().format('DD.MM.YYYY HH:mm:SS');
+    private date = DateUtils.currentDate();
 
     private price: string = null;
 
@@ -242,12 +249,15 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private currentTimer: number = null;
     private processState = false;
 
-    mounted(): void {
+    private moneyResiduals: MoneyResiduals = null;
+
+    async mounted(): Promise<void> {
         this.portfolio = (this.data.store as any).currentPortfolio;
         this.share = this.data.share || null;
         this.assetType = this.data.assetType || AssetType.STOCK;
         this.operation = this.data.operation || Operation.BUY;
-        console.log("ADD TRADE DIALOG2", this.data);
+        this.moneyResiduals = await this.portfolioService.getMoneyResiduals(this.portfolio.id);
+        console.log("ADD TRADE DIALOG2", this.data, this.moneyResiduals);
     }
 
     @Watch("assetType")
@@ -268,8 +278,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             return;
         }
         this.shareSearch = true;
-        const delay = new Promise((resolve, reject) => {
-            this.currentTimer = setTimeout(async () => {
+        const delay = new Promise((resolve, reject): void => {
+            this.currentTimer = setTimeout(async (): Promise<void> => {
                 try {
                     if (this.assetType === AssetType.STOCK) {
                         this.filteredShares = await this.marketService.searchStocks(this.searchQuery);
@@ -293,40 +303,6 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             this.shareSearch = false;
             throw error;
         }
-    }
-
-    private get total(): string {
-        if (!this.isValid()) {
-            return null;
-        }
-        const total = TradeMap.TRADE_CLASSES[this.assetType.enumName][this.operation.enumName][TradeValue.TOTAL](this);
-        return total;
-    }
-
-    private get totalWithoutFee(): string {
-        if (!this.isValid()) {
-            return null;
-        }
-        const total = TradeMap.TRADE_CLASSES[this.assetType.enumName][this.operation.enumName][TradeValue.TOTAL_WF](this);
-        return total;
-    }
-
-    private isValid(): boolean {
-        return !((this.assetType !== AssetType.MONEY && (!this.price || !this.quantity)) || (this.assetType === AssetType.MONEY && !this.moneyAmount));
-    }
-
-    private get keepMoneyLabel(): string {
-        const toPort = "Зачислить деньги";
-        const fromPort = "Списать деньги";
-        return Operation.BUY === this.operation || Operation.WITHDRAW === this.operation || Operation.LOSS === this.operation ? fromPort : toPort;
-    }
-
-    private get lotSizeHint(): string {
-        return "указывается в штуках." + (this.share ? " 1 лот = " + this.share.lotsize + " шт." : "");
-    }
-
-    private get priceLabel(): string {
-        return [Operation.AMORTIZATION, Operation.COUPON, Operation.DIVIDEND].includes(this.operation) ? "Начисление" : "Цена";
     }
 
     @Watch("share")
@@ -386,7 +362,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         // if (!result) {
         //     return;
         // }
-        const trade: TradeData = {
+        const trade: TradeFields = {
             ticker: this.shareTicker,
             date: this.getDate(),
             quantity: this.getQuantity(),
@@ -402,27 +378,17 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         };
         this.processState = true;
         try {
-            const errors = await this.tradeService.saveTrade({
+            await this.tradeService.saveTrade({
                 portfolioId: this.portfolio.id,
                 asset: this.assetType.enumName,
                 operation: this.operation.enumName,
                 createLinkedTrade: this.keepMoney,
                 fields: trade
             });
-            if (!errors) {
-                this.close(true);
-                // this.$notify({
-                //     title: 'Выполнено',
-                //     message: 'Сделка успешно добавлена',
-                //     type: 'success'
-                // });
-                return;
-            }
-            // иначе обрабатываем ошибки валидации с сервера и отображаем
-            for (const errorInfo of errors.fields) {
-                console.log("M", errorInfo);
-                this.$validator.errors.add({field: errorInfo.name, msg: errorInfo.errorMessage});
-            }
+            this.$snotify.info("Сделка успешно добавлена", "Выполнено");
+            this.close(true);
+            return;
+
         } catch (e) {
             console.log("e", e);
             // this.$notify({
@@ -430,6 +396,11 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             //     message: 'Ошибка при добавлении сделки',
             //     type: 'error'
             // });
+            // иначе обрабатываем ошибки валидации с сервера и отображаем
+            // for (const errorInfo of errors.fields) {
+            //     console.log("M", errorInfo);
+            //     this.$validator.errors.add({field: errorInfo.name, msg: errorInfo.errorMessage});
+            // }
             return;
         } finally {
             this.processState = false;
@@ -460,6 +431,52 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     private get calculationAssetType(): boolean {
         return this.operation === Operation.DIVIDEND;
+    }
+
+    private get total(): string {
+        if (!this.isValid) {
+            return null;
+        }
+        const total = TradeMap.TRADE_CLASSES[this.assetType.enumName][this.operation.enumName][TradeValue.TOTAL](this);
+        return total;
+    }
+
+    private get totalWithoutFee(): string {
+        if (!this.isValid) {
+            return null;
+        }
+        const total = TradeMap.TRADE_CLASSES[this.assetType.enumName][this.operation.enumName][TradeValue.TOTAL_WF](this);
+        return total;
+    }
+
+    private get isValid(): boolean {
+        switch (this.assetType) {
+            case AssetType.STOCK:
+                return this.share && this.date && this.price && this.quantity > 0;
+            case AssetType.BOND:
+                return this.share && this.date && this.price && this.facevalue && this.quantity > 0;
+            case AssetType.MONEY:
+                return !!this.date && !!this.moneyAmount;
+        }
+        return false;
+    }
+
+    private get keepMoneyLabel(): string {
+        const toPort = "Зачислить деньги";
+        const fromPort = "Списать деньги";
+        return Operation.BUY === this.operation || Operation.WITHDRAW === this.operation || Operation.LOSS === this.operation ? fromPort : toPort;
+    }
+
+    private get lotSizeHint(): string {
+        return "указывается в штуках." + (this.share ? " 1 лот = " + this.share.lotsize + " шт." : "");
+    }
+
+    private get priceLabel(): string {
+        return [Operation.AMORTIZATION, Operation.COUPON, Operation.DIVIDEND].includes(this.operation) ? "Начисление" : "Цена";
+    }
+
+    private get moneyResidual(): string {
+        return (this.moneyResiduals as any)[this.currency];
     }
 
     // tslint:disable
@@ -517,7 +534,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 export type TradeDialogData = {
     store: MainStore,
     router: VueRouter,
-    tradeData?: TradeData,
+    tradeData?: TradeFields,
     share?: Share,
     operation?: Operation,
     assetType?: AssetType

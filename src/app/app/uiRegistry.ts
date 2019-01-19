@@ -19,7 +19,6 @@ import {FileLink} from "../components/file-upload/fileLink";
 import {IINumberField} from "../components/iiNumberField";
 import {InplaceInput} from "../components/inplaceInput";
 import {StockLink} from "../components/stockLink";
-import {MaskDirective} from "../platform/directives/maskDirective";
 import {StateDirective} from "../platform/directives/stateDirective";
 import {Filters} from "../platform/filters/Filters";
 import {RU} from "../platform/locale/ru";
@@ -74,16 +73,16 @@ export class UIRegistry {
 
         // фильтры
         UI.filter("amount", Filters.formatMoneyAmount);
+        UI.filter("assetDesc", Filters.assetDesc);
         UI.filter("number", Filters.formatNumber);
         UI.filter("date", Filters.formatDate);
         UI.filter("declension", Filters.declension);
 
         // директивы
         UI.directive(StateDirective.NAME, new StateDirective());
-        UI.directive(MaskDirective.NAME, new MaskDirective());
 
         UI.mixin({
-            beforeCreate() {
+            beforeCreate(): void {
                 this.$uistate = UiStateHelper;
             }
         });

@@ -22,7 +22,7 @@ export class Storage {
      * @param session      признак получения из sessionStorage
      * @returns значение, сохраненное в storage, или defaultValue, если null или undefined
      */
-    get<T>(key: string, defaultValue: T, session = false): T {
+    get<T>(key: string, defaultValue: T, session: boolean = false): T {
         const storage = this.getStorage(session);
         try {
             const value = JSON.parse(storage[key]) as T;
@@ -39,7 +39,7 @@ export class Storage {
      * @param session признак установки значения в sessionStorage
      * @returns {@code true} в случае успешного сохранения, {@code false} если вывалились с ошибкой и не сохранили
      */
-    set<T>(key: string, value: T, session = false): boolean {
+    set<T>(key: string, value: T, session: boolean = false): boolean {
         const storage = this.getStorage(session);
         try {
             storage[key] = JSON.stringify(value);
@@ -54,7 +54,7 @@ export class Storage {
      * @param key     ключ
      * @param session признак удаления из sessionStorage
      */
-    delete(key: string, session = false): void {
+    delete(key: string, session: boolean = false): void {
         const storage = this.getStorage(session);
         if (storage.removeItem) {
             storage.removeItem(key);

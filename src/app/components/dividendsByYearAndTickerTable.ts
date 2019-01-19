@@ -24,10 +24,10 @@ const MainStore = namespace(StoreType.MAIN);
                     </td>
                     <td class="text-xs-left">{{ props.item.shortName }}</td>
                     <td class="text-xs-right">{{ props.item.year }}</td>
-                    <td class="text-xs-right">{{ props.item.quantity }}</td>
-                    <td class="text-xs-right">{{ props.item.perOne | amount(true) }}</td>
-                    <td class="text-xs-right">{{ props.item.amount | amount(true) }}</td>
-                    <td class="text-xs-right">{{ props.item.yield }}</td>
+                    <td class="text-xs-right ii-number-cell">{{ props.item.quantity }}</td>
+                    <td class="text-xs-right ii-number-cell">{{ props.item.perOne | amount(true) }}</td>
+                    <td class="text-xs-right ii-number-cell">{{ props.item.amount | amount(true) }}</td>
+                    <td class="text-xs-right ii-number-cell">{{ props.item.yield }}</td>
 
                     <td class="justify-center layout px-0">
                         <v-btn slot="activator" @click="deleteAllTrades(props.item)" color="primary" flat icon dark>

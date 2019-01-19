@@ -58,19 +58,18 @@ export class PieChart extends UI {
         this.chart = Highcharts.chart(this.$refs.container, {
             chart: {
                 type: "pie",
-                options3d: {
-                    enabled: true,
-                    alpha: 45,
-                    beta: 0,
-                    depth: 15
-                },
-                backgroundColor: null
+                backgroundColor: null,
+                style: {
+                    fontFamily: "\"OpenSans\" sans-serif",
+                    fontSize: "12px"
+                }
             },
             title: {
                 text: this.title
             },
             tooltip: {
-                pointFormat: "<b>{point.y}</b> ({point.percentage:.1f}%)"
+                pointFormat: "<b>{point.y}, ({point.percentage:.2f}%)</b> <br/>{point.tickers}",
+                valueSuffix: " ₽"
             },
             plotOptions: {
                 pie: {
@@ -82,9 +81,7 @@ export class PieChart extends UI {
                         style: {
                             color: "black"
                         }
-                    },
-                    showInLegend: true,
-                    depth: 35,
+                    }
                 }
             },
             series: [{

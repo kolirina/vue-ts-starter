@@ -15,8 +15,8 @@ import {TableHeader} from "../types/types";
                         <stock-link :ticker="props.item.ticker"></stock-link>
                     </td>
                     <td class="text-xs-left">{{ props.item.shortName }}</td>
-                    <td class="text-xs-right">{{ props.item.amount | amount(true) }}</td>
-                    <td class="text-xs-right">{{ props.item.yield }}</td>
+                    <td class="text-xs-right ii-number-cell">{{ props.item.amount | amount(true) }}</td>
+                    <td class="text-xs-right ii-number-cell">{{ props.item.yield }}</td>
                 </tr>
             </template>
         </v-data-table>

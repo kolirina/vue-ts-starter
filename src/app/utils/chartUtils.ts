@@ -24,7 +24,7 @@ export class ChartUtils {
         Object.keys(rowsBySector).forEach(key => {
             const sumAmount = rowsBySector[key].map(row => new BigMoney(row.currCost).amount.abs())
                 .reduce((result: Decimal, current: Decimal) => result.add(current), new Decimal("0"));
-            const tickers = rowsBySector[key].map(row => row.stock.ticker).join(",");
+            const tickers = rowsBySector[key].map(row => row.stock.ticker).join(", ");
             const percentage = new Decimal(sumAmount).mul(100).dividedBy(currentTotalCost).toDP(2, Decimal.ROUND_HALF_UP).toString();
             data.push({
                 name: key,
@@ -37,7 +37,8 @@ export class ChartUtils {
         return {data, categories: categoryNames};
     }
 
-    static processEventsChartData(data: EventChartData[], flags = "flags", onSeries = "dataseries", shape = "circlepin", width = 10): HighStockEventsGroup[] {
+    static processEventsChartData(data: EventChartData[], flags: string = "flags", onSeries: string = "dataseries",
+                                  shape: string = "circlepin", width: number = 10): HighStockEventsGroup[] {
         const eventsGroups: HighStockEventsGroup[] = [];
         const events: HighStockEventData[] = [];
         const temp = data.reduce((result: { [key: string]: HighStockEventData[] }, current: EventChartData) => {

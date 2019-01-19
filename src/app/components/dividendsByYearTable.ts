@@ -12,9 +12,9 @@ import {TableHeader} from "../types/types";
             <template slot="items" slot-scope="props">
                 <tr>
                     <td class="text-xs-left">{{ props.item.year }}</td>
-                    <td class="text-xs-right">{{ props.item.dividendsAmount | amount(true) }}</td>
-                    <td class="text-xs-right">{{ props.item.portfolioCosts | amount(true) }}</td>
-                    <td class="text-xs-right">{{ props.item.yield }}</td>
+                    <td class="text-xs-right ii-number-cell">{{ props.item.dividendsAmount | amount(true) }}</td>
+                    <td class="text-xs-right ii-number-cell">{{ props.item.portfolioCosts | amount(true) }}</td>
+                    <td class="text-xs-right ii-number-cell">{{ props.item.yield }}</td>
                 </tr>
             </template>
         </v-data-table>

@@ -42,7 +42,7 @@ export class DateUtils {
      * @param {boolean} showYear признак необходимости отображения года, если год в дате не соответствует текущему
      * @return {string} отформатированная дата
      */
-    static formatDisplayDate(date: Moment, showYear = true): string {
+    static formatDisplayDate(date: Moment, showYear: boolean = true): string {
         return DateUtils.isCurrentDate(date) ? "Сегодня" :
             date.format(!showYear || DateUtils.isCurrentYear(date) ? DateFormat.CURRENT_YEAR_FORMAT : DateFormat.ANOTHER_YEAR_FORMAT);
     }
@@ -53,8 +53,16 @@ export class DateUtils {
      * @param format формат
      * @return {string} отформатированная дата
      */
-    static formatDate(date: Moment, format = DateFormat.DATE): string {
+    static formatDate(date: Moment, format: string = DateFormat.DATE): string {
         return date.format(format);
+    }
+
+    /**
+     * Возвращает текущую дату
+     * @return {string} текущая дата в виде строки
+     */
+    static currentDate(): string {
+        return DateUtils.formatDate(moment(), DateFormat.DATE2);
     }
 }
 

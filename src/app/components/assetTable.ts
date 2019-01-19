@@ -2,6 +2,7 @@ import Component from "vue-class-component";
 import {Prop} from "vue-property-decorator";
 import {UI} from "../app/ui";
 import {AssetType} from "../types/assetType";
+import {BigMoney} from "../types/bigMoney";
 import {Operation} from "../types/operation";
 import {AssetRow, TableHeader} from "../types/types";
 import {StoreType} from "../vuex/storeType";
@@ -12,10 +13,12 @@ import {AddTradeDialog} from "./dialogs/addTradeDialog";
     template: `
         <v-data-table :headers="headers" :items="assets" hide-actions class="elevation-1">
             <template slot="items" slot-scope="props">
-                <td>{{ assetDesc(props.item.type) }}</td>
-                <td class="text-xs-right">{{ props.item.currCost | amount(true) }}</td>
-                <td class="text-xs-right">{{ props.item.profit | amount(true) }}</td>
-                <td class="text-xs-right">{{ props.item.percCurrShare | number }}</td>
+                <td>{{ props.item.type | assetDesc }}</td>
+                <td class="text-xs-right ii-number-cell">{{ props.item.currCost | amount(true) }}</td>
+                <td :class="[( amount(props.item.profit) >= 0 ) ? 'ii--green-markup' : 'ii--red-markup', 'ii-number-cell', 'text-xs-right']">
+                    {{ props.item.profit | amount(true) }}
+                </td>
+                <td class="text-xs-right ii-number-cell">{{ props.item.percCurrShare | number }}</td>
                 <td class="justify-center layout px-0" @click.stop>
                     <v-menu transition="slide-y-transition" bottom left>
                         <v-btn slot="activator" color="primary" flat icon dark>
@@ -56,24 +59,6 @@ export class AssetTable extends UI {
 
     private operation = Operation;
 
-    private assetDesc(type: string): string {
-        switch (type) {
-            case "STOCK":
-                return "Акции";
-            case "BOND":
-                return "Облигации";
-            case "RUBLES":
-                return "Рубли";
-            case "DOLLARS":
-                return "Доллары";
-            case "EURO":
-                return "Евро";
-            case "ETF":
-                return "ETF";
-        }
-        throw new Error("Неизвестный тип актива: " + type);
-    }
-
     private async openTradeDialog(assetRow: AssetRow, operation: Operation): Promise<void> {
         await new AddTradeDialog().show({
             store: this.$store.state[StoreType.MAIN],
@@ -81,5 +66,13 @@ export class AssetTable extends UI {
             operation,
             assetType: assetRow.type === "STOCK" ? AssetType.STOCK : AssetType.BOND
         });
+    }
+
+    private amount(value: string): number {
+        if (!value) {
+            return 0.00;
+        }
+        const amount = new BigMoney(value);
+        return amount.amount.toNumber();
     }
 }

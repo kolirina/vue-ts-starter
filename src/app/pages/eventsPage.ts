@@ -1,5 +1,6 @@
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
+import {Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
@@ -9,6 +10,7 @@ import {EventsAggregateInfo, EventService, ShareEvent} from "../services/eventSe
 import {AssetType} from "../types/assetType";
 import {Operation} from "../types/operation";
 import {Portfolio, TableHeader} from "../types/types";
+import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -48,27 +50,27 @@ const MainStore = namespace(StoreType.MAIN);
                     <div class="eventsAggregateInfo" v-if="eventsAggregateInfo">
                         <span class="item-block">
                             <span class="eventLegend dividend"/>
-                            <span :class="portfolio.portfolioParams.viewCurrency.toLowerCase()">Дивиденды {{ eventsAggregateInfo.totalDividendsAmount }} </span>
+                            <span :class="portfolio.portfolioParams.viewCurrency.toLowerCase()">Дивиденды {{ eventsAggregateInfo.totalDividendsAmount | number }} </span>
                         </span>
 
                         <span class="item-block">
                             <span class="eventLegend coupon"/>
-                            <span :class="portfolio.portfolioParams.viewCurrency.toLowerCase()">Купоны {{ eventsAggregateInfo.totalCouponsAmount }} </span>
+                            <span :class="portfolio.portfolioParams.viewCurrency.toLowerCase()">Купоны {{ eventsAggregateInfo.totalCouponsAmount | number }} </span>
                         </span>
 
                         <span class="item-block">
                             <span class="eventLegend amortization"/>
-                            <span :class="portfolio.portfolioParams.viewCurrency.toLowerCase()">Амортизация {{ eventsAggregateInfo.totalAmortizationsAmount }} </span>
+                            <span :class="portfolio.portfolioParams.viewCurrency.toLowerCase()">Амортизация {{ eventsAggregateInfo.totalAmortizationsAmount | number }} </span>
                         </span>
 
                         <span class="item-block">
                             <span class="eventLegend repayment"/>
-                            <span :class="portfolio.portfolioParams.viewCurrency.toLowerCase()">Поагешния {{ eventsAggregateInfo.totalRepaymentsAmount }} </span>
+                            <span :class="portfolio.portfolioParams.viewCurrency.toLowerCase()">Поагешния {{ eventsAggregateInfo.totalRepaymentsAmount | number }} </span>
                         </span>
 
                         <span class="item-block">
                             <span class="eventLegend custom"/>
-                            <span :class="portfolio.portfolioParams.viewCurrency.toLowerCase()">Всего выплат {{ eventsAggregateInfo.totalAmount }} </span>
+                            <span :class="portfolio.portfolioParams.viewCurrency.toLowerCase()">Всего выплат {{ eventsAggregateInfo.totalAmount | number }} </span>
                         </span>
                     </div>
 
@@ -84,7 +86,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 </td>
                                 <td class="text-xs-center">{{ props.item.date | date }}</td>
                                 <td class="text-xs-right">{{ props.item.period }}</td>
-                                <td class="text-xs-right">{{ props.item.cleanAmount | amount(true) }}</td>
+                                <td class="text-xs-right ii-number-cell">{{ props.item.cleanAmount | amount(true) }}</td>
                                 <td class="justify-center layout px-0">
                                     <v-btn color="primary" @click="openTradeDialog(props.item)" flat icon dark>
                                         <v-icon color="primary" small>fas fa-plus</v-icon>
@@ -111,6 +113,8 @@ export class EventsPage extends UI {
 
     @MainStore.Getter
     private portfolio: Portfolio;
+    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
+    private reloadPortfolio: (id: string) => Promise<void>;
     @Inject
     private eventService: EventService;
     /** Признак загрузки данных */
@@ -138,6 +142,11 @@ export class EventsPage extends UI {
         await this.loadEvents();
     }
 
+    @Watch("portfolio")
+    private async onPortfolioChange(): Promise<void> {
+        await this.loadEvents();
+    }
+
     private async loadEvents(): Promise<void> {
         this.loading = true;
         const eventsResponse = await this.eventService.getEvents(this.portfolio.id);
@@ -148,13 +157,16 @@ export class EventsPage extends UI {
 
     private async openTradeDialog(event: ShareEvent): Promise<void> {
         const operation = Operation.valueByName(event.type);
-        await new AddTradeDialog().show({
+        const result = await new AddTradeDialog().show({
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
             share: event.share,
             operation,
             assetType: operation === Operation.DIVIDEND ? AssetType.STOCK : AssetType.BOND
         });
+        if (result) {
+            await this.reloadPortfolio(this.portfolio.id);
+        }
     }
 
     private async confirmDeleteAllEvents(): Promise<void> {

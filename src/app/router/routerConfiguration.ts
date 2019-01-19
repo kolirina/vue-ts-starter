@@ -45,7 +45,7 @@ export class RouterConfiguration {
             RouterConfiguration.router = new VueRouter({
                 base: "/",
                 routes: RouterConfiguration.createRoutes(),
-                scrollBehavior: (() => ({x: 0, y: 0}))
+                scrollBehavior: ((): any => ({x: 0, y: 0}))
             });
         }
         return RouterConfiguration.router;
@@ -56,7 +56,7 @@ export class RouterConfiguration {
             {
                 path: "/logout",
                 name: "logout",
-                beforeEnter: () => (Container.get(LogoutService) as LogoutService).logout()
+                beforeEnter: (): Promise<void> => (Container.get(LogoutService) as LogoutService).logout()
             },
             {
                 name: "auth",
@@ -65,7 +65,7 @@ export class RouterConfiguration {
             },
             {
                 path: "*",
-                beforeEnter: () => {
+                beforeEnter: (): void => {
                     console.log("BEFORE ENTER");
                 },
                 redirect: "/portfolio"
