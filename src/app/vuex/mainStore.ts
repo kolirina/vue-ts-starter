@@ -4,6 +4,7 @@ import {Storage} from "../platform/services/storage";
 import {ClientInfo} from "../services/clientService";
 import {OverviewService} from "../services/overviewService";
 import {PortfolioParams, PortfolioService} from "../services/portfolioService";
+import {StoreKeys} from "../types/storeKeys";
 import {Portfolio} from "../types/types";
 import {GetterType} from "./getterType";
 import {MutationType} from "./mutationType";

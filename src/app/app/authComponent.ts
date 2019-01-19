@@ -15,16 +15,14 @@
  */
 
 import {Inject} from "typescript-ioc";
-import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
-import {HTTP} from "../platform/services/http";
 import {Storage} from "../platform/services/storage";
 import {ClientInfo, ClientService} from "../services/clientService";
 import {StoreKeys} from "../types/storeKeys";
 import {Portfolio} from "../types/types";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
-import {UI} from "./ui";
+import {Component, UI} from "./ui";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -63,10 +61,10 @@ export class AuthComponent extends UI {
 
     private async login(): Promise<void> {
         try {
-            this.localStorage.set(StoreKeys.TOKEN_KEY, this.$route.params.token);
-            HTTP.init();
-            const clientInfo = await this.clientService.getClientInfo();
-            await this.loadUser(clientInfo);
+            const token = this.$route.params.token;
+            this.localStorage.set(StoreKeys.TOKEN_KEY, token);
+            const client = await this.clientService.getClientInfo();
+            await this.loadUser({token: token, user: client});
             await this.setCurrentPortfolio(this.$store.state[StoreType.MAIN].clientInfo.user.currentPortfolioId);
             this.$router.push("/portfolio");
         } catch (e) {
