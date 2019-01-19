@@ -162,9 +162,9 @@ export class Http {
                 query += this.arrayToQueryString(key, urlParams[key] as string[]);
             } else {
                 query += encodeURIComponent(key) + "=" + encodeURIComponent(String(urlParams[key]));
-                if (idx < keys.length - 1) {
-                    query += "&";
-                }
+            }
+            if (idx < keys.length - 1) {
+                query += "&";
             }
             return query;
         }, "?");
@@ -277,7 +277,7 @@ export class Http {
     private arrayToQueryString(key: string, urlPrams: string[]): string {
         const out: string[] = [];
         urlPrams.forEach((value: string, index: number): void => {
-            out.push(key + "=" + encodeURIComponent(urlPrams[index]));
+            out.push(encodeURIComponent(key) + "=" + encodeURIComponent(urlPrams[index]));
         });
         return out.join("&");
     }
