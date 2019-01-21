@@ -4,8 +4,6 @@ import {UI} from "../app/ui";
 import {TradesFilters} from "../services/tradeService";
 import {ListType} from "../types/listType";
 import {FilterOperation} from "../types/operation";
-import { GeometryCollection } from "geojson";
-
 
 @Component({
   template: `
@@ -39,7 +37,7 @@ import { GeometryCollection } from "geojson";
           <v-flex xs6>
             <v-checkbox @change="onFilterParamChange()" label="Показать сделки по денежным средствам" v-model="tradesFilter.showMoneyTrades"></v-checkbox>
           </v-flex>
-          <v-flex xs6>    
+          <v-flex xs6>
             <v-checkbox @change="onFilterParamChange()" label="Показать связанные сделки" v-model="tradesFilter.showLinkedMoneyTrades"></v-checkbox>
           </v-flex>
         </v-layout>
@@ -56,19 +54,19 @@ import { GeometryCollection } from "geojson";
       </form>
     </v-expansion-panel-content>
   </v-expansion-panel>
-  ` 
+  `
 })
 export class TradesFilter extends UI {
   @Prop()
   tradesFilter: TradesFilters;
 
-  private listTypes: Object[] = ListType.values().map(obj => ({
-    'text': obj.description,
-    'value': obj.enumName
+  private listTypes: object[] = ListType.values().map(obj => ({
+    "text": obj.description,
+    "value": obj.enumName
   }));
   private operations = FilterOperation.values();
 
-  private onFilterParamChange() {
-    this.$emit('filterChange', this.tradesFilter);
+  private onFilterParamChange(): void {
+    this.$emit("filterChange", this.tradesFilter);
   }
 }

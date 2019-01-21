@@ -2,8 +2,8 @@ import {Container, Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {Http} from "../platform/services/http";
 import {Storage} from "../platform/services/storage";
+import {Operation} from "../types/operation";
 import {ErrorInfo, TradeRow} from "../types/types";
-import {Operation} from '../types/operation';
 
 /** Сервис работы с localStorage */
 const localStorage: Storage = Container.get(Storage);
@@ -11,7 +11,6 @@ const localStorage: Storage = Container.get(Storage);
 @Service("TradeService")
 @Singleton
 export class TradeService {
-
     @Inject
     private http: Http;
 
@@ -152,9 +151,9 @@ export enum TableName {
  * Фильтры сделок
  */
 export interface TradesFilters {
-    listType?: string,
-    operation?: string[],
-    showMoneyTrades?: boolean,
-    showLinkedMoneyTrades?: boolean,
-    search?: string
+    listType?: string;
+    operation?: string[];
+    showMoneyTrades?: boolean;
+    showLinkedMoneyTrades?: boolean;
+    search?: string;
 }

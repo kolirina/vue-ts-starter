@@ -3,16 +3,15 @@ import Component from "vue-class-component";
 import {Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
-import {TradesTable} from "../components/tradesTable";
 import {TradesFilter} from "../components/tradesFilter";
-import {TradeService, TradesFilters} from "../services/tradeService";
+import {TradesTable} from "../components/tradesTable";
 import {CatchErrors} from "../platform/decorators/catchErrors";
+import {TradeService, TradesFilters} from "../services/tradeService";
+import {ListType} from "../types/listType";
+import {FilterOperation} from "../types/operation";
 import {Pagination, Portfolio, TablePagination, TradeRow} from "../types/types";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
-import {ListType} from '../types/listType';
-import {FilterOperation} from "../types/operation";
-
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -73,7 +72,7 @@ export class TradesPage extends UI {
         listType: ListType.FULL.enumName,
         showMoneyTrades: true,
         showLinkedMoneyTrades: true,
-        search: ''
+        search: ""
     };
 
     async created(): Promise<void> {
@@ -81,18 +80,17 @@ export class TradesPage extends UI {
         this.calculatePagination();
     }
 
-    
     @Watch("page")
     private async onPageChange(): Promise<void> {
         await this.loadTrades();
     }
-    
+
     @Watch("portfolio")
     private async onPortfolioChange(): Promise<void> {
         await this.loadTrades();
         this.calculatePagination();
     }
-    
+
     @Watch("tradePagination.pagination", {deep: true})
     private async onTradePaginationChange(): Promise<void> {
         await this.loadTrades();
@@ -105,7 +103,7 @@ export class TradesPage extends UI {
         this.calculatePagination();
         this.$snotify.info(`Операция '${tradeRow.operationLabel}' по бумаге ${tradeRow.ticker} была успешно удалена`);
     }
-    
+
     private calculatePagination(): void {
         this.totalTrades = this.portfolio.overview.totalTradesCount;
         this.pages = parseInt(String(this.totalTrades / this.pageSize), 10);
@@ -115,17 +113,17 @@ export class TradesPage extends UI {
     private async loadTrades(): Promise<void> {
         this.tradePagination.loading = true;
         this.trades = await this.tradeService.loadTrades(
-            this.portfolio.id, 
+            this.portfolio.id,
             this.pageSize * (this.page - 1),
-            this.pageSize, 
-            this.tradePagination.pagination.sortBy, 
+            this.pageSize,
+            this.tradePagination.pagination.sortBy,
             this.tradePagination.pagination.descending,
             this.tradesFilter
         );
         this.tradePagination.loading = false;
     }
 
-    private onFilterChange() {
+    private onFilterChange(): void {
         this.loadTrades();
     }
 }
