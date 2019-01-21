@@ -3,6 +3,7 @@ import {Service} from "../platform/decorators/service";
 import {HTTP} from "../platform/services/http";
 import {Storage} from "../platform/services/storage";
 import {ErrorInfo, TradeRow} from "../types/types";
+import {Operation} from '../types/operation';
 
 /** Сервис работы с localStorage */
 const localStorage: Storage = Container.get(Storage);

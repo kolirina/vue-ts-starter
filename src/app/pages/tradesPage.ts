@@ -9,6 +9,9 @@ import {TradeService, TradesFilters} from "../services/tradeService";
 import {Pagination, Portfolio, TablePagination, TradeRow} from "../types/types";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
+import {ListType} from '../types/listType';
+import {FilterOperation} from "../types/operation";
+
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -18,7 +21,7 @@ const MainStore = namespace(StoreType.MAIN);
         <v-container v-if="portfolio" fluid>
             <dashboard :data="portfolio.overview.dashboardData"></dashboard>
 
-            <trades-filter :loadTrades="loadTrades"></trades-filter>
+            <trades-filter @filterChange="onFilterChange" :tradesFilter="tradesFilter"></trades-filter>
 
             <trades-table :trades="trades" :trade-pagination="tradePagination" @delete="onDelete"></trades-table>
             <v-container v-if="pages > 1">
@@ -31,7 +34,6 @@ const MainStore = namespace(StoreType.MAIN);
     components: {TradesTable, TradesFilter}
 })
 export class TradesPage extends UI {
-
     @MainStore.Getter
     private portfolio: Portfolio;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
@@ -65,40 +67,49 @@ export class TradesPage extends UI {
 
     private trades: TradeRow[] = [];
 
+    private tradesFilter: TradesFilters = {
+        operation: FilterOperation.values().map(el => el.enumName),
+        listType: ListType.FULL.description,
+        showMoneyTrades: true,
+        showLinkedMoneyTrades: true,
+        search: ''
+    };
+
     async created(): Promise<void> {
         await this.loadTrades();
         this.calculatePagination();
     }
 
+    
     @Watch("page")
     private async onPageChange(): Promise<void> {
         await this.loadTrades();
     }
-
+    
     @Watch("portfolio")
     private async onPortfolioChange(): Promise<void> {
         await this.loadTrades();
         this.calculatePagination();
     }
-
+    
     @Watch("tradePagination.pagination", {deep: true})
     private async onTradePaginationChange(): Promise<void> {
         await this.loadTrades();
     }
-
+    
     private async onDelete(tradeRow: TradeRow): Promise<void> {
         await this.tradeService.deleteTrade({portfolioId: this.portfolio.id, tradeId: tradeRow.id});
         await this.reloadPortfolio(this.portfolio.id);
         this.calculatePagination();
         this.$snotify.info(`Операция '${tradeRow.operationLabel}' по бумаге ${tradeRow.ticker} была успешно удалена`);
     }
-
+    
     private calculatePagination(): void {
         this.totalTrades = this.portfolio.overview.totalTradesCount;
         this.pages = parseInt(String(this.totalTrades / this.pageSize), 10);
     }
 
-    private async loadTrades(filters: TradesFilters = {}): Promise<void> {
+    private async loadTrades(): Promise<void> {
         this.tradePagination.loading = true;
         this.trades = await this.tradeService.loadTrades(
             this.portfolio.id, 
@@ -106,7 +117,12 @@ export class TradesPage extends UI {
             this.pageSize, 
             this.tradePagination.pagination.sortBy, 
             this.tradePagination.pagination.descending,
-            filters);
+            this.tradesFilter
+        );
         this.tradePagination.loading = false;
+    }
+
+    private onFilterChange() {
+        this.loadTrades();
     }
 }
