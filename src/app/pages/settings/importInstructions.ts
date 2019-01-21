@@ -16,6 +16,7 @@ import {PsbInstruction} from "./import_instructions/psbInstruction";
 import {QuikInstruction} from "./import_instructions/quikInstruction";
 import {TinkoffInstruction} from "./import_instructions/tinkoffInstruction";
 import {UralsibInstruction} from "./import_instructions/uralsibInstruction";
+import {VtbInstruction} from "./import_instructions/vtbInstruction";
 import {ZerichInstruction} from "./import_instructions/zerichInstruction";
 import {DealsImportProvider} from "./importPage";
 
@@ -97,7 +98,7 @@ const MainStore = namespace(StoreType.MAIN);
 
                 <!-- VTB24 -->
                 <div v-if="provider === providers.VTB24">
-                    <ui:include src="import_instructions/vtb/instruction.xhtml"/>
+                    <VtbInstruction></VtbInstruction>
                 </div>
 
                 <!-- Interactive brokers -->
@@ -160,7 +161,7 @@ const MainStore = namespace(StoreType.MAIN);
     `,
     components: {
         AlfadirectInstruction, ItInvestInstruction, OtkrytieInstruction, PsbInstruction, BcsInstruction, BcsCyprusInstruction, ZerichInstruction, FinamInstruction,
-        UralsibInstruction, TinkoffInstruction, QuikInstruction, IntelinvestInstruction
+        UralsibInstruction, TinkoffInstruction, QuikInstruction, IntelinvestInstruction, VtbInstruction
     }
 })
 export class ImportInstructions extends UI {

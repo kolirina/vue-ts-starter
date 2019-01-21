@@ -1,3 +1,4 @@
+import {Enum, EnumType, IStaticEnum} from "../platform/enum";
 import {PortfolioParams} from "../services/portfolioService";
 import {BaseChartDot, ColumnChartData, Dot, HighStockEventsGroup} from "./charts/types";
 
@@ -464,4 +465,21 @@ export interface Currency {
     name: string;
     /** Курс валюты */
     value: string;
+}
+
+/** Перечислению доступных валют */
+@Enum("code")
+export class CurrencyUnit extends (EnumType as IStaticEnum<CurrencyUnit>) {
+
+    static readonly RUB = new CurrencyUnit("RUB", "Рубль");
+    static readonly USD = new CurrencyUnit("USD", "Доллар");
+    static readonly EUR = new CurrencyUnit("EUR", "Евро");
+
+    private constructor(public code: string, public description: string) {
+        super();
+    }
+}
+
+export interface MapType {
+    [key: string]: string;
 }

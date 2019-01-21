@@ -22,7 +22,7 @@ const MainStore = namespace(StoreType.MAIN);
         <v-app id="inspire" light>
             <vue-snotify></vue-snotify>
             <error-handler></error-handler>
-            <template v-if="!isInitialized">
+            <template v-if="!loggedIn && !externalAuth">
                 <v-content>
                     <v-container fluid fill-height>
                         <v-layout align-center justify-center>
@@ -49,11 +49,6 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-layout>
                     </v-container>
                 </v-content>
-
-                <v-snackbar :timeout="5000" :top="true" :right="true" v-model="showMessage" :color="severity">
-                    {{ message }}
-                    <v-btn flat color="white" @click.native="closeMessage">X</v-btn>
-                </v-snackbar>
             </template>
 
             <template v-else>
@@ -65,7 +60,7 @@ const MainStore = namespace(StoreType.MAIN);
                             </v-list-tile-action>
                         </v-list-tile>
 
-                        <portfolio-switcher></portfolio-switcher>
+                        <portfolio-switcher v-if="portfolio"></portfolio-switcher>
 
                         <hr/>
 
@@ -84,7 +79,8 @@ const MainStore = namespace(StoreType.MAIN);
                                 </v-list-tile>
                             </v-list-group>
 
-                            <v-list-tile active-class="sidebar-list-item-active" class="sidebar-list-item" v-else :key="item.action" :to="{name: item.action, params: item.params}">
+                            <v-list-tile active-class="sidebar-list-item-active" class="sidebar-list-item" v-else :key="item.action"
+                                         :to="{name: item.action, params: item.params}">
                                 <v-list-tile-content class="pl-3">
                                     <v-list-tile-title>{{ item.title }}</v-list-tile-title>
                                 </v-list-tile-content>
@@ -108,7 +104,8 @@ const MainStore = namespace(StoreType.MAIN);
                                 </v-list-tile>
                             </v-list-group>
 
-                            <v-list-tile active-class="sidebar-list-item-active" class="sidebar-list-item" v-else :key="item.action" :to="{name: item.action, params: item.params}">
+                            <v-list-tile active-class="sidebar-list-item-active" class="sidebar-list-item" v-else :key="item.action"
+                                         :to="{name: item.action, params: item.params}">
                                 <v-list-tile-content class="pl-3">
                                     <v-list-tile-title>{{ item.title }}</v-list-tile-title>
                                 </v-list-tile-content>
@@ -163,9 +160,10 @@ export class AppFrame extends UI {
 
     @Inject
     private clientService: ClientService;
-
     @MainStore.Getter
     private clientInfo: ClientInfo;
+    @MainStore.Getter
+    private portfolio: Portfolio;
 
     @MainStore.Action(MutationType.SET_CLIENT_INFO)
     private loadUser: (clientInfo: ClientInfo) => Promise<void>;
@@ -180,13 +178,12 @@ export class AppFrame extends UI {
 
     private password: string = null;
 
-    private showMessage = false;
-
-    private message = "";
-
-    private severity = "info";
-
-    private isInitialized = false;
+    /**
+     * Переменная используется только для удобства локальной разработки при тестировании с отдельным приложением лэндинга
+     * Ддля PRODUCTION режима используется внешняя аутентификация с лэндинга
+     */
+    private externalAuth = true;
+    private loggedIn = false;
 
     /* Пользователь уведомлен об обновлениях */
     private isNotifyAccepted = false;
@@ -224,53 +221,39 @@ export class AppFrame extends UI {
                 {title: "Уведомления", action: "notifications", icon: "fas fa-bell"}
             ]
         },
-        {title: "Профиль", action: "profile", icon: "fas fa-user"}
+        {title: "Профиль", action: "profile", icon: "fas fa-user"},
+        {title: "Выход", action: "logout", icon: "exit_to_app"}
     ];
 
     async created(): Promise<void> {
         // если удалось восстановить state, значит все уже загружено
         if (this.$store.state[StoreType.MAIN].clientInfo) {
-            this.isInitialized = true;
             this.isNotifyAccepted = UiStateHelper.lastUpdateNotification === NotificationUpdateDialog.DATE;
+            this.loggedIn = true;
         }
     }
 
     private async login(): Promise<void> {
         if (!this.username || !this.password) {
-            this.showMessage = true;
-            this.message = "Заполните поля";
-            this.severity = "error";
+            this.$snotify.warning("Заполните поля");
             return;
         }
-        console.log("LOGIN");
         try {
-            const clientInfo = await this.clientService.getClientInfo({username: this.username, password: this.password});
+            const clientInfo = await this.clientService.login({username: this.username, password: this.password});
             await this.loadUser(clientInfo);
         } catch (e) {
             console.log("Ошибка при входе", e);
-            this.showMessage = true;
-            this.message = "Ошибка при входе";
-            this.severity = "error";
+            this.$snotify.error("Ошибка при входе");
             return;
         }
         await this.setCurrentPortfolio(this.$store.state[StoreType.MAIN].clientInfo.user.currentPortfolioId);
-        this.isInitialized = true;
-    }
-
-    private logout(): void {
-        this.$router.push({name: "logout"});
-    }
-
-    private closeMessage(): void {
-        this.showMessage = false;
-        this.message = "";
-        this.severity = "info";
+        this.loggedIn = true;
     }
 
     private async openDialog(): Promise<void> {
         const result = await new AddTradeDialog().show({store: this.$store.state[StoreType.MAIN], router: this.$router});
         if (result) {
-            await this.reloadPortfolio(this.$store.state[StoreType.MAIN].clientInfo.user.currentPortfolioId);
+            await this.reloadPortfolio(this.portfolio.id);
         }
     }
 

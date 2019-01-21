@@ -1,6 +1,6 @@
-import {Container, Singleton} from "typescript-ioc";
+import {Container, Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
-import {HTTP} from "../platform/services/http";
+import {Http} from "../platform/services/http";
 import {Storage} from "../platform/services/storage";
 import {ErrorInfo, TradeRow} from "../types/types";
 import {Operation} from '../types/operation';
@@ -12,20 +12,15 @@ const localStorage: Storage = Container.get(Storage);
 @Singleton
 export class TradeService {
 
-    async saveTrade(req: CreateTradeRequest): Promise<ErrorInfo> {
-        let result = null;
-        await HTTP.INSTANCE.post("/trades", req).catch(reason => {
-            result = reason.data;
-        });
-        return result;
+    @Inject
+    private http: Http;
+
+    async saveTrade(req: CreateTradeRequest): Promise<void> {
+        await this.http.post("/trades", req);
     }
 
-    async editTrade(req: EditTradeRequest): Promise<ErrorInfo> {
-        let result = null;
-        await HTTP.INSTANCE.put("/trades", req).catch(reason => {
-            result = reason.data;
-        });
-        return result;
+    async editTrade(req: EditTradeRequest): Promise<void> {
+        await this.http.put("/trades", req);
     }
 
     /**
@@ -35,7 +30,7 @@ export class TradeService {
      * @returns {Promise<TradeRow[]>}
      */
     async getShareTrades(id: string, ticker: string): Promise<TradeRow[]> {
-        return await (await HTTP.INSTANCE.get(`/trades/${id}/${ticker}`)).data as TradeRow[];
+        return this.http.get<TradeRow[]>(`/trades/${id}/${ticker}`);
     }
 
     /**
@@ -45,11 +40,8 @@ export class TradeService {
      * @returns {Promise<TradeRow[]>}
      */
     async loadTrades(id: string, offset: number = 0, limit: number = 50, sortColumn: string, descending: boolean = false, filters: TradesFilters = {}): Promise<TradeRow[]> {
-        return (await HTTP.INSTANCE.get(`/trades/${id}`, {
-            params: {
-                offset, limit, sortColumn: sortColumn ? sortColumn.toUpperCase() : null, descending, ...filters
-            }
-        })).data as TradeRow[];
+        return this.http.get<TradeRow[]>(`/trades/${id}`,
+            {offset, limit, sortColumn: sortColumn ? sortColumn.toUpperCase() : null, descending, ...filters});
     }
 
     /**
@@ -57,7 +49,7 @@ export class TradeService {
      * @param deleteTradeRequest запрос на удаление сделки
      */
     async deleteTrade(deleteTradeRequest: DeleteTradeRequest): Promise<void> {
-        await HTTP.INSTANCE.post("/trades/delete", deleteTradeRequest);
+        await this.http.post("/trades/delete", deleteTradeRequest);
     }
 
     /**
@@ -65,7 +57,7 @@ export class TradeService {
      * @param deleteTradeRequest запрос на удаление всех сделок
      */
     async deleteAllTrades(deleteTradeRequest: DeleteAllTradeRequest): Promise<void> {
-        await HTTP.INSTANCE.post("/trades/deleteAll", deleteTradeRequest);
+        await this.http.post("/trades/deleteAll", deleteTradeRequest);
     }
 }
 

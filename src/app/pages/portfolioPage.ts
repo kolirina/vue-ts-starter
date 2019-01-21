@@ -71,7 +71,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-expansion-panel-content>
             </v-expansion-panel>
 
-            <div style="height: 50px" v-if="portfolio.overview.bondPortfolio.rows.length > 0"></div>
+            <div style="height: 50px"></div>
 
             <v-expansion-panel focusable expand :value="$uistate.stockGraph">
                 <v-expansion-panel-content :lazy="true" v-state="$uistate.STOCK_CHART_PANEL">

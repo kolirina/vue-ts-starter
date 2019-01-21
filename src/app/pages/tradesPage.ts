@@ -6,6 +6,7 @@ import {UI} from "../app/ui";
 import {TradesTable} from "../components/tradesTable";
 import {TradesFilter} from "../components/tradesFilter";
 import {TradeService, TradesFilters} from "../services/tradeService";
+import {CatchErrors} from "../platform/decorators/catchErrors";
 import {Pagination, Portfolio, TablePagination, TradeRow} from "../types/types";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
@@ -69,7 +70,7 @@ export class TradesPage extends UI {
 
     private tradesFilter: TradesFilters = {
         operation: FilterOperation.values().map(el => el.enumName),
-        listType: ListType.FULL.description,
+        listType: ListType.FULL.enumName,
         showMoneyTrades: true,
         showLinkedMoneyTrades: true,
         search: ''
@@ -96,7 +97,8 @@ export class TradesPage extends UI {
     private async onTradePaginationChange(): Promise<void> {
         await this.loadTrades();
     }
-    
+
+    @CatchErrors
     private async onDelete(tradeRow: TradeRow): Promise<void> {
         await this.tradeService.deleteTrade({portfolioId: this.portfolio.id, tradeId: tradeRow.id});
         await this.reloadPortfolio(this.portfolio.id);
@@ -109,6 +111,7 @@ export class TradesPage extends UI {
         this.pages = parseInt(String(this.totalTrades / this.pageSize), 10);
     }
 
+    @CatchErrors
     private async loadTrades(): Promise<void> {
         this.tradePagination.loading = true;
         this.trades = await this.tradeService.loadTrades(

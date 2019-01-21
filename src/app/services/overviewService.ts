@@ -1,8 +1,8 @@
 import {Decimal} from "decimal.js";
-import {Container, Singleton} from "typescript-ioc";
+import {Container, Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {Cache} from "../platform/services/cache";
-import {HTTP} from "../platform/services/http";
+import {Http} from "../platform/services/http";
 import {BigMoney} from "../types/bigMoney";
 import {EventChartData, HighStockEventsGroup, LineChartItem} from "../types/charts/types";
 import {CombinedInfoRequest, Overview, Portfolio} from "../types/types";
@@ -14,6 +14,9 @@ const PORTFOLIOS_KEY = "PORTFOLIOS";
 @Service("OverviewService")
 @Singleton
 export class OverviewService {
+
+    @Inject
+    private http: Http;
 
     private cacheService = (Container.get(Cache) as Cache);
 
@@ -58,7 +61,7 @@ export class OverviewService {
      * @return {Promise<>}
      */
     async getPortfolioOverviewCombined(request: CombinedInfoRequest): Promise<Overview> {
-        const overview = (await HTTP.INSTANCE.post(`/portfolios/overview-combined`, request)).data as Overview;
+        const overview = await this.http.post<Overview>(`/portfolios/overview-combined`, request);
         // проставляем идентификаторы чтобы работали разворачиваютщиеся блоки в табилицах
         overview.stockPortfolio.rows.forEach((value, index) => value.id = index.toString());
         overview.bondPortfolio.rows.forEach((value, index) => value.id = index.toString());
@@ -66,7 +69,7 @@ export class OverviewService {
     }
 
     async getCostChartCombined(request: CombinedInfoRequest): Promise<any> {
-        const data = (await HTTP.INSTANCE.post(`/portfolios/cost-chart-combined`, request)).data as LineChartItem[];
+        const data = await this.http.post<LineChartItem[]>(`/portfolios/cost-chart-combined`, request);
         const result: any[] = [];
         data.forEach(value => {
             result.push([new Date(value.date).getTime(), new BigMoney(value.amount).amount.toDP(2, Decimal.ROUND_HALF_UP).toNumber()]);
@@ -81,7 +84,7 @@ export class OverviewService {
      * @return {Promise<void>}
      */
     async setCombinedFlag(id: string, combined: boolean): Promise<void> {
-        await HTTP.INSTANCE.post(`/portfolios/${id}/combined`, combined);
+        await this.http.post(`/portfolios/${id}/combined`, combined);
     }
 
     /**
@@ -90,11 +93,11 @@ export class OverviewService {
      * @return {Promise<void>}
      */
     async setDefaultPortfolio(id: string): Promise<void> {
-        await HTTP.INSTANCE.post(`/portfolios/${id}/default`);
+        await this.http.post(`/portfolios/${id}/default`);
     }
 
     async getCostChart(id: string): Promise<any> {
-        const data = (await HTTP.INSTANCE.get(`/portfolios/${id}/cost-chart`)).data as LineChartItem[];
+        const data = await this.http.get<LineChartItem[]>(`/portfolios/${id}/cost-chart`);
         const result: any[] = [];
         data.forEach(value => {
             result.push([new Date(value.date).getTime(), new BigMoney(value.amount).amount.toDP(2, Decimal.ROUND_HALF_UP).toNumber()]);
@@ -107,21 +110,21 @@ export class OverviewService {
     }
 
     async getEventsChartData(id: string): Promise<HighStockEventsGroup[]> {
-        const data = (await HTTP.INSTANCE.get(`/portfolios/${id}/events-chart-data`)).data as EventChartData[];
+        const data = await this.http.get<EventChartData[]>(`/portfolios/${id}/events-chart-data`);
         return ChartUtils.processEventsChartData(data);
     }
 
     async getEventsChartDataCombined(request: CombinedInfoRequest): Promise<HighStockEventsGroup[]> {
-        const data = (await HTTP.INSTANCE.post(`/portfolios/events-chart-data-combined`, request)).data as EventChartData[];
+        const data = await this.http.post<EventChartData[]>(`/portfolios/events-chart-data-combined`, request);
         return ChartUtils.processEventsChartData(data);
     }
 
     async getCurrentMoney(portfolioId: string): Promise<string> {
-        return (await HTTP.INSTANCE.get(`/portfolios/${portfolioId}/current-money`)).data;
+        return await this.http.get<string>(`/portfolios/${portfolioId}/current-money`);
     }
 
     async saveOrUpdateCurrentMoney(portfolioId: string, currentMoney: string): Promise<void> {
-        await HTTP.INSTANCE.post(`/portfolios/${portfolioId}/current-money`, {currentMoney});
+        await this.http.post(`/portfolios/${portfolioId}/current-money`, {currentMoney});
     }
 
     /**
@@ -130,14 +133,14 @@ export class OverviewService {
      * @return {Promise<Portfolio>}
      */
     private async loadPortfolio(id: string): Promise<Portfolio> {
-        const portfolioResponse: PortfolioParamsResponse = (await HTTP.INSTANCE.get(`/portfolios/${id}`)).data;
+        const portfolioResponse: PortfolioParamsResponse = await this.http.get<PortfolioParamsResponse>(`/portfolios/${id}`);
         const portfolio = {
             ...portfolioResponse,
             accountType: portfolioResponse.accountType ? PortfolioAccountType.valueByName(portfolioResponse.accountType) : null,
             iisType: portfolioResponse.iisType ? IisType.valueByName(portfolioResponse.iisType) : null,
             shareNotes: portfolioResponse.shareNotes ? portfolioResponse.shareNotes : {}
         } as PortfolioParams;
-        const overview = (await HTTP.INSTANCE.get(`/portfolios/${id}/overview`)).data as Overview;
+        const overview = await this.http.get<Overview>(`/portfolios/${id}/overview`);
         // проставляем идентификаторы чтобы работали разворачиваютщиеся блоки в табилицах
         overview.stockPortfolio.rows.forEach((value, index) => value.id = index.toString());
         overview.bondPortfolio.rows.forEach((value, index) => value.id = index.toString());
