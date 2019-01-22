@@ -17,5 +17,3 @@ export class Operation extends (EnumType as IStaticEnum<Operation>) {
         super();
     }
 }
-
-export const filterOperations: Operation[] = [Operation.BUY, Operation.SELL, Operation.COUPON, Operation.AMORTIZATION, Operation.DIVIDEND, Operation.INCOME, Operation.LOSS];

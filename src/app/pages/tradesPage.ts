@@ -8,7 +8,6 @@ import {TradesTable} from "../components/tradesTable";
 import {CatchErrors} from "../platform/decorators/catchErrors";
 import {TradeService, TradesFilter} from "../services/tradeService";
 import {ListType} from "../types/listType";
-import {filterOperations} from "../types/operation";
 import {Pagination, Portfolio, TablePagination, TradeRow} from "../types/types";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
@@ -68,7 +67,7 @@ export class TradesPage extends UI {
     private trades: TradeRow[] = [];
 
     private tradesFilter: TradesFilter = {
-        operation: filterOperations,
+        operation: TradesFilterComponent.DEFAULT_OPERATIONS,
         listType: ListType.FULL,
         showMoneyTrades: true,
         showLinkedMoneyTrades: true,
@@ -118,11 +117,7 @@ export class TradesPage extends UI {
             this.pageSize,
             this.tradePagination.pagination.sortBy,
             this.tradePagination.pagination.descending,
-            {
-                ...this.tradesFilter,
-                listType: this.tradesFilter.listType.enumName,
-                operation: this.tradesFilter.operation.map(el => el.enumName)
-            }
+            this.tradesFilter
         );
         this.tradePagination.loading = false;
     }

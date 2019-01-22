@@ -39,9 +39,16 @@ export class TradeService {
      * @param {string} ticker тикер
      * @returns {Promise<TradeRow[]>}
      */
-    async loadTrades(id: string, offset: number = 0, limit: number = 50, sortColumn: string, descending: boolean = false, filters: TradesFilterRequest = {}): Promise<TradeRow[]> {
+    async loadTrades(id: string, offset: number = 0, limit: number = 50, sortColumn: string, descending: boolean = false, filters: TradesFilter): Promise<TradeRow[]> {
+        const tradeFiltersRequest: TradesFilterRequest = {
+            operation: filters.operation.map(operation => operation.enumName),
+            listType: filters.listType.enumName,
+            showLinkedMoneyTrades: filters.showLinkedMoneyTrades,
+            showMoneyTrades: filters.showMoneyTrades,
+            search: filters.search
+        };
         return this.http.get<TradeRow[]>(`/trades/${id}`,
-            {offset, limit, sortColumn: sortColumn ? sortColumn.toUpperCase() : null, descending, ...filters});
+            {offset, limit, sortColumn: sortColumn ? sortColumn.toUpperCase() : null, descending, ...tradeFiltersRequest});
     }
 
     /**
