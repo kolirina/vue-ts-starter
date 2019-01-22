@@ -3,9 +3,11 @@ import Component from "vue-class-component";
 import {Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
+import {TradesFilterComponent} from "../components/tradesFilter";
 import {TradesTable} from "../components/tradesTable";
 import {CatchErrors} from "../platform/decorators/catchErrors";
-import {TradeService} from "../services/tradeService";
+import {TradeService, TradesFilter} from "../services/tradeService";
+import {ListType} from "../types/listType";
 import {Pagination, Portfolio, TablePagination, TradeRow} from "../types/types";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
@@ -17,6 +19,9 @@ const MainStore = namespace(StoreType.MAIN);
     template: `
         <v-container v-if="portfolio" fluid>
             <dashboard :data="portfolio.overview.dashboardData"></dashboard>
+
+            <trades-filter-component @filterChange="onFilterChange" :tradesFilter="tradesFilter"></trades-filter-component>
+
             <trades-table :trades="trades" :trade-pagination="tradePagination" @delete="onDelete"></trades-table>
             <v-container v-if="pages > 1">
                 <v-layout align-center justify-center row>
@@ -25,10 +30,9 @@ const MainStore = namespace(StoreType.MAIN);
             </v-container>
         </v-container>
     `,
-    components: {TradesTable}
+    components: {TradesTable, TradesFilterComponent}
 })
 export class TradesPage extends UI {
-
     @MainStore.Getter
     private portfolio: Portfolio;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
@@ -61,6 +65,14 @@ export class TradesPage extends UI {
     };
 
     private trades: TradeRow[] = [];
+
+    private tradesFilter: TradesFilter = {
+        operation: TradesFilterComponent.DEFAULT_OPERATIONS,
+        listType: ListType.FULL,
+        showMoneyTrades: true,
+        showLinkedMoneyTrades: true,
+        search: ""
+    };
 
     async created(): Promise<void> {
         await this.loadTrades();
@@ -99,8 +111,18 @@ export class TradesPage extends UI {
     @CatchErrors
     private async loadTrades(): Promise<void> {
         this.tradePagination.loading = true;
-        this.trades = await this.tradeService.loadTrades(this.portfolio.id, this.pageSize * (this.page - 1),
-            this.pageSize, this.tradePagination.pagination.sortBy, this.tradePagination.pagination.descending);
+        this.trades = await this.tradeService.loadTrades(
+            this.portfolio.id,
+            this.pageSize * (this.page - 1),
+            this.pageSize,
+            this.tradePagination.pagination.sortBy,
+            this.tradePagination.pagination.descending,
+            this.tradesFilter
+        );
         this.tradePagination.loading = false;
+    }
+
+    private async onFilterChange(): Promise<void> {
+        await this.loadTrades();
     }
 }

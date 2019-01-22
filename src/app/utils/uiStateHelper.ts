@@ -21,6 +21,7 @@ export class UiStateHelper {
     static readonly REFERRAL_STATISTICS_PANEL = "referralStatistics";
     static readonly EVENTS_CALENDAR = "events_calendar";
     static readonly LAST_UPDATE_NOTIFICATION = "last_update_notification";
+    static readonly TRADES_FILTER = "trades_filter";
 
     static set stocksTablePanel(value: number[]) {
         localStorage.set(UiStateHelper.STOCKS, value);
@@ -101,6 +102,7 @@ export class UiStateHelper {
     static get bondGraph(): number[] {
         return [localStorage.get(UiStateHelper.BOND_CHART_PANEL, 0)];
     }
+
     static set assetGraph(value: number[]) {
         localStorage.set(UiStateHelper.ASSET_CHART_PANEL, value);
     }
@@ -148,6 +150,15 @@ export class UiStateHelper {
     static get lastUpdateNotification(): string {
         return localStorage.get(UiStateHelper.LAST_UPDATE_NOTIFICATION, null);
     }
+
+    static set tradesFilter(value: number[]) {
+        localStorage.set(UiStateHelper.TRADES_FILTER, value);
+    }
+
+    static get tradesFilter(): number[] {
+        return [localStorage.get(UiStateHelper.TRADES_FILTER, 0)];
+    }
+
     static toggleState(type: string): void {
         localStorage.set(type, 1 - localStorage.get(type, 0));
     }

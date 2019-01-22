@@ -2,6 +2,8 @@ import {Container, Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {Http} from "../platform/services/http";
 import {Storage} from "../platform/services/storage";
+import {ListType} from "../types/listType";
+import {Operation} from "../types/operation";
 import {ErrorInfo, TradeRow} from "../types/types";
 
 /** Сервис работы с localStorage */
@@ -10,7 +12,6 @@ const localStorage: Storage = Container.get(Storage);
 @Service("TradeService")
 @Singleton
 export class TradeService {
-
     @Inject
     private http: Http;
 
@@ -38,9 +39,16 @@ export class TradeService {
      * @param {string} ticker тикер
      * @returns {Promise<TradeRow[]>}
      */
-    async loadTrades(id: string, offset: number = 0, limit: number = 50, sortColumn: string, descending: boolean = false): Promise<TradeRow[]> {
+    async loadTrades(id: string, offset: number = 0, limit: number = 50, sortColumn: string, descending: boolean = false, filters: TradesFilter): Promise<TradeRow[]> {
+        const tradeFiltersRequest: TradesFilterRequest = {
+            operation: filters.operation.map(operation => operation.enumName),
+            listType: filters.listType.enumName,
+            showLinkedMoneyTrades: filters.showLinkedMoneyTrades,
+            showMoneyTrades: filters.showMoneyTrades,
+            search: filters.search
+        };
         return this.http.get<TradeRow[]>(`/trades/${id}`,
-            {offset, limit, sortColumn: sortColumn ? sortColumn.toUpperCase() : null, descending});
+            {offset, limit, sortColumn: sortColumn ? sortColumn.toUpperCase() : null, descending, ...tradeFiltersRequest});
     }
 
     /**
@@ -145,4 +153,23 @@ export enum TableName {
     STOCK_TRADE = "STOCK_TRADE",
     BOND_TRADE = "BOND_TRADE",
     DIVIDEND_TRADE = "DIVIDEND_TRADE"
+}
+
+/**
+ * Фильтры сделок
+ */
+export interface TradesFilter {
+    listType?: ListType;
+    operation?: Operation[];
+    showMoneyTrades?: boolean;
+    showLinkedMoneyTrades?: boolean;
+    search?: string;
+}
+
+export interface TradesFilterRequest {
+    listType?: string;
+    operation?: string[];
+    showMoneyTrades?: boolean;
+    showLinkedMoneyTrades?: boolean;
+    search?: string;
 }
