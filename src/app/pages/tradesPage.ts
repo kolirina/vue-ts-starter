@@ -3,12 +3,12 @@ import Component from "vue-class-component";
 import {Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
-import {TradesFilter} from "../components/tradesFilter";
+import {TradesFilterComponent} from "../components/tradesFilter";
 import {TradesTable} from "../components/tradesTable";
 import {CatchErrors} from "../platform/decorators/catchErrors";
-import {TradeService, TradesFilters} from "../services/tradeService";
+import {TradeService, TradesFilter} from "../services/tradeService";
 import {ListType} from "../types/listType";
-import {FilterOperation} from "../types/operation";
+import {filterOperations} from "../types/operation";
 import {Pagination, Portfolio, TablePagination, TradeRow} from "../types/types";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
@@ -21,7 +21,7 @@ const MainStore = namespace(StoreType.MAIN);
         <v-container v-if="portfolio" fluid>
             <dashboard :data="portfolio.overview.dashboardData"></dashboard>
 
-            <trades-filter @filterChange="onFilterChange" :tradesFilter="tradesFilter"></trades-filter>
+            <trades-filter-component @filterChange="onFilterChange" :tradesFilter="tradesFilter"></trades-filter-component>
 
             <trades-table :trades="trades" :trade-pagination="tradePagination" @delete="onDelete"></trades-table>
             <v-container v-if="pages > 1">
@@ -31,7 +31,7 @@ const MainStore = namespace(StoreType.MAIN);
             </v-container>
         </v-container>
     `,
-    components: {TradesTable, TradesFilter}
+    components: {TradesTable, TradesFilterComponent}
 })
 export class TradesPage extends UI {
     @MainStore.Getter
@@ -67,9 +67,9 @@ export class TradesPage extends UI {
 
     private trades: TradeRow[] = [];
 
-    private tradesFilter: TradesFilters = {
-        operation: FilterOperation.values().map(el => el.enumName),
-        listType: ListType.FULL.enumName,
+    private tradesFilter: TradesFilter = {
+        operation: filterOperations,
+        listType: ListType.FULL,
         showMoneyTrades: true,
         showLinkedMoneyTrades: true,
         search: ""
@@ -118,12 +118,16 @@ export class TradesPage extends UI {
             this.pageSize,
             this.tradePagination.pagination.sortBy,
             this.tradePagination.pagination.descending,
-            this.tradesFilter
+            {
+                ...this.tradesFilter,
+                listType: this.tradesFilter.listType.enumName,
+                operation: this.tradesFilter.operation.map(el => el.enumName)
+            }
         );
         this.tradePagination.loading = false;
     }
 
-    private onFilterChange(): void {
-        this.loadTrades();
+    private async onFilterChange(): Promise<void> {
+        await this.loadTrades();
     }
 }

@@ -1,9 +1,9 @@
 import Component from "vue-class-component";
 import {Prop} from "vue-property-decorator";
 import {UI} from "../app/ui";
-import {TradesFilters} from "../services/tradeService";
+import {TradesFilter} from "../services/tradeService";
 import {ListType} from "../types/listType";
-import {FilterOperation} from "../types/operation";
+import {filterOperations, Operation} from "../types/operation";
 
 @Component({
   template: `
@@ -25,9 +25,11 @@ import {FilterOperation} from "../types/operation";
 
           <v-flex xs3 offset-xs1>
             <v-select
-            @change="onFilterParamChange()"
+            @change="onListTypeChange()"
             :items="listTypes"
-            v-model="tradesFilter.listType"
+            item-text="description"
+            item-value="enumName"
+            v-model="currentListType"
             label="Тип списка"
             ></v-select>
           </v-flex>
@@ -47,7 +49,7 @@ import {FilterOperation} from "../types/operation";
         <v-layout row wrap>
           <template v-for="op in operations">
             <v-flex xs3>
-              <v-checkbox @change="onFilterParamChange()" :label="op.description" :value="op.enumName" v-model="tradesFilter.operation"></v-checkbox>
+              <v-checkbox @change="onOperationChange()" :label="op.description" :value="op.enumName" v-model="currentOperations"></v-checkbox>
             </v-flex>
           </template>
         </v-layout>
@@ -56,17 +58,30 @@ import {FilterOperation} from "../types/operation";
   </v-expansion-panel>
   `
 })
-export class TradesFilter extends UI {
+export class TradesFilterComponent extends UI {
   @Prop()
-  tradesFilter: TradesFilters;
+  tradesFilter: TradesFilter;
 
-  private listTypes: object[] = ListType.values().map(obj => ({
-    "text": obj.description,
-    "value": obj.enumName
-  }));
-  private operations = FilterOperation.values();
+  private currentListType: string = this.tradesFilter.listType.enumName;
+  private currentOperations: string[] = this.tradesFilter.operation.map(el => el.enumName);
+  private listTypes: ListType[] = ListType.values().map(el => el);
+  private operations: Operation[] = filterOperations;
 
   private onFilterParamChange(): void {
     this.$emit("filterChange", this.tradesFilter);
+  }
+
+  private onListTypeChange(): void {
+    if (this.tradesFilter.listType.enumName === this.currentListType) {
+      return;
+    }
+
+    this.tradesFilter.listType = ListType.valueByName(this.currentListType);
+    this.onFilterParamChange();
+  }
+
+  private onOperationChange(): void {
+    this.tradesFilter.operation = this.currentOperations.map(el => Operation.valueByName(el));
+    this.onFilterParamChange();
   }
 }

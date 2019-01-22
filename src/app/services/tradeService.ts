@@ -2,6 +2,7 @@ import {Container, Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {Http} from "../platform/services/http";
 import {Storage} from "../platform/services/storage";
+import {ListType} from "../types/listType";
 import {Operation} from "../types/operation";
 import {ErrorInfo, TradeRow} from "../types/types";
 
@@ -38,7 +39,7 @@ export class TradeService {
      * @param {string} ticker тикер
      * @returns {Promise<TradeRow[]>}
      */
-    async loadTrades(id: string, offset: number = 0, limit: number = 50, sortColumn: string, descending: boolean = false, filters: TradesFilters = {}): Promise<TradeRow[]> {
+    async loadTrades(id: string, offset: number = 0, limit: number = 50, sortColumn: string, descending: boolean = false, filters: TradesFilterRequest = {}): Promise<TradeRow[]> {
         return this.http.get<TradeRow[]>(`/trades/${id}`,
             {offset, limit, sortColumn: sortColumn ? sortColumn.toUpperCase() : null, descending, ...filters});
     }
@@ -150,7 +151,15 @@ export enum TableName {
 /**
  * Фильтры сделок
  */
-export interface TradesFilters {
+export interface TradesFilter {
+    listType?: ListType;
+    operation?: Operation[];
+    showMoneyTrades?: boolean;
+    showLinkedMoneyTrades?: boolean;
+    search?: string;
+}
+
+export interface TradesFilterRequest {
     listType?: string;
     operation?: string[];
     showMoneyTrades?: boolean;
