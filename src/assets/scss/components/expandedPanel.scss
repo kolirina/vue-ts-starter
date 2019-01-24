@@ -1,0 +1,21 @@
+.exp-panel {
+  position: relative;
+
+  &-arrow {
+    font-size: 35px;
+    color: $non-active-table-th-color !important;
+  }
+  
+
+  &-list-tile {
+    .v-list__tile {
+      flex-direction: column;
+      height: auto;
+    }
+
+    .v-list__tile__title {
+      margin: 5px 0;
+      cursor: pointer;
+    }
+  }
+}

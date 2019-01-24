@@ -16,7 +16,7 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-data-table :headers="headers" :items="rows" item-key="year" hide-actions>
+        <v-data-table class="data-table" :headers="headers" :items="rows" item-key="year" hide-actions>
             <v-progress-linear slot="progress" color="blue" indeterminate></v-progress-linear>
             <template slot="items" slot-scope="props">
                 <tr>

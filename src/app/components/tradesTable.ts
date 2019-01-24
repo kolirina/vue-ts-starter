@@ -12,11 +12,14 @@ import {AddTradeDialog} from "./dialogs/addTradeDialog";
 @Component({
     // language=Vue
     template: `
-        <v-data-table :headers="headers" :items="trades" item-key="id" :pagination.sync="tradePagination.pagination"
+        <v-data-table class="data-table" :headers="headers" :items="trades" item-key="id" :pagination.sync="tradePagination.pagination"
                       :total-items="tradePagination.totalItems"
                       :loading="tradePagination.loading" hide-actions>
             <template slot="items" slot-scope="props">
                 <tr @click="props.expanded = !props.expanded">
+                    <td>
+                        <v-icon class="data-table-cell" v-bind:class="{'data-table-cell-open': props.expanded}">play_arrow</v-icon>
+                    </td>
                     <td>
                         <stock-link v-if="props.item.asset === 'STOCK'" :ticker="props.item.ticker"></stock-link>
                         <bond-link v-if="props.item.asset === 'BOND'" :ticker="props.item.ticker"></bond-link>
@@ -107,6 +110,7 @@ import {AddTradeDialog} from "./dialogs/addTradeDialog";
 export class TradesTable extends UI {
 
     private headers: TableHeader[] = [
+        {text: "", align: "left", sortable: false, value: ""},
         {text: "Тикер/ISIN", align: "left", value: "ticker"},
         {text: "Название", align: "left", value: "name"},
         {text: "Операция", align: "left", value: "operationLabel"},

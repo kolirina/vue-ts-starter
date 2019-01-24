@@ -5,6 +5,7 @@ import {UI} from "../../app/ui";
 import {ImportErrorsDialog} from "../../components/dialogs/importErrorsDialog";
 import {ImportGeneralErrorDialog} from "../../components/dialogs/importGeneralErrorDialog";
 import {ImportSuccessDialog} from "../../components/dialogs/importSuccessDialog";
+import {ExpandedPanel} from "../../components/expandedPanel";
 import {Filters} from "../../platform/filters/Filters";
 import {ClientInfo} from "../../services/clientService";
 import {ImportResponse, ImportService} from "../../services/importService";
@@ -64,93 +65,89 @@ const MainStore = namespace(StoreType.MAIN);
                         </ul>
                     </div>
 
-                    <v-expansion-panel>
-                        <v-expansion-panel-content>
-                            <div slot="header">
-                                <v-tooltip top>
-                                    <span slot="activator" style="cursor: pointer">Расширенные настройки импорта</span>
-                                    <span>Настройте дополнительные параметры импорта отчетов.</span>
-                                </v-tooltip>
-                            </div>
-                            <v-card>
-                                <v-card-text>
-                                    <v-layout row wrap>
-                                        <v-flex xs12 lg6>
-                                            <v-checkbox v-model="linkTrades" class="d-inline-block">
-                                                <template slot="label">
-                                                    <span>Добавлять сделки по списанию/зачислению денежных средств
-                                                        <v-tooltip :max-width="250" top>
-                                                            <i slot="activator" class="far fa-question-circle"></i>
-                                                            <span>
-                                                                Если включено, будут добавлены связанные сделки по зачислению/списанию денежных средств
-                                                            </span>
-                                                        </v-tooltip>
-                                                    </span>
-                                                </template>
-                                            </v-checkbox>
-                                        </v-flex>
-                                        <v-flex xs12 lg6>
-                                            <v-checkbox v-model="autoCommission">
-                                                <template slot="label">
+                    <expanded-panel :value="$uistate.stocksTablePanel" :state="$uistate.STOCKS">
+                        <template slot="header">
+                            <v-tooltip top>
+                                <span slot="activator" style="cursor: pointer">Расширенные настройки импорта</span>
+                                <span>Настройте дополнительные параметры импорта отчетов.</span>
+                            </v-tooltip>
+                        </template>
+                        <v-card-text>
+                            <v-layout row wrap>
+                                <v-flex xs12 lg6>
+                                    <v-checkbox v-model="linkTrades" class="d-inline-block">
+                                        <template slot="label">
+                                            <span>Добавлять сделки по списанию/зачислению денежных средств
+                                                <v-tooltip :max-width="250" top>
+                                                    <i slot="activator" class="far fa-question-circle"></i>
                                                     <span>
-                                                        Автоматически рассчитывать комисию для сделок
-                                                        <v-tooltip :max-width="250" top>
-                                                            <i slot="activator" class="far fa-question-circle"></i>
-                                                            <span>
-                                                                Если включено, комиссия для каждой сделки по ценной бумаге будет рассчитана в соответствии
-                                                                со значением фиксированной комиссии, заданной для портфеля. Если комиссия для бумаги есть в отчете
-                                                                она не будет перезаписана.
-                                                            </span>
-                                                        </v-tooltip>
+                                                        Если включено, будут добавлены связанные сделки по зачислению/списанию денежных средств
                                                     </span>
-                                                </template>
-                                            </v-checkbox>
-                                        </v-flex>
-                                        <v-flex xs12 lg6>
-                                            <v-checkbox v-model="autoEvents">
-                                                <template slot="label">
+                                                </v-tooltip>
+                                            </span>
+                                        </template>
+                                    </v-checkbox>
+                                </v-flex>
+                                <v-flex xs12 lg6>
+                                    <v-checkbox v-model="autoCommission">
+                                        <template slot="label">
+                                            <span>
+                                                Автоматически рассчитывать комисию для сделок
+                                                <v-tooltip :max-width="250" top>
+                                                    <i slot="activator" class="far fa-question-circle"></i>
                                                     <span>
-                                                        Автоматически исполнять события по бумагам
-                                                        <v-tooltip :max-width="250" top>
-                                                            <i slot="activator" class="far fa-question-circle"></i>
-                                                            <span>
-                                                                Если включено, события (дивиденды, купоны, амортизация, погашение) по сделкам,
-                                                                полученным из отчета (на даты первой и последней сделки),
-                                                                будут автоматически исполнены после импорта.
-                                                            </span>
-                                                        </v-tooltip>
+                                                        Если включено, комиссия для каждой сделки по ценной бумаге будет рассчитана в соответствии
+                                                        со значением фиксированной комиссии, заданной для портфеля. Если комиссия для бумаги есть в отчете
+                                                        она не будет перезаписана.
                                                     </span>
-                                                </template>
-                                            </v-checkbox>
-                                        </v-flex>
-                                        <v-flex xs12 lg6>
-                                            <v-checkbox v-model="confirmMoneyBalance">
-                                                <template slot="label">
+                                                </v-tooltip>
+                                            </span>
+                                        </template>
+                                    </v-checkbox>
+                                </v-flex>
+                                <v-flex xs12 lg6>
+                                    <v-checkbox v-model="autoEvents">
+                                        <template slot="label">
+                                            <span>
+                                                Автоматически исполнять события по бумагам
+                                                <v-tooltip :max-width="250" top>
+                                                    <i slot="activator" class="far fa-question-circle"></i>
                                                     <span>
-                                                        Спрашивать текущий остаток ДС
-                                                        <v-tooltip :max-width="250" top>
-                                                            <i slot="activator" class="far fa-question-circle"></i>
-                                                            <span>
-                                                                Если включено, то после успешного импорта будет предложено ввести текущий остаток денежных
-                                                                средств на счете. Отключите, если Вы хотите сами задать вводы и выводы денег.
-                                                            </span>
-                                                        </v-tooltip>
+                                                        Если включено, события (дивиденды, купоны, амортизация, погашение) по сделкам,
+                                                        полученным из отчета (на даты первой и последней сделки),
+                                                        будут автоматически исполнены после импорта.
                                                     </span>
-                                                </template>
-                                            </v-checkbox>
-                                        </v-flex>
-                                    </v-layout>
-                                </v-card-text>
-                            </v-card>
-                        </v-expansion-panel-content>
-                    </v-expansion-panel>
+                                                </v-tooltip>
+                                            </span>
+                                        </template>
+                                    </v-checkbox>
+                                </v-flex>
+                                <v-flex xs12 lg6>
+                                    <v-checkbox v-model="confirmMoneyBalance">
+                                        <template slot="label">
+                                            <span>
+                                                Спрашивать текущий остаток ДС
+                                                <v-tooltip :max-width="250" top>
+                                                    <i slot="activator" class="far fa-question-circle"></i>
+                                                    <span>
+                                                        Если включено, то после успешного импорта будет предложено ввести текущий остаток денежных
+                                                        средств на счете. Отключите, если Вы хотите сами задать вводы и выводы денег.
+                                                    </span>
+                                                </v-tooltip>
+                                            </span>
+                                        </template>
+                                    </v-checkbox>
+                                </v-flex>
+                            </v-layout>
+                        </v-card-text>
+                    </expanded-panel>
 
                     <v-btn color="primary" @click="uploadFile" :disabled="!selectedProvider || files.length === 0">Загрузить</v-btn>
                 </v-card-text>
             </v-card>
         </v-container>
     `,
-    components: {ImportInstructions}
+    components: {ImportInstructions, ExpandedPanel}
 })
 export class ImportPage extends UI {
 
