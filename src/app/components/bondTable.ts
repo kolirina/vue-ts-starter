@@ -22,10 +22,13 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-data-table :headers="headers" :items="rows" item-key="id" hide-actions>
+        <v-data-table class="data-table" :headers="headers" :items="rows" item-key="id" hide-actions>
             <v-progress-linear slot="progress" color="blue" indeterminate></v-progress-linear>
             <template slot="items" slot-scope="props">
                 <tr @click="props.expanded = !props.expanded">
+                    <td>
+                        <img src="img/table/table-arrow.png" class="data-table-cell" v-bind:class="{'data-table-cell-open': props.expanded}" />
+                    </td>
                     <td>{{ props.item.bond.shortname }}</td>
                     <td>
                         <bond-link :ticker="props.item.bond.ticker"></bond-link>
@@ -154,6 +157,7 @@ export class BondTable extends UI {
     private reloadPortfolio: (id: string) => Promise<void>;
 
     private headers: TableHeader[] = [
+        {text: "", align: "left", sortable: false, value: ""},
         {text: "Компания", align: "left", sortable: false, value: "company"},
         {text: "Тикер", align: "left", value: "ticker"},
         {text: "Ср. цена", align: "right", value: "avgBuy"},

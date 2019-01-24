@@ -1,0 +1,38 @@
+.exp-panel {
+  position: relative;
+  th {
+    color: $non-active-table-th-color !important;
+
+  &.active {
+      color: $active-table-th-color !important;
+    }
+  }
+
+  &-arrow {
+    margin-right: 35px;
+    font-size: 35px;
+    color: $non-active-table-th-color !important;
+  }
+  
+  &-menu {
+    z-index: 99999;
+    position: absolute;
+    right: 10px;
+    top: 2px;
+    i {
+      color: $non-active-table-th-color !important;
+    }
+  }
+
+  &-list-tile {
+    .v-list__tile {
+      flex-direction: column;
+      height: auto;
+    }
+
+    .v-list__tile__title {
+      margin: 5px 0;
+      cursor: pointer;
+    }
+  }
+}

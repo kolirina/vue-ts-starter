@@ -37,10 +37,13 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-data-table :headers="headers" :items="rows" item-key="id" :loading="loading" hide-actions>
+        <v-data-table class="data-table" :headers="headers" :items="rows" item-key="id" :loading="loading" hide-actions>
             <v-progress-linear slot="progress" color="blue" indeterminate></v-progress-linear>
             <template slot="items" slot-scope="props">
                 <tr @click="props.expanded = !props.expanded">
+                    <td>
+                        <img src="img/table/table-arrow.png" class="data-table-cell" v-bind:class="{'data-table-cell-open': props.expanded}" />
+                    </td>
                     <td>
                         <span>{{ props.item.stock.shortname }}</span>&nbsp;
                         <span :class="[(props.item.stock.change >= 0) ? 'ii--green-markup' : 'ii--red-markup', 'ii-number-cell']">{{ props.item.stock.change }}&nbsp;%</span>
@@ -141,6 +144,7 @@ export class StockTable extends UI {
     private operation = Operation;
 
     private headers: TableHeader[] = [
+        {text: "", align: "left", sortable: false, value: ""},
         {text: "Компания", align: "left", sortable: false, value: "company"},
         {text: "Тикер", align: "left", value: "ticker"},
         {text: "Ср. цена", align: "right", value: "avgBuy"},

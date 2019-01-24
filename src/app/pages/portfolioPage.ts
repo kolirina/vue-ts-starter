@@ -9,6 +9,7 @@ import {BondPieChart} from "../components/charts/bondPieChart";
 import {PortfolioLineChart} from "../components/charts/portfolioLineChart";
 import {SectorsChart} from "../components/charts/sectorsChart";
 import {StockPieChart} from "../components/charts/stockPieChart";
+import {ExpandedPanel} from "../components/expandedPanel";
 import {StockTable} from "../components/stockTable";
 import {Portfolio} from "../types/types";
 import {UiStateHelper} from "../utils/uiStateHelper";
@@ -24,107 +25,82 @@ const MainStore = namespace(StoreType.MAIN);
             <asset-table :assets="portfolio.overview.assetRows"></asset-table>
 
             <div style="height: 50px"></div>
-
-            <v-expansion-panel focusable expand :value="$uistate.stocksTablePanel">
-                <v-expansion-panel-content :lazy="true" v-state="$uistate.STOCKS">
-                    <div slot="header">Акции</div>
-                    <v-card>
-                        <stock-table :rows="portfolio.overview.stockPortfolio.rows" :loading="loading"></stock-table>
-                    </v-card>
-                </v-expansion-panel-content>
-            </v-expansion-panel>
+            
+            <expanded-panel :value="$uistate.stocksTablePanel" :state="$uistate.STOCKS">
+                <template slot="header">Акции</template>
+                <v-card>
+                    <stock-table :rows="portfolio.overview.stockPortfolio.rows"></stock-table>
+                </v-card>
+            </expanded-panel>
 
             <div style="height: 50px"></div>
 
-            <v-expansion-panel focusable expand :value="$uistate.bondsTablePanel">
-                <v-expansion-panel-content :lazy="true" v-state="$uistate.BONDS">
-                    <div slot="header">Облигации</div>
-                    <v-card>
-                        <bond-table :rows="portfolio.overview.bondPortfolio.rows"></bond-table>
-                    </v-card>
-                </v-expansion-panel-content>
-            </v-expansion-panel>
+            <expanded-panel :value="$uistate.bondsTablePanel" :state="$uistate.BONDS">
+                <template slot="header">Облигации</template>
+                <v-card>
+                    <bond-table :rows="portfolio.overview.bondPortfolio.rows"></bond-table>
+                </v-card>
+            </expanded-panel>
 
             <div style="height: 50px"></div>
 
-            <v-expansion-panel focusable expand :value="$uistate.historyPanel">
-                <v-expansion-panel-content :lazy="true" v-state="$uistate.HISTORY_PANEL">
-                    <div slot="header">Стоимость портфеля</div>
-                    <v-card style="overflow: auto;">
-                        <v-card-text>
-                            <portfolio-line-chart></portfolio-line-chart>
-                        </v-card-text>
-                    </v-card>
-                </v-expansion-panel-content>
-            </v-expansion-panel>
+            <expanded-panel :value="$uistate.historyPanel" :state="$uistate.HISTORY_PANEL">
+                <template slot="header">Стоимость портфеля</template>
+                <v-card style="overflow: auto;">
+                    <v-card-text>
+                        <portfolio-line-chart></portfolio-line-chart>
+                    </v-card-text>
+                </v-card>
+            </expanded-panel>
 
             <div style="height: 50px"></div>
 
-            <v-expansion-panel focusable expand :value="$uistate.assetGraph">
-                <v-expansion-panel-content :lazy="true" v-state="$uistate.ASSET_CHART_PANEL">
-                    <div slot="header">Состав портфеля по активам</div>
-                    <v-card style="overflow: auto;">
-                        <v-card-text>
-                            <asset-chart/>
-                        </v-card-text>
-                    </v-card>
-                </v-expansion-panel-content>
-            </v-expansion-panel>
+            <expanded-panel :value="$uistate.assetGraph" :state="$uistate.ASSET_CHART_PANEL">
+                <template slot="header">Состав портфеля по активам</template>
+                <v-card style="overflow: auto;">
+                    <v-card-text>
+                        <asset-chart/>
+                    </v-card-text>
+                </v-card>
+            </expanded-panel>
 
             <div style="height: 50px"></div>
 
-            <v-expansion-panel focusable expand :value="$uistate.stockGraph">
-                <v-expansion-panel-content :lazy="true" v-state="$uistate.STOCK_CHART_PANEL">
-                    <div slot="header">Состав портфеля акций</div>
-                    <v-card style="overflow: auto;">
-                        <v-card-text>
-                            <stock-pie-chart></stock-pie-chart>
-                        </v-card-text>
-                    </v-card>
-                </v-expansion-panel-content>
-            </v-expansion-panel>
+            <expanded-panel :value="$uistate.stockGraph" :state="$uistate.STOCK_CHART_PANEL">
+                <template slot="header">Состав портфеля акций</template>
+                <v-card style="overflow: auto;">
+                    <v-card-text>
+                        <stock-pie-chart></stock-pie-chart>
+                    </v-card-text>
+                </v-card>
+            </expanded-panel>
 
             <div style="height: 50px" v-if="portfolio.overview.bondPortfolio.rows.length > 0"></div>
 
-            <v-expansion-panel v-if="portfolio.overview.bondPortfolio.rows.length > 0" focusable expand :value="$uistate.bondGraph">
-                <v-expansion-panel-content :lazy="true" v-state="$uistate.BOND_CHART_PANEL">
-                    <div slot="header">Состав портфеля облигаций</div>
-                    <v-card style="overflow: auto;">
-                        <v-card-text>
-                            <bond-pie-chart></bond-pie-chart>
-                        </v-card-text>
-                    </v-card>
-                </v-expansion-panel-content>
-            </v-expansion-panel>
+            <expanded-panel v-if="portfolio.overview.bondPortfolio.rows.length > 0" :value="$uistate.bondGraph" :state="$uistate.BOND_CHART_PANEL">
+                <template slot="header">Состав портфеля облигаций</template>
+                <v-card style="overflow: auto;">
+                    <v-card-text>
+                        <bond-pie-chart></bond-pie-chart>
+                    </v-card-text>
+                </v-card>
+            </expanded-panel>
 
             <div style="height: 50px"></div>
 
-            <v-expansion-panel focusable expand :value="$uistate.sectorsGraph">
-                <v-expansion-panel-content :lazy="true" v-state="$uistate.SECTORS_PANEL">
-                    <div slot="header">Состав портфеля по секторам</div>
-                    <v-card style="overflow: auto;">
-                        <v-card-text>
-                            <sectors-chart></sectors-chart>
-                        </v-card-text>
-                    </v-card>
-                </v-expansion-panel-content>
-            </v-expansion-panel>
+            <expanded-panel :value="$uistate.sectorsGraph" :state="$uistate.SECTORS_PANEL">
+                <template slot="header">Состав портфеля по секторам</template>
+                <v-card style="overflow: auto;">
+                    <v-card-text>
+                        <sectors-chart></sectors-chart>
+                    </v-card-text>
+                </v-card>
+            </expanded-panel>
         </v-container>
     `,
-    components: {AssetTable, StockTable, BondTable, AssetChart, BarChart, StockPieChart, BondPieChart, PortfolioLineChart, SectorsChart}
+    components: {AssetTable, StockTable, BondTable, AssetChart, BarChart, StockPieChart, BondPieChart, PortfolioLineChart, SectorsChart, ExpandedPanel}
 })
 export class PortfolioPage extends UI {
-
     @MainStore.Getter
     private portfolio: Portfolio;
-
-    private loading = false;
-
-    mounted(): void {
-        this.loading = true;
-
-        setTimeout(() => {
-            this.loading = false;
-        }, 4000);
-    }
 }

@@ -1,0 +1,21 @@
+.data-table {
+  
+  &-cell {
+    transition: .3s ease-in-out;
+  }
+
+  &-cell-open {
+    transform: rotate(90deg);
+  }
+
+  td:nth-child(1) {
+    padding: 0 10px !important;
+    text-align: center;
+  }
+  td:nth-child(2) {
+    padding-left: 0 !important;
+  }
+  th {
+    padding-left: 0 !important;
+  }
+}
