@@ -1,6 +1,6 @@
 import Component from "vue-class-component";
-import {UI} from "../app/ui";
 import {Prop} from "vue-property-decorator";
+import {UI} from "../app/ui";
 import {StockTable} from "../components/stockTable";
 
 @Component({

@@ -25,7 +25,7 @@ const MainStore = namespace(StoreType.MAIN);
             <asset-table :assets="portfolio.overview.assetRows"></asset-table>
 
             <div style="height: 50px"></div>
-            
+
             <expanded-panel :value="$uistate.stocksTablePanel" :state="$uistate.STOCKS">
                 <template slot="header">Акции</template>
                 <v-card>
