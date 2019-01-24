@@ -42,7 +42,7 @@ const MainStore = namespace(StoreType.MAIN);
             <template slot="items" slot-scope="props">
                 <tr @click="props.expanded = !props.expanded">
                     <td>
-                        <img src="img/table/table-arrow.png" class="data-table-cell" v-bind:class="{'data-table-cell-open': props.expanded}" />
+                        <v-icon class="data-table-cell" v-bind:class="{'data-table-cell-open': props.expanded}">play_arrow</v-icon>
                     </td>
                     <td>
                         <span>{{ props.item.stock.shortname }}</span>&nbsp;
