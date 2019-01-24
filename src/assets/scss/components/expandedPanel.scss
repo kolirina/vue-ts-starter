@@ -1,12 +1,5 @@
 .exp-panel {
   position: relative;
-  th {
-    color: $non-active-table-th-color !important;
-
-  &.active {
-      color: $active-table-th-color !important;
-    }
-  }
 
   &-arrow {
     font-size: 35px;

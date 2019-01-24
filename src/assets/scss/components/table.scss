@@ -30,3 +30,42 @@
 .ii-number-cell {
     font-family: "OpenSans Semibold";
 }
+
+
+.data-table {
+    &-cell {
+      transition: .3s ease-in-out;
+    }
+  
+    &-cell-open {
+      transform: rotate(90deg);
+    }
+  
+    td {
+      text-align: left !important;
+    }
+  
+    td:nth-child(1) {
+      padding: 0 20px !important;
+      text-align: center;
+    }
+  
+    td:nth-child(2) {
+      padding-left: 0 !important;
+    }
+  
+    th {
+      text-align: left !important;
+      padding-left: 0 !important;
+      color: $non-active-table-th-color !important;
+      
+      &:first-child {
+        padding-left: 20px !important;
+      }
+      
+      &.active {
+        color: $active-table-th-color !important;
+      }
+    }
+  
+  }

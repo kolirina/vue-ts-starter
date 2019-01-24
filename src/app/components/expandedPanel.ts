@@ -14,7 +14,12 @@ import {StockTable} from "../components/stockTable";
           <div slot="header">
             <slot name="header"></slot>
           </div>
-          <slot></slot>
+
+          <v-card style="overflow: auto;">
+            <slot></slot>
+          </v-card>
+
+          <template name="underCard"></template>
         </v-expansion-panel-content>
       </v-expansion-panel>
     </div>
@@ -26,8 +31,4 @@ export class ExpandedPanel extends UI {
   private value: [];
   @Prop()
   private state: string;
-  @Prop()
-  private header: string;
-  @Prop()
-  private rows: [];
 }

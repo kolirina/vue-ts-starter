@@ -3,6 +3,7 @@ import Component from "vue-class-component";
 import {Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
+import {ExpandedPanel} from "../../components/expandedPanel";
 import {ClientInfo, ClientService} from "../../services/clientService";
 import {PromoCodeService, PromoCodeStatistics} from "../../services/promoCodeService";
 import {StoreType} from "../../vuex/storeType";
@@ -44,39 +45,35 @@ const MainStore = namespace(StoreType.MAIN);
                                 </div>
                             </div>
 
-                            <v-expansion-panel focusable expand :value="$uistate.referralStatisticsPanel">
-                                <v-expansion-panel-content :lazy="true" v-state="$uistate.REFERRAL_STATISTICS_PANEL">
-                                    <div slot="header">Статистика по реферальной программе</div>
-                                    <v-card>
-                                        <div v-if="promoCodeStatistics" class="statistics">
-                                            <div class="statistics__label">Всего привлеченных пользователей:</div>
-                                            <span class="statistics__value">{{ promoCodeStatistics.referralCount }}</span>
+                            <expanded-panel :value="$uistate.referralStatisticsPanel" :state="$uistate.REFERRAL_STATISTICS_PANEL">
+                                <template slot="header">Статистика по реферальной программе</template>
+                                <div v-if="promoCodeStatistics" class="statistics">
+                                    <div class="statistics__label">Всего привлеченных пользователей:</div>
+                                    <span class="statistics__value">{{ promoCodeStatistics.referralCount }}</span>
 
-                                            <div class="statistics__label">Из них хоть раз оплативших:</div>
-                                            <span class="statistics__value">{{ promoCodeStatistics.hasPaymentsReferralCount }}</span>
+                                    <div class="statistics__label">Из них хоть раз оплативших:</div>
+                                    <span class="statistics__value">{{ promoCodeStatistics.hasPaymentsReferralCount }}</span>
 
-                                            <div class="statistics__label">Всего оплат пользователей:</div>
-                                            <span class="statistics__value">{{ promoCodeStatistics.referralPaymentTotalAmount }}</span>
+                                    <div class="statistics__label">Всего оплат пользователей:</div>
+                                    <span class="statistics__value">{{ promoCodeStatistics.referralPaymentTotalAmount }}</span>
 
-                                            <div class="statistics__label">Всего заработано:</div>
-                                            <span class="statistics__value">{{ promoCodeStatistics.referrerPaymentsTotal }}</span>
+                                    <div class="statistics__label">Всего заработано:</div>
+                                    <span class="statistics__value">{{ promoCodeStatistics.referrerPaymentsTotal }}</span>
 
-                                            <div class="statistics__label">Всего выплачено:</div>
-                                            <span class="statistics__value">{{ promoCodeStatistics.referrerPaymentsTotalPaid }}</span>
+                                    <div class="statistics__label">Всего выплачено:</div>
+                                    <span class="statistics__value">{{ promoCodeStatistics.referrerPaymentsTotalPaid }}</span>
 
-                                            <div class="statistics__label">Остаток для выплаты:</div>
-                                            <span class="statistics__value">{{ promoCodeStatistics.referrerPaymentsTotalUnpaid }}</span>
-                                        </div>
-                                    </v-card>
-                                </v-expansion-panel-content>
-                            </v-expansion-panel>
+                                    <div class="statistics__label">Остаток для выплаты:</div>
+                                    <span class="statistics__value">{{ promoCodeStatistics.referrerPaymentsTotalUnpaid }}</span>
+                                </div>
+                            </expanded-panel>
                         </v-card-title>
                     </v-card>
-
                 </v-flex>
             </v-layout>
         </v-container>
-    `
+    `,
+    components: {ExpandedPanel}
 })
 export class PromoCodesPage extends UI {
 
