@@ -1,6 +1,6 @@
 import {Component, Prop, UI, Watch} from "../app/ui";
 import {TradesFilter} from "../services/tradeService";
-import {ListType} from "../types/listType";
+import {TradeListType} from "../types/tradeListType";
 import {Operation} from "../types/operation";
 
 @Component({
@@ -64,7 +64,7 @@ export class TradesFilterComponent extends UI {
     tradesFilter: TradesFilter;
     /** Текущий объект таймера */
     private currentTimer: number = null;
-    private listTypes = ListType.values();
+    private listTypes = TradeListType.values();
     private operations: Operation[] = TradesFilterComponent.DEFAULT_OPERATIONS;
 
     @Watch("tradesFilter.search")

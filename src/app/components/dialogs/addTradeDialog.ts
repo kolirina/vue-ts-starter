@@ -12,7 +12,7 @@ import {Operation} from "../../types/operation";
 import {TradeDataHolder} from "../../types/trade/tradeDataHolder";
 import {TradeMap} from "../../types/trade/tradeMap";
 import {TradeValue} from "../../types/trade/tradeValue";
-import {Bond, CurrencyUnit, Portfolio, Share} from "../../types/types";
+import {Bond, CurrencyUnit, ErrorInfo, Portfolio, Share} from "../../types/types";
 import {DateUtils} from "../../utils/dateUtils";
 import {MainStore} from "../../vuex/mainStore";
 import {CustomDialog} from "./customDialog";
@@ -22,11 +22,15 @@ import {CustomDialog} from "./customDialog";
     template: `
         <v-dialog v-model="showed" persistent max-width="700px">
             <v-card>
-                <v-card-title>
+                <v-card-title class="paddB0">
                     <span class="headline">Добавление сделки</span>
+                    <v-spacer></v-spacer>
+                    <v-btn icon @click.native="close">
+                        <v-icon>close</v-icon>
+                    </v-btn>
                 </v-card-title>
-                <v-card-text class="paddT0">
-                    <v-container grid-list-md class="paddT0">
+                <v-card-text class="paddT0 paddB0">
+                    <v-container grid-list-md class="paddT0 paddB0">
                         <v-layout wrap>
                             <v-flex xs12 sm6>
                                 <v-select :items="assetTypes" v-model="assetType" :return-object="true" label="Тип актива" item-text="description" dense hide-details></v-select>
@@ -37,7 +41,7 @@ import {CustomDialog} from "./customDialog";
                                           item-text="description"></v-select>
                             </v-flex>
 
-                            <v-flex v-if="shareAssetType" xs12>
+                            <v-flex v-if="shareAssetType" xs12 sm9>
                                 <v-autocomplete :items="filteredShares"
                                                 v-model="share"
                                                 label="Тикер / Название компании"
@@ -60,31 +64,33 @@ import {CustomDialog} from "./customDialog";
                                 </v-autocomplete>
                             </v-flex>
 
-                            <v-flex xs12>
+                            <v-flex xs12 :class="moneyTrade ? '' : 'sm3'">
                                 <v-menu
-                                        ref="dateMenu"
-                                        :close-on-content-click="false"
-                                        v-model="dateMenuValue"
-                                        :nudge-right="40"
-                                        :return-value.sync="date"
-                                        lazy
-                                        transition="scale-transition"
-                                        offset-y
-                                        full-width
-                                        min-width="290px">
+                                    ref="dateMenu"
+                                    :close-on-content-click="false"
+                                    v-model="dateMenuValue"
+                                    :nudge-right="40"
+                                    :return-value.sync="date"
+                                    lazy
+                                    transition="scale-transition"
+                                    offset-y
+                                    full-width
+                                    min-width="290px">
                                     <v-text-field
-                                            slot="activator"
-                                            v-model="date"
-                                            label="Дата"
-                                            required
-                                            readonly></v-text-field>
+                                        name="date"
+                                        slot="activator"
+                                        v-model="date"
+                                        label="Дата"
+                                        v-validate="'required'"
+                                        :error-messages="errors.collect('date')"
+                                        readonly></v-text-field>
                                     <v-date-picker v-model="date" :no-title="true" locale="ru" :first-day-of-week="1"
                                                    @input="$refs.dateMenu.save(date)"></v-date-picker>
                                 </v-menu>
                             </v-flex>
 
-                            <v-flex v-if="shareAssetType" xs12>
-                                <ii-number-field :label="priceLabel" v-model="price"
+                            <v-flex v-if="shareAssetType" xs12 sm6>
+                                <ii-number-field :label="priceLabel" v-model="price" class="required"
                                                  name="price"
                                                  decimals="2"
                                                  v-validate="'required'"
@@ -93,7 +99,19 @@ import {CustomDialog} from "./customDialog";
                                 </ii-number-field>
                             </v-flex>
 
-                            <v-flex v-if="bondTrade" xs12>
+                            <v-flex v-if="shareAssetType" xs12 sm6>
+                                <ii-number-field
+                                    label="Количество" v-model="quantity"
+                                    @keyup="calculateFee"
+                                    :hint="lotSizeHint" persistent-hint
+                                    name="quantity"
+                                    decimals="0"
+                                    v-validate="'required'"
+                                    :error-messages="errors.collect('quantity')">
+                                </ii-number-field>
+                            </v-flex>
+
+                            <v-flex v-if="bondTrade" xs12 sm3>
                                 <ii-number-field label="Номинал" v-model="facevalue"
                                                  @keyup="calculateFee"
                                                  decimals="2"
@@ -102,7 +120,8 @@ import {CustomDialog} from "./customDialog";
                                                  :error-messages="errors.collect('facevalue')">
                                 </ii-number-field>
                             </v-flex>
-                            <v-flex v-if="bondTrade" xs12>
+
+                            <v-flex v-if="bondTrade" xs12 sm9>
                                 <v-layout wrap>
                                     <v-flex xs12 lg6>
                                         <ii-number-field label="НКД" v-model="nkd"
@@ -113,11 +132,7 @@ import {CustomDialog} from "./customDialog";
                                                          :error-messages="errors.collect('nkd')">
                                         </ii-number-field>
                                     </v-flex>
-                                </v-layout>
-                            </v-flex>
-                            <v-flex v-if="calculationAssetType || bondTrade" xs12>
-                                <v-layout wrap>
-                                    <v-flex xs12 lg6>
+                                    <v-flex v-if="calculationAssetType || bondTrade" xs12 lg6>
                                         <v-tooltip top>
                                             <v-checkbox slot="activator" label="Начисление на одну бумагу" v-model="perOne"></v-checkbox>
                                             <span>Отключите если вносите сумму начисления</span>
@@ -126,22 +141,11 @@ import {CustomDialog} from "./customDialog";
                                 </v-layout>
                             </v-flex>
 
-                            <v-flex xs12>
-                                <ii-number-field v-if="shareAssetType"
-                                                 label="Количество" v-model="quantity"
-                                                 @keyup="calculateFee"
-                                                 :hint="lotSizeHint" persistent-hint
-                                                 name="quantity"
-                                                 decimals="0"
-                                                 v-validate="'required'"
-                                                 :error-messages="errors.collect('quantity')">
-                                </ii-number-field>
-                            </v-flex>
-                            <v-flex xs12>
-                                <ii-number-field v-if="shareAssetType && !calculationAssetType"
-                                                 label="Комиссия" v-model="fee"
-                                                 decimals="2"
-                                                 hint="Для автоматического рассчета комиссии задайте значение в Настройках или введите значение суммарной комиссии">
+                            <v-flex v-if="shareAssetType && !calculationAssetType" xs12>
+                                <ii-number-field
+                                    label="Комиссия" v-model="fee"
+                                    decimals="2"
+                                    hint="Для автоматического рассчета комиссии задайте значение в Настройках или введите значение суммарной комиссии">
                                 </ii-number-field>
                             </v-flex>
 
@@ -167,7 +171,7 @@ import {CustomDialog} from "./customDialog";
                             </v-flex>
                             <v-flex xs12 lg6>
                                 <span class="body-2">Доступно: </span><span v-if="moneyResiduals"><b class="title">{{ moneyResidual | amount }} {{ currency }}</b></span>
-                                <v-checkbox :label="keepMoneyLabel" v-model="keepMoney"></v-checkbox>
+                                <v-checkbox :label="keepMoneyLabel" v-model="keepMoney" hide-details></v-checkbox>
                             </v-flex>
                         </v-layout>
                     </v-container>
@@ -356,13 +360,12 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private async addTrade(): Promise<void> {
-        // const result = await this.$validator.validateAll();
-        // this.$validator.errors.add({field: 'price', msg: 'Errsdsadsadasdasor'});
-        // console.log(result, this.$validator.errors);
-        // if (!result) {
-        //     return;
-        // }
-        const trade: TradeFields = {
+        this.$validator.errors.clear();
+        const result = await this.$validator.validateAll();
+        if (!result) {
+            return;
+        }
+        const tradeFields: TradeFields = {
             ticker: this.shareTicker,
             date: this.getDate(),
             quantity: this.getQuantity(),
@@ -383,24 +386,14 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
                 asset: this.assetType.enumName,
                 operation: this.operation.enumName,
                 createLinkedTrade: this.keepMoney,
-                fields: trade
+                fields: tradeFields
             });
             this.$snotify.info("Сделка успешно добавлена", "Выполнено");
             this.close(true);
             return;
 
         } catch (e) {
-            console.log("e", e);
-            // this.$notify({
-            //     title: 'Ошибка',
-            //     message: 'Ошибка при добавлении сделки',
-            //     type: 'error'
-            // });
-            // иначе обрабатываем ошибки валидации с сервера и отображаем
-            // for (const errorInfo of errors.fields) {
-            //     console.log("M", errorInfo);
-            //     this.$validator.errors.add({field: errorInfo.name, msg: errorInfo.errorMessage});
-            // }
+            this.handleError(e);
             return;
         } finally {
             this.processState = false;
@@ -477,6 +470,27 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     private get moneyResidual(): string {
         return (this.moneyResiduals as any)[this.currency];
+    }
+
+    private handleError(error: ErrorInfo): void {
+        const validatorFields = this.$validator.fields.items.map(f => f.name);
+        for (const errorInfo of error.fields) {
+            if (validatorFields.includes(errorInfo.name)) {
+                this.$validator.errors.add({field: errorInfo.name, msg: errorInfo.errorMessage});
+            }
+        }
+        if (this.$validator.errors.count() === 0) {
+            const globalMessage = this.getGlobalMessage(error);
+            this.$snotify.error(globalMessage);
+        }
+    }
+
+    private getGlobalMessage(error: ErrorInfo): string {
+        const fieldError = error.fields[0];
+        if (error.errorCode === "GLOBAL" && fieldError && fieldError.errorMessage) {
+            return fieldError.errorMessage;
+        }
+        return error.message;
     }
 
     // tslint:disable

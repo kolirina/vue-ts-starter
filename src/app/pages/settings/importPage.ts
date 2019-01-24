@@ -82,7 +82,7 @@ const MainStore = namespace(StoreType.MAIN);
                                                         <v-tooltip :max-width="250" top>
                                                             <i slot="activator" class="far fa-question-circle"></i>
                                                             <span>
-                                                                Если включено, будут добавлены связанные сделки по зачислению/списанию денжных средств
+                                                                Если включено, будут добавлены связанные сделки по зачислению/списанию денежных средств
                                                             </span>
                                                         </v-tooltip>
                                                     </span>

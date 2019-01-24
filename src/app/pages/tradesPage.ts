@@ -7,7 +7,7 @@ import {TradesFilterComponent} from "../components/tradesFilter";
 import {TradesTable} from "../components/tradesTable";
 import {CatchErrors} from "../platform/decorators/catchErrors";
 import {TradeService, TradesFilter} from "../services/tradeService";
-import {ListType} from "../types/listType";
+import {TradeListType} from "../types/tradeListType";
 import {Pagination, Portfolio, TablePagination, TradeRow} from "../types/types";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
@@ -68,7 +68,7 @@ export class TradesPage extends UI {
 
     private tradesFilter: TradesFilter = {
         operation: TradesFilterComponent.DEFAULT_OPERATIONS,
-        listType: ListType.FULL,
+        listType: TradeListType.FULL,
         showMoneyTrades: true,
         showLinkedMoneyTrades: true,
         search: ""
