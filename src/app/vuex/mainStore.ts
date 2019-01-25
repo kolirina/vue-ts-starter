@@ -24,6 +24,8 @@ export class StateHolder {
     currentPortfolio: Portfolio = null;
     /** Версия стора */
     version = "1.0";
+    /** Состояние лоадера */
+    loadState: boolean = false;
 }
 
 const Getters = {
@@ -54,7 +56,10 @@ const Mutations = {
     [MutationType.UPDATE_PORTFOLIO](state: StateHolder, portfolio: PortfolioParams): void {
         const result = state.clientInfo.user.portfolios.filter(p => p.id !== portfolio.id);
         state.clientInfo.user.portfolios = [...result, portfolio];
-    }
+    },
+    [MutationType.SET_LOADER_STATE](state: StateHolder, newState: boolean): void {
+        state.loadState = newState;
+    },
 };
 
 /** Действия хранилища */
@@ -92,7 +97,10 @@ const Actions = {
                 resolve();
             });
         });
-    }
+    },
+    [MutationType.SET_LOADER_STATE](context: ActionContext<StateHolder, void>, newS: boolean): void {
+        context.commit(MutationType.SET_LOADER_STATE, newS);
+    },
 };
 
 /**

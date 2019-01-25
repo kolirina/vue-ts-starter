@@ -37,6 +37,9 @@ export class TradesPage extends UI {
     private portfolio: Portfolio;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
     private reloadPortfolio: (id: string) => Promise<void>;
+    @MainStore.Action(MutationType.SET_LOADER_STATE)
+    private setLoaderState: (isLoading: boolean) => void;
+
     @Inject
     private tradeService: TradeService;
 
@@ -110,6 +113,7 @@ export class TradesPage extends UI {
 
     @CatchErrors
     private async loadTrades(): Promise<void> {
+        this.setLoaderState(true);
         this.tradePagination.loading = true;
         this.trades = await this.tradeService.loadTrades(
             this.portfolio.id,
@@ -120,6 +124,7 @@ export class TradesPage extends UI {
             this.tradesFilter
         );
         this.tradePagination.loading = false;
+        this.setLoaderState(false);
     }
 
     private async onFilterChange(): Promise<void> {

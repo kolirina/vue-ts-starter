@@ -9,5 +9,7 @@ export enum MutationType {
     /** Запрос на обновление списка портфелей */
     RELOAD_PORTFOLIOS = "RELOAD_PORTFOLIOS",
     /** Обновление портфеля в сторе */
-    UPDATE_PORTFOLIO = "UPDATE_PORTFOLIO"
+    UPDATE_PORTFOLIO = "UPDATE_PORTFOLIO",
+    /** Изменение состояния лоадера */
+    SET_LOADER_STATE = "SET_LOADER_STATE"
 }

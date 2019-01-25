@@ -6,6 +6,7 @@ import {BtnReturn} from "../components/dialogs/customDialog";
 import {FeedbackDialog} from "../components/dialogs/feedbackDialog";
 import {NotificationUpdateDialog} from "../components/dialogs/notificationUpdateDialog";
 import {ErrorHandler} from "../components/errorHandler";
+import {LoaderState} from "../components/loaderState";
 import {PortfolioSwitcher} from "../components/portfolioSwitcher";
 import {ClientInfo, ClientService} from "../services/clientService";
 import {Portfolio} from "../types/types";
@@ -152,9 +153,11 @@ const MainStore = namespace(StoreType.MAIN);
                         <span>Напишите нам по email</span>
                     </v-tooltip>
                 </v-footer>
+
+                <loader-state v-if="$store.state.MAIN.loadState"></loader-state>
             </template>
         </v-app>`,
-    components: {PortfolioSwitcher, ErrorHandler, FeedbackDialog}
+    components: {PortfolioSwitcher, ErrorHandler, FeedbackDialog, LoaderState}
 })
 export class AppFrame extends UI {
 
