@@ -6,7 +6,6 @@ import {BtnReturn} from "../components/dialogs/customDialog";
 import {FeedbackDialog} from "../components/dialogs/feedbackDialog";
 import {NotificationUpdateDialog} from "../components/dialogs/notificationUpdateDialog";
 import {ErrorHandler} from "../components/errorHandler";
-import {LoaderState} from "../components/loaderState";
 import {PortfolioSwitcher} from "../components/portfolioSwitcher";
 import {ClientInfo, ClientService} from "../services/clientService";
 import {Portfolio} from "../types/types";
@@ -155,7 +154,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-footer>
             </template>
         </v-app>`,
-    components: {PortfolioSwitcher, ErrorHandler, FeedbackDialog, LoaderState}
+    components: {PortfolioSwitcher, ErrorHandler, FeedbackDialog}
 })
 export class AppFrame extends UI {
 
