@@ -1,6 +1,8 @@
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {UI} from "../../app/ui";
+import {CatchErrors} from "../../platform/decorators/catchErrors";
+import {ShowProgress} from "../../platform/decorators/showProgress";
 import {MarketService} from "../../services/marketService";
 import {Currency} from "../../types/types";
 
@@ -27,19 +29,17 @@ export class CurrencyQuotes extends UI {
     @Inject
     private marketservice: MarketService;
 
-    private loading = false;
-
     private currencies: Currency[] = [];
 
     /**
      * Загрузка данных для компонента
      * @inheritDoc
      */
+    @CatchErrors
+    @ShowProgress
     async created(): Promise<void> {
-        this.loading = true;
         const array = await this.marketservice.loadCurrencies();
         const sortBy = ["EUR", "USD"];
         this.currencies = array.sort((a, b) => sortBy.indexOf(b.charCode) - sortBy.indexOf(a.charCode));
-        this.loading = false;
     }
 }

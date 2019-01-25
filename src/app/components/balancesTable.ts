@@ -17,7 +17,7 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-data-table :headers="headers" :items="rows" item-key="id" :loading="loading" hide-actions>
+        <v-data-table :headers="headers" :items="rows" item-key="id" hide-actions>
             <v-progress-linear slot="progress" color="blue" indeterminate></v-progress-linear>
             <template slot="items" slot-scope="props">
                 <tr>
@@ -60,9 +60,6 @@ export class BalancesTable extends UI {
         {text: "Тек. стоимость", align: "right", value: "currCost", sortable: false, width: "200"},
         {text: "Действия", align: "right", value: "actions", sortable: false, width: "200"}
     ];
-
-    @Prop({default: false})
-    private loading: boolean;
 
     @Prop({default: [], required: true})
     private stocks: StockPortfolioRow[];

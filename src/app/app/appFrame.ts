@@ -153,8 +153,6 @@ const MainStore = namespace(StoreType.MAIN);
                         <span>Напишите нам по email</span>
                     </v-tooltip>
                 </v-footer>
-
-                <loader-state v-if="$store.state.MAIN.loadState"></loader-state>
             </template>
         </v-app>`,
     components: {PortfolioSwitcher, ErrorHandler, FeedbackDialog, LoaderState}
