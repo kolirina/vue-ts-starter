@@ -12,7 +12,6 @@ import {StockPieChart} from "../components/charts/stockPieChart";
 import {ExpandedPanel} from "../components/expandedPanel";
 import {StockTable} from "../components/stockTable";
 import {Portfolio} from "../types/types";
-import {UiStateHelper} from "../utils/uiStateHelper";
 import {StoreType} from "../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);

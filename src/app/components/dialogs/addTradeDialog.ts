@@ -1,8 +1,10 @@
 import Decimal from "decimal.js";
+import * as moment from "moment";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {Watch} from "vue-property-decorator";
 import {VueRouter} from "vue-router/types/router";
+import {MarketHistoryService} from "../../services/marketHistoryService";
 import {MarketService} from "../../services/marketService";
 import {MoneyResiduals, PortfolioService} from "../../services/portfolioService";
 import {TradeFields, TradeService} from "../../services/tradeService";
@@ -204,6 +206,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private tradeService: TradeService;
     @Inject
     private portfolioService: PortfolioService;
+    @Inject
+    private marketHistoryService: MarketHistoryService;
 
     private portfolio: Portfolio = null;
 
@@ -326,6 +330,19 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             this.nkd = new BigMoney(bond.accruedint).amount.toString();
         }
         this.currency = this.share.currency;
+    }
+
+    @Watch("date")
+    @Watch("share")
+    private async onTickerOrDateChange(): Promise<void> {
+        if (this.date && this.share) {
+            if (this.assetType === AssetType.STOCK) {
+                this.price = new BigMoney((await this.marketHistoryService.getStockHistory(this.share.ticker, moment(this.date).format("DD.MM.YYYY"))).stock.price)
+                    .amount.toString();
+            } else if (this.assetType === AssetType.BOND) {
+                this.price = (await this.marketHistoryService.getBondHistory(this.share.ticker, moment(this.date).format("DD.MM.YYYY"))).bond.price;
+            }
+        }
     }
 
     private calculateFee(): void {
