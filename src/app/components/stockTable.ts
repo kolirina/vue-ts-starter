@@ -37,7 +37,7 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-data-table class="data-table" :headers="headers" :items="rows" item-key="id" :loading="loading" hide-actions>
+        <v-data-table class="data-table" :headers="headers" :items="rows" item-key="id" hide-actions>
             <v-progress-linear slot="progress" color="blue" indeterminate></v-progress-linear>
             <template slot="items" slot-scope="props">
                 <tr @click="props.expanded = !props.expanded">
@@ -158,9 +158,6 @@ export class StockTable extends UI {
 
     @Prop({default: [], required: true})
     private rows: StockPortfolioRow[];
-
-    @Prop({default: false})
-    private loading: boolean;
 
     private async openShareTradesDialog(ticker: string): Promise<void> {
         await new ShareTradesDialog().show({trades: await this.tradeService.getShareTrades(this.portfolio.id, ticker), ticker});

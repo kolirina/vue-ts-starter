@@ -9,6 +9,8 @@ import {DividendsByYearAndTickerTable} from "../components/dividendsByYearAndTic
 import {DividendsByYearTable} from "../components/dividendsByYearTable";
 import {DividendTradesTable} from "../components/dividendTradesTable";
 import {ExpandedPanel} from "../components/expandedPanel";
+import {CatchErrors} from "../platform/decorators/catchErrors";
+import {ShowProgress} from "../platform/decorators/showProgress";
 import {DividendAggregateInfo, DividendService} from "../services/dividendService";
 import {Portfolio} from "../types/types";
 import {StoreType} from "../vuex/storeType";
@@ -52,8 +54,6 @@ export class DividendsPage extends UI {
     @Inject
     private dividendService: DividendService;
 
-    private loading = false;
-
     private dividendInfo: DividendAggregateInfo = null;
 
     async created(): Promise<void> {
@@ -65,9 +65,9 @@ export class DividendsPage extends UI {
         await this.loadDividendAggregateInfo();
     }
 
+    @CatchErrors
+    @ShowProgress
     private async loadDividendAggregateInfo(): Promise<void> {
-        this.loading = true;
         this.dividendInfo = await this.dividendService.getDividendAggregateInfo(this.portfolio.id);
-        this.loading = false;
     }
 }
