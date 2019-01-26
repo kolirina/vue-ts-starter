@@ -265,7 +265,6 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         this.assetType = this.data.assetType || AssetType.STOCK;
         this.operation = this.data.operation || Operation.BUY;
         this.moneyResiduals = await this.portfolioService.getMoneyResiduals(this.portfolio.id);
-        console.log("ADD TRADE DIALOG2", this.data, this.moneyResiduals);
     }
 
     @Watch("assetType")
@@ -279,7 +278,6 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     @Watch("searchQuery")
     private async onSearch(): Promise<void> {
-        console.log("SEARCH", this.searchQuery);
         clearTimeout(this.currentTimer);
         if (!this.searchQuery || this.searchQuery.length <= 2) {
             this.shareSearch = false;
@@ -315,7 +313,6 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     @Watch("share")
     private shareSelect(): void {
-        console.log("SELECT SHARE", this.share);
         // при очистке поля автокомплита
         if (!this.share) {
             this.price = "";

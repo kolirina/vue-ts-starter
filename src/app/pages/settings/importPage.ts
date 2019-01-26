@@ -184,7 +184,6 @@ export class ImportPage extends UI {
      */
     private onFileAdd(fileList: File[]): void {
         this.files = fileList;
-        console.log(this.files[0].name);
     }
 
     /**
@@ -220,7 +219,6 @@ export class ImportPage extends UI {
      * @param response
      */
     private async handleUploadResponse(response: ImportResponse): Promise<void> {
-        console.log(response);
         if (response.status === Status.ERROR) {
             this.$snotify.error(response.message, "Ошибка");
             return;

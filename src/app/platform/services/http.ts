@@ -245,7 +245,6 @@ export class Http {
     private async handleError(response: Response): Promise<any> {
         if (response.status === 401) {
             // при неавторизованном обращении отправляем пользователя на форму входа
-            this.localStorage.delete(StoreKeys.STORE_KEY);
             this.localStorage.delete(StoreKeys.TOKEN_KEY);
             window.location.replace("/");
             throw new Error("Доступ запрещен");

@@ -55,7 +55,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-content>
             </template>
 
-            <template v-else>
+            <template v-if="!loading && (loggedIn || externalAuth)">
                 <v-navigation-drawer disable-resize-watcher fixed stateless class="sidebar" v-model="drawer" :mini-variant.sync="mini" app>
                     <v-list dense class="sidebar-list">
                         <v-list-tile class="sidebar-list-item">
@@ -233,7 +233,7 @@ export class AppFrame extends UI {
     ];
 
     async created(): Promise<void> {
-        if (!this.externalAuth) {
+        if (!this.externalAuth && this.localStorage.get(StoreKeys.TOKEN_KEY, null)) {
             await this.startup();
         }
         // если удалось восстановить state, значит все уже загружено
@@ -265,7 +265,7 @@ export class AppFrame extends UI {
             const clientInfo = await this.clientService.login({username: this.username, password: this.password});
             await this.loadUser(clientInfo);
         } catch (e) {
-            console.log("Ошибка при входе", e);
+            console.error("Ошибка при входе", e);
             this.$snotify.error("Ошибка при входе");
             return;
         }

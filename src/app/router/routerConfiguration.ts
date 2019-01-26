@@ -66,7 +66,6 @@ export class RouterConfiguration {
             {
                 path: "*",
                 beforeEnter: (): void => {
-                    console.log("BEFORE ENTER");
                 },
                 redirect: "/portfolio"
             },

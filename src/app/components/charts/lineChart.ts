@@ -49,7 +49,6 @@ export class LineChart extends UI {
     private chart: ChartObject = null;
 
     async mounted(): Promise<void> {
-        console.log(this.eventsChartData);
         await this.draw();
     }
 
