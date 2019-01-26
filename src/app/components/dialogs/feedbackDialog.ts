@@ -86,7 +86,6 @@ export class FeedbackDialog extends CustomDialog<ClientInfo, void> {
      * Валидирует данные и отправляет запрос с сообщением
      */
     private async sendFeedback(): Promise<void> {
-        console.log({reason: this.feedbackType, email: this.email, username: this.username, message: this.message});
         if (this.username.length === 0 || this.email.length === 0 || this.message.length === 0) {
             this.$snotify.warning("Пожалуйста заполните все поля для отправки");
             return;

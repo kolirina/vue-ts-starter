@@ -19,15 +19,12 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.4.1",
     "@types/highcharts": "^5.0.22",
-    "@types/js-cookie": "^2.1.0",
     "decimal.js": "^10.0.1",
     "font-awesome": "^4.7.0",
     "font-awesome-animation": "^0.2.1",
     "highcharts": "^6.1.0",
     "highcharts-3d": "^0.1.7",
     "imask": "^3.4.0",
-    "js-big-decimal": "^1.2.0",
-    "js-cookie": "^2.2.0",
     "moment": "^2.22.2",
     "typescript-ioc": "^1.2.4",
     "vee-validate": "^2.1.0-beta.4",
@@ -38,8 +35,7 @@
     "vue-snotify": "^3.2.1",
     "vuetify": "^1.4.0",
     "vuex": "^3.0.1",
-    "vuex-class": "^0.3.1",
-    "vuex-persistedstate": "^2.5.4"
+    "vuex-class": "^0.3.1"
   },
   "devDependencies": {
     "browser-sync": "^2.26.3",

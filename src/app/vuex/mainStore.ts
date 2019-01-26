@@ -45,6 +45,9 @@ const Mutations = {
         state.currentPortfolio = portfolio;
         state.clientInfo.user.currentPortfolioId = portfolio.id;
     },
+    [MutationType.SET_DEFAULT_PORTFOLIO](state: StateHolder, id: string): void {
+        state.clientInfo.user.currentPortfolioId = id;
+    },
     [MutationType.RELOAD_PORTFOLIO](state: StateHolder, portfolio: Portfolio): void {
         state.currentPortfolio = portfolio;
     },
@@ -63,22 +66,26 @@ const Actions = {
     [MutationType.SET_CLIENT_INFO](context: ActionContext<StateHolder, void>, clientInfo: ClientInfo): void {
         localStorage.set(StoreKeys.TOKEN_KEY, clientInfo.token);
         context.commit(MutationType.SET_CLIENT_INFO, clientInfo);
-        console.log("ACTION SET USER", clientInfo, context);
     },
     [MutationType.SET_CURRENT_PORTFOLIO](context: ActionContext<StateHolder, void>, id: string): Promise<Portfolio> {
-        overviewService.setDefaultPortfolio(id).then();
         return new Promise<Portfolio>((resolve): void => {
             overviewService.getById(id).then((portfolio: Portfolio) => {
-                console.log("ACTION SET PORTFOLIO", portfolio, context);
                 context.commit(MutationType.SET_CURRENT_PORTFOLIO, portfolio);
                 resolve(portfolio);
+            });
+        });
+    },
+    [MutationType.SET_DEFAULT_PORTFOLIO](context: ActionContext<StateHolder, void>, id: string): Promise<void> {
+        return new Promise<void>((resolve): void => {
+            overviewService.setDefaultPortfolio(id).then(() => {
+                context.commit(MutationType.SET_DEFAULT_PORTFOLIO, id);
+                resolve();
             });
         });
     },
     [MutationType.RELOAD_PORTFOLIO](context: ActionContext<StateHolder, void>, id: string): Promise<void> {
         return new Promise<void>((resolve): void => {
             overviewService.reloadPortfolio(id).then((portfolio: Portfolio): void => {
-                console.log("ACTION RELOAD_PORTFOLIO", portfolio, context);
                 context.commit(MutationType.RELOAD_PORTFOLIO, portfolio);
                 resolve();
             });
@@ -87,7 +94,6 @@ const Actions = {
     [MutationType.RELOAD_PORTFOLIOS](context: ActionContext<StateHolder, void>): Promise<void> {
         return new Promise<void>((resolve): void => {
             portfolioService.getPortfolios().then((portfolios: PortfolioParams[]): void => {
-                console.log("ACTION RELOAD_PORTFOLIOS", portfolios, context);
                 context.commit(MutationType.RELOAD_PORTFOLIOS, portfolios);
                 resolve();
             });

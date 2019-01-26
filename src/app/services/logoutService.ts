@@ -15,7 +15,6 @@ export class LogoutService {
 
     async logout(): Promise<void> {
         await this.http.post("/user/logout");
-        this.localStorage.delete(StoreKeys.STORE_KEY);
         this.localStorage.delete(StoreKeys.TOKEN_KEY);
         window.location.replace("/");
     }

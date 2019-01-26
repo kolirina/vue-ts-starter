@@ -401,11 +401,11 @@ export type CombinedInfoRequest = {
     viewCurrency: string
 };
 
-export type ErrorInfo = {
-    errorCode: string,
-    errorMessage: string,
-    fields: ErrorFieldInfo[]
-};
+export interface ErrorInfo {
+    errorCode: string;
+    message: string;
+    fields: ErrorFieldInfo[];
+}
 
 export type ErrorFieldInfo = {
     name: string,

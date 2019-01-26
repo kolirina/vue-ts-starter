@@ -269,7 +269,6 @@ export class TariffsPage extends UI {
         if (this.isProgress) {
             return;
         }
-        console.log(this.busyState);
         this.isProgress = true;
         this.busyState[tariff.name] = true;
         try {

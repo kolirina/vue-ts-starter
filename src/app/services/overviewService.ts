@@ -36,12 +36,10 @@ export class OverviewService {
     async getById(id: string): Promise<Portfolio> {
         let portfolio = this.cache[id];
         if (!portfolio) {
-            console.log("load portfolio: ", id);
             portfolio = await this.loadPortfolio(id);
             this.cache[id] = portfolio;
             return portfolio;
         }
-        console.log("return portfolio: ", id);
         return portfolio;
     }
 
@@ -149,6 +147,5 @@ export class OverviewService {
 
     private init(): void {
         this.cacheService.put(PORTFOLIOS_KEY, this.cache);
-        console.log("INIT PORTFOLIO SERVICE");
     }
 }

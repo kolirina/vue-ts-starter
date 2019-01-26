@@ -8,7 +8,7 @@ import {TradesTable} from "../components/tradesTable";
 import {CatchErrors} from "../platform/decorators/catchErrors";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {TradeService, TradesFilter} from "../services/tradeService";
-import {ListType} from "../types/listType";
+import {TradeListType} from "../types/tradeListType";
 import {Pagination, Portfolio, TablePagination, TradeRow} from "../types/types";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
@@ -68,7 +68,7 @@ export class TradesPage extends UI {
 
     private tradesFilter: TradesFilter = {
         operation: TradesFilterComponent.DEFAULT_OPERATIONS,
-        listType: ListType.FULL,
+        listType: TradeListType.FULL,
         showMoneyTrades: true,
         showLinkedMoneyTrades: true,
         search: ""
@@ -99,6 +99,7 @@ export class TradesPage extends UI {
     private async onDelete(tradeRow: TradeRow): Promise<void> {
         await this.tradeService.deleteTrade({portfolioId: this.portfolio.id, tradeId: tradeRow.id});
         await this.reloadPortfolio(this.portfolio.id);
+        await this.loadTrades();
         this.calculatePagination();
         this.$snotify.info(`Операция '${tradeRow.operationLabel}' по бумаге ${tradeRow.ticker} была успешно удалена`);
     }

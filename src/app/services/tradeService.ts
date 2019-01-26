@@ -2,8 +2,8 @@ import {Container, Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {Http} from "../platform/services/http";
 import {Storage} from "../platform/services/storage";
-import {ListType} from "../types/listType";
 import {Operation} from "../types/operation";
+import {TradeListType} from "../types/tradeListType";
 import {ErrorInfo, TradeRow} from "../types/types";
 
 /** Сервис работы с localStorage */
@@ -159,7 +159,7 @@ export enum TableName {
  * Фильтры сделок
  */
 export interface TradesFilter {
-    listType?: ListType;
+    listType?: TradeListType;
     operation?: Operation[];
     showMoneyTrades?: boolean;
     showLinkedMoneyTrades?: boolean;
