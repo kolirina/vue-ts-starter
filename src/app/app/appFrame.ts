@@ -7,7 +7,11 @@ import {FeedbackDialog} from "../components/dialogs/feedbackDialog";
 import {NotificationUpdateDialog} from "../components/dialogs/notificationUpdateDialog";
 import {ErrorHandler} from "../components/errorHandler";
 import {PortfolioSwitcher} from "../components/portfolioSwitcher";
+import {CatchErrors} from "../platform/decorators/catchErrors";
+import {ShowProgress} from "../platform/decorators/showProgress";
+import {Storage} from "../platform/services/storage";
 import {ClientInfo, ClientService} from "../services/clientService";
+import {StoreKeys} from "../types/storeKeys";
 import {Portfolio} from "../types/types";
 import {UiStateHelper} from "../utils/uiStateHelper";
 import {MutationType} from "../vuex/mutationType";
@@ -22,7 +26,7 @@ const MainStore = namespace(StoreType.MAIN);
         <v-app id="inspire" light>
             <vue-snotify></vue-snotify>
             <error-handler></error-handler>
-            <template v-if="!loggedIn && !externalAuth">
+            <template v-if="!loading && !loggedIn && !externalAuth">
                 <v-content>
                     <v-container fluid fill-height>
                         <v-layout align-center justify-center>
@@ -159,6 +163,8 @@ const MainStore = namespace(StoreType.MAIN);
 export class AppFrame extends UI {
 
     @Inject
+    private localStorage: Storage;
+    @Inject
     private clientService: ClientService;
     @MainStore.Getter
     private clientInfo: ClientInfo;
@@ -199,6 +205,7 @@ export class AppFrame extends UI {
     private drawer = true;
 
     private mini = true;
+    private loading = false;
 
     private mainSection: NavBarItem[] = [
         {title: "Портфель", action: "portfolio", icon: "fas fa-briefcase"},
@@ -226,10 +233,26 @@ export class AppFrame extends UI {
     ];
 
     async created(): Promise<void> {
+        if (!this.externalAuth) {
+            await this.startup();
+        }
         // если удалось восстановить state, значит все уже загружено
         if (this.$store.state[StoreType.MAIN].clientInfo) {
             this.isNotifyAccepted = UiStateHelper.lastUpdateNotification === NotificationUpdateDialog.DATE;
             this.loggedIn = true;
+        }
+    }
+
+    @ShowProgress
+    @CatchErrors
+    private async startup(): Promise<void> {
+        this.loading = true;
+        try {
+            const client = await this.clientService.getClientInfo();
+            await this.loadUser({token: this.localStorage.get(StoreKeys.TOKEN_KEY, null), user: client});
+            await this.setCurrentPortfolio(this.$store.state[StoreType.MAIN].clientInfo.user.currentPortfolioId);
+        } finally {
+            this.loading = false;
         }
     }
 

@@ -45,6 +45,9 @@ const Mutations = {
         state.currentPortfolio = portfolio;
         state.clientInfo.user.currentPortfolioId = portfolio.id;
     },
+    [MutationType.SET_DEFAULT_PORTFOLIO](state: StateHolder, id: string): void {
+        state.clientInfo.user.currentPortfolioId = id;
+    },
     [MutationType.RELOAD_PORTFOLIO](state: StateHolder, portfolio: Portfolio): void {
         state.currentPortfolio = portfolio;
     },
@@ -66,12 +69,19 @@ const Actions = {
         console.log("ACTION SET USER", clientInfo, context);
     },
     [MutationType.SET_CURRENT_PORTFOLIO](context: ActionContext<StateHolder, void>, id: string): Promise<Portfolio> {
-        overviewService.setDefaultPortfolio(id).then();
         return new Promise<Portfolio>((resolve): void => {
             overviewService.getById(id).then((portfolio: Portfolio) => {
                 console.log("ACTION SET PORTFOLIO", portfolio, context);
                 context.commit(MutationType.SET_CURRENT_PORTFOLIO, portfolio);
                 resolve(portfolio);
+            });
+        });
+    },
+    [MutationType.SET_DEFAULT_PORTFOLIO](context: ActionContext<StateHolder, void>, id: string): Promise<void> {
+        return new Promise<void>((resolve): void => {
+            overviewService.setDefaultPortfolio(id).then(() => {
+                context.commit(MutationType.SET_DEFAULT_PORTFOLIO, id);
+                resolve();
             });
         });
     },
