@@ -6,6 +6,8 @@ import {UI} from "../app/ui";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
 import {ConfirmDialog} from "../components/dialogs/confirmDialog";
 import {BtnReturn} from "../components/dialogs/customDialog";
+import {CatchErrors} from "../platform/decorators/catchErrors";
+import {ShowProgress} from "../platform/decorators/showProgress";
 import {EventsAggregateInfo, EventService, ShareEvent} from "../services/eventService";
 import {AssetType} from "../types/assetType";
 import {Operation} from "../types/operation";
@@ -74,7 +76,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </span>
                     </div>
 
-                    <v-data-table :headers="headers" :items="events" item-key="id" :loading="loading" hide-actions>
+                    <v-data-table :headers="headers" :items="events" item-key="id" hide-actions>
                         <template slot="items" slot-scope="props">
                             <tr>
                                 <td>{{ props.item.label }}</td>
@@ -117,8 +119,6 @@ export class EventsPage extends UI {
     private reloadPortfolio: (id: string) => Promise<void>;
     @Inject
     private eventService: EventService;
-    /** Признак загрузки данных */
-    private loading = false;
     /** События */
     private events: ShareEvent[] = [];
     private eventsAggregateInfo: EventsAggregateInfo = null;
@@ -147,12 +147,12 @@ export class EventsPage extends UI {
         await this.loadEvents();
     }
 
+    @CatchErrors
+    @ShowProgress
     private async loadEvents(): Promise<void> {
-        this.loading = true;
         const eventsResponse = await this.eventService.getEvents(this.portfolio.id);
         this.events = eventsResponse.events;
         this.eventsAggregateInfo = eventsResponse.eventsAggregateInfo;
-        this.loading = false;
     }
 
     private async openTradeDialog(event: ShareEvent): Promise<void> {

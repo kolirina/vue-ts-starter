@@ -6,6 +6,7 @@ import {UI} from "../app/ui";
 import {TradesFilterComponent} from "../components/tradesFilter";
 import {TradesTable} from "../components/tradesTable";
 import {CatchErrors} from "../platform/decorators/catchErrors";
+import {ShowProgress} from "../platform/decorators/showProgress";
 import {TradeService, TradesFilter} from "../services/tradeService";
 import {TradeListType} from "../types/tradeListType";
 import {Pagination, Portfolio, TablePagination, TradeRow} from "../types/types";
@@ -33,16 +34,16 @@ const MainStore = namespace(StoreType.MAIN);
     components: {TradesTable, TradesFilterComponent}
 })
 export class TradesPage extends UI {
+
     @MainStore.Getter
     private portfolio: Portfolio;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
     private reloadPortfolio: (id: string) => Promise<void>;
+
     @Inject
     private tradeService: TradeService;
 
     private page = 1;
-
-    private loading = false;
 
     private totalTrades = 0;
 
@@ -60,8 +61,7 @@ export class TradesPage extends UI {
 
     private tradePagination: TablePagination = {
         pagination: this.pagination,
-        totalItems: this.totalTrades,
-        loading: this.loading
+        totalItems: this.totalTrades
     };
 
     private trades: TradeRow[] = [];
@@ -109,8 +109,8 @@ export class TradesPage extends UI {
     }
 
     @CatchErrors
+    @ShowProgress
     private async loadTrades(): Promise<void> {
-        this.tradePagination.loading = true;
         this.trades = await this.tradeService.loadTrades(
             this.portfolio.id,
             this.pageSize * (this.page - 1),
@@ -119,7 +119,6 @@ export class TradesPage extends UI {
             this.tradePagination.pagination.descending,
             this.tradesFilter
         );
-        this.tradePagination.loading = false;
     }
 
     private async onFilterChange(): Promise<void> {

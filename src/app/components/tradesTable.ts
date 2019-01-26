@@ -13,8 +13,7 @@ import {AddTradeDialog} from "./dialogs/addTradeDialog";
     // language=Vue
     template: `
         <v-data-table class="data-table" :headers="headers" :items="trades" item-key="id" :pagination.sync="tradePagination.pagination"
-                      :total-items="tradePagination.totalItems"
-                      :loading="tradePagination.loading" hide-actions>
+                      :total-items="tradePagination.totalItems" hide-actions>
             <template slot="items" slot-scope="props">
                 <tr @click="props.expanded = !props.expanded">
                     <td>
