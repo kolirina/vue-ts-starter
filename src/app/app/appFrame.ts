@@ -233,7 +233,7 @@ export class AppFrame extends UI {
     ];
 
     async created(): Promise<void> {
-        if (!this.externalAuth && this.localStorage.get(StoreKeys.TOKEN_KEY, null)) {
+        if (this.localStorage.get(StoreKeys.TOKEN_KEY, null)) {
             await this.startup();
         }
         // если удалось восстановить state, значит все уже загружено
