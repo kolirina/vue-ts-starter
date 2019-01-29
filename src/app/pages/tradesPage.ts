@@ -74,8 +74,11 @@ export class TradesPage extends UI {
         search: ""
     };
 
+    /**
+     * Загрузка сделок будет произведена в вотчере на объект с паджинацией
+     * @inheritDoc
+     */
     async created(): Promise<void> {
-        await this.loadTrades();
         this.calculatePagination();
     }
 

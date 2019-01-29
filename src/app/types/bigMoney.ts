@@ -14,6 +14,14 @@ export class BigMoney {
         }
     }
 
+    static isEmptyOrZero(value: string): boolean {
+        if (value) {
+            const result = new BigMoney(value);
+            return result.amount.isZero();
+        }
+        return true;
+    }
+
     get amount(): Decimal {
         return this.amountValue;
     }
@@ -24,7 +32,7 @@ export class BigMoney {
 
     get currencySymbol(): string {
         return this.currencyValue === "RUB" ? "₽" :
-                this.currencyValue === "EUR" ? "€" :
+            this.currencyValue === "EUR" ? "€" :
                 this.currencyValue === "USD" ? "$" : "";
     }
 }
