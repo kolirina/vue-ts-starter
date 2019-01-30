@@ -49,9 +49,9 @@ import {CustomDialog} from "./customDialog";
 
                             <!-- Тикер бумаги -->
                             <v-flex v-if="shareAssetType" xs12 :class="portfolioProModeEnabled ? 'sm6' : 'sm9'">
-                                <v-autocomplete :items="filteredShares" v-model="share" label="Тикер / Название компании" :loading="shareSearch" :no-data-text="notFoundLabel"
-                                                clearable required name="share" :error-messages="errors.collect('share')" dense :hide-no-data="true"
-                                                :no-filter="true" :search-input.sync="searchQuery">
+                                <v-autocomplete :items="filteredShares" v-model="share" @change="onShareSelect" @click:clear="onShareClear" label="Тикер / Название компании"
+                                                :loading="shareSearch" :no-data-text="notFoundLabel" clearable required name="share" :error-messages="errors.collect('share')"
+                                                dense :hide-no-data="true" :no-filter="true" :search-input.sync="searchQuery">
                                     <template slot="selection" slot-scope="data">
                                         {{ shareLabelSelected(data.item) }}
                                     </template>
@@ -67,7 +67,7 @@ import {CustomDialog} from "./customDialog";
                                         lazy transition="scale-transition" offset-y full-width min-width="290px">
                                     <v-text-field name="date" slot="activator" v-model="date" label="Дата" v-validate="'required'"
                                                   :error-messages="errors.collect('date')" readonly></v-text-field>
-                                    <v-date-picker v-model="date" :no-title="true" locale="ru" :first-day-of-week="1" @input="$refs.dateMenu.save(date)"></v-date-picker>
+                                    <v-date-picker v-model="date" :no-title="true" locale="ru" :first-day-of-week="1" @input="onDateSelected"></v-date-picker>
                                 </v-menu>
                             </v-flex>
 
@@ -85,20 +85,21 @@ import {CustomDialog} from "./customDialog";
 
                             <!-- Цена -->
                             <v-flex v-if="shareAssetType" xs12 sm6>
-                                <ii-number-field :label="priceLabel" v-model="price" class="required" name="price" decimals="2" v-validate="'required'"
+                                <ii-number-field :label="priceLabel" v-model="price" class="required" name="price" v-validate="'required'"
                                                  :error-messages="errors.collect('price')" @keyup="calculateFee">
                                 </ii-number-field>
                             </v-flex>
 
                             <!-- Количество -->
                             <v-flex v-if="shareAssetType" xs12 sm6>
-                                <ii-number-field label="Количество" v-model="quantity">
+                                <ii-number-field label="Количество" v-model="quantity" @keyup="calculateFee" :hint="lotSizeHint" persistent-hint
+                                    name="quantity" :decimals="0" v-validate="'required'" :error-messages="errors.collect('quantity')">
                                 </ii-number-field>
                             </v-flex>
 
                             <!-- Номинал -->
                             <v-flex v-if="bondTrade" xs12 sm3>
-                                <ii-number-field label="Номинал" v-model="facevalue" @keyup="calculateFee" decimals="2" name="facevalue"
+                                <ii-number-field label="Номинал" v-model="facevalue" @keyup="calculateFee" :decimals="2" name="facevalue"
                                                  v-validate="'required'" :error-messages="errors.collect('facevalue')">
                                 </ii-number-field>
                             </v-flex>
@@ -107,7 +108,7 @@ import {CustomDialog} from "./customDialog";
                             <v-flex v-if="bondTrade" xs12 sm9>
                                 <v-layout wrap>
                                     <v-flex xs12 lg6>
-                                        <ii-number-field label="НКД" v-model="nkd" @keyup="calculateFee" decimals="2" name="nkd"
+                                        <ii-number-field label="НКД" v-model="nkd" @keyup="calculateFee" :decimals="2" name="nkd"
                                                          v-validate="'required'" :error-messages="errors.collect('nkd')">
                                         </ii-number-field>
                                     </v-flex>
@@ -122,7 +123,7 @@ import {CustomDialog} from "./customDialog";
 
                             <!-- Комиссия -->
                             <v-flex v-if="shareAssetType && !calculationAssetType" xs12>
-                                <ii-number-field label="Комиссия" v-model="fee" decimals="2"
+                                <ii-number-field label="Комиссия" v-model="fee" :decimals="2"
                                                  hint="Для автоматического рассчета комиссии задайте значение в Настройках или введите значение суммарной комиссии">
                                 </ii-number-field>
                             </v-flex>
@@ -131,7 +132,7 @@ import {CustomDialog} from "./customDialog";
                             <v-flex v-if="moneyTrade" xs12>
                                 <v-layout wrap>
                                     <v-flex xs12 lg8>
-                                        <ii-number-field label="Сумма" v-model="moneyAmount" decimals="2"></ii-number-field>
+                                        <ii-number-field label="Сумма" v-model="moneyAmount" :decimals="2"></ii-number-field>
                                     </v-flex>
                                     <v-flex xs12 lg4>
                                         <v-select :items="currencyList" v-model="moneyCurrency" label="Валюта сделки"></v-select>
@@ -161,7 +162,7 @@ import {CustomDialog} from "./customDialog";
 
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="info lighten-2" flat @click.native="cancel">Отмена</v-btn>
+                    <v-btn color="info lighten-2" flat @click.native="close">Отмена</v-btn>
                     <v-btn :loading="processState" :disabled="!isValid || processState" color="primary" dark @click.native="addTrade">
                         Добавить
                         <span slot="loader" class="custom-loader">
@@ -249,7 +250,12 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         this.assetType = this.data.assetType || AssetType.STOCK;
         this.operation = this.data.operation || Operation.BUY;
         this.moneyResiduals = await this.portfolioService.getMoneyResiduals(this.portfolio.id);
-        this.setTradeFields();
+        if (this.data.tradeFields) {
+            await this.setTradeFields();
+        } else {
+            this.fillFieldsFromShare();
+            this.filteredShares = [this.share];
+        }
     }
 
     @Watch("assetType")
@@ -297,26 +303,6 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         }
     }
 
-    @Watch("share")
-    private shareSelect(): void {
-        // при очистке поля автокомплита
-        if (!this.share) {
-            this.price = "";
-            return;
-        }
-        if (this.assetType === AssetType.STOCK) {
-            this.price = new BigMoney(this.share.price).amount.toString();
-        } else if (this.assetType === AssetType.BOND) {
-            const bond = (this.share as Bond);
-            this.price = bond.prevprice;
-            this.facevalue = new BigMoney(bond.facevalue).amount.toString();
-            this.nkd = new BigMoney(bond.accruedint).amount.toString();
-        }
-        this.currency = this.share.currency;
-    }
-
-    @Watch("date")
-    @Watch("share")
     private async onTickerOrDateChange(): Promise<void> {
         if (!this.date || !this.share || ![Operation.BUY, Operation.SELL].includes(this.operation)) {
             return;
@@ -349,8 +335,35 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         }
     }
 
-    private cancel(): void {
-        this.close();
+    private async onDateSelected(date: string): Promise<void> {
+        this.$refs.dateMenu.save(date);
+        await this.onTickerOrDateChange();
+    }
+
+    private async onShareSelect(share: Share): Promise<void> {
+        this.share = share;
+        this.fillFieldsFromShare();
+        await this.onTickerOrDateChange();
+    }
+
+    private fillFieldsFromShare(): void {
+        // при очистке поля автокомплита
+        if (!this.share) {
+            return;
+        }
+        this.currency = this.share.currency;
+        if (this.assetType === AssetType.STOCK) {
+            this.fillFieldsFromStock(this.share as Stock);
+        } else if (this.assetType === AssetType.BOND) {
+            this.fillFieldsFromBond(this.share as Bond);
+        }
+    }
+
+    private onShareClear(): void {
+        this.price = "";
+        this.nkd = "";
+        this.facevalue = "";
+        this.filteredShares = [];
     }
 
     private shareLabelSelected(share: Share): string {
@@ -472,7 +485,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private get lotSizeHint(): string {
-        return "указывается в штуках." + (this.share ? " 1 лот = " + this.share.lotsize + " шт." : "");
+        return "указывается в штуках." + (this.share && this.assetType === AssetType.STOCK  ? " 1 лот = " + this.share.lotsize + " шт." : "");
     }
 
     private get priceLabel(): string {
@@ -529,12 +542,12 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     private async setTradeFields(): Promise<void> {
         console.log(this.data.tradeFields);
-        // вызываем вначале, чтобы сработал вотчер, а потом перезатираем поля
         if (this.assetType === AssetType.STOCK) {
-            // this.share = (await this.marketService.getStockInfo(this.data.tradeFields.ticker)).stock;
+            this.share = (await this.marketService.getStockInfo(this.data.tradeFields.ticker)).stock;
         } else if (this.assetType === AssetType.BOND) {
-            // this.share = (await this.marketService.getBondInfo(this.data.tradeFields.ticker)).bond;
+            this.share = (await this.marketService.getBondInfo(this.data.tradeFields.ticker)).bond;
         }
+        this.filteredShares = [this.share];
 
         this.date = TradeUtils.getDateString(this.data.tradeFields.date);
         this.time = TradeUtils.getTimeString(this.data.tradeFields.date);
