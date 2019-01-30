@@ -16,7 +16,9 @@ import {BtnReturn, CustomDialog} from "./customDialog";
     // language=Vue
     template: `
         <v-dialog v-model="showed" max-width="650px">
-            <v-card>
+            <v-card class="dialog-wrap">
+                <v-icon class="closeDialog" @click.native="close">close</v-icon>
+
                 <v-card-title class="headline">Настройка доступа к портфелю</v-card-title>
                 <v-card-text>
                     <v-container fluid class="pa-0">

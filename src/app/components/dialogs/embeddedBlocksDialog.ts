@@ -8,7 +8,9 @@ import {BtnReturn, CustomDialog} from "./customDialog";
     // language=Vue
     template: `
         <v-dialog v-model="showed" max-width="650px">
-            <v-card>
+            <v-card class="dialog-wrap">
+                <v-icon class="closeDialog" @click.native="close">close</v-icon>
+
                 <v-card-title class="headline">Настроить встраиваемые блоки</v-card-title>
                 <v-card-text>
                     <div>

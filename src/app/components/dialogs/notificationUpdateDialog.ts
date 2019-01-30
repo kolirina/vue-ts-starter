@@ -5,15 +5,12 @@ import {BtnReturn, CustomDialog} from "./customDialog";
     // language=Vue
     template: `
         <v-dialog v-model="showed" max-width="650px">
-            <v-card>
+            <v-card class="dialog-wrap">
+                <v-icon class="closeDialog" @click.native="close">close</v-icon>
+
                 <v-toolbar dark color="primary">
                     <v-toolbar-title><b>Обновления сервиса</b></v-toolbar-title>
                     <v-spacer></v-spacer>
-                    <v-toolbar-items>
-                        <v-btn icon dark @click.native="close">
-                            <v-icon>close</v-icon>
-                        </v-btn>
-                    </v-toolbar-items>
                 </v-toolbar>
                 <v-card-text>
                     <v-container class="selectable">
