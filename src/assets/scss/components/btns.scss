@@ -1,0 +1,16 @@
+.btn-profile {
+  font-family: "Open Sans Bold";
+  text-transform: capitalize;
+  font-size: 13px;
+  padding: 10px 25px;
+  height: auto;
+  margin: 0;
+  background-color: #fff;
+  border: 1px solid #96a5be;
+  box-shadow: none !important;
+
+  &:hover {
+    color: #fff;
+    background-color: $main-color-2 !important;
+  }
+}

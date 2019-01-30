@@ -1,0 +1,37 @@
+.profile {
+  padding: 28px 35px;
+  box-sizing: border-box;
+  font-size: 13px;
+
+  &-title {
+    font-size: 24px;
+    font-family: "Open Sans Bold";
+    margin-bottom: 50px;
+
+    img {
+      height: 25px;
+      width: 25px;
+      margin-left: 10px;
+    }
+  }
+
+  &-edit {
+    color: $main-color-2;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
+
+  &-icons {
+    i:first-child {
+      color: $main-color-2 !important;
+    }
+  }
+
+  &-line {
+    margin-bottom: 40px;
+    &:last-child {
+      margin-bottom: 25px;
+    }
+  }
+}

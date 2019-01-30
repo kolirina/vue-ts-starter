@@ -9,25 +9,39 @@ import {UI} from "../app/ui";
     // language=Vue
     template: `
         <div class="inplace-input">
+
             <template v-if="!editMode">
                 <a v-if="emptyLinkText" style="color: darkgray" class="inplace-out underline" @click="onEdit" :title="emptyLinkText">{{ emptyLinkText }}</a>
-                <span v-else class="inplace-out" @dblclick="onEdit" title="Редактировать">{{ value }}</span>
-                <v-icon v-if="!emptyLinkText" style="font-size: 16px" @click="onEdit" title="Редактировать">fas fa-pen</v-icon>
+                <v-layout row wrap>
+                    <v-flex xs7>
+                        <span v-if="!emptyLinkText"class="inplace-out" @dblclick="onEdit" title="Редактировать">{{ value }}</span>
+                    </v-flex>
+                    <v-flex xs4 offset-xs1 class="profile-edit">
+                        <span  v-if="!emptyLinkText"  @click="onEdit">Изменить</span>
+                    </v-flex>
+                </v-layout>
             </template>
             <template v-else>
-                <v-text-field
+                <v-layout row wrap>
+                    <v-flex xs7>
+                        <v-text-field
                         v-model.trim="editableValue"
                         @keyup.enter="emitCompleteEvent"
                         @keyup.esc="dismissChanges"
-                        type="text"
-                        ref="inplaceInput"
-                        :maxlength="maxLength"
-                        :placeholder="placeholder">
-                    <div slot="append">
-                        <v-icon @click.stop="dismissChanges">fas fa-times</v-icon>
-                        <v-icon @click.stop="emitCompleteEvent">fas fa-save</v-icon>
-                    </div>
-                </v-text-field>
+                            type="text"
+                            ref="inplaceInput"
+                            class="inplace-input-field"
+                            :maxlength="maxLength"
+                            :placeholder="placeholder">
+                        </v-text-field>
+                    </v-flex>
+                    <v-flex xs4 offset-xs1>
+                        <div class="profile-icons">
+                            <v-icon @click.stop="emitCompleteEvent">check_circle</v-icon>
+                            <v-icon @click.stop="dismissChanges">cancel</v-icon>
+                        </div>
+                    </v-flex>
+                </v-layout>
             </template>
         </div>
     `
@@ -79,7 +93,9 @@ export class InplaceInput extends UI {
             // throw new Error("Размер вводимого значения не должен превышать " + this.maxLength);
         }
         this.oldValue = this.editableValue;
+        console.log(0);
         if (this.editableValue !== this.value) {
+            console.log(0.1);
             this.$emit("input", this.editableValue);
         }
         this.closeInput();

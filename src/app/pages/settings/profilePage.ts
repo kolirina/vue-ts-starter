@@ -12,23 +12,32 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-container fluid>
-            <v-card>
-                <v-card-text>
-                    <h4 class="display-1">Профиль</h4>
-                    <v-btn dark color="primary" @click.native="changePassword">
-                        Сменить пароль
-                        <v-icon>fas fa-key fa-sm</v-icon>
-                    </v-btn>
-                    <div style="height: 50px"></div>
-                    <span> Сменить email</span>
-                    <inplace-input :value="email" @input="onEmailChange"></inplace-input>
-                    <div style="height: 50px"></div>
-                    <span>Сменить имя пользователя</span>
-                    <inplace-input :value="username" @input="onUserNameChange"></inplace-input>
-                </v-card-text>
+        <v-card>
+            <v-card class="profile">
+                <h1 class="profile-title">
+                    Профиль
+                    <img src="img/profile/profile-user.png" />
+                </h1>
+
+                <v-layout row wrap class="profile-line">
+                    <v-flex xs2>Email:</v-flex>
+                    <v-flex xs5>
+                        <inplace-input :value="email" @input="onEmailChange"></inplace-input>
+                    </v-flex>
+                </v-layout>
+
+                <v-layout row wrap class="profile-line">
+                    <v-flex xs2>Имя пользователя:</v-flex>
+                    <v-flex xs5>
+                        <inplace-input :value="username" @input="onUserNameChange"></inplace-input>
+                    </v-flex>
+                </v-layout>
+
+                <v-btn @click.native="changePassword" class="btn-profile">
+                    Сменить пароль
+                </v-btn>
             </v-card>
-        </v-container>
+        </v-card>
     `
 })
 export class ProfilePage extends UI {
@@ -64,9 +73,11 @@ export class ProfilePage extends UI {
      * @param email
      */
     private async onEmailChange(email: string): Promise<void> {
+        console.log(1);
         this.email = CommonUtils.isBlank(email) ? this.clientInfo.user.email : email;
         // отправляем запрос только если действительно поменяли
         if (this.email !== this.clientInfo.user.email) {
+            console.log(2, this.email);
             await this.clientService.changeEmail({id: this.clientInfo.user.id, email: this.email});
             this.clientInfo.user.email = this.email;
             this.$snotify.success("Вам отправлено письмо с подтверждением на новый адрес эл. почты");
