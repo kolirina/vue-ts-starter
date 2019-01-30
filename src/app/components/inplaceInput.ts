@@ -15,6 +15,7 @@ import {UI} from "../app/ui";
                 <v-layout row wrap>
                     <v-flex xs7>
                         <span v-if="!emptyLinkText"class="inplace-out" @dblclick="onEdit" title="Редактировать">{{ value }}</span>
+                        <slot name="afterText"></slot>
                     </v-flex>
                     <v-flex xs4 offset-xs1 class="profile-edit">
                         <span  v-if="!emptyLinkText"  @click="onEdit">Изменить</span>
@@ -93,9 +94,7 @@ export class InplaceInput extends UI {
             // throw new Error("Размер вводимого значения не должен превышать " + this.maxLength);
         }
         this.oldValue = this.editableValue;
-        console.log(0);
         if (this.editableValue !== this.value) {
-            console.log(0.1);
             this.$emit("input", this.editableValue);
         }
         this.closeInput();

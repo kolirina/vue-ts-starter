@@ -34,4 +34,9 @@
       margin-bottom: 25px;
     }
   }
+
+  &-not-confirmed-email {
+    color: red !important;
+    font-size: 12px !important;
+  }
 }

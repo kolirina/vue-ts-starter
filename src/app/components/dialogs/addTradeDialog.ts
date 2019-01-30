@@ -23,13 +23,12 @@ import {CustomDialog} from "./customDialog";
     // language=Vue
     template: `
         <v-dialog v-model="showed" persistent max-width="700px">
-            <v-card>
+            <v-card class="dialog-wrap">
+                <v-icon class="closeDialog" @click.native="close">close</v-icon>
+
                 <v-card-title class="paddB0">
                     <span class="headline">Добавление сделки</span>
                     <v-spacer></v-spacer>
-                    <v-btn icon @click.native="close">
-                        <v-icon>close</v-icon>
-                    </v-btn>
                 </v-card-title>
                 <v-card-text class="paddT0 paddB0">
                     <v-container grid-list-md class="paddT0 paddB0">

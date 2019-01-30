@@ -22,7 +22,9 @@ const MainStore = namespace(StoreType.MAIN);
                 <v-layout row wrap class="profile-line">
                     <v-flex xs2>Email:</v-flex>
                     <v-flex xs5>
-                        <inplace-input :value="email" @input="onEmailChange"></inplace-input>
+                        <inplace-input :value="email" @input="onEmailChange">
+                            <v-icon v-if="!clientInfo.user.emailConfirmed" slot="afterText" class="profile-not-confirmed-email">fas fa-exclamation-triangle</v-icon>
+                        </inplace-input>
                     </v-flex>
                 </v-layout>
 
@@ -73,11 +75,9 @@ export class ProfilePage extends UI {
      * @param email
      */
     private async onEmailChange(email: string): Promise<void> {
-        console.log(1);
         this.email = CommonUtils.isBlank(email) ? this.clientInfo.user.email : email;
         // отправляем запрос только если действительно поменяли
         if (this.email !== this.clientInfo.user.email) {
-            console.log(2, this.email);
             await this.clientService.changeEmail({id: this.clientInfo.user.id, email: this.email});
             this.clientInfo.user.email = this.email;
             this.$snotify.success("Вам отправлено письмо с подтверждением на новый адрес эл. почты");
