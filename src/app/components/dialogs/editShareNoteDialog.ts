@@ -23,7 +23,9 @@ import {CustomDialog} from "./customDialog";
     // language=Vue
     template: `
         <v-dialog v-model="showed" persistent max-width="500px">
-            <v-card>
+            <v-card class="dialog-wrap">
+                <v-icon class="closeDialog" @click.native="close">close</v-icon>
+
                 <v-card-title class="headline">Заметка к бумаге {{ data.ticker }}</v-card-title>
                 <v-card-text>
                     <v-textarea v-model="data.note"></v-textarea>
