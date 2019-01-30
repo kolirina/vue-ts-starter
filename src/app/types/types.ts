@@ -430,8 +430,8 @@ export type Pagination = {
 };
 
 export type TablePagination = {
-    pagination: Pagination,
-    totalItems: number,
+    pagination?: Pagination,
+    totalItems?: number,
     loading?: boolean
 };
 

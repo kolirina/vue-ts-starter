@@ -17,6 +17,7 @@ import {ExpandedPanel} from "./expandedPanel";
                     <v-flex xs8>
                         <v-text-field
                             v-model="tradesFilter.search"
+                            clearable
                             placeholder="Поиск по названию бумаги,по тикеру бумаги, по заметке к сделке"
                         ></v-text-field>
                     </v-flex>
@@ -75,10 +76,12 @@ export class TradesFilterComponent extends UI {
         clearTimeout(this.currentTimer);
         // поле было очищено
         if (!this.tradesFilter.search) {
+            this.tradesFilter.search = "";
             this.onFilterParamChange();
             return;
         }
         if (this.tradesFilter.search.length <= 2) {
+            this.onFilterParamChange();
             return;
         }
         const delay = new Promise((resolve, reject): void => {

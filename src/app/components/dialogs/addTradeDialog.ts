@@ -540,7 +540,6 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private async setTradeFields(): Promise<void> {
-        console.log(this.data.tradeFields);
         if (this.assetType === AssetType.STOCK) {
             this.share = (await this.marketService.getStockInfo(this.data.tradeFields.ticker)).stock;
         } else if (this.assetType === AssetType.BOND) {
