@@ -86,17 +86,4 @@ export class TradeMap {
             }
         }
     };
-    /*
-
-    Map<OperationType, Class<? extends Trade>> moneyTrades = new HashMap<>();
-    moneyTrades.put(OperationType.DEPOSIT, MoneyDepositTrade.class);
-    moneyTrades.put(OperationType.WITHDRAW, MoneyWithdrawTrade.class);
-    moneyTrades.put(OperationType.INCOME, IncomeTrade.class);
-    moneyTrades.put(OperationType.LOSS, LossTrade.class);
-    TRADE_CLASSES.put(AssetType.MONEY, moneyTrades);
-}
-
-public static Map<AssetType, Map<OperationType, Class<? extends Trade>>> getTradeClasses() {
-    return TRADE_CLASSES;
-}*/
 }

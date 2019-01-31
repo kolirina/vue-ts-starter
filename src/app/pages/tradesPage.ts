@@ -7,8 +7,8 @@ import {TradesFilterComponent} from "../components/tradesFilter";
 import {TradesTable} from "../components/tradesTable";
 import {CatchErrors} from "../platform/decorators/catchErrors";
 import {ShowProgress} from "../platform/decorators/showProgress";
+import {FilterService} from "../services/filterService";
 import {TradeService, TradesFilter} from "../services/tradeService";
-import {TradeListType} from "../types/tradeListType";
 import {Pagination, Portfolio, TablePagination, TradeRow} from "../types/types";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
@@ -21,9 +21,9 @@ const MainStore = namespace(StoreType.MAIN);
         <v-container v-if="portfolio" fluid>
             <dashboard :data="portfolio.overview.dashboardData"></dashboard>
 
-            <trades-filter-component @filterChange="onFilterChange" :tradesFilter="tradesFilter"></trades-filter-component>
+            <trades-filter-component v-if="tradesFilter" @filterChange="onFilterChange" :tradesFilter="tradesFilter"></trades-filter-component>
 
-            <trades-table :trades="trades" :trade-pagination="tradePagination" @delete="onDelete"></trades-table>
+            <trades-table v-if="tradePagination" :trades="trades" :trade-pagination="tradePagination" @delete="onDelete"></trades-table>
             <v-container v-if="pages > 1">
                 <v-layout align-center justify-center row>
                     <v-pagination v-model="page" :length="pages"></v-pagination>
@@ -42,6 +42,8 @@ export class TradesPage extends UI {
 
     @Inject
     private tradeService: TradeService;
+    @Inject
+    private filterService: FilterService;
 
     private page = 1;
 
@@ -59,23 +61,22 @@ export class TradesPage extends UI {
         totalItems: this.totalTrades
     };
 
-    private tradePagination: TablePagination = {
-        pagination: this.pagination,
-        totalItems: this.totalTrades
-    };
+    private tradePagination: TablePagination = null;
 
     private trades: TradeRow[] = [];
 
-    private tradesFilter: TradesFilter = {
-        operation: TradesFilterComponent.DEFAULT_OPERATIONS,
-        listType: TradeListType.FULL,
-        showMoneyTrades: true,
-        showLinkedMoneyTrades: true,
-        search: ""
-    };
+    private tradesFilter: TradesFilter = null;
 
+    /**
+     * Загрузка сделок будет произведена в вотчере на объект с паджинацией
+     * @inheritDoc
+     */
     async created(): Promise<void> {
-        await this.loadTrades();
+        this.tradesFilter = this.filterService.getFilter(FilterService.TRADES_FILTER_KEY);
+        this.tradePagination = {
+            pagination: this.pagination,
+            totalItems: this.totalTrades
+        };
         this.calculatePagination();
     }
 
@@ -118,11 +119,12 @@ export class TradesPage extends UI {
             this.pageSize,
             this.tradePagination.pagination.sortBy,
             this.tradePagination.pagination.descending,
-            this.tradesFilter
+            this.filterService.getTradesFilterRequest(this.tradesFilter)
         );
     }
 
     private async onFilterChange(): Promise<void> {
         await this.loadTrades();
+        this.filterService.saveFilter(FilterService.TRADES_FILTER_KEY, this.tradesFilter);
     }
 }

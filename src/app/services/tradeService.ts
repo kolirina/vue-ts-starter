@@ -2,9 +2,10 @@ import {Container, Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {Http} from "../platform/services/http";
 import {Storage} from "../platform/services/storage";
+import {AssetType} from "../types/assetType";
 import {Operation} from "../types/operation";
 import {TradeListType} from "../types/tradeListType";
-import {ErrorInfo, TradeRow} from "../types/types";
+import {TradeRow} from "../types/types";
 
 /** Сервис работы с localStorage */
 const localStorage: Storage = Container.get(Storage);
@@ -39,16 +40,11 @@ export class TradeService {
      * @param {string} ticker тикер
      * @returns {Promise<TradeRow[]>}
      */
-    async loadTrades(id: string, offset: number = 0, limit: number = 50, sortColumn: string, descending: boolean = false, filters: TradesFilter): Promise<TradeRow[]> {
-        const tradeFiltersRequest: TradesFilterRequest = {
-            operation: filters.operation.map(operation => operation.enumName),
-            listType: filters.listType.enumName,
-            showLinkedMoneyTrades: filters.showLinkedMoneyTrades,
-            showMoneyTrades: filters.showMoneyTrades,
-            search: filters.search
-        };
-        return this.http.get<TradeRow[]>(`/trades/${id}`,
-            {offset, limit, sortColumn: sortColumn ? sortColumn.toUpperCase() : null, descending, ...tradeFiltersRequest});
+    async loadTrades(id: string, offset: number = 0, limit: number = 50, sortColumn: string, descending: boolean = false, filter: TradesFilterRequest): Promise<TradeRow[]> {
+        const result = await this.http.get<TradeRow[]>(`/trades/${id}`,
+            {offset, limit, sortColumn: sortColumn ? sortColumn.toUpperCase() : null, descending, ...filter});
+
+        return result.map(this.correctMoneyOperation);
     }
 
     /**
@@ -65,6 +61,21 @@ export class TradeService {
      */
     async deleteAllTrades(deleteTradeRequest: DeleteAllTradeRequest): Promise<void> {
         await this.http.post("/trades/deleteAll", deleteTradeRequest);
+    }
+
+    private correctMoneyOperation(trade: TradeRow): TradeRow {
+        if (AssetType.valueByName(trade.asset) === AssetType.MONEY) {
+            const operation = Operation.valueByName(trade.operation);
+            switch (operation) {
+                case Operation.BUY:
+                    trade.operation = Operation.DEPOSIT.enumName;
+                    break;
+                case Operation.SELL:
+                    trade.operation = Operation.WITHDRAW.enumName;
+                    break;
+            }
+        }
+        return trade;
     }
 }
 
