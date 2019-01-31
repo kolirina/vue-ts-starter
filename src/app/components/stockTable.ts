@@ -15,7 +15,7 @@
  */
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
-import {Prop} from "vue-property-decorator";
+import {Prop, Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
 import {PortfolioService} from "../services/portfolioService";
@@ -140,21 +140,25 @@ export class StockTable extends UI {
     private portfolio: Portfolio;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
     private reloadPortfolio: (id: string) => Promise<void>;
-
+    
     private operation = Operation;
 
-    private headers: TableHeader[] = [
-        {text: "", align: "left", sortable: false, value: ""},
-        {text: "Компания", align: "left", sortable: false, value: "company"},
-        {text: "Тикер", align: "left", value: "ticker"},
-        {text: "Ср. цена", align: "right", value: "avgBuy"},
-        {text: "Тек. цена", align: "right", value: "currPrice"},
-        {text: "Тек. стоимость", align: "right", value: "currCost", sortable: false},
-        {text: "Прибыль", align: "right", value: "profit", sortable: false},
-        {text: "Прибыль, %", align: "right", value: "percProfit"},
-        {text: "Тек. доля", align: "right", value: "percCurrShare"},
-        {text: "Действия", align: "center", value: "actions", sortable: false, width: "25"}
+    // Данные из headers(Prop) записываются сюда при подключении компонента. Изменения посылаются с событием changeHeaders.
+    private tableHeaders: TableHeader[] = [
+        {text: "", align: "left", sortable: false, value: "", active: true},
+        {text: "Компания", align: "left", sortable: false, value: "company", active: true},
+        {text: "Тикер", align: "left", value: "ticker", active: false},
+        {text: "Ср. цена", align: "right", value: "avgBuy", active: true},
+        {text: "Тек. цена", align: "right", value: "currPrice", active: true},
+        {text: "Тек. стоимость", align: "right", value: "currCost", sortable: false, active: true},
+        {text: "Прибыль", align: "right", value: "profit", sortable: false, active: true},
+        {text: "Прибыль, %", align: "right", value: "percProfit", active: true},
+        {text: "Тек. доля", align: "right", value: "percCurrShare", active: true},
+        {text: "Действия", align: "center", value: "actions", sortable: false, width: "25", active: true},
     ];
+    
+    @Prop()
+    private headers: TableHeader[];
 
     @Prop({default: [], required: true})
     private rows: StockPortfolioRow[];
@@ -162,9 +166,19 @@ export class StockTable extends UI {
     @Prop({default: false})
     private loading: boolean;
 
+    mounted() {
+        this.onHeaderChange();
+    }
+
+    @Watch('tableHeaders')
+    private onHeaderChange(): void {
+        this.$emit('changeHeaders', 'stockHeaders', this.tableHeaders);
+    }
+
     private async openShareTradesDialog(ticker: string): Promise<void> {
         await new ShareTradesDialog().show({trades: await this.tradeService.getShareTrades(this.portfolio.id, ticker), ticker});
     }
+
 
     /**
      * Обновляет заметки по бумага в портфеле
@@ -206,5 +220,5 @@ export class StockTable extends UI {
         }
         const amount = new BigMoney(value);
         return amount.amount.toNumber();
-    }
+    }    
 }

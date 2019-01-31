@@ -2,59 +2,57 @@ import {Component, Prop, UI, Watch} from "../app/ui";
 import {TradesFilter} from "../services/tradeService";
 import {ListType} from "../types/listType";
 import {Operation} from "../types/operation";
+import {ExpandedPanel} from "../components/expandedPanel";
 
 @Component({
     // language=Vue
     template: `
-        <v-expansion-panel focusable expand :value="$uistate.tradesFilter">
-            <v-expansion-panel-content class="trades-filter" :lazy="true" v-state="$uistate.TRADES_FILTER">
-                <div slot="header">
-                    <h2>Фильтры</h2>
-                </div>
-
-                <form>
-                    <v-layout row wrap>
-                        <v-flex xs8>
-                            <v-text-field
-                                v-model="tradesFilter.search"
-                                placeholder="Поиск по названию бумаги,по тикеру бумаги, по заметке к сделке"
-                            ></v-text-field>
+        <expanded-panel class="trades-filter" :value="$uistate.tradesFilter" :state="$uistate.TRADES_FILTER">
+            <template slot="header"><h2>Фильтры</h2></template>
+            <form>
+                <v-layout row wrap>
+                    <v-flex xs8>
+                        <v-text-field
+                            v-model="tradesFilter.search"
+                            placeholder="Поиск по названию бумаги,по тикеру бумаги, по заметке к сделке"
+                        ></v-text-field>
+                    </v-flex>
+    
+                    <v-flex xs3 offset-xs1>
+                        <v-select
+                            @change="onListTypeChange()"
+                            :items="listTypes"
+                            item-text="description"
+                            :return-object="true"
+                            v-model="tradesFilter.listType"
+                            label="Тип списка">
+                        </v-select>
+                    </v-flex>
+                </v-layout>
+    
+                <v-layout row wrap>
+                    <v-flex xs6>
+                        <v-checkbox @change="onFilterParamChange()" label="Сделки по денежным средствам" v-model="tradesFilter.showMoneyTrades"></v-checkbox>
+                    </v-flex>
+                    <v-flex xs6>
+                        <v-checkbox @change="onFilterParamChange()" label="Связанные сделки" v-model="tradesFilter.showLinkedMoneyTrades"></v-checkbox>
+                    </v-flex>
+                </v-layout>
+    
+                <h2>Тип операции сделок</h2>
+    
+                <v-layout row wrap>
+                    <template v-for="op in operations">
+                        <v-flex xs3>
+                            <v-checkbox @change="onOperationChange($event, op)" :label="op.description" v-model="tradesFilter.operation.includes(op)"></v-checkbox>
                         </v-flex>
+                    </template>
+                </v-layout>
+            </form>
+        </expanded-panel>
 
-                        <v-flex xs3 offset-xs1>
-                            <v-select
-                                @change="onListTypeChange()"
-                                :items="listTypes"
-                                item-text="description"
-                                :return-object="true"
-                                v-model="tradesFilter.listType"
-                                label="Тип списка">
-                            </v-select>
-                        </v-flex>
-                    </v-layout>
-
-                    <v-layout row wrap>
-                        <v-flex xs6>
-                            <v-checkbox @change="onFilterParamChange()" label="Сделки по денежным средствам" v-model="tradesFilter.showMoneyTrades"></v-checkbox>
-                        </v-flex>
-                        <v-flex xs6>
-                            <v-checkbox @change="onFilterParamChange()" label="Связанные сделки" v-model="tradesFilter.showLinkedMoneyTrades"></v-checkbox>
-                        </v-flex>
-                    </v-layout>
-
-                    <h2>Тип операции сделок</h2>
-
-                    <v-layout row wrap>
-                        <template v-for="op in operations">
-                            <v-flex xs3>
-                                <v-checkbox @change="onOperationChange($event, op)" :label="op.description" v-model="tradesFilter.operation.includes(op)"></v-checkbox>
-                            </v-flex>
-                        </template>
-                    </v-layout>
-                </form>
-            </v-expansion-panel-content>
-        </v-expansion-panel>
-    `
+    `,
+    components: {ExpandedPanel}
 })
 export class TradesFilterComponent extends UI {
 

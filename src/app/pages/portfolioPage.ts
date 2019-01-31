@@ -11,9 +11,11 @@ import {SectorsChart} from "../components/charts/sectorsChart";
 import {StockPieChart} from "../components/charts/stockPieChart";
 import {ExpandedPanel} from "../components/expandedPanel";
 import {StockTable} from "../components/stockTable";
-import {Portfolio} from "../types/types";
+import {Portfolio, TableHeader} from "../types/types";
 import {UiStateHelper} from "../utils/uiStateHelper";
 import {StoreType} from "../vuex/storeType";
+import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog"
+
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -26,9 +28,12 @@ const MainStore = namespace(StoreType.MAIN);
 
             <div style="height: 50px"></div>
 
-            <expanded-panel :value="$uistate.stocksTablePanel" :state="$uistate.STOCKS">
+            <expanded-panel :value="$uistate.stocksTablePanel" :withMenu="true" :state="$uistate.STOCKS">
                 <template slot="header">Акции</template>
-                <stock-table :rows="portfolio.overview.stockPortfolio.rows"></stock-table>
+                <template slot="list">
+                    <v-list-tile-title @click="openTableSettings('stockHeaders')">Настроить калонки</v-list-tile-title>
+                </template>
+                <stock-table @changeHeaders="onHeadersChange" :rows="portfolio.overview.stockPortfolio.rows" :headers="headers.stockHeaders"></stock-table>
             </expanded-panel>
 
             <div style="height: 50px"></div>
@@ -83,10 +88,29 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-card-text>
             </expanded-panel>
         </v-container>
-    `,
+    `,                                                          
     components: {AssetTable, StockTable, BondTable, AssetChart, BarChart, StockPieChart, BondPieChart, PortfolioLineChart, SectorsChart, ExpandedPanel}
 })
 export class PortfolioPage extends UI {
     @MainStore.Getter
     private portfolio: Portfolio;
+
+    private headers: headers = {
+        stockHeaders: []
+    }
+
+    // Открывает диалог с настройкой заголовков таблицы
+    private async openTableSettings(tableName: string): Promise<void> {
+        await new TableSettingsDialog().show(this.headers[tableName], this.onHeadersChange);
+    }
+
+    private onHeadersChange(headerName: string, newHeader: TableHeader[]) {
+        if(this.headers[headerName]) {
+            this.headers[headerName] = newHeader;
+        }
+    }
+}
+
+type headers = {
+    [key: string]: TableHeader[]
 }

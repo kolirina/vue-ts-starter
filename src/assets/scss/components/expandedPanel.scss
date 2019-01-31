@@ -4,6 +4,10 @@
   &-arrow {
     font-size: 35px;
     color: $non-active-table-th-color !important;
+    
+    &-margin {
+      margin-right: 35px;
+    }
   }
   
 
@@ -17,5 +21,36 @@
       margin: 5px 0;
       cursor: pointer;
     }
+  }
+
+  &-menu {
+    z-index: 99999;
+    position: absolute;
+    right: 10px;
+    top: 1px;
+    i {
+      color: $non-active-table-th-color !important;
+    }
+  }
+
+  #exp-panel-attach {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    
+    .v-menu__content {
+      right: 24px;
+      left: auto !important;
+      top: 0 !important;
+    }
+
+    .v-list__tile__title {
+      font-size: 14px;
+    }
+  }
+
+  .v-expansion-panel__header {
+    position: relative;
   }
 }

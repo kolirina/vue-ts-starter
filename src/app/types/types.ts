@@ -217,6 +217,7 @@ export type TableHeader = {
     value: string
     class?: string[] | string;
     width?: string;
+    active?: boolean;
 };
 
 export type DashboardData = {

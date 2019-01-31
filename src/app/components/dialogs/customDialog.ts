@@ -4,6 +4,8 @@ export class CustomDialog<ParamType, ReturnType> extends UI {
 
     private static instances: any[] = [];
 
+    callback: Function;
+
     /** Модель данных для диалога */
     protected data: ParamType = null;
 
@@ -12,9 +14,12 @@ export class CustomDialog<ParamType, ReturnType> extends UI {
 
     protected showed = false;
 
-    async show(data?: ParamType): Promise<ReturnType> {
+    async show(data?: ParamType, callback?: Function): Promise<ReturnType> {
         if (data) {
             this.data = data;
+        }
+        if(callback) {
+            this.callback = callback;
         }
         const workspace = document.body;
         const dialog = this.$mount(workspace.appendChild(document.createElement("div"))).$el;
