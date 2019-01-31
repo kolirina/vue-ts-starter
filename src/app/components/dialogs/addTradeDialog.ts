@@ -28,7 +28,7 @@ import {CustomDialog} from "./customDialog";
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
 
                 <v-card-title class="paddB0">
-                    <span class="headline">Добавление сделки</span>
+                    <span class="headline">{{ tradeId ? "Редактирование" : "Добавление" }} сделки</span>
                     <v-spacer></v-spacer>
                 </v-card-title>
 
@@ -92,7 +92,7 @@ import {CustomDialog} from "./customDialog";
                             <!-- Количество -->
                             <v-flex v-if="shareAssetType" xs12 sm6>
                                 <ii-number-field label="Количество" v-model="quantity" @keyup="calculateFee" :hint="lotSizeHint" persistent-hint
-                                    name="quantity" :decimals="0" v-validate="'required'" :error-messages="errors.collect('quantity')">
+                                                 name="quantity" :decimals="0" v-validate="'required'" :error-messages="errors.collect('quantity')">
                                 </ii-number-field>
                             </v-flex>
 
@@ -163,7 +163,7 @@ import {CustomDialog} from "./customDialog";
                     <v-spacer></v-spacer>
                     <v-btn color="info lighten-2" flat @click.native="close">Отмена</v-btn>
                     <v-btn :loading="processState" :disabled="!isValid || processState" color="primary" dark @click.native="addTrade">
-                        Добавить
+                        {{ tradeId ? "Сохранить" : "Добавить" }}
                         <span slot="loader" class="custom-loader">
                         <v-icon light>fas fa-spinner fa-spin</v-icon>
                       </span>
@@ -207,6 +207,10 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private share: Share = null;
 
     private filteredShares: Share[] = [];
+
+    private tradeId: string = null;
+
+    private editedMoneyTradeId: string = null;
 
     private date = DateUtils.currentDate();
 
@@ -253,7 +257,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             await this.setTradeFields();
         } else {
             this.fillFieldsFromShare();
-            this.filteredShares = [this.share];
+            this.filteredShares = this.share ? [this.share] : [];
         }
     }
 
@@ -404,23 +408,42 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         };
         this.processState = true;
         try {
-            await this.tradeService.saveTrade({
-                portfolioId: this.portfolio.id,
-                asset: this.assetType.enumName,
-                operation: this.operation.enumName,
-                createLinkedTrade: this.keepMoney,
-                fields: tradeFields
-            });
-            this.$snotify.info("Сделка успешно добавлена", "Выполнено");
-            this.close(true);
-            return;
+            if (this.tradeId) {
+                await this.editTrade(tradeFields);
+            } else {
+                await this.saveTrade(tradeFields);
+            }
 
+            this.$snotify.info(`Сделка успешно ${this.tradeId ? "отредактирована" : "добавлена"}`, "Выполнено");
+            this.close(true);
         } catch (e) {
             this.handleError(e);
-            return;
         } finally {
             this.processState = false;
         }
+    }
+
+    private async saveTrade(tradeFields: TradeFields): Promise<void> {
+        return this.tradeService.saveTrade({
+            portfolioId: this.portfolio.id,
+            asset: this.assetType.enumName,
+            operation: this.operation.enumName,
+            createLinkedTrade: this.keepMoney,
+            fields: tradeFields
+        });
+    }
+
+    private async editTrade(tradeFields: TradeFields): Promise<void> {
+        return this.tradeService.editTrade({
+            tradeId: this.tradeId,
+            tableName: TradeUtils.tradeTable(this.assetType, this.operation),
+            asset: this.assetType.enumName,
+            operation: this.operation.enumName,
+            portfolioId: this.portfolio.id,
+            createLinkedTrade: this.keepMoney,
+            editedMoneyTradeId: this.editedMoneyTradeId,
+            fields: tradeFields
+        });
     }
 
     private get shareTicker(): string {
@@ -484,7 +507,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private get lotSizeHint(): string {
-        return "указывается в штуках." + (this.share && this.assetType === AssetType.STOCK  ? " 1 лот = " + this.share.lotsize + " шт." : "");
+        return "указывается в штуках." + (this.share && this.assetType === AssetType.STOCK ? " 1 лот = " + this.share.lotsize + " шт." : "");
     }
 
     private get priceLabel(): string {
@@ -547,6 +570,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         }
         this.filteredShares = [this.share];
 
+        this.tradeId = this.data.tradeId;
+        this.editedMoneyTradeId = this.data.editedMoneyTradeId;
         this.date = TradeUtils.getDateString(this.data.tradeFields.date);
         this.time = TradeUtils.getTimeString(this.data.tradeFields.date);
         this.quantity = this.data.tradeFields.quantity;
@@ -621,6 +646,7 @@ export type TradeDialogData = {
     store: MainStore,
     router: VueRouter,
     tradeId?: string,
+    editedMoneyTradeId?: string,
     tradeFields?: TradeFields,
     share?: Share,
     operation?: Operation,

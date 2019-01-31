@@ -148,7 +148,7 @@ export interface EditTradeRequest {
     /** Операция */
     operation: string;
     /** Идентификатор портфеля */
-    portfolioId: number;
+    portfolioId: string;
     /** Добавлять ли связанную сделку по деньгам */
     createLinkedTrade: boolean;
     /** Идентификатор редактируемой сделки по деньгам (связанной) */

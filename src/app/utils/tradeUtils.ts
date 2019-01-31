@@ -1,4 +1,5 @@
 import {Filters} from "../platform/filters/Filters";
+import {TableName} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
 import {Operation} from "../types/operation";
@@ -26,9 +27,18 @@ export class TradeUtils {
         return trade.asset === AssetType.STOCK.enumName || (trade.operation === Operation.COUPON.enumName && trade.operation === Operation.AMORTIZATION.enumName);
     }
 
+    static tradeTable(assetType: AssetType, operation: Operation): string {
+        if (assetType === AssetType.BOND) {
+            return TableName.BOND_TRADE;
+        } else if (operation === Operation.DIVIDEND) {
+            return TableName.DIVIDEND_TRADE;
+        }
+        return TableName.STOCK_TRADE;
+    }
+
     static decimal(value: string): string {
         if (value) {
-            return new BigMoney(value).amount.toString();
+            return String(new BigMoney(value).amount);
         }
         return null;
     }
