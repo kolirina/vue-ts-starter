@@ -44,23 +44,34 @@ const MainStore = namespace(StoreType.MAIN);
                     <td>
                         <v-icon class="data-table-cell" v-bind:class="{'data-table-cell-open': props.expanded}">play_arrow</v-icon>
                     </td>
-                    <td>
+                    <td v-if="tableKeys.company">
                         <span>{{ props.item.stock.shortname }}</span>&nbsp;
                         <span :class="[(props.item.stock.change >= 0) ? 'ii--green-markup' : 'ii--red-markup', 'ii-number-cell']">{{ props.item.stock.change }}&nbsp;%</span>
                     </td>
-                    <td>
-                        <stock-link :ticker="props.item.stock.ticker"></stock-link>
-                    </td>
-                    <td class="text-xs-right ii-number-cell">{{ props.item.avgBuy | amount }}</td>
-                    <td class="text-xs-right ii-number-cell">{{ props.item.currPrice| amount(true) }}</td>
-                    <td class="text-xs-right ii-number-cell">{{ props.item.currCost| amount(true) }}</td>
-                    <td :class="[( amount(props.item.profit) >= 0 ) ? 'ii--green-markup' : 'ii--red-markup', 'ii-number-cell', 'text-xs-right']">
+                    <td v-if="tableKeys.ticker" class="text-xs-right ii-number-cell"><stock-link :ticker="props.item.stock.ticker"></stock-link></td>
+                    <td v-if="tableKeys.quantity" class="text-xs-right ii-number-cell">{{props.item.quantity}}</td>
+                    <td v-if="tableKeys.avgBuy" class="text-xs-right ii-number-cell">{{ props.item.avgBuy | amount }}</td>
+                    <td v-if="tableKeys.currPrice" class="text-xs-right ii-number-cell">{{ props.item.currPrice| amount(true) }}</td>
+                    <td v-if="tableKeys.firstBuy" class="text-xs-right ii-number-cell">{{ props.item.firstBuy }}</td>
+                    <td v-if="tableKeys.lastBuy" class="text-xs-right ii-number-cell">{{ props.item.lastBuy }}</td>
+                    <td v-if="tableKeys.currCost" class="text-xs-right ii-number-cell" >{{ props.item.currCost| amount(true) }}</td>
+                    <td v-if="tableKeys.profitFromDividends" class="text-xs-right ii-number-cell">{{ props.item.profitFromDividends }}</td>
+                    <td v-if="tableKeys.profitFromDividendsPercent" class="text-xs-right ii-number-cell">{{ props.item.profitFromDividendsPercent }}</td>
+                    <td v-if="tableKeys.rateProfit" class="text-xs-right ii-number-cell">{{ props.item.rateProfit }}</td>
+                    <td v-if="tableKeys.rateProfitPercent" class="text-xs-right ii-number-cell">{{ props.item.rateProfitPercent }}</td>
+                    <td v-if="tableKeys.exchangeProfit" class="text-xs-right ii-number-cell">{{ props.item.exchangeProfit }}</td>
+                    <td v-if="tableKeys.exchangeProfitPercent" class="text-xs-right ii-number-cell">{{ props.item.exchangeProfitPercent }}</td>
+                    <td v-if="tableKeys.profit" :class="[( amount(props.item.profit) >= 0 ) ? 'ii--green-markup' : 'ii--red-markup', 'ii-number-cell', 'text-xs-right']">
                         {{ props.item.profit| amount(true) }}
                     </td>
-                    <td :class="[( Number(props.item.percProfit) >= 0 ) ? 'ii--green-markup' : 'ii--red-markup', 'ii-number-cell', 'text-xs-right']">
+                    <td v-if="tableKeys.percProfit" :class="[( Number(props.item.percProfit) >= 0 ) ? 'ii--green-markup' : 'ii--red-markup', 'ii-number-cell', 'text-xs-right']">
                         {{ props.item.percProfit | number }}
                     </td>
-                    <td class="text-xs-right ii-number-cell">{{ props.item.percCurrShare | number }}</td>
+                    <td v-if="tableKeys.yearYield" class="text-xs-right ii-number-cell">{{ props.item.yearYield }}</td>
+                    <td v-if="tableKeys.dailyPl" class="text-xs-right ii-number-cell">{{ props.item.dailyPl }}</td>
+                    <td v-if="tableKeys.dailyPlPercent" class="text-xs-right ii-number-cell">{{ props.item.dailyPlPercent }}</td>
+                    <td v-if="tableKeys.summFee" class="text-xs-right ii-number-cell">{{ props.item.summFee }}</td>
+                    <td v-if="tableKeys.percCurrShare" class="text-xs-right ii-number-cell">{{ props.item.percCurrShare | number }}</td>
                     <td class="justify-center layout px-0" @click.stop>
                         <v-menu transition="slide-y-transition" bottom left>
                             <v-btn slot="activator" color="primary" flat icon dark>
@@ -142,21 +153,10 @@ export class StockTable extends UI {
     private reloadPortfolio: (id: string) => Promise<void>;
     
     private operation = Operation;
-
-    // Данные из headers(Prop) записываются сюда при подключении компонента. Изменения посылаются с событием changeHeaders.
-    private tableHeaders: TableHeader[] = [
-        {text: "", align: "left", sortable: false, value: "", active: true},
-        {text: "Компания", align: "left", sortable: false, value: "company", active: true},
-        {text: "Тикер", align: "left", value: "ticker", active: false},
-        {text: "Ср. цена", align: "right", value: "avgBuy", active: true},
-        {text: "Тек. цена", align: "right", value: "currPrice", active: true},
-        {text: "Тек. стоимость", align: "right", value: "currCost", sortable: false, active: true},
-        {text: "Прибыль", align: "right", value: "profit", sortable: false, active: true},
-        {text: "Прибыль, %", align: "right", value: "percProfit", active: true},
-        {text: "Тек. доля", align: "right", value: "percCurrShare", active: true},
-        {text: "Действия", align: "center", value: "actions", sortable: false, width: "25", active: true},
-    ];
     
+    @Prop()
+    private tableKeys: object;
+
     @Prop()
     private headers: TableHeader[];
 
@@ -167,18 +167,12 @@ export class StockTable extends UI {
     private loading: boolean;
 
     mounted() {
-        this.onHeaderChange();
-    }
-
-    @Watch('tableHeaders')
-    private onHeaderChange(): void {
-        this.$emit('changeHeaders', 'stockHeaders', this.tableHeaders);
+        console.log(this.rows, "rows");
     }
 
     private async openShareTradesDialog(ticker: string): Promise<void> {
         await new ShareTradesDialog().show({trades: await this.tradeService.getShareTrades(this.portfolio.id, ticker), ticker});
     }
-
 
     /**
      * Обновляет заметки по бумага в портфеле

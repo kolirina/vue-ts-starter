@@ -24,7 +24,6 @@ export class CustomDialog<ParamType, ReturnType> extends UI {
         const workspace = document.body;
         const dialog = this.$mount(workspace.appendChild(document.createElement("div"))).$el;
         this.showed = true;
-        console.log("DATA", data);
         return new Promise<ReturnType>((resolve, reject): void => {
             let dialogResult: ReturnType = this.responseByDefault;
             // // регистрируем обработчик события на закрытие диалога

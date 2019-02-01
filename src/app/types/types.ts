@@ -218,7 +218,12 @@ export type TableHeader = {
     class?: string[] | string;
     width?: string;
     active?: boolean;
+    ghost?: boolean;
 };
+
+export type TableHeaders = {
+    [key: string]: TableHeader[]
+}
 
 export type DashboardData = {
     currentCost: string,

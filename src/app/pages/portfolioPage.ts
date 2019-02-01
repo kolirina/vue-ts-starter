@@ -1,6 +1,6 @@
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
-import {UI} from "../app/ui";
+import {UI, Watch} from "../app/ui";
 import {AssetTable} from "../components/assetTable";
 import {BondTable} from "../components/bondTable";
 import {AssetChart} from "../components/charts/assetChart";
@@ -11,10 +11,12 @@ import {SectorsChart} from "../components/charts/sectorsChart";
 import {StockPieChart} from "../components/charts/stockPieChart";
 import {ExpandedPanel} from "../components/expandedPanel";
 import {StockTable} from "../components/stockTable";
-import {Portfolio, TableHeader} from "../types/types";
+import {Portfolio, TableHeader, TableHeaders} from "../types/types";
 import {UiStateHelper} from "../utils/uiStateHelper";
 import {StoreType} from "../vuex/storeType";
-import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog"
+import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog";
+import {TablesService} from "../services/tablesService";
+import {Inject} from "typescript-ioc";
 
 
 const MainStore = namespace(StoreType.MAIN);
@@ -31,9 +33,9 @@ const MainStore = namespace(StoreType.MAIN);
             <expanded-panel :value="$uistate.stocksTablePanel" :withMenu="true" :state="$uistate.STOCKS">
                 <template slot="header">Акции</template>
                 <template slot="list">
-                    <v-list-tile-title @click="openTableSettings('stockHeaders')">Настроить калонки</v-list-tile-title>
+                    <v-list-tile-title @click="openTableSettings('stockTable')">Настроить калонки</v-list-tile-title>
                 </template>
-                <stock-table @changeHeaders="onHeadersChange" :rows="portfolio.overview.stockPortfolio.rows" :headers="headers.stockHeaders"></stock-table>
+                <stock-table @changeHeaders="onHeadersChange" :rows="portfolio.overview.stockPortfolio.rows" :tableKeys="getTableKeys('stockTable')" :headers="getHeaders('stockTable')"></stock-table>
             </expanded-panel>
 
             <div style="height: 50px"></div>
@@ -95,12 +97,26 @@ export class PortfolioPage extends UI {
     @MainStore.Getter
     private portfolio: Portfolio;
 
-    private headers: headers = {
-        stockHeaders: []
+    @Inject
+    tablesService: TablesService;
+
+    private headers: TableHeaders = this.tablesService.headers;
+
+    getHeaders(name: string): TableHeader[] {
+        let filtredHeaders = this.tablesService.filterHeaders(this.headers);
+        if(filtredHeaders[name]) {
+            return filtredHeaders[name];
+        }
+        return [];
+    }
+
+    getTableKeys(name: string) {
+        return this.tablesService.getHeadersValue( this.getHeaders(name) );
     }
 
     // Открывает диалог с настройкой заголовков таблицы
     private async openTableSettings(tableName: string): Promise<void> {
+        console.log(123, this.headers, tableName);
         await new TableSettingsDialog().show(this.headers[tableName], this.onHeadersChange);
     }
 
@@ -111,6 +127,3 @@ export class PortfolioPage extends UI {
     }
 }
 
-type headers = {
-    [key: string]: TableHeader[]
-}
