@@ -4,6 +4,7 @@ import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {Watch} from "vue-property-decorator";
 import {VueRouter} from "vue-router/types/router";
+import {ShowProgress} from "../../platform/decorators/showProgress";
 import {MarketHistoryService} from "../../services/marketHistoryService";
 import {MarketService} from "../../services/marketService";
 import {MoneyResiduals, PortfolioService} from "../../services/portfolioService";
@@ -386,6 +387,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         return `${share.ticker} (${share.shortname})`;
     }
 
+    @ShowProgress
     private async addTrade(): Promise<void> {
         this.$validator.errors.clear();
         const result = await this.$validator.validateAll();
@@ -582,7 +584,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         this.fee = TradeUtils.decimal(this.data.tradeFields.fee);
         this.note = this.data.tradeFields.note;
         this.keepMoney = this.data.tradeFields.keepMoney;
-        this.moneyAmount = TradeUtils.decimal(this.data.tradeFields.moneyAmount);
+        this.moneyAmount = TradeUtils.decimal(this.data.tradeFields.moneyAmount, true);
         this.currency = this.data.tradeFields.currency;
     }
 

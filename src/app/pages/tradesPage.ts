@@ -9,6 +9,7 @@ import {CatchErrors} from "../platform/decorators/catchErrors";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {FilterService} from "../services/filterService";
 import {TradeService, TradesFilter} from "../services/tradeService";
+import {AssetType} from "../types/assetType";
 import {Pagination, Portfolio, TablePagination, TradeRow} from "../types/types";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
@@ -102,7 +103,8 @@ export class TradesPage extends UI {
         await this.reloadPortfolio(this.portfolio.id);
         await this.loadTrades();
         this.calculatePagination();
-        this.$snotify.info(`Операция '${tradeRow.operationLabel}' по бумаге ${tradeRow.ticker} была успешно удалена`);
+        this.$snotify.info(`Операция '${tradeRow.operationLabel}' ${AssetType.valueByName(tradeRow.asset) === AssetType.MONEY ? "" :
+            `по бумаге ${tradeRow.ticker}`} была успешно удалена`);
     }
 
     private calculatePagination(): void {

@@ -36,9 +36,10 @@ export class TradeUtils {
         return TableName.STOCK_TRADE;
     }
 
-    static decimal(value: string): string {
+    static decimal(value: string, abs: boolean = false): string {
         if (value) {
-            return String(new BigMoney(value).amount);
+            const amount = new BigMoney(value).amount;
+            return String(abs ? amount.abs() : amount);
         }
         return null;
     }

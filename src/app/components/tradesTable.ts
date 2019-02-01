@@ -7,6 +7,7 @@ import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
 import {Operation} from "../types/operation";
 import {Portfolio, TableHeader, TablePagination, TradeRow} from "../types/types";
+import {CommonUtils} from "../utils/commonUtils";
 import {TradeUtils} from "../utils/tradeUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
@@ -36,19 +37,27 @@ const MainStore = namespace(StoreType.MAIN);
                     <td class="text-xs-right ii-number-cell">{{ getPrice(props.item) }}</td>
                     <td class="text-xs-right ii-number-cell">{{ getFee(props.item) }}</td>
                     <td class="text-xs-right ii-number-cell">{{ props.item.signedTotal | amount(true) }}</td>
+                    <td v-if="props.item.parentTradeId" class="justify-center px-0" @click.stop>
+                        <v-tooltip :max-width="250" top>
+                            <a slot="activator">
+                                <v-icon color="primary" small>fas fa-link</v-icon>
+                            </a>
+                            <span>
+                                Это связанная сделка, отредактируйте основную сделку для изменения.
+                            </span>
+                        </v-tooltip>
+                    </td>
+                    <td v-else class="justify-center px-0" @click.stop="openEditTradeDialog(props.item)">
+                        <a>
+                            <v-icon color="primary" small>fas fa-pencil-alt</v-icon>
+                        </a>
+                    </td>
                     <td class="justify-center layout px-0" @click.stop>
                         <v-menu transition="slide-y-transition" bottom left>
                             <v-btn slot="activator" color="primary" flat icon dark>
                                 <v-icon color="primary" small>fas fa-bars</v-icon>
                             </v-btn>
                             <v-list dense>
-                                <v-list-tile @click.stop="openEditTradeDialog(props.item)">
-                                    <v-list-tile-title>
-                                        <v-icon color="primary" small>fas fa-pencil-alt</v-icon>
-                                        Редактировать
-                                    </v-list-tile-title>
-                                </v-list-tile>
-                                <v-divider></v-divider>
                                 <v-list-tile v-if="!isMoneyTrade(props.item)" @click.stop="openTradeDialog(props.item, operation.BUY)">
                                     <v-list-tile-title>
                                         <v-icon color="primary" small>fas fa-plus</v-icon>
@@ -130,7 +139,7 @@ const MainStore = namespace(StoreType.MAIN);
 
             <template slot="no-data">
                 <v-alert :value="true" color="info" icon="info">
-                    Добавьте свою первую сделку и она отобразится здесь
+                    {{ tradePagination.totalItems ? "Добавьте свою первую сделку и она отобразится здесь" : "Ничего не найдено" }}
                 </v-alert>
             </template>
         </v-data-table>
@@ -153,6 +162,7 @@ export class TradesTable extends UI {
         {text: "Цена", align: "right", value: "price", sortable: false},
         {text: "Комиссия", align: "right", value: "fee"},
         {text: "Итого", align: "right", value: "signedTotal"},
+        {text: "", align: "center", value: "links", sortable: false, width: "25"},
         {text: "Действия", align: "center", value: "actions", sortable: false, width: "25"}
     ];
 
@@ -192,7 +202,7 @@ export class TradesTable extends UI {
             perOne: null,
             fee: BigMoney.isEmptyOrZero(trade.fee) ? null : trade.fee,
             note: trade.note,
-            keepMoney: false,
+            keepMoney: CommonUtils.exists(trade.moneyTradeId),
             moneyAmount: trade.signedTotal,
             currency: trade.currency
         };
