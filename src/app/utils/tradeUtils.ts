@@ -1,5 +1,6 @@
 import {Filters} from "../platform/filters/Filters";
 import {AssetType} from "../types/assetType";
+import {BigMoney} from "../types/bigMoney";
 import {Operation} from "../types/operation";
 import {TradeRow} from "../types/types";
 
@@ -23,5 +24,27 @@ export class TradeUtils {
 
     static moneyPrice(trade: TradeRow): boolean {
         return trade.asset === AssetType.STOCK.enumName || (trade.operation === Operation.COUPON.enumName && trade.operation === Operation.AMORTIZATION.enumName);
+    }
+
+    static decimal(value: string): string {
+        if (value) {
+            return new BigMoney(value).amount.toString();
+        }
+        return null;
+    }
+
+    // 2018-09-12T21:00:00Z
+    static getDateString(date: string): string {
+        if (date) {
+            return date.substr(0, date.indexOf("T"));
+        }
+        return null;
+    }
+
+    static getTimeString(date: string): string {
+        if (date) {
+            return date.substr(date.indexOf("T") + 1, 5);
+        }
+        return null;
     }
 }

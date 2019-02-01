@@ -13,13 +13,11 @@ export class MarketService {
     private http: Http;
 
     async searchStocks(query: string): Promise<Share[]> {
-        console.log("searchStocks");
         const result: Share[] = await this.http.get("/market/stocks/search", {query});
         return result || [];
     }
 
     async searchBonds(query: string): Promise<Share[]> {
-        console.log("searchBonds");
         const result: Share[] = await this.http.get("/market/bonds/search", {query});
         return result || [];
     }

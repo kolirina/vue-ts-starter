@@ -13,7 +13,9 @@ import {CustomDialog} from "./customDialog";
     // language=Vue
     template: `
         <v-dialog v-model="showed" persistent max-width="700px">
-            <v-card v-if="portfolioParams">
+            <v-card v-if="portfolioParams" class="dialog-wrap">
+                <v-icon class="closeDialog" @click.native="close">close</v-icon>
+
                 <v-card-title>
                     <span class="headline">{{ (editMode ? 'Редактирование' : 'Добавление') + ' портфеля' }}</span>
                 </v-card-title>

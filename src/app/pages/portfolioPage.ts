@@ -94,6 +94,7 @@ const MainStore = namespace(StoreType.MAIN);
     components: {AssetTable, StockTable, BondTable, AssetChart, BarChart, StockPieChart, BondPieChart, PortfolioLineChart, SectorsChart, ExpandedPanel}
 })
 export class PortfolioPage extends UI {
+
     @MainStore.Getter
     private portfolio: Portfolio;
 

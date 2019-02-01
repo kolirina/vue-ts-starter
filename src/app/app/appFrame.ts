@@ -6,9 +6,12 @@ import {BtnReturn} from "../components/dialogs/customDialog";
 import {FeedbackDialog} from "../components/dialogs/feedbackDialog";
 import {NotificationUpdateDialog} from "../components/dialogs/notificationUpdateDialog";
 import {ErrorHandler} from "../components/errorHandler";
-import {LoaderState} from "../components/loaderState";
 import {PortfolioSwitcher} from "../components/portfolioSwitcher";
+import {CatchErrors} from "../platform/decorators/catchErrors";
+import {ShowProgress} from "../platform/decorators/showProgress";
+import {Storage} from "../platform/services/storage";
 import {ClientInfo, ClientService} from "../services/clientService";
+import {StoreKeys} from "../types/storeKeys";
 import {Portfolio} from "../types/types";
 import {UiStateHelper} from "../utils/uiStateHelper";
 import {MutationType} from "../vuex/mutationType";
@@ -23,7 +26,7 @@ const MainStore = namespace(StoreType.MAIN);
         <v-app id="inspire" light>
             <vue-snotify></vue-snotify>
             <error-handler></error-handler>
-            <template v-if="!loggedIn && !externalAuth">
+            <template v-if="!loading && !loggedIn && !externalAuth">
                 <v-content>
                     <v-container fluid fill-height>
                         <v-layout align-center justify-center>
@@ -52,7 +55,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-content>
             </template>
 
-            <template v-else>
+            <template v-if="!loading && (loggedIn || externalAuth)">
                 <v-navigation-drawer disable-resize-watcher fixed stateless class="sidebar" v-model="drawer" :mini-variant.sync="mini" app>
                     <v-list dense class="sidebar-list">
                         <v-list-tile class="sidebar-list-item">
@@ -153,14 +156,14 @@ const MainStore = namespace(StoreType.MAIN);
                         <span>Напишите нам по email</span>
                     </v-tooltip>
                 </v-footer>
-
-                <loader-state v-if="$store.state.MAIN.loadState"></loader-state>
             </template>
         </v-app>`,
-    components: {PortfolioSwitcher, ErrorHandler, FeedbackDialog, LoaderState}
+    components: {PortfolioSwitcher, ErrorHandler, FeedbackDialog}
 })
 export class AppFrame extends UI {
 
+    @Inject
+    private localStorage: Storage;
     @Inject
     private clientService: ClientService;
     @MainStore.Getter
@@ -202,6 +205,7 @@ export class AppFrame extends UI {
     private drawer = true;
 
     private mini = true;
+    private loading = false;
 
     private mainSection: NavBarItem[] = [
         {title: "Портфель", action: "portfolio", icon: "fas fa-briefcase"},
@@ -229,10 +233,26 @@ export class AppFrame extends UI {
     ];
 
     async created(): Promise<void> {
+        if (this.localStorage.get(StoreKeys.TOKEN_KEY, null)) {
+            await this.startup();
+        }
         // если удалось восстановить state, значит все уже загружено
         if (this.$store.state[StoreType.MAIN].clientInfo) {
             this.isNotifyAccepted = UiStateHelper.lastUpdateNotification === NotificationUpdateDialog.DATE;
             this.loggedIn = true;
+        }
+    }
+
+    @ShowProgress
+    @CatchErrors
+    private async startup(): Promise<void> {
+        this.loading = true;
+        try {
+            const client = await this.clientService.getClientInfo();
+            await this.loadUser({token: this.localStorage.get(StoreKeys.TOKEN_KEY, null), user: client});
+            await this.setCurrentPortfolio(this.$store.state[StoreType.MAIN].clientInfo.user.currentPortfolioId);
+        } finally {
+            this.loading = false;
         }
     }
 
@@ -245,7 +265,7 @@ export class AppFrame extends UI {
             const clientInfo = await this.clientService.login({username: this.username, password: this.password});
             await this.loadUser(clientInfo);
         } catch (e) {
-            console.log("Ошибка при входе", e);
+            console.error("Ошибка при входе", e);
             this.$snotify.error("Ошибка при входе");
             return;
         }

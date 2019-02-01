@@ -1,8 +1,10 @@
+import {Inject} from "typescript-ioc";
 import {Component, Prop, UI, Watch} from "../app/ui";
+import {Storage} from "../platform/services/storage";
 import {TradesFilter} from "../services/tradeService";
-import {ListType} from "../types/listType";
 import {Operation} from "../types/operation";
-import {ExpandedPanel} from "../components/expandedPanel";
+import {TradeListType} from "../types/tradeListType";
+import {ExpandedPanel} from "./expandedPanel";
 
 @Component({
     // language=Vue
@@ -29,7 +31,6 @@ import {ExpandedPanel} from "../components/expandedPanel";
                         </v-select>
                     </v-flex>
                 </v-layout>
-    
                 <v-layout row wrap>
                     <v-flex xs6>
                         <v-checkbox @change="onFilterParamChange()" label="Сделки по денежным средствам" v-model="tradesFilter.showMoneyTrades"></v-checkbox>
@@ -38,9 +39,9 @@ import {ExpandedPanel} from "../components/expandedPanel";
                         <v-checkbox @change="onFilterParamChange()" label="Связанные сделки" v-model="tradesFilter.showLinkedMoneyTrades"></v-checkbox>
                     </v-flex>
                 </v-layout>
-    
+
                 <h2>Тип операции сделок</h2>
-    
+
                 <v-layout row wrap>
                     <template v-for="op in operations">
                         <v-flex xs3>
@@ -50,7 +51,6 @@ import {ExpandedPanel} from "../components/expandedPanel";
                 </v-layout>
             </form>
         </expanded-panel>
-
     `,
     components: {ExpandedPanel}
 })
@@ -58,11 +58,14 @@ export class TradesFilterComponent extends UI {
 
     /** Операции загружаемые по умполчанию */
     static readonly DEFAULT_OPERATIONS = [Operation.BUY, Operation.SELL, Operation.COUPON, Operation.AMORTIZATION, Operation.DIVIDEND, Operation.INCOME, Operation.LOSS];
+
+    @Inject
+    private localStorage: Storage;
     @Prop()
-    tradesFilter: TradesFilter;
+    private tradesFilter: TradesFilter;
     /** Текущий объект таймера */
     private currentTimer: number = null;
-    private listTypes = ListType.values();
+    private listTypes = TradeListType.values();
     private operations: Operation[] = TradesFilterComponent.DEFAULT_OPERATIONS;
 
     @Watch("tradesFilter.search")
@@ -70,10 +73,12 @@ export class TradesFilterComponent extends UI {
         clearTimeout(this.currentTimer);
         // поле было очищено
         if (!this.tradesFilter.search) {
+            this.tradesFilter.search = "";
             this.onFilterParamChange();
             return;
         }
         if (this.tradesFilter.search.length <= 2) {
+            this.onFilterParamChange();
             return;
         }
         const delay = new Promise((resolve, reject): void => {

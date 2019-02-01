@@ -28,22 +28,31 @@ import {StockTable} from "./stockTable";
             <slot name="header"></slot>
           </div>
 
-          <v-card style="overflow: auto;">
-            <slot></slot>
-          </v-card>
+                    <v-card style="overflow: auto;">
+                        <slot></slot>
+                    </v-card>
 
-          <template name="underCard"></template>
-        </v-expansion-panel-content>
-      </v-expansion-panel>
-    </div>
-  `,
-  components: {StockTable}
+                    <template name="underCard"></template>
+                </v-expansion-panel-content>
+            </v-expansion-panel>
+        </div>
+    `,
+    components: {StockTable}
 })
 export class ExpandedPanel extends UI {
+<<<<<<< HEAD
   @Prop()
   private value: [];
   @Prop()
   private state: string;
   @Prop()
   private withMenu: boolean;
+=======
+    @Prop()
+    private value: [];
+    @Prop()
+    private state: string;
+    @Prop({default: "", type: String, required: false})
+    private contentPanelClass: string;
+>>>>>>> e1cc6dcfc9f5583579738579809313b8e24cc055
 }

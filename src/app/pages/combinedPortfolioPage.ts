@@ -14,6 +14,8 @@ import {StockPieChart} from "../components/charts/stockPieChart";
 import {CombinedPortfoliosTable} from "../components/combinedPortfoliosTable";
 import {ExpandedPanel} from "../components/expandedPanel";
 import {StockTable} from "../components/stockTable";
+import {CatchErrors} from "../platform/decorators/catchErrors";
+import {ShowProgress} from "../platform/decorators/showProgress";
 import {ClientInfo} from "../services/clientService";
 import {OverviewService} from "../services/overviewService";
 import {BigMoney} from "../types/bigMoney";
@@ -105,10 +107,10 @@ const MainStore = namespace(StoreType.MAIN);
                 <div style="height: 50px"></div>
 
                 <expanded-panel v-if="sectorsChartData" :value="$uistate.sectorsGraph" :state="$uistate.SECTORS_PANEL">
-                    <template slot="header">Отрасли</template>
+                    <template slot="header">Состав портфеля по секторам</template>
                     <v-card-text>
                         <v-card-text>
-                            <bar-chart :data="sectorsChartData.data" :category-names="sectorsChartData.category" series-name="Отрасли"></bar-chart>
+                            <pie-chart :data="sectorsChartData.data" balloon-title=""></pie-chart>
                         </v-card-text>
                     </v-card-text>
                 </expanded-panel>
@@ -138,6 +140,8 @@ export class CombinedPortfolioPage extends UI {
         await this.doCombinedPortfolio();
     }
 
+    @CatchErrors
+    @ShowProgress
     private async doCombinedPortfolio(): Promise<void> {
         const ids = this.clientInfo.user.portfolios.filter(value => value.combined).map(value => value.id);
         this.overview = await this.overviewService.getPortfolioOverviewCombined({ids: ids, viewCurrency: this.viewCurrency});

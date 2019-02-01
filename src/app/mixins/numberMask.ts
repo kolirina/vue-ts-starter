@@ -8,18 +8,19 @@ import {isMaskDelimiter, maskText as _maskText, unmaskText as _unmaskText} from 
 })
 export class NumberMask extends Vue {
 
-    @Prop({type: String, default: "6"})
-    decimals: string;
+    @Prop({type: Number, default: 6})
+    decimals: number;
 
     private maskText(text: string): string {
-        return (this as any).mask ? _maskText(text, (this as any).masked, (this as any).dontFillMaskBlanks) : (this as any).maskNumber(text);
+        return (this as any).mask ? _maskText(text, (this as any).masked, (this as any).dontFillMaskBlanks) : this.maskNumber(text);
     }
 
     private unmaskText(text: string): string {
         return (this as any).mask && !(this as any).returnMaskedValue ? _unmaskText(text) : (this as any).unmaskNumber(text);
     }
 
-    private maskNumber(text: string): string {
+    private maskNumber(text: string | number): string {
+        text = String(text);
         if (text == null) {
             return "";
         }
@@ -31,10 +32,10 @@ export class NumberMask extends Vue {
             const char = text[textIndex];
             if (!isDot && char.match(/[0-9]/)) {
                 floorPart += char;
-            } else if (isDot && (decimalPart.length < (this as any).decimals) && char.match(/[0-9]/)) {
+            } else if (isDot && (decimalPart.length < this.decimals) && char.match(/[0-9]/)) {
                 /* TODO Математическое округление precision */
                 decimalPart += char;
-            } else if (!isDot && (this as any).decimals !== "0" && char.match(/[.]/)) {
+            } else if (!isDot && this.decimals !== 0 && char.match(/[.]/)) {
                 isDot = true;
             }
             textIndex++;

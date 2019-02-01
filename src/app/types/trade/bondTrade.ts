@@ -10,7 +10,6 @@ export class BondTrade implements Trade {
     }
 
     totalWithoutFee(holder: TradeDataHolder): string {
-        console.log(holder);
         let nkd = new Decimal("0");
         if (holder.getNkd()) {
             if (holder.isPerOne()) {

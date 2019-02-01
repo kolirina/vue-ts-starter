@@ -35,6 +35,7 @@ input[type="search"] {
 // Паддинги =============================================================================================================
 
 .paddT0 {padding-top: 0 !important;}
+.paddB0 {padding-bottom: 0 !important;}
 
 // Ширина ==============================================================================================================
 
@@ -254,3 +255,4 @@ input[type="search"] {
 .block {display: block !important}
 .floatR {float: right !important}
 .overflowV {overflow: visible}
+.required label::after {content: " *"}

@@ -15,7 +15,16 @@ export class DateUtils {
      * @return {boolean} {@code true} если переданная дата - текущий день, иначе {@code false}
      */
     static isCurrentDate(date: Moment): boolean {
-        return moment().startOf("day").isSame(date.clone().startOf("day"));
+        return moment().isSame(date, "day");
+    }
+
+    /**
+     * Проверяет что переданная дата меньше текущей
+     * @param {moment.Moment} date проверяемая дата
+     * @return {boolean} {@code true} если переданная дата - текущий день, иначе {@code false}
+     */
+    static isBefore(date: Moment): boolean {
+        return moment().isAfter(date, "day");
     }
 
     /**
@@ -24,7 +33,7 @@ export class DateUtils {
      * @return {boolean} {@code true} если переданная дата находится в рамках текущего года, иначе {@code false}
      */
     static isCurrentYear(date: Moment): boolean {
-        return moment().startOf("year").isSame(date.clone().startOf("year"));
+        return moment().isSame(date, "year");
     }
 
     /**
@@ -64,6 +73,14 @@ export class DateUtils {
     static currentDate(): string {
         return DateUtils.formatDate(moment(), DateFormat.DATE2);
     }
+
+    /**
+     * Возвращает текущую дату
+     * @return {string} текущая дата в виде строки
+     */
+    static currentTime(): string {
+        return DateUtils.formatDate(moment(), DateFormat.TIME);
+    }
 }
 
 /**
@@ -72,6 +89,7 @@ export class DateUtils {
 export enum DateFormat {
     DATE = "DD.MM.YYYY",
     DATE2 = "YYYY-MM-DD",
+    TIME = "HH:mm",
     CURRENT_YEAR_FORMAT = "DD MMMM",
     ANOTHER_YEAR_FORMAT = "DD MMMM YYYY"
 }

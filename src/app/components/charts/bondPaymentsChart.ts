@@ -37,7 +37,6 @@ export class BondPaymentsChart extends UI {
     private chart: ChartObject = null;
 
     async mounted(): Promise<void> {
-        console.log("BOND", this.data);
         await this.draw();
     }
 

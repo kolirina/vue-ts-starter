@@ -4,6 +4,8 @@ import {Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
 import {AddTradeDialog} from "../../components/dialogs/addTradeDialog";
+import {CatchErrors} from "../../platform/decorators/catchErrors";
+import {ShowProgress} from "../../platform/decorators/showProgress";
 import {MarketService} from "../../services/marketService";
 import {AssetType} from "../../types/assetType";
 import {Operation} from "../../types/operation";
@@ -18,8 +20,7 @@ const MainStore = namespace(StoreType.MAIN);
         <v-container v-if="portfolio" fluid>
             <v-data-table :headers="headers" :items="bonds" item-key="id" :pagination.sync="pagination"
                           :rows-per-page-items="[25, 50, 100, 200]"
-                          :total-items="totalItems"
-                          :loading="loading">
+                          :total-items="totalItems">
                 <template slot="items" slot-scope="props">
                     <tr>
                         <td class="text-xs-left">
@@ -29,10 +30,10 @@ const MainStore = namespace(StoreType.MAIN);
                         <td class="text-xs-right">{{ props.item.prevprice }}%</td>
                         <td class="text-xs-right">{{ props.item.change }}%</td>
                         <td class="text-xs-right">{{ props.item.yield }}%</td>
-                        <td class="text-xs-right">{{ props.item.accruedint  | amount(true) }}</td>
-                        <td class="text-xs-right">{{ props.item.couponvalue  | amount(true) }}</td>
+                        <td class="text-xs-right">{{ props.item.accruedint | amount(true) }}</td>
+                        <td class="text-xs-right">{{ props.item.couponvalue | amount(true) }}</td>
                         <td class="text-xs-center">{{ props.item.nextcoupon }}</td>
-                        <td class="text-xs-right">{{ props.item.facevalue  | amount(true) }}</td>
+                        <td class="text-xs-right">{{ props.item.facevalue | amount(true) }}</td>
                         <td class="text-xs-right">{{ props.item.duration }}</td>
                         <td class="text-xs-center">
                             <a v-if="props.item.currency === 'RUB'" :href="'http://moex.com/ru/issue.aspx?code=' + props.item.ticker" target="_blank"
@@ -113,8 +114,6 @@ export class BondQuotes extends UI {
         {text: "Меню", value: "", align: "center", width: "30", sortable: false}
     ];
 
-    private loading = false;
-
     private totalItems = 0;
 
     private pagination: Pagination = {
@@ -136,13 +135,13 @@ export class BondQuotes extends UI {
         await this.loadStocks();
     }
 
+    @CatchErrors
+    @ShowProgress
     private async loadStocks(): Promise<void> {
-        this.loading = true;
         const response = await this.marketservice.loadBonds(this.pagination.rowsPerPage * (this.pagination.page - 1),
             this.pagination.rowsPerPage, this.pagination.sortBy, this.pagination.descending);
         this.bonds = response.content;
         this.totalItems = response.totalItems;
-        this.loading = false;
     }
 
     private async openTradeDialog(bond: Bond, operation: Operation): Promise<void> {

@@ -11,15 +11,12 @@ import {CustomDialog} from "./customDialog";
     // language=Vue
     template: `
         <v-dialog v-model="showed" max-width="550px">
-            <v-card>
+            <v-card class="dialog-wrap">
+                <v-icon class="closeDialog" @click.native="close">close</v-icon>
+
                 <v-toolbar dark color="primary">
                     <v-toolbar-title><b>Обратная связь</b></v-toolbar-title>
                     <v-spacer></v-spacer>
-                    <v-toolbar-items>
-                        <v-btn icon dark @click.native="close">
-                            <v-icon>close</v-icon>
-                        </v-btn>
-                    </v-toolbar-items>
                 </v-toolbar>
                 <v-card-text>
                     <v-container grid-list-md>
@@ -86,7 +83,6 @@ export class FeedbackDialog extends CustomDialog<ClientInfo, void> {
      * Валидирует данные и отправляет запрос с сообщением
      */
     private async sendFeedback(): Promise<void> {
-        console.log({reason: this.feedbackType, email: this.email, username: this.username, message: this.message});
         if (this.username.length === 0 || this.email.length === 0 || this.message.length === 0) {
             this.$snotify.warning("Пожалуйста заполните все поля для отправки");
             return;

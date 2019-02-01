@@ -1,8 +1,10 @@
 import Component from "vue-class-component";
 import {Prop, Watch} from "vue-property-decorator";
 import {UI} from "../app/ui";
+import {Filters} from "../platform/filters/Filters";
 import {TradeFields} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
+import {BigMoney} from "../types/bigMoney";
 import {Operation} from "../types/operation";
 import {TableHeader, TablePagination, TradeRow} from "../types/types";
 import {TradeUtils} from "../utils/tradeUtils";
@@ -13,8 +15,7 @@ import {AddTradeDialog} from "./dialogs/addTradeDialog";
     // language=Vue
     template: `
         <v-data-table class="data-table" :headers="headers" :items="trades" item-key="id" :pagination.sync="tradePagination.pagination"
-                      :total-items="tradePagination.totalItems"
-                      :loading="tradePagination.loading" hide-actions>
+                      :total-items="tradePagination.totalItems" hide-actions>
             <template slot="items" slot-scope="props">
                 <tr @click="props.expanded = !props.expanded">
                     <td>
@@ -44,37 +45,62 @@ import {AddTradeDialog} from "./dialogs/addTradeDialog";
                                         Редактировать
                                     </v-list-tile-title>
                                 </v-list-tile>
-                                <v-list-tile @click.stop="openTradeDialog(props.item, operation.BUY)">
+                                <v-divider></v-divider>
+                                <v-list-tile v-if="!isMoneyTrade(props.item)" @click.stop="openTradeDialog(props.item, operation.BUY)">
                                     <v-list-tile-title>
                                         <v-icon color="primary" small>fas fa-plus</v-icon>
                                         Купить
                                     </v-list-tile-title>
                                 </v-list-tile>
-                                <v-list-tile @click.stop="openTradeDialog(props.item, operation.SELL)">
+                                <v-list-tile v-if="!isMoneyTrade(props.item)" @click.stop="openTradeDialog(props.item, operation.SELL)">
                                     <v-list-tile-title>
                                         <v-icon color="primary" small>fas fa-minus</v-icon>
                                         Продать
                                     </v-list-tile-title>
                                 </v-list-tile>
-                                <v-list-tile @click.stop="openTradeDialog(props.item, operation.DIVIDEND)">
+                                <v-list-tile v-if="isMoneyTrade(props.item)" @click.stop="openTradeDialog(props.item, operation.DEPOSIT)">
+                                    <v-list-tile-title>
+                                        <v-icon color="primary" small>fas fa-plus</v-icon>
+                                        Внести
+                                    </v-list-tile-title>
+                                </v-list-tile>
+                                <v-list-tile v-if="isMoneyTrade(props.item)" @click.stop="openTradeDialog(props.item, operation.WITHDRAW)">
+                                    <v-list-tile-title>
+                                        <v-icon color="primary" small>fas fa-minus</v-icon>
+                                        Вывести
+                                    </v-list-tile-title>
+                                </v-list-tile>
+                                <v-list-tile v-if="isMoneyTrade(props.item)" @click.stop="openTradeDialog(props.item, operation.INCOME)">
+                                    <v-list-tile-title>
+                                        <v-icon color="primary" small>far fa-grin-beam</v-icon>
+                                        Доход
+                                    </v-list-tile-title>
+                                </v-list-tile>
+                                <v-list-tile v-if="isMoneyTrade(props.item)" @click.stop="openTradeDialog(props.item, operation.LOSS)">
+                                    <v-list-tile-title>
+                                        <v-icon color="primary" small>far fa-sad-tear</v-icon>
+                                        Расход
+                                    </v-list-tile-title>
+                                </v-list-tile>
+                                <v-list-tile v-if="isStockTrade(props.item)" @click.stop="openTradeDialog(props.item, operation.DIVIDEND)">
                                     <v-list-tile-title>
                                         <v-icon color="primary" small>fas fa-calendar-alt</v-icon>
                                         Дивиденд
                                     </v-list-tile-title>
                                 </v-list-tile>
-                                <v-list-tile @click.stop="openTradeDialog(props.item, operation.COUPON)">
+                                <v-list-tile v-if="isBondTrade(props.item)" @click.stop="openTradeDialog(props.item, operation.COUPON)">
                                     <v-list-tile-title>
                                         <v-icon color="primary" small>fas fa-calendar-alt</v-icon>
                                         Купон
                                     </v-list-tile-title>
                                 </v-list-tile>
-                                <v-list-tile @click.stop="openTradeDialog(props.item, operation.AMORTIZATION)">
+                                <v-list-tile v-if="isBondTrade(props.item)" @click.stop="openTradeDialog(props.item, operation.AMORTIZATION)">
                                     <v-list-tile-title>
                                         <v-icon color="primary" small>fas fa-hourglass-half</v-icon>
                                         Амортизация
                                     </v-list-tile-title>
                                 </v-list-tile>
-                                <v-list-tile @click.stop="openTradeDialog(props.item, operation.REPAYMENT)">
+                                <v-list-tile v-if="isBondTrade(props.item)" @click.stop="openTradeDialog(props.item, operation.REPAYMENT)">
                                     <v-list-tile-title>
                                         <v-icon color="primary" small>fas fa-recycle</v-icon>
                                         Погашение
@@ -95,7 +121,7 @@ import {AddTradeDialog} from "./dialogs/addTradeDialog";
 
             <template slot="expand" slot-scope="props">
                 <v-card flat>
-                    <v-card-text>{{ props.item.comment }}</v-card-text>
+                    <v-card-text>{{ props.item.note }}</v-card-text>
                 </v-card>
             </template>
 
@@ -136,35 +162,39 @@ export class TradesTable extends UI {
         this.trades = trades;
     }
 
-    private async openTradeDialog(tradeRow: TradeRow, operation: Operation): Promise<void> {
+    private async openTradeDialog(trade: TradeRow, operation: Operation): Promise<void> {
         await new AddTradeDialog().show({
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
             share: null,
             operation,
-            assetType: AssetType.STOCK
+            assetType: AssetType.valueByName(trade.asset)
         });
     }
 
-    private async openEditTradeDialog(tradeRow: TradeRow): Promise<void> {
-        const trade: TradeFields = {
-            ticker: tradeRow.ticker,
-            date: tradeRow.date,
-            quantity: parseInt(tradeRow.quantity, 10),
-            price: tradeRow.price,
-            facevalue: null,
-            nkd: null,
+    private async openEditTradeDialog(trade: TradeRow): Promise<void> {
+        console.log(trade);
+        const tradeFields: TradeFields = {
+            ticker: trade.ticker,
+            date: trade.date,
+            quantity: trade.quantity,
+            price: this.getPrice(trade),
+            facevalue: trade.facevalue,
+            nkd: trade.nkd,
             perOne: null,
-            fee: tradeRow.fee,
-            note: tradeRow.note,
+            fee: BigMoney.isEmptyOrZero(trade.fee) ?  null : trade.fee,
+            note: trade.note,
             keepMoney: false,
-            moneyAmount: tradeRow.moneyPrice,
-            currency: tradeRow.currency
+            moneyAmount: trade.signedTotal,
+            currency: trade.currency
         };
         await new AddTradeDialog().show({
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
-            tradeData: trade
+            assetType: AssetType.valueByName(trade.asset),
+            operation: Operation.valueByName(trade.operation),
+            tradeFields: tradeFields,
+            tradeId: trade.id
         });
     }
 
@@ -186,5 +216,17 @@ export class TradesTable extends UI {
 
     private moneyPrice(trade: TradeRow): boolean {
         return TradeUtils.moneyPrice(trade);
+    }
+
+    private isBondTrade(trade: TradeRow): boolean {
+        return AssetType.valueByName(trade.asset) === AssetType.BOND;
+    }
+
+    private isStockTrade(trade: TradeRow): boolean {
+        return AssetType.valueByName(trade.asset) === AssetType.STOCK;
+    }
+
+    private isMoneyTrade(trade: TradeRow): boolean {
+        return AssetType.valueByName(trade.asset) === AssetType.MONEY;
     }
 }

@@ -37,9 +37,11 @@ export type TradeRow = {
     /** Название компании */
     companyName?: string,
     /** Количество */
-    quantity: string,
-    /** Идентификатор сделки */
-    price: string,
+    quantity: number,
+    /** Номинал */
+    facevalue: string,
+    /** НКД */
+    nkd: string,
     /** Комиссия по сделке */
     fee: string,
     /** Заметка */
@@ -407,11 +409,11 @@ export type CombinedInfoRequest = {
     viewCurrency: string
 };
 
-export type ErrorInfo = {
-    errorCode: string,
-    errorMessage: string,
-    fields: ErrorFieldInfo[]
-};
+export interface ErrorInfo {
+    errorCode: string;
+    message: string;
+    fields: ErrorFieldInfo[];
+}
 
 export type ErrorFieldInfo = {
     name: string,
@@ -434,9 +436,9 @@ export type Pagination = {
 };
 
 export type TablePagination = {
-    pagination: Pagination,
-    totalItems: number,
-    loading: boolean
+    pagination?: Pagination,
+    totalItems?: number,
+    loading?: boolean
 };
 
 /** Сущность постраничного ответа */

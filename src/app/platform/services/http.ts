@@ -17,6 +17,7 @@
 /** Структура данных параметров для URL */
 import {Inject, Singleton} from "typescript-ioc";
 import {StoreKeys} from "../../types/storeKeys";
+import {ErrorInfo} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {Service} from "../decorators/service";
 import {Storage} from "./storage";
@@ -205,15 +206,14 @@ export class Http {
      * @return {Promise<T | undefined>} преобразованный ответа сервиса в зависимости от его контента или {@code undefined}
      */
     private async parseResult<T>(response: Response): Promise<T | undefined> {
+        const contentType = response.headers.get("Content-Type");
         // Код 204 - запрос успешно выполнился, контента нет
-        if (response.status === 204) {
+        if (response.status === 204 || contentType === null) {
             return undefined;
         }
-        const contentType = response.headers.get("Content-Type");
         if (contentType.indexOf("application/json") !== -1) {
             return response.json();
         }
-
         if (contentType.indexOf("text/plain") !== -1) {
             return response.text() as Promise<any>;
         }
@@ -245,7 +245,6 @@ export class Http {
     private async handleError(response: Response): Promise<any> {
         if (response.status === 401) {
             // при неавторизованном обращении отправляем пользователя на форму входа
-            this.localStorage.delete(StoreKeys.STORE_KEY);
             this.localStorage.delete(StoreKeys.TOKEN_KEY);
             window.location.replace("/");
             throw new Error("Доступ запрещен");
@@ -253,6 +252,11 @@ export class Http {
         let error: any = new Error("Внутренняя ошибка сервера");
         try {
             const responseError = await response.json();
+            // кастомный тип с описанием ошибок и полями
+            const errorInfo = this.makeErrorInfo(responseError);
+            if (errorInfo) {
+                return errorInfo;
+            }
             if (responseError.message) {
                 error = new Error(responseError.message);
             }
@@ -280,6 +284,13 @@ export class Http {
             out.push(encodeURIComponent(key) + "=" + encodeURIComponent(urlPrams[index]));
         });
         return out.join("&");
+    }
+
+    private makeErrorInfo(responseError: any): ErrorInfo {
+        if (responseError.hasOwnProperty("errorCode") && responseError.hasOwnProperty("message") && responseError.hasOwnProperty("fields")) {
+            return responseError as ErrorInfo;
+        }
+        return null;
     }
 }
 

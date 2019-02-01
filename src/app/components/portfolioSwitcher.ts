@@ -62,6 +62,9 @@ export class PortfolioSwitcher extends UI {
     @MainStore.Action(MutationType.SET_CURRENT_PORTFOLIO)
     private setCurrentPortfolio: (id: string) => Promise<Portfolio>;
 
+    @MainStore.Action(MutationType.SET_DEFAULT_PORTFOLIO)
+    private setDefaultPortfolio: (id: string) => Promise<void>;
+
     private selected: PortfolioParams = null;
 
     async created(): Promise<void> {
@@ -69,6 +72,7 @@ export class PortfolioSwitcher extends UI {
     }
 
     private async onSelect(selected: PortfolioParams): Promise<void> {
+        await this.setDefaultPortfolio(selected.id);
         await this.setCurrentPortfolio(selected.id);
         this.selected = selected;
     }
