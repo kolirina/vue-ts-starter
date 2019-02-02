@@ -31,7 +31,9 @@ export type TradeRow = {
     /** Валюта */
     currency: string,
     /** Итоговая сумма сделки */
-    signedTotal: string
+    signedTotal: string,
+    /** Итоговая сумма сделки без учета комиссии */
+    totalWithoutFee: string,
     /** Тикер */
     ticker?: string,
     /** Название компании */
