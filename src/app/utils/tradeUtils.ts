@@ -1,4 +1,5 @@
 import {Filters} from "../platform/filters/Filters";
+import {ShareEvent} from "../services/eventService";
 import {TableName} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
@@ -44,10 +45,27 @@ export class TradeUtils {
         return null;
     }
 
+    static eventNote(event: ShareEvent): string {
+        const type = Operation.valueByName(event.type);
+        switch (type) {
+            case Operation.DIVIDEND:
+                return `Зачисление дивидендов по акции ${event.share.shortname} (${event.share.ticker})` +
+                    `${event.period ? `за период ${event.period}` : ""}, дата отсечки: ${event.date}`;
+            case Operation.COUPON:
+                return `Зачисление купона по облигации ${event.share.shortname} (${event.share.ticker}), дата выплаты купона: ${event.date}`;
+            case Operation.AMORTIZATION:
+                return `Амортизация номинала по облигации ${event.share.shortname} (${event.share.ticker}), дата выплаты амортизации: ${event.date}`;
+            case Operation.REPAYMENT:
+                return `Погашение облигации ${event.share.shortname} (${event.share.ticker}), дата: ${event.date}`;
+        }
+        throw new Error(`Неизвестный тип события ${type}`);
+    }
+
     // 2018-09-12T21:00:00Z
     static getDateString(date: string): string {
         if (date) {
-            return date.substr(0, date.indexOf("T"));
+            const timeDateIndex = date.indexOf("T");
+            return timeDateIndex === -1 ? date : date.substr(0, timeDateIndex);
         }
         return null;
     }
