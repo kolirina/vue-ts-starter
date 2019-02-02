@@ -1,7 +1,9 @@
 import Component from "vue-class-component";
-import { TableHeader } from "../../types/types";
-import { CustomDialog } from "./customDialog";
-import { Prop } from "vue-property-decorator";
+import {TableHeader, TableHeaderData} from "../../types/types";
+import {CustomDialog} from "./customDialog";
+import {Prop} from "vue-property-decorator";
+import {TablesService} from "../../services/tablesService";
+import {Inject} from "typescript-ioc";
 
 /**
  * Диалог подтверждения
@@ -9,20 +11,49 @@ import { Prop } from "vue-property-decorator";
 @Component({
   // language=Vue
   template: `
-    <v-dialog v-model="showed" persistent max-width="300px">
-      <v-card>
+    <v-dialog v-model="showed" persistent max-width="400px">
+      <v-card class="table-settings">
+        <v-icon class="closeDialog" @click.native="close">close</v-icon>
         <v-card-title class="headline">Настройка колонок</v-card-title>
-        <v-card-text>
-          <template v-for="header in data">
-            <v-checkbox v-if="!header.ghost" :label="header.text" v-model="header.active" @change="onCheckboxChange()"></v-checkbox>
-          </template>
+        <v-card-text class="table-settings-checkbox-wrap">
+          <v-layout row>
+            <v-flex xs6>
+              <template v-for="header in column1">
+                <v-checkbox class="table-settings-checkbox" v-if="!header.ghost" :label="header.text" v-model="header.active"></v-checkbox>
+              </template>
+            </v-flex>
+            <v-flex xs6>
+              <template v-for="header in column2">
+                <v-checkbox class="table-settings-checkbox" v-if="!header.ghost" :label="header.text" v-model="header.active"></v-checkbox>
+              </template>
+            </v-flex>
+          </v-layout>
         </v-card-text>
+        <v-card-actions class="dialog-actions">
+          <v-btn @click.native="filterHeaders" class="btn-dialog">ОК</v-btn>
+          <v-btn class="btn-cancel" @click.native="close">Отмена</v-btn>
+        </v-card-actions>
       </v-card>
     </v-dialog>
   `
 })
-export class TableSettingsDialog extends CustomDialog<TableHeader[], void> {
-  onCheckboxChange() {
-    console.log(this.headers);
+export class TableSettingsDialog extends CustomDialog<TableHeaderData, void> {
+
+  private headers: TableHeader[] = [];
+  private column1: TableHeader[] = [];
+  private column2: TableHeader[] = [];
+
+  @Inject
+  tablesService: TablesService;
+
+  mounted() {
+    this.headers = JSON.parse(JSON.stringify(this.data.headers));
+    this.column1 = this.headers.slice(0, Math.ceil(this.headers.length / 2));
+    this.column2 = this.headers.slice(Math.ceil(this.headers.length / 2));
+  }
+
+  private filterHeaders() {
+    this.tablesService.setHeaders(this.data.tableName, this.headers);
+    this.close();
   }
 }

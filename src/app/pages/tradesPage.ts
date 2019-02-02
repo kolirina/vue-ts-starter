@@ -9,9 +9,12 @@ import {CatchErrors} from "../platform/decorators/catchErrors";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {FilterService} from "../services/filterService";
 import {TradeService, TradesFilter} from "../services/tradeService";
-import {Pagination, Portfolio, TablePagination, TradeRow} from "../types/types";
+import {Pagination, Portfolio, TablePagination, TradeRow, TableHeader, TableHeaders} from "../types/types";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
+import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog";
+import {TablesService} from "../services/tablesService";
+import {ExpandedPanel} from "../components/expandedPanel";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -23,7 +26,14 @@ const MainStore = namespace(StoreType.MAIN);
 
             <trades-filter-component v-if="tradesFilter" @filterChange="onFilterChange" :tradesFilter="tradesFilter"></trades-filter-component>
 
-            <trades-table v-if="tradePagination" :trades="trades" :trade-pagination="tradePagination" @delete="onDelete"></trades-table>
+            <expanded-panel :disabled="true" :withMenu="true" name="trades" :alwaysOpen="true" :value="[true]">
+                <template slot="header">Сделки</template>
+                <template slot="list">
+                    <v-list-tile-title @click="openTableSettings('tradesTable')">Настроить калонки</v-list-tile-title>
+                </template>
+                <trades-table v-if="tradePagination" :trades="trades" :trade-pagination="tradePagination" :tableKeys="getTableKeys('tradesTable')" :headers="getHeaders('tradesTable')" @delete="onDelete"></trades-table>
+            </expanded-panel>
+
             <v-container v-if="pages > 1">
                 <v-layout align-center justify-center row>
                     <v-pagination v-model="page" :length="pages"></v-pagination>
@@ -31,7 +41,7 @@ const MainStore = namespace(StoreType.MAIN);
             </v-container>
         </v-container>
     `,
-    components: {TradesTable, TradesFilterComponent}
+    components: {TradesTable, TradesFilterComponent, ExpandedPanel}
 })
 export class TradesPage extends UI {
 
@@ -44,6 +54,8 @@ export class TradesPage extends UI {
     private tradeService: TradeService;
     @Inject
     private filterService: FilterService;
+    @Inject
+    tablesService: TablesService;
 
     private page = 1;
 
@@ -66,6 +78,30 @@ export class TradesPage extends UI {
     private trades: TradeRow[] = [];
 
     private tradesFilter: TradesFilter = null;
+
+
+    private headers: TableHeaders = this.tablesService.headers;
+
+    getHeaders(name: string): TableHeader[] {
+        let filtredHeaders = this.tablesService.filterHeaders(this.headers);
+        if(filtredHeaders[name]) {
+            return filtredHeaders[name];
+        }
+        return [];
+    }
+
+    getTableKeys(name: string) {
+        return this.tablesService.getHeadersValue( this.getHeaders(name) );
+    }
+
+
+    // Открывает диалог с настройкой заголовков таблицы
+    private async openTableSettings(tableName: string): Promise<void> {
+        await new TableSettingsDialog().show({
+            tableName: tableName,
+            headers: this.headers[tableName]
+        });
+    }
 
     /**
      * Загрузка сделок будет произведена в вотчере на объект с паджинацией

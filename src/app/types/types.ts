@@ -216,15 +216,20 @@ export type TableHeader = {
     text: string,
     align?: string,
     sortable?: boolean,
-    value: string
-    class?: string[] | string;
-    width?: string;
-    active?: boolean;
-    ghost?: boolean;
+    value: string,
+    class?: string[] | string,
+    width?: string,
+    active?: boolean,
+    ghost?: boolean,
 };
 
 export type TableHeaders = {
     [key: string]: TableHeader[]
+}
+
+export type TableHeaderData = {
+    tableName: string,
+    headers: TableHeader[]
 }
 
 export type DashboardData = {

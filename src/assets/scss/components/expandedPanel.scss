@@ -15,16 +15,18 @@
     .v-list__tile {
       flex-direction: column;
       height: auto;
+      padding: 0;
     }
-
+    
     .v-list__tile__title {
+      padding: 0 16px;
       margin: 5px 0;
       cursor: pointer;
     }
   }
 
   &-menu {
-    z-index: 99999;
+    z-index: 100;
     position: absolute;
     right: 10px;
     top: 1px;
@@ -33,7 +35,7 @@
     }
   }
 
-  #exp-panel-attach {
+  .exp-panel-attach {
     position: absolute;
     bottom: 0;
     right: 0;

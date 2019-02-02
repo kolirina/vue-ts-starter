@@ -30,19 +30,22 @@ const MainStore = namespace(StoreType.MAIN);
 
             <div style="height: 50px"></div>
 
-            <expanded-panel :value="$uistate.stocksTablePanel" :withMenu="true" :state="$uistate.STOCKS">
+            <expanded-panel :value="$uistate.stocksTablePanel" :withMenu="true" name="stock" :state="$uistate.STOCKS">
                 <template slot="header">Акции</template>
                 <template slot="list">
                     <v-list-tile-title @click="openTableSettings('stockTable')">Настроить калонки</v-list-tile-title>
                 </template>
-                <stock-table @changeHeaders="onHeadersChange" :rows="portfolio.overview.stockPortfolio.rows" :tableKeys="getTableKeys('stockTable')" :headers="getHeaders('stockTable')"></stock-table>
+                <stock-table :rows="portfolio.overview.stockPortfolio.rows" :tableKeys="getTableKeys('stockTable')" :headers="getHeaders('stockTable')"></stock-table>
             </expanded-panel>
 
             <div style="height: 50px"></div>
 
-            <expanded-panel :value="$uistate.bondsTablePanel" :state="$uistate.BONDS">
+            <expanded-panel :value="$uistate.bondsTablePanel" :withMenu="true" name="bond" :state="$uistate.BONDS">
                 <template slot="header">Облигации</template>
-                <bond-table :rows="portfolio.overview.bondPortfolio.rows"></bond-table>
+                <template slot="list">
+                    <v-list-tile-title @click="openTableSettings('bondTable')">Настроить калонки</v-list-tile-title>
+                </template>
+                <bond-table :rows="portfolio.overview.bondPortfolio.rows" :tableKeys="getTableKeys('bondTable')" :headers="getHeaders('bondTable')"></bond-table>
             </expanded-panel>
 
             <div style="height: 50px"></div>
@@ -90,7 +93,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-card-text>
             </expanded-panel>
         </v-container>
-    `,                                                          
+    `,
     components: {AssetTable, StockTable, BondTable, AssetChart, BarChart, StockPieChart, BondPieChart, PortfolioLineChart, SectorsChart, ExpandedPanel}
 })
 export class PortfolioPage extends UI {
@@ -117,14 +120,9 @@ export class PortfolioPage extends UI {
 
     // Открывает диалог с настройкой заголовков таблицы
     private async openTableSettings(tableName: string): Promise<void> {
-        console.log(123, this.headers, tableName);
-        await new TableSettingsDialog().show(this.headers[tableName], this.onHeadersChange);
-    }
-
-    private onHeadersChange(headerName: string, newHeader: TableHeader[]) {
-        if(this.headers[headerName]) {
-            this.headers[headerName] = newHeader;
-        }
+        await new TableSettingsDialog().show({
+            tableName: tableName,
+            headers: this.headers[tableName]
+        });
     }
 }
-

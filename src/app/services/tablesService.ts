@@ -1,10 +1,15 @@
 import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {TableHeader, TableHeaders} from '../types/types';
+import {Storage} from "../platform/services/storage";
 
 @Service("TablesService")
 @Singleton
 export class TablesService {
+  constructor() {
+    this.headers = this.localStorage.get('tableHeadersParams', this.headers); 
+  }
+
   headers: TableHeaders = {
     stockTable: [
       {text: "", align: "left", ghost: true, sortable: false, value: "", active: true},
@@ -13,8 +18,8 @@ export class TablesService {
       {text: "Количество", align: "left", value: "quantity", active: true},
       {text: "Ср. цена", align: "right", value: "avgBuy", active: true},
       {text: "Тек. цена", align: "right", value: "currPrice", active: true},
-      {text: "Стоимость покупок", align: "left", value: "firstBuy", active: false},
-      {text: "Стоимость продаж", align: "left", value: "lastBuy", active: false},
+      {text: "Стоимость покупок", align: "left", value: "bCost", active: false},
+      {text: "Стоимость продаж", align: "left", value: "sCost", active: false},
       {text: "Тек. стоимость", align: "right", value: "currCost", sortable: false, active: true},
       {text: "Дивиденды", align: "right", value: "profitFromDividends", sortable: false, active: false},
       {text: "Прибыль по дивидендам, %", align: "right", value: "profitFromDividendsPercent", sortable: false, active: false},
@@ -32,14 +37,14 @@ export class TablesService {
       {text: "Действия", align: "center", value: "actions", sortable: false, width: "25", active: true},
     ],
     bondTable: [
-      {text: "", align: "left", ghost: true, sortable: false, value: ""},
+      {text: "", align: "left", ghost: true, sortable: false, value: "", active: true},
       {text: "Компания", align: "left", sortable: false, value: "company", active: true},
       {text: "Тикер", align: "left", value: "ticker", active: false},
       {text: "Количество", align: "left", value: "quantity", active: false},
       {text: "Ср. цена", align: "right", value: "avgBuy", active: true},
       {text: "Тек. цена", align: "right", value: "currPrice", active: true},
       {text: "Стоимость покупок", align: "right", value: "bCost", active: false},
-      {text: "Стоимость продаж", align: "right", value: "aCost", active: false},
+      {text: "Стоимость продаж", align: "right", value: "sCost", active: false},
       {text: "Тек. стоимость", align: "right", value: "currCost", sortable: false, active: true},
       {text: "Средний номинал", align: "right", value: "nominal", sortable: false, active: false},
       {text: "Прибыль от купонов", align: "right", value: "profitFromCoupons", active: false},
@@ -55,12 +60,12 @@ export class TablesService {
       {text: "Доходность, %", align: "right", value: "yearYield", active: false},
       {text: "P/L за день", align: "right", value: "dailyPl", sortable: false, active: false},
       {text: "P/L за день, %", align: "right", value: "dailyPlPercent", active: false},
-      {text: "Комиcсия", align: "right", value: "summFee", active: false},
+      {text: "Комиcсия", align: "right", value: "summFee", active: true},
       {text: "Тек. доля", align: "right", value: "percCurrShare", active: true},
-      {text: "Действия", align: "center", value: "actions", sortable: false, width: "25", active: true},
+      {text: "Действия", align: "center", value: "actions", ghost: true, sortable: false, width: "25", active: true},
     ],
     tradesTable: [
-      {text: "", align: "left", sortable: false, value: ""},
+      {text: "", align: "left", ghost: true, sortable: false, value: "", active: true},
       {text: "Тикер/ISIN", align: "left", value: "ticker", active: true},
       {text: "Название", align: "left", value: "name", active: true},
       {text: "Операция", align: "left", value: "operationLabel", active: true},
@@ -71,13 +76,17 @@ export class TablesService {
       {text: "НКД", align: "right", value: "nkd", sortable: false, active: false},
       {text: "Комиссия", align: "right", value: "fee", active: true},
       {text: "Итого", align: "right", value: "signedTotal", active: true},
-      {text: "Действия", align: "center", value: "actions", sortable: false, width: "25", active: true},
+      {text: "Действия", align: "center", value: "actions", ghost: true, sortable: false, width: "25", active: true},
     ]
   };
+
+  @Inject
+  private localStorage: Storage;
 
   setHeaders(name: string, headers: TableHeader[]) {
     if(this.headers[name]) {
       this.headers[name] = headers;
+      this.localStorage.set('tableHeadersParams', this.headers);
     }
   }
 
@@ -88,7 +97,6 @@ export class TablesService {
    */
   filterHeaders(headers: TableHeaders): TableHeaders {
     let result: TableHeaders = {};
-
     Object.keys(headers).forEach(key => {
       result[key] = headers[key].filter(el => el.active)
     });

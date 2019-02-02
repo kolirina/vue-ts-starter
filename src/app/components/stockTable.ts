@@ -52,8 +52,8 @@ const MainStore = namespace(StoreType.MAIN);
                     <td v-if="tableKeys.quantity" class="text-xs-right ii-number-cell">{{props.item.quantity}}</td>
                     <td v-if="tableKeys.avgBuy" class="text-xs-right ii-number-cell">{{ props.item.avgBuy | amount }}</td>
                     <td v-if="tableKeys.currPrice" class="text-xs-right ii-number-cell">{{ props.item.currPrice| amount(true) }}</td>
-                    <td v-if="tableKeys.firstBuy" class="text-xs-right ii-number-cell">{{ props.item.firstBuy }}</td>
-                    <td v-if="tableKeys.lastBuy" class="text-xs-right ii-number-cell">{{ props.item.lastBuy }}</td>
+                    <td v-if="tableKeys.bCost" class="text-xs-right ii-number-cell">{{ props.item.bcost }}</td>
+                    <td v-if="tableKeys.sCost" class="text-xs-right ii-number-cell">{{ props.item.scost }}</td>
                     <td v-if="tableKeys.currCost" class="text-xs-right ii-number-cell" >{{ props.item.currCost| amount(true) }}</td>
                     <td v-if="tableKeys.profitFromDividends" class="text-xs-right ii-number-cell">{{ props.item.profitFromDividends }}</td>
                     <td v-if="tableKeys.profitFromDividendsPercent" class="text-xs-right ii-number-cell">{{ props.item.profitFromDividendsPercent }}</td>
@@ -162,10 +162,6 @@ export class StockTable extends UI {
 
     @Prop({default: [], required: true})
     private rows: StockPortfolioRow[];
-
-    mounted() {
-        console.log(this.rows, "rows");
-    }
 
     private async openShareTradesDialog(ticker: string): Promise<void> {
         await new ShareTradesDialog().show({trades: await this.tradeService.getShareTrades(this.portfolio.id, ticker), ticker});
