@@ -19,7 +19,7 @@ import {ExpandedPanel} from "./expandedPanel";
                             placeholder="Поиск по названию бумаги,по тикеру бумаги, по заметке к сделке"
                         ></v-text-field>
                     </v-flex>
-    
+
                     <v-flex xs3 offset-xs1>
                         <v-select
                             @change="onListTypeChange()"

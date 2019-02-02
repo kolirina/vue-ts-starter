@@ -33,10 +33,11 @@ import {AddTradeDialog} from "./dialogs/addTradeDialog";
                     <td v-if="tableKeys.price" class="text-xs-right ii-number-cell">{{ getPrice(props.item) }}</td>
                     <td v-if="tableKeys.facevalue">{{ props.item.facevalue }}</td>
                     <td v-if="tableKeys.nkd">{{ props.item.nkd }}</td>
-                    
-
                     <td v-if="tableKeys.fee" class="text-xs-right ii-number-cell">{{ getFee(props.item) }}</td>
+
+
                     <td v-if="tableKeys.signedTotal" class="text-xs-right ii-number-cell">{{ props.item.signedTotal | amount(true) }}</td>
+                    <td v-if="tableKeys.totalWithoutFee" class="text-xs-right ii-number-cell">{{ props.item.totalWithoutFee }}</td>
                     <td class="justify-center layout px-0" @click.stop>
                         <v-menu transition="slide-y-transition" bottom left>
                             <v-btn slot="activator" color="primary" flat icon dark>
@@ -157,7 +158,6 @@ export class TradesTable extends UI {
     @Watch("trades")
     private onTradesUpdate(trades: TradeRow[]): void {
         this.trades = trades;
-        console.log(trades);
     }
     private async openTradeDialog(trade: TradeRow, operation: Operation): Promise<void> {
         await new AddTradeDialog().show({
@@ -170,7 +170,6 @@ export class TradesTable extends UI {
     }
 
     private async openEditTradeDialog(trade: TradeRow): Promise<void> {
-        console.log(trade);
         const tradeFields: TradeFields = {
             ticker: trade.ticker,
             date: trade.date,

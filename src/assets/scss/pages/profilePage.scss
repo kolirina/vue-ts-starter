@@ -15,6 +15,11 @@
     }
   }
 
+  &-tooltip {
+    background-color: #f7f9fb;
+    color: #000;
+  }
+
   &-edit {
     color: $main-color-2;
     cursor: pointer;
@@ -23,8 +28,8 @@
   }
 
   &-icons {
-    i:first-child {
-      color: $main-color-2 !important;
+    img {
+      cursor: pointer;
     }
   }
 
@@ -32,6 +37,14 @@
     margin-bottom: 40px;
     &:last-child {
       margin-bottom: 25px;
+    }
+
+    .v-input__slot::before {
+      border-color: rgb(31, 131, 200) !important;
+    }
+
+    .v-input__slot::after {
+      display: none;
     }
   }
 

@@ -1,9 +1,9 @@
+import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
-import {TableHeader, TableHeaderData} from "../../types/types";
-import {CustomDialog} from "./customDialog";
 import {Prop} from "vue-property-decorator";
 import {TablesService} from "../../services/tablesService";
-import {Inject} from "typescript-ioc";
+import {TableHeader, TableHeaderData} from "../../types/types";
+import {CustomDialog} from "./customDialog";
 
 /**
  * Диалог подтверждения
@@ -44,15 +44,15 @@ export class TableSettingsDialog extends CustomDialog<TableHeaderData, void> {
   private column2: TableHeader[] = [];
 
   @Inject
-  tablesService: TablesService;
+  private tablesService: TablesService;
 
-  mounted() {
+  mounted(): void {
     this.headers = JSON.parse(JSON.stringify(this.data.headers));
     this.column1 = this.headers.slice(0, Math.ceil(this.headers.length / 2));
     this.column2 = this.headers.slice(Math.ceil(this.headers.length / 2));
   }
 
-  private filterHeaders() {
+  private filterHeaders(): void {
     this.tablesService.setHeaders(this.data.tableName, this.headers);
     this.close();
   }

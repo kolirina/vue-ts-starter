@@ -31,6 +31,7 @@ import {CustomDialog} from "./customDialog";
                             required
                             autofocus
                             :type="showPassword ? 'text' : 'password'"
+                            autocomplete="off"
                             @click:append="showPassword = !showPassword">
                         </v-text-field>
 
@@ -48,6 +49,7 @@ import {CustomDialog} from "./customDialog";
                             :persistent-hint="true"
                             ref="newPassword"
                             :type="showNewPassword ? 'text' : 'password'"
+                            autocomplete="off"
                             hint="Пароль может содержать строчные и прописные латинские буквы, цифры, спецсимволы. Минимум 6 символов"
                             @click:append="showNewPassword = !showNewPassword">
                         </v-text-field>
@@ -68,7 +70,7 @@ import {CustomDialog} from "./customDialog";
                     </v-form>
                 </v-card-text>
                 <v-card-actions>
-                    <v-btn :disabled="!valid" @click.native="validateAndChangePassword" class="btn-dialog">Сменить пароль</v-btn>
+                    <v-btn :disabled="!valid" @click.native="validateAndChangePassword" class="btn-dialog btn-hover-black">Сменить пароль</v-btn>
                     <v-btn class="btn-cancel" @click.native="close">Отмена</v-btn>
                 </v-card-actions>
             </v-card>

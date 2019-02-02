@@ -182,7 +182,7 @@ export class BondTable extends UI {
     private rows: BondPortfolioRow[];
 
     private operation = Operation;
-    
+
     private async openShareTradesDialog(ticker: string): Promise<void> {
         await new ShareTradesDialog().show({trades: await this.tradeService.getShareTrades(this.portfolio.id, ticker), ticker});
     }

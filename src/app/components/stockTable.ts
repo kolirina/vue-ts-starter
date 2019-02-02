@@ -151,9 +151,9 @@ export class StockTable extends UI {
     private portfolio: Portfolio;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
     private reloadPortfolio: (id: string) => Promise<void>;
-    
+
     private operation = Operation;
-    
+
     @Prop()
     private tableKeys: object;
 
@@ -207,5 +207,5 @@ export class StockTable extends UI {
         }
         const amount = new BigMoney(value);
         return amount.amount.toNumber();
-    }    
+    }
 }

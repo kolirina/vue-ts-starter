@@ -3,18 +3,18 @@ import Component from "vue-class-component";
 import {Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
+import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog";
+import {ExpandedPanel} from "../components/expandedPanel";
 import {TradesFilterComponent} from "../components/tradesFilter";
 import {TradesTable} from "../components/tradesTable";
 import {CatchErrors} from "../platform/decorators/catchErrors";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {FilterService} from "../services/filterService";
+import {TablesService} from "../services/tablesService";
 import {TradeService, TradesFilter} from "../services/tradeService";
-import {Pagination, Portfolio, TablePagination, TradeRow, TableHeader, TableHeaders} from "../types/types";
+import {Pagination, Portfolio, TableHeader, TableHeaders, TablePagination, TradeRow} from "../types/types";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
-import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog";
-import {TablesService} from "../services/tablesService";
-import {ExpandedPanel} from "../components/expandedPanel";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -31,7 +31,8 @@ const MainStore = namespace(StoreType.MAIN);
                 <template slot="list">
                     <v-list-tile-title @click="openTableSettings('tradesTable')">Настроить калонки</v-list-tile-title>
                 </template>
-                <trades-table v-if="tradePagination" :trades="trades" :trade-pagination="tradePagination" :tableKeys="getTableKeys('tradesTable')" :headers="getHeaders('tradesTable')" @delete="onDelete"></trades-table>
+                <trades-table v-if="tradePagination" :trades="trades" :trade-pagination="tradePagination" :tableKeys="getTableKeys('tradesTable')"
+                    :headers="getHeaders('tradesTable')" @delete="onDelete"></trades-table>
             </expanded-panel>
 
             <v-container v-if="pages > 1">
@@ -45,17 +46,17 @@ const MainStore = namespace(StoreType.MAIN);
 })
 export class TradesPage extends UI {
 
-    @MainStore.Getter
-    private portfolio: Portfolio;
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: string) => Promise<void>;
-
+    @Inject
+    tablesService: TablesService;
     @Inject
     private tradeService: TradeService;
     @Inject
     private filterService: FilterService;
-    @Inject
-    tablesService: TablesService;
+
+    @MainStore.Getter
+    private portfolio: Portfolio;
+    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
+    private reloadPortfolio: (id: string) => Promise<void>;
 
     private page = 1;
 
@@ -79,28 +80,18 @@ export class TradesPage extends UI {
 
     private tradesFilter: TradesFilter = null;
 
-
     private headers: TableHeaders = this.tablesService.headers;
 
     getHeaders(name: string): TableHeader[] {
-        let filtredHeaders = this.tablesService.filterHeaders(this.headers);
-        if(filtredHeaders[name]) {
+        const filtredHeaders = this.tablesService.filterHeaders(this.headers);
+        if (filtredHeaders[name]) {
             return filtredHeaders[name];
         }
         return [];
     }
 
-    getTableKeys(name: string) {
+    getTableKeys(name: string): {[key: string]: boolean} {
         return this.tablesService.getHeadersValue( this.getHeaders(name) );
-    }
-
-
-    // Открывает диалог с настройкой заголовков таблицы
-    private async openTableSettings(tableName: string): Promise<void> {
-        await new TableSettingsDialog().show({
-            tableName: tableName,
-            headers: this.headers[tableName]
-        });
     }
 
     /**
@@ -114,6 +105,14 @@ export class TradesPage extends UI {
             totalItems: this.totalTrades
         };
         this.calculatePagination();
+    }
+
+    // Открывает диалог с настройкой заголовков таблицы
+    private async openTableSettings(tableName: string): Promise<void> {
+        await new TableSettingsDialog().show({
+            tableName: tableName,
+            headers: this.headers[tableName]
+        });
     }
 
     @Watch("page")

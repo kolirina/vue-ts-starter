@@ -4,8 +4,6 @@ export class CustomDialog<ParamType, ReturnType> extends UI {
 
     private static instances: any[] = [];
 
-    callback: Function;
-
     /** Модель данных для диалога */
     protected data: ParamType = null;
 

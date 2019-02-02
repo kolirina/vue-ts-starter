@@ -1,3 +1,4 @@
+import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI, Watch} from "../app/ui";
@@ -9,15 +10,13 @@ import {BondPieChart} from "../components/charts/bondPieChart";
 import {PortfolioLineChart} from "../components/charts/portfolioLineChart";
 import {SectorsChart} from "../components/charts/sectorsChart";
 import {StockPieChart} from "../components/charts/stockPieChart";
+import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog";
 import {ExpandedPanel} from "../components/expandedPanel";
 import {StockTable} from "../components/stockTable";
+import {TablesService} from "../services/tablesService";
 import {Portfolio, TableHeader, TableHeaders} from "../types/types";
 import {UiStateHelper} from "../utils/uiStateHelper";
 import {StoreType} from "../vuex/storeType";
-import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog";
-import {TablesService} from "../services/tablesService";
-import {Inject} from "typescript-ioc";
-
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -102,19 +101,19 @@ export class PortfolioPage extends UI {
     private portfolio: Portfolio;
 
     @Inject
-    tablesService: TablesService;
+    private tablesService: TablesService;
 
     private headers: TableHeaders = this.tablesService.headers;
 
     getHeaders(name: string): TableHeader[] {
-        let filtredHeaders = this.tablesService.filterHeaders(this.headers);
-        if(filtredHeaders[name]) {
+        const filtredHeaders = this.tablesService.filterHeaders(this.headers);
+        if (filtredHeaders[name]) {
             return filtredHeaders[name];
         }
         return [];
     }
 
-    getTableKeys(name: string) {
+    getTableKeys(name: string): {[key: string]: boolean} {
         return this.tablesService.getHeadersValue( this.getHeaders(name) );
     }
 

@@ -1,15 +1,11 @@
 import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
-import {TableHeader, TableHeaders} from '../types/types';
 import {Storage} from "../platform/services/storage";
+import {TableHeader, TableHeaders} from "../types/types";
 
 @Service("TablesService")
 @Singleton
 export class TablesService {
-  constructor() {
-    this.headers = this.localStorage.get('tableHeadersParams', this.headers); 
-  }
-
   headers: TableHeaders = {
     stockTable: [
       {text: "", align: "left", ghost: true, sortable: false, value: "", active: true},
@@ -60,7 +56,7 @@ export class TablesService {
       {text: "Доходность, %", align: "right", value: "yearYield", active: false},
       {text: "P/L за день", align: "right", value: "dailyPl", sortable: false, active: false},
       {text: "P/L за день, %", align: "right", value: "dailyPlPercent", active: false},
-      {text: "Комиcсия", align: "right", value: "summFee", active: true},
+      {text: "Комиcсия", align: "right", value: "summFee", active: false},
       {text: "Тек. доля", align: "right", value: "percCurrShare", active: true},
       {text: "Действия", align: "center", value: "actions", ghost: true, sortable: false, width: "25", active: true},
     ],
@@ -75,7 +71,8 @@ export class TablesService {
       {text: "Номинал", align: "right", value: "facevalue", sortable: false, active: false},
       {text: "НКД", align: "right", value: "nkd", sortable: false, active: false},
       {text: "Комиссия", align: "right", value: "fee", active: true},
-      {text: "Итого", align: "right", value: "signedTotal", active: true},
+      {text: "Сумма", align: "right", value: "signedTotal", active: true},
+      {text: "Сумма без комисс.", align: "right", value: "totalWithoutFee", active: false},
       {text: "Действия", align: "center", value: "actions", ghost: true, sortable: false, width: "25", active: true},
     ]
   };
@@ -83,10 +80,14 @@ export class TablesService {
   @Inject
   private localStorage: Storage;
 
-  setHeaders(name: string, headers: TableHeader[]) {
-    if(this.headers[name]) {
+  constructor() {
+    this.headers = this.localStorage.get("tableHeadersParams", this.headers);
+  }
+
+  setHeaders(name: string, headers: TableHeader[]): void {
+    if (this.headers[name]) {
       this.headers[name] = headers;
-      this.localStorage.set('tableHeadersParams', this.headers);
+      this.localStorage.set("tableHeadersParams", this.headers);
     }
   }
 
@@ -96,9 +97,9 @@ export class TablesService {
    * @param headers
    */
   filterHeaders(headers: TableHeaders): TableHeaders {
-    let result: TableHeaders = {};
+    const result: TableHeaders = {};
     Object.keys(headers).forEach(key => {
-      result[key] = headers[key].filter(el => el.active)
+      result[key] = headers[key].filter(el => el.active);
     });
 
     return result;
@@ -108,10 +109,10 @@ export class TablesService {
    * Возвращает все значения(key) заголовков.
    * Используется для определения видимости соответствующих значений в таблице.
    * Пример: <td v-if="headersKey.quantity">{{props.quantity}}</td>
-   * @param headers 
+   * @param headers
    */
   getHeadersValue(headers: TableHeader[]): {[key: string]: boolean} {
-    let result: {[key: string]: boolean} = {};
+    const result: {[key: string]: boolean} = {};
 
     headers.forEach(el => {
       result[el.value] = el.active;

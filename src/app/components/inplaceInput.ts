@@ -9,7 +9,6 @@ import {UI} from "../app/ui";
     // language=Vue
     template: `
         <div class="inplace-input">
-
             <template v-if="!editMode">
                 <a v-if="emptyLinkText" style="color: darkgray" class="inplace-out underline" @click="onEdit" :title="emptyLinkText">{{ emptyLinkText }}</a>
                 <v-layout row wrap>
@@ -38,8 +37,8 @@ import {UI} from "../app/ui";
                     </v-flex>
                     <v-flex xs4 offset-xs1>
                         <div class="profile-icons">
-                            <v-icon @click.stop="emitCompleteEvent">check_circle</v-icon>
-                            <v-icon @click.stop="dismissChanges">cancel</v-icon>
+                            <img src="img/profile/okbtn.png" alt="OK" @click.stop="emitCompleteEvent">
+                            <img src="img/profile/cancelbtn.png" alt="Cancel" @click.stop="dismissChanges">
                         </div>
                     </v-flex>
                 </v-layout>
@@ -68,14 +67,23 @@ export class InplaceInput extends UI {
     @Prop({default: "", type: String})
     private emptyLinkText: string;
 
+    /** Режим редактирования */
+    @Prop({default: false, type: Boolean})
+    private editMode: boolean;
+
+    /** Имя блока */
+    @Prop({default: "", type: String})
+    private name: string;
+
+    /** Режим редактирования */
+    @Prop()
+    private onModeChange: (name: string, val: boolean) => void;
+
     /** Значение введенное пользователем */
     private editableValue = "";
 
     /** Первоначальное значение */
     private oldValue = "";
-
-    /** Режим редактирования */
-    private editMode = false;
 
     /**
      * Инициализирует данные компонента
@@ -101,11 +109,11 @@ export class InplaceInput extends UI {
     }
 
     private closeInput(): void {
-        this.editMode = false;
+        this.onModeChange(this.name, false);
     }
 
     private onEdit(): void {
-        this.editMode = true;
+        this.onModeChange(this.name, true);
         // если старого значения нет, значит оно было очищено, подставляем снова значение отображаемое в режиме просмотра
         this.editableValue = this.oldValue || this.value || "";
         this.$nextTick(() => {

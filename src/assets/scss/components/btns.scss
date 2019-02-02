@@ -8,6 +8,7 @@
     background-color: #fff !important;
     border: 1px solid #96a5be;
     box-shadow: none !important;
+    text-transform: initial !important;
 
     &:hover {
       color: #fff;
@@ -21,9 +22,14 @@
     background-color: #fff !important;
     box-shadow: none !important;
     cursor: pointer;
+    text-transform: initial !important;
 
     &:before {
       background-color: #fff!important;
     }
+  }
+
+  &-hover-black:hover {
+    background-color: #000 !important;
   }
 }
