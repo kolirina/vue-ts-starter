@@ -12,12 +12,11 @@ import {Share} from "../types/types";
 @Component({
     // language=Vue
     template: `
-        <v-container v-if="share" fluid>
-            <div slot="header">Информация по бумаге</div>
+        <v-container fluid>
             <v-layout>
                 <share-search :asset-type="assetType.STOCK" @change="onShareSelect"></share-search>
             </v-layout>
-            <v-card>
+            <v-card v-if="share">
                 <v-card-text>
                     <table>
                         <thead>
@@ -104,14 +103,16 @@ import {Share} from "../types/types";
                     </table>
                 </v-card-text>
             </v-card>
+
             <div style="height: 20px"></div>
-            <v-card style="overflow: auto;">
+            <v-card v-if="share" style="overflow: auto;">
                 <v-card-text>
                     <line-chart :data="history" :events-chart-data="events" :balloon-title="share.ticker"></line-chart>
                 </v-card-text>
             </v-card>
+
             <div style="height: 20px"></div>
-            <v-card style="overflow: auto;">
+            <v-card v-if="share" style="overflow: auto;">
                 <v-card-text>
                     <dividend-chart :data="dividends" title="Дивиденды"></dividend-chart>
                 </v-card-text>

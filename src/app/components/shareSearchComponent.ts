@@ -26,7 +26,7 @@ import {Bond, Share} from "../types/types";
 @Component({
     // language=Vue
     template: `
-        <v-autocomplete :items="filteredShares" v-model="share" @change="onShareSelect" @click:clear="onSearchClear"
+        <v-autocomplete :items="filteredSharesMutated" v-model="share" @change="onShareSelect" @click:clear="onSearchClear"
                         label="Введите тикер или название компании"
                         :loading="shareSearch" no-data-text="Ничего не найдено" clearable required
                         dense :hide-no-data="true" :no-filter="true" :search-input.sync="searchQuery">
@@ -45,16 +45,36 @@ export class ShareSearchComponent extends UI {
     @Prop({required: true})
     private assetType: AssetType;
 
+    @Prop({required: false})
+    private filteredShares: Share[];
+
+    private filteredSharesMutated: Share[] = [];
+    private assetTypeMutated: AssetType;
+
     @Inject
     private marketService: MarketService;
 
     /** Текущий объект таймера */
     private currentTimer: number = null;
     private searchQuery: string = null;
-    private filteredShares: Share[] = [];
+
     private share: Share = null;
     private shareSearch = false;
     private notFoundLabel = "Ничего не найдено";
+
+    created(): void {
+        // this.filteredSharesMutated = this.filteredShares ? [...this.filteredShares] : [];
+    }
+
+    @Watch("filteredShares")
+    private async onFilteredSharesChange(filteredShares: Share[]): Promise<void> {
+        this.filteredSharesMutated = filteredShares ? [...filteredShares] : [];
+    }
+
+    @Watch("assetType")
+    private async onAssetTypeChange(assetType: AssetType): Promise<void> {
+        this.assetTypeMutated = assetType;
+    }
 
     @Watch("searchQuery")
     private async onSearch(): Promise<void> {
@@ -67,7 +87,11 @@ export class ShareSearchComponent extends UI {
         const delay = new Promise((resolve, reject): void => {
             this.currentTimer = setTimeout(async (): Promise<void> => {
                 try {
-                    this.filteredShares = await this.marketService.searchStocks(this.searchQuery);
+                    if (this.assetType === AssetType.STOCK) {
+                        this.filteredSharesMutated = await this.marketService.searchStocks(this.searchQuery);
+                    } else if (this.assetType === AssetType.BOND) {
+                        this.filteredSharesMutated = await this.marketService.searchBonds(this.searchQuery);
+                    }
                     this.shareSearch = false;
                 } catch (error) {
                     reject(error);
@@ -95,17 +119,18 @@ export class ShareSearchComponent extends UI {
         if ((share as any) === this.notFoundLabel) {
             return this.notFoundLabel;
         }
-        if (this.assetType === AssetType.STOCK) {
+        if (this.assetTypeMutated === AssetType.STOCK) {
             const price = new BigMoney(share.price);
             return `${share.ticker} (${share.shortname}), ${price.amount.toString()} ${price.currency}`;
-        } else if (this.assetType === AssetType.BOND) {
+        } else if (this.assetTypeMutated === AssetType.BOND) {
             return `${share.ticker} (${share.shortname}), ${(share as Bond).prevprice}%`;
         }
         return `${share.ticker} (${share.shortname})`;
     }
 
     private onSearchClear(): void {
-        this.filteredShares = [];
+        this.filteredSharesMutated = [];
+        this.$emit("clear");
     }
 
     private async onShareSelect(share: Share): Promise<void> {

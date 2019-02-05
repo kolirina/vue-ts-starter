@@ -51,18 +51,7 @@ import {CustomDialog} from "./customDialog";
 
                             <!-- Тикер бумаги -->
                             <v-flex v-if="shareAssetType" xs12 :class="portfolioProModeEnabled ? 'sm6' : 'sm9'">
-                                <v-autocomplete :items="filteredShares" v-model="share" @change="onShareSelect" @click:clear="onShareClear"
-                                                label="Тикер / Название компании"
-                                                :loading="shareSearch" :no-data-text="notFoundLabel" clearable required name="share"
-                                                :error-messages="errors.collect('share')"
-                                                dense :hide-no-data="true" :no-filter="true" :search-input.sync="searchQuery">
-                                    <template slot="selection" slot-scope="data">
-                                        {{ shareLabelSelected(data.item) }}
-                                    </template>
-                                    <template slot="item" slot-scope="data">
-                                        {{ shareLabelListItem(data.item) }}
-                                    </template>
-                                </v-autocomplete>
+                                <share-search :asset-type="assetType" :filtered-shares="filteredShares" @change="onShareSelect" @clear="onShareClear"></share-search>
                             </v-flex>
 
                             <!-- Дата сделки -->
@@ -157,7 +146,7 @@ import {CustomDialog} from "./customDialog";
                             </v-flex>
                             <v-flex xs12 lg6>
                                 <span class="body-2">Доступно: </span><span v-if="moneyResiduals"><b
-                                    class="title">{{ moneyResidual | amount }} {{ currency }}</b></span>
+                                class="title">{{ moneyResidual | amount }} {{ currency }}</b></span>
                                 <v-checkbox :disabled="keepMoneyDisabled" :label="keepMoneyLabel" v-model="keepMoney" hide-details></v-checkbox>
                             </v-flex>
                         </v-layout>
@@ -198,8 +187,6 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     private portfolio: Portfolio = null;
 
-    private notFoundLabel = "Ничего не найдено";
-
     private assetTypes = AssetType.values();
 
     private assetType = AssetType.STOCK;
@@ -237,18 +224,12 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private dateMenuValue = false;
     private timeMenuValue = false;
 
-    private shareSearch = false;
-
     private moneyAmount: string = null;
 
     private keepMoneyValue = true;
     private perOne = true;
 
     private currency = "RUB";
-
-    private searchQuery: string = null;
-    /** Текущий объект таймера */
-    private currentTimer: number = null;
     private processState = false;
 
     private moneyResiduals: MoneyResiduals = null;
@@ -278,41 +259,6 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             this.operation = this.data.operation;
         }
         this.clearFields();
-    }
-
-    @Watch("searchQuery")
-    private async onSearch(): Promise<void> {
-        clearTimeout(this.currentTimer);
-        if (!this.searchQuery || this.searchQuery.length <= 2) {
-            this.shareSearch = false;
-            return;
-        }
-        this.shareSearch = true;
-        const delay = new Promise((resolve, reject): void => {
-            this.currentTimer = setTimeout(async (): Promise<void> => {
-                try {
-                    if (this.assetType === AssetType.STOCK) {
-                        this.filteredShares = await this.marketService.searchStocks(this.searchQuery);
-                    } else if (this.assetType === AssetType.BOND) {
-                        this.filteredShares = await this.marketService.searchBonds(this.searchQuery);
-                    }
-                    this.shareSearch = false;
-                } catch (error) {
-                    reject(error);
-                }
-            }, 1000);
-        });
-
-        try {
-            delay.then(() => {
-                clearTimeout(this.currentTimer);
-                this.shareSearch = false;
-            });
-        } catch (error) {
-            clearTimeout(this.currentTimer);
-            this.shareSearch = false;
-            throw error;
-        }
     }
 
     private async onTickerOrDateChange(): Promise<void> {
@@ -369,30 +315,6 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         } else if (this.assetType === AssetType.BOND) {
             this.fillFieldsFromBond(this.share as Bond);
         }
-    }
-
-    private onShareClear(): void {
-        this.price = "";
-        this.nkd = "";
-        this.facevalue = "";
-        this.filteredShares = [];
-    }
-
-    private shareLabelSelected(share: Share): string {
-        return `${share.ticker} (${share.shortname})`;
-    }
-
-    private shareLabelListItem(share: Share): string {
-        if ((share as any) === this.notFoundLabel) {
-            return this.notFoundLabel;
-        }
-        if (this.assetType === AssetType.STOCK) {
-            const price = new BigMoney(share.price);
-            return `${share.ticker} (${share.shortname}), ${price.amount.toString()} ${price.currency}`;
-        } else if (this.assetType === AssetType.BOND) {
-            return `${share.ticker} (${share.shortname}), ${(share as Bond).prevprice}%`;
-        }
-        return `${share.ticker} (${share.shortname})`;
     }
 
     @ShowProgress
@@ -498,6 +420,13 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         this.nkd = null;
         this.facevalue = null;
         this.moneyAmount = null;
+    }
+
+    private onShareClear(): void {
+        this.price = "";
+        this.nkd = "";
+        this.facevalue = "";
+        this.filteredShares = [];
     }
 
     private async setTradeFields(): Promise<void> {
