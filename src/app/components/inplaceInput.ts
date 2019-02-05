@@ -9,6 +9,7 @@ import {UI} from "../app/ui";
     // language=Vue
     template: `
         <div class="inplace-input">
+
             <template v-if="!editMode">
                 <a v-if="emptyLinkText" style="color: darkgray" class="inplace-out underline" @click="onEdit" :title="emptyLinkText">{{ emptyLinkText }}</a>
                 <v-layout row wrap>
@@ -37,8 +38,8 @@ import {UI} from "../app/ui";
                     </v-flex>
                     <v-flex xs4 offset-xs1>
                         <div class="profile-icons">
-                            <img src="img/profile/okbtn.png" alt="OK" @click.stop="emitCompleteEvent">
-                            <img src="img/profile/cancelbtn.png" alt="Cancel" @click.stop="dismissChanges">
+                            <div @click.stop="emitCompleteEvent" class="profile-icons-complete"></div>
+                            <div @click.stop="dismissChanges" class="profile-icons-dismiss"></div>
                         </div>
                     </v-flex>
                 </v-layout>
@@ -67,23 +68,15 @@ export class InplaceInput extends UI {
     @Prop({default: "", type: String})
     private emptyLinkText: string;
 
-    /** Режим редактирования */
-    @Prop({default: false, type: Boolean})
-    private editMode: boolean;
-
-    /** Имя блока */
-    @Prop({default: "", type: String})
-    private name: string;
-
-    /** Режим редактирования */
-    @Prop()
-    private onModeChange: (name: string, val: boolean) => void;
-
     /** Значение введенное пользователем */
     private editableValue = "";
 
     /** Первоначальное значение */
     private oldValue = "";
+
+    /** Режим редактирования */
+    @Prop({default: false})
+    private editMode: boolean;
 
     /**
      * Инициализирует данные компонента
@@ -109,11 +102,11 @@ export class InplaceInput extends UI {
     }
 
     private closeInput(): void {
-        this.onModeChange(this.name, false);
+        this.$emit("update:editMode", false);
     }
 
     private onEdit(): void {
-        this.onModeChange(this.name, true);
+        this.$emit("update:editMode", true);
         // если старого значения нет, значит оно было очищено, подставляем снова значение отображаемое в режиме просмотра
         this.editableValue = this.oldValue || this.value || "";
         this.$nextTick(() => {

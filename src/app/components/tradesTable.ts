@@ -21,23 +21,23 @@ import {AddTradeDialog} from "./dialogs/addTradeDialog";
                     <td>
                         <v-icon class="data-table-cell" v-bind:class="{'data-table-cell-open': props.expanded}">play_arrow</v-icon>
                     </td>
-                    <td v-if="tableKeys.ticker">
+                    <td v-if="tableHeaders.ticker">
                         <stock-link v-if="props.item.asset === 'STOCK'" :ticker="props.item.ticker"></stock-link>
                         <bond-link v-if="props.item.asset === 'BOND'" :ticker="props.item.ticker"></bond-link>
                         <span v-if="props.item.asset === 'MONEY'">{{ props.item.ticker }}</span>
                     </td>
-                    <td v-if="tableKeys.name">{{ props.item.companyName }}</td>
-                    <td v-if="tableKeys.operationLabel">{{ props.item.operationLabel }}</td>
-                    <td v-if="tableKeys.date" class="text-xs-center">{{ props.item.date | date }}</td>
-                    <td v-if="tableKeys.quantity" class="text-xs-right ii-number-cell">{{ props.item.quantity }}</td>
-                    <td v-if="tableKeys.price" class="text-xs-right ii-number-cell">{{ getPrice(props.item) }}</td>
-                    <td v-if="tableKeys.facevalue">{{ props.item.facevalue }}</td>
-                    <td v-if="tableKeys.nkd">{{ props.item.nkd }}</td>
-                    <td v-if="tableKeys.fee" class="text-xs-right ii-number-cell">{{ getFee(props.item) }}</td>
+                    <td v-if="tableHeaders.name">{{ props.item.companyName }}</td>
+                    <td v-if="tableHeaders.operationLabel">{{ props.item.operationLabel }}</td>
+                    <td v-if="tableHeaders.date" class="text-xs-center">{{ props.item.date | date }}</td>
+                    <td v-if="tableHeaders.quantity" class="text-xs-right ii-number-cell">{{ props.item.quantity }}</td>
+                    <td v-if="tableHeaders.price" class="text-xs-right ii-number-cell">{{ getPrice(props.item) }}</td>
+                    <td v-if="tableHeaders.facevalue">{{ props.item.facevalue }}</td>
+                    <td v-if="tableHeaders.nkd">{{ props.item.nkd }}</td>
+                    <td v-if="tableHeaders.fee" class="text-xs-right ii-number-cell">{{ getFee(props.item) }}</td>
 
 
-                    <td v-if="tableKeys.signedTotal" class="text-xs-right ii-number-cell">{{ props.item.signedTotal | amount(true) }}</td>
-                    <td v-if="tableKeys.totalWithoutFee" class="text-xs-right ii-number-cell">{{ props.item.totalWithoutFee }}</td>
+                    <td v-if="tableHeaders.signedTotal" class="text-xs-right ii-number-cell">{{ props.item.signedTotal | amount(true) }}</td>
+                    <td v-if="tableHeaders.totalWithoutFee" class="text-xs-right ii-number-cell">{{ props.item.totalWithoutFee | amount }}</td>
                     <td class="justify-center layout px-0" @click.stop>
                         <v-menu transition="slide-y-transition" bottom left>
                             <v-btn slot="activator" color="primary" flat icon dark>
@@ -144,7 +144,7 @@ export class TradesTable extends UI {
     private headers: TableHeader[];
 
     @Prop()
-    private tableKeys: object;
+    private tableHeaders: {[key: string]: boolean};
 
     @Prop({default: [], required: true})
     private trades: TradeRow[];

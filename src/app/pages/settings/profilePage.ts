@@ -22,10 +22,10 @@ const MainStore = namespace(StoreType.MAIN);
                 <v-layout row wrap class="profile-line">
                     <v-flex xs2>Email:</v-flex>
                     <v-flex xs5>
-                        <inplace-input :onModeChange="changeEditMode" name="email" :editMode="editMode.email" :value="email" @input="onEmailChange">
+                        <inplace-input name="email" v-on:update:editMode="onModeChange('email', $event)" v-bind:editMode="editMode.email" :value="email" @input="onEmailChange">
                             <v-tooltip content-class="profile-tooltip" max-width="250px" slot="afterText" top right>
                                 <template slot="activator">
-                                    <v-icon v-if="!clientInfo.user.emailConfirmed"  class="profile-not-confirmed-email">fas fa-exclamation-triangle</v-icon>
+                                    <v-icon v-if="!clientInfo.user.emailConfirmed" class="profile-not-confirmed-email">fas fa-exclamation-triangle</v-icon>
                                 </template>
                                 <span>Адрес не подтвержден. Пожалуйста подтвердите Ваш адрес эл.почты что воспользоваться всеми функциями сервиса.</span>
                             </v-tooltip>
@@ -36,7 +36,9 @@ const MainStore = namespace(StoreType.MAIN);
                 <v-layout row wrap class="profile-line">
                     <v-flex xs2>Имя пользователя:</v-flex>
                     <v-flex xs5>
-                        <inplace-input :onModeChange="changeEditMode" :editMode="editMode.username" name="username" :value="username" @input="onUserNameChange"></inplace-input>
+                        <inplace-input name="username"
+                            v-on:update:editMode="onModeChange('username', $event)"
+                            v-bind:editMode="editMode.username" :value="username" @input="onUserNameChange"></inplace-input>
                     </v-flex>
                 </v-layout>
 
@@ -49,7 +51,7 @@ const MainStore = namespace(StoreType.MAIN);
 })
 export class ProfilePage extends UI {
 
-    editMode: {[key: string]: boolean} = {
+    private editMode: {[key: string]: boolean} = {
         email: false,
         username: false,
     };
@@ -64,16 +66,6 @@ export class ProfilePage extends UI {
     /** email пользователя */
     private email = "";
 
-    changeEditMode(name: string, val: boolean): void {
-        if (typeof this.editMode[name] !== "undefined") {
-            Object.keys(this.editMode).forEach(el => {
-                this.editMode[el] = false;
-            });
-
-            this.editMode[name] = val;
-        }
-    }
-
     /**
      * Инициализирует данные компонента
      * @inheritDoc
@@ -81,6 +73,15 @@ export class ProfilePage extends UI {
     async mounted(): Promise<void> {
         this.username = this.clientInfo.user.username;
         this.email = this.clientInfo.user.email;
+    }
+
+    private onModeChange(field: string, newVal: boolean): void {
+        if (this.editMode[field] !== undefined) {
+            Object.keys(this.editMode).forEach(key => {
+                this.editMode[key] = false;
+            });
+            this.editMode[field] = newVal;
+        }
     }
 
     /**

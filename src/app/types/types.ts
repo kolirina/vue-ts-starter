@@ -31,7 +31,7 @@ export type TradeRow = {
     /** Валюта */
     currency: string,
     /** Итоговая сумма сделки */
-    signedTotal: string
+    signedTotal: string,
     /** Итоговая сумма сделки без учета комиссии */
     totalWithoutFee: string,
     /** Тикер */
@@ -221,17 +221,18 @@ export type TableHeader = {
     value: string,
     class?: string[] | string,
     width?: string,
+    /**
+     * Определяет показ элемента в таблице
+     */
     active?: boolean,
+    /**
+     * Определяет показ элемента в диалоге переключения калонок.
+     */
     ghost?: boolean,
 };
 
 export type TableHeaders = {
     [key: string]: TableHeader[]
-};
-
-export type TableHeaderData = {
-    tableName: string,
-    headers: TableHeader[]
 };
 
 export type DashboardData = {

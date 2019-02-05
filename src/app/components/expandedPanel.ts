@@ -4,6 +4,7 @@ import {UI} from "../app/ui";
 import {StockTable} from "./stockTable";
 
 @Component({
+  // language=Vue
   template: `
     <div class="exp-panel">
       <v-menu v-if="withMenu" :attach="'#exp-panel-attach' + name" class="exp-panel-menu">

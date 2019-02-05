@@ -28,8 +28,72 @@
   }
 
   &-icons {
-    img {
+    display: flex;
+
+    &-complete,
+    &-dismiss {
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      position: relative;
+      box-shadow: 0 0 10px rgba(0,0,0,.2);
       cursor: pointer;
+    }
+    
+    &-complete {
+      background-color: #3b6ec9;
+      margin-right: 21px;
+      &::before {
+        display: block;
+        content: "";
+        width: 1px;
+        height: 8px;
+        background-color: #fff;
+        transform: rotate(-45deg);
+        position: absolute;
+        top: 12px;
+        left: 7px;
+      }
+      
+      &::after {
+        display: block;
+        content: "";
+        width: 1px;
+        height: 12px;
+        background-color: #fff;
+        transform: rotate(45deg);
+        position: absolute;
+        top: 8px;
+        left: 14px;
+      }
+    }
+
+    &-dismiss {
+      border: 1px solid #abafbd;
+      
+      &::before {
+        display: block;
+        content: "";
+        height: 9px;
+        width: 1px;
+        position: absolute;
+        top: 7.5px;
+        left: 11px;
+        transform: rotate(45deg);
+        background-color: #abafbd;
+      }
+      
+      &::after {
+        display: block;
+        content: "";
+        height: 9px;
+        width: 1px;
+        position: absolute;
+        top: 7.5px;
+        left: 11px;
+        transform: rotate(-45deg);
+        background-color: #abafbd;
+      }
     }
   }
 

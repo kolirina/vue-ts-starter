@@ -1,8 +1,7 @@
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
-import {Prop} from "vue-property-decorator";
 import {TablesService} from "../../services/tablesService";
-import {TableHeader, TableHeaderData} from "../../types/types";
+import {TableHeader} from "../../types/types";
 import {CustomDialog} from "./customDialog";
 
 /**
@@ -47,7 +46,7 @@ export class TableSettingsDialog extends CustomDialog<TableHeaderData, void> {
   private tablesService: TablesService;
 
   mounted(): void {
-    this.headers = JSON.parse(JSON.stringify(this.data.headers));
+    this.headers = this.data.headers.map(el => ({...el}) );
     this.column1 = this.headers.slice(0, Math.ceil(this.headers.length / 2));
     this.column2 = this.headers.slice(Math.ceil(this.headers.length / 2));
   }
@@ -56,4 +55,9 @@ export class TableSettingsDialog extends CustomDialog<TableHeaderData, void> {
     this.tablesService.setHeaders(this.data.tableName, this.headers);
     this.close();
   }
+}
+
+export interface TableHeaderData {
+  tableName: string;
+  headers: TableHeader[];
 }

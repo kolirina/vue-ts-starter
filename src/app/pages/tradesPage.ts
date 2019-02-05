@@ -10,7 +10,7 @@ import {TradesTable} from "../components/tradesTable";
 import {CatchErrors} from "../platform/decorators/catchErrors";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {FilterService} from "../services/filterService";
-import {TablesService} from "../services/tablesService";
+import {TABLES_NAME, TablesService} from "../services/tablesService";
 import {TradeService, TradesFilter} from "../services/tradeService";
 import {Pagination, Portfolio, TableHeader, TableHeaders, TablePagination, TradeRow} from "../types/types";
 import {MutationType} from "../vuex/mutationType";
@@ -29,10 +29,10 @@ const MainStore = namespace(StoreType.MAIN);
             <expanded-panel :disabled="true" :withMenu="true" name="trades" :alwaysOpen="true" :value="[true]">
                 <template slot="header">Сделки</template>
                 <template slot="list">
-                    <v-list-tile-title @click="openTableSettings('tradesTable')">Настроить калонки</v-list-tile-title>
+                    <v-list-tile-title @click="openTableSettings(TABLES_NAME.TRADE)">Настроить колонки</v-list-tile-title>
                 </template>
-                <trades-table v-if="tradePagination" :trades="trades" :trade-pagination="tradePagination" :tableKeys="getTableKeys('tradesTable')"
-                    :headers="getHeaders('tradesTable')" @delete="onDelete"></trades-table>
+                <trades-table v-if="tradePagination" :trades="trades" :trade-pagination="tradePagination" :tableHeaders="getTableHeaders(TABLES_NAME.TRADE)"
+                    :headers="getHeaders(TABLES_NAME.TRADE)" @delete="onDelete"></trades-table>
             </expanded-panel>
 
             <v-container v-if="pages > 1">
@@ -82,6 +82,8 @@ export class TradesPage extends UI {
 
     private headers: TableHeaders = this.tablesService.headers;
 
+    private TABLES_NAME = TABLES_NAME;
+
     getHeaders(name: string): TableHeader[] {
         const filtredHeaders = this.tablesService.filterHeaders(this.headers);
         if (filtredHeaders[name]) {
@@ -90,7 +92,7 @@ export class TradesPage extends UI {
         return [];
     }
 
-    getTableKeys(name: string): {[key: string]: boolean} {
+    getTableHeaders(name: string): {[key: string]: boolean} {
         return this.tablesService.getHeadersValue( this.getHeaders(name) );
     }
 

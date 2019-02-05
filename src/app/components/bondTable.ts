@@ -29,36 +29,36 @@ const MainStore = namespace(StoreType.MAIN);
                     <td>
                         <v-icon class="data-table-cell" v-bind:class="{'data-table-cell-open': props.expanded}">play_arrow</v-icon>
                     </td>
-                    <td v-if="tableKeys.company">{{ props.item.bond.shortname }}</td>
-                    <td v-if="tableKeys.ticker">
+                    <td v-if="tableHeaders.company">{{ props.item.bond.shortname }}</td>
+                    <td v-if="tableHeaders.ticker">
                         <bond-link :ticker="props.item.bond.ticker"></bond-link>
                     </td>
-                    <td v-if="tableKeys.quantity" class="text-xs-right ii-number-cell">{{props.item.quantity}}</td>
-                    <td v-if="tableKeys.avgBuy" class="text-xs-right ii-number-cell">{{ props.item.avgBuy | number }}</td>
-                    <td v-if="tableKeys.currPrice" class="text-xs-right ii-number-cell">{{ props.item.currPrice | number }}</td>
-                    <td v-if="tableKeys.bCost" class="text-xs-right ii-number-cell">{{props.item.bcost}}</td>
-                    <td v-if="tableKeys.sCost" class="text-xs-right ii-number-cell">{{props.item.scost}}</td>
-                    <td v-if="tableKeys.currCost" class="text-xs-right ii-number-cell">{{ props.item.currCost | amount(true) }}</td>
-                    <td v-if="tableKeys.nominal" class="text-xs-right ii-number-cell">{{props.item.nominal}}</td>
-                    <td v-if="tableKeys.profitFromCoupons" class="text-xs-right ii-number-cell">{{props.item.profitFromCoupons}}</td>
-                    <td v-if="tableKeys.profitFromCouponsPercent" class="text-xs-right ii-number-cell">{{props.item.profitFromCouponsPercent}}</td>
-                    <td v-if="tableKeys.exchangeProfit" class="text-xs-right ii-number-cell">{{props.item.exchangeProfit}}</td>
-                    <td v-if="tableKeys.exchangeProfitPercent" class="text-xs-right ii-number-cell">{{props.item.exchangeProfitPercent}}</td>
-                    <td v-if="tableKeys.rateProfit" class="text-xs-right ii-number-cell">{{props.item.rateProfit}}</td>
-                    <td v-if="tableKeys.rateProfitPercent" class="text-xs-right ii-number-cell">{{props.item.rateProfitPercent}}</td>
-                    <td v-if="tableKeys.buyNkd" class="text-xs-right ii-number-cell">{{props.item.buyNkd}}</td>
-                    <td v-if="tableKeys.sellNkd" class="text-xs-right ii-number-cell">{{props.item.sellNkd}}</td>
-                    <td v-if="tableKeys.profit" :class="[( amount(props.item.profit) >= 0 ) ? 'ii--green-markup' : 'ii--red-markup', 'ii-number-cell', 'text-xs-right']">
+                    <td v-if="tableHeaders.quantity" class="text-xs-right ii-number-cell">{{props.item.quantity}}</td>
+                    <td v-if="tableHeaders.avgBuy" class="text-xs-right ii-number-cell">{{ props.item.avgBuy | number }}</td>
+                    <td v-if="tableHeaders.currPrice" class="text-xs-right ii-number-cell">{{ props.item.currPrice | number }}</td>
+                    <td v-if="tableHeaders.bCost" class="text-xs-right ii-number-cell">{{props.item.bcost | amount}}</td>
+                    <td v-if="tableHeaders.sCost" class="text-xs-right ii-number-cell">{{props.item.scost | amount}}</td>
+                    <td v-if="tableHeaders.currCost" class="text-xs-right ii-number-cell">{{ props.item.currCost | amount(true) }}</td>
+                    <td v-if="tableHeaders.nominal" class="text-xs-right ii-number-cell">{{props.item.nominal | amount}}</td>
+                    <td v-if="tableHeaders.profitFromCoupons" class="text-xs-right ii-number-cell">{{props.item.profitFromCoupons | amount}}</td>
+                    <td v-if="tableHeaders.profitFromCouponsPercent" class="text-xs-right ii-number-cell">{{props.item.profitFromCouponsPercent}}</td>
+                    <td v-if="tableHeaders.exchangeProfit" class="text-xs-right ii-number-cell">{{props.item.exchangeProfit | amount}}</td>
+                    <td v-if="tableHeaders.exchangeProfitPercent" class="text-xs-right ii-number-cell">{{props.item.exchangeProfitPercent}}</td>
+                    <td v-if="tableHeaders.rateProfit" class="text-xs-right ii-number-cell">{{props.item.rateProfit | amount}}</td>
+                    <td v-if="tableHeaders.rateProfitPercent" class="text-xs-right ii-number-cell">{{props.item.rateProfitPercent}}</td>
+                    <td v-if="tableHeaders.buyNkd" class="text-xs-right ii-number-cell">{{props.item.buyNkd | amount}}</td>
+                    <td v-if="tableHeaders.sellNkd" class="text-xs-right ii-number-cell">{{props.item.sellNkd | amount}}</td>
+                    <td v-if="tableHeaders.profit" :class="[( amount(props.item.profit) >= 0 ) ? 'ii--green-markup' : 'ii--red-markup', 'ii-number-cell', 'text-xs-right']">
                         {{ props.item.profit | amount(true) }}
                     </td>
-                    <td v-if="tableKeys.percProfit" :class="[( Number(props.item.percProfit) >= 0 ) ? 'ii--green-markup' : 'ii--red-markup', 'ii-number-cell', 'text-xs-right']">
+                    <td v-if="tableHeaders.percProfit" :class="[( Number(props.item.percProfit) >= 0 ) ? 'ii--green-markup' : 'ii--red-markup', 'ii-number-cell', 'text-xs-right']">
                         {{ props.item.percProfit | number }}
                     </td>
-                    <td v-if="tableKeys.yearYield" class="text-xs-right ii-number-cell">{{props.item.yearYield}}</td>
-                    <td v-if="tableKeys.dailyPl" class="text-xs-right ii-number-cell">{{props.item.dailyPl}}</td>
-                    <td v-if="tableKeys.dailyPlPercent" class="text-xs-right ii-number-cell">{{props.item.dailyPlPercent}}</td>
-                    <td v-if="tableKeys.summFee" class="text-xs-right ii-number-cell">{{props.item.summFee}}</td>
-                    <td v-if="tableKeys.percCurrShare" class="text-xs-right ii-number-cell">{{ props.item.percCurrShare | number }}</td>
+                    <td v-if="tableHeaders.yearYield" class="text-xs-right ii-number-cell">{{props.item.yearYield}}</td>
+                    <td v-if="tableHeaders.dailyPl" class="text-xs-right ii-number-cell">{{props.item.dailyPl | amount}}</td>
+                    <td v-if="tableHeaders.dailyPlPercent" class="text-xs-right ii-number-cell">{{props.item.dailyPlPercent}}</td>
+                    <td v-if="tableHeaders.summFee" class="text-xs-right ii-number-cell">{{props.item.summFee | amount}}</td>
+                    <td v-if="tableHeaders.percCurrShare" class="text-xs-right ii-number-cell">{{ props.item.percCurrShare | number }}</td>
                     <td class="justify-center layout px-0" @click.stop>
                         <v-menu transition="slide-y-transition" bottom left>
                             <v-btn slot="activator" color="primary" flat icon dark>
@@ -173,7 +173,7 @@ export class BondTable extends UI {
     private reloadPortfolio: (id: string) => Promise<void>;
 
     @Prop()
-    private tableKeys: object;
+    private tableHeaders: {[key: string]: boolean};
 
     @Prop()
     private headers: TableHeader[];

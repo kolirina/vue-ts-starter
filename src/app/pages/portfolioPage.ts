@@ -1,7 +1,7 @@
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
-import {UI, Watch} from "../app/ui";
+import {UI} from "../app/ui";
 import {AssetTable} from "../components/assetTable";
 import {BondTable} from "../components/bondTable";
 import {AssetChart} from "../components/charts/assetChart";
@@ -13,7 +13,7 @@ import {StockPieChart} from "../components/charts/stockPieChart";
 import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog";
 import {ExpandedPanel} from "../components/expandedPanel";
 import {StockTable} from "../components/stockTable";
-import {TablesService} from "../services/tablesService";
+import {TABLES_NAME, TablesService} from "../services/tablesService";
 import {Portfolio, TableHeader, TableHeaders} from "../types/types";
 import {UiStateHelper} from "../utils/uiStateHelper";
 import {StoreType} from "../vuex/storeType";
@@ -32,9 +32,11 @@ const MainStore = namespace(StoreType.MAIN);
             <expanded-panel :value="$uistate.stocksTablePanel" :withMenu="true" name="stock" :state="$uistate.STOCKS">
                 <template slot="header">Акции</template>
                 <template slot="list">
-                    <v-list-tile-title @click="openTableSettings('stockTable')">Настроить калонки</v-list-tile-title>
+                    <v-list-tile-title @click="openTableHeadersDialog('stockTable')">Настроить колонки</v-list-tile-title>
                 </template>
-                <stock-table :rows="portfolio.overview.stockPortfolio.rows" :tableKeys="getTableKeys('stockTable')" :headers="getHeaders('stockTable')"></stock-table>
+                <stock-table :rows="portfolio.overview.stockPortfolio.rows"
+                    :tableHeaders="getTableHeaders(TABLES_NAME.STOCK)"
+                    :headers="getHeaders(TABLES_NAME.STOCK)"></stock-table>
             </expanded-panel>
 
             <div style="height: 50px"></div>
@@ -42,9 +44,9 @@ const MainStore = namespace(StoreType.MAIN);
             <expanded-panel :value="$uistate.bondsTablePanel" :withMenu="true" name="bond" :state="$uistate.BONDS">
                 <template slot="header">Облигации</template>
                 <template slot="list">
-                    <v-list-tile-title @click="openTableSettings('bondTable')">Настроить калонки</v-list-tile-title>
+                    <v-list-tile-title @click="openTableHeadersDialog('bondTable')">Настроить колонки</v-list-tile-title>
                 </template>
-                <bond-table :rows="portfolio.overview.bondPortfolio.rows" :tableKeys="getTableKeys('bondTable')" :headers="getHeaders('bondTable')"></bond-table>
+                <bond-table :rows="portfolio.overview.bondPortfolio.rows" :tableHeaders="getTableHeaders(TABLES_NAME.BOND)" :headers="getHeaders(TABLES_NAME.BOND)"></bond-table>
             </expanded-panel>
 
             <div style="height: 50px"></div>
@@ -105,6 +107,8 @@ export class PortfolioPage extends UI {
 
     private headers: TableHeaders = this.tablesService.headers;
 
+    private TABLES_NAME = TABLES_NAME;
+
     getHeaders(name: string): TableHeader[] {
         const filtredHeaders = this.tablesService.filterHeaders(this.headers);
         if (filtredHeaders[name]) {
@@ -113,12 +117,11 @@ export class PortfolioPage extends UI {
         return [];
     }
 
-    getTableKeys(name: string): {[key: string]: boolean} {
+    getTableHeaders(name: string): {[key: string]: boolean} {
         return this.tablesService.getHeadersValue( this.getHeaders(name) );
     }
 
-    // Открывает диалог с настройкой заголовков таблицы
-    private async openTableSettings(tableName: string): Promise<void> {
+    private async openTableHeadersDialog(tableName: string): Promise<void> {
         await new TableSettingsDialog().show({
             tableName: tableName,
             headers: this.headers[tableName]
