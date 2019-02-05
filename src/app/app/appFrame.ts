@@ -83,8 +83,8 @@ const MainStore = namespace(StoreType.MAIN);
                                 </v-list-tile>
                             </v-list-group>
 
-                            <v-list-tile active-class="sidebar-list-item-active" class="sidebar-list-item" v-else :key="item.action"
-                                         :to="{name: item.action, params: item.params}">
+                            <v-list-tile v-else active-class="sidebar-list-item-active" class="sidebar-list-item" :key="item.action"
+                                         :to="{path: item.path, name: item.action, params: item.params}">
                                 <v-list-tile-content class="pl-3">
                                     <v-list-tile-title>{{ item.title }}</v-list-tile-title>
                                 </v-list-tile-content>
@@ -214,7 +214,7 @@ export class AppFrame extends UI {
         {title: "Дивиденды", action: "dividends", icon: "far fa-calendar-plus"},
         {title: "Комбинированный портфель", action: "combined-portfolio", icon: "fas fa-object-group"},
         {title: "Котировки", action: "quotes", icon: "fas fa-chart-area"},
-        {title: "Информация", action: "share-info", params: {ticker: "GAZP"}, icon: "fas fa-info"}
+        {title: "Информация", path: "/share-info", icon: "fas fa-info"}
     ];
 
     private secondSection: NavBarItem[] = [
@@ -299,6 +299,7 @@ export type NavBarItem = {
     title: string,
     /** routing, для корневых элементов может не заполнен */
     action?: string,
+    path?: string,
     icon: string,
     active?: boolean,
     subMenu?: NavBarItem[],

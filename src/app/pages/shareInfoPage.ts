@@ -2,7 +2,10 @@ import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {UI} from "../app/ui";
 import {DividendChart} from "../components/charts/dividendChart";
+import {CatchErrors} from "../platform/decorators/catchErrors";
+import {ShowProgress} from "../platform/decorators/showProgress";
 import {MarketService} from "../services/marketService";
+import {AssetType} from "../types/assetType";
 import {BaseChartDot, Dot, HighStockEventsGroup} from "../types/charts/types";
 import {Share} from "../types/types";
 
@@ -12,7 +15,7 @@ import {Share} from "../types/types";
         <v-container v-if="share" fluid>
             <div slot="header">Информация по бумаге</div>
             <v-layout>
-                <v-text-field placeholder="Введите тикер или название компании"></v-text-field>
+                <share-search :asset-type="assetType.STOCK" @change="onShareSelect"></share-search>
             </v-layout>
             <v-card>
                 <v-card-text>
@@ -122,6 +125,7 @@ export class ShareInfoPage extends UI {
     @Inject
     private marketService: MarketService;
 
+    private assetType = AssetType;
     private share: Share = null;
     private history: Dot[] = [];
     private dividends: BaseChartDot[] = [];
@@ -138,4 +142,16 @@ export class ShareInfoPage extends UI {
         }
     }
 
+    @CatchErrors
+    @ShowProgress
+    private async onShareSelect(share: Share): Promise<void> {
+        this.share = share;
+        if (this.share) {
+            const result = await this.marketService.getStockInfo(this.share.ticker);
+            this.share = result.stock;
+            this.history = result.history;
+            this.dividends = result.dividends;
+            this.events.push(result.events);
+        }
+    }
 }

@@ -1,0 +1,115 @@
+/*
+ * STRICTLY CONFIDENTIAL
+ * TRADE SECRET
+ * PROPRIETARY:
+ *       "Intelinvest" Ltd, TIN 1655386205
+ *       420107, REPUBLIC OF TATARSTAN, KAZAN CITY, SPARTAKOVSKAYA STREET, HOUSE 2, ROOM 119
+ * (c) "Intelinvest" Ltd, 2019
+ *
+ * СТРОГО КОНФИДЕНЦИАЛЬНО
+ * КОММЕРЧЕСКАЯ ТАЙНА
+ * СОБСТВЕННИК:
+ *       ООО "Интеллектуальные инвестиции", ИНН 1655386205
+ *       420107, РЕСПУБЛИКА ТАТАРСТАН, ГОРОД КАЗАНЬ, УЛИЦА СПАРТАКОВСКАЯ, ДОМ 2, ПОМЕЩЕНИЕ 119
+ * (c) ООО "Интеллектуальные инвестиции", 2019
+ */
+
+import {Inject} from "typescript-ioc";
+import Component from "vue-class-component";
+import {Watch} from "vue-property-decorator";
+import {Prop, UI} from "../app/ui";
+import {MarketService} from "../services/marketService";
+import {AssetType} from "../types/assetType";
+import {BigMoney} from "../types/bigMoney";
+import {Bond, Share} from "../types/types";
+
+@Component({
+    // language=Vue
+    template: `
+        <v-autocomplete :items="filteredShares" v-model="share" @change="onShareSelect" @click:clear="onSearchClear"
+                        label="Введите тикер или название компании"
+                        :loading="shareSearch" no-data-text="Ничего не найдено" clearable required
+                        dense :hide-no-data="true" :no-filter="true" :search-input.sync="searchQuery">
+            <template slot="selection" slot-scope="data">
+                {{ shareLabelSelected(data.item) }}
+            </template>
+            <template slot="item" slot-scope="data">
+                {{ shareLabelListItem(data.item) }}
+            </template>
+        </v-autocomplete>
+
+    `
+})
+export class ShareSearchComponent extends UI {
+
+    @Prop({required: true})
+    private assetType: AssetType;
+
+    @Inject
+    private marketService: MarketService;
+
+    /** Текущий объект таймера */
+    private currentTimer: number = null;
+    private searchQuery: string = null;
+    private filteredShares: Share[] = [];
+    private share: Share = null;
+    private shareSearch = false;
+    private notFoundLabel = "Ничего не найдено";
+
+    @Watch("searchQuery")
+    private async onSearch(): Promise<void> {
+        clearTimeout(this.currentTimer);
+        if (!this.searchQuery || this.searchQuery.length <= 2) {
+            this.shareSearch = false;
+            return;
+        }
+        this.shareSearch = true;
+        const delay = new Promise((resolve, reject): void => {
+            this.currentTimer = setTimeout(async (): Promise<void> => {
+                try {
+                    this.filteredShares = await this.marketService.searchStocks(this.searchQuery);
+                    this.shareSearch = false;
+                } catch (error) {
+                    reject(error);
+                }
+            }, 1000);
+        });
+
+        try {
+            delay.then(() => {
+                clearTimeout(this.currentTimer);
+                this.shareSearch = false;
+            });
+        } catch (error) {
+            clearTimeout(this.currentTimer);
+            this.shareSearch = false;
+            throw error;
+        }
+    }
+
+    private shareLabelSelected(share: Share): string {
+        return `${share.ticker} (${share.shortname})`;
+    }
+
+    private shareLabelListItem(share: Share): string {
+        if ((share as any) === this.notFoundLabel) {
+            return this.notFoundLabel;
+        }
+        if (this.assetType === AssetType.STOCK) {
+            const price = new BigMoney(share.price);
+            return `${share.ticker} (${share.shortname}), ${price.amount.toString()} ${price.currency}`;
+        } else if (this.assetType === AssetType.BOND) {
+            return `${share.ticker} (${share.shortname}), ${(share as Bond).prevprice}%`;
+        }
+        return `${share.ticker} (${share.shortname})`;
+    }
+
+    private onSearchClear(): void {
+        this.filteredShares = [];
+    }
+
+    private async onShareSelect(share: Share): Promise<void> {
+        this.share = share;
+        this.$emit("change", this.share);
+    }
+}
