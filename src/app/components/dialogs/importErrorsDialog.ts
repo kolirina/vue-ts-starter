@@ -14,10 +14,9 @@ import {CustomDialog} from "./customDialog";
             <v-card class="dialog-wrap">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
 
-                <v-toolbar dark color="primary">
-                    <v-toolbar-title><b>Результаты импорта</b></v-toolbar-title>
-                    <v-spacer></v-spacer>
-                </v-toolbar>
+                <v-card-title>
+                    <span class="headline">Результаты импорта</span>
+                </v-card-title>
                 <v-card-text>
                     <h4>Успешно {{ data.validatedTradesCount | declension("добавлена", "добавлено", "добавлено") }}
                         {{ data.validatedTradesCount }} {{ data.validatedTradesCount | declension("сделка", "сделки", "сделок") }}.</h4>
@@ -44,6 +43,7 @@ import {CustomDialog} from "./customDialog";
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
+                    <v-btn color="info lighten-2" flat @click.native="close">Отмена</v-btn>
                     <v-btn color="primary" @click.native="goToPortfolio" dark small>
                         Перейти к портфелю
                     </v-btn>

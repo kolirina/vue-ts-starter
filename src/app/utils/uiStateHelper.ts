@@ -22,6 +22,7 @@ export class UiStateHelper {
     static readonly EVENTS_CALENDAR = "events_calendar";
     static readonly LAST_UPDATE_NOTIFICATION = "last_update_notification";
     static readonly TRADES_FILTER = "trades_filter";
+    static readonly IMPORT_SETTINGS = "import_settings";
 
     static set stocksTablePanel(value: number[]) {
         localStorage.set(UiStateHelper.STOCKS, value);
@@ -157,6 +158,14 @@ export class UiStateHelper {
 
     static get tradesFilter(): number[] {
         return [localStorage.get(UiStateHelper.TRADES_FILTER, 0)];
+    }
+
+    static set importSettings(value: number[]) {
+        localStorage.set(UiStateHelper.IMPORT_SETTINGS, value);
+    }
+
+    static get importSettings(): number[] {
+        return [localStorage.get(UiStateHelper.IMPORT_SETTINGS, 0)];
     }
 
     static toggleState(type: string): void {

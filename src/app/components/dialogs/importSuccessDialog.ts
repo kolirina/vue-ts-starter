@@ -15,10 +15,9 @@ import {CustomDialog} from "./customDialog";
             <v-card class="dialog-wrap">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
 
-                <v-toolbar dark color="primary">
-                    <v-toolbar-title><b>Завершение импорта</b></v-toolbar-title>
-                    <v-spacer></v-spacer>
-                </v-toolbar>
+                <v-card-title>
+                    <span class="headline">Завершение импорта</span>
+                </v-card-title>
                 <v-card-text>
                         <span v-if="step === 0">
                             <h4>Остался последний шаг и ваш портфель будет готов.</h4>
