@@ -14,8 +14,9 @@ import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
 import {Operation} from "../types/operation";
 import {TradeDataHolder} from "../types/trade/tradeDataHolder";
-import {CurrencyUnit, Portfolio, Share} from "../types/types";
+import {CurrencyUnit, ErrorInfo, Portfolio, Share} from "../types/types";
 import {DateUtils} from "../utils/dateUtils";
+import {TradeUtils} from "../utils/tradeUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 
@@ -80,7 +81,6 @@ const MainStore = namespace(StoreType.MAIN);
                                                 <ii-number-field v-model="quantity"
                                                                  required
                                                                  :rules="rulesQuantity"
-                                                                 append-icon="fas fa-plus"
                                                                  :decimals="0"
                                                                  label="Количество"
                                                                  name="quantity"
@@ -97,10 +97,8 @@ const MainStore = namespace(StoreType.MAIN);
                                             </v-flex>
                                             <v-layout wrap>
                                                 <v-flex>
-                                                    <ii-number-field v-model="price"
-                                                                     append-icon="fas fa-money-bill-alt"
-                                                                     label="Цена акции"
-                                                                     messages="укажите цену акции или стоимость сделки"
+                                                    <ii-number-field v-model="price" label="Цена акции"
+                                                                     messages="Укажите цену акции или стоимость сделки"
                                                                      name="price"
                                                                      required
                                                                      :rules="rulesPrice"
@@ -109,10 +107,9 @@ const MainStore = namespace(StoreType.MAIN);
                                                 </v-flex>
                                                 <v-flex/>
                                                 <ii-number-field v-model="total"
-                                                                 append-icon="fas fa-money-bill-alt"
                                                                  :decimals="2"
                                                                  label="Стоимость позиции"
-                                                                 messages="укажите цену акции или стоимость сделки"
+                                                                 messages="Укажите цену акции или стоимость сделки"
                                                                  name="total"
                                                                  required
                                                                  :rules="rulesPrice"
@@ -139,13 +136,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             <v-flex xs12>
                                                 <v-layout wrap>
                                                     <v-flex xs12 lg8>
-                                                        <ii-number-field v-model="moneyField"
-                                                                         requered
-                                                                         :rules="rulesMoney"
-                                                                         append-icon="fas fa-money-bill-alt"
-                                                                         :decimals="2"
-                                                                         label="Сумма">
-                                                        </ii-number-field>
+                                                        <ii-number-field v-model="moneyField" requered :rules="rulesMoney" :decimals="2" label="Сумма"></ii-number-field>
                                                     </v-flex>
                                                     <v-spacer></v-spacer>
                                                     <v-flex xs12 lg3>
@@ -172,11 +163,11 @@ const MainStore = namespace(StoreType.MAIN);
             <v-card>
                 <v-card-text class="text-xs-center title">
                     Текущая стоимость портфеля:
-                    <a href="#/portfolio" style="text-decoration: none">
+                    <router-link to="portfolio" style="text-decoration: none">
                     <span :class="portfolio.portfolioParams.viewCurrency.toLowerCase()">
                         {{ this.portfolio.overview.dashboardData.currentCost | amount(true) }}
                     </span>
-                    </a>
+                    </router-link>
                 </v-card-text>
             </v-card>
             <balances-table :assets="portfolio.overview.assetRows" :stocks="portfolio.overview.stockPortfolio.rows" :loading="processState"/>
@@ -294,8 +285,10 @@ export class BalancesPage extends UI implements TradeDataHolder {
         this.assetType = AssetType.STOCK;
         this.operation = Operation.BUY;
         this.moneyAmount = this.total;
+        this.currency = this.share.currency;
         await this.addTrade();
         await this.$refs.stockForm.reset();
+        this.closePrice = null;
         this.date = DateUtils.currentDate();
     }
 
@@ -306,8 +299,11 @@ export class BalancesPage extends UI implements TradeDataHolder {
         this.assetType = AssetType.MONEY;
         this.operation = Operation.DEPOSIT;
         this.moneyAmount = this.moneyField;
+        const currentCurrency = this.moneyCurrency;
+        this.currency = this.moneyCurrency;
         await this.addTrade();
         await this.$refs.moneyForm.reset();
+        this.moneyCurrency = this.currencyList.filter(cur => cur !== currentCurrency)[0] || CurrencyUnit.RUB.code;
     }
 
     private async addTrade(): Promise<void> {
@@ -336,14 +332,24 @@ export class BalancesPage extends UI implements TradeDataHolder {
             });
             await this.reloadPortfolio(this.portfolio.id);
             this.$snotify.info("Баланс успешно сохранен");
-            return;
         } catch (e) {
-            // for (const errorInfo of errors.fields) {
-            //     this.$validator.errors.add({field: errorInfo.name, msg: errorInfo.errorMessage});
-            // }
+            this.handleError(e);
             return;
         } finally {
             this.processState = false;
+        }
+    }
+
+    private handleError(error: ErrorInfo): void {
+        const validatorFields = this.$validator.fields.items.map(f => f.name);
+        for (const errorInfo of error.fields) {
+            if (validatorFields.includes(errorInfo.name)) {
+                this.$validator.errors.add({field: errorInfo.name, msg: errorInfo.errorMessage});
+            }
+        }
+        if (this.$validator.errors.count() === 0) {
+            const globalMessage = TradeUtils.getGlobalMessage(error);
+            this.$snotify.error(globalMessage);
         }
     }
 

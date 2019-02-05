@@ -386,17 +386,9 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             }
         }
         if (this.$validator.errors.count() === 0) {
-            const globalMessage = this.getGlobalMessage(error);
+            const globalMessage = TradeUtils.getGlobalMessage(error);
             this.$snotify.error(globalMessage);
         }
-    }
-
-    private getGlobalMessage(error: ErrorInfo): string {
-        const fieldError = error.fields[0];
-        if (error.errorCode === "GLOBAL" && fieldError && fieldError.errorMessage) {
-            return fieldError.errorMessage;
-        }
-        return error.message;
     }
 
     private fillFieldsFromStock(stock: Stock): void {
