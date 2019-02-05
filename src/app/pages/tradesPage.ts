@@ -1,3 +1,4 @@
+import Decimal from "decimal.js";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {Watch} from "vue-property-decorator";
@@ -109,7 +110,7 @@ export class TradesPage extends UI {
 
     private calculatePagination(): void {
         this.totalTrades = this.portfolio.overview.totalTradesCount;
-        this.pages = parseInt(String(this.totalTrades / this.pageSize), 10);
+        this.pages = new Decimal(this.totalTrades / this.pageSize).toDP(0, Decimal.ROUND_UP).toNumber();
     }
 
     @CatchErrors

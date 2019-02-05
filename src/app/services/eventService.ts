@@ -62,8 +62,18 @@ export interface ShareEvent {
     totalAmount: string;
     /** Назавание события */
     label: string;
+    /** Период выплаты */
+    period?: string;
     /** Тип события */
     type: string;
+}
+
+/** Поля события, необходимые для диа */
+export interface EventFields {
+    quantity: number;
+    amount: string;
+    note: string;
+    perOne: boolean;
 }
 
 /** Информация о событиях портфеля */

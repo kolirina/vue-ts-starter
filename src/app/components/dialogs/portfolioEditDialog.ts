@@ -24,7 +24,7 @@ import {CustomDialog} from "./customDialog";
                     <v-container grid-list-md class="paddT0 paddB0">
                         <v-layout wrap>
                             <v-flex xs12>
-                                <v-text-field label="Название" v-model="portfolioParams.name" required :counter="40" class="required"></v-text-field>
+                                <v-text-field label="Название" v-model="portfolioParams.name" required autofocus :counter="40" class="required"></v-text-field>
                             </v-flex>
 
                             <v-flex xs12 sm4>

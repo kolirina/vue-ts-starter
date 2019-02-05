@@ -139,7 +139,7 @@ const MainStore = namespace(StoreType.MAIN);
 
             <template slot="no-data">
                 <v-alert :value="true" color="info" icon="info">
-                    {{ tradePagination.totalItems ? "Добавьте свою первую сделку и она отобразится здесь" : "Ничего не найдено" }}
+                    {{ tradePagination.totalItems ? "Ничего не найдено" : "Добавьте свою первую сделку и она отобразится здесь"}}
                 </v-alert>
             </template>
         </v-data-table>
@@ -191,7 +191,6 @@ export class TradesTable extends UI {
     }
 
     private async openEditTradeDialog(trade: TradeRow): Promise<void> {
-        console.log(trade);
         const tradeFields: TradeFields = {
             ticker: trade.ticker,
             date: trade.date,
