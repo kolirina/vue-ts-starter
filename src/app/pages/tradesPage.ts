@@ -1,3 +1,4 @@
+import Decimal from "decimal.js";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {Watch} from "vue-property-decorator";
@@ -12,6 +13,7 @@ import {ShowProgress} from "../platform/decorators/showProgress";
 import {FilterService} from "../services/filterService";
 import {TABLES_NAME, TablesService} from "../services/tablesService";
 import {TradeService, TradesFilter} from "../services/tradeService";
+import {AssetType} from "../types/assetType";
 import {Pagination, Portfolio, TableHeader, TableHeaders, TablePagination, TradeRow} from "../types/types";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
@@ -139,12 +141,13 @@ export class TradesPage extends UI {
         await this.reloadPortfolio(this.portfolio.id);
         await this.loadTrades();
         this.calculatePagination();
-        this.$snotify.info(`Операция '${tradeRow.operationLabel}' по бумаге ${tradeRow.ticker} была успешно удалена`);
+        this.$snotify.info(`Операция '${tradeRow.operationLabel}' ${AssetType.valueByName(tradeRow.asset) === AssetType.MONEY ? "" :
+            `по бумаге ${tradeRow.ticker}`} была успешно удалена`);
     }
 
     private calculatePagination(): void {
         this.totalTrades = this.portfolio.overview.totalTradesCount;
-        this.pages = parseInt(String(this.totalTrades / this.pageSize), 10);
+        this.pages = new Decimal(this.totalTrades / this.pageSize).toDP(0, Decimal.ROUND_UP).toNumber();
     }
 
     @CatchErrors

@@ -100,9 +100,20 @@ export class RouterConfiguration {
                 component: QuotesPage
             },
             {
-                name: "share-info",
+                path: "/share-info",
+                redirect: "/share-info/GAZP"
+            },
+            {
                 path: "/share-info/:ticker",
-                component: ShareInfoPage
+                name: "share-info",
+                component: ShareInfoPage,
+                children: [
+                    {
+                        path: "",
+                        name: "share",
+                        component: ShareInfoPage
+                    }
+                ],
             },
             {
                 name: "bond-info",
