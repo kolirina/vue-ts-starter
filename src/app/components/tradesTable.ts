@@ -21,18 +21,23 @@ import {AddTradeDialog} from "./dialogs/addTradeDialog";
                     <td>
                         <v-icon class="data-table-cell" v-bind:class="{'data-table-cell-open': props.expanded}">play_arrow</v-icon>
                     </td>
-                    <td>
+                    <td v-if="tableHeaders.ticker">
                         <stock-link v-if="props.item.asset === 'STOCK'" :ticker="props.item.ticker"></stock-link>
                         <bond-link v-if="props.item.asset === 'BOND'" :ticker="props.item.ticker"></bond-link>
                         <span v-if="props.item.asset === 'MONEY'">{{ props.item.ticker }}</span>
                     </td>
-                    <td>{{ props.item.companyName }}</td>
-                    <td>{{ props.item.operationLabel }}</td>
-                    <td class="text-xs-center">{{ props.item.date | date }}</td>
-                    <td class="text-xs-right ii-number-cell">{{ props.item.quantity }}</td>
-                    <td class="text-xs-right ii-number-cell">{{ getPrice(props.item) }}</td>
-                    <td class="text-xs-right ii-number-cell">{{ getFee(props.item) }}</td>
-                    <td class="text-xs-right ii-number-cell">{{ props.item.signedTotal | amount(true) }}</td>
+                    <td v-if="tableHeaders.name">{{ props.item.companyName }}</td>
+                    <td v-if="tableHeaders.operationLabel">{{ props.item.operationLabel }}</td>
+                    <td v-if="tableHeaders.date" class="text-xs-center">{{ props.item.date | date }}</td>
+                    <td v-if="tableHeaders.quantity" class="text-xs-right ii-number-cell">{{ props.item.quantity }}</td>
+                    <td v-if="tableHeaders.price" class="text-xs-right ii-number-cell">{{ getPrice(props.item) }}</td>
+                    <td v-if="tableHeaders.facevalue">{{ props.item.facevalue }}</td>
+                    <td v-if="tableHeaders.nkd">{{ props.item.nkd }}</td>
+                    <td v-if="tableHeaders.fee" class="text-xs-right ii-number-cell">{{ getFee(props.item) }}</td>
+
+
+                    <td v-if="tableHeaders.signedTotal" class="text-xs-right ii-number-cell">{{ props.item.signedTotal | amount(true) }}</td>
+                    <td v-if="tableHeaders.totalWithoutFee" class="text-xs-right ii-number-cell">{{ props.item.totalWithoutFee | amount }}</td>
                     <td class="justify-center layout px-0" @click.stop>
                         <v-menu transition="slide-y-transition" bottom left>
                             <v-btn slot="activator" color="primary" flat icon dark>
@@ -135,18 +140,11 @@ import {AddTradeDialog} from "./dialogs/addTradeDialog";
 })
 export class TradesTable extends UI {
 
-    private headers: TableHeader[] = [
-        {text: "", align: "left", sortable: false, value: ""},
-        {text: "Тикер/ISIN", align: "left", value: "ticker"},
-        {text: "Название", align: "left", value: "name"},
-        {text: "Операция", align: "left", value: "operationLabel"},
-        {text: "Дата", align: "center", value: "date"},
-        {text: "Количество", align: "right", value: "quantity", sortable: false},
-        {text: "Цена", align: "right", value: "price", sortable: false},
-        {text: "Комиссия", align: "right", value: "fee"},
-        {text: "Итого", align: "right", value: "signedTotal"},
-        {text: "Действия", align: "center", value: "actions", sortable: false, width: "25"}
-    ];
+    @Prop()
+    private headers: TableHeader[];
+
+    @Prop()
+    private tableHeaders: {[key: string]: boolean};
 
     @Prop({default: [], required: true})
     private trades: TradeRow[];
@@ -161,7 +159,6 @@ export class TradesTable extends UI {
     private onTradesUpdate(trades: TradeRow[]): void {
         this.trades = trades;
     }
-
     private async openTradeDialog(trade: TradeRow, operation: Operation): Promise<void> {
         await new AddTradeDialog().show({
             store: this.$store.state[StoreType.MAIN],
@@ -173,7 +170,6 @@ export class TradesTable extends UI {
     }
 
     private async openEditTradeDialog(trade: TradeRow): Promise<void> {
-        console.log(trade);
         const tradeFields: TradeFields = {
             ticker: trade.ticker,
             date: trade.date,

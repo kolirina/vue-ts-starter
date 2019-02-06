@@ -9,15 +9,13 @@ import {ExpandedPanel} from "./expandedPanel";
 @Component({
     // language=Vue
     template: `
-        <expanded-panel :value="$uistate.tradesFilter" :state="$uistate.TRADES_FILTER" contentPanelClass="trades-filter">
-            <div slot="header"><h2>Фильтры</h2></div>
-
-            <form @click.stop>
+        <expanded-panel class="trades-filter" :value="$uistate.tradesFilter" :state="$uistate.TRADES_FILTER">
+            <template slot="header"><h2>Фильтры</h2></template>
+            <form>
                 <v-layout row wrap>
                     <v-flex xs8>
                         <v-text-field
                             v-model="tradesFilter.search"
-                            clearable
                             placeholder="Поиск по названию бумаги,по тикеру бумаги, по заметке к сделке"
                         ></v-text-field>
                     </v-flex>
@@ -33,7 +31,6 @@ import {ExpandedPanel} from "./expandedPanel";
                         </v-select>
                     </v-flex>
                 </v-layout>
-
                 <v-layout row wrap>
                     <v-flex xs6>
                         <v-checkbox @change="onFilterParamChange()" label="Сделки по денежным средствам" v-model="tradesFilter.showMoneyTrades"></v-checkbox>
