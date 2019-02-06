@@ -38,8 +38,6 @@ const MainStore = namespace(StoreType.MAIN);
                     <td v-if="tableHeaders.facevalue">{{ props.item.facevalue }}</td>
                     <td v-if="tableHeaders.nkd">{{ props.item.nkd }}</td>
                     <td v-if="tableHeaders.fee" class="text-xs-right ii-number-cell">{{ getFee(props.item) }}</td>
-
-
                     <td v-if="tableHeaders.signedTotal" class="text-xs-right ii-number-cell">{{ props.item.signedTotal | amount(true) }}</td>
                     <td v-if="tableHeaders.totalWithoutFee" class="text-xs-right ii-number-cell">{{ props.item.totalWithoutFee | amount }}</td>
                     <td v-if="props.item.parentTradeId" class="justify-center px-0" @click.stop>
@@ -161,7 +159,7 @@ export class TradesTable extends UI {
     private headers: TableHeader[];
 
     @Prop()
-    private tableHeaders: {[key: string]: boolean};
+    private tableHeaders: { [key: string]: boolean };
 
     @Prop({default: [], required: true})
     private trades: TradeRow[];
