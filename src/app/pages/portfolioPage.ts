@@ -35,7 +35,6 @@ const MainStore = namespace(StoreType.MAIN);
                     <v-list-tile-title @click="openTableHeadersDialog(TABLES_NAME.STOCK)">Настроить колонки</v-list-tile-title>
                 </template>
                 <stock-table :rows="portfolio.overview.stockPortfolio.rows"
-                    :tableHeaders="getTableHeaders(TABLES_NAME.STOCK)"
                     :headers="getHeaders(TABLES_NAME.STOCK)"></stock-table>
             </expanded-panel>
 
@@ -46,7 +45,7 @@ const MainStore = namespace(StoreType.MAIN);
                 <template slot="list">
                     <v-list-tile-title @click="openTableHeadersDialog('bondTable')">Настроить колонки</v-list-tile-title>
                 </template>
-                <bond-table :rows="portfolio.overview.bondPortfolio.rows" :tableHeaders="getTableHeaders(TABLES_NAME.BOND)" :headers="getHeaders(TABLES_NAME.BOND)"></bond-table>
+                <bond-table :rows="portfolio.overview.bondPortfolio.rows" :headers="getHeaders(TABLES_NAME.BOND)"></bond-table>
             </expanded-panel>
 
             <div style="height: 50px"></div>
@@ -117,9 +116,9 @@ export class PortfolioPage extends UI {
         return [];
     }
 
-    getTableHeaders(name: string): {[key: string]: boolean} {
-        return this.tablesService.getHeadersValue( this.getHeaders(name) );
-    }
+    // getTableHeaders(name: string): {[key: string]: boolean} {
+    //     return this.tablesService.getHeadersValue( this.getHeaders(name) );
+    // }
 
     private async openTableHeadersDialog(tableName: string): Promise<void> {
         await new TableSettingsDialog().show({

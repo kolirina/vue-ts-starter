@@ -85,6 +85,18 @@ export class TablesService {
         this.headers = this.localStorage.get("tableHeadersParams", this.headers);
     }
 
+    /**
+     * Возвращает состояния заголовков в виде объекта {header.value: header.active}
+     * @param name Название таблицы
+     */
+    getHeadersState(headers: TableHeader[]): TableHeadersState {
+        let result: {[key: string]: boolean} = {};
+        headers.forEach(header => {
+            result[header.value] = header.active
+        });
+        return result;
+    }
+
     setHeaders(name: string, headers: TableHeader[]): void {
         if (this.headers[name]) {
             this.headers[name] = headers;
@@ -171,3 +183,7 @@ export enum TABLES_NAME {
 export interface TableHeaders {
     [key: string]: TableHeader[];
 };
+
+export interface TableHeadersState {
+    [key: string]: boolean
+}
