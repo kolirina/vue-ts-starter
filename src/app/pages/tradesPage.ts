@@ -87,11 +87,7 @@ export class TradesPage extends UI {
     private TABLES_NAME = TABLES_NAME;
 
     getHeaders(name: string): TableHeader[] {
-        const filtredHeaders = this.tablesService.filterHeaders(this.headers);
-        if (filtredHeaders[name]) {
-            return filtredHeaders[name];
-        }
-        return [];
+        return this.tablesService.getFilterHeaders(name);
     }
 
     getTableHeaders(name: string): {[key: string]: boolean} {

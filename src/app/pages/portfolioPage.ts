@@ -109,16 +109,8 @@ export class PortfolioPage extends UI {
     private TABLES_NAME = TABLES_NAME;
 
     getHeaders(name: string): TableHeader[] {
-        const filtredHeaders = this.tablesService.filterHeaders(this.headers);
-        if (filtredHeaders[name]) {
-            return filtredHeaders[name];
-        }
-        return [];
+        return this.tablesService.getFilterHeaders(name);
     }
-
-    // getTableHeaders(name: string): {[key: string]: boolean} {
-    //     return this.tablesService.getHeadersValue( this.getHeaders(name) );
-    // }
 
     private async openTableHeadersDialog(tableName: string): Promise<void> {
         await new TableSettingsDialog().show({

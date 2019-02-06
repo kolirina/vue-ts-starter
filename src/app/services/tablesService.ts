@@ -109,11 +109,12 @@ export class TablesService {
      * Используется в таблицах.
      * @param headers
      */
-    filterHeaders(headers: TableHeaders): TableHeaders {
-        const result: TableHeaders = {};
-        Object.keys(headers).forEach(key => {
-            result[key] = headers[key].filter(el => el.active);
-        });
+    getFilterHeaders(name: string): TableHeader[] {
+        let result: TableHeader[] = [];
+        
+        if (this.headers[name]) {
+            result = this.headers[name].filter(el => el.active);
+        }
 
         return result;
     }
