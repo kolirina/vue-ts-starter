@@ -3,7 +3,7 @@ import Component from "vue-class-component";
 import {Prop, Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class";
 import {UI} from "../app/ui";
-import {TablesService, TableHeadersState, TABLES_NAME} from "../services/tablesService";
+import {TableHeadersState, TablesService} from "../services/tablesService";
 import {TradeFields} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
@@ -168,24 +168,24 @@ export class TradesTable extends UI {
     @Prop({required: true, type: Object})
     private tradePagination: TablePagination;
 
-    private tableHeadersState:TableHeadersState;
-    
+    private tableHeadersState: TableHeadersState;
+
+    /** Текущая операция */
+    private operation = Operation;
+
     beforeMount(): void {
         /** Установка состояния заголовков таблицы */
         this.setHeadersState();
     }
 
-    @Watch("headers") 
+    @Watch("headers")
     onHeadersChange(): void {
         this.setHeadersState();
     }
-    
+
     setHeadersState(): void {
         this.tableHeadersState = this.tablesService.getHeadersState(this.headers);
     }
-
-    /** Текущая операция */
-    private operation = Operation;
 
     @Watch("trades")
     private onTradesUpdate(trades: TradeRow[]): void {

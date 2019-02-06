@@ -90,9 +90,9 @@ export class TablesService {
      * @param name Название таблицы
      */
     getHeadersState(headers: TableHeader[]): TableHeadersState {
-        let result: {[key: string]: boolean} = {};
+        const result: TableHeadersState = {};
         headers.forEach(header => {
-            result[header.value] = header.active
+            result[header.value] = header.active;
         });
         return result;
     }
@@ -111,7 +111,7 @@ export class TablesService {
      */
     getFilterHeaders(name: string): TableHeader[] {
         let result: TableHeader[] = [];
-        
+
         if (this.headers[name]) {
             result = this.headers[name].filter(el => el.active);
         }
@@ -125,8 +125,8 @@ export class TablesService {
      * Пример: <td v-if="headersKey.quantity">{{props.quantity}}</td>
      * @param headers
      */
-    getHeadersValue(headers: TableHeader[]): { [key: string]: boolean } {
-        const result: { [key: string]: boolean } = {};
+    getHeadersValue(headers: TableHeader[]): TableHeadersState {
+        const result: TableHeadersState = {};
 
         headers.forEach(el => {
             result[el.value] = el.active;
@@ -180,11 +180,10 @@ export enum TABLES_NAME {
     TRADE = "tradesTable",
 }
 
-
 export interface TableHeaders {
     [key: string]: TableHeader[];
-};
+}
 
 export interface TableHeadersState {
-    [key: string]: boolean
+    [key: string]: boolean;
 }

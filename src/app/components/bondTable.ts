@@ -4,7 +4,7 @@ import {Prop, Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
 import {PortfolioService} from "../services/portfolioService";
-import {TablesService, TableHeadersState, TABLES_NAME} from "../services/tablesService";
+import {TableHeadersState, TablesService} from "../services/tablesService";
 import {TradeService} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
@@ -52,7 +52,9 @@ const MainStore = namespace(StoreType.MAIN);
                     <td v-if="tableHeadersState.profit" :class="[( amount(props.item.profit) >= 0 ) ? 'ii--green-markup' : 'ii--red-markup', 'ii-number-cell', 'text-xs-right']">
                         {{ props.item.profit | amount(true) }}
                     </td>
-                    <td v-if="tableHeadersState.percProfit" :class="[( Number(props.item.percProfit) >= 0 ) ? 'ii--green-markup' : 'ii--red-markup', 'ii-number-cell', 'text-xs-right']">
+                    <td v-if="tableHeadersState.percProfit"
+                        :class="[( Number(props.item.percProfit) >= 0 ) ? 'ii--green-markup' :
+                        'ii--red-markup', 'ii-number-cell', 'text-xs-right']">
                         {{ props.item.percProfit | number }}
                     </td>
                     <td v-if="tableHeadersState.yearYield" class="text-xs-right ii-number-cell">{{props.item.yearYield}}</td>
@@ -174,13 +176,13 @@ export class BondTable extends UI {
     private portfolio: Portfolio;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
     private reloadPortfolio: (id: string) => Promise<void>;
-    
+
     @Prop()
     private headers: TableHeader[];
-    
+
     @Prop({default: [], required: true})
     private rows: BondPortfolioRow[];
-    
+
     private tableHeadersState: TableHeadersState;
 
     private operation = Operation;
@@ -190,11 +192,11 @@ export class BondTable extends UI {
         this.setHeadersState();
     }
 
-    @Watch("headers") 
+    @Watch("headers")
     onHeadersChange(): void {
         this.setHeadersState();
     }
-    
+
     setHeadersState(): void {
         this.tableHeadersState = this.tablesService.getHeadersState(this.headers);
     }

@@ -19,7 +19,7 @@ import {Prop} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI, Watch} from "../app/ui";
 import {PortfolioService} from "../services/portfolioService";
-import {TablesService, TableHeadersState, TABLES_NAME} from "../services/tablesService";
+import {TableHeadersState, TablesService} from "../services/tablesService";
 import {TradeService} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
@@ -65,7 +65,9 @@ const MainStore = namespace(StoreType.MAIN);
                     <td v-if="tableHeadersState.profit" :class="[( amount(props.item.profit) >= 0 ) ? 'ii--green-markup' : 'ii--red-markup', 'ii-number-cell', 'text-xs-right']">
                         {{ props.item.profit| amount(true) }}
                     </td>
-                    <td v-if="tableHeadersState.percProfit" :class="[( Number(props.item.percProfit) >= 0 ) ? 'ii--green-markup' : 'ii--red-markup', 'ii-number-cell', 'text-xs-right']">
+                    <td v-if="tableHeadersState.percProfit"
+                        :class="[( Number(props.item.percProfit) >= 0 ) ? 'ii--green-markup' :
+                        'ii--red-markup', 'ii-number-cell', 'text-xs-right']">
                         {{ props.item.percProfit | number }}
                     </td>
                     <td v-if="tableHeadersState.yearYield" class="text-xs-right ii-number-cell">{{ props.item.yearYield }}</td>
@@ -163,18 +165,18 @@ export class StockTable extends UI {
     @Prop({default: [], required: true})
     private rows: StockPortfolioRow[];
 
-    private tableHeadersState:TableHeadersState;
+    private tableHeadersState: TableHeadersState;
 
     beforeMount(): void {
         /** Установка состояния заголовков таблицы */
         this.setHeadersState();
     }
 
-    @Watch("headers") 
+    @Watch("headers")
     onHeadersChange(): void {
         this.setHeadersState();
     }
-    
+
     setHeadersState(): void {
         this.tableHeadersState = this.tablesService.getHeadersState(this.headers);
     }

@@ -13,7 +13,7 @@ import {StockPieChart} from "../components/charts/stockPieChart";
 import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog";
 import {ExpandedPanel} from "../components/expandedPanel";
 import {StockTable} from "../components/stockTable";
-import {TABLES_NAME, TableHeaders, TablesService} from "../services/tablesService";
+import {TableHeaders, TABLES_NAME, TablesService} from "../services/tablesService";
 import {Portfolio, TableHeader} from "../types/types";
 import {UiStateHelper} from "../utils/uiStateHelper";
 import {StoreType} from "../vuex/storeType";
