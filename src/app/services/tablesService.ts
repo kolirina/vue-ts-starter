@@ -1,7 +1,7 @@
 import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {Storage} from "../platform/services/storage";
-import {TableHeader, TableHeaders} from "../types/types";
+import {TableHeader} from "../types/types";
 
 @Service("TablesService")
 @Singleton
@@ -66,7 +66,7 @@ export class TablesService {
             {text: "Название", align: "left", value: TABLE_HEADERS.NAME, active: true},
             {text: "Операция", align: "left", value: TABLE_HEADERS.OPERATION_LABEL, active: true},
             {text: "Дата", align: "center", value: TABLE_HEADERS.DATE, active: true},
-            {text: "Количество", align: "right", value: TABLE_HEADERS.QUANTITY, sortable: false, active: true},
+            {text: "Количество", align: "right", value: TABLE_HEADERS.QUANTITY, sortable: false, active: false},
             {text: "Цена", align: "right", value: TABLE_HEADERS.PRICE, sortable: false, active: true},
             {text: "Номинал", align: "right", value: TABLE_HEADERS.FACE_VALUE, sortable: false, active: false},
             {text: "НКД", align: "right", value: TABLE_HEADERS.NKD, sortable: false, active: false},
@@ -166,3 +166,8 @@ export enum TABLES_NAME {
     BOND = "bondTable",
     TRADE = "tradesTable",
 }
+
+
+export interface TableHeaders {
+    [key: string]: TableHeader[];
+};

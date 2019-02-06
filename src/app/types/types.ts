@@ -221,18 +221,10 @@ export type TableHeader = {
     value: string,
     class?: string[] | string,
     width?: string,
-    /**
-     * Определяет показ элемента в таблице
-     */
+    /** Определяет показ элемента в таблице */
     active?: boolean,
-    /**
-     * Определяет показ элемента в диалоге переключения калонок.
-     */
+    /** Определяет показ элемента в диалоге переключения калонок. */
     ghost?: boolean,
-};
-
-export type TableHeaders = {
-    [key: string]: TableHeader[]
 };
 
 export type DashboardData = {

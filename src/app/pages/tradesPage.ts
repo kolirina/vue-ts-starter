@@ -11,10 +11,10 @@ import {TradesTable} from "../components/tradesTable";
 import {CatchErrors} from "../platform/decorators/catchErrors";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {FilterService} from "../services/filterService";
-import {TABLES_NAME, TablesService} from "../services/tablesService";
+import {TABLES_NAME, TableHeaders, TablesService} from "../services/tablesService";
 import {TradeService, TradesFilter} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
-import {Pagination, Portfolio, TableHeader, TableHeaders, TablePagination, TradeRow} from "../types/types";
+import {Pagination, Portfolio, TableHeader, TablePagination, TradeRow} from "../types/types";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 

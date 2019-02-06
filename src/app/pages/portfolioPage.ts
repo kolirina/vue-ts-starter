@@ -13,8 +13,8 @@ import {StockPieChart} from "../components/charts/stockPieChart";
 import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog";
 import {ExpandedPanel} from "../components/expandedPanel";
 import {StockTable} from "../components/stockTable";
-import {TABLES_NAME, TablesService} from "../services/tablesService";
-import {Portfolio, TableHeader, TableHeaders} from "../types/types";
+import {TABLES_NAME, TableHeaders, TablesService} from "../services/tablesService";
+import {Portfolio, TableHeader} from "../types/types";
 import {UiStateHelper} from "../utils/uiStateHelper";
 import {StoreType} from "../vuex/storeType";
 
@@ -32,7 +32,7 @@ const MainStore = namespace(StoreType.MAIN);
             <expanded-panel :value="$uistate.stocksTablePanel" :withMenu="true" name="stock" :state="$uistate.STOCKS">
                 <template slot="header">Акции</template>
                 <template slot="list">
-                    <v-list-tile-title @click="openTableHeadersDialog('stockTable')">Настроить колонки</v-list-tile-title>
+                    <v-list-tile-title @click="openTableHeadersDialog(TABLES_NAME.STOCK)">Настроить колонки</v-list-tile-title>
                 </template>
                 <stock-table :rows="portfolio.overview.stockPortfolio.rows"
                     :tableHeaders="getTableHeaders(TABLES_NAME.STOCK)"
