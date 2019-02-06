@@ -4,14 +4,17 @@ import Component from "vue-class-component";
 import {Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
+import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog";
+import {ExpandedPanel} from "../components/expandedPanel";
 import {TradesFilterComponent} from "../components/tradesFilter";
 import {TradesTable} from "../components/tradesTable";
 import {CatchErrors} from "../platform/decorators/catchErrors";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {FilterService} from "../services/filterService";
+import {TABLES_NAME, TablesService} from "../services/tablesService";
 import {TradeService, TradesFilter} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
-import {Pagination, Portfolio, TablePagination, TradeRow} from "../types/types";
+import {Pagination, Portfolio, TableHeader, TableHeaders, TablePagination, TradeRow} from "../types/types";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 
@@ -25,7 +28,15 @@ const MainStore = namespace(StoreType.MAIN);
 
             <trades-filter-component v-if="tradesFilter" @filterChange="onFilterChange" :tradesFilter="tradesFilter"></trades-filter-component>
 
-            <trades-table v-if="tradePagination" :trades="trades" :trade-pagination="tradePagination" @delete="onDelete"></trades-table>
+            <expanded-panel :disabled="true" :withMenu="true" name="trades" :alwaysOpen="true" :value="[true]">
+                <template slot="header">Сделки</template>
+                <template slot="list">
+                    <v-list-tile-title @click="openTableSettings(TABLES_NAME.TRADE)">Настроить колонки</v-list-tile-title>
+                </template>
+                <trades-table v-if="tradePagination" :trades="trades" :trade-pagination="tradePagination" :tableHeaders="getTableHeaders(TABLES_NAME.TRADE)"
+                    :headers="getHeaders(TABLES_NAME.TRADE)" @delete="onDelete"></trades-table>
+            </expanded-panel>
+
             <v-container v-if="pages > 1">
                 <v-layout align-center justify-center row>
                     <v-pagination v-model="page" :length="pages"></v-pagination>
@@ -33,19 +44,21 @@ const MainStore = namespace(StoreType.MAIN);
             </v-container>
         </v-container>
     `,
-    components: {TradesTable, TradesFilterComponent}
+    components: {TradesTable, TradesFilterComponent, ExpandedPanel}
 })
 export class TradesPage extends UI {
+
+    @Inject
+    tablesService: TablesService;
+    @Inject
+    private tradeService: TradeService;
+    @Inject
+    private filterService: FilterService;
 
     @MainStore.Getter
     private portfolio: Portfolio;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
     private reloadPortfolio: (id: string) => Promise<void>;
-
-    @Inject
-    private tradeService: TradeService;
-    @Inject
-    private filterService: FilterService;
 
     private page = 1;
 
@@ -69,6 +82,22 @@ export class TradesPage extends UI {
 
     private tradesFilter: TradesFilter = null;
 
+    private headers: TableHeaders = this.tablesService.headers;
+
+    private TABLES_NAME = TABLES_NAME;
+
+    getHeaders(name: string): TableHeader[] {
+        const filtredHeaders = this.tablesService.filterHeaders(this.headers);
+        if (filtredHeaders[name]) {
+            return filtredHeaders[name];
+        }
+        return [];
+    }
+
+    getTableHeaders(name: string): {[key: string]: boolean} {
+        return this.tablesService.getHeadersValue( this.getHeaders(name) );
+    }
+
     /**
      * Загрузка сделок будет произведена в вотчере на объект с паджинацией
      * @inheritDoc
@@ -80,6 +109,14 @@ export class TradesPage extends UI {
             totalItems: this.totalTrades
         };
         this.calculatePagination();
+    }
+
+    // Открывает диалог с настройкой заголовков таблицы
+    private async openTableSettings(tableName: string): Promise<void> {
+        await new TableSettingsDialog().show({
+            tableName: tableName,
+            headers: this.headers[tableName]
+        });
     }
 
     @Watch("page")
