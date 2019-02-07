@@ -1,7 +1,7 @@
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
-import {UI, Watch} from "../../app/ui";
+import {UI} from "../../app/ui";
 import {ChangePasswordDialog} from "../../components/dialogs/changePasswordDialog";
 import {ClientInfo, ClientService} from "../../services/clientService";
 import {CommonUtils} from "../../utils/commonUtils";

@@ -1,7 +1,7 @@
 import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {Storage} from "../platform/services/storage";
-import {TableHeader, TableHeaders} from "../types/types";
+import {TableHeader} from "../types/types";
 
 @Service("TablesService")
 @Singleton
@@ -66,7 +66,7 @@ export class TablesService {
             {text: "Название", align: "left", value: TABLE_HEADERS.NAME, active: true},
             {text: "Операция", align: "left", value: TABLE_HEADERS.OPERATION_LABEL, active: true},
             {text: "Дата", align: "center", value: TABLE_HEADERS.DATE, active: true},
-            {text: "Количество", align: "right", value: TABLE_HEADERS.QUANTITY, sortable: false, active: true},
+            {text: "Количество", align: "right", value: TABLE_HEADERS.QUANTITY, sortable: false, active: false},
             {text: "Цена", align: "right", value: TABLE_HEADERS.PRICE, sortable: false, active: true},
             {text: "Номинал", align: "right", value: TABLE_HEADERS.FACE_VALUE, sortable: false, active: false},
             {text: "НКД", align: "right", value: TABLE_HEADERS.NKD, sortable: false, active: false},
@@ -85,6 +85,18 @@ export class TablesService {
         this.headers = this.localStorage.get("tableHeadersParams", this.headers);
     }
 
+    /**
+     * Возвращает состояния заголовков в виде объекта {header.value: header.active}
+     * @param headers {TableHeader[]} - Название таблицы
+     */
+    getHeadersState(headers: TableHeader[]): TableHeadersState {
+        const result: TableHeadersState = {};
+        headers.forEach(header => {
+            result[header.value] = header.active;
+        });
+        return result;
+    }
+
     setHeaders(name: string, headers: TableHeader[]): void {
         if (this.headers[name]) {
             this.headers[name] = headers;
@@ -94,30 +106,14 @@ export class TablesService {
 
     /**
      * Возвращает заголовки со свойством active: true.
-     * Используется в таблицах.
-     * @param headers
+     * @param name {string} Название таблицы заголовков
      */
-    filterHeaders(headers: TableHeaders): TableHeaders {
-        const result: TableHeaders = {};
-        Object.keys(headers).forEach(key => {
-            result[key] = headers[key].filter(el => el.active);
-        });
+    getFilterHeaders(name: string): TableHeader[] {
+        let result: TableHeader[] = [];
 
-        return result;
-    }
-
-    /**
-     * Возвращает все значения(key) заголовков.
-     * Используется для определения видимости соответствующих значений в таблице.
-     * Пример: <td v-if="headersKey.quantity">{{props.quantity}}</td>
-     * @param headers
-     */
-    getHeadersValue(headers: TableHeader[]): { [key: string]: boolean } {
-        const result: { [key: string]: boolean } = {};
-
-        headers.forEach(el => {
-            result[el.value] = el.active;
-        });
+        if (this.headers[name]) {
+            result = this.headers[name].filter(el => el.active);
+        }
 
         return result;
     }
@@ -165,4 +161,12 @@ export enum TABLES_NAME {
     STOCK = "stockTable",
     BOND = "bondTable",
     TRADE = "tradesTable",
+}
+
+export interface TableHeaders {
+    [key: string]: TableHeader[];
+}
+
+export interface TableHeadersState {
+    [key: string]: boolean;
 }

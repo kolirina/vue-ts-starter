@@ -1,7 +1,9 @@
+import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {Prop, Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class";
 import {UI} from "../app/ui";
+import {TableHeadersState, TablesService} from "../services/tablesService";
 import {TradeFields} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
@@ -25,21 +27,21 @@ const MainStore = namespace(StoreType.MAIN);
                     <td>
                         <v-icon class="data-table-cell" v-bind:class="{'data-table-cell-open': props.expanded}">play_arrow</v-icon>
                     </td>
-                    <td v-if="tableHeaders.ticker">
+                    <td v-if="tableHeadersState.ticker">
                         <stock-link v-if="props.item.asset === 'STOCK'" :ticker="props.item.ticker"></stock-link>
                         <bond-link v-if="props.item.asset === 'BOND'" :ticker="props.item.ticker"></bond-link>
                         <span v-if="props.item.asset === 'MONEY'">{{ props.item.ticker }}</span>
                     </td>
-                    <td v-if="tableHeaders.name">{{ props.item.companyName }}</td>
-                    <td v-if="tableHeaders.operationLabel">{{ props.item.operationLabel }}</td>
-                    <td v-if="tableHeaders.date" class="text-xs-center">{{ props.item.date | date }}</td>
-                    <td v-if="tableHeaders.quantity" class="text-xs-right ii-number-cell">{{ props.item.quantity }}</td>
-                    <td v-if="tableHeaders.price" class="text-xs-right ii-number-cell">{{ getPrice(props.item) }}</td>
-                    <td v-if="tableHeaders.facevalue">{{ props.item.facevalue }}</td>
-                    <td v-if="tableHeaders.nkd">{{ props.item.nkd }}</td>
-                    <td v-if="tableHeaders.fee" class="text-xs-right ii-number-cell">{{ getFee(props.item) }}</td>
-                    <td v-if="tableHeaders.signedTotal" class="text-xs-right ii-number-cell">{{ props.item.signedTotal | amount(true) }}</td>
-                    <td v-if="tableHeaders.totalWithoutFee" class="text-xs-right ii-number-cell">{{ props.item.totalWithoutFee | amount }}</td>
+                    <td v-if="tableHeadersState.name">{{ props.item.companyName }}</td>
+                    <td v-if="tableHeadersState.operationLabel">{{ props.item.operationLabel }}</td>
+                    <td v-if="tableHeadersState.date" class="text-xs-center">{{ props.item.date | date }}</td>
+                    <td v-if="tableHeadersState.quantity" class="text-xs-right ii-number-cell">{{ props.item.quantity }}</td>
+                    <td v-if="tableHeadersState.price" class="text-xs-right ii-number-cell">{{ getPrice(props.item) }}</td>
+                    <td v-if="tableHeadersState.facevalue">{{ props.item.facevalue }}</td>
+                    <td v-if="tableHeadersState.nkd">{{ props.item.nkd }}</td>
+                    <td v-if="tableHeadersState.fee" class="text-xs-right ii-number-cell">{{ getFee(props.item) }}</td>
+                    <td v-if="tableHeadersState.signedTotal" class="text-xs-right ii-number-cell">{{ props.item.signedTotal | amount(true) }}</td>
+                    <td v-if="tableHeadersState.totalWithoutFee" class="text-xs-right ii-number-cell">{{ props.item.totalWithoutFee | amount }}</td>
                     <td v-if="props.item.parentTradeId" class="justify-center px-0" @click.stop>
                         <v-tooltip :max-width="250" top>
                             <a slot="activator">
@@ -150,6 +152,8 @@ const MainStore = namespace(StoreType.MAIN);
 })
 export class TradesTable extends UI {
 
+    @Inject
+    private tablesService: TablesService;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
     private reloadPortfolio: (id: string) => Promise<void>;
     @MainStore.Getter
@@ -158,17 +162,30 @@ export class TradesTable extends UI {
     @Prop()
     private headers: TableHeader[];
 
-    @Prop()
-    private tableHeaders: { [key: string]: boolean };
-
     @Prop({default: [], required: true})
     private trades: TradeRow[];
 
     @Prop({required: true, type: Object})
     private tradePagination: TablePagination;
 
+    private tableHeadersState: TableHeadersState;
+
     /** Текущая операция */
     private operation = Operation;
+
+    created(): void {
+        /** Установка состояния заголовков таблицы */
+        this.setHeadersState();
+    }
+
+    @Watch("headers")
+    onHeadersChange(): void {
+        this.setHeadersState();
+    }
+
+    setHeadersState(): void {
+        this.tableHeadersState = this.tablesService.getHeadersState(this.headers);
+    }
 
     @Watch("trades")
     private onTradesUpdate(trades: TradeRow[]): void {
