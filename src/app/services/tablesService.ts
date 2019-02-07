@@ -87,7 +87,7 @@ export class TablesService {
 
     /**
      * Возвращает состояния заголовков в виде объекта {header.value: header.active}
-     * @param name Название таблицы
+     * @param headers {TableHeader[]} - Название таблицы
      */
     getHeadersState(headers: TableHeader[]): TableHeadersState {
         const result: TableHeadersState = {};
@@ -106,8 +106,7 @@ export class TablesService {
 
     /**
      * Возвращает заголовки со свойством active: true.
-     * Используется в таблицах.
-     * @param headers
+     * @param name {string} Название таблицы заголовков
      */
     getFilterHeaders(name: string): TableHeader[] {
         let result: TableHeader[] = [];
@@ -115,22 +114,6 @@ export class TablesService {
         if (this.headers[name]) {
             result = this.headers[name].filter(el => el.active);
         }
-
-        return result;
-    }
-
-    /**
-     * Возвращает все значения(key) заголовков.
-     * Используется для определения видимости соответствующих значений в таблице.
-     * Пример: <td v-if="headersKey.quantity">{{props.quantity}}</td>
-     * @param headers
-     */
-    getHeadersValue(headers: TableHeader[]): TableHeadersState {
-        const result: TableHeadersState = {};
-
-        headers.forEach(el => {
-            result[el.value] = el.active;
-        });
 
         return result;
     }

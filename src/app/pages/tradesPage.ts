@@ -33,7 +33,7 @@ const MainStore = namespace(StoreType.MAIN);
                 <template slot="list">
                     <v-list-tile-title @click="openTableSettings(TABLES_NAME.TRADE)">Настроить колонки</v-list-tile-title>
                 </template>
-                <trades-table v-if="tradePagination" :trades="trades" :trade-pagination="tradePagination" :tableHeaders="getTableHeaders(TABLES_NAME.TRADE)"
+                <trades-table v-if="tradePagination" :trades="trades" :trade-pagination="tradePagination"
                     :headers="getHeaders(TABLES_NAME.TRADE)" @delete="onDelete"></trades-table>
             </expanded-panel>
 
@@ -88,10 +88,6 @@ export class TradesPage extends UI {
 
     getHeaders(name: string): TableHeader[] {
         return this.tablesService.getFilterHeaders(name);
-    }
-
-    getTableHeaders(name: string): {[key: string]: boolean} {
-        return this.tablesService.getHeadersValue( this.getHeaders(name) );
     }
 
     /**
