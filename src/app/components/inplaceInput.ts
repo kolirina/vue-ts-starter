@@ -38,8 +38,8 @@ import {UI} from "../app/ui";
                     </v-flex>
                     <v-flex xs4 offset-xs1>
                         <div class="profile-icons">
-                            <v-icon @click.stop="emitCompleteEvent">check_circle</v-icon>
-                            <v-icon @click.stop="dismissChanges">cancel</v-icon>
+                            <div @click.stop="emitCompleteEvent" class="profile-icons-complete"></div>
+                            <div @click.stop="dismissChanges" class="profile-icons-dismiss"></div>
                         </div>
                     </v-flex>
                 </v-layout>
@@ -75,7 +75,8 @@ export class InplaceInput extends UI {
     private oldValue = "";
 
     /** Режим редактирования */
-    private editMode = false;
+    @Prop({default: false})
+    private editMode: boolean;
 
     /**
      * Инициализирует данные компонента
@@ -101,11 +102,11 @@ export class InplaceInput extends UI {
     }
 
     private closeInput(): void {
-        this.editMode = false;
+        this.$emit("update:editMode", false);
     }
 
     private onEdit(): void {
-        this.editMode = true;
+        this.$emit("update:editMode", true);
         // если старого значения нет, значит оно было очищено, подставляем снова значение отображаемое в режиме просмотра
         this.editableValue = this.oldValue || this.value || "";
         this.$nextTick(() => {

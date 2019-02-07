@@ -4,7 +4,7 @@ import {TableName} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
 import {Operation} from "../types/operation";
-import {TradeRow} from "../types/types";
+import {ErrorInfo, TradeRow} from "../types/types";
 
 export class TradeUtils {
 
@@ -75,5 +75,13 @@ export class TradeUtils {
             return date.substr(date.indexOf("T") + 1, 5);
         }
         return null;
+    }
+
+    static getGlobalMessage(error: ErrorInfo): string {
+        const fieldError = error.fields[0];
+        if (error.errorCode === "GLOBAL" && fieldError && fieldError.errorMessage) {
+            return fieldError.errorMessage;
+        }
+        return error.message;
     }
 }

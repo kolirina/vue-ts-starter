@@ -6,6 +6,7 @@ import Highcharts3D from "highcharts-3d";
 import exporting from "highcharts/modules/exporting";
 import VeeValidate, {Validator} from "vee-validate";
 import Vue from "vue";
+import VueQriously from "vue-qriously";
 import Snotify, {SnotifyPosition} from "vue-snotify";
 import Vuetify from "vuetify";
 import {BondLink} from "../components/bondLink";
@@ -18,6 +19,7 @@ import {FileDropArea} from "../components/file-upload/fileDropArea";
 import {FileLink} from "../components/file-upload/fileLink";
 import {IINumberField} from "../components/iiNumberField";
 import {InplaceInput} from "../components/inplaceInput";
+import {ShareSearchComponent} from "../components/shareSearchComponent";
 import {StockLink} from "../components/stockLink";
 import {StateDirective} from "../platform/directives/stateDirective";
 import {Filters} from "../platform/filters/Filters";
@@ -35,6 +37,8 @@ export class UIRegistry {
      * Инициализация реестра компонентов, фильтров и директив
      */
     static init(): boolean {
+
+        Vue.use(VueQriously);
 
         Vue.use(Vuetify, {
             lang: {
@@ -70,6 +74,7 @@ export class UIRegistry {
         UI.component("bond-link", BondLink);
         /* Компонент с маской для десятичных дробей */
         UI.component("ii-number-field", IINumberField);
+        UI.component("share-search", ShareSearchComponent);
 
         // фильтры
         UI.filter("amount", Filters.formatMoneyAmount);

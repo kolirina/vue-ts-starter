@@ -1,0 +1,37 @@
+.table-settings {
+  .headline {
+    font-size: 20px !important;
+    padding-bottom: 0;
+  }
+
+  &-checkbox-wrap {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  &-checkbox {
+    margin: 0;
+    padding: 1px 10px !important;
+    box-sizing: border-box;
+
+    i {
+      font-size: 17px;
+    }
+
+    .v-messages  {
+      min-height: 0px !important;
+    }
+
+    .v-input__slot {
+      align-items: flex-start !important;
+    }
+  }
+  
+  .v-input__slot {
+    margin-bottom: 0 !important;
+  }
+
+  label {
+    font-size: 14px !important;
+  }
+}

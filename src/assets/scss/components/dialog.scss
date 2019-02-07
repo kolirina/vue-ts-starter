@@ -9,3 +9,8 @@
 .dialog-wrap {
   position: relative;
 }
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+}

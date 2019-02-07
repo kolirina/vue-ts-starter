@@ -15,12 +15,12 @@ import {BtnReturn, CustomDialog} from "./customDialog";
 @Component({
     // language=Vue
     template: `
-        <v-dialog v-model="showed" max-width="650px">
+        <v-dialog v-model="showed" max-width="550px">
             <v-card class="dialog-wrap">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
 
                 <v-card-title class="headline">Настройка доступа к портфелю</v-card-title>
-                <v-card-text>
+                <v-card-text class="paddT0 paddB0">
                     <v-container fluid class="pa-0">
                         <v-layout row wrap>
                             <v-flex xs12>
@@ -34,7 +34,7 @@ import {BtnReturn, CustomDialog} from "./customDialog";
                         </v-layout>
                     </v-container>
 
-                    <v-container grid-list-md>
+                    <v-container grid-list-md class="paddB0">
                         <v-layout row wrap>
                             <v-flex v-if="shareOption === 'DEFAULT_ACCESS'" xs9>
                                 Включите публичный доступ, и тогда информацию по вашему портфелю смогут просматривать все, кто обладает этой ссылкой. Ссылка не
@@ -51,13 +51,13 @@ import {BtnReturn, CustomDialog} from "./customDialog";
                                 жизни ссылки, отменить ее будет невозможно.
                             </v-flex>
                             <v-flex xs3>
-
+                                <qriously v-if="link" :value="link" :size="120"></qriously>
                             </v-flex>
                         </v-layout>
 
                         <v-layout row wrap>
                             <v-flex xs12>
-                                <v-text-field :value="link" placeholder="url для доступа к портфелю" readonly></v-text-field>
+                                <v-text-field :value="link" placeholder="url для доступа к портфелю" readonly hide-details></v-text-field>
                             </v-flex>
                         </v-layout>
 
@@ -66,16 +66,16 @@ import {BtnReturn, CustomDialog} from "./customDialog";
                                 <v-checkbox v-model="access" hide-details class="shrink mr-2" label="Публичный доступ к портфелю"></v-checkbox>
                             </v-flex>
                             <v-flex xs12>
-                                <v-checkbox v-model="divAccess" hide-details class="shrink mr-2" label="Просмотр дивидендов"></v-checkbox>
+                                <v-checkbox v-model="divAccess" hide-details class="shrink mr-2 mt-0" label="Просмотр дивидендов"></v-checkbox>
                             </v-flex>
                             <v-flex xs12>
-                                <v-checkbox v-model="tradeAccess" hide-details class="shrink mr-2" label="Просмотр сделок"></v-checkbox>
+                                <v-checkbox v-model="tradeAccess" hide-details class="shrink mr-2 mt-0" label="Просмотр сделок"></v-checkbox>
                             </v-flex>
                             <v-flex xs12>
-                                <v-checkbox v-model="lineDataAccess" hide-details class="shrink mr-2" label="Просмотр графика"></v-checkbox>
+                                <v-checkbox v-model="lineDataAccess" hide-details class="shrink mr-2 mt-0" label="Просмотр графика"></v-checkbox>
                             </v-flex>
                             <v-flex xs12>
-                                <v-checkbox v-model="dashboardAccess" hide-details class="shrink mr-2" label="Просмотр дашборда"></v-checkbox>
+                                <v-checkbox v-model="dashboardAccess" hide-details class="shrink mr-2 mt-0" label="Просмотр дашборда"></v-checkbox>
                             </v-flex>
                         </v-layout>
 
@@ -125,7 +125,7 @@ import {BtnReturn, CustomDialog} from "./customDialog";
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="info lighten-2" flat @click.native="close">Отмена</v-btn>
+                    <v-btn color="info lighten-2" flat @click.native="close">Закрыть</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
