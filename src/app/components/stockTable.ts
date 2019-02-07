@@ -167,7 +167,7 @@ export class StockTable extends UI {
 
     private tableHeadersState: TableHeadersState;
 
-    beforeMount(): void {
+    created(): void {
         /** Установка состояния заголовков таблицы */
         this.setHeadersState();
     }

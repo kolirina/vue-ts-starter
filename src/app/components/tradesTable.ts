@@ -173,7 +173,7 @@ export class TradesTable extends UI {
     /** Текущая операция */
     private operation = Operation;
 
-    beforeMount(): void {
+    created(): void {
         /** Установка состояния заголовков таблицы */
         this.setHeadersState();
     }

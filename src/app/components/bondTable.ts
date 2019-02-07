@@ -187,7 +187,7 @@ export class BondTable extends UI {
 
     private operation = Operation;
 
-    beforeMount(): void {
+    created(): void {
         /** Установка состояния заголовков таблицы */
         this.setHeadersState();
     }
