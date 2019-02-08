@@ -1,11 +1,12 @@
 import {Container, Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
-import {Http} from "../platform/services/http";
+import {Http, UrlParams} from "../platform/services/http";
 import {Storage} from "../platform/services/storage";
 import {AssetType} from "../types/assetType";
 import {Operation} from "../types/operation";
 import {TradeListType} from "../types/tradeListType";
 import {TradeRow} from "../types/types";
+import {CommonUtils} from "../utils/commonUtils";
 
 /** Сервис работы с localStorage */
 const localStorage: Storage = Container.get(Storage);
@@ -41,8 +42,14 @@ export class TradeService {
      * @returns {Promise<TradeRow[]>}
      */
     async loadTrades(id: string, offset: number = 0, limit: number = 50, sortColumn: string, descending: boolean = false, filter: TradesFilterRequest): Promise<TradeRow[]> {
-        const result = await this.http.get<TradeRow[]>(`/trades/${id}`,
-            {offset, limit, sortColumn: sortColumn ? sortColumn.toUpperCase() : null, descending, ...filter});
+        const urlParams: UrlParams = {offset, limit, ...filter};
+        if (sortColumn) {
+            urlParams.sortColumn = sortColumn.toUpperCase();
+        }
+        if (CommonUtils.exists(descending)) {
+            urlParams.descending = descending;
+        }
+        const result = await this.http.get<TradeRow[]>(`/trades/${id}`, urlParams);
 
         return result.map(this.correctMoneyOperation);
     }
