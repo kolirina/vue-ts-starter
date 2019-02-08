@@ -11,7 +11,7 @@ export class TablesService {
             {text: "", align: "left", ghost: true, sortable: false, value: "", active: true},
             {text: "Компания", align: "left", sortable: false, value: TABLE_HEADERS.COMPANY, active: true},
             {text: "Тикер", align: "left", value: TABLE_HEADERS.TICKER, active: false},
-            {text: "Количество", align: "left", value: TABLE_HEADERS.QUANTITY, active: true},
+            {text: "Количество", align: "left", value: TABLE_HEADERS.QUANTITY, active: false},
             {text: "Ср. цена", align: "right", value: TABLE_HEADERS.AVG_BUY, active: true},
             {text: "Тек. цена", align: "right", value: TABLE_HEADERS.CURR_PRICE, active: true},
             {text: "Стоимость покупок", align: "left", value: TABLE_HEADERS.B_COST, active: false},
