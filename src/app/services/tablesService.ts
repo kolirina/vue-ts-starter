@@ -73,6 +73,7 @@ export class TablesService {
             {text: "Комиссия", align: "right", value: TABLE_HEADERS.FEE, active: true},
             {text: "Сумма", align: "right", value: TABLE_HEADERS.SIGNED_TOTAL, active: true},
             {text: "Сумма без комисс.", align: "right", value: TABLE_HEADERS.TOTAL_WITHOUT_FEE, active: false},
+            {text: "", align: "center", value: "links", ghost: true, sortable: false, width: "25"},
             {text: "Действия", align: "center", ghost: true, value: "actions", sortable: false, width: "25", active: true},
         ]
     };
