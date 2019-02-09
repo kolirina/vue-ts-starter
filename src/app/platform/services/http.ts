@@ -16,8 +16,10 @@
 
 /** Структура данных параметров для URL */
 import {Inject, Singleton} from "typescript-ioc";
+import {BlockByTariffDialog} from "../../components/dialogs/blockByTariffDialog";
+import {ForbiddenDialog} from "../../components/dialogs/forbiddenDialog";
 import {StoreKeys} from "../../types/storeKeys";
-import {ErrorInfo} from "../../types/types";
+import {ErrorInfo, ForbiddenCode} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {Service} from "../decorators/service";
 import {Storage} from "./storage";
@@ -249,6 +251,14 @@ export class Http {
             window.location.replace("/");
             throw new Error("Доступ запрещен");
         }
+        if (response.status === 403) {
+            // при запрете доступа отображаем соответствующий диалог
+            const reason = await this.makeForbiddenError(response);
+            if (reason) {
+                reason === ForbiddenCode.DEMO_MODE ? await new ForbiddenDialog().show() : await new BlockByTariffDialog().show(reason);
+            }
+            throw new Error("Доступ запрещен");
+        }
         let error: any = new Error("Внутренняя ошибка сервера");
         try {
             const responseError = await response.json();
@@ -289,6 +299,18 @@ export class Http {
     private makeErrorInfo(responseError: any): ErrorInfo {
         if (responseError.hasOwnProperty("errorCode") && responseError.hasOwnProperty("message") && responseError.hasOwnProperty("fields")) {
             return responseError as ErrorInfo;
+        }
+        return null;
+    }
+
+    private async makeForbiddenError(response: Response): Promise<ForbiddenCode> {
+        try {
+            const responseError = await response.json();
+            if (responseError.message) {
+                return ForbiddenCode.valueByName(responseError.message);
+            }
+        } catch (e) {
+            // пришел ответ, отличный от json
         }
         return null;
     }
