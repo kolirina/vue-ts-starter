@@ -13,10 +13,10 @@ import {CustomDialog} from "./customDialog";
             <v-card class="dialog-wrap">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
 
-                <v-toolbar dark color="primary">
-                    <v-toolbar-title>Сделки по бумаге <b>{{ data.ticker }}</b></v-toolbar-title>
+                <v-card-title class="paddB0">
+                    <span class="headline">Сделки по бумаге <b>{{ data.ticker }}</b></span>
                     <v-spacer></v-spacer>
-                </v-toolbar>
+                </v-card-title>
                 <v-card-text>
                     <v-data-table :headers="headers" :items="data.trades" item-key="id" hide-actions>
                         <template slot="items" slot-scope="props">
@@ -37,6 +37,11 @@ import {CustomDialog} from "./customDialog";
                         </template>
                     </v-data-table>
                 </v-card-text>
+
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="primary" dark @click.native="close">OK</v-btn>
+                </v-card-actions>
             </v-card>
         </v-dialog>
     `

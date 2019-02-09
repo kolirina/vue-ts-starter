@@ -12,14 +12,19 @@ export class ClientService {
     @Inject
     private http: Http;
 
+    private clientInfoCache: Client = null;
+
     async login(request: LoginRequest): Promise<ClientInfo> {
         const clientInfo = await this.http.post<ClientInfoResponse>("/user/login", request);
         return this.mapClientInfoResponse(clientInfo);
     }
 
     async getClientInfo(): Promise<Client> {
-        const clientInfo = await this.http.get<ClientResponse>("/user/info");
-        return this.mapClientResponse(clientInfo);
+        if (!this.clientInfoCache) {
+            const clientInfo = await this.http.get<ClientResponse>("/user/info");
+            this.clientInfoCache = await this.mapClientResponse(clientInfo);
+        }
+        return this.clientInfoCache;
     }
 
     /**

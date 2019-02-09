@@ -8,9 +8,10 @@ import {ImportSuccessDialog} from "../../components/dialogs/importSuccessDialog"
 import {ExpandedPanel} from "../../components/expandedPanel";
 import {Filters} from "../../platform/filters/Filters";
 import {ClientInfo} from "../../services/clientService";
-import {ImportResponse, ImportService} from "../../services/importService";
+import {DealsImportProvider, ImportProviderFeatures, ImportProviderFeaturesByProvider, ImportResponse, ImportService} from "../../services/importService";
 import {OverviewService} from "../../services/overviewService";
 import {Portfolio, Status} from "../../types/types";
+import {CommonUtils} from "../../utils/commonUtils";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 import {ImportInstructions} from "./importInstructions";
@@ -38,7 +39,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </p>
                     </div>
                     <div class="providers">
-                        <div v-for="provider in providers" :key="provider" @click="selectedProvider = provider"
+                        <div v-for="provider in providers" :key="provider" @click="onSelectProvider(provider)"
                              :class="['item', provider.toLowerCase(), selectedProvider === provider ? 'active' : '']"></div>
                     </div>
 
@@ -65,17 +66,17 @@ const MainStore = namespace(StoreType.MAIN);
                         </ul>
                     </div>
 
-                    <expanded-panel :value="$uistate.stocksTablePanel" :state="$uistate.STOCKS">
+                    <expanded-panel v-if="importProviderFeatures" :value="$uistate.importSettings" :state="$uistate.IMPORT_SETTINGS">
                         <template slot="header">
                             <v-tooltip top>
                                 <span slot="activator" style="cursor: pointer">Расширенные настройки импорта</span>
                                 <span>Настройте дополнительные параметры импорта отчетов.</span>
                             </v-tooltip>
                         </template>
-                        <v-card-text>
+                        <v-card-text @click.stop>
                             <v-layout row wrap>
                                 <v-flex xs12 lg6>
-                                    <v-checkbox v-model="linkTrades" class="d-inline-block">
+                                    <v-checkbox v-model="importProviderFeatures.createLinkedTrade" class="d-inline-block">
                                         <template slot="label">
                                             <span>Добавлять сделки по списанию/зачислению денежных средств
                                                 <v-tooltip :max-width="250" top>
@@ -89,7 +90,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     </v-checkbox>
                                 </v-flex>
                                 <v-flex xs12 lg6>
-                                    <v-checkbox v-model="autoCommission">
+                                    <v-checkbox v-model="importProviderFeatures.autoCommission">
                                         <template slot="label">
                                             <span>
                                                 Автоматически рассчитывать комисию для сделок
@@ -106,7 +107,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     </v-checkbox>
                                 </v-flex>
                                 <v-flex xs12 lg6>
-                                    <v-checkbox v-model="autoEvents">
+                                    <v-checkbox v-model="importProviderFeatures.autoEvents">
                                         <template slot="label">
                                             <span>
                                                 Автоматически исполнять события по бумагам
@@ -123,7 +124,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     </v-checkbox>
                                 </v-flex>
                                 <v-flex xs12 lg6>
-                                    <v-checkbox v-model="confirmMoneyBalance">
+                                    <v-checkbox v-model="importProviderFeatures.confirmMoneyBalance">
                                         <template slot="label">
                                             <span>
                                                 Спрашивать текущий остаток ДС
@@ -132,6 +133,22 @@ const MainStore = namespace(StoreType.MAIN);
                                                     <span>
                                                         Если включено, то после успешного импорта будет предложено ввести текущий остаток денежных
                                                         средств на счете. Отключите, если Вы хотите сами задать вводы и выводы денег.
+                                                    </span>
+                                                </v-tooltip>
+                                            </span>
+                                        </template>
+                                    </v-checkbox>
+                                </v-flex>
+                                <v-flex xs12 lg6>
+                                    <v-checkbox v-model="importProviderFeatures.importMoneyTrades">
+                                        <template slot="label">
+                                            <span>
+                                                Импорт сделок по денежным средствам
+                                                <v-tooltip :max-width="250" top>
+                                                    <i slot="activator" class="far fa-question-circle"></i>
+                                                    <span>
+                                                        Если включено, то из отчета будут импортированы сделки по денежным средствам.
+                                                        Отключите, если Вы не хотите загружать сделки по движению денежных средств.
                                                     </span>
                                                 </v-tooltip>
                                             </span>
@@ -161,22 +178,26 @@ export class ImportPage extends UI {
     private importService: ImportService;
     @Inject
     private overviewService: OverviewService;
+    /** Все провайдеры импорта */
+    private importProviderFeaturesByProvider: ImportProviderFeaturesByProvider = null;
+    /** Настройки импорта для выбранного провайдера */
+    private importProviderFeatures: ImportProviderFeatures = null;
     /** Файлы для импорта */
     private files: File[] = [];
     /** Провайдеры отчетов */
     private providers = DealsImportProvider;
     /** Выбранный провайдер */
     private selectedProvider: DealsImportProvider = null;
-    /** Признак создания связанных сделок */
-    private linkTrades = false;
-    /** Признак автоматического рассчета комиссии по сделкам */
-    private autoCommission = false;
-    /** Призак автоисполнения Событий по сделкам из отчета */
-    private autoEvents = true;
-    /** Признак отображения диалога для ввода баланса портфеля после импорта */
-    private confirmMoneyBalance = true;
     /** Признак отображения панели с расширенными настройками */
     private showExtendedSettings = false;
+
+    /**
+     * Инициализирует необходимые для работы данные
+     * @inheritDoc
+     */
+    async created(): Promise<void> {
+        this.importProviderFeaturesByProvider = await this.importService.getImportProviderFeatures();
+    }
 
     /**
      * Событие при добавлении вложений
@@ -204,12 +225,7 @@ export class ImportPage extends UI {
         if (this.files && this.files.length && this.selectedProvider) {
             const data = new FormData();
             this.files.forEach(file => data.append("files", file, file.name));
-            const response = await this.importService.importReport(this.selectedProvider, this.portfolio.id, data, {
-                linkTrades: this.linkTrades,
-                autoCommission: this.autoCommission,
-                autoEvents: this.autoEvents,
-                confirmMoneyBalance: this.confirmMoneyBalance
-            });
+            const response = await this.importService.importReport(this.selectedProvider, this.portfolio.id, data, this.importProviderFeatures);
             await this.handleUploadResponse(response);
         }
     }
@@ -219,7 +235,7 @@ export class ImportPage extends UI {
      * @param response
      */
     private async handleUploadResponse(response: ImportResponse): Promise<void> {
-        if (response.status === Status.ERROR) {
+        if (response.status === Status.ERROR && CommonUtils.isBlank(response.generalError)) {
             this.$snotify.error(response.message, "Ошибка");
             return;
         }
@@ -237,7 +253,7 @@ export class ImportPage extends UI {
         if (response.validatedTradesCount) {
             const firstWord = Filters.declension(response.validatedTradesCount, "Добавлена", "Добавлено", "Добавлено");
             const secondWord = Filters.declension(response.validatedTradesCount, "сделка", "сделки", "сделок");
-            if (this.confirmMoneyBalance) {
+            if (this.importProviderFeatures.confirmMoneyBalance) {
                 const currentMoneyRemainder = await this.overviewService.getCurrentMoney(this.portfolio.id);
                 const enteredMoneyRemainder = await new ImportSuccessDialog().show({
                     currentMoneyRemainder,
@@ -247,11 +263,13 @@ export class ImportPage extends UI {
                 });
                 await this.overviewService.saveOrUpdateCurrentMoney(this.portfolio.id, enteredMoneyRemainder);
                 this.$router.push("portfolio");
-                this.$snotify.info(`${firstWord} ${secondWord}`, "Результат импорта");
+                this.$snotify.info(`${firstWord} ${response.validatedTradesCount} ${secondWord}.`, "Результат импорта");
             } else {
-                this.$snotify.info(`Импорт прошел успешно. ${firstWord} ${secondWord}`, "Результат импорта");
+                this.$snotify.info(`Импорт прошел успешно. ${firstWord} ${response.validatedTradesCount} ${secondWord}.`, "Результат импорта");
             }
             await this.reloadPortfolio(this.portfolio.id);
+        } else {
+            this.$snotify.warning("В отчете не содержится информации по сделкам.", "Импорт завершен");
         }
     }
 
@@ -261,31 +279,9 @@ export class ImportPage extends UI {
      */
     private onSelectProvider(provider: DealsImportProvider): void {
         this.selectedProvider = provider;
+        this.importProviderFeatures = {...this.importProviderFeaturesByProvider[provider]};
         if (this.selectedProvider === DealsImportProvider.INTELINVEST) {
-            this.linkTrades = false;
+            this.importProviderFeatures.createLinkedTrade = false;
         }
     }
-}
-
-/** Форматы поддерживаемых брокеров и отчетов */
-export enum DealsImportProvider {
-    ALFADIRECT = "ALFADIRECT",
-    ITINVEST = "ITINVEST",
-    OTKRYTIE = "OTKRYTIE",
-    ZERICH = "ZERICH",
-    PSBANK = "PSBANK",
-    BCS = "BCS",
-    BCS_CYPRUS = "BCS_CYPRUS",
-    FINAM = "FINAM",
-    FREEDOM_FINANCE = "FREEDOM_FINANCE",
-    KITFINANCE = "KITFINANCE",
-    URALSIB = "URALSIB",
-    SBERBANK = "SBERBANK",
-    VTB24 = "VTB24",
-    INTERACTIVE_BROKERS = "INTERACTIVE_BROKERS",
-    TINKOFF = "TINKOFF",
-    NETTRADER = "NETTRADER",
-    INTELINVEST = "INTELINVEST",
-    ATON = "ATON",
-    QUIK = "QUIK"
 }

@@ -3,6 +3,7 @@ import {Prop} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
 import {ClientInfo} from "../../services/clientService";
+import {DealsImportProvider} from "../../services/importService";
 import {Portfolio} from "../../types/types";
 import {StoreType} from "../../vuex/storeType";
 import {AlfadirectInstruction} from "./import_instructions/alfadirectInstruction";
@@ -18,7 +19,6 @@ import {TinkoffInstruction} from "./import_instructions/tinkoffInstruction";
 import {UralsibInstruction} from "./import_instructions/uralsibInstruction";
 import {VtbInstruction} from "./import_instructions/vtbInstruction";
 import {ZerichInstruction} from "./import_instructions/zerichInstruction";
-import {DealsImportProvider} from "./importPage";
 
 const MainStore = namespace(StoreType.MAIN);
 

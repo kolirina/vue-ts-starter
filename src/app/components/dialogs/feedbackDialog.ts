@@ -14,10 +14,9 @@ import {CustomDialog} from "./customDialog";
             <v-card class="dialog-wrap">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
 
-                <v-toolbar dark color="primary">
-                    <v-toolbar-title><b>Обратная связь</b></v-toolbar-title>
-                    <v-spacer></v-spacer>
-                </v-toolbar>
+                <v-card-title>
+                    <span class="headline">Обратная связь</span>
+                </v-card-title>
                 <v-card-text>
                     <v-container grid-list-md>
                         <v-layout wrap>
@@ -44,6 +43,7 @@ import {CustomDialog} from "./customDialog";
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
+                    <v-btn color="info lighten-2" flat @click.native="close">Отмена</v-btn>
                     <v-btn color="primary" @click.native="sendFeedback" dark small>
                         Отправить
                     </v-btn>

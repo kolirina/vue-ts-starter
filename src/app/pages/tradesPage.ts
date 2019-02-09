@@ -1,3 +1,4 @@
+import Decimal from "decimal.js";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {Watch} from "vue-property-decorator";
@@ -10,9 +11,10 @@ import {TradesTable} from "../components/tradesTable";
 import {CatchErrors} from "../platform/decorators/catchErrors";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {FilterService} from "../services/filterService";
-import {TablesService} from "../services/tablesService";
+import {TableHeaders, TABLES_NAME, TablesService} from "../services/tablesService";
 import {TradeService, TradesFilter} from "../services/tradeService";
-import {Pagination, Portfolio, TableHeader, TableHeaders, TablePagination, TradeRow} from "../types/types";
+import {AssetType} from "../types/assetType";
+import {Pagination, Portfolio, TableHeader, TablePagination, TradeRow} from "../types/types";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 
@@ -29,10 +31,10 @@ const MainStore = namespace(StoreType.MAIN);
             <expanded-panel :disabled="true" :withMenu="true" name="trades" :alwaysOpen="true" :value="[true]">
                 <template slot="header">Сделки</template>
                 <template slot="list">
-                    <v-list-tile-title @click="openTableSettings('tradesTable')">Настроить калонки</v-list-tile-title>
+                    <v-list-tile-title @click="openTableSettings(TABLES_NAME.TRADE)">Настроить колонки</v-list-tile-title>
                 </template>
-                <trades-table v-if="tradePagination" :trades="trades" :trade-pagination="tradePagination" :tableKeys="getTableKeys('tradesTable')"
-                    :headers="getHeaders('tradesTable')" @delete="onDelete"></trades-table>
+                <trades-table v-if="tradePagination" :trades="trades" :trade-pagination="tradePagination"
+                    :headers="getHeaders(TABLES_NAME.TRADE)" @delete="onDelete"></trades-table>
             </expanded-panel>
 
             <v-container v-if="pages > 1">
@@ -82,16 +84,10 @@ export class TradesPage extends UI {
 
     private headers: TableHeaders = this.tablesService.headers;
 
-    getHeaders(name: string): TableHeader[] {
-        const filtredHeaders = this.tablesService.filterHeaders(this.headers);
-        if (filtredHeaders[name]) {
-            return filtredHeaders[name];
-        }
-        return [];
-    }
+    private TABLES_NAME = TABLES_NAME;
 
-    getTableKeys(name: string): {[key: string]: boolean} {
-        return this.tablesService.getHeadersValue( this.getHeaders(name) );
+    getHeaders(name: string): TableHeader[] {
+        return this.tablesService.getFilterHeaders(name);
     }
 
     /**
@@ -137,12 +133,13 @@ export class TradesPage extends UI {
         await this.reloadPortfolio(this.portfolio.id);
         await this.loadTrades();
         this.calculatePagination();
-        this.$snotify.info(`Операция '${tradeRow.operationLabel}' по бумаге ${tradeRow.ticker} была успешно удалена`);
+        this.$snotify.info(`Операция '${tradeRow.operationLabel}' ${AssetType.valueByName(tradeRow.asset) === AssetType.MONEY ? "" :
+            `по бумаге ${tradeRow.ticker}`} была успешно удалена`);
     }
 
     private calculatePagination(): void {
         this.totalTrades = this.portfolio.overview.totalTradesCount;
-        this.pages = parseInt(String(this.totalTrades / this.pageSize), 10);
+        this.pages = new Decimal(this.totalTrades / this.pageSize).toDP(0, Decimal.ROUND_UP).toNumber();
     }
 
     @CatchErrors

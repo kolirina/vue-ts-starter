@@ -12,10 +12,9 @@ import {CustomDialog} from "./customDialog";
             <v-card class="dialog-wrap">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
 
-                <v-toolbar dark color="primary">
-                    <v-toolbar-title>Ошибка импорта</v-toolbar-title>
-                    <v-spacer></v-spacer>
-                </v-toolbar>
+                <v-card-title>
+                    <span class="headline">Ошибка импорта</span>
+                </v-card-title>
                 <v-card-text>
                     <div>
                         <p>

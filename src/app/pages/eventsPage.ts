@@ -12,6 +12,7 @@ import {EventsAggregateInfo, EventService, ShareEvent} from "../services/eventSe
 import {AssetType} from "../types/assetType";
 import {Operation} from "../types/operation";
 import {Portfolio, TableHeader} from "../types/types";
+import {TradeUtils} from "../utils/tradeUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 
@@ -90,12 +91,23 @@ const MainStore = namespace(StoreType.MAIN);
                                 <td class="text-xs-right">{{ props.item.period }}</td>
                                 <td class="text-xs-right ii-number-cell">{{ props.item.cleanAmount | amount(true) }}</td>
                                 <td class="justify-center layout px-0">
-                                    <v-btn color="primary" @click="openTradeDialog(props.item)" flat icon dark>
-                                        <v-icon color="primary" small>fas fa-plus</v-icon>
-                                    </v-btn>
-                                    <v-btn color="primary" flat icon dark>
-                                        <v-icon color="primary" small>fas fa-trash-alt</v-icon>
-                                    </v-btn>
+                                    <v-tooltip :max-width="250" top>
+                                        <v-btn slot="activator" color="primary" @click="openTradeDialog(props.item)" flat icon dark>
+                                            <v-icon color="primary" small>fas fa-check</v-icon>
+                                        </v-btn>
+                                        <span>
+                                            Нажмите для исполнения события.
+                                        </span>
+                                    </v-tooltip>
+
+                                    <v-tooltip :max-width="250" top>
+                                        <v-btn slot="activator" color="primary" flat icon dark>
+                                            <v-icon color="primary" small>fas fa-trash-alt</v-icon>
+                                        </v-btn>
+                                        <span>
+                                            Нажмите для отмены события.
+                                        </span>
+                                    </v-tooltip>
                                 </td>
                             </tr>
                         </template>
@@ -161,6 +173,12 @@ export class EventsPage extends UI {
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
             share: event.share,
+            eventFields: {
+                amount: event.cleanAmountPerShare || event.amountPerShare,
+                quantity: event.quantity,
+                note: TradeUtils.eventNote(event),
+                perOne: true,
+            },
             operation,
             assetType: operation === Operation.DIVIDEND ? AssetType.STOCK : AssetType.BOND
         });

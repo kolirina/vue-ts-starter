@@ -31,7 +31,7 @@ export type TradeRow = {
     /** Валюта */
     currency: string,
     /** Итоговая сумма сделки */
-    signedTotal: string
+    signedTotal: string,
     /** Итоговая сумма сделки без учета комиссии */
     totalWithoutFee: string,
     /** Тикер */
@@ -221,17 +221,10 @@ export type TableHeader = {
     value: string,
     class?: string[] | string,
     width?: string,
+    /** Определяет показ элемента в таблице */
     active?: boolean,
+    /** Определяет показ элемента в диалоге переключения калонок. */
     ghost?: boolean,
-};
-
-export type TableHeaders = {
-    [key: string]: TableHeader[]
-};
-
-export type TableHeaderData = {
-    tableName: string,
-    headers: TableHeader[]
 };
 
 export type DashboardData = {
@@ -497,4 +490,24 @@ export class CurrencyUnit extends (EnumType as IStaticEnum<CurrencyUnit>) {
 
 export interface MapType {
     [key: string]: string;
+}
+
+/** Перечислению кодов для 403 ответов */
+@Enum("code")
+export class ForbiddenCode extends (EnumType as IStaticEnum<ForbiddenCode>) {
+
+    static readonly LIMIT_EXCEEDED = new ForbiddenCode("LIMIT_EXCEEDED", "К сожалению, Ваш тарифный план не позволяет выполнить это действие из-за лимита " +
+        "на количество ценных бумаг или портфелей. Пожалуйста, обновите Ваш план и получите доступ к новым возможностям.");
+    static readonly PERMISSION_DENIED = new ForbiddenCode("PERMISSION_DENIED", "Сожалеем, но на Вашем тарифном плане этот функционал недоступен. " +
+        "Пожалуйста, обновите Ваш план и получите доступ к новым возможностям.");
+    static readonly CURRENCY_PERMISSION_DENIED = new ForbiddenCode("CURRENCY_PERMISSION_DENIED", "Сожалеем, но на Вашем тарифном плане нет возможности работы с валютами. " +
+        "Пожалуйста, обновите Ваш план и получите доступ к новым возможностям.");
+    static readonly SUBSCRIPTION_EXPIRED = new ForbiddenCode("SUBSCRIPTION_EXPIRED", "Сожалеем, но подписка во Вашему тарифу истекла. " +
+        "Для выполнения действия, пожалуйста, продлите подписку и получите доступ к новым возможностям.");
+    static readonly DEMO_MODE = new ForbiddenCode("DEMO_MODE", "Вы находитесь в демо-режиме. Чтобы воспользоваться всеми возможностями сервиса, " +
+        "Вам нужно всего лишь зарегистрироваться - это займет не больше пары минут");
+
+    private constructor(public code: string, public description: string) {
+        super();
+    }
 }

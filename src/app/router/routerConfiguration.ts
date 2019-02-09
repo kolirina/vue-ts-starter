@@ -1,8 +1,11 @@
+import * as moment from "moment";
 import {Container} from "typescript-ioc";
 import Vue from "vue";
-import VueRouter from "vue-router";
+import VueRouter, {Route} from "vue-router";
 import {RouteConfig} from "vue-router/types/router";
+import {Resolver} from "../../../typings/vue";
 import {AuthComponent} from "../app/authComponent";
+import {TariffExpiredDialog} from "../components/dialogs/tariffExpiredDialog";
 import {BalancesPage} from "../pages/balancesPage";
 import {BondInfoPage} from "../pages/bondInfoPage";
 import {CombinedPortfolioPage} from "../pages/combinedPortfolioPage";
@@ -21,10 +24,16 @@ import {TariffsPage} from "../pages/settings/tariffsPage";
 import {ShareInfoPage} from "../pages/shareInfoPage";
 import {TradesPage} from "../pages/tradesPage";
 import {Storage} from "../platform/services/storage";
+import {ClientService} from "../services/clientService";
 import {LogoutService} from "../services/logoutService";
+import {StoreKeys} from "../types/storeKeys";
+import {Tariff} from "../types/tariff";
+import {DateUtils} from "../utils/dateUtils";
 
 Vue.use(VueRouter);
 
+/** Сервис работы с клиентом */
+const clientService: ClientService = Container.get(ClientService);
 /** Сервис работы с localStorage */
 const localStorage: Storage = Container.get(Storage);
 
@@ -47,6 +56,23 @@ export class RouterConfiguration {
                 routes: RouterConfiguration.createRoutes(),
                 scrollBehavior: ((): any => ({x: 0, y: 0}))
             });
+            RouterConfiguration.router.beforeEach(async (to: Route, from: Route, next: Resolver): Promise<void> => {
+                // осуществляем переход по роуту если пользователь залогинен, его тариф не Бесплатный и тариф действущий
+                const tariffAllowed = (to.meta as ShowTariffMeta).tariffAllowed;
+                const authorized = !!localStorage.get(StoreKeys.TOKEN_KEY, null);
+                if (!tariffAllowed && authorized) {
+                    const client = await clientService.getClientInfo();
+                    const tariffExpired = client.tariff !== Tariff.FREE && DateUtils.parseDate(client.paidTill).isBefore(moment());
+                    if (tariffExpired) {
+                        await new TariffExpiredDialog().show();
+                        next(false);
+                    } else {
+                        next();
+                    }
+                } else {
+                    next();
+                }
+            });
         }
         return RouterConfiguration.router;
     }
@@ -56,17 +82,17 @@ export class RouterConfiguration {
             {
                 path: "/logout",
                 name: "logout",
+                meta: {tariffAllowed: true},
                 beforeEnter: (): Promise<void> => (Container.get(LogoutService) as LogoutService).logout()
             },
             {
                 name: "auth",
                 path: "/auth/:token",
+                meta: {tariffAllowed: true},
                 component: AuthComponent
             },
             {
                 path: "*",
-                beforeEnter: (): void => {
-                },
                 redirect: "/portfolio"
             },
             {
@@ -97,26 +123,42 @@ export class RouterConfiguration {
             {
                 name: "quotes",
                 path: "/quotes",
+                meta: {tariffAllowed: true},
                 component: QuotesPage
             },
             {
-                name: "share-info",
+                path: "/share-info",
+                meta: {tariffAllowed: true},
+                redirect: "/share-info/GAZP"
+            },
+            {
                 path: "/share-info/:ticker",
-                component: ShareInfoPage
+                component: ShareInfoPage,
+                children: [
+                    {
+                        path: "",
+                        name: "share",
+                        meta: {tariffAllowed: true},
+                        component: ShareInfoPage
+                    }
+                ],
             },
             {
                 name: "bond-info",
+                meta: {tariffAllowed: true},
                 path: "/bond-info/:isin",
                 component: BondInfoPage
             },
             {
                 name: "portfolio-settings",
                 path: "/portfolio-settings",
+                meta: {tariffAllowed: true},
                 component: SettingsPage
             },
             {
                 name: "help",
                 path: "/help",
+                meta: {tariffAllowed: true},
                 component: HelpPage
             },
             {
@@ -132,16 +174,19 @@ export class RouterConfiguration {
             {
                 name: "profile",
                 path: "/profile",
+                meta: {tariffAllowed: true},
                 component: ProfilePage
             },
             {
                 name: "tariffs",
                 path: "/tariffs",
+                meta: {tariffAllowed: true},
                 component: TariffsPage
             },
             {
                 name: "promo-codes",
                 path: "/promo-codes",
+                meta: {tariffAllowed: true},
                 component: PromoCodesPage
             },
             {
@@ -156,4 +201,8 @@ export class RouterConfiguration {
             }
         ];
     }
+}
+
+interface ShowTariffMeta {
+    tariffAllowed: boolean;
 }
