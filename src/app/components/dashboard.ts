@@ -3,6 +3,7 @@ import {Prop, Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
 import {Filters} from "../platform/filters/Filters";
+import {BigMoney} from "../types/bigMoney";
 import {DashboardBrick, DashboardData, Portfolio} from "../types/types";
 import {StoreType} from "../vuex/storeType";
 
@@ -92,6 +93,7 @@ export class Dashboard extends UI {
 
     private fillBricks(newValue: DashboardData): void {
         const mainCurrency = this.portfolio.portfolioParams.viewCurrency.toLowerCase();
+        const secondCurrency = new BigMoney(newValue.currentCostInAlternativeCurrency).currency.toLowerCase();
 
         this.blocks[0] = {
             name: "Суммарная стоимость",
@@ -99,7 +101,7 @@ export class Dashboard extends UI {
             secondValue: Filters.formatMoneyAmount(newValue.currentCostInAlternativeCurrency, true),
             hasNotBorderLeft: true,
             mainCurrency,
-            secondCurrency: mainCurrency,
+            secondCurrency: secondCurrency,
         };
         this.blocks[1] = {
             name: "Суммарная прибыль",
@@ -116,7 +118,7 @@ export class Dashboard extends UI {
             mainValue: newValue.yearYield,
             secondValueDesc: "без дивидендов и купонов",
             secondValue: newValue.yearYieldWithoutDividendsAndCoupons,
-            mainCurrency,
+            mainCurrency: "percent",
             secondCurrency: "percent",
         };
         this.blocks[3] = {

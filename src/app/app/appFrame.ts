@@ -229,6 +229,7 @@ export class AppFrame extends UI {
             ]
         },
         {title: "Профиль", action: "profile", icon: "fas fa-user"},
+        {title: "Справка", action: "help", icon: "far fa-question-circle"},
         {title: "Выход", action: "logout", icon: "exit_to_app"}
     ];
 
