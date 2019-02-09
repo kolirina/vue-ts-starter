@@ -29,7 +29,16 @@
     }
   }
 
-  &-hover-black:hover {
-    background-color: #000 !important;
+  &-group-right {
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 0;
+  }
+
+  &-hover-black {
+    border-color: #000;
+    &:hover {
+      background-color: #000 !important;
+    }
   }
 }
