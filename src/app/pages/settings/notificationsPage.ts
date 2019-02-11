@@ -30,13 +30,13 @@ const MainStore = namespace(StoreType.MAIN);
             <span>Здесь можно настроить уведомления о дивидендах, о достижении целевых цен на акции, а также подписаться на новости интересующих эмитентов. Добавьте первое уведомление, нажав на кнопку “+“ в правом верхнем углу.</span>
         </v-card>
 
-        <v-card v-else class="notifications-card" v-for="notification in notificationsService.notifications" :key="notification.stockPriceNotification.id">
+        <v-card v-else class="notifications-card" v-for="notification in notificationsService.notifications" :key="notification.id">
             <div class="notifications-card-header">
-                <div class="notifications-card-header-title">{{notification.stockPriceNotification.stock.shortname}}</div>
+                <div class="notifications-card-header-title">{{notification.stock.shortname}}</div>
                 <div class="notifications-card-header-price">
                     Цена 
-                    <span>{{notification.stockPriceNotification.stock.price | amount}} 
-                        <i :class="notification.stockPriceNotification.stock.currency.toLowerCase()"></i>
+                    <span>{{notification.stock.price | amount}} 
+                        <i :class="notification.stock.currency.toLowerCase()"></i>
                     </span>
                 </div>
                 <div class="notifications-card-header-actions">
@@ -46,33 +46,33 @@ const MainStore = namespace(StoreType.MAIN);
             </div>
             <v-layout class="notifications-card-body" row>
                 <v-flex class="notifications-card-body-prices with-padding">
-                    <div v-if="notification.stockPriceNotification.buyPrice">
+                    <div v-if="notification.buyPrice">
                         Целевая цена покупки
-                        <span class="notifications-card-body-prices-price">{{notification.stockPriceNotification.buyPrice}}</span>
+                        <span class="notifications-card-body-prices-price">{{notification.buyPrice}}</span>
                         <span class="notifications-card-body-prices-sign">±</span>
-                        <span class="notifications-card-body-prices-variation">{{notification.stockPriceNotification.buyVariation}}</span>
-                        <i class="notifications-card-body-prices-currency" :class="notification.stockPriceNotification.stock.currency.toLowerCase()"></i>
+                        <span class="notifications-card-body-prices-variation">{{notification.buyVariation}}</span>
+                        <i class="notifications-card-body-prices-currency" :class="notification.stock.currency.toLowerCase()"></i>
                     </div>
-                    <div v-if="notification.stockPriceNotification.sellPrice">
+                    <div v-if="notification.sellPrice">
                         Целевая цена продажи
-                        <span class="notifications-card-body-prices-price">{{notification.stockPriceNotification.sellPrice}}</span>
+                        <span class="notifications-card-body-prices-price">{{notification.sellPrice}}</span>
                         <span class="notifications-card-body-prices-sign">±</span>
-                        <span class="notifications-card-body-prices-variation">{{notification.stockPriceNotification.sellVariation}}</span>
-                        <i class="notifications-card-body-prices-currency" :class="notification.stockPriceNotification.stock.currency.toLowerCase()"></i>
+                        <span class="notifications-card-body-prices-variation">{{notification.sellVariation}}</span>
+                        <i class="notifications-card-body-prices-currency" :class="notification.stock.currency.toLowerCase()"></i>
                     </div>
                 </v-flex>
-                <div v-if="notification.stockNewsNotification" class="notifications-card-body-line"></div>
-                <v-flex v-if="notification.stockNewsNotification" class="notifications-card-body-news with-padding">
+                <div v-if="notification.keywords" class="notifications-card-body-line"></div>
+                <v-flex v-if="notification.keywords" class="notifications-card-body-news with-padding">
                     <div>
-                        Ключевые слова: <span>{{notification.stockNewsNotification.keywords}}</span>
+                        Ключевые слова: <span>{{notification.keywords}}</span>
                     </div>
                     <div>
-                        Тип слов: <span>{{searchTypesTitle[notification.stockNewsNotification.keyWordsSearchType]}}</span>
+                        Тип слов: <span>{{searchTypesTitle[notification.keyWordsSearchType]}}</span>
                     </div>
                 </v-flex>
             </v-layout>
             <div class="notifications-card-last-notification">
-                <span>Дата последнего уведомления {{notification.stockPriceNotification.lastNotification}}</span>
+                <span>Дата последнего уведомления {{notification.lastNotification}}</span>
             </div>
         </v-card>
     </div>
@@ -88,6 +88,7 @@ export class NotificationsPage extends UI {
 
     private searchTypesTitle = KeyWordsSearchTypeTitle;
     
+    /** Создан для того, чтобы свойство notificationsService.notifications стало реактивным. */
     notifications: NotificationParams[] = this.notificationsService.notifications;
 
     async mounted() {
