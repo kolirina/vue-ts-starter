@@ -48,9 +48,6 @@ export class ShareSearchComponent extends UI {
     @Prop({required: false})
     private filteredShares: Share[];
 
-    @Prop()
-    private defaultShare: Share;
-
     private filteredSharesMutated: Share[] = [];
     private assetTypeMutated: AssetType;
 
@@ -61,19 +58,12 @@ export class ShareSearchComponent extends UI {
     private currentTimer: number = null;
     private searchQuery: string = null;
 
-    private share: Share = {...this.defaultShare} || null;
+    private share: Share = null;
     private shareSearch = false;
     private notFoundLabel = "Ничего не найдено";
 
     created(): void {
         // this.filteredSharesMutated = this.filteredShares ? [...this.filteredShares] : [];
-    }
-
-    @Watch("defaultShare")
-    private onDefaltShareChange(): void {
-        this.filteredSharesMutated = [this.share];
-        this.share = {...this.defaultShare};
-        this.searchQuery = `${this.share.ticker} (${this.share.shortname})`;
     }
 
     @Watch("filteredShares")

@@ -1,10 +1,10 @@
 import { Inject } from "typescript-ioc";
 import Component from "vue-class-component";
+import { NotificationBodyData, NotificationMessages, NotificationParams, NotificationResponseType, NotificationsService} from "../../services/notificationsService";
+import { AssetType } from "../../types/assetType";
+import { AddAndEditNotificationBody } from "../addAndEditNotificationBody";
+import { ShareSearchComponent } from "../shareSearchComponent";
 import { CustomDialog } from "./customDialog";
-import {AddAndEditNotificationBody} from "../addAndEditNotificationBody";
-import {ShareSearchComponent} from "../shareSearchComponent";
-import {AssetType } from "../../types/assetType";
-import {NotificationBodyData, NotificationMessages, NotificationParams, NotificationResponseType, NotificationsService} from "../../services/notificationsService";
 
 @Component({
   template: `
@@ -19,7 +19,7 @@ import {NotificationBodyData, NotificationMessages, NotificationParams, Notifica
     </v-dialog>
   `,
   components: {ShareSearchComponent, AddAndEditNotificationBody}
-}) 
+})
 export class EditNotificationDialog extends CustomDialog<any, string> {
   @Inject
   private notificationsService: NotificationsService;
@@ -40,7 +40,7 @@ export class EditNotificationDialog extends CustomDialog<any, string> {
   };
 
   /** beforeMount т.к. необходимо получение data из метода show, которым был открыт диалог */
-  async beforeMount() {
+  async beforeMount(): Promise<void> {
     const sellPriceChange = this.data.sellPrice ? true : false;
     const sellPrice = this.data.sellPrice || null;
     const sellVariation = this.data.sellVariation || null;
@@ -55,16 +55,16 @@ export class EditNotificationDialog extends CustomDialog<any, string> {
     this.defaultBodyParams = {
       ...this.defaultBodyParams,
       share, sellPriceChange, sellPrice, sellVariation, buyVariation, buyPrice, buyPriceChange, news, keyWordsSearchType, newsKeyWords
-    }
+    };
   }
 
   private async editNotification(bodyParams: NotificationBodyData): Promise<void> {
-    let stockId: string = bodyParams.share.id;
-    let response: NotificationResponseType;
-    let reqParams: NotificationParams = {
+    const stockId: string = bodyParams.share.id;
+    const reqParams: NotificationParams = {
       id: this.data.id,
       stockId: stockId
     };
+    let response: NotificationResponseType;
 
     // Заполнение полей для запроса
     if (bodyParams.sellPriceChange) {
@@ -84,14 +84,14 @@ export class EditNotificationDialog extends CustomDialog<any, string> {
 
     response = await this.notificationsService.editNotification(reqParams);
 
-    if(response) {
+    if (response) {
       this.$snotify.success(NotificationMessages.SUCCESS_EDIT);
       this.close();
     }
   }
 
   /*** Для передачи в дочерние элементы. Метод close эммитит событие вверх, поэтому его нельзя передать напрямую. */
-  private closeDialog() {
+  private closeDialog(): void {
     this.close();
   }
 }

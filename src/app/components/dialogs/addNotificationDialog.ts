@@ -1,10 +1,10 @@
 import { Inject } from "typescript-ioc";
 import Component from "vue-class-component";
+import { NotificationBodyData, NotificationMessages, NotificationParams, NotificationResponseType, NotificationsService } from "../../services/notificationsService";
+import { AssetType } from "../../types/assetType";
+import { AddAndEditNotificationBody } from "../addAndEditNotificationBody";
+import { ShareSearchComponent } from "../shareSearchComponent";
 import { CustomDialog } from "./customDialog";
-import {AddAndEditNotificationBody} from "../addAndEditNotificationBody";
-import {ShareSearchComponent} from "../shareSearchComponent";
-import {AssetType } from "../../types/assetType";
-import {NotificationBodyData, NotificationMessages, NotificationParams, NotificationResponseType, NotificationsService} from "../../services/notificationsService";
 
 @Component({
   template: `
@@ -13,13 +13,13 @@ import {NotificationBodyData, NotificationMessages, NotificationParams, Notifica
         <v-icon class="closeDialog" @click.native="close">close</v-icon>
         <v-card-title class="headline add-notification-title">Создание уведомления</v-card-title>
 
-        <add-and-edit-notification-body @mainAction="addNotification" @close="close" :data="defaultBodyParams">
+        <add-and-edit-notification-body @mainAction="addNotification" @close="closeDialog" :data="defaultBodyParams">
         </add-and-edit-notification-body>
       </v-card>
     </v-dialog>
   `,
   components: {ShareSearchComponent, AddAndEditNotificationBody}
-}) 
+})
 export class AddNotificationDialog extends CustomDialog<any, string> {
   @Inject
   private notificationsService: NotificationsService;
@@ -40,11 +40,11 @@ export class AddNotificationDialog extends CustomDialog<any, string> {
   };
 
   private async addNotification(bodyParams: NotificationBodyData): Promise<void> {
-    let stockId: string = bodyParams.share.id;
-    let response: NotificationResponseType;
-    let reqParams: NotificationParams = {
+    const stockId: string = bodyParams.share.id;
+    const reqParams: NotificationParams = {
       stockId: stockId
     };
+    let response: NotificationResponseType;
 
     // Заполнение полей для запроса
     if (bodyParams.sellPriceChange) {
@@ -64,9 +64,14 @@ export class AddNotificationDialog extends CustomDialog<any, string> {
 
     response = await this.notificationsService.addNotification(reqParams);
 
-    if(response) {
+    if (response) {
       this.$snotify.success(NotificationMessages.SUCCESS_ADD);
       this.close();
     }
+  }
+
+  /*** Для передачи в дочерние элементы. Метод close эммитит событие вверх, поэтому его нельзя передать напрямую. */
+  private closeDialog(): void {
+    this.close();
   }
 }

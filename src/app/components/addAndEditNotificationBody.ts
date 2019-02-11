@@ -7,7 +7,7 @@ import {ShareSearchComponent} from "./shareSearchComponent";
 @Component({
   template: `
     <div>
-      <share-search-component :defaultShare="data.share" :assetType="bodyParams.assetType" @change="onShareSearchChange"></share-search-component>
+      <share-search-component :filteredShares="filteredShares" :assetType="bodyParams.assetType" @clear="onShareClear" @change="onShareSearchChange"></share-search-component>
 
       <v-switch v-model="bodyParams.buyPriceChange">
         <template slot="label">
@@ -19,7 +19,7 @@ import {ShareSearchComponent} from "./shareSearchComponent";
             <span>
               Для получения уведомлений задайте целевые цены
               и допуск. Например, вы хотите получить уведомление
-              для покупки акций SBER про цене 80 рублей. Для этого 
+              для покупки акций SBER про цене 80 рублей. Для этого
               укажите в “Целевая цена покупки:” 80.
               <br />
               <br />
@@ -58,7 +58,7 @@ import {ShareSearchComponent} from "./shareSearchComponent";
             <span>
               Для получения уведомлений задайте целевые цены
               и допуск. Например, вы хотите получить уведомление
-              для покупки акций SBER про цене 80 рублей. Для этого 
+              для покупки акций SBER про цене 80 рублей. Для этого
               укажите в “Целевая цена покупки:” 80.
               <br />
               <br />
@@ -94,13 +94,17 @@ import {ShareSearchComponent} from "./shareSearchComponent";
               <v-icon>fas fa-info-circle</v-icon>
             </sup>
             <span>
-              Вы будет получать письма обо всех корпоративных событиях (сюда относятся новости о публикации отчетности, проведении собраний, о решении собраний, решения о выплате дивидендов, заключение значимых сделок), о которых эмитент должен отчитываться на сайтах раскрытия информации. Вы всегда будете в курсе всех значимых событий.
+              Вы будет получать письма обо всех корпоративных событиях (сюда относятся новости о публикации отчетности, проведении собраний,
+              о решении собраний, решения о выплате дивидендов, заключение значимых сделок), о которых эмитент должен отчитываться на сайтах раскрытия информации.
+              Вы всегда будете в курсе всех значимых событий.
               <br /><br />
               Новость будет отправлена вам на почту, как только появится новая публикация.
               <br /><br />
-              Также вы можете дополнительно настроить ключевые слова, которые должны встречаться в тексте новости. Ключевые слова разделить запятой. Можно задать как слово целиком, так и часть слова.
+              Также вы можете дополнительно настроить ключевые слова, которые должны встречаться в тексте новости.
+              Ключевые слова разделить запятой. Можно задать как слово целиком, так и часть слова.
               <br /><br />
-              Доступно два режима поиска слов: будет искаться вхождение всех слов в тексте новости или вхождение любого из ключевых слов. Задавать список ключевых слов не обязательно.
+              Доступно два режима поиска слов: будет искаться вхождение всех слов в тексте новости или вхождение любого из ключевых слов.
+              Задавать список ключевых слов не обязательно.
             </span>
           </v-tooltip>
         </template>
@@ -130,8 +134,7 @@ import {ShareSearchComponent} from "./shareSearchComponent";
   components: {ShareSearchComponent}
 })
 export class AddAndEditNotificationBody extends UI {
-  
-  private selectParams: {text: string, value: string}[] = [
+  private selectParams: Array<{text: string, value: string}> = [
     {text: "Вхождение любого слова", value: KeyWordsSearchType.CONTAINS_ONE},
     {text: "Вхождение всех слов", value: KeyWordsSearchType.CONTAINS_ALL}
   ];
@@ -141,40 +144,47 @@ export class AddAndEditNotificationBody extends UI {
 
   private bodyParams: NotificationBodyData = {...this.data};
 
+  private filteredShares = [this.bodyParams.share];
+
   @Watch("data")
   private onDataChange(): void {
     this.bodyParams = this.data;
+    this.filteredShares = [this.bodyParams.share];
+  }
+
+  private onShareClear(): void {
+    this.filteredShares = [];
   }
 
   private validateFields(): boolean {
-    let isThereAnyError: boolean = false;
+    let isThereAnyError = false;
 
     // Валидация тикера
-    if(!this.bodyParams.share || !this.bodyParams.share.id) {
+    if (!this.bodyParams.share || !this.bodyParams.share.id) {
       this.$snotify.error(NotificationMessages.NO_ID);
       isThereAnyError = true;
     }
 
     // Валидация активности одного из блоков(продажи или покупки)
-    if( !this.bodyParams.sellPriceChange && !this.bodyParams.buyPriceChange ) {
+    if (!this.bodyParams.sellPriceChange && !this.bodyParams.buyPriceChange) {
       this.$snotify.error(NotificationMessages.NO_BLOCK_CHOOSEN);
       isThereAnyError = true;
     }
 
     // Валидация блока продажи
-    if(this.bodyParams.sellPriceChange && !(this.bodyParams.sellPrice && this.bodyParams.sellVariation)) {
+    if (this.bodyParams.sellPriceChange && !(this.bodyParams.sellPrice && this.bodyParams.sellVariation)) {
       this.$snotify.error(NotificationMessages.SELL_BLOCK_ERROR);
       isThereAnyError = true;
     }
 
     // Валидация блока покупки
-    if(this.bodyParams.buyPriceChange && !(this.bodyParams.buyPrice && this.bodyParams.buyVariation)) {
+    if (this.bodyParams.buyPriceChange && !(this.bodyParams.buyPrice && this.bodyParams.buyVariation)) {
       this.$snotify.error(NotificationMessages.BUY_BLOCK_ERROR);
       isThereAnyError = true;
     }
 
     // Валидация ключевых слов для новостей
-    if(this.bodyParams.news && !(this.bodyParams.newsKeyWords)) {
+    if (this.bodyParams.news && !(this.bodyParams.newsKeyWords)) {
       this.$snotify.error(NotificationMessages.NEWS_KEYWORDS_ERROR);
       isThereAnyError = true;
     }
@@ -187,8 +197,8 @@ export class AddAndEditNotificationBody extends UI {
   }
 
   private mainAction(): void {
-    if(!this.validateFields()) {
-      this.$emit("mainAction", this.bodyParams)
+    if (!this.validateFields()) {
+      this.$emit("mainAction", this.bodyParams);
     }
   }
 

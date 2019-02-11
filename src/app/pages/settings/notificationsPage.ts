@@ -1,13 +1,13 @@
-import {Inject} from "typescript-ioc";
+import { Inject } from "typescript-ioc";
 import Component from "vue-class-component";
-import {namespace} from "vuex-class/lib/bindings";
-import {UI} from "../../app/ui";
-import {ClientInfo} from "../../services/clientService";
-import {StoreType} from "../../vuex/storeType";
-import {AddNotificationDialog} from "../../components/dialogs/addNotificationDialog";
-import {KeyWordsSearchTypeTitle, NotificationParams, NotificationsService} from "../../services/notificationsService";
-import {EditNotificationDialog} from "../../components/dialogs/editNotificationDialog";
-import {RemoveNotificationDialog} from "../../components/dialogs/removeNotificationDialog";
+import { namespace } from "vuex-class/lib/bindings";
+import { UI } from "../../app/ui";
+import { AddNotificationDialog } from "../../components/dialogs/addNotificationDialog";
+import { EditNotificationDialog } from "../../components/dialogs/editNotificationDialog";
+import { RemoveNotificationDialog } from "../../components/dialogs/removeNotificationDialog";
+import { ClientInfo } from "../../services/clientService";
+import { KeyWordsSearchTypeTitle, NotificationParams, NotificationsService } from "../../services/notificationsService";
+import { StoreType } from "../../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -27,15 +27,16 @@ const MainStore = namespace(StoreType.MAIN);
         </v-card>
 
         <v-card v-if="!notificationsService.notifications" class="notifications-card notifications-card-empty">
-            <span>Здесь можно настроить уведомления о дивидендах, о достижении целевых цен на акции, а также подписаться на новости интересующих эмитентов. Добавьте первое уведомление, нажав на кнопку “+“ в правом верхнем углу.</span>
+            <span>Здесь можно настроить уведомления о дивидендах, о достижении целевых цен на акции,
+            а также подписаться на новости интересующих эмитентов. Добавьте первое уведомление, нажав на кнопку “+“ в правом верхнем углу.</span>
         </v-card>
 
         <v-card v-else class="notifications-card" v-for="notification in notificationsService.notifications" :key="notification.id">
             <div class="notifications-card-header">
                 <div class="notifications-card-header-title">{{notification.stock.shortname}}</div>
                 <div class="notifications-card-header-price">
-                    Цена 
-                    <span>{{notification.stock.price | amount}} 
+                    Цена
+                    <span>{{notification.stock.price | amount}}
                         <i :class="notification.stock.currency.toLowerCase()"></i>
                     </span>
                 </div>
@@ -79,19 +80,15 @@ const MainStore = namespace(StoreType.MAIN);
     `
 })
 export class NotificationsPage extends UI {
-
-    @MainStore.Getter
-    private clientInfo: ClientInfo;
-
     @Inject
     notificationsService: NotificationsService;
 
-    private searchTypesTitle = KeyWordsSearchTypeTitle;
-    
     /** Создан для того, чтобы свойство notificationsService.notifications стало реактивным. */
     notifications: NotificationParams[] = this.notificationsService.notifications;
 
-    async mounted() {
+    private searchTypesTitle = KeyWordsSearchTypeTitle;
+
+    async mounted(): Promise<void> {
         await this.notificationsService.receiveNotifications();
     }
 
@@ -99,11 +96,11 @@ export class NotificationsPage extends UI {
         await new AddNotificationDialog().show();
     }
 
-    private async editNotificationDialog(notification: NotificationParams) {
+    private async editNotificationDialog(notification: NotificationParams): Promise<void> {
         await new EditNotificationDialog().show(notification);
     }
-    
-    private async removeNotificationDialog(notification: NotificationParams) {
+
+    private async removeNotificationDialog(notification: NotificationParams): Promise<void> {
         await new RemoveNotificationDialog().show(notification);
     }
 
