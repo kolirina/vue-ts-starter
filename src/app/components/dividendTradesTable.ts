@@ -4,9 +4,13 @@ import {Prop} from "vue-property-decorator";
 import {namespace} from "vuex-class";
 import {UI} from "../app/ui";
 import {DividendInfo, DividendService} from "../services/dividendService";
+import {TradeFields} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
+import {BigMoney} from "../types/bigMoney";
 import {Operation} from "../types/operation";
-import {Portfolio, Stock, TableHeader} from "../types/types";
+import {Portfolio, TableHeader} from "../types/types";
+import {CommonUtils} from "../utils/commonUtils";
+import {TradeUtils} from "../utils/tradeUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {AddTradeDialog} from "./dialogs/addTradeDialog";
@@ -30,28 +34,15 @@ const MainStore = namespace(StoreType.MAIN);
                     <td class="text-xs-right ii-number-cell">{{ props.item.amount | amount(true) }}</td>
                     <td class="text-xs-right ii-number-cell">{{ props.item.yield }}</td>
                     <td class="text-xs-left">{{ props.item.note }}</td>
-
-                    <td class="justify-center layout px-0" @click.stop>
-                        <v-menu transition="slide-y-transition" bottom left>
-                            <v-btn slot="activator" color="primary" flat icon dark>
-                                <v-icon color="primary" small>fas fa-bars</v-icon>
-                            </v-btn>
-                            <v-list dense>
-                                <v-list-tile @click="openTradeDialog(props.item.stock)">
-                                    <v-list-tile-title>
-                                        <v-icon color="primary" small>fas fa-pencil-alt</v-icon>
-                                        Редактировать
-                                    </v-list-tile-title>
-                                </v-list-tile>
-                                <v-divider></v-divider>
-                                <v-list-tile @click.stop="deleteDividendTrade(props.item)">
-                                    <v-list-tile-title>
-                                        <v-icon color="primary" small>fas fa-trash-alt</v-icon>
-                                        Удалить
-                                    </v-list-tile-title>
-                                </v-list-tile>
-                            </v-list>
-                        </v-menu>
+                    <td class="justify-center px-0" @click.stop="openEditTradeDialog(props.item)">
+                        <a>
+                            <v-icon color="primary" small>fas fa-pencil-alt</v-icon>
+                        </a>
+                    </td>
+                    <td class="justify-center" @click.stop="deleteDividendTrade(props.item)">
+                        <a>
+                            <v-icon color="primary" small>fas fa-trash-alt</v-icon>
+                        </a>
                     </td>
                 </tr>
             </template>
@@ -76,20 +67,40 @@ export class DividendTradesTable extends UI {
         {text: "Сумма", align: "right", value: "amount"},
         {text: "Доходность, %", align: "right", value: "yield"},
         {text: "Заметка", align: "center", value: "note"},
-        {text: "Действия", align: "center", value: "actions", sortable: false, width: "25"}
+        {text: "", align: "center", value: "edit", sortable: false, width: "25"},
+        {text: "", align: "center", value: "delete", sortable: false, width: "25"}
     ];
 
     @Prop({default: [], required: true})
     private rows: DividendInfo[];
 
-    private async openTradeDialog(stock: Stock): Promise<void> {
-        await new AddTradeDialog().show({
+    private async openEditTradeDialog(trade: DividendInfo): Promise<void> {
+        const tradeFields: TradeFields = {
+            ticker: trade.ticker,
+            date: trade.date,
+            quantity: trade.quantity,
+            price: TradeUtils.decimal(trade.perOne),
+            facevalue: null,
+            nkd: null,
+            perOne: true,
+            fee: null,
+            note: trade.note,
+            keepMoney: CommonUtils.exists(trade.moneyTradeId),
+            moneyAmount: trade.amount,
+            currency: new BigMoney(trade.amount).currency
+        };
+        const result = await new AddTradeDialog().show({
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
-            share: stock,
+            assetType: AssetType.STOCK,
             operation: Operation.DIVIDEND,
-            assetType: AssetType.STOCK
+            tradeFields: tradeFields,
+            tradeId: trade.id,
+            editedMoneyTradeId: trade.moneyTradeId
         });
+        if (result) {
+            await this.reloadPortfolio(this.portfolio.id);
+        }
     }
 
     private async deleteDividendTrade(dividendTrade: DividendInfo): Promise<void> {

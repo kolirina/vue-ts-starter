@@ -79,6 +79,9 @@ export class ShareSearchComponent extends UI {
     @Watch("filteredShares")
     private async onFilteredSharesChange(filteredShares: Share[]): Promise<void> {
         this.filteredSharesMutated = filteredShares ? [...filteredShares] : [];
+        if (this.filteredSharesMutated.length) {
+            this.share = this.filteredSharesMutated[0];
+        }
     }
 
     @Watch("assetType")

@@ -39,7 +39,7 @@ const MainStore = namespace(StoreType.MAIN);
             </expanded-panel>
 
             <expanded-panel :value="$uistate.divTradesTablePanel" :state="$uistate.DIV_LIST" class="margT20">
-                <template slot="header">Дивиденды по годам</template>
+                <template slot="header">Сделки по дивидендам</template>
                 <dividend-trades-table :rows="dividendInfo.dividendTrades"></dividend-trades-table>
             </expanded-panel>
         </v-container>
