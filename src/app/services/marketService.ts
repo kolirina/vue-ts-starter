@@ -32,6 +32,16 @@ export class MarketService {
         };
     }
 
+    async getShareById(id: number): Promise<StockInfo> {
+        const result = await this.http.get<_stockInfo>(`/market/stock/${id}/info-by-id`);
+        return {
+            stock: result.stock,
+            history: this.convertDots(result.history),
+            dividends: result.dividends,
+            events: this.convertStockEvents(result.dividends, result.stock.ticker)
+        };
+    }
+
     async getBondInfo(secid: string): Promise<BondInfo> {
         const result = await this.http.get<_bondInfo>(`/market/bond/${secid}/info`);
         return {

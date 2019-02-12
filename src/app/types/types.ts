@@ -265,10 +265,10 @@ export interface PortfolioBackup {
 
 export type Share = {
     /** Идентификатору бумаги в системе */
-    id: string;
-
+    id: number;
+    /** Текущая цена бумаги */
     price: string,
-
+    /** Размер лота */
     lotsize: string,
     /** Количество значащих разрядов */
     decimals: string;
