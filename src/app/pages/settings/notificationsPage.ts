@@ -1,7 +1,11 @@
-import Component from "vue-class-component";
+import {Inject} from "typescript-ioc";
 import {namespace} from "vuex-class/lib/bindings";
-import {UI} from "../../app/ui";
-import {ClientInfo} from "../../services/clientService";
+import {Component, UI} from "../../app/ui";
+import {CreateOrEditNotificationDialog} from "../../components/dialogs/createOrEditNotificationDialog";
+import {BtnReturn} from "../../components/dialogs/customDialog";
+import {RemoveNotificationDialog} from "../../components/dialogs/removeNotificationDialog";
+import {Notification, NotificationsService} from "../../services/notificationsService";
+import {CommonUtils} from "../../utils/commonUtils";
 import {StoreType} from "../../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -9,17 +13,115 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-container fluid>
-            Уведомления
-        </v-container>
+        <div class="notifications">
+            <v-card class="notifications-card notifications-card-main">
+                <h1 class="notifications-title">
+                    Уведомления
+                    <img src="img/notification/notifications_icon.png"/>
+                </h1>
+
+                <div @click="addNotificationDialog" class="notifications-open-dialog-btn">
+                    <v-icon>add</v-icon>
+                </div>
+            </v-card>
+
+            <v-card v-if="notifications.length === 0" class="notifications-card notifications-card-empty">
+            <span>Здесь можно настроить уведомления о дивидендах, о достижении целевых цен на акции,
+            а также подписаться на новости интересующих эмитентов. Добавьте первое уведомление, нажав на кнопку “+“ в правом верхнем углу.</span>
+            </v-card>
+
+            <v-card v-else class="notifications-card" v-for="notification in notifications" :key="notification.id">
+                <div class="notifications-card-header">
+                    <div class="notifications-card-header-title">{{notification.stock.shortname}}</div>
+                    <div class="notifications-card-header-price">
+                        Цена
+                        <span>{{notification.stock.price | amount}}
+                        <i :class="notification.stock.currency.toLowerCase()"></i>
+                    </span>
+                    </div>
+                    <div class="notifications-card-header-actions">
+                        <img src="img/notification/edit.png" @click="editNotificationDialog(notification)" alt="Edit">
+                        <img src="img/notification/remove.png" @click="removeNotificationDialog(notification)" alt="Remove">
+                    </div>
+                </div>
+                <v-layout class="notifications-card-body" row>
+                    <v-flex v-if="notification.buyPrice || notification.sellPrice" class="notifications-card-body-prices with-padding">
+                        <div v-if="notification.buyPrice">
+                            Целевая цена покупки
+                            <span class="notifications-card-body-prices-price">{{notification.buyPrice}}</span>
+                            <span v-if="notification.buyVariation" class="notifications-card-body-prices-sign">±</span>
+                            <span v-if="notification.buyVariation" class="notifications-card-body-prices-variation">{{ notification.buyVariation }}</span>
+                            <i class="notifications-card-body-prices-currency" :class="notification.stock.currency.toLowerCase()"></i>
+                        </div>
+                        <div v-if="notification.sellPrice">
+                            Целевая цена продажи
+                            <span class="notifications-card-body-prices-price">{{notification.sellPrice}}</span>
+                            <span v-if="notification.sellVariation" class="notifications-card-body-prices-sign">±</span>
+                            <span v-if="notification.sellVariation" class="notifications-card-body-prices-variation">{{ notification.sellVariation }}</span>
+                            <i class="notifications-card-body-prices-currency" :class="notification.stock.currency.toLowerCase()"></i>
+                        </div>
+                    </v-flex>
+                    <div v-if="hasPriceAndNews(notification)" class="notifications-card-body-line"></div>
+                    <v-flex v-if="notification.keywords" :class="['notifications-card-body-news', hasPriceAndNews(notification) ? 'with-padding' : '']">
+                        <div>
+                            Ключевые слова: <span>{{ notification.keywords }}</span>
+                        </div>
+                        <div>
+                            Тип слов: <span>{{ searchTypesTitle[notification.keyWordsSearchType] }}</span>
+                        </div>
+                    </v-flex>
+                </v-layout>
+                <div class="notifications-card-last-notification">
+                    <span>Дата последнего уведомления {{ notification.lastNotification }}</span>
+                </div>
+            </v-card>
+        </div>
     `
 })
 export class NotificationsPage extends UI {
 
-    @MainStore.Getter
-    private clientInfo: ClientInfo;
+    @Inject
+    notificationsService: NotificationsService;
 
-    async mounted(): Promise<void> {
+    notifications: Notification[] = [];
 
+    private searchTypesTitle = KeyWordsSearchTypeTitle;
+
+    async created(): Promise<void> {
+        await this.loadNotifications();
     }
+
+    async addNotificationDialog(): Promise<void> {
+        const result = await new CreateOrEditNotificationDialog().show() as Notification;
+        if (result) {
+            await this.loadNotifications();
+        }
+    }
+
+    private async editNotificationDialog(notification: Notification): Promise<void> {
+        const result = await new CreateOrEditNotificationDialog().show(notification);
+        if (result) {
+            await this.loadNotifications();
+        }
+    }
+
+    private async removeNotificationDialog(notification: Notification): Promise<void> {
+        const result = await new RemoveNotificationDialog().show(notification);
+        if (result === BtnReturn.YES) {
+            await this.loadNotifications();
+        }
+    }
+
+    private hasPriceAndNews(notification: Notification): boolean {
+        return CommonUtils.exists(notification.keywords) && (CommonUtils.exists(notification.buyPrice) || CommonUtils.exists(notification.sellPrice));
+    }
+
+    private async loadNotifications(): Promise<void> {
+        this.notifications = await this.notificationsService.getNotifications();
+    }
+}
+
+export enum KeyWordsSearchTypeTitle {
+    CONTAINS_ONE = "вхождение любого слова",
+    CONTAINS_ALL = "вхождение всех слов"
 }
