@@ -62,12 +62,21 @@ const MainStore = namespace(StoreType.MAIN);
                         </div>
                     </v-flex>
                     <div v-if="hasPriceAndNews(notification)" class="notifications-card-body-line"></div>
-                    <v-flex v-if="notification.keywords" :class="['notifications-card-body-news', hasPriceAndNews(notification) ? 'with-padding' : '']">
+                    <v-flex v-if="isNewsNotification(notification)"
+                            :class="['notifications-card-body-news', hasPriceAndNews(notification) ? 'with-padding' : '']">
                         <div>
                             Ключевые слова: <span>{{ notification.keywords }}</span>
                         </div>
                         <div>
                             Тип слов: <span>{{ searchTypesTitle[notification.keyWordsSearchType] }}</span>
+                        </div>
+                    </v-flex>
+                    <v-flex v-if="isDividendNotification(notification)" :class="['notifications-card-body-news', hasPriceAndNews(notification) ? 'with-padding' : '']">
+                        <div>
+                            Уведомление о предстоящих дивидендах
+                        </div>
+                        <div>
+                            Вы будет получать письма как только эмитент примет решение о выплате дивидендов.
                         </div>
                     </v-flex>
                 </v-layout>
@@ -112,12 +121,20 @@ export class NotificationsPage extends UI {
         }
     }
 
+    private async loadNotifications(): Promise<void> {
+        this.notifications = await this.notificationsService.getNotifications();
+    }
+
     private hasPriceAndNews(notification: Notification): boolean {
         return CommonUtils.exists(notification.keywords) && (CommonUtils.exists(notification.buyPrice) || CommonUtils.exists(notification.sellPrice));
     }
 
-    private async loadNotifications(): Promise<void> {
-        this.notifications = await this.notificationsService.getNotifications();
+    private isDividendNotification(notification: Notification): boolean {
+        return CommonUtils.exists(notification.keywords) && notification.keywords === this.notificationsService.DIVIDEND_WORDS;
+    }
+
+    private isNewsNotification(notification: Notification): boolean {
+        return CommonUtils.exists(notification.keywords) && notification.keywords !== this.notificationsService.DIVIDEND_WORDS;
     }
 }
 

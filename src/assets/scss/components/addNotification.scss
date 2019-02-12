@@ -21,41 +21,12 @@
   &-conditional {
     padding-left: 70px;
     box-sizing: border-box;
-    
+
     &-block {
       display: flex;
       align-items: center;
       justify-content: space-between;
       margin-top: 15px;
-      
-      .v-text-field {
-        font-size: 13px;
-      }
-      
-      label {
-        width: 60%;
-      }
-      
-      .v-input {
-        padding-top: 0;
-      }
-      
-      .v-input__slot {
-        margin-top: 0;
-        padding-top: 0;
-
-        &::before {
-          border-color: #040427 !important;
-        }
-
-        input {
-          padding-top: 0;
-          font-weight: bold;
-          text-align: center;
-          font-size: 14px;
-          font-weight: bold;
-        }
-      }
     }
   }
 
