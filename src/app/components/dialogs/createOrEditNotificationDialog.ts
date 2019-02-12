@@ -134,6 +134,21 @@ import {CustomDialog} from "./customDialog";
                         </v-expansion-panel-content>
                     </v-expansion-panel>
 
+                    <v-switch v-model="dividendNotification" @change="onDividendNotificationChange">
+                        <template slot="label">
+                            <span>Получать уведомления о планируемых дивидендах</span>
+                            <v-tooltip content-class="add-notification-tooltip-wrap" bottom>
+                                <sup class="add-notification-tooltip" slot="activator">
+                                    <v-icon>fas fa-info-circle</v-icon>
+                                </sup>
+                                <span>
+                                  Вы будет получать письма как только эмитент <b>{{ stock ? stock.ticker : "" }}</b>
+                                  примет решение о выплате дивидендов.
+                                </span>
+                            </v-tooltip>
+                        </template>
+                    </v-switch>
+
                     <v-card-actions class="btn-group-right">
                         <v-btn @click.native="save" class="btn-dialog btn-hover-black">{{ notification.id ? "Редактировать" : "Сохранить" }}</v-btn>
                         <v-btn class="btn-cancel" @click.native="close">Отмена</v-btn>
@@ -161,6 +176,7 @@ export class CreateOrEditNotificationDialog extends CustomDialog<Notification, b
     private buyPriceNotification = false;
     private sellPriceNotification = false;
     private newsNotification = false;
+    private dividendNotification = false;
     private notification: Notification = null;
 
     async mounted(): Promise<void> {
@@ -168,7 +184,8 @@ export class CreateOrEditNotificationDialog extends CustomDialog<Notification, b
             this.notification = {...this.data};
             this.buyPriceNotification = CommonUtils.exists(this.notification.buyPrice);
             this.sellPriceNotification = CommonUtils.exists(this.notification.sellPrice);
-            this.newsNotification = CommonUtils.exists(this.notification.keywords);
+            this.dividendNotification = CommonUtils.exists(this.notification.keywords) && this.notificationsService.DIVIDEND_WORDS === this.notification.keywords;
+            this.newsNotification = CommonUtils.exists(this.notification.keywords) && this.notificationsService.DIVIDEND_WORDS !== this.notification.keywords;
             this.stock = (await this.marketService.getShareById(this.notification.stockId)).stock;
             this.filteredShares = [this.stock];
         } else {
@@ -202,7 +219,7 @@ export class CreateOrEditNotificationDialog extends CustomDialog<Notification, b
             reqParams.sellVariation = this.notification.sellVariation;
         }
 
-        if (this.newsNotification) {
+        if (this.newsNotification || this.dividendNotification) {
             reqParams.keywords = this.notification.keywords;
             reqParams.keyWordsSearchType = this.notification.keyWordsSearchType;
         }
@@ -219,6 +236,11 @@ export class CreateOrEditNotificationDialog extends CustomDialog<Notification, b
 
     private onNewsNotificationChange(value: boolean): void {
         this.notification.keyWordsSearchType = value ? KeyWordsSearchType.CONTAINS_ALL : null;
+    }
+
+    private onDividendNotificationChange(value: boolean): void {
+        this.notification.keyWordsSearchType = value ? KeyWordsSearchType.CONTAINS_ONE : null;
+        this.notification.keywords = value ? this.notificationsService.DIVIDEND_WORDS : null;
     }
 
     private onShareClear(): void {

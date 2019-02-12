@@ -6,6 +6,8 @@ import {Http} from "../platform/services/http";
 @Singleton
 export class NotificationsService {
 
+    readonly DIVIDEND_WORDS = "дивиденд, дивиденда, дивиденду, дивидендом, дивиденде, дивиденды, дивидендов, дивидендам, дивидендами, дивидендах";
+
     readonly PATH = "/notifications";
 
     @Inject
