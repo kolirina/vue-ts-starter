@@ -54,26 +54,26 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-container>
             </expanded-panel>
 
-            <div style="height: 20px"></div>
+            <div style="height: 30px"></div>
 
             <template v-if="overview">
                 <asset-table :assets="overview.assetRows"></asset-table>
 
-                <div style="height: 50px"></div>
+                <div style="height: 30px"></div>
 
                 <expanded-panel :value="$uistate.stocksTablePanel" :state="$uistate.STOCKS">
                     <div slot="header">Акции</div>
                     <stock-table :rows="overview.stockPortfolio.rows"></stock-table>
                 </expanded-panel>
 
-                <div style="height: 50px"></div>
+                <div style="height: 30px"></div>
 
                 <expanded-panel :value="$uistate.bondsTablePanel" :state="$uistate.BONDS">
                     <template slot="header">Облигации</template>
                     <bond-table :rows="overview.bondPortfolio.rows"></bond-table>
                 </expanded-panel>
 
-                <div style="height: 50px"></div>
+                <div style="height: 30px"></div>
 
                 <expanded-panel :value="$uistate.historyPanel" :state="$uistate.HISTORY_PANEL">
                     <template slot="header">Стоимость портфеля</template>
@@ -82,7 +82,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-card-text>
                 </expanded-panel>
 
-                <div style="height: 50px"></div>
+                <div style="height: 30px"></div>
 
                 <expanded-panel :value="$uistate.stockGraph" :state="$uistate.STOCK_CHART_PANEL">
                     <template slot="header">Состав портфеля акций</template>
@@ -93,7 +93,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-card-text>
                 </expanded-panel>
 
-                <div style="height: 50px" v-if="overview.bondPortfolio.rows.length > 0"></div>
+                <div style="height: 30px" v-if="overview.bondPortfolio.rows.length > 0"></div>
 
                 <expanded-panel v-if="overview.bondPortfolio.rows.length > 0" :value="$uistate.bondGraph" :state="$uistate.BOND_CHART_PANEL">
                     <template slot="header">Состав портфеля облигаций</template>
@@ -104,7 +104,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-card-text>
                 </expanded-panel>
 
-                <div style="height: 50px"></div>
+                <div style="height: 30px"></div>
 
                 <expanded-panel v-if="sectorsChartData" :value="$uistate.sectorsGraph" :state="$uistate.SECTORS_PANEL">
                     <template slot="header">Состав портфеля по секторам</template>

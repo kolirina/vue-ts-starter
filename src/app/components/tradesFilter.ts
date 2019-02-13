@@ -10,7 +10,7 @@ import {ExpandedPanel} from "./expandedPanel";
     // language=Vue
     template: `
         <expanded-panel class="trades-filter" :value="$uistate.tradesFilter" :state="$uistate.TRADES_FILTER">
-            <template slot="header"><h2>Фильтры</h2></template>
+            <template slot="header">Фильтры</template>
             <form>
                 <v-layout row wrap>
                     <v-flex xs8>
