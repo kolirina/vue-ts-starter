@@ -75,6 +75,13 @@ export class MarketService {
         return this.http.get<Currency[]>(`/market/currency`);
     }
 
+    /**
+     * Загружает и возвращает список акций из индекса ММВБ
+     */
+    async loadTopStocks(): Promise<Stock[]> {
+        return this.http.get<Stock[]>(`/market/top-stocks`);
+    }
+
     private convertDots(dots: _baseChartDot[]): Dot[] {
         const result: Dot[] = [];
         dots.forEach(value => {
