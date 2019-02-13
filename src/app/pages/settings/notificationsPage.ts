@@ -75,9 +75,6 @@ const MainStore = namespace(StoreType.MAIN);
                         <div>
                             Уведомление о предстоящих дивидендах
                         </div>
-                        <div>
-                            Вы будет получать письма как только эмитент примет решение о выплате дивидендов.
-                        </div>
                     </v-flex>
                 </v-layout>
                 <div class="notifications-card-last-notification">

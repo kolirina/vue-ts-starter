@@ -83,11 +83,11 @@ import {CustomDialog} from "./customDialog";
                         <v-expansion-panel-content>
                             <div class="add-notification-conditional">
                                 <div class="add-notification-conditional-block">
-                                    <label for="sellPrice">Целевая цена покупки</label>
+                                    <label for="sellPrice">Целевая цена продажи</label>
                                     <ii-number-field v-model="notification.sellPrice" id="sellPrice" :decimals="2"></ii-number-field>
                                 </div>
                                 <div class="add-notification-conditional-block">
-                                    <label for="sellVariation">Допуск цены покупки</label>
+                                    <label for="sellVariation">Допуск цены продажи</label>
                                     <ii-number-field v-model="notification.sellVariation" id="sellVariation" :decimals="2"></ii-number-field>
                                 </div>
                             </div>
