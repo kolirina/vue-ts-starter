@@ -6,7 +6,7 @@
     margin-bottom: 25px;
     box-shadow: none !important;
     border: 1px solid #d1d4dc !important;
-    font-family: "OpenSans";
+    font-family: $main--font-family;
 
     &-main {
       margin-bottom: 40px;
@@ -28,7 +28,7 @@
         font-size: 18px;
         color: #a1a6b6;
         margin-left: 40px;
-        font-family: "OpenSans";
+        font-family: $main--font-family;
 
         i {
           color: #cdd4e0;
@@ -118,7 +118,7 @@
         span {
           font-size: 18px;
           font-weight: bold;
-          font-family: "OpenSans";
+          font-family: $main--font-family;
         }
       }
     }
@@ -126,14 +126,14 @@
     &-last-notification {
       text-align: right;
       font-size: 13px;
-      font-family: "OpenSans";
+      font-family: $main--font-family;
       color: rgb(161, 166, 182);
       line-height: 1.385;      
     }
 
     &-empty {
       font-size: 16px;
-      font-family: "OpenSans";
+      font-family: $main--font-family;
       color: rgb(4, 4, 39);
       line-height: 2.75;      
     }
@@ -179,14 +179,14 @@
   }
 
   .notifications-card-header-title {
-    font-family: "OpenSans";
+    font-family: $main--font-family;
     font-weight: bold;
     text-align: left;
   }
   
   &-text {
     font-size: 14px;
-    font-family: "OpenSans";
+    font-family: $main--font-family;
     color: rgb(87, 87, 138);
     line-height: 22px;
     margin-bottom: 17px;

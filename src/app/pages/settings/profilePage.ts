@@ -3,6 +3,8 @@ import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
 import {ChangePasswordDialog} from "../../components/dialogs/changePasswordDialog";
+import {CatchErrors} from "../../platform/decorators/catchErrors";
+import {ShowProgress} from "../../platform/decorators/showProgress";
 import {ClientInfo, ClientService} from "../../services/clientService";
 import {CommonUtils} from "../../utils/commonUtils";
 import {StoreType} from "../../vuex/storeType";
@@ -16,13 +18,13 @@ const MainStore = namespace(StoreType.MAIN);
             <v-card class="profile">
                 <h1 class="profile-title">
                     Профиль
-                    <img src="img/profile/profile-user.png" />
+                    <img src="img/profile/profile-user.png"/>
                 </h1>
 
                 <v-layout row wrap class="profile-line">
                     <v-flex xs2>Email:</v-flex>
                     <v-flex xs5>
-                        <inplace-input name="email" v-on:update:editMode="onModeChange('email', $event)" v-bind:editMode="editMode.email" :value="email" @input="onEmailChange">
+                        <inplace-input name="email" @update:editMode="onModeChange('email', $event)" :editMode="editMode.email" :value="email" @input="onEmailChange">
                             <v-tooltip content-class="profile-tooltip" max-width="250px" slot="afterText" top right>
                                 <template slot="activator">
                                     <v-icon v-if="!clientInfo.user.emailConfirmed" class="profile-not-confirmed-email">fas fa-exclamation-triangle</v-icon>
@@ -37,8 +39,8 @@ const MainStore = namespace(StoreType.MAIN);
                     <v-flex xs2>Имя пользователя:</v-flex>
                     <v-flex xs5>
                         <inplace-input name="username"
-                            v-on:update:editMode="onModeChange('username', $event)"
-                            v-bind:editMode="editMode.username" :value="username" @input="onUserNameChange"></inplace-input>
+                                       @update:editMode="onModeChange('username', $event)"
+                                       :editMode="editMode.username" :value="username" @input="onUserNameChange"></inplace-input>
                     </v-flex>
                 </v-layout>
 
@@ -51,7 +53,7 @@ const MainStore = namespace(StoreType.MAIN);
 })
 export class ProfilePage extends UI {
 
-    private editMode: {[key: string]: boolean} = {
+    private editMode: { [key: string]: boolean } = {
         email: false,
         username: false,
     };
@@ -95,27 +97,46 @@ export class ProfilePage extends UI {
      * Обабатывает смену email пользователя
      * @param email
      */
+    @CatchErrors
+    @ShowProgress
     private async onEmailChange(email: string): Promise<void> {
         this.email = CommonUtils.isBlank(email) ? this.clientInfo.user.email : email;
+        if (!(await this.validate())) {
+            return;
+        }
         // отправляем запрос только если действительно поменяли
         if (this.email !== this.clientInfo.user.email) {
             await this.clientService.changeEmail({id: this.clientInfo.user.id, email: this.email});
             this.clientInfo.user.email = this.email;
-            this.$snotify.success("Вам отправлено письмо с подтверждением на новый адрес эл. почты");
+            this.$snotify.info("Вам отправлено письмо с подтверждением на новый адрес эл. почты");
         }
+    }
+
+    /**
+     * Проверяет введенное значение, если валидация не пройдена, выкидывает ошибку.
+     */
+    private async validate(): Promise<boolean> {
+        this.$validator.attach({name: "value", rules: "email"});
+        const result = await this.$validator.validate("value", this.email);
+        if (!result) {
+            this.$snotify.warning(`Неверное значение e-mail "${this.email}"`);
+        }
+        return result;
     }
 
     /**
      * Обрабатывает смену имени пользователя
      * @param username
      */
+    @CatchErrors
+    @ShowProgress
     private async onUserNameChange(username: string): Promise<void> {
         this.username = CommonUtils.isBlank(username) ? this.clientInfo.user.username : username;
         // отправляем запрос только если действительно поменяли
         if (this.username !== this.clientInfo.user.username) {
             await this.clientService.changeUsername({id: this.clientInfo.user.id, username: this.username});
             this.clientInfo.user.username = this.username;
-            this.$snotify.success("Новое имя пользователя успешно сохранено");
+            this.$snotify.info("Новое имя пользователя успешно сохранено");
         }
     }
 }

@@ -47,7 +47,9 @@ const MainStore = namespace(StoreType.MAIN);
                                 </span>
                                 </v-tooltip>
                             </p>
-                            <div style="height: 50px"/>
+
+                            <div style="height: 30px"/>
+
                             <v-layout row wrap justify-space-around>
                                 <v-flex d-flex xs5>
                                     <v-layout column wrap>
@@ -160,6 +162,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-card>
                 </v-flex>
             </v-layout>
+
             <v-card>
                 <v-card-text class="text-xs-center title">
                     Текущая стоимость портфеля:
@@ -170,6 +173,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </router-link>
                 </v-card-text>
             </v-card>
+            <div style="height: 30px"/>
             <balances-table :assets="portfolio.overview.assetRows" :stocks="portfolio.overview.stockPortfolio.rows" :loading="processState"/>
         </v-container>
     `,
