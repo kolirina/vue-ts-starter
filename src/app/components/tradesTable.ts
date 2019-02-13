@@ -25,7 +25,7 @@ const MainStore = namespace(StoreType.MAIN);
             <template slot="items" slot-scope="props">
                 <tr @click="props.expanded = !props.expanded">
                     <td>
-                        <v-icon class="data-table-cell" v-bind:class="{'data-table-cell-open': props.expanded}">play_arrow</v-icon>
+                        <v-icon class="data-table-cell" :class="{'data-table-cell-open': props.expanded}">play_arrow</v-icon>
                     </td>
                     <td v-if="tableHeadersState.ticker">
                         <stock-link v-if="props.item.asset === 'STOCK'" :ticker="props.item.ticker"></stock-link>
