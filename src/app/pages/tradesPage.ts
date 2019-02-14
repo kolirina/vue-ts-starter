@@ -10,6 +10,7 @@ import {TradesFilterComponent} from "../components/tradesFilter";
 import {TradesTable} from "../components/tradesTable";
 import {CatchErrors} from "../platform/decorators/catchErrors";
 import {ShowProgress} from "../platform/decorators/showProgress";
+import {ExportService, ExportType} from "../services/exportService";
 import {FilterService} from "../services/filterService";
 import {TableHeaders, TABLES_NAME, TablesService} from "../services/tablesService";
 import {TradeService, TradesFilter} from "../services/tradeService";
@@ -32,9 +33,10 @@ const MainStore = namespace(StoreType.MAIN);
                 <template slot="header">Сделки</template>
                 <template slot="list">
                     <v-list-tile-title @click="openTableSettings(TABLES_NAME.TRADE)">Настроить колонки</v-list-tile-title>
+                    <v-list-tile-title @click="exportTable(ExportType.TRADES)">Экспорт в xlsx</v-list-tile-title>
                 </template>
                 <trades-table v-if="tradePagination" :trades="trades" :trade-pagination="tradePagination"
-                    :headers="getHeaders(TABLES_NAME.TRADE)" @delete="onDelete"></trades-table>
+                              :headers="getHeaders(TABLES_NAME.TRADE)" @delete="onDelete"></trades-table>
             </expanded-panel>
 
             <v-container v-if="pages > 1">
@@ -54,6 +56,8 @@ export class TradesPage extends UI {
     private tradeService: TradeService;
     @Inject
     private filterService: FilterService;
+    @Inject
+    private exportService: ExportService;
 
     @MainStore.Getter
     private portfolio: Portfolio;
@@ -85,6 +89,7 @@ export class TradesPage extends UI {
     private headers: TableHeaders = this.tablesService.headers;
 
     private TABLES_NAME = TABLES_NAME;
+    private ExportType = ExportType;
 
     getHeaders(name: string): TableHeader[] {
         return this.tablesService.getFilterHeaders(name);
@@ -103,7 +108,9 @@ export class TradesPage extends UI {
         this.calculatePagination();
     }
 
-    // Открывает диалог с настройкой заголовков таблицы
+    /**
+     * Открывает диалог с настройкой заголовков таблицы
+     */
     private async openTableSettings(tableName: string): Promise<void> {
         await new TableSettingsDialog().show({
             tableName: tableName,
@@ -128,6 +135,7 @@ export class TradesPage extends UI {
     }
 
     @CatchErrors
+    @ShowProgress
     private async onDelete(tradeRow: TradeRow): Promise<void> {
         await this.tradeService.deleteTrade({portfolioId: this.portfolio.id, tradeId: tradeRow.id});
         await this.reloadPortfolio(this.portfolio.id);
@@ -153,6 +161,12 @@ export class TradesPage extends UI {
             this.tradePagination.pagination.descending,
             this.filterService.getTradesFilterRequest(this.tradesFilter)
         );
+    }
+
+    @CatchErrors
+    @ShowProgress
+    private async exportTable(exportType: ExportType): Promise<void> {
+        await this.exportService.exportReport(this.portfolio.id, exportType);
     }
 
     private async onFilterChange(): Promise<void> {

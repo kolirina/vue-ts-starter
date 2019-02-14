@@ -17,8 +17,10 @@ export class ExportService {
         const response = await this.http.get<Response>(`/export/${portfolioId}`);
         if (!window.navigator.msSaveOrOpenBlob) {
             const blob = await response.blob();
+            const binaryData = [];
+            binaryData.push(blob);
             const link = document.createElement("a");
-            link.href = window.URL.createObjectURL(blob);
+            link.href = (window.URL || (window as any).webkitURL).createObjectURL(new Blob(binaryData, {type: "application/octet-stream"}));
             link.download = `trades_portfolio_${portfolioId}.csv`;
             link.click();
         } else {
@@ -34,11 +36,13 @@ export class ExportService {
      */
     async exportReport(portfolioId: string, exportType: ExportType): Promise<any> {
         const response = await this.http.get<Response>(`/export/${exportType}/${portfolioId}`);
-        const fileName = this.getFileName(response.headers);
+        const fileName = this.getFileName(response.headers, exportType);
         if (!window.navigator.msSaveOrOpenBlob) {
-            const blob = response.blob();
+            const blob = await response.blob();
+            const binaryData = [];
+            binaryData.push(blob);
             const link = document.createElement("a");
-            link.href = window.URL.createObjectURL(blob);
+            link.href = (window.URL || (window as any).webkitURL).createObjectURL(new Blob(binaryData, {type: "application/octet-stream"}));
             link.download = fileName;
             link.click();
         } else {
@@ -51,12 +55,12 @@ export class ExportService {
      * Возвращает имя файла
      * @param headers заголовки ответа
      */
-    private getFileName(headers: Headers): string {
+    private getFileName(headers: Headers, exportType: ExportType): string {
         try {
             const contentDisposition = (headers as any)["content-disposition"];
             return contentDisposition.substring(contentDisposition.indexOf("=") + 1).trim();
         } catch (e) {
-            return "report.xlsx";
+            return `${exportType.toLowerCase()}.xlsx`;
         }
     }
 }

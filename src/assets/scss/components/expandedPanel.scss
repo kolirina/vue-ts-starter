@@ -47,8 +47,13 @@
       top: 0 !important;
     }
 
-    .v-list__tile__title {
+    .v-list__tile {
       font-size: 14px;
+      font-family: "Open Sans";
+    }
+
+    .v-list {
+      padding: 0 !important;
     }
   }
 

@@ -132,6 +132,8 @@ export class ShareInfoPage extends UI {
     private dividends: BaseChartDot[] = [];
     private events: HighStockEventsGroup[] = [];
 
+    @CatchErrors
+    @ShowProgress
     async created(): Promise<void> {
         const ticker = this.$route.params.ticker;
         if (ticker) {

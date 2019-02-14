@@ -6,6 +6,8 @@ import {ImportErrorsDialog} from "../../components/dialogs/importErrorsDialog";
 import {ImportGeneralErrorDialog} from "../../components/dialogs/importGeneralErrorDialog";
 import {ImportSuccessDialog} from "../../components/dialogs/importSuccessDialog";
 import {ExpandedPanel} from "../../components/expandedPanel";
+import {CatchErrors} from "../../platform/decorators/catchErrors";
+import {ShowProgress} from "../../platform/decorators/showProgress";
 import {Filters} from "../../platform/filters/Filters";
 import {ClientInfo} from "../../services/clientService";
 import {DealsImportProvider, ImportProviderFeatures, ImportProviderFeaturesByProvider, ImportResponse, ImportService} from "../../services/importService";
@@ -195,6 +197,8 @@ export class ImportPage extends UI {
      * Инициализирует необходимые для работы данные
      * @inheritDoc
      */
+    @CatchErrors
+    @ShowProgress
     async created(): Promise<void> {
         this.importProviderFeaturesByProvider = await this.importService.getImportProviderFeatures();
     }
@@ -221,6 +225,8 @@ export class ImportPage extends UI {
     /**
      * Отправляет отчет на сервер
      */
+    @CatchErrors
+    @ShowProgress
     private async uploadFile(): Promise<void> {
         if (this.files && this.files.length && this.selectedProvider) {
             const data = new FormData();

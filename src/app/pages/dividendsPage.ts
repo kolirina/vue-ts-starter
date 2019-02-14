@@ -12,6 +12,7 @@ import {ExpandedPanel} from "../components/expandedPanel";
 import {CatchErrors} from "../platform/decorators/catchErrors";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {DividendAggregateInfo, DividendService} from "../services/dividendService";
+import {ExportService, ExportType} from "../services/exportService";
 import {Portfolio} from "../types/types";
 import {StoreType} from "../vuex/storeType";
 
@@ -23,23 +24,35 @@ const MainStore = namespace(StoreType.MAIN);
         <v-container v-if="dividendInfo" fluid>
             <dividend-dashboard-component :data="dividendInfo.dividendDashboard"></dividend-dashboard-component>
 
-            <expanded-panel :value="$uistate.sumYearDivsTablePanel" :state="$uistate.SUM_YEAR_DIVIDENDS">
+            <expanded-panel :value="$uistate.sumYearDivsTablePanel" :withMenu="true" :name="ExportType.DIVIDENDS_BY_YEAR" :state="$uistate.SUM_YEAR_DIVIDENDS">
                 <template slot="header">Сумма дивидендов по годам</template>
+                <template slot="list">
+                    <v-list-tile-title @click="exportTable(ExportType.DIVIDENDS_BY_YEAR)">Экспорт в xlsx</v-list-tile-title>
+                </template>
                 <dividends-by-year-table :rows="dividendInfo.summaryDividendsByYear"></dividends-by-year-table>
             </expanded-panel>
 
-            <expanded-panel :value="$uistate.sumDivsTablePanel" :state="$uistate.SUM_DIVS" class="margT20">
+            <expanded-panel :value="$uistate.sumDivsTablePanel" :withMenu="true" :name="ExportType.DIVIDENDS_BY_TICKER" :state="$uistate.SUM_DIVS" class="margT20">
                 <template slot="header">Дивиденды по тикерам</template>
+                <template slot="list">
+                    <v-list-tile-title @click="exportTable(ExportType.DIVIDENDS_BY_TICKER)">Экспорт в xlsx</v-list-tile-title>
+                </template>
                 <dividends-by-ticker-table :rows="dividendInfo.summaryDividendsByTicker"></dividends-by-ticker-table>
             </expanded-panel>
 
-            <expanded-panel :value="$uistate.yearDivsTablePanel" :state="$uistate.YEAR_DIV_LIST" class="margT20">
+            <expanded-panel :value="$uistate.yearDivsTablePanel" :withMenu="true" :name="ExportType.DIVIDENDS_BY_YEAR_AND_TICKER" :state="$uistate.YEAR_DIV_LIST" class="margT20">
                 <template slot="header">Дивиденды по годам</template>
+                <template slot="list">
+                    <v-list-tile-title @click="exportTable(ExportType.DIVIDENDS_BY_YEAR_AND_TICKER)">Экспорт в xlsx</v-list-tile-title>
+                </template>
                 <dividends-by-year-and-ticker-table :rows="dividendInfo.summaryDividendsByYearAndTicker"></dividends-by-year-and-ticker-table>
             </expanded-panel>
 
-            <expanded-panel :value="$uistate.divTradesTablePanel" :state="$uistate.DIV_LIST" class="margT20">
+            <expanded-panel :value="$uistate.divTradesTablePanel" :withMenu="true" :name="ExportType.DIVIDENDS" :state="$uistate.DIV_LIST" class="margT20">
                 <template slot="header">Сделки по дивидендам</template>
+                <template slot="list">
+                    <v-list-tile-title @click="exportTable(ExportType.DIVIDENDS)">Экспорт в xlsx</v-list-tile-title>
+                </template>
                 <dividend-trades-table :rows="dividendInfo.dividendTrades"></dividend-trades-table>
             </expanded-panel>
         </v-container>
@@ -53,6 +66,9 @@ export class DividendsPage extends UI {
 
     @Inject
     private dividendService: DividendService;
+    @Inject
+    private exportService: ExportService;
+    private ExportType = ExportType;
 
     private dividendInfo: DividendAggregateInfo = null;
 
@@ -69,5 +85,11 @@ export class DividendsPage extends UI {
     @ShowProgress
     private async loadDividendAggregateInfo(): Promise<void> {
         this.dividendInfo = await this.dividendService.getDividendAggregateInfo(this.portfolio.id);
+    }
+
+    @CatchErrors
+    @ShowProgress
+    private async exportTable(exportType: ExportType): Promise<void> {
+        await this.exportService.exportReport(this.portfolio.id, exportType);
     }
 }
