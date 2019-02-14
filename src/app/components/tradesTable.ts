@@ -23,9 +23,9 @@ const MainStore = namespace(StoreType.MAIN);
         <v-data-table class="data-table" :headers="headers" :items="trades" item-key="id" :pagination.sync="tradePagination.pagination"
                       :total-items="tradePagination.totalItems" hide-actions>
             <template slot="items" slot-scope="props">
-                <tr @click="props.expanded = !props.expanded">
+                <tr class="selectable">
                     <td>
-                        <v-icon class="data-table-cell" :class="{'data-table-cell-open': props.expanded}">play_arrow</v-icon>
+                        <v-icon @click="props.expanded = !props.expanded" class="data-table-cell" :class="{'data-table-cell-open': props.expanded}">play_arrow</v-icon>
                     </td>
                     <td v-if="tableHeadersState.ticker">
                         <stock-link v-if="props.item.asset === 'STOCK'" :ticker="props.item.ticker"></stock-link>

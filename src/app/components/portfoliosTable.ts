@@ -22,7 +22,10 @@ const MainStore = namespace(StoreType.MAIN);
     template: `
         <v-data-table :headers="headers" :items="portfolios" item-key="id" hide-actions>
             <template slot="items" slot-scope="props">
-                <tr @click="props.expanded = !props.expanded">
+                <tr class="selectable">
+                    <td>
+                        <v-icon @click="props.expanded = !props.expanded" class="data-table-cell" v-bind:class="{'data-table-cell-open': props.expanded}">play_arrow</v-icon>
+                    </td>
                     <td>{{ props.item.name }}</td>
                     <td class="text-xs-center">
                         <v-icon color="gray" small v-if="props.item.professionalMode" title="Профессиональный режим в действии">fas fa-rocket</v-icon>
@@ -123,6 +126,7 @@ export class PortfoliosTable extends UI {
     private portfolioService: PortfolioService;
 
     private headers: TableHeader[] = [
+        {text: "", align: "left", ghost: true, sortable: false, value: "", active: true},
         {text: "Название", align: "left", value: "name"},
         {text: "", align: "center", value: "", sortable: false, width: "100"},
         {text: "Фикс. комиссия", align: "right", value: "fixFee", width: "50"},

@@ -18,7 +18,7 @@ const MainStore = namespace(StoreType.MAIN);
         <v-data-table class="data-table" :headers="headers" :items="rows" item-key="year" hide-actions>
             <v-progress-linear slot="progress" color="blue" indeterminate></v-progress-linear>
             <template slot="items" slot-scope="props">
-                <tr>
+                <tr class="selectable">
                     <td class="text-xs-left">
                         <stock-link :ticker="props.item.ticker"></stock-link>
                     </td>

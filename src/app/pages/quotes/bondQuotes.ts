@@ -22,7 +22,7 @@ const MainStore = namespace(StoreType.MAIN);
                           :rows-per-page-items="[25, 50, 100, 200]"
                           :total-items="totalItems">
                 <template slot="items" slot-scope="props">
-                    <tr>
+                    <tr class="selectable">
                         <td class="text-xs-left">
                             <bond-link :ticker="props.item.ticker"></bond-link>
                         </td>

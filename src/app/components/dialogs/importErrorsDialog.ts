@@ -33,7 +33,7 @@ import {CustomDialog} from "./customDialog";
                     <h4>Возникли следующие ошибки:</h4>
                     <v-data-table :headers="headers" :items="data.errors" hide-actions>
                         <template slot="items" slot-scope="props">
-                            <tr>
+                            <tr class="selectable">
                                 <td class="text-xs-left"><span v-if="props.item.dealDate">{{ props.item.dealDate | date }}</span></td>
                                 <td class="text-xs-left">{{ props.item.dealTicker }}</td>
                                 <td class="text-xs-left">{{ props.item.message }}</td>
