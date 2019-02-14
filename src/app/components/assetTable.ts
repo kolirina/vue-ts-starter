@@ -13,33 +13,35 @@ import {AddTradeDialog} from "./dialogs/addTradeDialog";
     template: `
         <v-data-table :headers="headers" :items="assets" hide-actions class="elevation-1">
             <template slot="items" slot-scope="props">
-                <td>{{ props.item.type | assetDesc }}</td>
-                <td class="text-xs-right ii-number-cell">{{ props.item.currCost | amount(true) }}</td>
-                <td :class="[( amount(props.item.profit) >= 0 ) ? 'ii--green-markup' : 'ii--red-markup', 'ii-number-cell', 'text-xs-right']">
-                    {{ props.item.profit | amount(true) }}
-                </td>
-                <td class="text-xs-right ii-number-cell">{{ props.item.percCurrShare | number }}</td>
-                <td class="justify-center layout px-0" @click.stop>
-                    <v-menu transition="slide-y-transition" bottom left>
-                        <v-btn slot="activator" color="primary" flat icon dark>
-                            <v-icon color="primary" small>fas fa-bars</v-icon>
-                        </v-btn>
-                        <v-list dense>
-                            <v-list-tile @click.stop="openTradeDialog(props.item, operation.BUY)">
-                                <v-list-tile-title>
-                                    <v-icon color="primary" small>fas fa-plus</v-icon>
-                                    Купить
-                                </v-list-tile-title>
-                            </v-list-tile>
-                            <v-list-tile @click.stop="openTradeDialog(props.item, operation.SELL)">
-                                <v-list-tile-title>
-                                    <v-icon color="primary" small>fas fa-minus</v-icon>
-                                    Продать
-                                </v-list-tile-title>
-                            </v-list-tile>
-                        </v-list>
-                    </v-menu>
-                </td>
+                <tr class="selectable">
+                    <td>{{ props.item.type | assetDesc }}</td>
+                    <td class="text-xs-right ii-number-cell">{{ props.item.currCost | amount(true) }}</td>
+                    <td :class="[( amount(props.item.profit) >= 0 ) ? 'ii--green-markup' : 'ii--red-markup', 'ii-number-cell', 'text-xs-right']">
+                        {{ props.item.profit | amount(true) }}
+                    </td>
+                    <td class="text-xs-right ii-number-cell">{{ props.item.percCurrShare | number }}</td>
+                    <td class="justify-center layout px-0" @click.stop>
+                        <v-menu transition="slide-y-transition" bottom left>
+                            <v-btn slot="activator" color="primary" flat icon dark>
+                                <v-icon color="primary" small>fas fa-bars</v-icon>
+                            </v-btn>
+                            <v-list dense>
+                                <v-list-tile @click.stop="openTradeDialog(props.item, operation.BUY)">
+                                    <v-list-tile-title>
+                                        <v-icon color="primary" small>fas fa-plus</v-icon>
+                                        Купить
+                                    </v-list-tile-title>
+                                </v-list-tile>
+                                <v-list-tile @click.stop="openTradeDialog(props.item, operation.SELL)">
+                                    <v-list-tile-title>
+                                        <v-icon color="primary" small>fas fa-minus</v-icon>
+                                        Продать
+                                    </v-list-tile-title>
+                                </v-list-tile>
+                            </v-list>
+                        </v-menu>
+                    </td>
+                </tr>
             </template>
         </v-data-table>
     `
