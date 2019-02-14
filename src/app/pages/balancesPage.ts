@@ -59,35 +59,16 @@ const MainStore = namespace(StoreType.MAIN);
                                                 <share-search :asset-type="assetType" @change="onShareSelect"></share-search>
                                             </v-flex>
                                             <v-flex>
-                                                <v-menu v-model="dateMenuValue"
-                                                        full-width
-                                                        lazy
-                                                        min-width="290px"
-                                                        offset-y
-                                                        ref="dateMenu"
-                                                        transition="scale-transition"
-                                                        :close-on-content-click="false"
-                                                        :return-value.sync="date">
-                                                    <v-text-field v-model="date"
-                                                                  required
-                                                                  :rules="rulesDate"
-                                                                  slot="activator"
-                                                                  label="Дата покупки"
-                                                                  append-icon="event"
-                                                                  readonly>
+                                                <v-menu v-model="dateMenuValue" full-width lazy min-width="290px" offset-y ref="dateMenu"
+                                                        transition="scale-transition" :close-on-content-click="false" :return-value.sync="date">
+                                                    <v-text-field v-model="date" required :rules="rulesDate" slot="activator" label="Дата покупки" append-icon="event" readonly>
                                                     </v-text-field>
                                                     <v-date-picker v-model="date" locale="ru" :no-title="true" :first-day-of-week="1" @input="onDateSelected"></v-date-picker>
                                                 </v-menu>
                                             </v-flex>
                                             <v-flex>
-                                                <ii-number-field v-model="quantity"
-                                                                 required
-                                                                 :rules="rulesQuantity"
-                                                                 :decimals="0"
-                                                                 label="Количество"
-                                                                 name="quantity"
-                                                                 @keyup="calculateOnQuantity"
-                                                                 @change="changeOnQuantity">
+                                                <ii-number-field v-model="quantity" required :rules="rulesQuantity" :decimals="0" label="Количество" name="quantity"
+                                                                 @keyup="calculateOnQuantity" @change="changeOnQuantity">
                                                 </ii-number-field>
                                             </v-flex>
                                             <v-flex class="subtitle" v-if="closePrice !== null">
@@ -99,24 +80,13 @@ const MainStore = namespace(StoreType.MAIN);
                                             </v-flex>
                                             <v-layout wrap>
                                                 <v-flex>
-                                                    <ii-number-field v-model="price" label="Цена акции"
-                                                                     messages="Укажите цену акции или стоимость сделки"
-                                                                     name="price"
-                                                                     required
-                                                                     :rules="rulesPrice"
-                                                                     @keyup="calculateOnPrice">
+                                                    <ii-number-field v-model="price" label="Цена акции" messages="Укажите цену акции или стоимость сделки"
+                                                                     name="price" required :rules="rulesPrice" @keyup="calculateOnPrice">
                                                     </ii-number-field>
                                                 </v-flex>
                                                 <v-flex/>
-                                                <ii-number-field v-model="total"
-                                                                 :decimals="2"
-                                                                 label="Стоимость позиции"
-                                                                 messages="Укажите цену акции или стоимость сделки"
-                                                                 name="total"
-                                                                 required
-                                                                 :rules="rulesPrice"
-                                                                 @keyup="calculateOnTotal"
-                                                                 @change="changeOnTotal">
+                                                <ii-number-field v-model="total" :decimals="2" label="Стоимость позиции" messages="Укажите цену акции или стоимость сделки"
+                                                                 name="total" required :rules="rulesPrice" @keyup="calculateOnTotal" @change="changeOnTotal">
                                                 </ii-number-field>
                                             </v-layout>
                                         </v-form>
