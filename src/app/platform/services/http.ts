@@ -219,6 +219,10 @@ export class Http {
         if (contentType.indexOf("text/plain") !== -1) {
             return response.text() as Promise<any>;
         }
+        // для экспорта файлов
+        if (contentType.indexOf("application/octet-stream") !== -1) {
+            return response as any;
+        }
 
         throw new Error("Неподдерживаемый тип контента " + contentType);
     }

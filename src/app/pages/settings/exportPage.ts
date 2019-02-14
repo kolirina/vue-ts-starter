@@ -3,8 +3,10 @@ import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
+import {CatchErrors} from "../../platform/decorators/catchErrors";
+import {ShowProgress} from "../../platform/decorators/showProgress";
 import {ClientInfo} from "../../services/clientService";
-import {ExportService} from "../../services/exportService";
+import {ExportService, ExportType} from "../../services/exportService";
 import {PortfolioParams, PortfolioService} from "../../services/portfolioService";
 import {Tariff} from "../../types/tariff";
 import {Portfolio, PortfolioBackup, TableHeader} from "../../types/types";
@@ -25,7 +27,7 @@ const MainStore = namespace(StoreType.MAIN);
                             Выгрузите сделки вашего текущего портфеля в csv или json формате.
                             Данный файл содержит полную информацию о всех сделках и является полностью совместимым для обратного импорта в сервис.
                         </p>
-                        <v-btn slot="activator" color="primary" @click="downloadFile" :disabled="isDownloadNotAllowed()">
+                        <v-btn color="primary" @click="downloadFile" :disabled="isDownloadNotAllowed()">
                             Экспорт сделок в csv
                             <v-icon right dark>fas fa-download</v-icon>
                         </v-btn>
@@ -37,7 +39,10 @@ const MainStore = namespace(StoreType.MAIN);
                                 подписку чтобы иметь возможность экспортировать сделки в csv формат.
                                 Или воспользуйтесь экспортом в xlsx.</span>
                         </v-tooltip>
-
+                        <v-btn color="primary" @click="exportPortfolio">
+                            Экспорт портфеля в xlsx
+                            <v-icon right dark>fas fa-download</v-icon>
+                        </v-btn>
                         <div class="EmptyBox20"></div>
 
                         <h1>Автоматический бэкап портфеля</h1>
@@ -133,11 +138,15 @@ export class ExportPage extends UI {
     private portfolios: PortfolioParams[] = null;
     /** Информация о бэкапе портфеля */
     private portfolioBackup: PortfolioBackup = null;
+    /** Типы экспорта таблиц */
+    private ExportType = ExportType;
 
     /**
      * Инициализация компонента, загрузка портфелей
      * @inheritDoc
      */
+    @CatchErrors
+    @ShowProgress
     async mounted(): Promise<void> {
         this.portfolios = this.clientInfo.user.portfolios;
         this.portfolioBackup = await this.portfolioService.getPortfolioBackup(this.clientInfo.user.id);
@@ -170,12 +179,20 @@ export class ExportPage extends UI {
     /**
      * Сохраняет выбранные настройки расписания
      */
+    @CatchErrors
+    @ShowProgress
     private async saveBackupSchedule(): Promise<void> {
         const days = this.selectedDaysInner.map(day => this.days.indexOf(day) + 2);
         const portfolioIds = this.selectedPortfolios.map(portfolio => portfolio.id);
         const pb: PortfolioBackup = {id: this.portfolioBackup.id, days, portfolioIds};
         await this.portfolioService.saveOrUpdatePortfolioBackup(this.clientInfo.user.id, pb);
         this.$snotify.info("Настройки бэкапа успешно обновлены");
+    }
+
+    @CatchErrors
+    @ShowProgress
+    private async exportPortfolio(): Promise<void> {
+        await this.exportService.exportReport(this.portfolio.id, ExportType.COMPLEX);
     }
 
     private get selectedDays(): string[] {

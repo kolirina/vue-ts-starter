@@ -2,6 +2,8 @@ import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {UI} from "../app/ui";
 import {BondPaymentsChart} from "../components/charts/bondPaymentsChart";
+import {CatchErrors} from "../platform/decorators/catchErrors";
+import {ShowProgress} from "../platform/decorators/showProgress";
 import {MarketService} from "../services/marketService";
 import {ColumnChartData, Dot, HighStockEventsGroup} from "../types/charts/types";
 import {Share} from "../types/types";
@@ -107,6 +109,8 @@ export class BondInfoPage extends UI {
     private paymentsData: ColumnChartData = null;
     private events: HighStockEventsGroup[] = [];
 
+    @CatchErrors
+    @ShowProgress
     async created(): Promise<void> {
         const isin = this.$route.params.isin;
         if (isin) {

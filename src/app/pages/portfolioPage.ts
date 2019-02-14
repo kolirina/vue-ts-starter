@@ -13,9 +13,11 @@ import {StockPieChart} from "../components/charts/stockPieChart";
 import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog";
 import {ExpandedPanel} from "../components/expandedPanel";
 import {StockTable} from "../components/stockTable";
+import {CatchErrors} from "../platform/decorators/catchErrors";
+import {ShowProgress} from "../platform/decorators/showProgress";
+import {ExportService, ExportType} from "../services/exportService";
 import {TableHeaders, TABLES_NAME, TablesService} from "../services/tablesService";
 import {Portfolio, TableHeader} from "../types/types";
-import {UiStateHelper} from "../utils/uiStateHelper";
 import {StoreType} from "../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -33,9 +35,10 @@ const MainStore = namespace(StoreType.MAIN);
                 <template slot="header">Акции</template>
                 <template slot="list">
                     <v-list-tile-title @click="openTableHeadersDialog(TABLES_NAME.STOCK)">Настроить колонки</v-list-tile-title>
+                    <v-list-tile-title @click="exportTable(ExportType.STOCKS)">Экспорт в xlsx</v-list-tile-title>
                 </template>
                 <stock-table :rows="portfolio.overview.stockPortfolio.rows"
-                    :headers="getHeaders(TABLES_NAME.STOCK)"></stock-table>
+                             :headers="getHeaders(TABLES_NAME.STOCK)"></stock-table>
             </expanded-panel>
 
             <div style="height: 30px"></div>
@@ -44,6 +47,7 @@ const MainStore = namespace(StoreType.MAIN);
                 <template slot="header">Облигации</template>
                 <template slot="list">
                     <v-list-tile-title @click="openTableHeadersDialog('bondTable')">Настроить колонки</v-list-tile-title>
+                    <v-list-tile-title @click="exportTable(ExportType.BONDS)">Экспорт в xlsx</v-list-tile-title>
                 </template>
                 <bond-table :rows="portfolio.overview.bondPortfolio.rows" :headers="getHeaders(TABLES_NAME.BOND)"></bond-table>
             </expanded-panel>
@@ -103,10 +107,13 @@ export class PortfolioPage extends UI {
 
     @Inject
     private tablesService: TablesService;
+    @Inject
+    private exportService: ExportService;
 
     private headers: TableHeaders = this.tablesService.headers;
 
     private TABLES_NAME = TABLES_NAME;
+    private ExportType = ExportType;
 
     getHeaders(name: string): TableHeader[] {
         return this.tablesService.getFilterHeaders(name);
@@ -117,5 +124,11 @@ export class PortfolioPage extends UI {
             tableName: tableName,
             headers: this.headers[tableName]
         });
+    }
+
+    @CatchErrors
+    @ShowProgress
+    private async exportTable(exportType: ExportType): Promise<void> {
+        await this.exportService.exportReport(this.portfolio.id, exportType);
     }
 }

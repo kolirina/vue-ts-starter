@@ -152,6 +152,8 @@ export class CombinedPortfolioPage extends UI {
         this.sectorsChartData = ChartUtils.doSectorsChartData(this.overview);
     }
 
+    @CatchErrors
+    @ShowProgress
     private async onSetCombined(data: CombinedData): Promise<void> {
         await this.overviewService.setCombinedFlag(data.id, data.combined);
     }

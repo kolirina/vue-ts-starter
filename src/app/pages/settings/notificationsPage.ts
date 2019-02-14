@@ -4,6 +4,8 @@ import {Component, UI} from "../../app/ui";
 import {CreateOrEditNotificationDialog} from "../../components/dialogs/createOrEditNotificationDialog";
 import {BtnReturn} from "../../components/dialogs/customDialog";
 import {RemoveNotificationDialog} from "../../components/dialogs/removeNotificationDialog";
+import {CatchErrors} from "../../platform/decorators/catchErrors";
+import {ShowProgress} from "../../platform/decorators/showProgress";
 import {Notification, NotificationsService} from "../../services/notificationsService";
 import {CommonUtils} from "../../utils/commonUtils";
 import {StoreType} from "../../vuex/storeType";
@@ -118,6 +120,8 @@ export class NotificationsPage extends UI {
         }
     }
 
+    @CatchErrors
+    @ShowProgress
     private async loadNotifications(): Promise<void> {
         this.notifications = await this.notificationsService.getNotifications();
     }
