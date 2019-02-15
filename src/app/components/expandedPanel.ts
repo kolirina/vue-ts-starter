@@ -1,13 +1,12 @@
 import Component from "vue-class-component";
 import {Prop} from "vue-property-decorator";
 import {UI} from "../app/ui";
-import {StockTable} from "./stockTable";
 
 @Component({
     // language=Vue
     template: `
-        <div class="exp-panel">
-            <v-menu v-if="withMenu" :attach="'#exp-panel-attach' + name" class="exp-panel-menu">
+        <div class="exp-panel" @click="$emit('click')">
+            <v-menu v-if="withMenu" :attach="'#exp-panel-attach' + name" class="exp-panel-menu" @click.stop>
                 <v-btn slot="activator" icon>
                     <v-icon>more_horiz</v-icon>
                 </v-btn>
@@ -29,7 +28,7 @@ import {StockTable} from "./stockTable";
                         <slot name="header"></slot>
                     </div>
 
-                    <v-card style="overflow: auto;">
+                    <v-card style="overflow: auto;" @click.stop>
                         <slot></slot>
                     </v-card>
 
@@ -37,10 +36,10 @@ import {StockTable} from "./stockTable";
                 </v-expansion-panel-content>
             </v-expansion-panel>
         </div>
-    `,
-    components: {StockTable}
+    `
 })
 export class ExpandedPanel extends UI {
+
     @Prop()
     private value: [];
     @Prop()
