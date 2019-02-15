@@ -18,6 +18,10 @@
     overflow: visible;
   }
 
+  .v-list__group__items--no-action .v-list__tile {
+    padding-left: 55px;
+  }
+
   &-list-item {
     color: $sidebar-not-active-link-color;
   }
