@@ -1,5 +1,6 @@
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
+import {Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
 import {AssetTable} from "../components/assetTable";
@@ -16,8 +17,11 @@ import {StockTable} from "../components/stockTable";
 import {CatchErrors} from "../platform/decorators/catchErrors";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {ExportService, ExportType} from "../services/exportService";
+import {OverviewService} from "../services/overviewService";
 import {TableHeaders, TABLES_NAME, TablesService} from "../services/tablesService";
+import {HighStockEventsGroup} from "../types/charts/types";
 import {Portfolio, TableHeader} from "../types/types";
+import {UiStateHelper} from "../utils/uiStateHelper";
 import {StoreType} from "../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -37,8 +41,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <v-list-tile-title @click="openTableHeadersDialog(TABLES_NAME.STOCK)">Настроить колонки</v-list-tile-title>
                     <v-list-tile-title @click="exportTable(ExportType.STOCKS)">Экспорт в xlsx</v-list-tile-title>
                 </template>
-                <stock-table :rows="portfolio.overview.stockPortfolio.rows"
-                             :headers="getHeaders(TABLES_NAME.STOCK)"></stock-table>
+                <stock-table :rows="portfolio.overview.stockPortfolio.rows" :headers="getHeaders(TABLES_NAME.STOCK)"></stock-table>
             </expanded-panel>
 
             <div style="height: 30px"></div>
@@ -54,10 +57,11 @@ const MainStore = namespace(StoreType.MAIN);
 
             <div style="height: 30px"></div>
 
-            <expanded-panel :value="$uistate.historyPanel" :state="$uistate.HISTORY_PANEL">
+            <expanded-panel :value="$uistate.historyPanel" :state="$uistate.HISTORY_PANEL" @click="onPortfolioLineChartPanelStateChanges">
                 <template slot="header">Стоимость портфеля</template>
                 <v-card-text>
-                    <portfolio-line-chart></portfolio-line-chart>
+                    <portfolio-line-chart v-if="portfolioLineChartData && eventsChartData" :data="portfolioLineChartData"
+                                          :events-chart-data="eventsChartData" :balloon-title="portfolio.portfolioParams.name"></portfolio-line-chart>
                 </v-card-text>
             </expanded-panel>
 
@@ -104,18 +108,43 @@ export class PortfolioPage extends UI {
 
     @MainStore.Getter
     private portfolio: Portfolio;
-
+    @Inject
+    private overviewService: OverviewService;
     @Inject
     private tablesService: TablesService;
     @Inject
     private exportService: ExportService;
-
+    private portfolioLineChartData: any[] = null;
+    private eventsChartData: HighStockEventsGroup[] = null;
     private headers: TableHeaders = this.tablesService.headers;
 
     private TABLES_NAME = TABLES_NAME;
     private ExportType = ExportType;
 
-    getHeaders(name: string): TableHeader[] {
+    async created(): Promise<void> {
+        await this.loadPortfolioLineChart();
+    }
+
+    @CatchErrors
+    @ShowProgress
+    async loadPortfolioLineChart(): Promise<void> {
+        if (UiStateHelper.historyPanel[0] === 1) {
+            this.portfolioLineChartData = await this.overviewService.getCostChart(this.portfolio.id);
+            this.eventsChartData = await this.overviewService.getEventsChartDataWithDefaults(this.portfolio.id);
+        }
+    }
+
+    private async onPortfolioLineChartPanelStateChanges(): Promise<void> {
+        console.log((this.$uistate as any).historyPanel);
+        await this.loadPortfolioLineChart();
+    }
+
+    @Watch("portfolio")
+    private async onPortfolioChange(): Promise<void> {
+        await this.loadPortfolioLineChart();
+    }
+
+    private getHeaders(name: string): TableHeader[] {
         return this.tablesService.getFilterHeaders(name);
     }
 

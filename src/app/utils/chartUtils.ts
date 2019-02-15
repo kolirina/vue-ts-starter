@@ -1,4 +1,6 @@
 import {Decimal} from "decimal.js";
+import Highcharts, {ChartObject, DataPoint, Gradient} from "highcharts";
+import Highstock from "highcharts/highstock";
 import {BigMoney} from "../types/bigMoney";
 import {EventChartData, HighStockEventData, HighStockEventsGroup, SectorChartData} from "../types/charts/types";
 import {Overview, StockPortfolioRow} from "../types/types";
@@ -59,5 +61,138 @@ export class ChartUtils {
             });
         });
         return eventsGroups;
+    }
+
+    // tslint:disable-next-line
+    private static readonly ranges: Highstock.RangeSelectorButton[] = [
+        {
+            type: "day",
+            count: 10,
+            text: "10d"
+        },
+        {
+            type: "month",
+            count: 1,
+            text: "1m"
+        }, {
+            type: "month",
+            count: 3,
+            text: "3m"
+        }, {
+            type: "month",
+            count: 6,
+            text: "6m"
+        }, {
+            type: "ytd",
+            text: "YTD"
+        }, {
+            type: "year",
+            count: 1,
+            text: "1y"
+        }, {
+            type: "all",
+            text: "All"
+        }];
+
+    static getChartRanges(): Highstock.RangeSelectorButton[] {
+        return this.ranges;
+    }
+
+    /**
+     * Отрисовывает график и возвращает объект
+     * @param container контейнер где будет рисоваться график
+     * @param chartData данные для графика
+     * @param eventsChartData данные по событиям
+     * @param ranges диапазон выбора дат
+     * @param selectedRangeIndex индекс выбранного диапазона
+     * @param decimals количество знаков для округления на графике
+     * @param balloonTitle заголовок в тултипе
+     * @param title заголовк графика
+     * @param yAxisTitle заголовок для оси y
+     */
+    static drawLineChart(container: HTMLElement, chartData: any[], eventsChartData: HighStockEventsGroup[], ranges: Highstock.RangeSelectorButton[], selectedRangeIndex: number,
+                         decimals: number, balloonTitle: string, title: string = "", yAxisTitle: string = ""): ChartObject {
+        return Highstock.stockChart(container, {
+            chart: {
+                zoomType: "x",
+                backgroundColor: null,
+                style: {
+                    fontFamily: "\"Open Sans\" sans-serif",
+                    fontSize: "12px"
+                }
+            },
+            title: {
+                text: title
+            },
+            subtitle: {
+                text: "Выделите участок для увеличения"
+            },
+            rangeSelector: {
+                buttons: ranges,
+                selected: selectedRangeIndex,
+                inputEnabled: false
+            },
+            xAxis: {
+                type: "datetime",
+                gridLineWidth: 1,
+                labels: {
+                    style: {
+                        fontFamily: "\"Open Sans\" sans-serif",
+                        fontSize: "12px"
+                    }
+                }
+            },
+            yAxis: {
+                title: {
+                    text: yAxisTitle
+                }
+            },
+            legend: {
+                enabled: false
+            },
+            plotOptions: {
+                area: {
+                    fillColor: {
+                        linearGradient: {
+                            x1: 0,
+                            y1: 0,
+                            x2: 0,
+                            y2: 1
+                        },
+                        stops: [
+                            [0, Highcharts.getOptions().colors[0]],
+                            // @ts-ignore
+                            [1, (Highcharts.Color(Highcharts.getOptions().colors[0]) as Gradient).setOpacity(0).get("rgba")]
+                        ]
+                    },
+                    marker: {
+                        radius: 2
+                    },
+                    lineWidth: 1,
+                    states: {
+                        hover: {
+                            lineWidth: 1
+                        }
+                    },
+                    threshold: null
+                }
+            },
+
+            series: [{
+                type: "area",
+                name: balloonTitle,
+                data: chartData,
+                id: "dataseries",
+                // @ts-ignore
+                tooltip: {
+                    valueDecimals: decimals
+                }
+            },
+                // @ts-ignore
+                ...eventsChartData || []],
+            exporting: {
+                enabled: true
+            }
+        });
     }
 }

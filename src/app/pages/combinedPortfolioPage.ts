@@ -12,16 +12,18 @@ import {PortfolioLineChart} from "../components/charts/portfolioLineChart";
 import {SectorsChart} from "../components/charts/sectorsChart";
 import {StockPieChart} from "../components/charts/stockPieChart";
 import {CombinedPortfoliosTable} from "../components/combinedPortfoliosTable";
+import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog";
 import {ExpandedPanel} from "../components/expandedPanel";
 import {StockTable} from "../components/stockTable";
 import {CatchErrors} from "../platform/decorators/catchErrors";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {ClientInfo} from "../services/clientService";
 import {OverviewService} from "../services/overviewService";
+import {TableHeaders, TABLES_NAME, TablesService} from "../services/tablesService";
 import {BigMoney} from "../types/bigMoney";
 import {HighStockEventsGroup, SectorChartData} from "../types/charts/types";
 import {CombinedData} from "../types/eventObjects";
-import {Overview} from "../types/types";
+import {Overview, TableHeader} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
 import {StoreType} from "../vuex/storeType";
 
@@ -61,16 +63,22 @@ const MainStore = namespace(StoreType.MAIN);
 
                 <div style="height: 30px"></div>
 
-                <expanded-panel :value="$uistate.stocksTablePanel" :state="$uistate.STOCKS">
+                <expanded-panel :value="$uistate.stocksTablePanel" :withMenu="true" name="stock" :state="$uistate.STOCKS">
                     <div slot="header">Акции</div>
-                    <stock-table :rows="overview.stockPortfolio.rows"></stock-table>
+                    <template slot="list">
+                        <v-list-tile-title @click="openTableHeadersDialog(TABLES_NAME.STOCK)">Настроить колонки</v-list-tile-title>
+                    </template>
+                    <stock-table :rows="overview.stockPortfolio.rows" :headers="getHeaders(TABLES_NAME.STOCK)"></stock-table>
                 </expanded-panel>
 
                 <div style="height: 30px"></div>
 
-                <expanded-panel :value="$uistate.bondsTablePanel" :state="$uistate.BONDS">
+                <expanded-panel :value="$uistate.bondsTablePanel" :withMenu="true" name="bond" :state="$uistate.BONDS">
                     <template slot="header">Облигации</template>
-                    <bond-table :rows="overview.bondPortfolio.rows"></bond-table>
+                    <template slot="list">
+                        <v-list-tile-title @click="openTableHeadersDialog('bondTable')">Настроить колонки</v-list-tile-title>
+                    </template>
+                    <bond-table :rows="overview.bondPortfolio.rows" :headers="getHeaders(TABLES_NAME.BOND)"></bond-table>
                 </expanded-panel>
 
                 <div style="height: 30px"></div>
@@ -78,7 +86,7 @@ const MainStore = namespace(StoreType.MAIN);
                 <expanded-panel :value="$uistate.historyPanel" :state="$uistate.HISTORY_PANEL">
                     <template slot="header">Стоимость портфеля</template>
                     <v-card-text>
-                        <line-chart :data="lineChartData" :events-chart-data="eventsChartData" balloon-title="Портфель"></line-chart>
+                        <portfolio-line-chart :data="lineChartData" :events-chart-data="eventsChartData" balloon-title="Портфель"></portfolio-line-chart>
                     </v-card-text>
                 </expanded-panel>
 
@@ -126,7 +134,8 @@ export class CombinedPortfolioPage extends UI {
 
     @Inject
     private overviewService: OverviewService;
-
+    @Inject
+    private tablesService: TablesService;
     private overview: Overview = null;
     private viewCurrency = "RUB";
 
@@ -135,6 +144,8 @@ export class CombinedPortfolioPage extends UI {
     private stockPieChartData: DataPoint[] = [];
     private bondPieChartData: DataPoint[] = [];
     private sectorsChartData: SectorChartData = null;
+    private headers: TableHeaders = this.tablesService.headers;
+    private TABLES_NAME = TABLES_NAME;
 
     async created(): Promise<void> {
         await this.doCombinedPortfolio();
@@ -178,5 +189,16 @@ export class CombinedPortfolioPage extends UI {
             });
         });
         return data;
+    }
+
+    private getHeaders(name: string): TableHeader[] {
+        return this.tablesService.getFilterHeaders(name);
+    }
+
+    private async openTableHeadersDialog(tableName: string): Promise<void> {
+        await new TableSettingsDialog().show({
+            tableName: tableName,
+            headers: this.headers[tableName]
+        });
     }
 }
