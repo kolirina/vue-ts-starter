@@ -1,9 +1,10 @@
 import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
-import {Http} from "../platform/services/http";
+import {Http, UrlParams} from "../platform/services/http";
 import {BaseChartDot, ColumnChartData, ColumnDataSeries, Dot, EventChartData, HighStockEventData, HighStockEventsGroup} from "../types/charts/types";
 import {Bond, BondInfo, Currency, PageableResponse, Share, Stock, StockInfo} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
+import {CommonUtils} from "../utils/commonUtils";
 
 @Service("MarketService")
 @Singleton
@@ -56,16 +57,28 @@ export class MarketService {
      * Загружает и возвращает список акций
      */
     async loadStocks(offset: number = 0, pageSize: number = 50, sortColumn: string, descending: boolean = false): Promise<PageableResponse<Stock>> {
-        return this.http.get<PageableResponse<Stock>>(`/market/stocks`,
-            {pageSize, offset, sortColumn: sortColumn ? sortColumn.toUpperCase() : null, descending});
+        const urlParams: UrlParams = {offset, pageSize};
+        if (sortColumn) {
+            urlParams.sortColumn = sortColumn.toUpperCase();
+        }
+        if (CommonUtils.exists(descending)) {
+            urlParams.descending = descending;
+        }
+        return this.http.get<PageableResponse<Stock>>(`/market/stocks`, urlParams);
     }
 
     /**
      * Загружает и возвращает список облигаций
      */
     async loadBonds(offset: number = 0, pageSize: number = 50, sortColumn: string, descending: boolean = false): Promise<PageableResponse<Bond>> {
-        return this.http.get<PageableResponse<Bond>>(`/market/bonds`,
-            {pageSize, offset, sortColumn: sortColumn ? sortColumn.toUpperCase() : null, descending});
+        const urlParams: UrlParams = {offset, pageSize};
+        if (sortColumn) {
+            urlParams.sortColumn = sortColumn.toUpperCase();
+        }
+        if (CommonUtils.exists(descending)) {
+            urlParams.descending = descending;
+        }
+        return this.http.get<PageableResponse<Bond>>(`/market/bonds`, urlParams);
     }
 
     /**

@@ -38,12 +38,12 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-data-table class="data-table" :headers="headers" :items="rows" item-key="id" hide-actions>
+        <v-data-table class="data-table" :headers="headers" :items="rows" item-key="id" :custom-sort="customSort" hide-actions>
             <v-progress-linear slot="progress" color="blue" indeterminate></v-progress-linear>
             <template slot="items" slot-scope="props">
                 <tr class="selectable">
                     <td>
-                        <v-icon @click="props.expanded = !props.expanded" class="data-table-cell" v-bind:class="{'data-table-cell-open': props.expanded}">play_arrow</v-icon>
+                        <v-icon @click="props.expanded = !props.expanded" class="data-table-cell" :class="{'data-table-cell-open': props.expanded}">play_arrow</v-icon>
                     </td>
                     <td v-if="tableHeadersState.company">
                         <span>{{ props.item.stock.shortname }}</span>&nbsp;
@@ -55,7 +55,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <td v-if="tableHeadersState.currPrice" class="text-xs-right ii-number-cell">{{ props.item.currPrice| amount(true) }}</td>
                     <td v-if="tableHeadersState.bCost" class="text-xs-right ii-number-cell">{{ props.item.bcost | amount }}</td>
                     <td v-if="tableHeadersState.sCost" class="text-xs-right ii-number-cell">{{ props.item.scost | amount }}</td>
-                    <td v-if="tableHeadersState.currCost" class="text-xs-right ii-number-cell" >{{ props.item.currCost| amount(true) }}</td>
+                    <td v-if="tableHeadersState.currCost" class="text-xs-right ii-number-cell">{{ props.item.currCost| amount(true) }}</td>
                     <td v-if="tableHeadersState.profitFromDividends" class="text-xs-right ii-number-cell">{{ props.item.profitFromDividends | amount }}</td>
                     <td v-if="tableHeadersState.profitFromDividendsPercent" class="text-xs-right ii-number-cell">{{ props.item.profitFromDividendsPercent }}</td>
                     <td v-if="tableHeadersState.rateProfit" class="text-xs-right ii-number-cell">{{ props.item.rateProfit | amount }}</td>
@@ -225,5 +225,24 @@ export class StockTable extends UI {
         }
         const amount = new BigMoney(value);
         return amount.amount.toNumber();
+    }
+
+    private customSort(items: StockPortfolioRow[], index: string, isDesc: boolean): StockPortfolioRow[] {
+        items.sort((a: StockPortfolioRow, b: StockPortfolioRow): number => {
+            if (index === "ticker") {
+                if (!isDesc) {
+                    return a.stock.ticker.localeCompare(b.stock.ticker);
+                } else {
+                    return b.stock.ticker.localeCompare(a.stock.ticker);
+                }
+            } else {
+                if (!isDesc) {
+                    return (a as any)[index] < (b as any)[index] ? -1 : 1;
+                } else {
+                    return (b as any)[index] < (a as any)[index] ? -1 : 1;
+                }
+            }
+        });
+        return items;
     }
 }

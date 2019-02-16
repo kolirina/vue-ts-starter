@@ -23,7 +23,7 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-data-table class="data-table" :headers="headers" :items="rows" item-key="id" hide-actions>
+        <v-data-table class="data-table" :headers="headers" :items="rows" item-key="id" :custom-sort="customSort" hide-actions>
             <v-progress-linear slot="progress" color="blue" indeterminate></v-progress-linear>
             <template slot="items" slot-scope="props">
                 <tr class="selectable">
@@ -245,5 +245,24 @@ export class BondTable extends UI {
         }
         const amount = new BigMoney(value);
         return amount.amount.toNumber();
+    }
+
+    private customSort(items: BondPortfolioRow[], index: string, isDesc: boolean): BondPortfolioRow[] {
+        items.sort((a: BondPortfolioRow, b: BondPortfolioRow): number => {
+            if (index === "ticker") {
+                if (!isDesc) {
+                    return a.bond.ticker.localeCompare(b.bond.ticker);
+                } else {
+                    return b.bond.ticker.localeCompare(a.bond.ticker);
+                }
+            } else {
+                if (!isDesc) {
+                    return (a as any)[index] < (b as any)[index] ? -1 : 1;
+                } else {
+                    return (b as any)[index] < (a as any)[index] ? -1 : 1;
+                }
+            }
+        });
+        return items;
     }
 }

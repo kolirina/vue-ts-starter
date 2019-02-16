@@ -77,7 +77,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </span>
                     </div>
 
-                    <v-data-table :headers="headers" :items="events" item-key="id" hide-actions>
+                    <v-data-table :headers="headers" :items="events" item-key="id" :custom-sort="customSort" hide-actions>
                         <template slot="items" slot-scope="props">
                             <tr class="selectable">
                                 <td>{{ props.item.label }}</td>
@@ -211,5 +211,24 @@ export class EventsPage extends UI {
     private get emptyTableText(): string {
         return this.portfolio.overview.totalTradesCount !== 0 ? "Новых событий по вашим бумагам еще не появилось" :
             "Добавьте свою первую сделку чтобы мы могли предложить вам события";
+    }
+
+    private customSort(items: ShareEvent[], index: string, isDesc: boolean): ShareEvent[] {
+        items.sort((a: ShareEvent, b: ShareEvent): number => {
+            if (index === "ticker") {
+                if (!isDesc) {
+                    return a.share.ticker.localeCompare(b.share.ticker);
+                } else {
+                    return b.share.ticker.localeCompare(a.share.ticker);
+                }
+            } else {
+                if (!isDesc) {
+                    return (a as any)[index] < (b as any)[index] ? -1 : 1;
+                } else {
+                    return (b as any)[index] < (a as any)[index] ? -1 : 1;
+                }
+            }
+        });
+        return items;
     }
 }

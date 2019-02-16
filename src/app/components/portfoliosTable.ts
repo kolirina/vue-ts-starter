@@ -24,7 +24,7 @@ const MainStore = namespace(StoreType.MAIN);
             <template slot="items" slot-scope="props">
                 <tr class="selectable">
                     <td>
-                        <v-icon @click="props.expanded = !props.expanded" class="data-table-cell" v-bind:class="{'data-table-cell-open': props.expanded}">play_arrow</v-icon>
+                        <v-icon @click="props.expanded = !props.expanded" class="data-table-cell" :class="{'data-table-cell-open': props.expanded}">play_arrow</v-icon>
                     </td>
                     <td>{{ props.item.name }}</td>
                     <td class="text-xs-center">
