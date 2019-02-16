@@ -4,7 +4,6 @@ import Vue from "vue";
 import VueRouter, {Route} from "vue-router";
 import {RouteConfig} from "vue-router/types/router";
 import {Resolver} from "../../../typings/vue";
-import {AuthComponent} from "../app/authComponent";
 import {TariffExpiredDialog} from "../components/dialogs/tariffExpiredDialog";
 import {BalancesPage} from "../pages/balancesPage";
 import {BondInfoPage} from "../pages/bondInfoPage";
@@ -84,12 +83,6 @@ export class RouterConfiguration {
                 name: "logout",
                 meta: {tariffAllowed: true},
                 beforeEnter: (): Promise<void> => (Container.get(LogoutService) as LogoutService).logout()
-            },
-            {
-                name: "auth",
-                path: "/auth/:token",
-                meta: {tariffAllowed: true},
-                component: AuthComponent
             },
             {
                 path: "*",

@@ -252,6 +252,9 @@ export class AppFrame extends UI {
             const client = await this.clientService.getClientInfo();
             await this.loadUser({token: this.localStorage.get(StoreKeys.TOKEN_KEY, null), user: client});
             await this.setCurrentPortfolio(this.$store.state[StoreType.MAIN].clientInfo.user.currentPortfolioId);
+        } catch (e) {
+            this.$snotify.error("При авторизации пользователя", "Ошибка", {timeout: 0});
+            throw e;
         } finally {
             this.loading = false;
         }
