@@ -102,6 +102,7 @@ export class ProfilePage extends UI {
     private async onEmailChange(email: string): Promise<void> {
         this.email = CommonUtils.isBlank(email) ? this.clientInfo.user.email : email;
         if (!(await this.validate())) {
+            this.email = this.clientInfo.user.email;
             return;
         }
         // отправляем запрос только если действительно поменяли

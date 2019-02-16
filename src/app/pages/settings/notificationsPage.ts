@@ -66,11 +66,14 @@ const MainStore = namespace(StoreType.MAIN);
                     <div v-if="hasPriceAndNews(notification)" class="notifications-card-body-line"></div>
                     <v-flex v-if="isNewsNotification(notification)"
                             :class="['notifications-card-body-news', hasPriceAndNews(notification) ? 'with-padding' : '']">
-                        <div>
+                        <div v-if="notification.keywords">
                             Ключевые слова: <span>{{ notification.keywords }}</span>
                         </div>
-                        <div>
+                        <div v-if="notification.keywords">
                             Тип слов: <span>{{ searchTypesTitle[notification.keyWordsSearchType] }}</span>
+                        </div>
+                        <div v-if="!notification.keywords">
+                            Вы будете получать уведомления о всех новостях
                         </div>
                     </v-flex>
                     <v-flex v-if="isDividendNotification(notification)" :class="['notifications-card-body-news', hasPriceAndNews(notification) ? 'with-padding' : '']">
@@ -135,7 +138,7 @@ export class NotificationsPage extends UI {
     }
 
     private isNewsNotification(notification: Notification): boolean {
-        return CommonUtils.exists(notification.keywords) && notification.keywords !== this.notificationsService.DIVIDEND_WORDS;
+        return CommonUtils.exists(notification.keyWordsSearchType) && notification.keywords !== this.notificationsService.DIVIDEND_WORDS;
     }
 }
 
