@@ -23,8 +23,10 @@ import {TableHeaders, TABLES_NAME, TablesService} from "../services/tablesServic
 import {BigMoney} from "../types/bigMoney";
 import {HighStockEventsGroup, SectorChartData} from "../types/charts/types";
 import {CombinedData} from "../types/eventObjects";
+import {StoreKeys} from "../types/storeKeys";
 import {Overview, TableHeader} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
+import {UiStateHelper} from "../utils/uiStateHelper";
 import {StoreType} from "../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -83,10 +85,19 @@ const MainStore = namespace(StoreType.MAIN);
 
                 <div style="height: 30px"></div>
 
-                <expanded-panel :value="$uistate.historyPanel" :state="$uistate.HISTORY_PANEL">
+                <expanded-panel :value="$uistate.historyPanel" :state="$uistate.HISTORY_PANEL" @click="onPortfolioLineChartPanelStateChanges">
                     <template slot="header">Стоимость портфеля</template>
                     <v-card-text>
-                        <portfolio-line-chart :data="lineChartData" :events-chart-data="eventsChartData" balloon-title="Портфель"></portfolio-line-chart>
+                        <portfolio-line-chart v-if="lineChartData && eventsChartData"
+                                              :data="lineChartData" :events-chart-data="eventsChartData" :state-key="StoreKeys.PORTFOLIO_COMBINED_CHART_RANGE"
+                                              balloon-title="Портфель"></portfolio-line-chart>
+                        <v-container v-else grid-list-md text-xs-center>
+                            <v-layout row wrap>
+                                <v-flex xs12>
+                                    <v-progress-circular :size="70" :width="7" indeterminate color="indigo"></v-progress-circular>
+                                </v-flex>
+                            </v-layout>
+                        </v-container>
                     </v-card-text>
                 </expanded-panel>
 
@@ -139,13 +150,14 @@ export class CombinedPortfolioPage extends UI {
     private overview: Overview = null;
     private viewCurrency = "RUB";
 
-    private lineChartData: any[] = [];
-    private eventsChartData: HighStockEventsGroup[] = [];
+    private lineChartData: any[] = null;
+    private eventsChartData: HighStockEventsGroup[] = null;
     private stockPieChartData: DataPoint[] = [];
     private bondPieChartData: DataPoint[] = [];
     private sectorsChartData: SectorChartData = null;
     private headers: TableHeaders = this.tablesService.headers;
     private TABLES_NAME = TABLES_NAME;
+    private StoreKeys = StoreKeys;
 
     async created(): Promise<void> {
         await this.doCombinedPortfolio();
@@ -156,8 +168,7 @@ export class CombinedPortfolioPage extends UI {
     private async doCombinedPortfolio(): Promise<void> {
         const ids = this.clientInfo.user.portfolios.filter(value => value.combined).map(value => value.id);
         this.overview = await this.overviewService.getPortfolioOverviewCombined({ids: ids, viewCurrency: this.viewCurrency});
-        this.lineChartData = await this.overviewService.getCostChartCombined({ids: ids, viewCurrency: this.viewCurrency});
-        this.eventsChartData = await this.overviewService.getEventsChartDataCombined({ids: ids, viewCurrency: this.viewCurrency});
+        await this.loadPortfolioLineChart();
         this.stockPieChartData = this.doStockPieChartData();
         this.bondPieChartData = this.doBondPieChartData();
         this.sectorsChartData = ChartUtils.doSectorsChartData(this.overview);
@@ -167,6 +178,18 @@ export class CombinedPortfolioPage extends UI {
     @ShowProgress
     private async onSetCombined(data: CombinedData): Promise<void> {
         await this.overviewService.setCombinedFlag(data.id, data.combined);
+    }
+
+    private async onPortfolioLineChartPanelStateChanges(): Promise<void> {
+        await this.loadPortfolioLineChart();
+    }
+
+    private async loadPortfolioLineChart(): Promise<void> {
+        const ids = this.clientInfo.user.portfolios.filter(value => value.combined).map(value => value.id);
+        if (UiStateHelper.historyPanel[0] === 1) {
+            this.lineChartData = await this.overviewService.getCostChartCombined({ids: ids, viewCurrency: this.viewCurrency});
+            this.eventsChartData = await this.overviewService.getEventsChartDataCombined({ids: ids, viewCurrency: this.viewCurrency});
+        }
     }
 
     private doStockPieChartData(): DataPoint[] {

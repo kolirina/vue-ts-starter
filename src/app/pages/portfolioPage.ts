@@ -20,6 +20,7 @@ import {ExportService, ExportType} from "../services/exportService";
 import {OverviewService} from "../services/overviewService";
 import {TableHeaders, TABLES_NAME, TablesService} from "../services/tablesService";
 import {HighStockEventsGroup} from "../types/charts/types";
+import {StoreKeys} from "../types/storeKeys";
 import {Portfolio, TableHeader} from "../types/types";
 import {UiStateHelper} from "../utils/uiStateHelper";
 import {StoreType} from "../vuex/storeType";
@@ -61,7 +62,15 @@ const MainStore = namespace(StoreType.MAIN);
                 <template slot="header">Стоимость портфеля</template>
                 <v-card-text>
                     <portfolio-line-chart v-if="portfolioLineChartData && eventsChartData" :data="portfolioLineChartData"
+                                          :state-key="StoreKeys.PORTFOLIO_CHART_RANGE"
                                           :events-chart-data="eventsChartData" :balloon-title="portfolio.portfolioParams.name"></portfolio-line-chart>
+                    <v-container v-else grid-list-md text-xs-center>
+                        <v-layout row wrap>
+                            <v-flex xs12>
+                                <v-progress-circular :size="70" :width="7" indeterminate color="indigo"></v-progress-circular>
+                            </v-flex>
+                        </v-layout>
+                    </v-container>
                 </v-card-text>
             </expanded-panel>
 
@@ -120,6 +129,7 @@ export class PortfolioPage extends UI {
 
     private TABLES_NAME = TABLES_NAME;
     private ExportType = ExportType;
+    private StoreKeys = StoreKeys;
 
     async created(): Promise<void> {
         await this.loadPortfolioLineChart();
@@ -135,7 +145,6 @@ export class PortfolioPage extends UI {
     }
 
     private async onPortfolioLineChartPanelStateChanges(): Promise<void> {
-        console.log((this.$uistate as any).historyPanel);
         await this.loadPortfolioLineChart();
     }
 
