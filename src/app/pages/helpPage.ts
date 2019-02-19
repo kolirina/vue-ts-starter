@@ -1,15 +1,19 @@
 /*
 * TODO: Исправить скринкасты
-* TODO: Сделать страницу Пользовательское соглашение /terms-of-use
 */
 
 import Component from "vue-class-component";
+import {namespace} from "vuex-class";
 import {UI} from "../app/ui";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
 import {FeedbackDialog} from "../components/dialogs/feedbackDialog";
 import {AssetType} from "../types/assetType";
 import {Operation} from "../types/operation";
+import {Portfolio} from "../types/types";
+import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
+
+const MainStore = namespace(StoreType.MAIN);
 
 @Component({
     // language=Vue
@@ -451,17 +455,25 @@ import {StoreType} from "../vuex/storeType";
 })
 export class HelpPage extends UI {
 
+    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
+    private reloadPortfolio: (id: string) => Promise<void>;
+    @MainStore.Getter
+    private portfolio: Portfolio;
+
     private assetType = AssetType;
     private operation = Operation;
 
     /* Диалог добавления сделок */
     private async openDialog(assetType: AssetType, operation: Operation): Promise<void> {
-        await new AddTradeDialog().show({
+        const result = await new AddTradeDialog().show({
             store: this.$root.$store.state[StoreType.MAIN],
             router: this.$root.$router,
             operation,
             assetType
         });
+        if (result) {
+            await this.reloadPortfolio(this.portfolio.id);
+        }
     }
 
     /* Диалог обратной связи */

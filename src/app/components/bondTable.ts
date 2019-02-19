@@ -206,13 +206,17 @@ export class BondTable extends UI {
     }
 
     private async openTradeDialog(bondRow: BondPortfolioRow, operation: Operation): Promise<void> {
-        await new AddTradeDialog().show({
+        const result = await new AddTradeDialog().show({
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
             share: bondRow.bond,
+            quantity: [Operation.COUPON, Operation.AMORTIZATION, Operation.REPAYMENT].indexOf(operation) !== -1 ? parseInt(bondRow.quantity, 10) : null,
             operation,
             assetType: AssetType.BOND
         });
+        if (result) {
+            await this.reloadPortfolio(this.portfolio.id);
+        }
     }
 
     /**

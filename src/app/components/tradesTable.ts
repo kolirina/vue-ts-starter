@@ -193,13 +193,17 @@ export class TradesTable extends UI {
     }
 
     private async openTradeDialog(trade: TradeRow, operation: Operation): Promise<void> {
-        await new AddTradeDialog().show({
+        const result = await new AddTradeDialog().show({
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
             share: null,
+            ticker: trade.ticker,
             operation,
             assetType: AssetType.valueByName(trade.asset)
         });
+        if (result) {
+            await this.reloadPortfolio(this.portfolio.id);
+        }
     }
 
     private async openEditTradeDialog(trade: TradeRow): Promise<void> {

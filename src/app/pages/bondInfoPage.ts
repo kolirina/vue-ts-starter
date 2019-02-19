@@ -1,12 +1,20 @@
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
+import {namespace} from "vuex-class";
 import {UI} from "../app/ui";
 import {BondPaymentsChart} from "../components/charts/bondPaymentsChart";
+import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
 import {CatchErrors} from "../platform/decorators/catchErrors";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {MarketService} from "../services/marketService";
+import {AssetType} from "../types/assetType";
 import {ColumnChartData, Dot, HighStockEventsGroup} from "../types/charts/types";
-import {Share} from "../types/types";
+import {Operation} from "../types/operation";
+import {Portfolio, Share} from "../types/types";
+import {MutationType} from "../vuex/mutationType";
+import {StoreType} from "../vuex/storeType";
+
+const MainStore = namespace(StoreType.MAIN);
 
 @Component({
     // language=Vue
@@ -79,6 +87,14 @@ import {Share} from "../types/types";
                                 </a>
                             </td>
                         </tr>
+                        <tr>
+                            <td>Добавить в портфель</td>
+                            <td>
+                                <v-btn fab dark small color="primary" @click.stop="openDialog">
+                                    <v-icon dark>add</v-icon>
+                                </v-btn>
+                            </td>
+                        </tr>
                         </tbody>
                     </table>
                 </v-card-text>
@@ -101,6 +117,10 @@ import {Share} from "../types/types";
 })
 export class BondInfoPage extends UI {
 
+    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
+    private reloadPortfolio: (id: string) => Promise<void>;
+    @MainStore.Getter
+    private portfolio: Portfolio;
     @Inject
     private marketService: MarketService;
 
@@ -119,6 +139,19 @@ export class BondInfoPage extends UI {
             this.history = result.history;
             this.paymentsData = result.payments;
             this.events.push(...result.events);
+        }
+    }
+
+    private async openDialog(): Promise<void> {
+        const result = await new AddTradeDialog().show({
+            store: this.$store.state[StoreType.MAIN],
+            router: this.$router,
+            share: this.share,
+            operation: Operation.BUY,
+            assetType: AssetType.BOND
+        });
+        if (result) {
+            await this.reloadPortfolio(this.portfolio.id);
         }
     }
 }
