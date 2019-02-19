@@ -146,7 +146,7 @@ import {CustomDialog} from "./customDialog";
                             </v-flex>
                             <v-flex xs12 lg6>
                                 <span class="body-2">Доступно: </span><span v-if="moneyResiduals"><b
-                                class="title">{{ moneyResidual | amount }} {{ currency }}</b></span>
+                                    class="title">{{ moneyResidual | amount }} {{ currency }}</b></span>
                                 <v-checkbox :disabled="keepMoneyDisabled" :label="keepMoneyLabel" v-model="keepMoney" hide-details></v-checkbox>
                             </v-flex>
                         </v-layout>
@@ -240,7 +240,13 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         this.moneyResiduals = await this.portfolioService.getMoneyResiduals(this.portfolio.id);
         this.share = this.data.share || null;
         this.operation = this.data.operation || Operation.BUY;
-        if (this.data.tradeFields) {
+        if (this.data.quantity) {
+            this.quantity = this.data.quantity;
+        }
+        if (this.data.ticker) {
+            await this.setShareFromTicker(this.data.ticker);
+            this.filteredShares = [this.share];
+        } else if (this.data.tradeFields) {
             await this.setTradeFields();
         } else if (this.data.eventFields) {
             this.filteredShares = this.share ? [this.share] : [];
@@ -422,11 +428,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private async setTradeFields(): Promise<void> {
-        if (this.assetType === AssetType.STOCK) {
-            this.share = (await this.marketService.getStockInfo(this.data.tradeFields.ticker)).stock;
-        } else if (this.assetType === AssetType.BOND) {
-            this.share = (await this.marketService.getBondInfo(this.data.tradeFields.ticker)).bond;
-        }
+        await this.setShareFromTicker(this.data.tradeFields.ticker);
         this.filteredShares = [this.share];
 
         this.tradeId = this.data.tradeId;
@@ -443,6 +445,14 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         this.keepMoney = this.data.tradeFields.keepMoney;
         this.moneyAmount = TradeUtils.decimal(this.data.tradeFields.moneyAmount, true);
         this.currency = this.data.tradeFields.currency;
+    }
+
+    private async setShareFromTicker(ticker: string): Promise<void> {
+        if (this.assetType === AssetType.STOCK) {
+            this.share = (await this.marketService.getStockInfo(ticker)).stock;
+        } else if (this.assetType === AssetType.BOND) {
+            this.share = (await this.marketService.getBondInfo(ticker)).bond;
+        }
     }
 
     private async setEventFields(): Promise<void> {
@@ -600,6 +610,7 @@ export type TradeDialogData = {
     editedMoneyTradeId?: string,
     tradeFields?: TradeFields,
     share?: Share,
+    ticker?: string,
     quantity?: number,
     eventFields?: EventFields,
     operation?: Operation,

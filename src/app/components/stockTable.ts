@@ -198,13 +198,17 @@ export class StockTable extends UI {
     }
 
     private async openTradeDialog(stockRow: StockPortfolioRow, operation: Operation): Promise<void> {
-        await new AddTradeDialog().show({
+        const result = await new AddTradeDialog().show({
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
             share: stockRow.stock,
+            quantity: operation === Operation.DIVIDEND ? parseInt(stockRow.quantity, 10) : null,
             operation,
             assetType: AssetType.STOCK
         });
+        if (result) {
+            await this.reloadPortfolio(this.portfolio.id);
+        }
     }
 
     private async deleteAllTrades(stockRow: StockPortfolioRow): Promise<void> {

@@ -56,77 +56,78 @@ const MainStore = namespace(StoreType.MAIN);
             </template>
 
             <template v-if="!loading && (loggedIn || externalAuth)">
-                <v-navigation-drawer disable-resize-watcher fixed stateless class="sidebar" v-model="drawer" :mini-variant.sync="mini" app>
-                    <v-list dense class="sidebar-list">
-                        <v-list-tile class="sidebar-list-item">
-                            <v-list-tile-action class="sidebar-item-action">
-                                <img src="img/sidebar/hamb.svg" class="hamburger" @click="mini = !mini" alt="">
-                            </v-list-tile-action>
-                        </v-list-tile>
+                <v-navigation-drawer disable-resize-watcher fixed stateless touchless app class="sidebar" v-model="drawer" :mini-variant.sync="mini">
+                    <vue-scroll>
+                        <v-list dense class="sidebar-list">
+                            <v-list-tile class="sidebar-list-item">
+                                <v-list-tile-action class="sidebar-item-action">
+                                    <img src="img/sidebar/hamb.svg" class="hamburger" @click="mini = !mini" alt="">
+                                </v-list-tile-action>
+                            </v-list-tile>
 
-                        <portfolio-switcher v-if="portfolio"></portfolio-switcher>
+                            <portfolio-switcher v-if="portfolio"></portfolio-switcher>
 
-                        <hr/>
+                            <hr/>
 
-                        <template v-if="!mini" v-for="item in mainSection">
-                            <v-list-group class="sidebar-list-item" v-if="item.subMenu" v-model="item.active" :key="item.title" no-action>
-                                <v-list-tile slot="activator">
+                            <template v-if="!mini" v-for="item in mainSection">
+                                <v-list-group class="sidebar-list-item" v-if="item.subMenu" v-model="item.active" :key="item.title" no-action>
+                                    <v-list-tile slot="activator">
+                                        <v-list-tile-content class="pl-3">
+                                            <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+                                        </v-list-tile-content>
+                                    </v-list-tile>
+                                    <v-list-tile active-class="sidebar-list-item-active" v-for="subItem in item.subMenu" :key="subItem.action"
+                                                 :to="{name: subItem.action, params: item.params}">
+                                        <v-list-tile-content>
+                                            <v-list-tile-title>{{ subItem.title }}</v-list-tile-title>
+                                        </v-list-tile-content>
+                                    </v-list-tile>
+                                </v-list-group>
+
+                                <v-list-tile v-else active-class="sidebar-list-item-active" class="sidebar-list-item" :key="item.action"
+                                             :to="{path: item.path, name: item.action, params: item.params}">
                                     <v-list-tile-content class="pl-3">
                                         <v-list-tile-title>{{ item.title }}</v-list-tile-title>
                                     </v-list-tile-content>
                                 </v-list-tile>
-                                <v-list-tile active-class="sidebar-list-item-active" v-for="subItem in item.subMenu" :key="subItem.action"
-                                             :to="{name: subItem.action, params: item.params}">
-                                    <v-list-tile-content>
-                                        <v-list-tile-title>{{ subItem.title }}</v-list-tile-title>
-                                    </v-list-tile-content>
-                                </v-list-tile>
-                            </v-list-group>
+                            </template>
 
-                            <v-list-tile v-else active-class="sidebar-list-item-active" class="sidebar-list-item" :key="item.action"
-                                         :to="{path: item.path, name: item.action, params: item.params}">
-                                <v-list-tile-content class="pl-3">
-                                    <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-                                </v-list-tile-content>
-                            </v-list-tile>
-                        </template>
+                            <hr v-if="!mini"/>
 
-                        <hr v-if="!mini"/>
+                            <template v-if="!mini" v-for="item in secondSection">
+                                <v-list-group class="sidebar-list-item" v-if="item.subMenu" v-model="item.active" :key="item.title" no-action>
+                                    <v-list-tile slot="activator">
+                                        <v-list-tile-content class="pl-3">
+                                            <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+                                        </v-list-tile-content>
+                                    </v-list-tile>
+                                    <v-list-tile active-class="sidebar-list-item-active" v-for="subItem in item.subMenu" :key="subItem.action"
+                                                 :to="{name: subItem.action, params: item.params}">
+                                        <v-list-tile-content>
+                                            <v-list-tile-title>{{ subItem.title }}</v-list-tile-title>
+                                        </v-list-tile-content>
+                                    </v-list-tile>
+                                </v-list-group>
 
-                        <template v-if="!mini" v-for="item in secondSection">
-                            <v-list-group class="sidebar-list-item" v-if="item.subMenu" v-model="item.active" :key="item.title" no-action>
-                                <v-list-tile slot="activator">
+                                <v-list-tile active-class="sidebar-list-item-active" class="sidebar-list-item" v-else :key="item.action"
+                                             :to="{name: item.action, params: item.params}">
                                     <v-list-tile-content class="pl-3">
                                         <v-list-tile-title>{{ item.title }}</v-list-tile-title>
                                     </v-list-tile-content>
                                 </v-list-tile>
-                                <v-list-tile active-class="sidebar-list-item-active" v-for="subItem in item.subMenu" :key="subItem.action"
-                                             :to="{name: subItem.action, params: item.params}">
-                                    <v-list-tile-content>
-                                        <v-list-tile-title>{{ subItem.title }}</v-list-tile-title>
-                                    </v-list-tile-content>
-                                </v-list-tile>
-                            </v-list-group>
+                            </template>
 
-                            <v-list-tile active-class="sidebar-list-item-active" class="sidebar-list-item" v-else :key="item.action"
-                                         :to="{name: item.action, params: item.params}">
-                                <v-list-tile-content class="pl-3">
-                                    <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+                            <v-list-tile class="sidebar-list-item sidebar-logo">
+                                <v-list-tile-action class="sidebar-item-action sidebar-logo-img">
+                                    <img src="img/sidebar/logo_grey.svg" @click="mini = !mini" alt="">
+                                </v-list-tile-action>
+
+                                <v-list-tile-content class="sidebar-logo-content">
+                                    © 2018 Intelinvest
                                 </v-list-tile-content>
                             </v-list-tile>
-                        </template>
-
-                        <v-list-tile class="sidebar-list-item sidebar-logo">
-                            <v-list-tile-action class="sidebar-item-action sidebar-logo-img">
-                                <img src="img/sidebar/logo_grey.svg" @click="mini = !mini" alt="">
-                            </v-list-tile-action>
-
-                            <v-list-tile-content class="sidebar-logo-content">
-                                © 2018 Intelinvest
-                            </v-list-tile-content>
-                        </v-list-tile>
-
-                    </v-list>
+                        </v-list>
+                    </vue-scroll>
                 </v-navigation-drawer>
                 <div class="sidebar-dialog" :class="{open: !mini}" @click.stop="openDialog">
                     <v-icon>add</v-icon>
@@ -142,7 +143,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-container>
                 </v-content>
                 <v-footer color="indigo" inset>
-                    <span class="white--text" style="margin-left: 15px;">&copy; 2018</span>
+                    <span class="white--text" style="margin-left: 15px;">&copy; {{ actualYear }}</span>
                     <v-spacer></v-spacer>
                     <v-tooltip top>
                         <a slot="activator" class="white--text margR16 decorationNone" href="https://telegram.me/intelinvestSupportBot">
@@ -296,6 +297,10 @@ export class AppFrame extends UI {
 
     private async openFeedBackDialog(): Promise<void> {
         await new FeedbackDialog().show(this.clientInfo);
+    }
+
+    private get actualYear(): string {
+        return String(new Date().getFullYear());
     }
 }
 

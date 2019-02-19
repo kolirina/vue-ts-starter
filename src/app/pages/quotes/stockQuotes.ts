@@ -10,6 +10,7 @@ import {MarketService} from "../../services/marketService";
 import {AssetType} from "../../types/assetType";
 import {Operation} from "../../types/operation";
 import {Pagination, Portfolio, Stock, TableHeader} from "../../types/types";
+import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -80,6 +81,8 @@ const MainStore = namespace(StoreType.MAIN);
 })
 export class StockQuotes extends UI {
 
+    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
+    private reloadPortfolio: (id: string) => Promise<void>;
     @MainStore.Getter
     private portfolio: Portfolio;
     /** Текущая операция */
@@ -129,12 +132,15 @@ export class StockQuotes extends UI {
     }
 
     private async openTradeDialog(stock: Stock, operation: Operation): Promise<void> {
-        await new AddTradeDialog().show({
+        const result = await new AddTradeDialog().show({
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
             share: stock,
             operation,
             assetType: AssetType.STOCK
         });
+        if (result) {
+            await this.reloadPortfolio(this.portfolio.id);
+        }
     }
 }

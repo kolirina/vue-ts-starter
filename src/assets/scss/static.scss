@@ -1,6 +1,8 @@
 body {
   user-select: none;
   font-family: $main--font-family;
+  font-size: $font-size;
+  line-height: normal;
 }
 
 .selectable {

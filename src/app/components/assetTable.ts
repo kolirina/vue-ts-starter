@@ -1,12 +1,16 @@
 import Component from "vue-class-component";
 import {Prop} from "vue-property-decorator";
+import {namespace} from "vuex-class";
 import {UI} from "../app/ui";
 import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
 import {Operation} from "../types/operation";
-import {AssetRow, TableHeader} from "../types/types";
+import {AssetRow, Portfolio, TableHeader} from "../types/types";
+import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {AddTradeDialog} from "./dialogs/addTradeDialog";
+
+const MainStore = namespace(StoreType.MAIN);
 
 @Component({
     // language=Vue
@@ -48,6 +52,11 @@ import {AddTradeDialog} from "./dialogs/addTradeDialog";
 })
 export class AssetTable extends UI {
 
+    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
+    private reloadPortfolio: (id: string) => Promise<void>;
+    @MainStore.Getter
+    private portfolio: Portfolio;
+
     private headers: TableHeader[] = [
         {text: "Актив", sortable: false, value: "name"},
         {text: "Текущая стоимость", align: "center", value: "currCost"},
@@ -62,12 +71,15 @@ export class AssetTable extends UI {
     private operation = Operation;
 
     private async openTradeDialog(assetRow: AssetRow, operation: Operation): Promise<void> {
-        await new AddTradeDialog().show({
+        const result = await new AddTradeDialog().show({
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
             operation,
             assetType: assetRow.type === "STOCK" ? AssetType.STOCK : AssetType.BOND
         });
+        if (result) {
+            await this.reloadPortfolio(this.portfolio.id);
+        }
     }
 
     private amount(value: string): number {

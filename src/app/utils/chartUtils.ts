@@ -109,9 +109,10 @@ export class ChartUtils {
      * @param balloonTitle заголовок в тултипе
      * @param title заголовк графика
      * @param yAxisTitle заголовок для оси y
+     * @param callback callback вызваемый после загрузки
      */
     static drawLineChart(container: HTMLElement, chartData: any[], eventsChartData: HighStockEventsGroup[], ranges: Highstock.RangeSelectorButton[], selectedRangeIndex: number,
-                         decimals: number, balloonTitle: string, title: string = "", yAxisTitle: string = ""): ChartObject {
+                         decimals: number, balloonTitle: string, title: string = "", yAxisTitle: string = "", callback: () => void = null): ChartObject {
         return Highstock.stockChart(container, {
             chart: {
                 zoomType: "x",
@@ -119,6 +120,13 @@ export class ChartUtils {
                 style: {
                     fontFamily: "\"Open Sans\" sans-serif",
                     fontSize: "12px"
+                },
+                events: {
+                    load(event: Event): void {
+                        if (callback) {
+                            callback();
+                        }
+                    }
                 }
             },
             title: {
