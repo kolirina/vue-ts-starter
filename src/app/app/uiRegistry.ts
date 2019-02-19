@@ -8,6 +8,7 @@ import VeeValidate, {Validator} from "vee-validate";
 import Vue from "vue";
 import VueQriously from "vue-qriously";
 import Snotify, {SnotifyPosition} from "vue-snotify";
+import vuescroll from "vuescroll";
 import Vuetify from "vuetify";
 import {BondLink} from "../components/bondLink";
 import {LineChart} from "../components/charts/lineChart";
@@ -38,6 +39,26 @@ export class UIRegistry {
      */
     static init(): boolean {
 
+        Vue.use(vuescroll, {
+            ops: {
+                vuescroll: {
+                    mode: "native",
+                    sizeStrategy: "percent",
+                    detectResize: true
+                },
+                bar: {
+                    showDelay: 500,
+                    onlyShowBarOnScroll: true,
+                    keepShow: false,
+                    background: "#c1c1c1",
+                    opacity: 1,
+                    hoverStyle: false,
+                    specifyBorderRadius: false,
+                    minSize: false,
+                    size: "6px"
+                }
+            }
+        });
         Vue.use(VueQriously);
 
         Vue.use(Vuetify, {

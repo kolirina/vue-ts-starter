@@ -34,6 +34,7 @@
     "vue-qriously": "^1.1.1",
     "vue-router": "^3.0.1",
     "vue-snotify": "^3.2.1",
+    "vuescroll": "^4.10.5",
     "vuetify": "^1.5.0",
     "vuex": "^3.0.1",
     "vuex-class": "^0.3.1"
