@@ -24,7 +24,7 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-container v-if="portfolio" fluid>
+        <v-container v-if="portfolio" fluid class="paddT0">
             <dashboard :data="portfolio.overview.dashboardData"></dashboard>
 
             <trades-filter-component v-if="tradesFilter" @filterChange="onFilterChange" :tradesFilter="tradesFilter"></trades-filter-component>

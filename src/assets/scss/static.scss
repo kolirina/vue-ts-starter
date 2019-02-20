@@ -229,6 +229,21 @@ input[type="search"] {
   content: '\f1e0' !important;
   @extend %fa_icon_custom;
 }
+
+.path {
+  width: 16px;
+  height: 16px;
+  display: block;
+  cursor: pointer;
+  background: url('../img/common/arrow1.svg') no-repeat center;
+}
+.menuDots {
+  width: 20px;
+  height: 5px;
+  display: block;
+  cursor: pointer;
+  background: url('../img/common/dots_more.svg') no-repeat center;
+}
 // ===============================
 
 // Троеточие в конце неумещающегося текста (слова не переносятся)

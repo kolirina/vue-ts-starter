@@ -22,12 +22,6 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-container v-if="portfolio" fluid>
-            <v-toolbar dark color="primary">
-                <v-toolbar-title class="white--text">Новые события</v-toolbar-title>
-
-                <v-spacer></v-spacer>
-            </v-toolbar>
-
             <v-card>
                 <v-card-text>
                     <div v-if="eventsAggregateInfo" class="eventsControls">

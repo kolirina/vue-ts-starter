@@ -134,7 +134,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </div>
 
                 <v-content>
-                    <v-container fluid>
+                    <v-container fluid class="paddT0">
                         <v-fade-transition mode="out-in">
                             <!--<keep-alive :include="cachedPages">-->
                             <router-view></router-view>

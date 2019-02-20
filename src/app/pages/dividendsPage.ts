@@ -21,7 +21,7 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-container v-if="dividendInfo" fluid>
+        <v-container v-if="dividendInfo" fluid class="paddT0">
             <dividend-dashboard-component :data="dividendInfo.dividendDashboard"></dividend-dashboard-component>
 
             <expanded-panel :value="$uistate.sumYearDivsTablePanel" :withMenu="true" :name="ExportType.DIVIDENDS_BY_YEAR" :state="$uistate.SUM_YEAR_DIVIDENDS">
