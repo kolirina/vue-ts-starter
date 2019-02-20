@@ -43,7 +43,7 @@ const MainStore = namespace(StoreType.MAIN);
             <template slot="items" slot-scope="props">
                 <tr class="selectable">
                     <td>
-                        <v-icon @click="props.expanded = !props.expanded" class="data-table-cell" :class="{'data-table-cell-open': props.expanded}">play_arrow</v-icon>
+                        <span @click="props.expanded = !props.expanded" class="data-table-cell" :class="{'data-table-cell-open': props.expanded, 'path': true}"></span>
                     </td>
                     <td v-if="tableHeadersState.company">
                         <span>{{ props.item.stock.shortname }}</span>&nbsp;
@@ -77,8 +77,8 @@ const MainStore = namespace(StoreType.MAIN);
                     <td v-if="tableHeadersState.percCurrShare" class="text-xs-right ii-number-cell">{{ props.item.percCurrShare | number }}</td>
                     <td class="justify-center layout px-0" @click.stop>
                         <v-menu transition="slide-y-transition" bottom left>
-                            <v-btn slot="activator" color="primary" flat icon dark>
-                                <v-icon color="primary" small>fas fa-bars</v-icon>
+                            <v-btn slot="activator" flat icon dark>
+                                <span class="menuDots"></span>
                             </v-btn>
                             <v-list dense>
                                 <v-list-tile @click="openShareTradesDialog(props.item.stock.ticker)">

@@ -30,7 +30,7 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-container v-if="portfolio" fluid>
+        <v-container v-if="portfolio" fluid class="paddT0">
             <dashboard :data="portfolio.overview.dashboardData"></dashboard>
             <asset-table :assets="portfolio.overview.assetRows"></asset-table>
 

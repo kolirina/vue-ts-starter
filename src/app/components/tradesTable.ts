@@ -25,7 +25,7 @@ const MainStore = namespace(StoreType.MAIN);
             <template slot="items" slot-scope="props">
                 <tr class="selectable">
                     <td>
-                        <v-icon @click="props.expanded = !props.expanded" class="data-table-cell" :class="{'data-table-cell-open': props.expanded}">play_arrow</v-icon>
+                        <span @click="props.expanded = !props.expanded" class="data-table-cell" :class="{'data-table-cell-open': props.expanded, 'path': true}"></span>
                     </td>
                     <td v-if="tableHeadersState.ticker">
                         <stock-link v-if="props.item.asset === 'STOCK'" :ticker="props.item.ticker"></stock-link>
@@ -59,8 +59,8 @@ const MainStore = namespace(StoreType.MAIN);
                     </td>
                     <td class="justify-center layout px-0" @click.stop>
                         <v-menu transition="slide-y-transition" bottom left>
-                            <v-btn slot="activator" color="primary" flat icon dark>
-                                <v-icon color="primary" small>fas fa-bars</v-icon>
+                            <v-btn slot="activator" flat icon dark>
+                                <span class="menuDots"></span>
                             </v-btn>
                             <v-list dense>
                                 <v-list-tile v-if="!isMoneyTrade(props.item)" @click.stop="openTradeDialog(props.item, operation.BUY)">
