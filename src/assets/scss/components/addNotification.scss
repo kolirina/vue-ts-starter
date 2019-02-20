@@ -68,12 +68,18 @@
     font-family: "Open Sans" !important;
     font-weight: bold;
     z-index: 10;
+    margin: 5px 5px 0 0;
   }
 
   .v-input--is-label-active {
     label {
       color: #040427 !important;
     }
+  }
+
+  .v-text-field {
+    padding-top: 0;
+    margin-top: 0;
   }
 
   .btn-group-right {

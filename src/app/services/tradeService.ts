@@ -70,6 +70,22 @@ export class TradeService {
         await this.http.post("/trades/deleteAll", deleteTradeRequest);
     }
 
+    /**
+     * Загружает и возвращает сделки по тикеру в портфеле
+     * @param portfolioId идентификатор портфеля
+     * @param asset тип актива
+     * @param operation тип операции
+     * @param ticker тикер
+     * @param date дата
+     * @returns данные с суммной начисления и количеством
+     */
+    async getSuggestedInfo(portfolioId: number, asset: string, operation: string, ticker: string, date: string): Promise<SuggestedQuantityResponse> {
+        const request: SuggestedQuantityRequest = {
+            portfolioId, asset, operation, ticker, date
+        };
+        return this.http.post<SuggestedQuantityResponse>("/trades/suggested", request);
+    }
+
     private correctMoneyOperation(trade: TradeRow): TradeRow {
         if (AssetType.valueByName(trade.asset) === AssetType.MONEY) {
             const operation = Operation.valueByName(trade.operation);
@@ -190,4 +206,28 @@ export interface TradesFilterRequest {
     showMoneyTrades?: boolean;
     showLinkedMoneyTrades?: boolean;
     search?: string;
+}
+
+/** Сущность запроса количества бумаг и начисления в портфеле для опереденного актива на дату */
+export interface SuggestedQuantityRequest {
+
+    /** Актив сделки */
+    asset: string;
+    /** Операция над активом */
+    operation: string;
+    /** Идентификатор портфеля */
+    portfolioId: number;
+    /** Тикер для акции или isin для облигации. Используется для поиска бумаги */
+    ticker: string;
+    /** Дата */
+    date: string;
+}
+
+/** Сущность ответа на запрос количества бумаг в портфеле для опереденного актива на дату */
+export interface SuggestedQuantityResponse {
+
+    /** Размер начисления */
+    amount: string;
+    /** Количество */
+    quantity: number;
 }

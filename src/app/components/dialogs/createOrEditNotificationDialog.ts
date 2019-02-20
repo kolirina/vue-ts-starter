@@ -235,7 +235,7 @@ export class CreateOrEditNotificationDialog extends CustomDialog<Notification, b
     }
 
     private onNewsNotificationChange(value: boolean): void {
-        this.notification.keyWordsSearchType = value ? KeyWordsSearchType.CONTAINS_ALL : null;
+        this.notification.keyWordsSearchType = value ? KeyWordsSearchType.CONTAINS_ONE : null;
     }
 
     private onDividendNotificationChange(value: boolean): void {

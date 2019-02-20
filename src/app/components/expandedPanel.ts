@@ -32,7 +32,7 @@ import {UI} from "../app/ui";
                         <slot></slot>
                     </v-card>
 
-                    <template name="underCard"></template>
+                    <slot name="underCard"></slot>
                 </v-expansion-panel-content>
             </v-expansion-panel>
         </div>

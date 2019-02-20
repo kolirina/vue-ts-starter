@@ -82,7 +82,7 @@ export class OverviewService {
      * @return {Promise<void>}
      */
     async setCombinedFlag(id: string, combined: boolean): Promise<void> {
-        await this.http.post(`/portfolios/${id}/combined`, combined);
+        await this.http.post(`/portfolios/${id}/combined/${combined}`, {});
     }
 
     /**
