@@ -11,7 +11,7 @@ import {TableHeader} from "../types/types";
             <template slot="items" slot-scope="props">
                 <tr class="selectable">
                     <td>
-                        <v-checkbox v-model="props.item.combined" @change="onSetCombined(props.item)"></v-checkbox>
+                        <v-checkbox v-model="props.item.combined" @change="onSetCombined(props.item)" hide-details></v-checkbox>
                     </td>
                     <td class="text-xs-left">{{ props.item.name }}</td>
                     <td class="text-xs-center">{{ props.item.viewCurrency }}</td>
@@ -25,11 +25,11 @@ import {TableHeader} from "../types/types";
 export class CombinedPortfoliosTable extends UI {
 
     private headers: TableHeader[] = [
-        {text: "Выбран", align: "center", value: "combined"},
-        {text: "Название", align: "center", value: "name"},
-        {text: "Валюта", align: "center", value: "viewCurrency"},
-        {text: "Тип счета", align: "center", value: "type"},
-        {text: "Дата открытия", align: "center", value: "openDate"}
+        {text: "Выбран", align: "center", value: "combined", width: "50", sortable: false},
+        {text: "Название", align: "left", value: "name"},
+        {text: "Валюта", align: "center", value: "viewCurrency", width: "80"},
+        {text: "Тип счета", align: "center", value: "type", width: "100"},
+        {text: "Дата открытия", align: "center", value: "openDate", width: "100"}
     ];
 
     @Prop({default: [], required: true})

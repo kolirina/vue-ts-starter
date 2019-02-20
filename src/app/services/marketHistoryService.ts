@@ -10,10 +10,20 @@ export class MarketHistoryService {
     @Inject
     private http: Http;
 
+    /**
+     * TODO кеширование исторических значений
+     * @param ticker
+     * @param date
+     */
     async getStockHistory(ticker: string, date: string): Promise<StockHistoryResponse> {
         return this.http.get<StockHistoryResponse>(`/history/stock/${ticker}`, {date: date});
     }
 
+    /**
+     * TODO кеширование исторических значений
+     * @param secid
+     * @param date
+     */
     async getBondHistory(secid: string, date: string): Promise<BondHistoryResponse> {
         return this.http.get<BondHistoryResponse>(`/history/bond/${secid}`, {date: date});
     }

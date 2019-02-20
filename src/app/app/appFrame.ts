@@ -213,7 +213,7 @@ export class AppFrame extends UI {
         {title: "Сделки", action: "trades", icon: "fas fa-list-alt"},
         {title: "События", action: "events", icon: "far fa-calendar-check"},
         {title: "Дивиденды", action: "dividends", icon: "far fa-calendar-plus"},
-        {title: "Комбинированный портфель", action: "combined-portfolio", icon: "fas fa-object-group"},
+        {title: "Составной портфель", action: "combined-portfolio", icon: "fas fa-object-group"},
         {title: "Котировки", action: "quotes", icon: "fas fa-chart-area"},
         {title: "Информация", path: "/share-info", icon: "fas fa-info"}
     ];
