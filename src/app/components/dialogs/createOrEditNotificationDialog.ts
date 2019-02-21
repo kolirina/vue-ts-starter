@@ -23,8 +23,8 @@ import {CustomDialog} from "./customDialog";
                     <v-switch v-model="buyPriceNotification">
                         <template slot="label">
                             <span>Получать уведомления об изменении цены покупки</span>
-                            <v-tooltip content-class="add-notification-tooltip-wrap" bottom>
-                                <sup class="add-notification-tooltip" slot="activator">
+                            <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                                <sup class="custom-tooltip" slot="activator">
                                     <v-icon>fas fa-info-circle</v-icon>
                                 </sup>
                                 <span>
@@ -60,8 +60,8 @@ import {CustomDialog} from "./customDialog";
                     <v-switch v-model="sellPriceNotification">
                         <template slot="label">
                             <span>Получать уведомления об изменении цены продажи</span>
-                            <v-tooltip content-class="add-notification-tooltip-wrap" bottom>
-                                <sup class="add-notification-tooltip" slot="activator">
+                            <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                                <sup class="custom-tooltip" slot="activator">
                                     <v-icon>fas fa-info-circle</v-icon>
                                 </sup>
                                 <span>
@@ -97,8 +97,8 @@ import {CustomDialog} from "./customDialog";
                     <v-switch v-model="newsNotification" @change="onNewsNotificationChange">
                         <template slot="label">
                             <span>Получать уведомления о новостях</span>
-                            <v-tooltip content-class="add-notification-tooltip-wrap" bottom>
-                                <sup class="add-notification-tooltip" slot="activator">
+                            <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                                <sup class="custom-tooltip" slot="activator">
                                     <v-icon>fas fa-info-circle</v-icon>
                                 </sup>
                                 <span>
@@ -137,8 +137,8 @@ import {CustomDialog} from "./customDialog";
                     <v-switch v-model="dividendNotification" @change="onDividendNotificationChange">
                         <template slot="label">
                             <span>Получать уведомления о планируемых дивидендах</span>
-                            <v-tooltip content-class="add-notification-tooltip-wrap" bottom>
-                                <sup class="add-notification-tooltip" slot="activator">
+                            <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                                <sup class="custom-tooltip" slot="activator">
                                     <v-icon>fas fa-info-circle</v-icon>
                                 </sup>
                                 <span>
@@ -150,7 +150,7 @@ import {CustomDialog} from "./customDialog";
                     </v-switch>
 
                     <v-card-actions class="btn-group-right">
-                        <v-btn @click.native="save" class="btn-dialog btn-hover-black">{{ notification.id ? "Редактировать" : "Сохранить" }}</v-btn>
+                        <v-btn @click.native="save" class="btn-dialog btn-hover-black">{{ notification.id ? "Сохранить" : "Добавить" }}</v-btn>
                         <v-btn class="btn-cancel" @click.native="close">Отмена</v-btn>
                     </v-card-actions>
                 </div>

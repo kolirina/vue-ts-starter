@@ -70,7 +70,7 @@ const MainStore = namespace(StoreType.MAIN);
 
                     <expanded-panel v-if="importProviderFeatures" :value="$uistate.importSettings" :state="$uistate.IMPORT_SETTINGS">
                         <template slot="header">
-                            <v-tooltip top>
+                            <v-tooltip content-class="custom-tooltip-wrap" top>
                                 <span slot="activator" style="cursor: pointer">Расширенные настройки импорта</span>
                                 <span>Настройте дополнительные параметры импорта отчетов.</span>
                             </v-tooltip>
@@ -81,8 +81,10 @@ const MainStore = namespace(StoreType.MAIN);
                                     <v-checkbox v-model="importProviderFeatures.createLinkedTrade" class="d-inline-block">
                                         <template slot="label">
                                             <span>Добавлять сделки по списанию/зачислению денежных средств
-                                                <v-tooltip :max-width="250" top>
-                                                    <i slot="activator" class="far fa-question-circle"></i>
+                                                <v-tooltip content-class="custom-tooltip-wrap" :max-width="250" top>
+                                                    <sup class="custom-tooltip" slot="activator">
+                                                        <v-icon>fas fa-info-circle</v-icon>
+                                                    </sup>
                                                     <span>
                                                         Если включено, будут добавлены связанные сделки по зачислению/списанию денежных средств
                                                     </span>
@@ -96,7 +98,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         <template slot="label">
                                             <span>
                                                 Автоматически рассчитывать комисию для сделок
-                                                <v-tooltip :max-width="250" top>
+                                                <v-tooltip content-class="custom-tooltip-wrap" :max-width="250" top>
                                                     <i slot="activator" class="far fa-question-circle"></i>
                                                     <span>
                                                         Если включено, комиссия для каждой сделки по ценной бумаге будет рассчитана в соответствии
@@ -113,8 +115,10 @@ const MainStore = namespace(StoreType.MAIN);
                                         <template slot="label">
                                             <span>
                                                 Автоматически исполнять события по бумагам
-                                                <v-tooltip :max-width="250" top>
-                                                    <i slot="activator" class="far fa-question-circle"></i>
+                                                <v-tooltip content-class="custom-tooltip-wrap" :max-width="250" top>
+                                                    <sup class="custom-tooltip" slot="activator">
+                                                        <v-icon>fas fa-info-circle</v-icon>
+                                                    </sup>
                                                     <span>
                                                         Если включено, события (дивиденды, купоны, амортизация, погашение) по сделкам,
                                                         полученным из отчета (на даты первой и последней сделки),
@@ -130,8 +134,10 @@ const MainStore = namespace(StoreType.MAIN);
                                         <template slot="label">
                                             <span>
                                                 Спрашивать текущий остаток ДС
-                                                <v-tooltip :max-width="250" top>
-                                                    <i slot="activator" class="far fa-question-circle"></i>
+                                                <v-tooltip content-class="custom-tooltip-wrap" :max-width="250" top>
+                                                    <sup class="custom-tooltip" slot="activator">
+                                                        <v-icon>fas fa-info-circle</v-icon>
+                                                    </sup>
                                                     <span>
                                                         Если включено, то после успешного импорта будет предложено ввести текущий остаток денежных
                                                         средств на счете. Отключите, если Вы хотите сами задать вводы и выводы денег.
@@ -146,8 +152,10 @@ const MainStore = namespace(StoreType.MAIN);
                                         <template slot="label">
                                             <span>
                                                 Импорт сделок по денежным средствам
-                                                <v-tooltip :max-width="250" top>
-                                                    <i slot="activator" class="far fa-question-circle"></i>
+                                                <v-tooltip content-class="custom-tooltip-wrap" :max-width="250" top>
+                                                    <sup class="custom-tooltip" slot="activator">
+                                                        <v-icon>fas fa-info-circle</v-icon>
+                                                    </sup>
                                                     <span>
                                                         Если включено, то из отчета будут импортированы сделки по денежным средствам.
                                                         Отключите, если Вы не хотите загружать сделки по движению денежных средств.

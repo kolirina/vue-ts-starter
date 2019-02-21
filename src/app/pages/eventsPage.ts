@@ -35,8 +35,10 @@ const MainStore = namespace(StoreType.MAIN);
                             <v-btn color="primary" @click.native="executeAllEventsWithoutMoney" dark small>
                                 Исполнить все без зачисления денег
                             </v-btn>
-                            <v-tooltip :max-width="250" top>
-                                <i slot="activator" class="far fa-question-circle"></i>
+                            <v-tooltip content-class="custom-tooltip-wrap" :max-width="250" top>
+                                <sup class="custom-tooltip" slot="activator">
+                                    <v-icon>fas fa-info-circle</v-icon>
+                                </sup>
                                 <span>
                                     Полезно, если вы хотите быстро учесть все начисления в доходности портфеля, а текущий баланс укажете самостоятельно.
                                 </span>
@@ -85,7 +87,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 <td class="text-xs-right">{{ props.item.period }}</td>
                                 <td class="text-xs-right ii-number-cell">{{ props.item.cleanAmount | amount(true) }}</td>
                                 <td class="justify-center layout px-0">
-                                    <v-tooltip :max-width="250" top>
+                                    <v-tooltip content-class="custom-tooltip-wrap" :max-width="250" top>
                                         <v-btn slot="activator" color="primary" @click="openTradeDialog(props.item)" flat icon dark>
                                             <v-icon color="primary" small>fas fa-check</v-icon>
                                         </v-btn>
@@ -94,7 +96,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         </span>
                                     </v-tooltip>
 
-                                    <v-tooltip :max-width="250" top>
+                                    <v-tooltip content-class="custom-tooltip-wrap" :max-width="250" top>
                                         <v-btn slot="activator" color="primary" flat icon dark>
                                             <v-icon color="primary" small>fas fa-trash-alt</v-icon>
                                         </v-btn>

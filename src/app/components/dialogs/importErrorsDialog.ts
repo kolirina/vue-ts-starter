@@ -24,8 +24,10 @@ import {CustomDialog} from "./customDialog";
                     <div>
                         <span>Попробуйте указать </span><a @click="goToBalances">начальные балансы </a><i class="fa fa-balance-scale"/>
                         <span>для быстрого старта</span>
-                        <v-tooltip bottom>
-                            <i slot="activator" class="fa fa-question-circle"/>
+                        <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                            <sup class="custom-tooltip" slot="activator">
+                                <v-icon>fas fa-info-circle</v-icon>
+                            </sup>
                             <span>Если у Вас нет полной истории ваших сделок. Вы можете добавить дополнительные сделки позже.</span>
                         </v-tooltip>
                     </div>

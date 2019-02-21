@@ -145,14 +145,14 @@ const MainStore = namespace(StoreType.MAIN);
                 <v-footer color="indigo" inset>
                     <span class="white--text" style="margin-left: 15px;">&copy; {{ actualYear }}</span>
                     <v-spacer></v-spacer>
-                    <v-tooltip top>
+                    <v-tooltip content-class="custom-tooltip-wrap" top>
                         <a slot="activator" class="white--text margR16 decorationNone" href="https://telegram.me/intelinvestSupportBot">
                             Telegram <i class="fab fa-telegram"></i>
                         </a>
                         <span>Оперативная связь с нами</span>
                     </v-tooltip>
 
-                    <v-tooltip top>
+                    <v-tooltip content-class="custom-tooltip-wrap" top>
                         <a slot="activator" class="white--text margR16" @click="openFeedBackDialog">Обратная связь <i class="fas fa-envelope"></i></a>
                         <span>Напишите нам по email</span>
                     </v-tooltip>

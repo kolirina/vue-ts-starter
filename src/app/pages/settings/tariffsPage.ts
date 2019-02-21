@@ -98,7 +98,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         {{ getExpirationDescription() }}
                                     </p>
 
-                                    <v-tooltip bottom>
+                                    <v-tooltip content-class="custom-tooltip-wrap" bottom>
                                         <a slot="activator" color="primary" @click="makePayment(Tariff.FREE)"
                                            class="tab-item__link" :style="isSelected(Tariff.FREE) ? 'margin-top: 10px' : ''"
                                            :disabled="!isAvailable(Tariff.FREE) || isSelected(Tariff.FREE) || isProgress">
@@ -155,7 +155,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         {{ getExpirationDescription() }}
                                     </p>
 
-                                    <v-tooltip bottom>
+                                    <v-tooltip content-class="custom-tooltip-wrap" bottom>
                                         <a slot="activator" color="primary" @click="makePayment(Tariff.STANDARD)"
                                            class="tab-item__link" :style="isSelected(Tariff.STANDARD) ? 'margin-top: 10px' : ''"
                                            :disabled="!isAvailable(Tariff.STANDARD) || isProgress">

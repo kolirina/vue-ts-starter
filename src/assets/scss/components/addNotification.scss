@@ -30,27 +30,6 @@
     }
   }
 
-  &-tooltip {
-    i {
-      font-size: 10px;
-      margin-left: 8px;
-    }
-
-    &-wrap {
-      background-color: #fff;
-      z-index: 999 !important;
-      color: #000;
-      box-sizing: border-box;
-      padding: 15px;
-      max-width: 400px;
-      font-size: 13px;
-      
-      &.menuable__content__active {
-        opacity: 1 !important;
-      }
-    }
-  }
-
   .v-input {
 
     input {

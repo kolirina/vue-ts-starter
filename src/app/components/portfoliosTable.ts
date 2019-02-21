@@ -55,7 +55,7 @@ const MainStore = namespace(StoreType.MAIN);
                         <div class="extended-info one-column">
                             <div class="extended-info__cell label">Профессиональный режим</div>
                             <div class="extended-info__cell">
-                                <v-tooltip top style="height: 30px;">
+                                <v-tooltip content-class="custom-tooltip-wrap" top>
                                     <v-checkbox slot="activator" label="Профессиональный режим"
                                                 @change="onProfessionalModeChange(props.item)"
                                                 v-model="props.item.professionalMode" hide-details></v-checkbox>

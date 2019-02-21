@@ -106,7 +106,7 @@ import {CustomDialog} from "./customDialog";
                                         </ii-number-field>
                                     </v-flex>
                                     <v-flex v-if="calculationAssetType || bondTrade" xs12 lg6>
-                                        <v-tooltip top>
+                                        <v-tooltip content-class="custom-tooltip-wrap" top>
                                             <v-checkbox slot="activator" label="Начисление на одну бумагу" v-model="perOne"></v-checkbox>
                                             <span>Отключите если вносите сумму начисления</span>
                                         </v-tooltip>

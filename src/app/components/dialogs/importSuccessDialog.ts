@@ -22,8 +22,10 @@ import {CustomDialog} from "./customDialog";
                         <span v-if="step === 0">
                             <h4>Остался последний шаг и ваш портфель будет готов.</h4>
                             <h4>Пожалуйста, укажите остаток денежных средств в портфеле на данный момент:
-                                <v-tooltip :max-width="250" top>
-                                    <i slot="activator" class="far fa-question-circle"></i>
+                                <v-tooltip content-class="custom-tooltip-wrap" :max-width="250" top>
+                                    <sup class="custom-tooltip" slot="activator">
+                                        <v-icon>fas fa-info-circle</v-icon>
+                                    </sup>
                                     <span>
                                         Мы просим вас указать текущий остаток чтобы сверить результаты и убедиться в точности импорта.
                                         Остаток денежных средств вы можете узнать из:
