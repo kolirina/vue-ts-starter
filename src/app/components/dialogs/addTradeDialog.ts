@@ -142,11 +142,11 @@ import {CustomDialog} from "./customDialog";
                         <!-- Итоговая сумма сделки -->
                         <v-layout wrap>
                             <v-flex xs12 lg6>
-                                <span class="body-2">Сумма сделки: </span><span v-if="total"><b class="title">{{ total | number }} {{ currency }}</b></span>
+                                <span class="body-2">Сумма сделки: </span><span v-if="total"><b class="title">{{ total | number }} {{ getCurrency() }}</b></span>
                             </v-flex>
                             <v-flex xs12 lg6>
                                 <span class="body-2">Доступно: </span><span v-if="moneyResiduals"><b
-                                    class="title">{{ moneyResidual | amount }} {{ currency }}</b></span>
+                                    class="title">{{ moneyResidual | amount }} {{ getCurrency() }}</b></span>
                                 <v-checkbox :disabled="keepMoneyDisabled" :label="keepMoneyLabel" v-model="keepMoney" hide-details></v-checkbox>
                             </v-flex>
                         </v-layout>
@@ -342,7 +342,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             note: this.getNote(),
             keepMoney: this.isKeepMoney(),
             moneyAmount: this.total,
-            currency: this.assetType === AssetType.MONEY ? this.moneyCurrency : this.currency
+            currency: this.getCurrency()
         };
         this.processState = true;
         try {
@@ -532,7 +532,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private get moneyResidual(): string {
-        return (this.moneyResiduals as any)[this.currency];
+        return (this.moneyResiduals as any)[this.getCurrency()];
     }
 
     private get keepMoneyDisabled(): boolean {
@@ -597,7 +597,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     getCurrency(): string {
-        return this.currency;
+        return this.assetType === AssetType.MONEY ? this.moneyCurrency : this.currency;
     }
 
     // tslint:enable
