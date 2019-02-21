@@ -19,7 +19,7 @@ import {Prop} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI, Watch} from "../app/ui";
 import {PortfolioService} from "../services/portfolioService";
-import {TableHeadersState, TablesService} from "../services/tablesService";
+import {TableHeadersState, TABLES_NAME, TablesService} from "../services/tablesService";
 import {TradeService} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
@@ -32,6 +32,7 @@ import {ConfirmDialog} from "./dialogs/confirmDialog";
 import {BtnReturn} from "./dialogs/customDialog";
 import {EditShareNoteDialog} from "./dialogs/editShareNoteDialog";
 import {ShareTradesDialog} from "./dialogs/shareTradesDialog";
+import {TableExtendedInfo} from "./tableExtendedInfo";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -126,23 +127,20 @@ const MainStore = namespace(StoreType.MAIN);
             </template>
 
             <template slot="expand" slot-scope="props">
-                <v-card flat>
-                    <v-card-text>
-                        <v-container grid-list-md>
-                            <v-layout wrap>
-                                <v-flex>
-                                    {{ 'Вы держите акцию в портфеле:' + props.item.ownedDays + ' дня c, ' + props.item.firstBuy }}
-                                </v-flex>
-                                <v-flex>
-                                    {{ 'Количество полных лотов ' + props.item.lotCounts }}
-                                </v-flex>
-                            </v-layout>
-                        </v-container>
-                    </v-card-text>
-                </v-card>
+                <table-extended-info :headers="headers" :table-name="TABLES_NAME.STOCK"
+                                     :asset="AssetType.STOCK" :row-item="props.item" :ticker="props.item.stock.ticker">
+                    <div class="extended-info__cell label">Время нахождения в портфеле</div>
+                    <div class="extended-info__cell">
+                        {{ props.item.ownedDays }} {{ props.item.ownedDays | declension("день", "дня", "дней")}}, c {{ props.item.firstBuy | date }}
+                    </div>
+
+                    <div class="extended-info__cell label">Количество полных лотов</div>
+                    <div class="extended-info__cell">{{ props.item.lotCounts }}</div>
+                </table-extended-info>
             </template>
         </v-data-table>
-    `
+    `,
+    components: {TableExtendedInfo}
 })
 export class StockTable extends UI {
 
@@ -156,17 +154,25 @@ export class StockTable extends UI {
     private portfolio: Portfolio;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
     private reloadPortfolio: (id: string) => Promise<void>;
-
-    private operation = Operation;
-
+    /** Список заголовков таблицы */
     @Prop()
     private headers: TableHeader[];
-
+    /** Список отображаемых строк */
     @Prop({default: [], required: true})
     private rows: StockPortfolioRow[];
-
+    /** Состояние столбцов таблицы */
     private tableHeadersState: TableHeadersState;
+    /** Текущая операция */
+    private operation = Operation;
+    /** Перечисление типов таблиц */
+    private TABLES_NAME = TABLES_NAME;
+    /** Типы активов */
+    private AssetType = AssetType;
 
+    /**
+     * Инициализация данных
+     * @inheritDoc
+     */
     created(): void {
         /** Установка состояния заголовков таблицы */
         this.setHeadersState();

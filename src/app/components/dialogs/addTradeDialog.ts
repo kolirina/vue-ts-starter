@@ -342,7 +342,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             note: this.getNote(),
             keepMoney: this.isKeepMoney(),
             moneyAmount: this.total,
-            currency: this.currency
+            currency: this.assetType === AssetType.MONEY ? this.moneyCurrency : this.currency
         };
         this.processState = true;
         try {

@@ -1,7 +1,7 @@
 .theme--light.v-data-iterator .v-data-iterator__actions,
 .theme--light.v-expansion-panel .v-expansion-panel__container .v-expansion-panel__header .v-expansion-panel__header__icon .v-icon,
 .theme--light.v-table thead th {
-    color: $table--header--font-color;
+  color: $table--header--font-color;
 }
 
 .theme--light.v-btn-toggle .v-btn,
@@ -9,63 +9,87 @@
 .theme--light.v-datatable thead th.column.sortable.active .v-icon,
 .theme--light.v-datatable thead th.column.sortable:hover,
 .theme--light.v-small-dialog a {
-    color: $table--text--font-color;
+  color: $table--text--font-color;
 }
 
 .theme--light.v-table {
-    background-color: #fff;
-    color: $table--text--font-color;
+  background-color: #fff;
+  color: $table--text--font-color;
 }
 
 .ii--red-markup {
-    font-family: "OpenSans Semibold";
-    color: $table--num--red-color;
+  font-family: "OpenSans Semibold";
+  color: $table--num--red-color;
 }
 
 .ii--green-markup {
-    font-family: "OpenSans Semibold";
-    color: $table--num--green-color;
+  font-family: "OpenSans Semibold";
+  color: $table--num--green-color;
 }
 
 .ii-number-cell {
-    font-family: "OpenSans Semibold";
+  font-family: "OpenSans Semibold";
 }
 
-
 .data-table {
-    &-cell {
-      transition: .3s ease-in-out;
-    }
-  
-    &-cell-open {
-      transform: rotate(90deg);
-    }
-  
-    td {
-      text-align: left !important;
-    }
-  
-    td:nth-child(1) {
-      padding: 0 20px !important;
-      text-align: center;
-    }
-  
-    td:nth-child(2) {
-      padding-left: 0 !important;
-    }
-  
-    th {
-      text-align: left !important;
-      padding-left: 0 !important;
-      color: $non-active-table-th-color !important;
-      
-      &:first-child {
-        padding-left: 20px !important;
-      }
-      
-      &.active {
-        color: $active-table-th-color !important;
-      }
-    }
-  
+  &-cell {
+    transition: .3s ease-in-out;
   }
+
+  &-cell-open {
+    transform: rotate(90deg);
+  }
+
+  td {
+    text-align: left !important;
+  }
+
+  td:nth-child(1) {
+    padding: 0 20px !important;
+    text-align: center;
+  }
+
+  td:nth-child(2) {
+    padding-left: 0 !important;
+  }
+
+  th {
+    text-align: left !important;
+    padding-left: 0 !important;
+    color: $non-active-table-th-color !important;
+
+    &:first-child {
+      padding-left: 20px !important;
+    }
+
+    &.active {
+      color: $active-table-th-color !important;
+    }
+  }
+}
+
+/** Стили разворачивающегося блока */
+.extended-info {
+  display: grid;
+  margin-left: 20px;
+
+  &.one-column {
+    grid-template-columns: 20% 30%;
+  }
+
+  &.two-column {
+    grid-template-columns: repeat(4, 20%);
+  }
+
+  &__cell {
+    margin: 5px 0 5px 0;
+
+    &.label {
+      font-weight: 900;
+    }
+
+    &__second {
+      color: rgba(0, 0, 0, 0.57) !important;
+    }
+  }
+}

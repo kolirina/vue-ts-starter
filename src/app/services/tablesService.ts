@@ -109,13 +109,15 @@ export class TablesService {
      * @param name {string} Название таблицы заголовков
      */
     getFilterHeaders(name: string): TableHeader[] {
-        let result: TableHeader[] = [];
+        return (this.headers[name] || []).filter(el => el.active);
+    }
 
-        if (this.headers[name]) {
-            result = this.headers[name].filter(el => el.active);
-        }
-
-        return result;
+    /**
+     * Возвращает заголовки со свойством active: false.
+     * @param name {string} Название таблицы заголовков
+     */
+    getHiddenHeaders(name: string): TableHeader[] {
+        return (this.headers[name] || []).filter(el => !el.active && !el.ghost);
     }
 }
 
@@ -125,8 +127,8 @@ export enum TABLE_HEADERS {
     QUANTITY = "quantity",
     AVG_BUY = "avgBuy",
     CURR_PRICE = "currPrice",
-    B_COST = "bCost",
-    S_COST = "sCost",
+    B_COST = "bcost",
+    S_COST = "scost",
     CURR_COST = "currCost",
     PROFIT_FROM_DIVIDENDS = "profitFromDividends",
     PROFIT_FROM_DIVIDENDS_PERCENT = "profitFromDividendsPercent",

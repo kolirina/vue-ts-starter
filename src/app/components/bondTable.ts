@@ -4,7 +4,7 @@ import {Prop, Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
 import {PortfolioService} from "../services/portfolioService";
-import {TableHeadersState, TablesService} from "../services/tablesService";
+import {TableHeadersState, TABLES_NAME, TablesService} from "../services/tablesService";
 import {TradeService} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
@@ -17,6 +17,7 @@ import {ConfirmDialog} from "./dialogs/confirmDialog";
 import {BtnReturn} from "./dialogs/customDialog";
 import {EditShareNoteDialog} from "./dialogs/editShareNoteDialog";
 import {ShareTradesDialog} from "./dialogs/shareTradesDialog";
+import {TableExtendedInfo} from "./tableExtendedInfo";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -125,44 +126,38 @@ const MainStore = namespace(StoreType.MAIN);
             </template>
 
             <template slot="expand" slot-scope="props">
-                <v-card flat>
-                    <v-card-text>
-                        <v-container grid-list-md>
-                            <v-layout wrap>
-                                <v-flex :d-block="true">
-                                    <span>ISIN:</span>{{ props.item.bond.isin }}
-                                </v-flex>
-                                <v-flex v-if="!props.item.bond.isRepaid">
-                                    <span>След. купон:</span>{{ props.item.bond.nexcoupon | amount(true) }}
-                                </v-flex>
-                                <v-flex v-if="!props.item.bond.isRepaid">
-                                    <span>Купон:</span>{{ props.item.bond.couponvalue | amount(true) }}
-                                </v-flex>
-                                <v-flex v-if="!props.item.bond.isRepaid">
-                                    <span>НКД:</span>{{ props.item.bond.accruedint | amount(true) }}
-                                </v-flex>
-                                <v-flex v-if="props.item.bond.isRepaid">
-                                    <span>Статус: Погашена</span>
-                                </v-flex>
-                                <v-flex>
-                                    {{ 'Дата погашения:' + props.item.bond.matdate }}
-                                </v-flex>
-                                <v-flex>
-                                    <span>Номинал покупки:</span>{{ props.item.nominal | amount(true) }}
-                                </v-flex>
-                                <v-flex>
-                                    <span>Дисконт:</span>{{ props.item.bond.amortization | amount(true) }}
-                                </v-flex>
-                                <v-flex>
-                                    {{ 'Вы держите бумагу в портфеле:' + props.item.ownedDays + ' дня, c ' + props.item.firstBuy }}
-                                </v-flex>
-                            </v-layout>
-                        </v-container>
-                    </v-card-text>
-                </v-card>
+                <table-extended-info :headers="headers" :table-name="TABLES_NAME.BOND"
+                                     :asset="AssetType.BOND" :row-item="props.item" :ticker="props.item.bond.ticker">
+                    <div class="extended-info__cell label">Время нахождения в портфеле</div>
+                    <div class="extended-info__cell">
+                        {{ props.item.ownedDays }} {{ props.item.ownedDays | declension("день", "дня", "дней")}}, c {{ props.item.firstBuy | date }}
+                    </div>
+
+                    <div v-if="!props.item.bond.isRepaid" class="extended-info__cell label">След. купон:</div>
+                    <div v-if="!props.item.bond.isRepaid" class="extended-info__cell">{{ props.item.bond.nextcoupon | date }}</div>
+
+                    <div v-if="!props.item.bond.isRepaid" class="extended-info__cell label">Купон</div>
+                    <div v-if="!props.item.bond.isRepaid" class="extended-info__cell">{{ props.item.bond.couponvalue | amount(true) }}</div>
+
+                    <div v-if="!props.item.bond.isRepaid" class="extended-info__cell label">НКД</div>
+                    <div v-if="!props.item.bond.isRepaid" class="extended-info__cell">{{ props.item.bond.accruedint | amount(true) }}</div>
+
+                    <div v-if="props.item.bond.isRepaid" class="extended-info__cell label">Статус</div>
+                    <div v-if="props.item.bond.isRepaid" class="extended-info__cell">Погашена</div>
+
+                    <div class="extended-info__cell label">Дата погашения</div>
+                    <div class="extended-info__cell">{{ props.item.bond.matdate }}</div>
+
+                    <div class="extended-info__cell label">Номинал покупки</div>
+                    <div class="extended-info__cell">{{ props.item.nominal | amount(true) }}</div>
+
+                    <div class="extended-info__cell label">Дисконт</div>
+                    <div class="extended-info__cell">{{ props.item.bond.amortization | amount(true) }}</div>
+                </table-extended-info>
             </template>
         </v-data-table>
-    `
+    `,
+    components: {TableExtendedInfo}
 })
 export class BondTable extends UI {
 
@@ -176,17 +171,25 @@ export class BondTable extends UI {
     private portfolio: Portfolio;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
     private reloadPortfolio: (id: string) => Promise<void>;
-
+    /** Список заголовков таблицы */
     @Prop()
     private headers: TableHeader[];
-
+    /** Список отображаемых строк */
     @Prop({default: [], required: true})
     private rows: BondPortfolioRow[];
-
+    /** Состояние столбцов таблицы */
     private tableHeadersState: TableHeadersState;
-
+    /** Текущая операция */
     private operation = Operation;
+    /** Перечисление типов таблиц */
+    private TABLES_NAME = TABLES_NAME;
+    /** Типы активов */
+    private AssetType = AssetType;
 
+    /**
+     * Инициализация данных
+     * @inheritDoc
+     */
     created(): void {
         /** Установка состояния заголовков таблицы */
         this.setHeadersState();

@@ -52,64 +52,53 @@ const MainStore = namespace(StoreType.MAIN);
             <template slot="expand" slot-scope="props">
                 <v-card flat>
                     <v-card-text>
-                        <table>
-                            <tbody>
-                            <tr>
-                                <td>Профессиональный режим</td>
-                                <td style="display: flex;align-items: center;">
-                                    <v-tooltip top style="height: 30px;">
-                                        <v-checkbox slot="activator" label="Профессиональный режим"
-                                                    @change="onProfessionalModeChange(props.item)"
-                                                    v-model="props.item.professionalMode"></v-checkbox>
-                                        <span>
-                                            Профессиональный режим включает дополнительные возможности, необходимые опытным инвесторам:
-                                            <ul>
-                                                <li>возможность уходить в минус по деньгам (маржинальное кредитование)</li>
-                                                <li>возможность открытия коротких позиций</li>
-                                                <li>возможность учета времени заключения сделки</li>
-                                            </ul>
-                                        </span>
-                                    </v-tooltip>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Время с момента открытия</td>
-                                <td>{{ props.item.openDate }}</td>
-                            </tr>
-                            <tr>
-                                <td>Брокер</td>
-                                <td>{{props.item.brokerName}}</td>
-                            </tr>
-                            <tr>
-                                <td>Настройка доступа</td>
-                                <td>
-                                    <v-btn dark color="primary" @click.native="openSharePortfolioDialog(props.item)" small>
-                                        Настройка доступа
-                                    </v-btn>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Ссылка на публичный портфель</td>
-                                <td><a :href="publicLink(props.item.id)">{{publicLink(props.item.id)}}</a></td>
-                            </tr>
-                            <tr>
-                                <td>Ссылка информер-картинка горизонтальный</td>
-                                <td><a :href="informerH(props.item.id)">{{informerH(props.item.id)}}</a></td>
-                            </tr>
-                            <tr>
-                                <td>Ссылка информер-картинка вертикальный</td>
-                                <td><a :href="informerV(props.item.id)">{{informerV(props.item.id)}}</a></td>
-                            </tr>
-                            <tr>
-                                <td>Встраиваемые блоки</td>
-                                <td>
-                                    <v-btn dark color="primary" @click.stop="openEmbeddedDialog(props.item.id)" small>
-                                        Получить код
-                                    </v-btn>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
+                        <div class="extended-info one-column">
+                            <div class="extended-info__cell label">Профессиональный режим</div>
+                            <div class="extended-info__cell">
+                                <v-tooltip top style="height: 30px;">
+                                    <v-checkbox slot="activator" label="Профессиональный режим"
+                                                @change="onProfessionalModeChange(props.item)"
+                                                v-model="props.item.professionalMode" hide-details></v-checkbox>
+                                    <span>
+                                        Профессиональный режим включает дополнительные возможности, необходимые опытным инвесторам:
+                                        <ul>
+                                            <li>возможность уходить в минус по деньгам (маржинальное кредитование)</li>
+                                            <li>возможность открытия коротких позиций</li>
+                                            <li>возможность учета времени заключения сделки</li>
+                                        </ul>
+                                    </span>
+                                </v-tooltip>
+                            </div>
+
+                            <div class="extended-info__cell label">Время с момента открытия</div>
+                            <div class="extended-info__cell">{{ props.item.openDate }}</div>
+
+                            <div class="extended-info__cell label">Брокер</div>
+                            <div class="extended-info__cell">{{props.item.brokerName}}</div>
+
+                            <div class="extended-info__cell label">Настройка доступа</div>
+                            <div class="extended-info__cell">
+                                <v-btn dark color="primary" @click.native="openSharePortfolioDialog(props.item)" small>
+                                    Настройка доступа
+                                </v-btn>
+                            </div>
+
+                            <div class="extended-info__cell label">Ссылка на публичный портфель</div>
+                            <div class="extended-info__cell"><a :href="publicLink(props.item.id)">{{publicLink(props.item.id)}}</a></div>
+
+                            <div class="extended-info__cell label">Ссылка информер-картинка горизонтальный</div>
+                            <div class="extended-info__cell"><a :href="informerH(props.item.id)">{{informerH(props.item.id)}}</a></div>
+
+                            <div class="extended-info__cell label">Ссылка информер-картинка вертикальный</div>
+                            <div class="extended-info__cell"><a :href="informerV(props.item.id)">{{informerV(props.item.id)}}</a></div>
+
+                            <div class="extended-info__cell label">Встраиваемые блоки</div>
+                            <div class="extended-info__cell">
+                                <v-btn dark color="primary" @click.stop="openEmbeddedDialog(props.item.id)" small>
+                                    Получить код
+                                </v-btn>
+                            </div>
+                        </div>
                     </v-card-text>
                 </v-card>
             </template>
