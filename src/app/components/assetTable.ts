@@ -15,7 +15,7 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-data-table :headers="headers" :items="assets" hide-actions class="elevation-1">
+        <v-data-table :headers="headers" :items="assets" hide-actions>
             <template slot="items" slot-scope="props">
                 <tr class="selectable">
                     <td>{{ props.item.type | assetDesc }}</td>
