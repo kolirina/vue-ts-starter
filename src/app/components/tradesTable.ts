@@ -44,7 +44,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <td v-if="tableHeadersState.signedTotal" class="text-xs-right ii-number-cell">{{ props.item.signedTotal | amount(true) }}</td>
                     <td v-if="tableHeadersState.totalWithoutFee" class="text-xs-right ii-number-cell">{{ props.item.totalWithoutFee | amount }}</td>
                     <td v-if="props.item.parentTradeId" class="justify-center px-0" @click.stop>
-                        <v-tooltip :max-width="250" top>
+                        <v-tooltip content-class="custom-tooltip-wrap" :max-width="250" top>
                             <a slot="activator">
                                 <v-icon color="primary" small>fas fa-link</v-icon>
                             </a>

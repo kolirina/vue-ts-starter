@@ -38,8 +38,10 @@ const MainStore = namespace(StoreType.MAIN);
                             <p>
                                 Для максимальной гибкости (чтобы учесть облигации, повторные покупки, дивиденды) вы можете поочередно занести
                                 <a href="#/trades">все сделки портфеля</a>
-                                <v-tooltip :max-width="250" top>
-                                    <i slot="activator" class="far fa-question-circle"></i>
+                                <v-tooltip content-class="custom-tooltip-wrap" :max-width="250" top>
+                                    <sup class="custom-tooltip" slot="activator">
+                                        <v-icon>fas fa-info-circle</v-icon>
+                                    </sup>
                                     <span>
                                     Через диалог добавления сделки добавляйте одна за другой все события портфеля:
                                     ввод и вывод денег, покупка и продажа бумаг, дивиденды, купоны, уплаченные налоги.

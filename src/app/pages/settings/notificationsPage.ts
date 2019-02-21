@@ -103,7 +103,7 @@ export class NotificationsPage extends UI {
     }
 
     async addNotificationDialog(): Promise<void> {
-        const result = await new CreateOrEditNotificationDialog().show() as Notification;
+        const result = await new CreateOrEditNotificationDialog().show();
         if (result) {
             await this.loadNotifications();
         }

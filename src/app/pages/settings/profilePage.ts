@@ -25,7 +25,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <v-flex xs2>Email:</v-flex>
                     <v-flex xs5>
                         <inplace-input name="email" @update:editMode="onModeChange('email', $event)" :editMode="editMode.email" :value="email" @input="onEmailChange">
-                            <v-tooltip content-class="profile-tooltip" max-width="250px" slot="afterText" top right>
+                            <v-tooltip content-class="custom-tooltip-wrap" max-width="250px" slot="afterText" top>
                                 <template slot="activator">
                                     <v-icon v-if="!clientInfo.user.emailConfirmed" class="profile-not-confirmed-email">fas fa-exclamation-triangle</v-icon>
                                 </template>
