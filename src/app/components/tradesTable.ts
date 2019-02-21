@@ -3,7 +3,7 @@ import Component from "vue-class-component";
 import {Prop, Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class";
 import {UI} from "../app/ui";
-import {TableHeadersState, TablesService} from "../services/tablesService";
+import {TableHeadersState, TABLES_NAME, TablesService} from "../services/tablesService";
 import {TradeFields} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
@@ -14,6 +14,7 @@ import {TradeUtils} from "../utils/tradeUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {AddTradeDialog} from "./dialogs/addTradeDialog";
+import {TableExtendedInfo} from "./tableExtendedInfo";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -137,9 +138,11 @@ const MainStore = namespace(StoreType.MAIN);
             </template>
 
             <template slot="expand" slot-scope="props">
-                <v-card flat>
-                    <v-card-text>{{ props.item.note }}</v-card-text>
-                </v-card>
+                <table-extended-info :headers="headers" :table-name="TABLES_NAME.TRADE"
+                                     :asset="AssetType.valueByName(props.item.asset)" :row-item="props.item" :ticker="props.item.ticker">
+                    <div class="extended-info__cell label">Заметка</div>
+                    <div class="extended-info__cell">{{ props.item.note }}</div>
+                </table-extended-info>
             </template>
 
             <template slot="no-data">
@@ -148,7 +151,8 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-alert>
             </template>
         </v-data-table>
-    `
+    `,
+    components: {TableExtendedInfo}
 })
 export class TradesTable extends UI {
 
@@ -158,21 +162,28 @@ export class TradesTable extends UI {
     private reloadPortfolio: (id: string) => Promise<void>;
     @MainStore.Getter
     private portfolio: Portfolio;
-
+    /** Список заголовков таблицы */
     @Prop()
     private headers: TableHeader[];
-
+    /** Список отображаемых строк */
     @Prop({default: [], required: true})
     private trades: TradeRow[];
-
+    /** Паджинация таблицы */
     @Prop({required: true, type: Object})
     private tradePagination: TablePagination;
-
+    /** Состояние столбцов таблицы */
     private tableHeadersState: TableHeadersState;
-
     /** Текущая операция */
     private operation = Operation;
+    /** Перечисление типов таблиц */
+    private TABLES_NAME = TABLES_NAME;
+    /** Типы активов */
+    private AssetType = AssetType;
 
+    /**
+     * Инициализация данных
+     * @inheritDoc
+     */
     created(): void {
         /** Установка состояния заголовков таблицы */
         this.setHeadersState();
