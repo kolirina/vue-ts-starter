@@ -24,6 +24,13 @@ const MainStore = namespace(StoreType.MAIN);
         <v-container v-if="portfolio" fluid>
             <v-card>
                 <v-card-text>
+                    <div class="margB30">
+                        Начисленные на Ваши бумаги дивиденды, купоны, амортизация и погашения будут автоматически появляться в разделе "Новые события".
+                        Отклоните событие или исполните его. Исполненное событие будет отображаться в отдельной таблице.
+
+                        Если вы не нашли выплаты по своим бумагам, то это означает, что информацию мы пока не получили.
+                        При необходимости Вы можете <a @click="openDialog">внести выплату вручную</a>.
+                    </div>
                     <div v-if="eventsAggregateInfo" class="eventsControls">
                         <v-btn color="primary" @click.native="confirmDeleteAllEvents" dark small>
                             Удалить все
@@ -178,6 +185,13 @@ export class EventsPage extends UI {
             operation,
             assetType: operation === Operation.DIVIDEND ? AssetType.STOCK : AssetType.BOND
         });
+        if (result) {
+            await this.reloadPortfolio(this.portfolio.id);
+        }
+    }
+
+    private async openDialog(): Promise<void> {
+        const result = await new AddTradeDialog().show({store: this.$store.state[StoreType.MAIN], router: this.$router});
         if (result) {
             await this.reloadPortfolio(this.portfolio.id);
         }
