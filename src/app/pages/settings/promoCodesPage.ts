@@ -18,58 +18,60 @@ const MainStore = namespace(StoreType.MAIN);
         <v-container fluid>
             <v-layout row wrap>
                 <v-flex>
+                    <div class="section-title">Промо-коды</div>
                     <v-card>
-                        <v-card-title primary-title>
+                        <div class="promo-codes__steps">
+                            <div class="promo-codes__step">
+                                <div>Поделитесь промо-кодом или<br>ссылкой на регистрацию</div>
+                            </div>
+                            <div class="promo-codes__step">
+                                <div>Друзья получают скидку 20%<br>на первую покупку</div>
+                            </div>
+                            <div class="promo-codes__step">
+                                <div>Вы получаете подарок<br>на выбор</div>
+                            </div>
+                        </div>
+                        <div class="section-content">
                             <div class="promo-codes">
-                                <h4 class="display-1">Промо-коды</h4>
-                                <h3 class="headline mb-0">Рекомендуйте сервис друзьям и знакомым, дарите скидку 20% и получайте бонусы</h3>
-
-                                <div>Для рекомендации сервиса поделитесь промо-кодом со скидкой 20% на первую покупку:</div>
-                                <v-text-field :value="clientInfo.user.promoCode" class="display-1" readonly box label="Промо-код"></v-text-field>
-
-                                <div>Или просто поделитеcь этой ссылкой на регистрацию:</div>
-                                <v-text-field :value="refLink" class="headline" readonly box label="Реферальная ссылка"></v-text-field>
-
-                                <div>В благодарность за рекомендации мы предоставляем два вида вознаграждений на выбор:</div>
-                                <v-btn-toggle v-model="clientInfo.user.referralAwardType" dark class="promo-code-type" mandatory>
-                                    <v-btn value="SUBSCRIPTION" color="info">
-                                        Подписка
-                                    </v-btn>
-                                    <v-btn value="PAYMENT" color="info">
-                                        Платеж
-                                    </v-btn>
-                                </v-btn-toggle>
-                                <div v-if="clientInfo.user.referralAwardType === 'SUBSCRIPTION'">
-                                    После первой оплаты каждого приглашенного вами пользователя вы получите месяц подписки бесплатно
+                                <div class="light-text">Промо-код</div>
+                                <div class="promo-code">{{ clientInfo.user.promoCode }}</div>
+                                <div class="btns">
+                                    <v-btn>Копировать промо-код</v-btn>
+                                    <v-btn>Копировать ссылку</v-btn>
                                 </div>
-                                <div v-if="clientInfo.user.referralAwardType === 'PAYMENT'">
-                                    Вы будете получать 30% от суммы всех оплат каждого приглашенного вами пользователя навсегда. Вывод от 3000 рублей.
+                                <div class="rewards">
+                                    <div>Вознаграждения на выбор</div>
+                                    <v-radio-group v-model="clientInfo.user.referralAwardType" class="radio-horizontal">
+                                      <v-radio label="Подписка" value="SUBSCRIPTION"></v-radio>
+                                      <v-radio label="Платеж" value="PAYMENT"></v-radio>
+                                    </v-radio-group>
+                                    <div v-if="clientInfo.user.referralAwardType === 'SUBSCRIPTION'">
+                                        После первой оплаты приглашенного Вами<br>
+                                        пользователя вы получите месяц подписки бесплатно.
+                                    </div>
+                                    <div v-if="clientInfo.user.referralAwardType === 'PAYMENT'">
+                                        Вы будете получать 30% от суммы всех оплат<br>
+                                        каждого приглашенного Вами пользователя навсегда.<br>
+                                        Вывод от 3000 <span class="rewards-currency">RUB</span>
+                                    </div>
                                 </div>
                             </div>
 
-                            <expanded-panel :value="$uistate.referralStatisticsPanel" :state="$uistate.REFERRAL_STATISTICS_PANEL">
+                            <expanded-panel :value="$uistate.referralStatisticsPanel" :state="$uistate.REFERRAL_STATISTICS_PANEL" class="promo-codes__statistics">
                                 <template slot="header">Статистика по реферальной программе</template>
                                 <div v-if="promoCodeStatistics" class="statistics">
-                                    <div class="statistics__label">Всего привлеченных пользователей:</div>
-                                    <span class="statistics__value">{{ promoCodeStatistics.referralCount }}</span>
-
-                                    <div class="statistics__label">Из них хоть раз оплативших:</div>
-                                    <span class="statistics__value">{{ promoCodeStatistics.hasPaymentsReferralCount }}</span>
-
-                                    <div class="statistics__label">Всего оплат пользователей:</div>
-                                    <span class="statistics__value">{{ promoCodeStatistics.referralPaymentTotalAmount }}</span>
-
-                                    <div class="statistics__label">Всего заработано:</div>
-                                    <span class="statistics__value">{{ promoCodeStatistics.referrerPaymentsTotal }}</span>
-
-                                    <div class="statistics__label">Всего выплачено:</div>
-                                    <span class="statistics__value">{{ promoCodeStatistics.referrerPaymentsTotalPaid }}</span>
-
-                                    <div class="statistics__label">Остаток для выплаты:</div>
-                                    <span class="statistics__value">{{ promoCodeStatistics.referrerPaymentsTotalUnpaid }}</span>
+                                    <div>Всего привлеченных пользователей: {{ promoCodeStatistics.referralCount }}</div>
+                                    <div>Из них хоть раз оплативших: {{ promoCodeStatistics.hasPaymentsReferralCount }}</div>
+                                    <div>Всего оплат пользователей: {{ promoCodeStatistics.referralPaymentTotalAmount }} <span class="rewards-currency">RUB</span></div>
+                                    <div>Всего заработано: {{ promoCodeStatistics.referrerPaymentsTotal }} <span class="rewards-currency">RUB</span></div>
+                                    <div>Всего выплачено: {{ promoCodeStatistics.referrerPaymentsTotalPaid }} <span class="rewards-currency">RUB</span></div>
+                                    <div class="statistics__label">
+                                        Остаток для выплаты: {{ promoCodeStatistics.referrerPaymentsTotalUnpaid }}
+                                        <span class="rewards-currency">RUB</span>
+                                    </div>
                                 </div>
                             </expanded-panel>
-                        </v-card-title>
+                        </div>
                     </v-card>
                 </v-flex>
             </v-layout>

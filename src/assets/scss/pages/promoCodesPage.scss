@@ -1,26 +1,111 @@
+// Общие
+.section-title {
+  font-weight: bold;
+  line-height: 1.4;
+  font-size: 18px;
+  letter-spacing: -0.3px;
+  margin-bottom: 28px;
+}
+
+.section-content {
+  padding: 24px 40px 24px 24px;
+}
+
+.light-text,
+.rewards-currency {color: #A1A6B6}
+
 .promo-codes {
   margin: 0 0 20px 0;
-
-  .display-1 {
-    margin-bottom: 15px;
-  }
+  padding-bottom: 48px;
+  border-bottom: 1px solid $sidebar-hr-color;
 
   .promo-code-type {
     margin: 10px 0 10px 0;
   }
+
+  .promo-code {
+    color: $sidebar-blue-color;
+    margin: 8px 0 16px;
+  }
+
+  &__steps {
+    display: flex;
+    background: $sidebar-blue-color;
+    counter-reset: step;
+  }
+
+  &__step {
+    width: 33%;
+    padding: 24px;
+    color: #fff;
+    line-height: 1.4;
+    text-align: center;
+    counter-increment: step;
+    position: relative;
+
+    &:before {
+      content: counter(step);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background-color: #fff;
+      color: $sidebar-blue-color;
+      margin-bottom: 16px;
+      font-size: 24px;
+    }
+
+    + .promo-codes__step:after {
+      content: '';
+      height: calc(100% - 25px);
+      width: 1px;
+      background-color: #fff;
+      opacity: 0.15;
+      position: absolute;
+      left: 0;
+      top: 15px;
+    }
+  }
+
+  .rewards {
+    border-top: 1px solid $sidebar-hr-color;
+    margin-top: 30px;
+    padding-top: 24px;
+  }
+
+  &__statistics {
+
+
+    .v-expansion-panel__header {
+      padding: 0;
+      font-family: "OpenSans";
+
+      > div:first-child {
+        flex: none;
+        font-weight: normal;
+        font-size: $font-size;
+      }
+
+      .v-expansion-panel__header__icon {
+        background: url("../img/common/icon-dropdown.svg") no-repeat center;
+        width: 10px;
+        height: 10px;
+        margin-left: 16px;
+        transform: rotate(180deg);
+        transition: transform 0.2s ease;
+
+        i {display: none}
+      }
+    }
+
+    .v-expansion-panel__container--active .v-expansion-panel__header__icon {transform: rotate(0deg)}
+  }
 }
 
 .statistics {
-  margin: 10px 0 10px 25px;
-  flex: auto;
+  margin-top: 16px;
 
-  &__value {
-    font-size: 16px;
-    font-weight: 500;
-    color: #5f5f5f;
-  }
-
-  &__label {
-    margin: 12px 0 4px;
-  }
+  div {margin: 0 0 24px 32px}
 }

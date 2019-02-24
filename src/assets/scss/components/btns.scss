@@ -42,3 +42,23 @@
     }
   }
 }
+
+// Перекрытие кнопок vuetify
+
+.btns {
+  display: flex;
+}
+
+.v-btn {
+  border-radius: $form-element--border-radius;
+  box-shadow: none !important;
+  margin: 0;
+  text-transform: none;
+
+  &.theme--light {
+    background-color: #fff !important;
+    border: 1px solid #CACED5;
+  }
+
+  + .v-btn {margin-left: 20px}
+}
