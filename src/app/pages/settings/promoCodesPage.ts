@@ -19,7 +19,7 @@ const MainStore = namespace(StoreType.MAIN);
             <v-layout row wrap>
                 <v-flex>
                     <div class="section-title">Промо-коды</div>
-                    <v-card>
+                    <v-card class="overflowXA">
                         <div class="promo-codes__steps">
                             <div class="promo-codes__step">
                                 <div>Поделитесь промо-кодом или<br>ссылкой на регистрацию</div>

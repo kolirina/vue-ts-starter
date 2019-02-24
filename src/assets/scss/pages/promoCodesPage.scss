@@ -9,6 +9,7 @@
 
 .section-content {
   padding: 24px 40px 24px 24px;
+  min-width: 900px;
 }
 
 .light-text,
@@ -31,6 +32,7 @@
   &__steps {
     display: flex;
     background: $sidebar-blue-color;
+    min-width: 900px;
     counter-reset: step;
   }
 

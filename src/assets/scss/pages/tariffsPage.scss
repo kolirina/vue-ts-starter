@@ -1,5 +1,6 @@
 .tariff {
   max-width: 1066px;
+  min-width: 800px;
   margin: 0 auto;
   padding-bottom: 32px;
 
@@ -28,39 +29,44 @@
   }
 
   &__plans {
-    border-collapse: collapse;
-    width: 100%;
-    table-layout: fixed;
-    font-size: 14px;
-    margin-top: 40px;
+    min-width: 800px;
 
-    tr {
-      &:nth-child(2) td {vertical-align: top}
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      table-layout: fixed;
+      font-size: 14px;
+      margin-top: 40px;
 
-      &:nth-child(3) td span {
-        display: inline-block;
-        text-align: left;
+      tr {
+        &:nth-child(2) td {vertical-align: top}
+
+        &:nth-child(3) td span {
+          display: inline-block;
+          text-align: left;
+        }
+      }
+
+      td {
+        border: 1px solid #E8E9ED;
+        padding: 8px 28px;
+        text-align: center;
+
+        &:first-child {
+          width: 288px;
+          text-align: left;
+        }
+
+        &:nth-child(n + 2) {
+          width: calc((100% - 288px) / 3);
+        }
+
+        &.no-borders {border: none}
+
+        &.fs13 {font-size: 13px}
       }
     }
 
-    td {
-      border: 1px solid #E8E9ED;
-      padding: 8px 28px;
-      text-align: center;
-
-      &:first-child {
-        width: 288px;
-        text-align: left;
-      }
-
-      &:nth-child(n + 2) {
-        width: calc((100% - 288px) / 3);
-      }
-
-      &.no-borders {border: none}
-
-      &.fs13 {font-size: 13px}
-    }
 
     &_check {
       display: inline-block;
