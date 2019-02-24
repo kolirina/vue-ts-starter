@@ -62,7 +62,7 @@ const MainStore = namespace(StoreType.MAIN);
                         Совершите покупку с вашей персональной скидкой <b>{{ clientInfo.user.nextPurchaseDiscount }}%</b>! (срок действия скидки до {{
                         clientInfo.user.nextPurchaseDiscountExpired | date }})
                     </p>
-                    
+
                     <div class="tariff__plans">
                         <table>
                             <tr>
@@ -191,25 +191,6 @@ const MainStore = namespace(StoreType.MAIN);
                                 <td><div class="tariff__plans_check"></div></td>
                             </tr>
                         </table>
-                    </div>
-
-                    <div class="tab" id="planTabs">
-
-                        <div class="tab-items active">
-                            <div :class="{'tab-item': true, 'selected': isSelected(Tariff.FREE)}">
-  
-                            </div>
-
-
-                            <div :class="{'tab-item': true, 'selected': isSelected(Tariff.STANDARD)}">
-                                
-                            </div>
-
-
-                            <div :class="{'tab-item': true, 'selected': isSelected(Tariff.PRO)}">
-                               
-                            </div>
-                        </div>
                     </div>
                 </div>
             </v-card>
