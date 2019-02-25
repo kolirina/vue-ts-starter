@@ -36,8 +36,15 @@ const MainStore = namespace(StoreType.MAIN);
 
             <div style="height: 30px"></div>
 
-            <expanded-panel :value="$uistate.stocksTablePanel" :withMenu="true" name="stock" :state="$uistate.STOCKS">
-                <template slot="header">Акции</template>
+            <expanded-panel :value="$uistate.stocksTablePanel" :withMenu="true" name="stock" :state="$uistate.STOCKS" @click="onStockTablePanelClick">
+                <template slot="header">
+                    <span>Акции</span>
+                    <v-fade-transition mode="out-in">
+                        <span v-if="stockTablePanelClosed" class="v-expansion-panel__header-info">
+                            {{ portfolio.overview.stockPortfolio.rows.length }} {{ portfolio.overview.stockPortfolio.rows.length | declension("акция", "акции", "акций") }}
+                        </span>
+                    </v-fade-transition>
+                </template>
                 <template slot="list">
                     <v-list-tile-title @click="openTableHeadersDialog(TABLES_NAME.STOCK)">Настроить колонки</v-list-tile-title>
                     <v-list-tile-title @click="exportTable(ExportType.STOCKS)">Экспорт в xlsx</v-list-tile-title>
@@ -47,8 +54,16 @@ const MainStore = namespace(StoreType.MAIN);
 
             <div style="height: 30px"></div>
 
-            <expanded-panel :value="$uistate.bondsTablePanel" :withMenu="true" name="bond" :state="$uistate.BONDS">
-                <template slot="header">Облигации</template>
+            <expanded-panel :value="$uistate.bondsTablePanel" :withMenu="true" name="bond" :state="$uistate.BONDS" @click="onBondTablePanelClick">
+                <template slot="header">
+                    <span>Облигации</span>
+                    <v-fade-transition mode="out-in">
+                        <span v-if="bondTablePanelClosed" class="v-expansion-panel__header-info">
+                            {{ portfolio.overview.bondPortfolio.rows.length }}
+                            {{ portfolio.overview.bondPortfolio.rows.length | declension("облигация", "облигации", "облигаций") }}
+                        </span>
+                    </v-fade-transition>
+                </template>
                 <template slot="list">
                     <v-list-tile-title @click="openTableHeadersDialog('bondTable')">Настроить колонки</v-list-tile-title>
                     <v-list-tile-title @click="exportTable(ExportType.BONDS)">Экспорт в xlsx</v-list-tile-title>
@@ -130,9 +145,13 @@ export class PortfolioPage extends UI {
     private TABLES_NAME = TABLES_NAME;
     private ExportType = ExportType;
     private StoreKeys = StoreKeys;
+    private stockTablePanelClosed = true;
+    private bondTablePanelClosed = true;
 
     async created(): Promise<void> {
         await this.loadPortfolioLineChart();
+        this.stockTablePanelClosed = UiStateHelper.stocksTablePanel[0] === 0;
+        this.bondTablePanelClosed = UiStateHelper.bondsTablePanel[0] === 0;
     }
 
     @CatchErrors
@@ -142,6 +161,14 @@ export class PortfolioPage extends UI {
             this.portfolioLineChartData = await this.overviewService.getCostChart(this.portfolio.id);
             this.eventsChartData = await this.overviewService.getEventsChartDataWithDefaults(this.portfolio.id);
         }
+    }
+
+    private onStockTablePanelClick(): void {
+        this.stockTablePanelClosed = UiStateHelper.stocksTablePanel[0] === 0;
+    }
+
+    private onBondTablePanelClick(): void {
+        this.bondTablePanelClosed = UiStateHelper.bondsTablePanel[0] === 0;
     }
 
     private async onPortfolioLineChartPanelStateChanges(): Promise<void> {

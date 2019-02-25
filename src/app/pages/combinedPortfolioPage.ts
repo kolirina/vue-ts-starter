@@ -65,8 +65,15 @@ const MainStore = namespace(StoreType.MAIN);
 
                 <div style="height: 30px"></div>
 
-                <expanded-panel :value="$uistate.stocksTablePanel" :withMenu="true" name="stock" :state="$uistate.STOCKS">
-                    <div slot="header">Акции</div>
+                <expanded-panel :value="$uistate.stocksTablePanel" :withMenu="true" name="stock" :state="$uistate.STOCKS" @click="onStockTablePanelClick">
+                    <template slot="header">
+                        <span>Акции</span>
+                        <v-fade-transition mode="out-in">
+                            <span v-if="stockTablePanelClosed" class="v-expansion-panel__header-info">
+                                {{ overview.stockPortfolio.rows.length }} {{ overview.stockPortfolio.rows.length | declension("акция", "акции", "акций") }}
+                            </span>
+                        </v-fade-transition>
+                    </template>
                     <template slot="list">
                         <v-list-tile-title @click="openTableHeadersDialog(TABLES_NAME.STOCK)">Настроить колонки</v-list-tile-title>
                     </template>
@@ -75,8 +82,15 @@ const MainStore = namespace(StoreType.MAIN);
 
                 <div style="height: 30px"></div>
 
-                <expanded-panel :value="$uistate.bondsTablePanel" :withMenu="true" name="bond" :state="$uistate.BONDS">
-                    <template slot="header">Облигации</template>
+                <expanded-panel :value="$uistate.bondsTablePanel" :withMenu="true" name="bond" :state="$uistate.BONDS" @click="onBondTablePanelClick">
+                    <template slot="header">
+                        <span>Облигации</span>
+                        <v-fade-transition mode="out-in">
+                            <span v-if="bondTablePanelClosed" class="v-expansion-panel__header-info">
+                                {{ overview.bondPortfolio.rows.length }} {{ overview.bondPortfolio.rows.length | declension("облигация", "облигации", "облигаций") }}
+                            </span>
+                        </v-fade-transition>
+                    </template>
                     <template slot="list">
                         <v-list-tile-title @click="openTableHeadersDialog('bondTable')">Настроить колонки</v-list-tile-title>
                     </template>
@@ -158,9 +172,13 @@ export class CombinedPortfolioPage extends UI {
     private headers: TableHeaders = this.tablesService.headers;
     private TABLES_NAME = TABLES_NAME;
     private StoreKeys = StoreKeys;
+    private stockTablePanelClosed = true;
+    private bondTablePanelClosed = true;
 
     async created(): Promise<void> {
         await this.doCombinedPortfolio();
+        this.stockTablePanelClosed = UiStateHelper.stocksTablePanel[0] === 0;
+        this.bondTablePanelClosed = UiStateHelper.bondsTablePanel[0] === 0;
     }
 
     @CatchErrors
@@ -182,6 +200,14 @@ export class CombinedPortfolioPage extends UI {
 
     private async onPortfolioLineChartPanelStateChanges(): Promise<void> {
         await this.loadPortfolioLineChart();
+    }
+
+    private onStockTablePanelClick(): void {
+        this.stockTablePanelClosed = UiStateHelper.stocksTablePanel[0] === 0;
+    }
+
+    private onBondTablePanelClick(): void {
+        this.bondTablePanelClosed = UiStateHelper.bondsTablePanel[0] === 0;
     }
 
     private async loadPortfolioLineChart(): Promise<void> {
