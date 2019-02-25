@@ -10,10 +10,10 @@
   }
 
   &-card-big-nums {
-    font-family: $dashbord--big-num--font-family;
-    font-size: $dashbord--big-num--font-size;
-    font-weight: $dashbord--big-num--font-weight;
-    color: $dashbord--big-num--font-color;
+    font-family: $dashbord--big-num--font-family !important;
+    font-size: $dashbord--big-num--font-size !important;;
+    font-weight: $dashbord--big-num--font-weight !important;;
+    color: $dashbord--big-num--font-color !important;;
   }
 
   &-card-string {
@@ -24,10 +24,16 @@
   }
 
   &-card-small-nums {
-    font-family: $dashbord--num--font-family;
-    font-size: $dashbord--num--font-size;
-    font-weight: $dashbord--num--font-weight;
-    color: $dashbord--num--font-color;
+    font-family: $dashbord--num--font-family !important;
+    font-size: $dashbord--num--font-size !important;
+    font-weight: $dashbord--num--font-weight !important;
+    color: $dashbord--num--font-color !important;
+  }
+
+  &-second-value-desc {
+    font-family: $table--title--font-family !important;
+    font-size: 12px !important;
+    color: $dashbord--num--font-color !important;
   }
 
   &-summary-income {
