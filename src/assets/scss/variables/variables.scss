@@ -39,6 +39,7 @@ $theme-color-dark-blue: #040427;
 
 /* Основной шрифт */
 $main--font-family: "Open Sans";
+$gilroy--bold-font: "Gilroy Bold";
 $main--font-size: 13px;
 $main--font-color: $theme-color-dark-blue;
 
@@ -49,17 +50,17 @@ $dashboard--red-color: #d0021b;
 /* Большие цифры */
 $dashbord--big-num--font-family: "Gilroy Bold";
 $dashbord--big-num--font-weight: bold; /* ?Семейство */
-$dashbord--big-num--font-size: 26px;
+$dashbord--big-num--font-size: 24px;
 $dashbord--big-num--font-color: #ffffff;
-/* Верхняя строка цифры */
-$dashbord--string--font-family: "Gilroy Semibold";
+/* Верхняя строка название */
+$dashbord--string--font-family: "Open Sans";
 $dashbord--string--font-weight: normal; /* ?Семейство */
 $dashbord--string--font-size: 13px;
-$dashbord--string--font-color: #D0D0D7;
+$dashbord--string--font-color: #ffffff;
 /* Нижние цифры */
 $dashbord--num--font-family: "Gilroy Semibold";
 $dashbord--num--font-weight: normal; /* ?Семейство */
-$dashbord--num--font-size: 13px;
+$dashbord--num--font-size: 16px;
 $dashbord--num--font-color: #55556D;
 /* */
 $dashbord--icon-circle--color: #202F2E;

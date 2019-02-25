@@ -14,12 +14,18 @@ const MainStore = namespace(StoreType.MAIN);
     template: `
         <v-card dark class="dashboard-card" :class="{ 'dashboard-border': !block.hasNotBorderLeft }">
             <v-card-title primary-title class="pb-2 dashboard-card-string">
-                <div>{{ block.name }}</div>
+                <div>
+                    <span>{{ block.name }}</span>
+                    <v-tooltip content-class="custom-tooltip-wrap" :max-width="450" bottom right>
+                        <v-icon class="custom-tooltip" style="color: #55556d!important" slot="activator" small>far fa-question-circle</v-icon>
+                        <span v-html="block.tooltip"></span>
+                    </v-tooltip>
+                </div>
             </v-card-title>
             <v-container fluid pl-3 pt-0>
-                <v-layout row class="mx-0 py-2 dashboard-card-big-nums">
+                <v-layout row class="mx-0 py-2 ">
                     <div class="headline">
-                        <span class="dashboard-currency" :class="block.mainCurrency"><b>{{ block.mainValue }}</b></span>
+                        <span class="dashboard-currency dashboard-card-big-nums" :class="block.mainCurrency"><b>{{ block.mainValue }}</b></span>
                     </div>
                 </v-layout>
                 <v-layout row class="mx-0 dashboard-card-small-nums">
@@ -37,7 +43,7 @@ const MainStore = namespace(StoreType.MAIN);
 
                         <template v-else>
                             <span class="dashboard-currency" :class="block.secondCurrency"><b>{{ block.secondValue }}</b> </span>
-                            <span>{{ block.secondValueDesc }} </span>
+                            <span class="dashboard-second-value-desc">{{ block.secondValueDesc }} </span>
                         </template>
                     </div>
                 </v-layout>
@@ -102,6 +108,11 @@ export class Dashboard extends UI {
             hasNotBorderLeft: true,
             mainCurrency,
             secondCurrency: secondCurrency,
+            tooltip: "Сумма текущей рыночной стоимости всех активов портфеля: акций, облигаций, денежных средств.<br/>" +
+                "                                Текущая стоимость облигаций учитывает НКД, который Вы получите при продаже бумаги," +
+                "                                или заплатите при откупе короткой позиции.<br/>" +
+                "                                При этом стоимость акций, номинированных в валюте, пересчитывается по текущему курсу рубля.<br/>" +
+                "                                Ниже указана суммарная стоимость портфеля, пересчитанная в долларах по текущему курсу."
         };
         this.blocks[1] = {
             name: "Суммарная прибыль",
@@ -112,6 +123,11 @@ export class Dashboard extends UI {
             },
             mainCurrency,
             secondCurrency: "percent",
+            tooltip: "Прибыль, образованная активами портфеля за все его время." +
+                "                                Она включает в себя: прибыль от совершенных ранее сделок (бумага куплена дешевле и продана дороже)," +
+                "                                выплаченные дивиденды и купоны, курсовую прибыль (бумага куплена дешевле и подорожала, но еще не продана).<br/>" +
+                "                                Ввод и вывод денежных средств на прибыль портфеля не влияют. <br/>" +
+                "                                Ниже указана прибыль портфеля в отношении к его средневзвешенной стоимости вложений с учетом денег."
         };
         this.blocks[2] = {
             name: "Среднегодовая доходность",
@@ -120,6 +136,10 @@ export class Dashboard extends UI {
             secondValue: newValue.yearYieldWithoutDividendsAndCoupons,
             mainCurrency: "percent",
             secondCurrency: "percent",
+            tooltip: "Доходность в процентах годовых. Рассчитывается исходя из прибыли портфеля с даты первой сделки по текущий момент.<br/>" +
+                "                                Например, если портфель за полгода существования принес 8%, то его годовая доходность будет 16%." +
+                "                                Показатель полезен для сравнения доходности портфеля с банковскими депозитами и другими активами.<br/>" +
+                "                                Расчет ведется на основе средневзвешенной стоимости портфеля с учетом денежных средств."
         };
         this.blocks[3] = {
             name: "Изменение за день",
@@ -127,6 +147,8 @@ export class Dashboard extends UI {
             secondValue: Filters.formatNumber(newValue.dailyChangesPercent),
             mainCurrency,
             secondCurrency: "percent",
+            tooltip: "Показывает на сколько изменилась курсовая суммарная стоимость портфеля за последний торговый день." +
+                "                                Эта разница возникает за счет изменения биржевой цены входящих в портфель активов."
         };
     }
 }
