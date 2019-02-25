@@ -139,12 +139,12 @@ export class EventsPage extends UI {
     private eventsAggregateInfo: EventsAggregateInfo = null;
     /** Зголовки таблицы */
     private headers: TableHeader[] = [
-        {text: "Событие", align: "left", value: "label", width: "100"},
+        {text: "Событие", align: "left", value: "label", width: "120"},
         {text: "Компания", align: "left", value: "shortname"},
         {text: "Тикер/ISIN", align: "left", value: "ticker", width: "100"},
         {text: "Дата выплаты", align: "center", value: "date", width: "50"},
-        {text: "Период", align: "center", value: "period", sortable: false, width: "100"},
-        {text: "Начислено", align: "right", value: "cleanAmount", width: "120"},
+        {text: "Период", align: "center", value: "period", sortable: false, width: "180"},
+        {text: "Начислено", align: "right", value: "cleanAmount", width: "150"},
         {text: "Действия", value: "", align: "center", width: "30", sortable: false}
 
     ];
