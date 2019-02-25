@@ -54,6 +54,13 @@ export class ClientService {
         await this.http.post(`/user/change-email`, request);
     }
 
+    /**
+     * Сбрасывает кэш информации о пользователе
+     */
+    resetClientInfo(): void {
+        this.clientInfoCache = null;
+    }
+
     private mapClientInfoResponse(clientInfoResponse: ClientInfoResponse): ClientInfo {
         return {
             token: clientInfoResponse.token,
@@ -112,7 +119,7 @@ export interface BaseClient {
     /** Тип вознаграждения за реферальную программу */
     referralAwardType: string;
     /** Промо-код пользователя */
-    promoCode: string;
+    promoCode: PromoCode;
     /** Признак блокировки аккаунта */
     blocked: boolean;
     /** Алиас для реферальной ссылки */
@@ -175,4 +182,34 @@ export interface ChangeEmailRequest {
     id: string;
     /** E-mail пользователя */
     email: string;
+}
+
+/** Сущность промо-кода */
+export interface PromoCode {
+    /** Идентификатор промо-кода */
+    id: number;
+    /** Значение промо-кода */
+    val: string;
+    /** Источник */
+    source: string;
+    /** Количество месяцев которое прибавляет промо-код */
+    months?: number;
+    /** Скидка промо-кода */
+    discount?: number;
+    /** Идентификатор владельца */
+    ownerId: number;
+    /** Признак одноразовости промо-кода */
+    oneTime: boolean;
+    /** Признак Приветственного промо-кода */
+    welcoming: boolean;
+    /** Признак реферального промо-кода. Проставляет владельца в качестве реферала */
+    referral: boolean;
+    /** Срок действия промо-кода */
+    expired?: string;
+    /** Идентификатор пользователя использовавшего промо-код */
+    usedUserId: string;
+    /** Признак выплаты вознаграждения рефереру если промо-код реферальный */
+    payToReferrer: boolean;
+    /** Тариф устанавливаемый пользователю */
+    tariff: string;
 }

@@ -4,12 +4,16 @@ import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
-import {ClientInfo} from "../../services/clientService";
+import {ApplyPromoCodeDialog} from "../../components/dialogs/applyPromoCodeDialog";
+import {CatchErrors} from "../../platform/decorators/catchErrors";
+import {ShowProgress} from "../../platform/decorators/showProgress";
+import {ClientInfo, ClientService} from "../../services/clientService";
 import {TariffService} from "../../services/tariffService";
 import {Permission} from "../../types/permission";
 import {Tariff} from "../../types/tariff";
-import {CommonUtils} from "../../utils/commonUtils";
+import {Portfolio} from "../../types/types";
 import {DateUtils} from "../../utils/dateUtils";
+import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -33,8 +37,15 @@ const MainStore = namespace(StoreType.MAIN);
                             </div>
                         </div>
                         <div class="promo-code-component">
-                            Применить промо-код
-                            <div class="promo-code-component__icon"></div>
+                            <span @click="applyPromoCode">Применить промо-код</span>
+                            <v-tooltip content-class="custom-tooltip-wrap" :max-width="250" bottom>
+                                <div v-if="clientInfo.user.promoCode" slot="activator" class="promo-code-component__icon"></div>
+                                <span>
+                                    <div>Активирован промо-код</div>
+                                    <div>Скидка составляет {{ clientInfo.user.promoCode.discount }}%</div>
+                                    <div v-if="clientInfo.user.promoCode.expired">Срок действия до {{ clientInfo.user.promoCode.expired | date }}</div>
+                                </span>
+                            </v-tooltip>
                         </div>
                     </div>
 
@@ -78,6 +89,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     <div class="tariff__plan_name">Бесплатный</div>
                                     <div class="tariff__plan_price">{{ getPriceLabel(Tariff.FREE) }}</div>
                                     <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                                        <!-- TODO верстка либо переделать на кнопки, либо правильно дизйблить ссылки (кнопки лучше) -->
                                         <a slot="activator" @click="makePayment(Tariff.FREE)"
                                            :class="{'tariff__plan_btn': true, 'selected': isSelected(Tariff.FREE)}"
                                            :disabled="!isAvailable(Tariff.FREE) || isSelected(Tariff.FREE) || isProgress">
@@ -198,12 +210,16 @@ const MainStore = namespace(StoreType.MAIN);
 })
 export class TariffsPage extends UI {
 
-    @MainStore.Getter
-    private clientInfo: ClientInfo;
+    @Inject
+    private clientService: ClientService;
     @Inject
     private tariffService: TariffService;
-
-    private promoCode = "";
+    @MainStore.Getter
+    private clientInfo: ClientInfo;
+    @MainStore.Getter
+    private portfolio: Portfolio;
+    @MainStore.Action(MutationType.SET_CLIENT_INFO)
+    private loadUser: (clientInfo: ClientInfo) => Promise<void>;
 
     private Tariff = Tariff;
 
@@ -216,26 +232,19 @@ export class TariffsPage extends UI {
 
     private isProgress = false;
 
-    async mounted(): Promise<void> {
-
-    }
-
     /**
-     * Применяет введенный промо-код пользователя
+     * Открывает диалог для ввода промо-кода пользователя
      */
     private async applyPromoCode(): Promise<void> {
-        if (CommonUtils.isBlank(this.promoCode)) {
-            this.$snotify.warning("Введите пожалуйста промо-код");
-            return;
-        }
-        await this.tariffService.applyPromoCode(this.promoCode);
-        this.$snotify.info("Промо-код успешно применен");
+        await new ApplyPromoCodeDialog().show();
     }
 
     /**
      * Сделать платеж
      * @param tariff выбранный тариф
      */
+    @ShowProgress
+    @CatchErrors
     private async makePayment(tariff: Tariff): Promise<void> {
         if (this.isProgress) {
             return;
@@ -248,6 +257,9 @@ export class TariffsPage extends UI {
             if (!orderData.paymentOrder.done) {
                 await this.tariffService.openPaymentFrame(orderData, this.clientInfo);
             } else {
+                this.clientService.resetClientInfo();
+                const client = await this.clientService.getClientInfo();
+                await this.loadUser({token: this.clientInfo.token, user: client});
                 this.$snotify.info("Оплата заказа успешно завершена");
             }
         } finally {
