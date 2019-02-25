@@ -1,6 +1,7 @@
 import {Decimal} from "decimal.js";
 import Highcharts, {ChartObject, DataPoint, Gradient} from "highcharts";
 import Highstock from "highcharts/highstock";
+import {Filters} from "../platform/filters/Filters";
 import {BigMoney} from "../types/bigMoney";
 import {EventChartData, HighStockEventData, HighStockEventsGroup, SectorChartData} from "../types/charts/types";
 import {Overview, StockPortfolioRow} from "../types/types";
@@ -61,6 +62,39 @@ export class ChartUtils {
             });
         });
         return eventsGroups;
+    }
+
+    static doStockPieChartData(overview: Overview): DataPoint[] {
+        const data: DataPoint[] = [];
+        overview.stockPortfolio.rows.filter(value => value.currCost !== "0").forEach(row => {
+            data.push({
+                name: row.stock.shortname,
+                y: new Decimal(new BigMoney(row.currCost).amount.abs().toString()).toDP(2, Decimal.ROUND_HALF_UP).toNumber()
+            });
+        });
+        return data;
+    }
+
+    static doBondPieChartData(overview: Overview): DataPoint[] {
+        const data: DataPoint[] = [];
+        overview.bondPortfolio.rows.filter(value => value.currCost !== "0").forEach(row => {
+            data.push({
+                name: row.bond.shortname,
+                y: new Decimal(new BigMoney(row.currCost).amount.abs().toString()).toDP(2, Decimal.ROUND_HALF_UP).toNumber()
+            });
+        });
+        return data;
+    }
+
+    static doAssetsPieChartData(overview: Overview): DataPoint[] {
+        const data: DataPoint[] = [];
+        overview.assetRows.filter(value => new BigMoney(value.currCost).amount.toString() !== "0").forEach(row => {
+            data.push({
+                name: Filters.assetDesc(row.type),
+                y: new BigMoney(row.currCost).amount.abs().toDP(2, Decimal.ROUND_HALF_UP).toNumber()
+            });
+        });
+        return data;
     }
 
     // tslint:disable-next-line

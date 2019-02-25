@@ -100,7 +100,7 @@ export class TradesPage extends UI {
      * @inheritDoc
      */
     async created(): Promise<void> {
-        this.tradesFilter = this.filterService.getFilter(FilterService.TRADES_FILTER_KEY);
+        this.tradesFilter = this.filterService.getFilter(FilterService.TRADES_FILTER_SETTINGS_KEY);
         this.tradePagination = {
             pagination: this.pagination,
             totalItems: this.totalTrades
@@ -171,6 +171,6 @@ export class TradesPage extends UI {
 
     private async onFilterChange(): Promise<void> {
         await this.loadTrades();
-        this.filterService.saveFilter(FilterService.TRADES_FILTER_KEY, this.tradesFilter);
+        this.filterService.saveFilter(FilterService.TRADES_FILTER_SETTINGS_KEY, this.tradesFilter);
     }
 }
