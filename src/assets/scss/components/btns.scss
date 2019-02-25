@@ -55,9 +55,20 @@
   margin: 0;
   text-transform: none;
 
+  &.big_btn {
+    height: 44px;
+    min-width: 124px;
+  }
+
   &.theme--light {
     background-color: #fff;
     border: 1px solid #CACED5;
+  }
+
+  &.selected {
+    background-color: $sidebar-blue-color !important;
+    border-color: $sidebar-blue-color;
+    color: #fff;
   }
 
   + .v-btn {margin-left: 20px}

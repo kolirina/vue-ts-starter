@@ -34,7 +34,7 @@ const MainStore = namespace(StoreType.MAIN);
                         <div class="section-content">
                             <div class="promo-codes">
                                 <div class="light-text">Промо-код</div>
-                                <div class="promo-code">{{ clientInfo.user.promoCode }}</div>
+                                <div class="promo-code">{{ clientInfo.user.promoCode.val }}</div>
                                 <div class="btns">
                                     <v-btn>Копировать промо-код</v-btn>
                                     <v-btn>Копировать ссылку</v-btn>

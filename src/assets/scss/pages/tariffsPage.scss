@@ -97,28 +97,6 @@
       margin-bottom: 2px;
     }
 
-    &_btn {
-      display: inline-block;
-      width: 124px;
-      padding: 10px 20px;
-      border-radius: $form-element--border-radius;
-      text-align: center;
-      font-size: 14px;
-      color: #3D4656;
-      line-height: 19px;
-      transition: 0.25s all;
-      -webkit-transition: 0.25s all;
-      border: 1px solid #CACED5;
-
-      &:hover {background-color: #e8e9ed}
-
-      &.selected {
-        background-color: $sidebar-blue-color;
-        border-color: $sidebar-blue-color;
-        color: #fff;
-      }
-    }
-
     &_expires {
       font-size: 12px;
       color: #A1A6B6;
@@ -139,12 +117,38 @@
     align-items: center;
     color: $sidebar-blue-color;
 
+    .v-tooltip > span {
+      display: flex;
+      align-items: center;
+    }
+
     &__icon {
       width: 16px;
       height: 16px;
-      background: url("../img/common/arrow-right.svg") no-repeat center;
-      background-size: contain;
-      margin-left: 8px;
+      margin-left: 10px;
+      position: relative;
+
+      &:before,
+      &:after {
+        content: "";
+        position: absolute;
+        width: 2px;
+        background-color: $sidebar-blue-color;
+      }
+
+      &:before {
+        height: 6px;
+        transform: rotate(-45deg);
+        top: 7px;
+        left: 0;
+      }
+
+      &:after {
+        height: 8px;
+        transform: rotate(45deg);
+        top: 4px;
+        left: 5px;
+      }
     }
   }
 

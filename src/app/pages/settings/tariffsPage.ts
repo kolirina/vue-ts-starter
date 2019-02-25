@@ -40,11 +40,11 @@ const MainStore = namespace(StoreType.MAIN);
                             <span @click="applyPromoCode">Применить промо-код</span>
                             <v-tooltip content-class="custom-tooltip-wrap" :max-width="250" bottom>
                                 <div v-if="clientInfo.user.promoCode" slot="activator" class="promo-code-component__icon"></div>
-                                <span>
+                                <div>
                                     <div>Активирован промо-код</div>
                                     <div>Скидка составляет {{ clientInfo.user.promoCode.discount }}%</div>
                                     <div v-if="clientInfo.user.promoCode.expired">Срок действия до {{ clientInfo.user.promoCode.expired | date }}</div>
-                                </span>
+                                </div>
                             </v-tooltip>
                         </div>
                     </div>
@@ -89,13 +89,12 @@ const MainStore = namespace(StoreType.MAIN);
                                     <div class="tariff__plan_name">Бесплатный</div>
                                     <div class="tariff__plan_price">{{ getPriceLabel(Tariff.FREE) }}</div>
                                     <v-tooltip content-class="custom-tooltip-wrap" bottom>
-                                        <!-- TODO верстка либо переделать на кнопки, либо правильно дизйблить ссылки (кнопки лучше) -->
-                                        <a slot="activator" @click="makePayment(Tariff.FREE)"
-                                           :class="{'tariff__plan_btn': true, 'selected': isSelected(Tariff.FREE)}"
+                                        <v-btn slot="activator" @click="makePayment(Tariff.FREE)"
+                                           :class="{'big_btn': true, 'selected': isSelected(Tariff.FREE)}"
                                            :disabled="!isAvailable(Tariff.FREE) || isSelected(Tariff.FREE) || isProgress">
                                             <span v-if="!busyState[Tariff.FREE.name]">{{ getButtonLabel(Tariff.FREE) }}</span>
                                             <v-progress-circular v-if="busyState[Tariff.FREE.name]" indeterminate color="primary" :size="20"></v-progress-circular>
-                                        </a>
+                                        </v-btn>
                                         <span>
                                         Переход на Бесплатный тарифный план <br/> возможен только если не превышены лимиты.
                                     </span>
@@ -111,12 +110,12 @@ const MainStore = namespace(StoreType.MAIN);
                                     </div>
                                     <div class="tariff__plan_price">{{ getPriceLabel(Tariff.STANDARD) }}</div>
                                     <v-tooltip content-class="custom-tooltip-wrap" bottom>
-                                        <a slot="activator" @click="makePayment(Tariff.STANDARD)"
-                                           :class="{'tariff__plan_btn': true, 'selected': isSelected(Tariff.STANDARD)}"
+                                        <v-btn slot="activator" @click="makePayment(Tariff.STANDARD)"
+                                           :class="{'big_btn': true, 'selected': isSelected(Tariff.STANDARD)}"
                                            :disabled="!isAvailable(Tariff.STANDARD) || isProgress">
                                             <span v-if="!busyState[Tariff.STANDARD.name]">{{ getButtonLabel(Tariff.STANDARD) }}</span>
                                             <v-progress-circular v-if="busyState[Tariff.STANDARD.name]" indeterminate color="primary" :size="20"></v-progress-circular>
-                                        </a>
+                                        </v-btn>
                                         <span>
                                         Переход на Стандарт тарифный план <br/> возможен только если не превышены лимиты.
                                     </span>
@@ -131,12 +130,12 @@ const MainStore = namespace(StoreType.MAIN);
                                         {{ getNoDiscountPriceLabel(Tariff.PRO) }}
                                     </div>
                                     <div class="tariff__plan_price">{{ getPriceLabel(Tariff.PRO) }}</div>
-                                    <a @click="makePayment(Tariff.PRO)"
-                                       :class="{'tariff__plan_btn': true, 'selected': isSelected(Tariff.PRO)}"
+                                    <v-btn @click="makePayment(Tariff.PRO)"
+                                       :class="{'big_btn': true, 'selected': isSelected(Tariff.PRO)}"
                                        :disabled="!isAvailable(Tariff.PRO) || isProgress">
                                         <span v-if="!busyState[Tariff.PRO.name]">{{ getButtonLabel(Tariff.PRO) }}</span>
                                         <v-progress-circular v-if="busyState[Tariff.PRO.name]" indeterminate color="primary" :size="20"></v-progress-circular>
-                                    </a>
+                                    </v-btn>
                                     <div v-if="isSelected(Tariff.PRO)" class="tariff__plan_expires">
                                         {{ getExpirationDescription() }}
                                     </div>
