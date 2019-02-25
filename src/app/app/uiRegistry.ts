@@ -16,6 +16,7 @@ import {PieChart} from "../components/charts/pieChart";
 import {Dashboard} from "../components/dashboard";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
 import {ImageDialog} from "../components/dialogs/imageDialog";
+import {ExpandedPanel} from "../components/expandedPanel";
 import {FileDropArea} from "../components/file-upload/fileDropArea";
 import {FileLink} from "../components/file-upload/fileLink";
 import {IINumberField} from "../components/iiNumberField";
@@ -96,6 +97,7 @@ export class UIRegistry {
         /* Компонент с маской для десятичных дробей */
         UI.component("ii-number-field", IINumberField);
         UI.component("share-search", ShareSearchComponent);
+        UI.component("expanded-panel", ExpandedPanel);
 
         // фильтры
         UI.filter("amount", Filters.formatMoneyAmount);

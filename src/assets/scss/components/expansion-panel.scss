@@ -1,5 +1,12 @@
 .v-expansion-panel {
-    box-shadow: none
+    box-shadow: none;
+
+    &__header-info {
+        font-size: 14px;
+        color: #b4b4b4;
+        font-family: "Open Sans";
+        margin-left: 10px;
+    }
 }
 
 .theme--light.v-expansion-panel .v-expansion-panel__container {
