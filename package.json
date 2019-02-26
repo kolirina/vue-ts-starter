@@ -27,6 +27,7 @@
     "imask": "^3.4.0",
     "moment": "^2.22.2",
     "typescript-ioc": "^1.2.4",
+    "v-clipboard": "^2.2.1",
     "vee-validate": "^2.1.0-beta.4",
     "vue": "^2.5.17",
     "vue-class-component": "^6.0.0",

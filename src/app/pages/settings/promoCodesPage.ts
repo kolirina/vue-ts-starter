@@ -36,14 +36,14 @@ const MainStore = namespace(StoreType.MAIN);
                                 <div class="light-text">Промо-код</div>
                                 <div class="promo-code">{{ clientInfo.user.promoCode.val }}</div>
                                 <div class="btns">
-                                    <v-btn>Копировать промо-код</v-btn>
-                                    <v-btn>Копировать ссылку</v-btn>
+                                    <v-btn v-clipboard="() => clientInfo.user.promoCode.val" @click="copyPromoCode">Копировать промо-код</v-btn>
+                                    <v-btn v-clipboard="() => refLink" @click="copyRefLink">Копировать ссылку</v-btn>
                                 </div>
                                 <div class="rewards">
                                     <div>Вознаграждения на выбор</div>
                                     <v-radio-group v-model="clientInfo.user.referralAwardType" class="radio-horizontal">
-                                      <v-radio label="Подписка" value="SUBSCRIPTION"></v-radio>
-                                      <v-radio label="Платеж" value="PAYMENT"></v-radio>
+                                        <v-radio label="Подписка" value="SUBSCRIPTION"></v-radio>
+                                        <v-radio label="Платеж" value="PAYMENT"></v-radio>
                                     </v-radio-group>
                                     <div v-if="clientInfo.user.referralAwardType === 'SUBSCRIPTION'">
                                         После первой оплаты приглашенного Вами<br>
@@ -105,6 +105,14 @@ export class PromoCodesPage extends UI {
     @Watch("clientInfo.user.referralAwardType")
     private async onReferralAwardTypeChange(): Promise<void> {
         await this.promoCodeService.changeReferralAwardType(this.clientInfo.user.referralAwardType);
+    }
+
+    private copyPromoCode(): void {
+        this.$snotify.info("Промо-код скопирован");
+    }
+
+    private copyRefLink(): void {
+        this.$snotify.info("Реферальная ссылка скопирована");
     }
 
     /**

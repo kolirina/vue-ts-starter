@@ -4,6 +4,7 @@
 import Highcharts from "highcharts";
 import Highcharts3D from "highcharts-3d";
 import exporting from "highcharts/modules/exporting";
+import Clipboard from "v-clipboard";
 import VeeValidate, {Validator} from "vee-validate";
 import Vue from "vue";
 import VueQriously from "vue-qriously";
@@ -39,6 +40,8 @@ export class UIRegistry {
      * Инициализация реестра компонентов, фильтров и директив
      */
     static init(): boolean {
+
+        Vue.use(Clipboard);
 
         Vue.use(vuescroll, {
             ops: {
