@@ -49,7 +49,7 @@
   display: flex;
 }
 
-.v-btn {
+.v-btn:not(.v-btn--floating):not(.v-btn--icon) {
   border-radius: $form-element--border-radius;
   box-shadow: none !important;
   margin: 0;
@@ -71,5 +71,5 @@
     color: #fff;
   }
 
-  + .v-btn {margin-left: 20px}
+  .btns & + & {margin-left: 12px}
 }

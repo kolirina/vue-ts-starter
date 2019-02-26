@@ -1,36 +1,27 @@
-.v-radio.accent--text {
-  .v-input--selection-controls__input:before {
-    content: "";
-    position: absolute;
-    width: 18px;
-    height: 18px;
-    background: #fff;
-    border: 5px solid $sidebar-blue-color;
-    border-radius: 50%;
-    display: block;
-    top: 50%;
-    left: 3px;
-    transform: translateY(-50%);
+.v-radio {
+  .v-input--selection-controls__input {
+    i {display: none}
+
+    &:before {
+      content: "";
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      background: #fff;
+      border: 2px solid #CACED5;
+      border-radius: 50%;
+      display: block;
+      top: 50%;
+      left: 3px;
+      transform: translateY(-50%);
+    }
   }
+
+  &.accent--text .v-input--selection-controls__input:before {border: 5px solid $sidebar-blue-color}
+
+  .v-label {font-size: 14px}
 }
 
-.v-input--selection-controls__input {
-  i {display: none}
-
-  &:before {
-    content: "";
-    position: absolute;
-    width: 18px;
-    height: 18px;
-    background: #fff;
-    border: 2px solid #CACED5;
-    border-radius: 50%;
-    display: block;
-    top: 50%;
-    left: 3px;
-    transform: translateY(-50%);
-  }
-}
 
 .v-input.radio-horizontal {
   .v-input__slot {margin: 0}

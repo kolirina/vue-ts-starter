@@ -33,14 +33,16 @@ const MainStore = namespace(StoreType.MAIN);
                         </div>
                         <div class="section-content">
                             <div class="promo-codes">
-                                <div class="light-text">Промо-код</div>
-                                <div class="promo-code">{{ clientInfo.user.promoCode.val }}</div>
-                                <div class="btns">
-                                    <v-btn v-clipboard="() => clientInfo.user.promoCode.val" @click="copyPromoCode">Копировать промо-код</v-btn>
-                                    <v-btn v-clipboard="() => refLink" @click="copyRefLink">Копировать ссылку</v-btn>
+                                <div class="promo-codes__subtitle">Промо-код</div>
+                                <div class="promo-code__wrapper">
+                                    <div class="promo-code">{{ clientInfo.user.promoCode.val }}</div>
+                                    <div class="btns">
+                                        <v-btn v-clipboard="() => clientInfo.user.promoCode.val" @click="copyPromoCode">Копировать промо-код</v-btn>
+                                        <v-btn v-clipboard="() => refLink" @click="copyRefLink">Копировать ссылку</v-btn>
+                                    </div>
                                 </div>
                                 <div class="rewards">
-                                    <div>Вознаграждения на выбор</div>
+                                    <div class="promo-codes__subtitle">Вознаграждения на выбор</div>
                                     <v-radio-group v-model="clientInfo.user.referralAwardType" class="radio-horizontal">
                                         <v-radio label="Подписка" value="SUBSCRIPTION"></v-radio>
                                         <v-radio label="Платеж" value="PAYMENT"></v-radio>
