@@ -29,7 +29,6 @@ import {TradesFilter, TradesFilterRequest} from "./tradeService";
 @Singleton
 export class FilterService {
 
-    static readonly TRADES_FILTER_SETTINGS_KEY = "trades_filter_settings";
     @Inject
     private storageService: Storage;
 

@@ -24,7 +24,9 @@ import {AssetChart} from "../components/charts/assetChart";
 import {PortfolioLineChart} from "../components/charts/portfolioLineChart";
 import {SectorsChart} from "../components/charts/sectorsChart";
 import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog";
+import {PortfolioRowFilter, PortfolioRowsTableFilter} from "../components/portfolioRowsTableFilter";
 import {StockTable} from "../components/stockTable";
+import {Storage} from "../platform/services/storage";
 import {ExportType} from "../services/exportService";
 import {TableHeaders, TABLES_NAME, TablesService} from "../services/tablesService";
 import {HighStockEventsGroup, SectorChartData} from "../types/charts/types";
@@ -65,7 +67,8 @@ const MainStore = namespace(StoreType.MAIN);
                     <v-list-tile-title @click="openTableHeadersDialog(TABLES_NAME.STOCK)">Настроить колонки</v-list-tile-title>
                     <v-list-tile-title v-if="exportable" @click="exportTable(ExportType.STOCKS)">Экспорт в xlsx</v-list-tile-title>
                 </template>
-                <stock-table :rows="overview.stockPortfolio.rows" :headers="getHeaders(TABLES_NAME.STOCK)"></stock-table>
+                <portfolio-rows-table-filter :search.sync="stockSearch" :filter.sync="stockFilter" :store-key="StoreKeys.STOCKS_TABLE_FILTER_KEY"></portfolio-rows-table-filter>
+                <stock-table :rows="overview.stockPortfolio.rows" :headers="getHeaders(TABLES_NAME.STOCK)" :search="stockSearch" :filter="stockFilter"></stock-table>
             </expanded-panel>
 
             <div style="height: 30px"></div>
@@ -84,7 +87,8 @@ const MainStore = namespace(StoreType.MAIN);
                     <v-list-tile-title @click="openTableHeadersDialog('bondTable')">Настроить колонки</v-list-tile-title>
                     <v-list-tile-title v-if="exportable" @click="exportTable(ExportType.BONDS)">Экспорт в xlsx</v-list-tile-title>
                 </template>
-                <bond-table :rows="overview.bondPortfolio.rows" :headers="getHeaders(TABLES_NAME.BOND)"></bond-table>
+                <portfolio-rows-table-filter :search.sync="bondSearch" :filter.sync="bondFilter" :store-key="StoreKeys.BONDS_TABLE_FILTER_KEY"></portfolio-rows-table-filter>
+                <bond-table :rows="overview.bondPortfolio.rows" :headers="getHeaders(TABLES_NAME.BOND)" :search="bondSearch" :filter="bondFilter"></bond-table>
             </expanded-panel>
 
             <div style="height: 30px"></div>
@@ -142,7 +146,7 @@ const MainStore = namespace(StoreType.MAIN);
             </expanded-panel>
         </v-container>
     `,
-    components: {AssetTable, StockTable, BondTable, PortfolioLineChart, SectorsChart}
+    components: {AssetTable, StockTable, BondTable, PortfolioLineChart, SectorsChart, PortfolioRowsTableFilter}
 })
 export class BasePortfolioPage extends UI {
 
@@ -163,6 +167,8 @@ export class BasePortfolioPage extends UI {
     private exportable: boolean;
     @Inject
     private tablesService: TablesService;
+    @Inject
+    private storageService: Storage;
     /** Список заголовков таблиц */
     private headers: TableHeaders = this.tablesService.headers;
     /** Названия таблиц с заголовками */
@@ -183,6 +189,14 @@ export class BasePortfolioPage extends UI {
     private bondPieChartData: DataPoint[] = [];
     /** Данные для графика секторов */
     private sectorsChartData: SectorChartData = null;
+    /** Поисковый запрос по табилце Акции */
+    private stockSearch = "";
+    /** Фильтр таблицы Акции */
+    private stockFilter: PortfolioRowFilter = {};
+    /** Поисковый запрос по табилце Облигации */
+    private bondSearch = "";
+    /** Фильтр таблицы Облигации */
+    private bondFilter: PortfolioRowFilter = {};
 
     /**
      * Инициализация данных компонента
@@ -195,6 +209,8 @@ export class BasePortfolioPage extends UI {
         this.stockPieChartData = this.doStockPieChartData();
         this.bondPieChartData = this.doBondPieChartData();
         this.sectorsChartData = this.doSectorsChartData();
+        this.stockFilter = this.storageService.get(StoreKeys.STOCKS_TABLE_FILTER_KEY, {});
+        this.bondFilter = this.storageService.get(StoreKeys.BONDS_TABLE_FILTER_KEY, {});
     }
 
     @Watch("overview")

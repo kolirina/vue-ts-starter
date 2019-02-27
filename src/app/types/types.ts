@@ -135,7 +135,7 @@ export type StockPortfolioRow = StockPortfolioSumRow & {
     // private StockTarget stockTarget = new StockTarget();
     id: string,
     stock: Stock,
-    quantity: string,
+    quantity: number,
     /** Средняя цена покупки */
     avgBuy: string,
 
@@ -156,7 +156,7 @@ export type BondPortfolioRow = BondPortfolioSumRow & {
     /** Облигация */
     bond: Bond,
     /** Количество */
-    quantity: string,
+    quantity: number,
     /** Средняя цена покупки */
     avgBuy: string,
     /** Средняя без комиссий */

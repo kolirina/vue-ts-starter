@@ -88,7 +88,7 @@ export class BalancesTable extends UI {
                 type: "STOCK",
                 company: row.stock.shortname,
                 ticker: row.stock.ticker,
-                quantity: parseInt(row.quantity, 10),
+                quantity: row.quantity,
                 avgBuy: row.avgBuy,
                 currCost: row.currCost
             });
@@ -139,7 +139,7 @@ export class BalancesTable extends UI {
                 type: "STOCK",
                 company: row.stock.shortname,
                 ticker: row.stock.ticker,
-                quantity: parseInt(row.quantity, 10),
+                quantity: row.quantity,
                 avgBuy: row.avgBuy,
                 currCost: row.currCost
             });
