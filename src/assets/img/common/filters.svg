@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="11" height="13">
+	<defs>
+		<clipPath id="clip_0">
+			<rect x="-600" y="-436" width="1440" height="1024" clip-rule="evenodd"/>
+		</clipPath>
+	</defs>
+	<g clip-path="url(#clip_0)">
+		<path fill="none" stroke="rgb(61,70,86)" stroke-width="1" stroke-linecap="square" stroke-miterlimit="4" transform="translate(1 0.5)" d="M0.5 0L0.5 2"/>
+	</g>
+	<defs>
+		<clipPath id="clip_1">
+			<rect x="-600" y="-436" width="1440" height="1024" clip-rule="evenodd"/>
+		</clipPath>
+	</defs>
+	<g clip-path="url(#clip_1)">
+		<path fill="none" stroke="rgb(61,70,86)" stroke-width="1" stroke-linecap="square" stroke-miterlimit="4" transform="translate(1 8.5)" d="M0.5 0L0.5 5"/>
+	</g>
+	<defs>
+		<clipPath id="clip_2">
+			<rect x="-600" y="-436" width="1440" height="1024" clip-rule="evenodd"/>
+		</clipPath>
+	</defs>
+	<g clip-path="url(#clip_2)">
+		<path fill="none" stroke="rgb(61,70,86)" stroke-width="1" stroke-linecap="square" stroke-miterlimit="4" transform="translate(9 0.5)" d="M0.5 0L0.5 6"/>
+	</g>
+	<defs>
+		<clipPath id="clip_3">
+			<rect x="-600" y="-436" width="1440" height="1024" clip-rule="evenodd"/>
+		</clipPath>
+	</defs>
+	<g clip-path="url(#clip_3)">
+		<path fill="none" stroke="rgb(61,70,86)" stroke-width="1" stroke-linecap="square" stroke-miterlimit="4" transform="translate(9 12.5)" d="M0.5 6.08402e-14L0.5 1"/>
+	</g>
+	<defs>
+		<clipPath id="clip_4">
+			<rect x="-600" y="-436" width="1440" height="1024" clip-rule="evenodd"/>
+		</clipPath>
+	</defs>
+	<g clip-path="url(#clip_4)">
+		<path fill="rgb(61,70,86)" stroke="none" transform="translate(0 4)" d="M1.5 3C2.32843 3 3 2.32843 3 1.5C3 0.671573 2.32843 0 1.5 0C0.671573 0 0 0.671573 0 1.5C0 2.32843 0.671573 3 1.5 3Z"/>
+	</g>
+	<defs>
+		<clipPath id="clip_5">
+			<path d="M3 5.5C3 6.32843 2.32843 7 1.5 7C0.671573 7 0 6.32843 0 5.5C0 4.67157 0.671573 4 1.5 4C2.32843 4 3 4.67157 3 5.5Z" clip-rule="evenodd"/>
+		</clipPath>
+	</defs>
+	<g clip-path="url(#clip_5)">
+		<path fill="none" stroke="rgb(61,70,86)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" transform="translate(0 4)" d="M1.5 3C2.32843 3 3 2.32843 3 1.5C3 0.671573 2.32843 0 1.5 0C0.671573 0 0 0.671573 0 1.5C0 2.32843 0.671573 3 1.5 3Z"/>
+	</g>
+	<defs>
+		<clipPath id="clip_6">
+			<rect x="-600" y="-436" width="1440" height="1024" clip-rule="evenodd"/>
+		</clipPath>
+	</defs>
+	<g clip-path="url(#clip_6)">
+		<path fill="rgb(61,70,86)" stroke="none" transform="translate(8 8)" d="M1.5 3C2.32843 3 3 2.32843 3 1.5C3 0.671573 2.32843 0 1.5 0C0.671573 0 0 0.671573 0 1.5C0 2.32843 0.671573 3 1.5 3Z"/>
+	</g>
+	<defs>
+		<clipPath id="clip_7">
+			<path d="M11 9.5C11 10.3284 10.3284 11 9.5 11C8.67157 11 8 10.3284 8 9.5C8 8.67157 8.67157 8 9.5 8C10.3284 8 11 8.67157 11 9.5Z" clip-rule="evenodd"/>
+		</clipPath>
+	</defs>
+	<g clip-path="url(#clip_7)">
+		<path fill="none" stroke="rgb(61,70,86)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" transform="translate(8 8)" d="M1.5 3C2.32843 3 3 2.32843 3 1.5C3 0.671573 2.32843 0 1.5 0C0.671573 0 0 0.671573 0 1.5C0 2.32843 0.671573 3 1.5 3Z"/>
+	</g>
+
+</svg>

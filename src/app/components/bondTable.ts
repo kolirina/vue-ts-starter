@@ -10,6 +10,7 @@ import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
 import {Operation} from "../types/operation";
 import {BondPortfolioRow, Portfolio, TableHeader} from "../types/types";
+import {CommonUtils} from "../utils/commonUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {AddTradeDialog} from "./dialogs/addTradeDialog";
@@ -17,6 +18,7 @@ import {ConfirmDialog} from "./dialogs/confirmDialog";
 import {BtnReturn} from "./dialogs/customDialog";
 import {EditShareNoteDialog} from "./dialogs/editShareNoteDialog";
 import {ShareTradesDialog} from "./dialogs/shareTradesDialog";
+import {PortfolioRowFilter} from "./portfolioRowsTableFilter";
 import {TableExtendedInfo} from "./tableExtendedInfo";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -24,7 +26,8 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-data-table class="data-table" :headers="headers" :items="rows" item-key="id" :custom-sort="customSort" hide-actions>
+        <v-data-table class="data-table" :headers="headers" :items="filteredRows" item-key="bond"
+                      :search="search" :custom-sort="customSort" :custom-filter="customFilter" hide-actions>
             <v-progress-linear slot="progress" color="blue" indeterminate></v-progress-linear>
             <template slot="items" slot-scope="props">
                 <tr class="selectable">
@@ -177,6 +180,18 @@ export class BondTable extends UI {
     /** Список отображаемых строк */
     @Prop({default: [], required: true})
     private rows: BondPortfolioRow[];
+    /** Поисковая строка */
+    @Prop({required: false, type: String, default: ""})
+    private search: string;
+    /** Фильтр строк */
+    @Prop({
+        required: false, type: Object, default: (): PortfolioRowFilter => {
+            return {};
+        }
+    })
+    private filter: PortfolioRowFilter;
+    /** Список отображаемых строк */
+    private filteredRows: BondPortfolioRow[] = [];
     /** Состояние столбцов таблицы */
     private tableHeadersState: TableHeadersState;
     /** Текущая операция */
@@ -193,11 +208,31 @@ export class BondTable extends UI {
     created(): void {
         /** Установка состояния заголовков таблицы */
         this.setHeadersState();
+        this.setFilteredRows();
     }
 
     @Watch("headers")
     onHeadersChange(): void {
         this.setHeadersState();
+    }
+
+    @Watch("rows")
+    onRowsChange(): void {
+        console.log("ROWS CHANGE");
+        this.setFilteredRows();
+    }
+
+    @Watch("filter", {deep: true})
+    onFilterChange(): void {
+        this.setFilteredRows();
+    }
+
+    setFilteredRows(): void {
+        if (this.filter.hideSoldRows) {
+            this.filteredRows = [...this.rows.filter(row => row.quantity !== 0)];
+        } else {
+            this.filteredRows = [...this.rows];
+        }
     }
 
     setHeadersState(): void {
@@ -213,7 +248,7 @@ export class BondTable extends UI {
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
             share: bondRow.bond,
-            quantity: [Operation.COUPON, Operation.AMORTIZATION, Operation.REPAYMENT].indexOf(operation) !== -1 ? parseInt(bondRow.quantity, 10) : null,
+            quantity: [Operation.COUPON, Operation.AMORTIZATION, Operation.REPAYMENT].indexOf(operation) !== -1 ? bondRow.quantity : null,
             operation,
             assetType: AssetType.BOND
         });
@@ -271,5 +306,18 @@ export class BondTable extends UI {
             }
         });
         return items;
+    }
+
+    private customFilter(items: BondPortfolioRow[], search: string): BondPortfolioRow[] {
+        if (CommonUtils.isBlank(search)) {
+            return items;
+        }
+        search = search.toLowerCase();
+        return items.filter(row => {
+            return row.bond.shortname.toLowerCase().includes(search) ||
+                row.bond.ticker.toLowerCase().includes(search) ||
+                row.bond.price.includes(search) ||
+                row.yearYield.includes(search);
+        });
     }
 }
