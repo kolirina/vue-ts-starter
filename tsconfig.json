@@ -9,6 +9,7 @@
         "experimentalDecorators": true,
         "allowSyntheticDefaultImports": true,
         "resolveJsonModule": true,
+        "esModuleInterop": true,
         "noImplicitAny": true,
         "declaration": false,
         "noImplicitReturns": true,
