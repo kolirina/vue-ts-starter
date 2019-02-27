@@ -58,8 +58,8 @@ import {CustomDialog} from "./customDialog";
                     </v-form>
                 </v-card-text>
                 <v-card-actions class="margT20">
-                    <v-btn :disabled="!valid" @click.native="validateAndChangePassword" class="btn-dialog btn-hover-black">Сменить пароль</v-btn>
-                    <v-btn class="btn-cancel" @click.native="close">Отмена</v-btn>
+                    <v-btn :disabled="!valid" @click.native="validateAndChangePassword" color="info lighten-2" flat>Сменить пароль</v-btn>
+                    <v-btn @click.native="close">Отмена</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>

@@ -23,8 +23,8 @@ import {BtnReturn, CustomDialog} from "./customDialog";
                     <span>Удалить уведомления по этой акции?</span>
                 </div>
                 <v-card-actions class="btn-group-right">
-                    <v-btn @click.native="removeNotification" class="btn-dialog btn-hover-black">Удалить</v-btn>
-                    <v-btn class="btn-cancel" @click.native="close">Отмена</v-btn>
+                    <v-btn @click.native="removeNotification" color="info lighten-2" flat>Удалить</v-btn>
+                    <v-btn @click.native="close">Отмена</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>

@@ -42,3 +42,40 @@
     }
   }
 }
+
+// Перекрытие кнопок vuetify
+
+.btns {
+  display: flex;
+}
+
+.v-btn:not(.v-btn--floating):not(.v-btn--icon) {
+  border-radius: $form-element--border-radius;
+  box-shadow: none !important;
+  margin: 0;
+  text-transform: none;
+
+  &.big_btn {
+    height: 44px;
+    min-width: 124px;
+  }
+
+  &.theme--light {
+    background-color: #fff;
+    border: 1px solid #CACED5;
+  }
+
+  &.selected {
+    background-color: $sidebar-blue-color !important;
+    border-color: $sidebar-blue-color;
+    color: #fff;
+  }
+
+  .btns & + & {margin-left: 12px}
+}
+
+.v-card__actions {
+  .v-btn {
+    margin-left: 10px !important;
+  }
+}

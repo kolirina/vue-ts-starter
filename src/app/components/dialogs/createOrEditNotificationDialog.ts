@@ -150,8 +150,8 @@ import {CustomDialog} from "./customDialog";
                     </v-switch>
 
                     <v-card-actions class="btn-group-right">
-                        <v-btn @click.native="save" class="btn-dialog btn-hover-black">{{ notification.id ? "Сохранить" : "Добавить" }}</v-btn>
-                        <v-btn class="btn-cancel" @click.native="close">Отмена</v-btn>
+                        <v-btn @click.native="save" color="info lighten-2" flat>{{ notification.id ? "Сохранить" : "Добавить" }}</v-btn>
+                        <v-btn @click.native="close">Отмена</v-btn>
                     </v-card-actions>
                 </div>
             </v-card>

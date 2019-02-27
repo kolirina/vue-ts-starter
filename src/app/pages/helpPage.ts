@@ -46,7 +46,7 @@ const MainStore = namespace(StoreType.MAIN);
                             <li><a href="#settings_user" @click.stop="$vuetify.goTo('#settings_user', { offset: -64 })">Настройки пользователя</a></li>
                             <li><a href="#settings_public" @click.stop="$vuetify.goTo('#settings_public', { offset: -64 })">Публичный доступ</a></li>
                             <li><a href="#tariffs_public" @click.stop="$vuetify.goTo('#tariffs_public', { offset: -64 })">Тарифы</a></li>
-                            <li><a href="#settings_promo_codes" @click.stop="$vuetify.goTo('#settings_promo_codes', { offset: -64 })">Промо-коды</a></li>
+                            <li><a href="#settings_promo_codes" @click.stop="$vuetify.goTo('#settings_promo_codes', { offset: -64 })">Промокоды</a></li>
                             <li><a href="#settings_notifications" @click.stop="$vuetify.goTo('#settings_notifications', { offset: -64 })">Уведомления</a></li>
                         </ul>
                     </li>
@@ -410,7 +410,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </ul>
 
                     <ul>
-                        <li><a id="settings_promo_codes">Промо-коды</a></li>
+                        <li><a id="settings_promo_codes">Промокоды</a></li>
                         В
                         <a href="#/promo-codes">данном</a>
                         разделе будет представлен личный промо код,
