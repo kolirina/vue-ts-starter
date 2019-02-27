@@ -73,3 +73,9 @@
 
   .btns & + & {margin-left: 12px}
 }
+
+.v-card__actions {
+  .v-btn {
+    margin-left: 10px !important;
+  }
+}

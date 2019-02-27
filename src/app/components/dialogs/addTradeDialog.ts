@@ -156,13 +156,13 @@ import {CustomDialog} from "./customDialog";
 
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="info lighten-2" flat @click.native="close">Отмена</v-btn>
                     <v-btn :loading="processState" :disabled="!isValid || processState" color="primary" dark @click.native="addTrade">
                         {{ tradeId ? "Сохранить" : "Добавить" }}
                         <span slot="loader" class="custom-loader">
                         <v-icon light>fas fa-spinner fa-spin</v-icon>
                       </span>
                     </v-btn>
+                    <v-btn color="info lighten-2" flat @click.native="close">Отмена</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
