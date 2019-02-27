@@ -19,7 +19,10 @@
 
   &.accent--text .v-input--selection-controls__input:before {border: 5px solid $sidebar-blue-color}
 
-  .v-label {font-size: 14px}
+  .v-label {
+    font-size: 14px;
+    color: #3D4656 !important;
+  }
 }
 
 

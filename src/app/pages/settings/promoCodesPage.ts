@@ -42,7 +42,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     </div>
                                 </div>
                                 <div class="rewards">
-                                    <div class="promo-codes__subtitle">Вознаграждения на выбор</div>
+                                    <div class="promo-codes__subtitle">Выберите тип вознаграждения</div>
                                     <v-radio-group v-model="clientInfo.user.referralAwardType" class="radio-horizontal">
                                         <v-radio label="Подписка" value="SUBSCRIPTION"></v-radio>
                                         <v-radio label="Платеж" value="PAYMENT"></v-radio>
