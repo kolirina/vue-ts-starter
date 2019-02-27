@@ -22,8 +22,8 @@ export class TariffService {
     }
 
     /**
-     * Применяет промо-код
-     * @param promoCode промо-код
+     * Применяет промокод
+     * @param promoCode промокод
      */
     async applyPromoCode(promoCode: string): Promise<void> {
         await this.http.post(`/tariff/apply-promo-code/${promoCode}`);

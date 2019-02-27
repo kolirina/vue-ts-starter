@@ -37,11 +37,11 @@ const MainStore = namespace(StoreType.MAIN);
                             </div>
                         </div>
                         <div class="promo-code-component">
-                            <span @click="applyPromoCode">Применить промо-код</span>
+                            <span @click="applyPromoCode">Применить промокод</span>
                             <v-tooltip content-class="custom-tooltip-wrap" :max-width="250" bottom>
                                 <div v-if="clientInfo.user.promoCode" slot="activator" class="promo-code-component__icon"></div>
                                 <div>
-                                    <div>Активирован промо-код</div>
+                                    <div>Активирован промокод</div>
                                     <div>Скидка составляет {{ clientInfo.user.promoCode.discount }}%</div>
                                     <div v-if="clientInfo.user.promoCode.expired">Срок действия до {{ clientInfo.user.promoCode.expired | date }}</div>
                                 </div>
@@ -232,7 +232,7 @@ export class TariffsPage extends UI {
     private isProgress = false;
 
     /**
-     * Открывает диалог для ввода промо-кода пользователя
+     * Открывает диалог для ввода промокода пользователя
      */
     private async applyPromoCode(): Promise<void> {
         await new ApplyPromoCodeDialog().show();

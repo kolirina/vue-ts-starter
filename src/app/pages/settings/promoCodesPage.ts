@@ -18,11 +18,11 @@ const MainStore = namespace(StoreType.MAIN);
         <v-container fluid>
             <v-layout row wrap>
                 <v-flex>
-                    <div class="section-title">Промо-коды</div>
+                    <div class="section-title">Промокоды</div>
                     <v-card class="overflowXA">
                         <div class="promo-codes__steps">
                             <div class="promo-codes__step">
-                                <div>Поделитесь промо-кодом или<br>ссылкой на регистрацию</div>
+                                <div>Поделитесь промокодом или<br>ссылкой на регистрацию</div>
                             </div>
                             <div class="promo-codes__step">
                                 <div>Друзья получают скидку 20%<br>на первую покупку</div>
@@ -33,11 +33,11 @@ const MainStore = namespace(StoreType.MAIN);
                         </div>
                         <div class="section-content">
                             <div class="promo-codes">
-                                <div class="promo-codes__subtitle">Промо-код</div>
+                                <div class="promo-codes__subtitle">Промокод</div>
                                 <div class="promo-code__wrapper">
                                     <div class="promo-code">{{ clientInfo.user.promoCode.val }}</div>
                                     <div class="btns">
-                                        <v-btn v-clipboard="() => clientInfo.user.promoCode.val" @click="copyPromoCode">Копировать промо-код</v-btn>
+                                        <v-btn v-clipboard="() => clientInfo.user.promoCode.val" @click="copyPromoCode">Копировать промокод</v-btn>
                                         <v-btn v-clipboard="() => refLink" @click="copyRefLink">Копировать ссылку</v-btn>
                                     </div>
                                 </div>
@@ -88,10 +88,10 @@ export class PromoCodesPage extends UI {
     /** Сервис для работы с данными клиента */
     @Inject
     private clientService: ClientService;
-    /** Сервис для работы с промо-кодами */
+    /** Сервис для работы с промокодами */
     @Inject
     private promoCodeService: PromoCodeService;
-    /** Статистика по промо-коду */
+    /** Статистика по промокоду */
     private promoCodeStatistics: PromoCodeStatistics = null;
 
     /**
@@ -110,7 +110,7 @@ export class PromoCodesPage extends UI {
     }
 
     private copyPromoCode(): void {
-        this.$snotify.info("Промо-код скопирован");
+        this.$snotify.info("Промокод скопирован");
     }
 
     private copyRefLink(): void {

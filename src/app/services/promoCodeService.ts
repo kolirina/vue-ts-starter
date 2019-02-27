@@ -10,7 +10,7 @@ export class PromoCodeService {
     private http: Http;
 
     /**
-     * Отправляет запрос на смену типа вознаграждения промо-кода
+     * Отправляет запрос на смену типа вознаграждения промокода
      * @param {string} type
      * @returns {Promise<void>}
      */
@@ -19,7 +19,7 @@ export class PromoCodeService {
     }
 
     /**
-     * Отправляет запрос на смену типа вознаграждения промо-кода
+     * Отправляет запрос на смену типа вознаграждения промокода
      * @param {string} userId
      * @returns {Promise<void>}
      */
@@ -28,7 +28,7 @@ export class PromoCodeService {
     }
 }
 
-/** Статистика по промо-коду пользователя */
+/** Статистика по промокоду пользователя */
 export interface PromoCodeStatistics {
     /** Всего оплачено пользователями от партнера */
     referralPaymentTotalAmount: string;

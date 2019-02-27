@@ -23,7 +23,7 @@ import {CommonUtils} from "../../utils/commonUtils";
 import {BtnReturn, CustomDialog} from "./customDialog";
 
 /**
- * Диалог ввода промо-кода
+ * Диалог ввода промокода
  */
 @Component({
     // language=Vue
@@ -32,10 +32,10 @@ import {BtnReturn, CustomDialog} from "./customDialog";
             <v-card class="dialog-wrap">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
 
-                <v-card-title class="headline">Введите промо-код</v-card-title>
+                <v-card-title class="headline">Введите промокод</v-card-title>
                 <v-card-text>
                     <v-text-field v-model.trim="promoCode" maxlength="10" size="10" @keypress.enter="applyPromoCode"
-                                  label="Введите промо-код" clearable></v-text-field>
+                                  label="Введите промокод" clearable></v-text-field>
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
@@ -50,18 +50,18 @@ export class ApplyPromoCodeDialog extends CustomDialog<void, BtnReturn> {
 
     @Inject
     private tariffService: TariffService;
-    /** Введенный промо-код */
+    /** Введенный промокод */
     private promoCode = "";
 
     @ShowProgress
     @CatchErrors
     private async applyPromoCode(): Promise<void> {
         if (CommonUtils.isBlank(this.promoCode)) {
-            this.$snotify.warning("Пожалуйста введите промо-код");
+            this.$snotify.warning("Пожалуйста введите промокод");
             return;
         }
         await this.tariffService.applyPromoCode(this.promoCode);
-        this.$snotify.info("Промо-код успешно применен");
+        this.$snotify.info("Промокод успешно применен");
         this.close(BtnReturn.YES);
     }
 }

@@ -225,7 +225,7 @@ export class AppFrame extends UI {
                 {title: "Импорт сделок", action: "import", icon: "fas fa-download"},
                 {title: "Экспорт сделок", action: "export", icon: "fas fa-upload"},
                 {title: "Тарифы", action: "tariffs", icon: "fas fa-credit-card"},
-                {title: "Промо-коды", action: "promo-codes", icon: "fas fa-heart"},
+                {title: "Промокоды", action: "promo-codes", icon: "fas fa-heart"},
                 {title: "Уведомления", action: "notifications", icon: "fas fa-bell"}
             ]
         },
