@@ -81,7 +81,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 <td></td>
                                 <td>
                                     <div class="tariff__plan_name">Бесплатный</div>
-                                    <div class="tariff__plan_price">{{ getPriceLabel(Tariff.FREE) }}</div>
+                                    <div class="tariff__plan_price">{{ getPriceLabel(Tariff.FREE) }} <span>RUB</span></div>
                                     <v-tooltip content-class="custom-tooltip-wrap" bottom>
                                         <v-btn slot="activator" @click="makePayment(Tariff.FREE)"
                                            :class="{'big_btn': true, 'selected': isSelected(Tariff.FREE)}"
@@ -100,9 +100,9 @@ const MainStore = namespace(StoreType.MAIN);
                                 <td>
                                     <div class="tariff__plan_name">Стандарт</div>
                                     <div v-if="isDiscountApplied()" class="tariff__plan_old-price">
-                                        {{ getNoDiscountPriceLabel(Tariff.STANDARD) }}
+                                        {{ getNoDiscountPriceLabel(Tariff.STANDARD) }} <span>RUB</span>
                                     </div>
-                                    <div class="tariff__plan_price">{{ getPriceLabel(Tariff.STANDARD) }}</div>
+                                    <div class="tariff__plan_price">{{ getPriceLabel(Tariff.STANDARD) }} <span>RUB</span></div>
                                     <v-tooltip content-class="custom-tooltip-wrap" bottom>
                                         <v-btn slot="activator" @click="makePayment(Tariff.STANDARD)"
                                            :class="{'big_btn': true, 'selected': isSelected(Tariff.STANDARD)}"
@@ -121,9 +121,9 @@ const MainStore = namespace(StoreType.MAIN);
                                 <td>
                                     <div class="tariff__plan_name">Профессионал</div>
                                     <div v-if="isDiscountApplied()" class="tariff__plan_old-price">
-                                        {{ getNoDiscountPriceLabel(Tariff.PRO) }}
+                                        {{ getNoDiscountPriceLabel(Tariff.PRO) }} <span>RUB</span>
                                     </div>
-                                    <div class="tariff__plan_price">{{ getPriceLabel(Tariff.PRO) }}</div>
+                                    <div class="tariff__plan_price">{{ getPriceLabel(Tariff.PRO) }} <span>RUB</span></div>
                                     <v-btn @click="makePayment(Tariff.PRO)"
                                        :class="{'big_btn': true, 'selected': isSelected(Tariff.PRO)}"
                                        :disabled="!isAvailable(Tariff.PRO) || isProgress">
@@ -135,7 +135,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     </div>
                                 </td>
                             </tr>
-                            <tr>
+                            <tr class="no-borders">
                                 <td>Объем портфеля</td>
                                 <td class="fs13">
                                     <span>7 ценных бумаг<br>1 портфель</span>
@@ -262,7 +262,7 @@ export class TariffsPage extends UI {
     }
 
     private getPriceLabel(tariff: Tariff): string {
-        return `${this.getPrice(tariff)} ${this.monthly ? " / месяц" : " / год"}`;
+        return `${this.getPrice(tariff)}`;
     }
 
     private getNoDiscountPriceLabel(tariff: Tariff): string {
@@ -272,7 +272,7 @@ export class TariffsPage extends UI {
         } else {
             price = new Decimal(tariff.monthlyPrice).mul(new Decimal(12));
         }
-        return `${price.toFixed(2)} ${this.monthly ? " / месяц" : " / год"}`;
+        return `${price.toFixed(2)}`;
     }
 
     /**
