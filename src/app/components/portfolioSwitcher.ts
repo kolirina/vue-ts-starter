@@ -1,6 +1,5 @@
-import Component from "vue-class-component";
-import {Action, Getter, namespace} from "vuex-class/lib/bindings";
-import {UI} from "../app/ui";
+import {namespace} from "vuex-class/lib/bindings";
+import {Component, UI, Watch} from "../app/ui";
 import {ClientInfo} from "../services/clientService";
 import {PortfolioParams} from "../services/portfolioService";
 
@@ -75,6 +74,11 @@ export class PortfolioSwitcher extends UI {
         await this.setDefaultPortfolio(selected.id);
         await this.setCurrentPortfolio(selected.id);
         this.selected = selected;
+    }
+
+    @Watch("clientInfo.user.portfolios", {deep: true})
+    private onPortfoliosChange(): void {
+        this.selected = this.getSelected();
     }
 
     private getSelected(): PortfolioParams {

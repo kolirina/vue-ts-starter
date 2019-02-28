@@ -1,4 +1,3 @@
-import Decimal from "decimal.js";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {Watch} from "vue-property-decorator";
@@ -42,7 +41,7 @@ const MainStore = namespace(StoreType.MAIN);
 
             <v-container v-if="pages > 1">
                 <v-layout align-center justify-center row>
-                    <v-pagination v-model="page" :length="pages"></v-pagination>
+                    <v-pagination v-model="pagination.page" @input="onPageChange" :length="pages"></v-pagination>
                 </v-layout>
             </v-container>
         </v-container>
@@ -65,23 +64,24 @@ export class TradesPage extends UI {
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
     private reloadPortfolio: (id: string) => Promise<void>;
 
-    private page = 1;
-
     private totalTrades = 0;
 
-    private pageSize = 50;
-
     private pages = 0;
+    /** Ключи для сохранения информации */
+    private StoreKeys = StoreKeys;
 
     private pagination: Pagination = {
         descending: false,
-        page: this.page,
-        rowsPerPage: this.pageSize,
+        page: 1,
+        rowsPerPage: 50,
         sortBy: "ticker",
         totalItems: this.totalTrades
     };
 
-    private tradePagination: TablePagination = null;
+    private tradePagination: TablePagination = {
+        pagination: this.pagination,
+        totalItems: this.totalTrades
+    };
 
     private trades: TradeRow[] = [];
 
@@ -92,21 +92,16 @@ export class TradesPage extends UI {
     private TABLES_NAME = TABLES_NAME;
     private ExportType = ExportType;
 
-    getHeaders(name: string): TableHeader[] {
-        return this.tablesService.getFilterHeaders(name);
-    }
-
     /**
      * Загрузка сделок будет произведена в вотчере на объект с паджинацией
      * @inheritDoc
      */
     async created(): Promise<void> {
         this.tradesFilter = this.filterService.getFilter(StoreKeys.TRADES_FILTER_SETTINGS_KEY);
-        this.tradePagination = {
-            pagination: this.pagination,
-            totalItems: this.totalTrades
-        };
-        this.calculatePagination();
+    }
+
+    getHeaders(name: string): TableHeader[] {
+        return this.tablesService.getFilterHeaders(name);
     }
 
     /**
@@ -119,7 +114,6 @@ export class TradesPage extends UI {
         });
     }
 
-    @Watch("page")
     private async onPageChange(): Promise<void> {
         await this.loadTrades();
     }
@@ -127,7 +121,6 @@ export class TradesPage extends UI {
     @Watch("portfolio")
     private async onPortfolioChange(): Promise<void> {
         await this.loadTrades();
-        this.calculatePagination();
     }
 
     @Watch("tradePagination.pagination", {deep: true})
@@ -141,27 +134,24 @@ export class TradesPage extends UI {
         await this.tradeService.deleteTrade({portfolioId: this.portfolio.id, tradeId: tradeRow.id});
         await this.reloadPortfolio(this.portfolio.id);
         await this.loadTrades();
-        this.calculatePagination();
         this.$snotify.info(`Операция '${tradeRow.operationLabel}' ${AssetType.valueByName(tradeRow.asset) === AssetType.MONEY ? "" :
             `по бумаге ${tradeRow.ticker}`} была успешно удалена`);
-    }
-
-    private calculatePagination(): void {
-        this.totalTrades = this.portfolio.overview.totalTradesCount;
-        this.pages = new Decimal(this.totalTrades / this.pageSize).toDP(0, Decimal.ROUND_UP).toNumber();
     }
 
     @CatchErrors
     @ShowProgress
     private async loadTrades(): Promise<void> {
-        this.trades = await this.tradeService.loadTrades(
+        const result = await this.tradeService.loadTrades(
             this.portfolio.id,
-            this.pageSize * (this.page - 1),
-            this.pageSize,
+            this.pagination.rowsPerPage * (this.pagination.page - 1),
+            this.pagination.rowsPerPage,
             this.tradePagination.pagination.sortBy,
             this.tradePagination.pagination.descending,
             this.filterService.getTradesFilterRequest(this.tradesFilter)
         );
+        this.trades = result.content;
+        this.totalTrades = result.totalItems;
+        this.pages = result.pages;
     }
 
     @CatchErrors
@@ -172,6 +162,8 @@ export class TradesPage extends UI {
 
     private async onFilterChange(): Promise<void> {
         await this.loadTrades();
+        // при смене фильтра сбрасываем паджинацию чтобы не остаться на несуществующей странице
+        this.pagination.page = 1;
         this.filterService.saveFilter(StoreKeys.TRADES_FILTER_SETTINGS_KEY, this.tradesFilter);
     }
 }

@@ -133,7 +133,7 @@ export class PortfoliosTable extends UI {
     }
 
     private async deletePortfolio(portfolio: PortfolioParams): Promise<void> {
-        const result = await new ConfirmDialog().show(`Вы собираетесь удалить портфель. ${portfolio.name}
+        const result = await new ConfirmDialog().show(`Вы собираетесь удалить портфель ${portfolio.name}.
                                               Все сделки по акциям, облигациям и дивиденды,
                                               связанные с этим портфелем будут удалены.`);
         if (result === BtnReturn.YES) {
