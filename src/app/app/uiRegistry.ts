@@ -11,6 +11,7 @@ import VueQriously from "vue-qriously";
 import Snotify, {SnotifyPosition} from "vue-snotify";
 import vuescroll from "vuescroll";
 import Vuetify from "vuetify";
+import * as versionConfig from "../../version.json";
 import {BondLink} from "../components/bondLink";
 import {LineChart} from "../components/charts/lineChart";
 import {PieChart} from "../components/charts/pieChart";
@@ -40,6 +41,10 @@ export class UIRegistry {
      * Инициализация реестра компонентов, фильтров и директив
      */
     static init(): boolean {
+
+        if (Vue.config.productionTip) {
+            console.log(JSON.stringify(versionConfig));
+        }
 
         Vue.use(Clipboard);
 
