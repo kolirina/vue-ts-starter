@@ -26,6 +26,10 @@
     background-color: #fff !important;
     box-shadow: none !important;
 
+    &:hover {
+      background: #ebeff7 !important;
+    }
+
     &__icon {
       width: 16px;
       height: 16px;
@@ -50,7 +54,7 @@
     padding: 0 25px;
     background: #ffffff;
     border-radius: 4px !important;
-    box-shadow: 0 4px  20px rgba(0,0,0,0.1) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
 
     .v-card {
       box-shadow: none !important;
@@ -58,9 +62,52 @@
   }
 
   &__settings {
-    padding: 0 25px;
+    padding: 20px 25px 0;
     background: #ffffff;
     border-radius: 4px !important;
-    box-shadow: 0 4px  20px rgba(0,0,0,0.1) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
+  }
+}
+
+
+.portfolio-rows-filter__settings {
+
+  .trades-filter {
+
+    &__label {
+      opacity: 0.48;
+      color: #4f5d75;
+      font-family: $main--font-family;
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 16px;
+      letter-spacing: 0.2px;
+    }
+
+    &__list-types {
+      margin-top: 15px !important;
+    }
+
+    &__operations {
+      display: grid;
+      margin-left: 20px;
+      grid-template-columns: 50% 50%;
+      margin-top: 15px;
+    }
+
+    .v-input--selection-controls {
+      margin-top: 0 !important;
+      padding-top: 0 !important;
+    }
+  }
+
+  .v-label {
+    font-size: 14px !important;
+    color: #3d4656 !important;
+  }
+
+  .theme--light.v-label {
+    font-size: 14px !important;
+    color: #3d4656 !important;
   }
 }

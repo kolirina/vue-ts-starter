@@ -14,8 +14,7 @@
  * (c) ООО "Интеллектуальные инвестиции", 2019
  */
 import {Inject, Singleton} from "typescript-ioc";
-import {DataFilter, FilterPeriod, FilterPeriodType} from "../../cp/cp.types";
-import {TradesFilterComponent} from "../components/tradesFilter";
+import {TradesTableFilter} from "../components/tradesTableFilter";
 import {Service} from "../platform/decorators/service";
 import {Storage} from "../platform/services/storage";
 import {Operation} from "../types/operation";
@@ -72,7 +71,7 @@ export class FilterService {
      */
     getDefaultFilter(): TradesFilter {
         return {
-            operation: TradesFilterComponent.DEFAULT_OPERATIONS,
+            operation: TradesTableFilter.DEFAULT_OPERATIONS,
             listType: TradeListType.FULL,
             showMoneyTrades: true,
             showLinkedMoneyTrades: true,
