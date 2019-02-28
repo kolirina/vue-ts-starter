@@ -5,7 +5,7 @@ import {Storage} from "../platform/services/storage";
 import {AssetType} from "../types/assetType";
 import {Operation} from "../types/operation";
 import {TradeListType} from "../types/tradeListType";
-import {TradeRow} from "../types/types";
+import {PageableResponse, TradeRow} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
 
 /** Сервис работы с localStorage */
@@ -38,10 +38,15 @@ export class TradeService {
     /**
      * Загружает и возвращает сделки по тикеру в портфеле
      * @param {string} id идентификатор портфеля
-     * @param {string} ticker тикер
+     * @param offset смещение
+     * @param limit размер страницы
+     * @param sortColumn колонка сортировка
+     * @param descending направление сортировки
+     * @param filter фильтр
      * @returns {Promise<TradeRow[]>}
      */
-    async loadTrades(id: string, offset: number = 0, limit: number = 50, sortColumn: string, descending: boolean = false, filter: TradesFilterRequest): Promise<TradeRow[]> {
+    async loadTrades(id: string, offset: number = 0, limit: number = 50, sortColumn: string, descending: boolean = false,
+                     filter: TradesFilterRequest): Promise<PageableResponse<TradeRow>> {
         const urlParams: UrlParams = {offset, limit, ...filter};
         if (sortColumn) {
             urlParams.sortColumn = sortColumn.toUpperCase();
@@ -49,9 +54,10 @@ export class TradeService {
         if (CommonUtils.exists(descending)) {
             urlParams.descending = descending;
         }
-        const result = await this.http.get<TradeRow[]>(`/trades/${id}`, urlParams);
+        const result = await this.http.get<PageableResponse<TradeRow>>(`/trades/pageable/${id}`, urlParams);
+        result.content = result.content.map(this.correctMoneyOperation);
 
-        return result.map(this.correctMoneyOperation);
+        return result;
     }
 
     /**
