@@ -84,10 +84,11 @@
     margin-top: 30px;
     padding-top: 24px;
     font-size: 14px;
+    color: $main--font-color;
   }
 
   &__statistics {
-    font-size: 14px;
+    font-size: 13px;
 
     .v-expansion-panel__header {
       padding: 0;
@@ -118,5 +119,13 @@
 .statistics {
   margin-top: 16px;
 
-  div {margin: 0 0 36px 32px}
+  div {
+    margin: 0 0 24px 20px;
+
+    span:first-child {
+      display: inline-block;
+      width: 228px;
+      margin-right: 24px;
+    }
+  }
 }

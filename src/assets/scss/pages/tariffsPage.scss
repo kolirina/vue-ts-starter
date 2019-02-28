@@ -2,7 +2,7 @@
   max-width: 1066px;
   min-width: 800px;
   margin: 0 auto;
-  padding-bottom: 32px;
+  color: $main--font-color;
 
   &__header {
     display: flex;
@@ -51,6 +51,11 @@
         &:nth-child(3) td span {
           display: inline-block;
           text-align: left;
+        }
+
+        &:last-child td {
+          border-bottom: none;
+          padding-bottom: 16px;
         }
 
         &.no-borders td {

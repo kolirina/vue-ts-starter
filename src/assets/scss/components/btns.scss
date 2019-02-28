@@ -54,8 +54,10 @@
   box-shadow: none !important;
   margin: 0;
   text-transform: none;
+  color: #3D4656;
 
-  &:hover {
+  &:hover,
+  &:focus {
     border-color: rgba($sidebar-blue-color, 0.12) !important;
 
     &:before {
