@@ -27,7 +27,7 @@ import {Bond, Share} from "../types/types";
     // language=Vue
     template: `
         <div class="portfolio-rows-filter">
-            <v-menu v-model="menu" :close-on-content-click="false" :nudge-width="200" :nudge-bottom="40" bottom>
+            <v-menu v-model="menu" :close-on-content-click="false" :nudge-width="416" :nudge-bottom="40" bottom>
                 <v-btn slot="activator" round class="portfolio-rows-filter__button">
                     Фильтры
                     <span class="portfolio-rows-filter__button__icon"></span>

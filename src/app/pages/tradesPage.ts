@@ -5,8 +5,8 @@ import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
 import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog";
 import {ExpandedPanel} from "../components/expandedPanel";
-import {TradesFilterComponent} from "../components/tradesFilter";
 import {TradesTable} from "../components/tradesTable";
+import {TradesTableFilter} from "../components/tradesTableFilter";
 import {CatchErrors} from "../platform/decorators/catchErrors";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {ExportService, ExportType} from "../services/exportService";
@@ -27,14 +27,13 @@ const MainStore = namespace(StoreType.MAIN);
         <v-container v-if="portfolio" fluid class="paddT0">
             <dashboard :data="portfolio.overview.dashboardData"></dashboard>
 
-            <trades-filter-component v-if="tradesFilter" @filterChange="onFilterChange" :tradesFilter="tradesFilter"></trades-filter-component>
-
             <expanded-panel :disabled="true" :withMenu="true" name="trades" :alwaysOpen="true" :value="[true]">
                 <template slot="header">Сделки</template>
                 <template slot="list">
                     <v-list-tile-title @click="openTableSettings(TABLES_NAME.TRADE)">Настроить колонки</v-list-tile-title>
                     <v-list-tile-title @click="exportTable(ExportType.TRADES)">Экспорт в xlsx</v-list-tile-title>
                 </template>
+                <trades-table-filter v-if="tradesFilter" :store-key="StoreKeys.TRADES_FILTER_SETTINGS_KEY" @filter="onFilterChange" :filter="tradesFilter"></trades-table-filter>
                 <trades-table v-if="tradePagination" :trades="trades" :trade-pagination="tradePagination"
                               :headers="getHeaders(TABLES_NAME.TRADE)" @delete="onDelete"></trades-table>
             </expanded-panel>
@@ -46,7 +45,7 @@ const MainStore = namespace(StoreType.MAIN);
             </v-container>
         </v-container>
     `,
-    components: {TradesTable, TradesFilterComponent, ExpandedPanel}
+    components: {TradesTable, ExpandedPanel, TradesTableFilter}
 })
 export class TradesPage extends UI {
 
