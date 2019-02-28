@@ -52,6 +52,14 @@
           display: inline-block;
           text-align: left;
         }
+
+        &.no-borders td {
+          border: none;
+
+          &:first-child {border-left: 1px solid #E8E9ED;}
+
+          &:last-child {border-right: 1px solid #E8E9ED;}
+        }
       }
 
       td {
@@ -93,7 +101,14 @@
 
     &_price {
       margin-bottom: 24px;
-      font-size: $font-size;
+      font-size: 20px;
+      font-weight: bold;
+
+      span {
+        font-size: 14px;
+        font-weight: normal;
+        color: #A1A6B6;
+      }
     }
 
     &_old-price {
