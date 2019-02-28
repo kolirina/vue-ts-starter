@@ -1,4 +1,4 @@
-import * as moment from "moment";
+import moment from "moment";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {VueRouter} from "vue-router/types/router";

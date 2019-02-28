@@ -1,5 +1,5 @@
 import Decimal from "decimal.js";
-import * as moment from "moment";
+import moment from "moment";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {Watch} from "vue-property-decorator";
