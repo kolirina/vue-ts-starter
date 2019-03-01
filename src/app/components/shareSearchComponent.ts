@@ -62,10 +62,6 @@ export class ShareSearchComponent extends UI {
     private shareSearch = false;
     private notFoundLabel = "Ничего не найдено";
 
-    created(): void {
-        // this.filteredSharesMutated = this.filteredShares ? [...this.filteredShares] : [];
-    }
-
     @Watch("filteredShares")
     private async onFilteredSharesChange(filteredShares: Share[]): Promise<void> {
         this.filteredSharesMutated = filteredShares ? [...filteredShares] : [];

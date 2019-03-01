@@ -33,13 +33,23 @@ export class MarketService {
         };
     }
 
-    async getShareById(id: number): Promise<StockInfo> {
+    async getStockById(id: number): Promise<StockInfo> {
         const result = await this.http.get<_stockInfo>(`/market/stock/${id}/info-by-id`);
         return {
             stock: result.stock,
             history: this.convertDots(result.history),
             dividends: result.dividends,
             events: this.convertStockEvents(result.dividends, result.stock.ticker)
+        };
+    }
+
+    async getBondById(id: number): Promise<BondInfo> {
+        const result = await this.http.get<_bondInfo>(`/market/bond/${id}/info-by-id`);
+        return {
+            bond: result.bond,
+            history: this.convertDots(result.history),
+            payments: this.convertBondPayments(result.payments),
+            events: ChartUtils.processEventsChartData(result.payments)
         };
     }
 

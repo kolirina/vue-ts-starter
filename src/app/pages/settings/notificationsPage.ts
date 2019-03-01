@@ -6,7 +6,8 @@ import {BtnReturn} from "../../components/dialogs/customDialog";
 import {RemoveNotificationDialog} from "../../components/dialogs/removeNotificationDialog";
 import {CatchErrors} from "../../platform/decorators/catchErrors";
 import {ShowProgress} from "../../platform/decorators/showProgress";
-import {Notification, NotificationsService} from "../../services/notificationsService";
+import {Filters} from "../../platform/filters/Filters";
+import {Notification, NotificationsService, NotificationType} from "../../services/notificationsService";
 import {CommonUtils} from "../../utils/commonUtils";
 import {StoreType} from "../../vuex/storeType";
 
@@ -34,11 +35,11 @@ const MainStore = namespace(StoreType.MAIN);
 
             <v-card v-else class="notifications-card" v-for="notification in notifications" :key="notification.id">
                 <div class="notifications-card-header">
-                    <div class="notifications-card-header-title">{{notification.stock.shortname}}</div>
+                    <div class="notifications-card-header-title">{{notification.share.shortname}}</div>
                     <div class="notifications-card-header-price">
                         Цена
-                        <span>{{notification.stock.price | amount}}
-                        <i :class="notification.stock.currency.toLowerCase()"></i>
+                        <span>{{ getNotificationPrice(notification) }}
+                        <i :class="notification.share.currency.toLowerCase()"></i>
                     </span>
                     </div>
                     <div class="notifications-card-header-actions">
@@ -53,14 +54,14 @@ const MainStore = namespace(StoreType.MAIN);
                             <span class="notifications-card-body-prices-price">{{notification.buyPrice}}</span>
                             <span v-if="notification.buyVariation" class="notifications-card-body-prices-sign">±</span>
                             <span v-if="notification.buyVariation" class="notifications-card-body-prices-variation">{{ notification.buyVariation }}</span>
-                            <i class="notifications-card-body-prices-currency" :class="notification.stock.currency.toLowerCase()"></i>
+                            <i class="notifications-card-body-prices-currency" :class="notification.share.currency.toLowerCase()"></i>
                         </div>
                         <div v-if="notification.sellPrice">
                             Целевая цена продажи
                             <span class="notifications-card-body-prices-price">{{notification.sellPrice}}</span>
                             <span v-if="notification.sellVariation" class="notifications-card-body-prices-sign">±</span>
                             <span v-if="notification.sellVariation" class="notifications-card-body-prices-variation">{{ notification.sellVariation }}</span>
-                            <i class="notifications-card-body-prices-currency" :class="notification.stock.currency.toLowerCase()"></i>
+                            <i class="notifications-card-body-prices-currency" :class="notification.share.currency.toLowerCase()"></i>
                         </div>
                     </v-flex>
                     <div v-if="hasPriceAndNews(notification)" class="notifications-card-body-line"></div>
@@ -97,6 +98,8 @@ export class NotificationsPage extends UI {
     notifications: Notification[] = [];
 
     private searchTypesTitle = KeyWordsSearchTypeTitle;
+
+    private NotificationType = NotificationType;
 
     async created(): Promise<void> {
         await this.loadNotifications();
@@ -139,6 +142,10 @@ export class NotificationsPage extends UI {
 
     private isNewsNotification(notification: Notification): boolean {
         return CommonUtils.exists(notification.keyWordsSearchType) && notification.keywords !== this.notificationsService.DIVIDEND_WORDS;
+    }
+
+    private getNotificationPrice(notification: Notification): string {
+        return notification.type === NotificationType.stock ? Filters.formatMoneyAmount(notification.share.price) : Filters.formatNumber(notification.share.price);
     }
 }
 

@@ -18,20 +18,10 @@ export class OverviewService {
     @Inject
     private http: Http;
 
-    private cacheService = (Container.get(Cache) as Cache);
+    @Inject
+    private cacheService: Cache;
 
     private cache: { [key: string]: Portfolio } = {};
-
-    private isInit = false;
-
-    private portfolio: Portfolio = null;
-
-    getPortfolio(): Portfolio {
-        if (!this.isInit) {
-            this.init();
-        }
-        return this.portfolio;
-    }
 
     async getById(id: string): Promise<Portfolio> {
         let portfolio = this.cache[id];
@@ -143,9 +133,5 @@ export class OverviewService {
         overview.stockPortfolio.rows.forEach((value, index) => value.id = index.toString());
         overview.bondPortfolio.rows.forEach((value, index) => value.id = index.toString());
         return {id, portfolioParams: portfolio, overview};
-    }
-
-    private init(): void {
-        this.cacheService.put(PORTFOLIOS_KEY, this.cache);
     }
 }
