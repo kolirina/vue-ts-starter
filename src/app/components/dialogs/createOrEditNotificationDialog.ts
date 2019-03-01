@@ -149,6 +149,21 @@ import {CustomDialog} from "./customDialog";
                         </template>
                     </v-switch>
 
+                    <v-switch v-if="!isStockNotification" :readonly="!isStockNotification" v-model="bondEventNotification">
+                        <template slot="label">
+                            <span>Получать уведомления о событиях</span>
+                            <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                                <sup class="custom-tooltip" slot="activator">
+                                    <v-icon>fas fa-info-circle</v-icon>
+                                </sup>
+                                <span>
+                                  Вы будет получать письма как только эмитент <b>{{ share ? share.ticker : "" }}</b>
+                                  произведет выплату купона, амортизации или погашение.
+                                </span>
+                            </v-tooltip>
+                        </template>
+                    </v-switch>
+
                     <v-card-actions class="btn-group-right">
                         <v-btn @click.native="save" color="info lighten-2" flat>{{ notification.id ? "Сохранить" : "Добавить" }}</v-btn>
                         <v-btn @click.native="close">Отмена</v-btn>
@@ -177,11 +192,13 @@ export class CreateOrEditNotificationDialog extends CustomDialog<Notification, b
     private sellPriceNotification = false;
     private newsNotification = false;
     private dividendNotification = false;
+    private bondEventNotification = false;
     private notification: Notification = null;
 
     async mounted(): Promise<void> {
         if (this.data) {
             this.notification = {...this.data};
+            this.bondEventNotification = this.notification.type === NotificationType.bond;
             this.buyPriceNotification = CommonUtils.exists(this.notification.buyPrice);
             this.sellPriceNotification = CommonUtils.exists(this.notification.sellPrice);
             this.dividendNotification = CommonUtils.exists(this.notification.keywords) && this.notificationsService.DIVIDEND_WORDS === this.notification.keywords;
@@ -264,7 +281,7 @@ export class CreateOrEditNotificationDialog extends CustomDialog<Notification, b
         const emptySearchType = !CommonUtils.exists(this.notification.keyWordsSearchType);
 
         // Валидация активности одного из блоков(продажи или покупки)
-        if (emptyBuyPrice && emptySellPrice && emptySearchType) {
+        if (emptyBuyPrice && emptySellPrice && emptySearchType && this.notification.type === NotificationType.stock) {
             this.$snotify.warning("Заполните поля уведомления");
             return false;
         }
