@@ -4,9 +4,9 @@ import {CatchErrors} from "../../platform/decorators/catchErrors";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {Filters} from "../../platform/filters/Filters";
 import {MarketService} from "../../services/marketService";
-import {KeyWordsSearchType, Notification, NotificationsService} from "../../services/notificationsService";
+import {KeyWordsSearchType, Notification, NotificationsService, NotificationType} from "../../services/notificationsService";
 import {AssetType} from "../../types/assetType";
-import {Stock} from "../../types/types";
+import {Bond, Share} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {CustomDialog} from "./customDialog";
 
@@ -29,12 +29,12 @@ import {CustomDialog} from "./customDialog";
                                 </sup>
                                 <span>
                                   Для получения уведомлений задайте целевые цены и допуск. Например, вы хотите получить уведомление
-                                  для покупки акций <b>{{ stock ? stock.ticker : "SBER" }}</b> про цене <b>{{ stockPrice }}</b> {{ stockCurrency }}.
-                                  Для этого укажите в "Целевая цена покупки:" <b>{{ stockPrice }}</b>.
+                                  для покупки акций <b>{{ share ? share.ticker : "SBER" }}</b> про цене <b>{{ sharePrice }}</b> {{ shareCurrency }}.
+                                  Для этого укажите в "Целевая цена покупки:" <b>{{ sharePrice }}</b>.
                                   <br/>
                                   <br/>
                                   Задайте так же допуск цены, например, 3, чтобы получать
-                                  уведомления для цен от {{ stockPrice }}-3  и до {{ stockPrice }}+3 {{ stockCurrency }}.
+                                  уведомления для цен от {{ sharePrice }}-3  и до {{ sharePrice }}+3 {{ shareCurrency }}.
                                   Для покупки акции это значение будет просуммированно с целевой ценой.
                                   Допуск может быть нулевым.
                                 </span>
@@ -66,12 +66,12 @@ import {CustomDialog} from "./customDialog";
                                 </sup>
                                 <span>
                                   Для получения уведомлений задайте целевые цены и допуск. Например, вы хотите получить уведомление
-                                  для покупки акций <b>{{ stock ? stock.ticker : "SBER" }}</b> про цене <b>{{ stockPrice }}</b> {{ stockCurrency }}.
-                                  Для этого укажите в "Целевая цена покупки:" <b>{{ stockPrice }}</b>.
+                                  для покупки акций <b>{{ share ? share.ticker : "SBER" }}</b> про цене <b>{{ sharePrice }}</b> {{ shareCurrency }}.
+                                  Для этого укажите в "Целевая цена покупки:" <b>{{ sharePrice }}</b>.
                                   <br/>
                                   <br/>
                                   Задайте так же допуск цены, например 3, чтобы получать
-                                  уведомления для цен от {{ stockPrice }}-3  и до {{ stockPrice }}+3 {{ stockCurrency }}.
+                                  уведомления для цен от {{ sharePrice }}-3  и до {{ sharePrice }}+3 {{ shareCurrency }}.
                                   Для покупки акции это значение будет просуммированно с целевой ценой.
                                   Допуск может быть нулевым.
                                 </span>
@@ -94,7 +94,7 @@ import {CustomDialog} from "./customDialog";
                         </v-expansion-panel-content>
                     </v-expansion-panel>
 
-                    <v-switch v-model="newsNotification" @change="onNewsNotificationChange">
+                    <v-switch v-if="isStockNotification" v-model="newsNotification" @change="onNewsNotificationChange">
                         <template slot="label">
                             <span>Получать уведомления о новостях</span>
                             <v-tooltip content-class="custom-tooltip-wrap" bottom>
@@ -102,7 +102,7 @@ import {CustomDialog} from "./customDialog";
                                     <v-icon>fas fa-info-circle</v-icon>
                                 </sup>
                                 <span>
-                                  Вы будет получать письма обо всех корпоративных событиях эмитента <b>{{ stock ? stock.ticker : "" }}</b>.
+                                  Вы будет получать письма обо всех корпоративных событиях эмитента <b>{{ share ? share.ticker : "" }}</b>.
                                   Сюда относятся новости о публикациях отчетности,
                                   проведении собраний, о решении собраний, решения о выплате дивидендов, заключение значимых сделок,
                                   о которых эмитент должен отчитываться на сайтах раскрытия информации).
@@ -134,7 +134,7 @@ import {CustomDialog} from "./customDialog";
                         </v-expansion-panel-content>
                     </v-expansion-panel>
 
-                    <v-switch v-model="dividendNotification" @change="onDividendNotificationChange">
+                    <v-switch v-if="isStockNotification" v-model="dividendNotification" @change="onDividendNotificationChange">
                         <template slot="label">
                             <span>Получать уведомления о планируемых дивидендах</span>
                             <v-tooltip content-class="custom-tooltip-wrap" bottom>
@@ -142,7 +142,7 @@ import {CustomDialog} from "./customDialog";
                                     <v-icon>fas fa-info-circle</v-icon>
                                 </sup>
                                 <span>
-                                  Вы будет получать письма как только эмитент <b>{{ stock ? stock.ticker : "" }}</b>
+                                  Вы будет получать письма как только эмитент <b>{{ share ? share.ticker : "" }}</b>
                                   примет решение о выплате дивидендов.
                                 </span>
                             </v-tooltip>
@@ -171,8 +171,8 @@ export class CreateOrEditNotificationDialog extends CustomDialog<Notification, b
     ];
 
     private assetType = AssetType.STOCK;
-    private stock: Stock = null;
-    private filteredShares: Stock[] = [];
+    private share: Share = null;
+    private filteredShares: Share[] = [];
     private buyPriceNotification = false;
     private sellPriceNotification = false;
     private newsNotification = false;
@@ -186,10 +186,16 @@ export class CreateOrEditNotificationDialog extends CustomDialog<Notification, b
             this.sellPriceNotification = CommonUtils.exists(this.notification.sellPrice);
             this.dividendNotification = CommonUtils.exists(this.notification.keywords) && this.notificationsService.DIVIDEND_WORDS === this.notification.keywords;
             this.newsNotification = CommonUtils.exists(this.notification.keyWordsSearchType) && this.notificationsService.DIVIDEND_WORDS !== this.notification.keywords;
-            this.stock = (await this.marketService.getShareById(this.notification.stockId)).stock;
-            this.filteredShares = [this.stock];
+            if (this.notification.type === NotificationType.stock) {
+                this.share = (await this.marketService.getStockById(this.notification.shareId)).stock;
+            } else if (this.notification.type === NotificationType.bond) {
+                this.share = (await this.marketService.getBondById(this.notification.shareId)).bond;
+            }
+            this.filteredShares = [this.share];
         } else {
-            this.notification = {};
+            this.notification = {
+                type: NotificationType.stock
+            };
         }
     }
 
@@ -203,9 +209,9 @@ export class CreateOrEditNotificationDialog extends CustomDialog<Notification, b
     }
 
     private async addNotification(): Promise<void> {
-        const stockId = this.stock.id;
+        const shareId = this.share.id;
         const reqParams: Notification = {
-            stockId: stockId,
+            shareId,
             id: this.notification.id
         };
 
@@ -225,9 +231,9 @@ export class CreateOrEditNotificationDialog extends CustomDialog<Notification, b
         }
 
         if (this.notification.id) {
-            await this.notificationsService.editNotification(reqParams);
+            await this.notificationsService.editNotification(reqParams, this.notification.type);
         } else {
-            await this.notificationsService.addNotification(reqParams);
+            await this.notificationsService.addNotification(reqParams, this.notification.type);
         }
 
         this.$snotify.info("Уведомление успешно сохранено");
@@ -249,7 +255,7 @@ export class CreateOrEditNotificationDialog extends CustomDialog<Notification, b
 
     private isValid(): boolean {
         // Валидация тикера
-        if (!this.stock) {
+        if (!this.share) {
             this.$snotify.warning("Ценная бумага не выбрана");
             return false;
         }
@@ -265,19 +271,29 @@ export class CreateOrEditNotificationDialog extends CustomDialog<Notification, b
         return true;
     }
 
-    private onShareSearchChange(stock: Stock): void {
-        this.stock = stock;
+    private get isStockNotification(): boolean {
+        return this.notification.type === NotificationType.stock;
     }
 
-    private get stockPrice(): string {
-        return this.stock ? Filters.formatMoneyAmount(this.stock.price) : "220";
+    private onShareSearchChange(share: Share): void {
+        this.share = share;
     }
 
-    private get stockCurrency(): string {
-        if (!this.stock) {
+    private get sharePrice(): string {
+        if (!this.share) {
+            return "220";
+        }
+        return this.notification.type === NotificationType.stock ? Filters.formatMoneyAmount(this.share.price) : Filters.formatNumber((this.share as Bond).prevprice);
+    }
+
+    private get shareCurrency(): string {
+        if (!this.share) {
             return "рублей";
         }
-        switch (this.stock.currency) {
+        if (this.notification.type === NotificationType.bond) {
+            return "%";
+        }
+        switch (this.share.currency) {
             case "RUB":
                 return "рублей";
             case "USD":

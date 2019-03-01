@@ -264,6 +264,11 @@ export interface PortfolioBackup {
     days: number[];
 }
 
+export enum ShareType {
+    STOCK = "STOCK",
+    BOND = "BOND"
+}
+
 export type Share = {
     /** Идентификатору бумаги в системе */
     id: number;
@@ -287,6 +292,8 @@ export type Share = {
     name: string;
     /** Тикер */
     ticker: string;
+    /** Тип актива бумаги */
+    shareType: ShareType;
 };
 
 /**
