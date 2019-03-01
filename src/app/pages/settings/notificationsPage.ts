@@ -8,6 +8,7 @@ import {CatchErrors} from "../../platform/decorators/catchErrors";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {Filters} from "../../platform/filters/Filters";
 import {Notification, NotificationsService, NotificationType} from "../../services/notificationsService";
+import {Bond} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {StoreType} from "../../vuex/storeType";
 
@@ -82,6 +83,11 @@ const MainStore = namespace(StoreType.MAIN);
                             Уведомление о предстоящих дивидендах
                         </div>
                     </v-flex>
+                    <v-flex v-if="isBondEventNotification(notification)" :class="['notifications-card-body-news', hasPriceAndNews(notification) ? 'with-padding' : '']">
+                        <div>
+                            Уведомление о событиях (Купонные выплаты, амортизация, погашение)
+                        </div>
+                    </v-flex>
                 </v-layout>
                 <div class="notifications-card-last-notification">
                     <span>Дата последнего уведомления {{ notification.lastNotification }}</span>
@@ -144,8 +150,12 @@ export class NotificationsPage extends UI {
         return CommonUtils.exists(notification.keyWordsSearchType) && notification.keywords !== this.notificationsService.DIVIDEND_WORDS;
     }
 
+    private isBondEventNotification(notification: Notification): boolean {
+        return notification.type === NotificationType.bond;
+    }
+
     private getNotificationPrice(notification: Notification): string {
-        return notification.type === NotificationType.stock ? Filters.formatMoneyAmount(notification.share.price) : Filters.formatNumber(notification.share.price);
+        return notification.type === NotificationType.stock ? Filters.formatMoneyAmount(notification.share.price) : Filters.formatNumber((notification.share as Bond).prevprice);
     }
 }
 
