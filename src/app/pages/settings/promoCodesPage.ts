@@ -62,13 +62,26 @@ const MainStore = namespace(StoreType.MAIN);
                             <expanded-panel :value="$uistate.referralStatisticsPanel" :state="$uistate.REFERRAL_STATISTICS_PANEL" class="promo-codes__statistics">
                                 <template slot="header">Статистика по реферальной программе</template>
                                 <div v-if="promoCodeStatistics" class="statistics">
-                                    <div>Всего привлеченных пользователей: {{ promoCodeStatistics.referralCount }}</div>
-                                    <div>Из них хоть раз оплативших: {{ promoCodeStatistics.hasPaymentsReferralCount }}</div>
-                                    <div>Всего оплат пользователей: {{ promoCodeStatistics.referralPaymentTotalAmount }} <span class="rewards-currency">RUB</span></div>
-                                    <div>Всего заработано: {{ promoCodeStatistics.referrerPaymentsTotal }} <span class="rewards-currency">RUB</span></div>
-                                    <div>Всего выплачено: {{ promoCodeStatistics.referrerPaymentsTotalPaid }} <span class="rewards-currency">RUB</span></div>
+                                    <div>
+                                        <span>Привлеченных пользователей:</span>{{ promoCodeStatistics.referralCount }}
+                                    </div>
+                                    <div>
+                                        <span>Из них хоть раз оплативших:</span>{{ promoCodeStatistics.hasPaymentsReferralCount }}
+                                    </div>
+                                    <div>
+                                        <span>Всего оплат пользователей:</span>{{ promoCodeStatistics.referralPaymentTotalAmount }}
+                                        <span class="rewards-currency">RUB</span>
+                                    </div>
+                                    <div>
+                                        <span>Всего заработано:</span>{{ promoCodeStatistics.referrerPaymentsTotal }}
+                                        <span class="rewards-currency">RUB</span>
+                                    </div>
+                                    <div>
+                                        <span>Всего выплачено:</span>{{ promoCodeStatistics.referrerPaymentsTotalPaid }}
+                                        <span class="rewards-currency">RUB</span>
+                                    </div>
                                     <div class="statistics__label">
-                                        Остаток для выплаты: {{ promoCodeStatistics.referrerPaymentsTotalUnpaid }}
+                                        <span>Остаток для выплаты:</span>{{ promoCodeStatistics.referrerPaymentsTotalUnpaid }}
                                         <span class="rewards-currency">RUB</span>
                                     </div>
                                 </div>
