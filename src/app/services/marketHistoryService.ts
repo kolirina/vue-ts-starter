@@ -1,7 +1,7 @@
 import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {Http} from "../platform/services/http";
-import {BondHistoryResponse, StockHistoryResponse} from "../types/types";
+import {Bond, BondHistoryResponse, Stock, StockHistoryResponse} from "../types/types";
 
 @Service("MarketHistoryService")
 @Singleton
@@ -10,22 +10,37 @@ export class MarketHistoryService {
     @Inject
     private http: Http;
 
+    private stockCache: { [key: string]: Stock } = {};
+    private bondCache: { [key: string]: Bond } = {};
+
     /**
-     * TODO кеширование исторических значений
-     * @param ticker
-     * @param date
+     * РџРѕР»СѓС‡РµРЅРёРµ РёСЃС‚РѕСЂРёС‡РµСЃРєРёС… РґР°РЅРЅС‹С… РїРѕ Р°РєС†РёРё РЅР° РґР°С‚Сѓ
+     * @param ticker С‚РёРєРµСЂ
+     * @param date РґР°С‚Р°
      */
-    async getStockHistory(ticker: string, date: string): Promise<StockHistoryResponse> {
-        return this.http.get<StockHistoryResponse>(`/history/stock/${ticker}`, {date: date});
+    async getStockHistory(ticker: string, date: string): Promise<Stock> {
+        const stock = this.stockCache[`${ticker}:${date}`];
+        if (stock) {
+            return stock;
+        }
+        const response = await this.http.get<StockHistoryResponse>(`/history/stock/${ticker}`, {date: date});
+        this.stockCache[`${ticker}:${date}`] = response.stock;
+        return response.stock;
     }
 
     /**
-     * TODO кеширование исторических значений
-     * @param secid
-     * @param date
+     * РџРѕР»СѓС‡РµРЅРёРµ РёСЃС‚РѕСЂРёС‡РµСЃРєРёС… РґР°РЅРЅС‹С… РїРѕ РѕР±Р»РёРіР°С†РёРё РЅР° РґР°С‚Сѓ
+     * @param secid secid
+     * @param date РґР°С‚Р°
      */
-    async getBondHistory(secid: string, date: string): Promise<BondHistoryResponse> {
-        return this.http.get<BondHistoryResponse>(`/history/bond/${secid}`, {date: date});
+    async getBondHistory(secid: string, date: string): Promise<Bond> {
+        const bond = this.bondCache[`${secid}:${date}`];
+        if (bond) {
+            return bond;
+        }
+        const response = await this.http.get<BondHistoryResponse>(`/history/bond/${secid}`, {date: date});
+        this.bondCache[`${secid}:${date}`] = response.bond;
+        return response.bond;
     }
 
 }

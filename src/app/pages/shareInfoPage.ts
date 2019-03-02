@@ -9,6 +9,7 @@ import {CatchErrors} from "../platform/decorators/catchErrors";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {MarketService} from "../services/marketService";
 import {AssetType} from "../types/assetType";
+import {BigMoney} from "../types/bigMoney";
 import {BaseChartDot, Dot, HighStockEventsGroup} from "../types/charts/types";
 import {Operation} from "../types/operation";
 import {Portfolio, Share} from "../types/types";
@@ -131,7 +132,7 @@ const MainStore = namespace(StoreType.MAIN);
             <div style="height: 20px"></div>
             <v-card v-if="share" style="overflow: auto;">
                 <v-card-text>
-                    <line-chart :data="history" :events-chart-data="events" :balloon-title="share.ticker"></line-chart>
+                    <line-chart :data="history" :events-chart-data="events" :balloon-title="share.ticker" :avg-line-value="portfolioAvgPrice"></line-chart>
                 </v-card-text>
             </v-card>
 
@@ -201,5 +202,10 @@ export class ShareInfoPage extends UI {
 
     private async openCreateNotificationDialog(): Promise<void> {
         await new CreateOrEditNotificationDialog().show();
+    }
+
+    private get portfolioAvgPrice(): number {
+        const row = this.portfolio.overview.stockPortfolio.rows.find(r => r.stock.ticker === this.share.ticker);
+        return row ? new BigMoney(row.avgBuy).amount.toNumber() : null;
     }
 }

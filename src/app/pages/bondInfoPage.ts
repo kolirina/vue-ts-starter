@@ -22,7 +22,7 @@ const MainStore = namespace(StoreType.MAIN);
         <v-container v-if="share" fluid>
             <div slot="header">Информация по бумаге</div>
             <v-layout>
-                <v-text-field placeholder="Введите тикер или название компании"></v-text-field>
+                <share-search :asset-type="assetType.BOND" @change="onShareSelect"></share-search>
             </v-layout>
             <v-card>
                 <v-card-text>
@@ -102,7 +102,7 @@ const MainStore = namespace(StoreType.MAIN);
             <div style="height: 20px"></div>
             <v-card style="overflow: auto;">
                 <v-card-text>
-                    <line-chart :data="history" :events-chart-data="events" :balloon-title="share.isin"></line-chart>
+                    <line-chart :data="history" :events-chart-data="events" :balloon-title="share.isin" :avg-line-value="portfolioAvgPrice"></line-chart>
                 </v-card-text>
             </v-card>
             <div style="height: 20px"></div>
@@ -128,6 +128,7 @@ export class BondInfoPage extends UI {
     private history: Dot[] = [];
     private paymentsData: ColumnChartData = null;
     private events: HighStockEventsGroup[] = [];
+    private assetType = AssetType;
 
     @CatchErrors
     @ShowProgress
@@ -135,6 +136,19 @@ export class BondInfoPage extends UI {
         const isin = this.$route.params.isin;
         if (isin) {
             const result = await this.marketService.getBondInfo(isin);
+            this.share = result.bond;
+            this.history = result.history;
+            this.paymentsData = result.payments;
+            this.events.push(...result.events);
+        }
+    }
+
+    @CatchErrors
+    @ShowProgress
+    private async onShareSelect(share: Share): Promise<void> {
+        this.share = share;
+        if (this.share) {
+            const result = await this.marketService.getBondInfo(this.share.isin);
             this.share = result.bond;
             this.history = result.history;
             this.paymentsData = result.payments;
@@ -153,5 +167,10 @@ export class BondInfoPage extends UI {
         if (result) {
             await this.reloadPortfolio(this.portfolio.id);
         }
+    }
+
+    private get portfolioAvgPrice(): number {
+        const row = this.portfolio.overview.bondPortfolio.rows.find(r => r.bond.ticker === this.share.ticker);
+        return row ? Number(row.avgBuy) : null;
     }
 }

@@ -1,5 +1,5 @@
 import {Decimal} from "decimal.js";
-import Highcharts, {ChartObject, DataPoint, Gradient} from "highcharts";
+import Highcharts, {ChartObject, DataPoint, Gradient, PlotLines} from "highcharts";
 import Highstock from "highcharts/highstock";
 import {Filters} from "../platform/filters/Filters";
 import {BigMoney} from "../types/bigMoney";
@@ -144,9 +144,11 @@ export class ChartUtils {
      * @param title заголовк графика
      * @param yAxisTitle заголовок для оси y
      * @param callback callback вызваемый после загрузки
+     * @param portfolioAvg средняя цена бумаги в портфеле (для рисования горизонтальной линии)
      */
-    static drawLineChart(container: HTMLElement, chartData: any[], eventsChartData: HighStockEventsGroup[], ranges: Highstock.RangeSelectorButton[], selectedRangeIndex: number,
-                         decimals: number, balloonTitle: string, title: string = "", yAxisTitle: string = "", callback: () => void = null): ChartObject {
+    static drawLineChart(container: HTMLElement, chartData: any[], eventsChartData: HighStockEventsGroup[], ranges: Highstock.RangeSelectorButton[],
+                         selectedRangeIndex: number, decimals: number, balloonTitle: string, title: string = "", yAxisTitle: string = "",
+                         callback: () => void = null, portfolioAvg: number = null): ChartObject {
         return Highstock.stockChart(container, {
             chart: {
                 zoomType: "x",
@@ -187,7 +189,16 @@ export class ChartUtils {
             yAxis: {
                 title: {
                     text: yAxisTitle
-                }
+                },
+                plotLines: portfolioAvg ? [{
+                    value: portfolioAvg,
+                    color: "#1976d2",
+                    dashStyle: "shortdash",
+                    width: 2,
+                    label: {
+                        text: `Средняя цена в портфеле ${portfolioAvg}`
+                    }
+                } as PlotLines] : []
             },
             legend: {
                 enabled: false

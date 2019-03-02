@@ -46,7 +46,7 @@ import {CustomDialog} from "./customDialog";
                             <!-- Операция -->
                             <v-flex xs12 sm6>
                                 <v-select :items="assetType.operations" v-model="operation" :return-object="true" label="Операция" dense hide-details
-                                          item-text="description"></v-select>
+                                          item-text="description" @change="onOperationChange"></v-select>
                             </v-flex>
 
                             <!-- Тикер бумаги -->
@@ -268,10 +268,15 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private async onTickerOrDateChange(): Promise<void> {
-        if (!this.date || !this.share || ![Operation.BUY, Operation.SELL].includes(this.operation)) {
+        if (!this.date || !this.share) {
             return;
         }
+        const calculationOperation = [Operation.COUPON, Operation.DIVIDEND, Operation.AMORTIZATION].includes(this.operation);
         const date = DateUtils.parseDate(this.date);
+        if (calculationOperation) {
+            await this.fillFromSuggestedInfo();
+            return;
+        }
         if (DateUtils.isCurrentDate(date)) {
             if (this.assetType === AssetType.STOCK) {
                 this.fillFieldsFromStock(this.share as Stock);
@@ -280,12 +285,32 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             }
         } else if (DateUtils.isBefore(date)) {
             if (this.assetType === AssetType.STOCK) {
-                const stock = (await this.marketHistoryService.getStockHistory(this.share.ticker, moment(this.date).format("DD.MM.YYYY"))).stock;
+                const stock = (await this.marketHistoryService.getStockHistory(this.share.ticker, moment(this.date).format("DD.MM.YYYY")));
                 this.fillFieldsFromStock(stock);
             } else if (this.assetType === AssetType.BOND) {
-                const bond = (await this.marketHistoryService.getBondHistory(this.share.ticker, moment(this.date).format("DD.MM.YYYY"))).bond;
+                const bond = (await this.marketHistoryService.getBondHistory(this.share.ticker, moment(this.date).format("DD.MM.YYYY")));
                 this.fillFieldsFromBond(bond);
             }
+        }
+    }
+
+    private async onOperationChange(): Promise<void> {
+        if (!this.date || !this.share) {
+            return;
+        }
+        const calculationOperation = [Operation.COUPON, Operation.DIVIDEND, Operation.AMORTIZATION].includes(this.operation);
+        const date = DateUtils.parseDate(this.date);
+        if (calculationOperation) {
+            await this.fillFromSuggestedInfo();
+        }
+    }
+
+    private async fillFromSuggestedInfo(): Promise<void> {
+        const suggestedInfo = await this.tradeService.getSuggestedInfo(this.portfolio.id, this.assetType.enumName,
+            this.operation.enumName, this.share.ticker, this.date);
+        if (suggestedInfo) {
+            this.quantity = suggestedInfo.quantity;
+            this.price = suggestedInfo.amount;
         }
     }
 
@@ -408,6 +433,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private clearFields(): void {
+        this.share = null;
+        this.filteredShares = [];
         this.date = DateUtils.currentDate();
         this.time = DateUtils.currentTime();
         this.quantity = null;
