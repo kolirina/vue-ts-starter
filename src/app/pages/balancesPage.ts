@@ -250,7 +250,8 @@ export class BalancesPage extends UI implements TradeDataHolder {
         this.currency = this.share.currency;
         this.closePrice = null;
         if (this.date) {
-            this.closePrice = new BigMoney((await this.marketHistoryService.getStockHistory(this.share.ticker, moment(this.date).format("DD.MM.YYYY"))).stock.price);
+            this.closePrice = new BigMoney((await this.marketHistoryService.getStockHistory(this.share.ticker,
+                moment(this.date).format("DD.MM.YYYY"))).price);
         }
     }
 

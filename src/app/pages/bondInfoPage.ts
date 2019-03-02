@@ -22,7 +22,7 @@ const MainStore = namespace(StoreType.MAIN);
         <v-container v-if="share" fluid>
             <div slot="header">Информация по бумаге</div>
             <v-layout>
-                <v-text-field placeholder="Введите тикер или название компании"></v-text-field>
+                <share-search :asset-type="assetType.BOND" @change="onShareSelect"></share-search>
             </v-layout>
             <v-card>
                 <v-card-text>
@@ -128,6 +128,7 @@ export class BondInfoPage extends UI {
     private history: Dot[] = [];
     private paymentsData: ColumnChartData = null;
     private events: HighStockEventsGroup[] = [];
+    private assetType = AssetType;
 
     @CatchErrors
     @ShowProgress
@@ -135,6 +136,19 @@ export class BondInfoPage extends UI {
         const isin = this.$route.params.isin;
         if (isin) {
             const result = await this.marketService.getBondInfo(isin);
+            this.share = result.bond;
+            this.history = result.history;
+            this.paymentsData = result.payments;
+            this.events.push(...result.events);
+        }
+    }
+
+    @CatchErrors
+    @ShowProgress
+    private async onShareSelect(share: Share): Promise<void> {
+        this.share = share;
+        if (this.share) {
+            const result = await this.marketService.getBondInfo(this.share.isin);
             this.share = result.bond;
             this.history = result.history;
             this.paymentsData = result.payments;

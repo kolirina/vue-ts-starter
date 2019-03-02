@@ -85,11 +85,11 @@ export class TradeService {
      * @param date дата
      * @returns данные с суммной начисления и количеством
      */
-    async getSuggestedInfo(portfolioId: number, asset: string, operation: string, ticker: string, date: string): Promise<SuggestedQuantityResponse> {
+    async getSuggestedInfo(portfolioId: string, asset: string, operation: string, ticker: string, date: string): Promise<SuggestedQuantityResponse> {
         const request: SuggestedQuantityRequest = {
             portfolioId, asset, operation, ticker, date
         };
-        return this.http.post<SuggestedQuantityResponse>("/trades/suggested", request);
+        return this.http.post<SuggestedQuantityResponse>("/trades/suggest", request);
     }
 
     private correctMoneyOperation(trade: TradeRow): TradeRow {
@@ -222,7 +222,7 @@ export interface SuggestedQuantityRequest {
     /** Операция над активом */
     operation: string;
     /** Идентификатор портфеля */
-    portfolioId: number;
+    portfolioId: string;
     /** Тикер для акции или isin для облигации. Используется для поиска бумаги */
     ticker: string;
     /** Дата */
