@@ -47,6 +47,9 @@ export class LineChart extends UI {
     /** Данные по событиям */
     @Prop({required: false})
     private eventsChartData: HighStockEventsGroup[];
+    /** Значение для линии средней цены в портфеле */
+    @Prop({required: false})
+    private avgLineValue: number;
     /** Объект графика */
     private chart: ChartObject = null;
     /** Набор доступных для выбора диапазонов дат */
@@ -79,7 +82,7 @@ export class LineChart extends UI {
      */
     private async draw(): Promise<void> {
         this.chart = ChartUtils.drawLineChart(this.$refs.container, this.data, this.eventsChartData, this.ranges,
-            this.ranges.length - 1, this.decimals, this.balloonTitle, this.title, this.yAxisTitle);
+            this.ranges.length - 1, this.decimals, this.balloonTitle, this.title, this.yAxisTitle, null, this.avgLineValue);
     }
 
     private defineDecimals(): number {

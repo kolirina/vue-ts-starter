@@ -102,7 +102,7 @@ const MainStore = namespace(StoreType.MAIN);
             <div style="height: 20px"></div>
             <v-card style="overflow: auto;">
                 <v-card-text>
-                    <line-chart :data="history" :events-chart-data="events" :balloon-title="share.isin"></line-chart>
+                    <line-chart :data="history" :events-chart-data="events" :balloon-title="share.isin" :avg-line-value="portfolioAvgPrice"></line-chart>
                 </v-card-text>
             </v-card>
             <div style="height: 20px"></div>
@@ -153,5 +153,10 @@ export class BondInfoPage extends UI {
         if (result) {
             await this.reloadPortfolio(this.portfolio.id);
         }
+    }
+
+    private get portfolioAvgPrice(): number {
+        const row = this.portfolio.overview.bondPortfolio.rows.find(r => r.bond.ticker === this.share.ticker);
+        return row ? Number(row.avgBuy) : null;
     }
 }
