@@ -26,11 +26,6 @@ import {TableFilterBase} from "./tableFilterBase";
     // language=Vue
     template: `
         <table-filter-base @search="onSearch" :search-label="searchLabel" :min-length="2">
-            <v-switch v-model="filter.showMoneyTrades" @change="onChange">
-                <template slot="label">
-                    <span>Сделки по денежным средствам</span>
-                </template>
-            </v-switch>
             <v-switch v-model="filter.showLinkedMoneyTrades" @change="onChange">
                 <template slot="label">
                     <span>Связанные сделки</span>
@@ -71,7 +66,7 @@ export class TradesTableFilter extends UI {
     /** Текущий объект таймера */
     private currentTimer: number = null;
     /** Список типов */
-    private listTypes = [TradeListType.FULL, TradeListType.STOCK, TradeListType.BOND];
+    private listTypes = [TradeListType.FULL, TradeListType.STOCK, TradeListType.BOND, TradeListType.MONEY];
     /** Список операций */
     private operations: Operation[] = TradesTableFilter.DEFAULT_OPERATIONS;
 
@@ -111,7 +106,20 @@ export class TradesTableFilter extends UI {
     }
 
     private onListTypeChange(): void {
-        console.log(this.filter);
+        switch (this.filter.listType) {
+            case TradeListType.FULL:
+                this.filter.operation = [...TradesTableFilter.DEFAULT_OPERATIONS];
+                break;
+            case TradeListType.STOCK:
+                this.filter.operation = [Operation.BUY, Operation.SELL, Operation.DIVIDEND];
+                break;
+            case TradeListType.BOND:
+                this.filter.operation = [Operation.BUY, Operation.SELL, Operation.COUPON, Operation.AMORTIZATION];
+                break;
+            case TradeListType.MONEY:
+                this.filter.operation = [Operation.BUY, Operation.SELL, Operation.INCOME, Operation.LOSS];
+                break;
+        }
         this.emitFilterChange();
     }
 

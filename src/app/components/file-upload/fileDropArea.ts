@@ -10,7 +10,8 @@ import {FileUtils} from "../../utils/fileUtils";
     // language=Vue
     template: `
         <div class="file-drop-area" :class="[{'drag-over': isDragOver}]">
-            <slot></slot>
+            <slot v-if="!isDragOver"></slot>
+            <div v-else>Отпустите для загрузки</div>
         </div>
     `
 })

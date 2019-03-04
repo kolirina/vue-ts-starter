@@ -27,7 +27,7 @@
   }
 
   &-list-item-active {
-    color: $sidebar-active-link-color!important;
+    color: $theme-color-dark-blue !important;
     border-left: 2px solid $sidebar-blue-color;
   }
 
@@ -43,13 +43,13 @@
 
     &-content {
       font-weight: 200;
-      font-size: 14px;
-      justify-content: flex-end!important;
+      font-size: 12px;
+      justify-content: flex-end !important;
     }
 
     &-img {
       padding-bottom: 5px;
-      align-items: flex-end!important;
+      align-items: flex-end !important;
     }
   }
 
@@ -73,7 +73,7 @@
     }
 
     i {
-      color: #fff!important;
+      color: #fff !important;
     }
 
   }

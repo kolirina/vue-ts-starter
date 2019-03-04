@@ -9,12 +9,12 @@
 .theme--light.v-datatable thead th.column.sortable.active .v-icon,
 .theme--light.v-datatable thead th.column.sortable:hover,
 .theme--light.v-small-dialog a {
-  color: $table--text--font-color;
+  color: $theme-color-dark-blue;
 }
 
 .theme--light.v-table {
   background-color: #fff;
-  color: $table--text--font-color;
+  color: $theme-color-dark-blue;
 }
 
 .ii--red-markup {
@@ -63,7 +63,7 @@
     }
 
     &.active {
-      color: $active-table-th-color !important;
+      color: $theme-color-dark-blue !important;
     }
   }
 }
@@ -92,4 +92,9 @@
       color: rgba(0, 0, 0, 0.57) !important;
     }
   }
+}
+// ======================= перекрываем кастомные стили
+/** Убираем нижнюю границу у заголовка таблиц */
+.theme--light.v-table thead tr:first-child {
+  border-bottom: none !important;
 }

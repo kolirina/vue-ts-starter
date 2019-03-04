@@ -1,3 +1,28 @@
+.v-expansion-panel {
+  box-shadow: none;
+
+  &__header-info {
+    font-size: 14px;
+    color: #b4b4b4;
+    font-family: $main--font-family;
+    margin-left: 10px;
+  }
+}
+
+.theme--light.v-expansion-panel .v-expansion-panel__container {
+  background-color: #ffffff;
+}
+
+.v-expansion-panel__header {
+  font-family: $table--title--font-family;
+  font-size: $table--title--font-size;
+  color: $theme-color-dark-blue !important;
+}
+
+.theme--light.v-expansion-panel--focusable .v-expansion-panel__container:focus {
+  background-color: #ffffff;
+}
+
 .exp-panel {
   position: relative;
 

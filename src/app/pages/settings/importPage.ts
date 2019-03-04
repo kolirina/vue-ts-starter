@@ -14,6 +14,7 @@ import {DealsImportProvider, ImportProviderFeatures, ImportProviderFeaturesByPro
 import {OverviewService} from "../../services/overviewService";
 import {Portfolio, Status} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
+import {FileUtils} from "../../utils/fileUtils";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 import {ImportInstructions} from "./importInstructions";
@@ -215,7 +216,17 @@ export class ImportPage extends UI {
      * @param {FileList} fileList список файлов
      */
     private onFileAdd(fileList: File[]): void {
-        this.files = fileList;
+        let filtered = fileList;
+        if (fileList.length > 1) {
+            this.$snotify.warning("Пожалуйста загружайте по одному файлу для более точных результатов импорта.");
+            filtered = [fileList[0]];
+        }
+        const isValid = FileUtils.checkExtension(filtered[0]);
+        if (!isValid) {
+            this.$snotify.warning(`Формат файла не соответствует разрешенным: ${FileUtils.ALLOWED_EXTENSION}.`);
+            return;
+        }
+        this.files = filtered;
     }
 
     /**
