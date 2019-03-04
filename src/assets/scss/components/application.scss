@@ -16,3 +16,8 @@
   color: rgba(0,0,0,.12)!important;
   background-color: #e0e0e0 !important;
 }
+
+.v-select>.v-input__control>.v-input__slot,
+.v-autocomplete.v-input>.v-input__control>.v-input__slot {
+  cursor: pointer !important;
+}

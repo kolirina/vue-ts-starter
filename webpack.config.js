@@ -1,69 +1,69 @@
-var path = require('path');
-var webpack = require('webpack');
+var path = require("path");
+var webpack = require("webpack");
 
 module.exports = {
+    devServer: {
+        historyApiFallback: true,
+        noInfo: true,
+    },
+    devtool: "#eval-source-map",
+    entry: "./src/index.ts",
     mode: process.env.NODE_ENV,
-    entry: './src/index.ts',
-    output: {
-        path: path.resolve(__dirname, './dist'),
-        publicPath: '/dist/',
-        filename: 'build.js'
-    },
-    node: {
-        fs: 'empty'
-    },
     module: {
         rules: [
             {
-                test: /\.tsx?$/,
-                loader: 'ts-loader',
                 exclude: /node_modules/,
+                loader: "ts-loader",
                 options: {
                     appendTsSuffixTo: [/\.vue$/],
-                }
+                },
+                test: /\.tsx?$/,
             },
             {
-                test: /\.(png|jpg|gif|svg)$/,
-                loader: 'file-loader',
+                loader: "file-loader",
                 options: {
-                    name: '[name].[ext]?[hash]'
-                }
+                    name: "[name].[ext]?[hash]",
+                },
+                test: /\.(png|jpg|gif|svg)$/,
             },
             {
+                loader: ["style-loader", "css-loader", "stylus-loader"],
                 test: /\.styl$/,
-                loader: ['style-loader', 'css-loader', 'stylus-loader']
-            }
-        ]
+            },
+        ],
+    },
+    node: {
+        fs: "empty",
+    },
+    output: {
+        filename: "build.js",
+        path: path.resolve(__dirname, "./dist"),
+        publicPath: "/dist/",
+    },
+    performance: {
+        hints: false,
     },
     plugins: [],
     resolve: {
-        extensions: ['.ts', '.js', '.json'],
         alias: {
-            'vue$': 'vue/dist/vue.esm.js'
-        }
+            "vue$": "vue/dist/vue.esm.js",
+        },
+        extensions: [".ts", ".js", ".json"],
     },
-    devServer: {
-        historyApiFallback: true,
-        noInfo: true
-    },
-    performance: {
-        hints: false
-    },
-    devtool: '#eval-source-map'
 };
 
-if (process.env.NODE_ENV === 'production') {
-    module.exports.devtool = '';
+if (process.env.NODE_ENV === "production") {
+    module.exports.devtool = "";
     // http://vue-loader.vuejs.org/en/workflow/production.html
     module.exports.plugins.push(...[
         new webpack.DefinePlugin({
-            'process.env': {
-                NODE_ENV: '"production"'
-            }
+            "process.env": {
+                NODE_ENV: '"production"',
+            },
         }),
         new webpack.optimize.AggressiveMergingPlugin(),
         new webpack.LoaderOptionsPlugin({
-            minimize: true
-        })
+            minimize: true,
+        }),
     ]);
 }
