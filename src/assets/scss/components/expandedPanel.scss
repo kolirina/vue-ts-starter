@@ -33,10 +33,12 @@
   &-arrow {
     font-size: 35px;
     color: $non-active-table-th-color !important;
-
-    &-margin {
-      margin-right: 35px;
-    }
+    background: url("../img/common/arrow.svg") no-repeat center;
+    width: 10px;
+    height: 10px;
+    display: block;
+    margin-right: 45px;
+    transition: transform 0.2s ease;
   }
 
   &-list-tile {
@@ -91,15 +93,8 @@
   }
 }
 
-.v-expansion-panel__header__icon {
-  .v-icon {
-    transform: rotate(-90deg);
-    transition: transform 0.2s ease;
-  }
-}
-
 .v-expansion-panel__container--active .v-expansion-panel__header__icon {
-  .v-icon {
-    transform: rotate(0deg) !important;
+  i {
+    transform: rotate(90deg);
   }
 }

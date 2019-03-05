@@ -21,7 +21,7 @@ import {UI} from "../app/ui";
             <v-expansion-panel :readonly="alwaysOpen" focusable expand :value="value">
                 <v-expansion-panel-content :lazy="true" v-state="state">
                     <template slot="actions">
-                        <v-icon v-if="!alwaysOpen" class="exp-panel-arrow" :class="{'exp-panel-arrow-margin': withMenu}">arrow_drop_down</v-icon>
+                        <i v-if="!alwaysOpen" class="exp-panel-arrow"></i>
                         <div class="exp-panel-attach" :id="'exp-panel-attach' + name"></div>
                     </template>
                     <div slot="header">
