@@ -234,6 +234,8 @@ export class AppFrame extends UI {
         {title: "Выход", action: "logout", icon: "exit_to_app"}
     ];
 
+    @ShowProgress
+    @CatchErrors
     async created(): Promise<void> {
         if (this.localStorage.get(StoreKeys.TOKEN_KEY, null)) {
             await this.startup();
@@ -245,8 +247,6 @@ export class AppFrame extends UI {
         }
     }
 
-    @ShowProgress
-    @CatchErrors
     private async startup(): Promise<void> {
         this.loading = true;
         try {
