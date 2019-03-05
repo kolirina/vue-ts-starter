@@ -24,7 +24,7 @@ const MainStore = namespace(StoreType.MAIN);
         <v-data-table class="data-table" :headers="headers" :items="trades" item-key="id" :pagination.sync="tradePagination.pagination"
                       :total-items="tradePagination.totalItems" hide-actions>
             <template slot="items" slot-scope="props">
-                <tr class="selectable">
+                <tr class="selectable" @dblclick="props.expanded = !props.expanded">
                     <td>
                         <span @click="props.expanded = !props.expanded" class="data-table-cell" :class="{'data-table-cell-open': props.expanded, 'path': true}"></span>
                     </td>

@@ -26,11 +26,11 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-data-table class="data-table" :headers="headers" :items="filteredRows" item-key="bond"
+        <v-data-table class="data-table" :headers="headers" :items="filteredRows" item-key="bond.id"
                       :search="search" :custom-sort="customSort" :custom-filter="customFilter" hide-actions>
             <v-progress-linear slot="progress" color="blue" indeterminate></v-progress-linear>
             <template slot="items" slot-scope="props">
-                <tr class="selectable">
+                <tr class="selectable" @dblclick="props.expanded = !props.expanded">
                     <td>
                         <span @click="props.expanded = !props.expanded" class="data-table-cell" :class="{'data-table-cell-open': props.expanded, 'path': true}"></span>
                     </td>
@@ -218,7 +218,6 @@ export class BondTable extends UI {
 
     @Watch("rows")
     onRowsChange(): void {
-        console.log("ROWS CHANGE");
         this.setFilteredRows();
     }
 
