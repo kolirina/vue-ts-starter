@@ -22,7 +22,7 @@ const MainStore = namespace(StoreType.MAIN);
     template: `
         <v-data-table :headers="headers" :items="portfolios" item-key="id" hide-actions>
             <template slot="items" slot-scope="props">
-                <tr class="selectable">
+                <tr class="selectable" @dblclick="props.expanded = !props.expanded">
                     <td>
                         <span @click="props.expanded = !props.expanded" class="data-table-cell" :class="{'data-table-cell-open': props.expanded, 'path': true}"></span>
                     </td>
