@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="8px" height="12px" viewBox="0 0 8 12" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linejoin="round">
-        <g id="Desktop-HD-Copy" transform="translate(-1322.000000, -931.000000)" fill="#B0B4C2" stroke="#B0B4C2" stroke-width="2">
-            <polygon id="Path-2" transform="translate(1326.000000, 937.000000) rotate(-90.000000) translate(-1326.000000, -937.000000) " points="1321 934 1331 934 1326 940"></polygon>
+        <g id="Desktop-collapsed" transform="translate(-1092.000000, -931.000000)" fill="#B0B4C2" stroke="#B0B4C2" stroke-width="2">
+            <polygon id="Path-2" transform="translate(1096.000000, 937.000000) rotate(-90.000000) translate(-1096.000000, -937.000000) " points="1091 934 1101 934 1096 940"></polygon>
         </g>
     </g>
 </svg>
