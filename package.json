@@ -18,6 +18,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.4.1",
+    "@sentry/browser": "^4.6.4",
     "@types/highcharts": "^5.0.22",
     "decimal.js": "^10.0.1",
     "font-awesome": "^4.7.0",
@@ -63,7 +64,6 @@
     "ts-loader": "^5.3.3",
     "tslint": "^5.13.1",
     "typescript": "^3.3.3333",
-    "typescript-ioc": "^1.2.5",
     "vue-loader": "^15.4.2",
     "vue-template-compiler": "^2.5.17",
     "webpack": "^4.20.2",
