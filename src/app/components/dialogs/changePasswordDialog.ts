@@ -2,6 +2,7 @@ import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {Vue} from "vue/types/vue";
 import {CatchErrors} from "../../platform/decorators/catchErrors";
+import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {ClientInfo, ClientService} from "../../services/clientService";
 import {CustomDialog} from "./customDialog";
@@ -58,7 +59,7 @@ import {CustomDialog} from "./customDialog";
                     </v-form>
                 </v-card-text>
                 <v-card-actions class="margT20">
-                    <v-btn :disabled="!valid" @click.native="validateAndChangePassword" color="info lighten-2" flat>Сменить пароль</v-btn>
+                    <v-btn :disabled="!valid" @click.native="validateAndChangePassword" color="primary" light>Сменить пароль</v-btn>
                     <v-btn @click.native="close">Отмена</v-btn>
                 </v-card-actions>
             </v-card>
@@ -86,6 +87,7 @@ export class ChangePasswordDialog extends CustomDialog<ClientInfo, string> {
      */
     @CatchErrors
     @ShowProgress
+    @DisableConcurrentExecution
     private async validateAndChangePassword(): Promise<void> {
         const result = await this.$validator.validateAll();
         if (result) {

@@ -1,5 +1,8 @@
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
+import {CatchErrors} from "../../platform/decorators/catchErrors";
+import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
+import {ShowProgress} from "../../platform/decorators/showProgress";
 import {ClientInfo} from "../../services/clientService";
 import {FeedbackService, FeedbackType} from "../../services/feedbackService";
 import {CustomDialog} from "./customDialog";
@@ -43,10 +46,10 @@ import {CustomDialog} from "./customDialog";
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="info lighten-2" flat @click.native="close">Отмена</v-btn>
                     <v-btn color="primary" @click.native="sendFeedback" dark small>
                         Отправить
                     </v-btn>
+                    <v-btn color="info lighten-2" flat @click.native="close">Отмена</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -82,6 +85,9 @@ export class FeedbackDialog extends CustomDialog<ClientInfo, void> {
     /**
      * Валидирует данные и отправляет запрос с сообщением
      */
+    @CatchErrors
+    @ShowProgress
+    @DisableConcurrentExecution
     private async sendFeedback(): Promise<void> {
         if (this.username.length === 0 || this.email.length === 0 || this.message.length === 0) {
             this.$snotify.warning("Пожалуйста заполните все поля для отправки");
