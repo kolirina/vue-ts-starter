@@ -1,6 +1,7 @@
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {CatchErrors} from "../../platform/decorators/catchErrors";
+import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {Filters} from "../../platform/filters/Filters";
 import {MarketService} from "../../services/marketService";
@@ -165,7 +166,7 @@ import {CustomDialog} from "./customDialog";
                     </v-switch>
 
                     <v-card-actions class="btn-group-right">
-                        <v-btn @click.native="save" color="info lighten-2" flat>{{ notification.id ? "Сохранить" : "Добавить" }}</v-btn>
+                        <v-btn @click.native="save" color="primary" light>{{ notification.id ? "Сохранить" : "Добавить" }}</v-btn>
                         <v-btn @click.native="close">Отмена</v-btn>
                     </v-card-actions>
                 </div>
@@ -218,6 +219,7 @@ export class CreateOrEditNotificationDialog extends CustomDialog<Notification, b
 
     @ShowProgress
     @CatchErrors
+    @DisableConcurrentExecution
     private async save(): Promise<void> {
         if (!this.isValid()) {
             return;

@@ -3,6 +3,9 @@ import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {VueRouter} from "vue-router/types/router";
 import {UI} from "../../app/ui";
+import {CatchErrors} from "../../platform/decorators/catchErrors";
+import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
+import {ShowProgress} from "../../platform/decorators/showProgress";
 import {IisType, PortfolioAccountType, PortfolioParams, PortfolioService} from "../../services/portfolioService";
 import {EventType} from "../../types/eventType";
 import {DateFormat, DateUtils} from "../../utils/dateUtils";
@@ -24,7 +27,7 @@ import {CustomDialog} from "./customDialog";
                     <v-container grid-list-md class="paddT0 paddB0">
                         <v-layout wrap>
                             <v-flex xs12>
-                                <v-text-field label="Название" v-model="portfolioParams.name" required autofocus :counter="40" class="required"></v-text-field>
+                                <v-text-field label="Название" v-model.trim="portfolioParams.name" required autofocus :counter="40" class="required"></v-text-field>
                             </v-flex>
 
                             <v-flex xs12 sm4>
@@ -42,23 +45,23 @@ import {CustomDialog} from "./customDialog";
 
                             <v-flex xs12 sm4>
                                 <v-menu
-                                    ref="dateMenu"
-                                    :close-on-content-click="false"
-                                    v-model="dateMenuValue"
-                                    :nudge-right="40"
-                                    :return-value.sync="portfolioParams.openDate"
-                                    lazy
-                                    transition="scale-transition"
-                                    offset-y
-                                    full-width
-                                    min-width="290px">
+                                        ref="dateMenu"
+                                        :close-on-content-click="false"
+                                        v-model="dateMenuValue"
+                                        :nudge-right="40"
+                                        :return-value.sync="portfolioParams.openDate"
+                                        lazy
+                                        transition="scale-transition"
+                                        offset-y
+                                        full-width
+                                        min-width="290px">
                                     <v-text-field
-                                        slot="activator"
-                                        v-model="portfolioParams.openDate"
-                                        label="Дата открытия"
-                                        required
-                                        append-icon="event"
-                                        readonly></v-text-field>
+                                            slot="activator"
+                                            v-model="portfolioParams.openDate"
+                                            label="Дата открытия"
+                                            required
+                                            append-icon="event"
+                                            readonly></v-text-field>
                                     <v-date-picker v-model="portfolioParams.openDate" :no-title="true" locale="ru" :first-day-of-week="1"
                                                    @input="$refs.dateMenu.save(portfolioParams.openDate)"></v-date-picker>
                                 </v-menu>
@@ -103,13 +106,13 @@ import {CustomDialog} from "./customDialog";
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="info lighten-2" flat @click.native="cancel">Отмена</v-btn>
                     <v-btn :loading="processState" :disabled="processState" color="primary" light @click.native="savePortfolio">
                         {{ editMode ? 'Сохранить' : 'Добавить'}}
                         <span slot="loader" class="custom-loader">
                         <v-icon color="blue">fas fa-spinner fa-spin</v-icon>
                       </span>
                     </v-btn>
+                    <v-btn color="info lighten-2" flat @click.native="cancel">Отмена</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -146,7 +149,7 @@ export class PortfolioEditDialog extends CustomDialog<PortfolioDialogData, boole
             this.editMode = true;
         } else {
             this.portfolioParams = {
-                name: null,
+                name: "",
                 access: false,
                 viewCurrency: "RUB",
                 openDate: DateUtils.formatDate(moment(), DateFormat.DATE2),
@@ -155,17 +158,28 @@ export class PortfolioEditDialog extends CustomDialog<PortfolioDialogData, boole
         }
     }
 
-    private cancel(): void {
-        this.close();
-    }
-
+    @CatchErrors
+    @ShowProgress
+    @DisableConcurrentExecution
     private async savePortfolio(): Promise<void> {
+        if (!this.isValid()) {
+            this.$snotify.warning("Заполните все обязательные поля");
+            return;
+        }
         this.processState = true;
         await this.portfolioService.createOrUpdatePortfolio(this.portfolioParams);
         this.$snotify.info(`Портфель успешно ${this.portfolioParams.id ? "изменен" : "создан"}`);
         this.processState = false;
         UI.emit(EventType.PORTFOLIO_CREATED);
         this.close(true);
+    }
+
+    private isValid(): boolean {
+        return this.portfolioParams.name.length > 0;
+    }
+
+    private cancel(): void {
+        this.close();
     }
 }
 

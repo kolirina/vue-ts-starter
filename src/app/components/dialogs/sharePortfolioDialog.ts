@@ -2,6 +2,9 @@ import moment from "moment";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {UI} from "../../app/ui";
+import {CatchErrors} from "../../platform/decorators/catchErrors";
+import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
+import {ShowProgress} from "../../platform/decorators/showProgress";
 import {ClientInfo} from "../../services/clientService";
 import {PortfolioParams, PortfolioService} from "../../services/portfolioService";
 import {EventType} from "../../types/eventType";
@@ -116,15 +119,13 @@ import {BtnReturn, CustomDialog} from "./customDialog";
                                 <v-btn v-if="shareOption !== 'DEFAULT_ACCESS'" color="primary" block small @click="generateTokenLink">
                                     Сгенерировать ссылку
                                 </v-btn>
-                                <v-btn v-else color="primary" block small @click="savePublicParams">
-                                    Сохранить настройки доступа
-                                </v-btn>
                             </v-flex>
                         </v-layout>
                     </v-container>
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
+                    <v-btn color="primary" light @click.native="savePublicParams">Сохранить</v-btn>
                     <v-btn color="info lighten-2" flat @click.native="close">Закрыть</v-btn>
                 </v-card-actions>
             </v-card>
@@ -162,6 +163,16 @@ export class SharePortfolioDialog extends CustomDialog<SharePortfolioDialogData,
         [ShareAccessType.BY_IDENTIFICATION]: null
     };
 
+    mounted(): void {
+        this.access = this.data.portfolio.access;
+        this.divAccess = this.data.portfolio.dividendsAccess;
+        this.tradeAccess = this.data.portfolio.tradesAccess;
+        this.lineDataAccess = this.data.portfolio.lineDataAccess;
+        this.dashboardAccess = this.data.portfolio.dashboardAccess;
+    }
+
+    @CatchErrors
+    @ShowProgress
     private async generateTokenLink(): Promise<void> {
         const isValid = this.isValid();
         if (!isValid) {
@@ -172,6 +183,9 @@ export class SharePortfolioDialog extends CustomDialog<SharePortfolioDialogData,
         });
     }
 
+    @CatchErrors
+    @ShowProgress
+    @DisableConcurrentExecution
     private async savePublicParams(): Promise<void> {
         const result = await this.portfolioService.updatePortfolio({
             ...this.data.portfolio,
@@ -183,6 +197,7 @@ export class SharePortfolioDialog extends CustomDialog<SharePortfolioDialogData,
         });
         this.$snotify.info("Настройки доступа к портфелю успешно изменены");
         UI.emit(EventType.PORTFOLIO_UPDATED, result);
+        this.close();
     }
 
     private get link(): string {

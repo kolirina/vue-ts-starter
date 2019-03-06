@@ -29,7 +29,7 @@ import {CustomDialog} from "./customDialog";
           </v-layout>
         </v-card-text>
         <v-card-actions class="dialog-actions">
-          <v-btn @click.native="filterHeaders" color="info lighten-2" flat>ОК</v-btn>
+          <v-btn @click.native="filterHeaders" color="primary" light>ОК</v-btn>
           <v-btn @click.native="close">Отмена</v-btn>
         </v-card-actions>
       </v-card>

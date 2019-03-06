@@ -34,7 +34,7 @@ import {BtnReturn, CustomDialog} from "./customDialog";
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="primary" @click="tariffs">
+                    <v-btn color="primary" light @click="tariffs">
                         Обновить подписку
                         <v-icon right dark small>fas fa-rocket</v-icon>
                     </v-btn>
