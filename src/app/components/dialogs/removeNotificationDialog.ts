@@ -1,5 +1,8 @@
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
+import {CatchErrors} from "../../platform/decorators/catchErrors";
+import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
+import {ShowProgress} from "../../platform/decorators/showProgress";
 import {Filters} from "../../platform/filters/Filters";
 import {Notification, NotificationsService, NotificationType} from "../../services/notificationsService";
 import {Bond} from "../../types/types";
@@ -25,7 +28,7 @@ import {BtnReturn, CustomDialog} from "./customDialog";
                     <span>Удалить уведомления по этой бумаге?</span>
                 </div>
                 <v-card-actions class="btn-group-right">
-                    <v-btn @click.native="removeNotification" color="info lighten-2" flat>Удалить</v-btn>
+                    <v-btn @click.native="removeNotification" color="primary" light>Удалить</v-btn>
                     <v-btn @click.native="close">Отмена</v-btn>
                 </v-card-actions>
             </v-card>
@@ -39,6 +42,9 @@ export class RemoveNotificationDialog extends CustomDialog<Notification, BtnRetu
     /** Тип уведомления */
     private NotificationType = NotificationType;
 
+    @CatchErrors
+    @ShowProgress
+    @DisableConcurrentExecution
     private async removeNotification(): Promise<void> {
         await this.notificationsService.removeNotification(this.data.id, this.data.type);
         this.$snotify.info("Уведомление успешно удалено");

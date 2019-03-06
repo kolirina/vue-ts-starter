@@ -15,6 +15,7 @@
  */
 
 import Component from "vue-class-component";
+import {VueRouter} from "vue-router/types/router";
 import {BtnReturn, CustomDialog} from "./customDialog";
 
 /**
@@ -34,7 +35,7 @@ import {BtnReturn, CustomDialog} from "./customDialog";
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="primary" @click="tariffs">
+                    <v-btn color="primary" light @click="tariffs">
                         Обновить подписку
                         <v-icon right dark small>fas fa-rocket</v-icon>
                     </v-btn>
@@ -43,7 +44,7 @@ import {BtnReturn, CustomDialog} from "./customDialog";
         </v-dialog>
     `
 })
-export class TariffExpiredDialog extends CustomDialog<null, BtnReturn> {
+export class TariffExpiredDialog extends CustomDialog<VueRouter, BtnReturn> {
 
     /** Признак возможности закрыть диалог */
     private allowClose = false;
@@ -83,7 +84,7 @@ export class TariffExpiredDialog extends CustomDialog<null, BtnReturn> {
     }
 
     private tariffs(): void {
-        window.location.replace("/#/tariffs");
+        this.data.push("tariffs");
         this.close();
     }
 }

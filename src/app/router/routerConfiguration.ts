@@ -63,7 +63,7 @@ export class RouterConfiguration {
                     const client = await clientService.getClientInfo();
                     const tariffExpired = client.tariff !== Tariff.FREE && DateUtils.parseDate(client.paidTill).isBefore(moment());
                     if (tariffExpired) {
-                        await new TariffExpiredDialog().show();
+                        await new TariffExpiredDialog().show(RouterConfiguration.router);
                         next(false);
                     } else {
                         next();

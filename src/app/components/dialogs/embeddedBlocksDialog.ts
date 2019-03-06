@@ -25,7 +25,7 @@ import {BtnReturn, CustomDialog} from "./customDialog";
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="info lighten-2" flat @click.native="close">OK</v-btn>
+                    <v-btn color="primary" light @click.native="close">OK</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>

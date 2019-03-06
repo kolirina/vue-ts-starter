@@ -4,6 +4,7 @@ import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {Watch} from "vue-property-decorator";
 import {VueRouter} from "vue-router/types/router";
+import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {EventFields} from "../../services/eventService";
 import {MarketHistoryService} from "../../services/marketHistoryService";
@@ -349,6 +350,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     @ShowProgress
+    @DisableConcurrentExecution
     private async addTrade(): Promise<void> {
         this.$validator.errors.clear();
         const result = await this.$validator.validateAll();
