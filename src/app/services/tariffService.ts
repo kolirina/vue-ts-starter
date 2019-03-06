@@ -17,8 +17,8 @@ export class TariffService {
      * @param tariff выбранный тариф
      * @param monthly признак оплаты за месяц
      */
-    async makePayment(tariff: Tariff, monthly: boolean): Promise<PayTariffResponse> {
-        return this.http.post<PayTariffResponse>("/tariff/payment", {tariff: tariff.name, monthly});
+    async makePayment(tariff: Tariff, monthly: boolean): Promise<TinkoffPaymentOrderResponse> {
+        return this.http.post<TinkoffPaymentOrderResponse>("/tariff/payment", {tariff: tariff.name, monthly});
     }
 
     /**
@@ -56,6 +56,32 @@ export interface PayTariffResponse {
     paymentOrder: PaymentOrder;
     /** Ключ терминала для оплаты */
     terminalKey: string;
+}
+
+/**
+ * Сущность ответа от платежного шлюза Тинькоф
+ */
+export interface TinkoffPaymentOrderResponse {
+    /** Идентификатор терминала, выдается Продавцу Банком */
+    terminalKey: string;
+    /** Сумма в копейках */
+    amount: number;
+    /** Номер заказа в системе Продавца */
+    orderId: string;
+    /** Успешность операции */
+    success: boolean;
+    /** Статус транзакции */
+    status: string;
+    /** Уникальный идентификатор транзакции в системе Банка */
+    paymentId: string;
+    /** Код ошибки, «0» - если успешно */
+    errorCode: string;
+    /** Ссылка на страницу оплаты. По умолчанию ссылка доступна в течении 24 часов. */
+    paymentURL?: string;
+    /** Краткое описание ошибки */
+    message?: string;
+    /** Подробное описание ошибки */
+    details?: string;
 }
 
 /** Информация об оплате тарифа */

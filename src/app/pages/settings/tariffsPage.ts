@@ -84,8 +84,8 @@ const MainStore = namespace(StoreType.MAIN);
                                     <div class="tariff__plan_price">{{ getPriceLabel(Tariff.FREE) }}</div>
                                     <v-tooltip content-class="custom-tooltip-wrap" bottom>
                                         <v-btn slot="activator" @click="makePayment(Tariff.FREE)"
-                                           :class="{'big_btn': true, 'selected': isSelected(Tariff.FREE)}"
-                                           :disabled="!isAvailable(Tariff.FREE) || isSelected(Tariff.FREE) || isProgress">
+                                               :class="{'big_btn': true, 'selected': isSelected(Tariff.FREE)}"
+                                               :disabled="!isAvailable(Tariff.FREE) || isSelected(Tariff.FREE) || isProgress">
                                             <span v-if="!busyState[Tariff.FREE.name]">{{ getButtonLabel(Tariff.FREE) }}</span>
                                             <v-progress-circular v-if="busyState[Tariff.FREE.name]" indeterminate color="primary" :size="20"></v-progress-circular>
                                         </v-btn>
@@ -105,8 +105,8 @@ const MainStore = namespace(StoreType.MAIN);
                                     <div class="tariff__plan_price">{{ getPriceLabel(Tariff.STANDARD) }}</div>
                                     <v-tooltip content-class="custom-tooltip-wrap" bottom>
                                         <v-btn slot="activator" @click="makePayment(Tariff.STANDARD)"
-                                           :class="{'big_btn': true, 'selected': isSelected(Tariff.STANDARD)}"
-                                           :disabled="!isAvailable(Tariff.STANDARD) || isProgress">
+                                               :class="{'big_btn': true, 'selected': isSelected(Tariff.STANDARD)}"
+                                               :disabled="!isAvailable(Tariff.STANDARD) || isProgress">
                                             <span v-if="!busyState[Tariff.STANDARD.name]">{{ getButtonLabel(Tariff.STANDARD) }}</span>
                                             <v-progress-circular v-if="busyState[Tariff.STANDARD.name]" indeterminate color="primary" :size="20"></v-progress-circular>
                                         </v-btn>
@@ -125,8 +125,8 @@ const MainStore = namespace(StoreType.MAIN);
                                     </div>
                                     <div class="tariff__plan_price">{{ getPriceLabel(Tariff.PRO) }}</div>
                                     <v-btn @click="makePayment(Tariff.PRO)"
-                                       :class="{'big_btn': true, 'selected': isSelected(Tariff.PRO)}"
-                                       :disabled="!isAvailable(Tariff.PRO) || isProgress">
+                                           :class="{'big_btn': true, 'selected': isSelected(Tariff.PRO)}"
+                                           :disabled="!isAvailable(Tariff.PRO) || isProgress">
                                         <span v-if="!busyState[Tariff.PRO.name]">{{ getButtonLabel(Tariff.PRO) }}</span>
                                         <v-progress-circular v-if="busyState[Tariff.PRO.name]" indeterminate color="primary" :size="20"></v-progress-circular>
                                     </v-btn>
@@ -226,6 +226,15 @@ export class TariffsPage extends UI {
     private isProgress = false;
 
     /**
+     * Проверка успешно завершенной оплаты
+     */
+    async created(): Promise<void> {
+        if (this.$route.params.status) {
+            await this.afterSuccessPayment();
+        }
+    }
+
+    /**
      * Открывает диалог для ввода промокода пользователя
      */
     private async applyPromoCode(): Promise<void> {
@@ -247,18 +256,22 @@ export class TariffsPage extends UI {
         try {
             const orderData = await this.tariffService.makePayment(tariff, this.monthly);
             // если оплата не завершена, открываем фрэйм для оплаты
-            if (!orderData.paymentOrder.done) {
-                await this.tariffService.openPaymentFrame(orderData, this.clientInfo);
-            } else {
-                this.clientService.resetClientInfo();
-                const client = await this.clientService.getClientInfo();
-                await this.loadUser({token: this.clientInfo.token, user: client});
-                this.$snotify.info("Оплата заказа успешно завершена");
+            if (orderData.status === "NEW") {
+                window.location.assign(orderData.paymentURL);
+            } else if (orderData.status === "CONFIRMED") {
+                await this.afterSuccessPayment();
             }
         } finally {
             this.busyState[tariff.name] = false;
             this.isProgress = false;
         }
+    }
+
+    private async afterSuccessPayment(): Promise<void> {
+        this.clientService.resetClientInfo();
+        const client = await this.clientService.getClientInfo();
+        await this.loadUser({token: this.clientInfo.token, user: client});
+        this.$snotify.info("Оплата заказа успешно завершена");
     }
 
     private getPriceLabel(tariff: Tariff): string {

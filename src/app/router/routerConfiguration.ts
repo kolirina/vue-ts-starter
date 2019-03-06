@@ -172,7 +172,13 @@ export class RouterConfiguration {
             },
             {
                 name: "tariffs",
-                path: "/tariffs",
+                path: "/tariffs/",
+                meta: {tariffAllowed: true},
+                component: TariffsPage
+            },
+            {
+                name: "tariffs_status",
+                path: "/tariffs/:status",
                 meta: {tariffAllowed: true},
                 component: TariffsPage
             },
