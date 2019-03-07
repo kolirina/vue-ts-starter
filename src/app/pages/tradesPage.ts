@@ -28,8 +28,8 @@ const MainStore = namespace(StoreType.MAIN);
             <dashboard :data="portfolio.overview.dashboardData"></dashboard>
 
             <expanded-panel :disabled="true" :withMenu="true" name="trades" :alwaysOpen="true" :value="[true]">
-                <template slot="header">Сделки</template>
-                <template slot="list">
+                <template #header>Сделки</template>
+                <template #list>
                     <v-list-tile-title @click="openTableSettings(TABLES_NAME.TRADE)">Настроить колонки</v-list-tile-title>
                     <v-list-tile-title @click="exportTable(ExportType.TRADES)">Экспорт в xlsx</v-list-tile-title>
                 </template>

@@ -58,7 +58,7 @@ const MainStore = namespace(StoreType.MAIN);
                                       item-key="id"
                                       select-all
                                       class="elevation-1" style="max-width: 1000px">
-                            <template slot="headerCell" slot-scope="props">
+                            <template #headerCell="props">
                                 <v-tooltip content-class="custom-tooltip-wrap" bottom>
                                     <span slot="activator">
                                       {{ props.header.text }}
@@ -68,7 +68,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     </span>
                                 </v-tooltip>
                             </template>
-                            <template slot="items" slot-scope="props">
+                            <template #items="props">
                                 <td style="width: 50px">
                                     <v-checkbox v-model="props.selected" primary hide-details></v-checkbox>
                                 </td>

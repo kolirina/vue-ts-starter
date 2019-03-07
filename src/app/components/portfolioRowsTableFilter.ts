@@ -24,7 +24,7 @@ import {TableFilterBase} from "./tableFilterBase";
     template: `
         <table-filter-base @search="$emit('update:search', $event)" :search-label="searchLabel" :min-length="0">
             <v-switch v-model="filter.hideSoldRows" @change="onChange">
-                <template slot="label">
+                <template #label>
                     <span>Скрыть проданные</span>
                     <v-tooltip content-class="custom-tooltip-wrap" bottom>
                         <sup class="custom-tooltip" slot="activator">

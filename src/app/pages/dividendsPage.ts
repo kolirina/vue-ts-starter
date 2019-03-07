@@ -25,32 +25,32 @@ const MainStore = namespace(StoreType.MAIN);
             <dividend-dashboard-component :data="dividendInfo.dividendDashboard"></dividend-dashboard-component>
 
             <expanded-panel :value="$uistate.sumYearDivsTablePanel" :withMenu="true" :name="ExportType.DIVIDENDS_BY_YEAR" :state="$uistate.SUM_YEAR_DIVIDENDS">
-                <template slot="header">Сумма дивидендов по годам</template>
-                <template slot="list">
+                <template #header>Сумма дивидендов по годам</template>
+                <template #list>
                     <v-list-tile-title @click="exportTable(ExportType.DIVIDENDS_BY_YEAR)">Экспорт в xlsx</v-list-tile-title>
                 </template>
                 <dividends-by-year-table :rows="dividendInfo.summaryDividendsByYear"></dividends-by-year-table>
             </expanded-panel>
 
             <expanded-panel :value="$uistate.sumDivsTablePanel" :withMenu="true" :name="ExportType.DIVIDENDS_BY_TICKER" :state="$uistate.SUM_DIVS" class="margT20">
-                <template slot="header">Дивиденды по тикерам</template>
-                <template slot="list">
+                <template #header>Дивиденды по тикерам</template>
+                <template #list>
                     <v-list-tile-title @click="exportTable(ExportType.DIVIDENDS_BY_TICKER)">Экспорт в xlsx</v-list-tile-title>
                 </template>
                 <dividends-by-ticker-table :rows="dividendInfo.summaryDividendsByTicker"></dividends-by-ticker-table>
             </expanded-panel>
 
             <expanded-panel :value="$uistate.yearDivsTablePanel" :withMenu="true" :name="ExportType.DIVIDENDS_BY_YEAR_AND_TICKER" :state="$uistate.YEAR_DIV_LIST" class="margT20">
-                <template slot="header">Дивиденды по годам</template>
-                <template slot="list">
+                <template #header>Дивиденды по годам</template>
+                <template #list>
                     <v-list-tile-title @click="exportTable(ExportType.DIVIDENDS_BY_YEAR_AND_TICKER)">Экспорт в xlsx</v-list-tile-title>
                 </template>
                 <dividends-by-year-and-ticker-table :rows="dividendInfo.summaryDividendsByYearAndTicker"></dividends-by-year-and-ticker-table>
             </expanded-panel>
 
             <expanded-panel :value="$uistate.divTradesTablePanel" :withMenu="true" :name="ExportType.DIVIDENDS" :state="$uistate.DIV_LIST" class="margT20">
-                <template slot="header">Сделки по дивидендам</template>
-                <template slot="list">
+                <template #header>Сделки по дивидендам</template>
+                <template #list>
                     <v-list-tile-title @click="exportTable(ExportType.DIVIDENDS)">Экспорт в xlsx</v-list-tile-title>
                 </template>
                 <dividend-trades-table :rows="dividendInfo.dividendTrades"></dividend-trades-table>

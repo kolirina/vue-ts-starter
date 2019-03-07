@@ -19,7 +19,7 @@ const MainStore = namespace(StoreType.MAIN);
     template: `
         <v-data-table :headers="headers" :items="rows" item-key="id" hide-actions>
             <v-progress-linear slot="progress" color="blue" indeterminate></v-progress-linear>
-            <template slot="items" slot-scope="props">
+            <template #items="props">
                 <tr class="selectable">
                     <td><span>{{ props.item.company}}</span>
                     </td>

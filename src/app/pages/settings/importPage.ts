@@ -69,7 +69,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </div>
 
                     <expanded-panel v-if="importProviderFeatures" :value="$uistate.importSettings" :state="$uistate.IMPORT_SETTINGS">
-                        <template slot="header">
+                        <template #header>
                             <v-tooltip content-class="custom-tooltip-wrap" top>
                                 <span slot="activator" style="cursor: pointer">Расширенные настройки импорта</span>
                                 <span>Настройте дополнительные параметры импорта отчетов.</span>
@@ -79,7 +79,7 @@ const MainStore = namespace(StoreType.MAIN);
                             <v-layout row wrap>
                                 <v-flex xs12 lg6>
                                     <v-checkbox v-model="importProviderFeatures.createLinkedTrade" class="d-inline-block">
-                                        <template slot="label">
+                                        <template #label>
                                             <span>Добавлять сделки по списанию/зачислению денежных средств
                                                 <v-tooltip content-class="custom-tooltip-wrap" :max-width="250" top>
                                                     <sup class="custom-tooltip" slot="activator">
@@ -95,7 +95,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 </v-flex>
                                 <v-flex xs12 lg6>
                                     <v-checkbox v-model="importProviderFeatures.autoCommission">
-                                        <template slot="label">
+                                        <template #label>
                                             <span>
                                                 Автоматически рассчитывать комисию для сделок
                                                 <v-tooltip content-class="custom-tooltip-wrap" :max-width="250" top>
@@ -112,7 +112,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 </v-flex>
                                 <v-flex xs12 lg6>
                                     <v-checkbox v-model="importProviderFeatures.autoEvents">
-                                        <template slot="label">
+                                        <template #label>
                                             <span>
                                                 Автоматически исполнять события по бумагам
                                                 <v-tooltip content-class="custom-tooltip-wrap" :max-width="250" top>
@@ -131,7 +131,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 </v-flex>
                                 <v-flex xs12 lg6>
                                     <v-checkbox v-model="importProviderFeatures.confirmMoneyBalance">
-                                        <template slot="label">
+                                        <template #label>
                                             <span>
                                                 Спрашивать текущий остаток ДС
                                                 <v-tooltip content-class="custom-tooltip-wrap" :max-width="250" top>
@@ -149,7 +149,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 </v-flex>
                                 <v-flex xs12 lg6>
                                     <v-checkbox v-model="importProviderFeatures.importMoneyTrades">
-                                        <template slot="label">
+                                        <template #label>
                                             <span>
                                                 Импорт сделок по денежным средствам
                                                 <v-tooltip content-class="custom-tooltip-wrap" :max-width="250" top>

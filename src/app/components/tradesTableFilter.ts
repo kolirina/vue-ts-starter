@@ -27,7 +27,7 @@ import {TableFilterBase} from "./tableFilterBase";
     template: `
         <table-filter-base @search="onSearch" :search-label="searchLabel" :min-length="2">
             <v-switch v-model="filter.showLinkedMoneyTrades" @change="onChange">
-                <template slot="label">
+                <template #label>
                     <span>Связанные сделки</span>
                 </template>
             </v-switch>

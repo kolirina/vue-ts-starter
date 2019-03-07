@@ -20,9 +20,9 @@ const MainStore = namespace(StoreType.MAIN);
     template: `
         <base-portfolio-page v-if="overview" :overview="overview" :line-chart-data="lineChartData" :line-chart-events="lineChartEvents"
                              @reloadLineChart="loadPortfolioLineChart">
-            <template slot="afterDashboard">
+            <template #afterDashboard>
                 <expanded-panel :value="$uistate.combinedPanel" :state="$uistate.COMBINED_CONTROL_PANEL">
-                    <template slot="header">Управление комбинированным портфелем</template>
+                    <template #header>Управление комбинированным портфелем</template>
 
                     <v-card-text>
                         <combined-portfolios-table :portfolios="clientInfo.user.portfolios" @change="onSetCombined"></combined-portfolios-table>

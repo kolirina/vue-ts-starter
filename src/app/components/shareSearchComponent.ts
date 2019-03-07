@@ -30,10 +30,10 @@ import {Bond, Share} from "../types/types";
                         label="Введите тикер или название компании"
                         :loading="shareSearch" no-data-text="Ничего не найдено" clearable required
                         dense :hide-no-data="true" :no-filter="true" :search-input.sync="searchQuery">
-            <template slot="selection" slot-scope="data">
+            <template #selection="data">
                 {{ shareLabelSelected(data.item) }}
             </template>
-            <template slot="item" slot-scope="data">
+            <template #item="data">
                 {{ shareLabelListItem(data.item) }}
             </template>
         </v-autocomplete>

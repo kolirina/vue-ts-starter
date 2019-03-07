@@ -19,7 +19,7 @@ import {CustomDialog} from "./customDialog";
                 </v-card-title>
                 <v-card-text>
                     <v-data-table :headers="headers" :items="data.trades" item-key="id" hide-actions>
-                        <template slot="items" slot-scope="props">
+                        <template #items="props">
                             <tr class="selectable" @click="props.expanded = !props.expanded">
                                 <td>{{ props.item.operationLabel }}</td>
                                 <td class="text-xs-center">{{ props.item.date | date }}</td>
@@ -30,7 +30,7 @@ import {CustomDialog} from "./customDialog";
                             </tr>
                         </template>
 
-                        <template slot="expand" slot-scope="props">
+                        <template #expand="props">
                             <v-card flat>
                                 <v-card-text>{{ props.item.comment }}</v-card-text>
                             </v-card>
