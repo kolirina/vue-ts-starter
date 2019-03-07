@@ -59,9 +59,9 @@ const MainStore = namespace(StoreType.MAIN);
                 <v-navigation-drawer disable-resize-watcher fixed stateless app class="sidebar" v-model="drawer" :mini-variant.sync="mini">
                     <vue-scroll>
                         <v-list dense class="sidebar-list">
-                            <v-list-tile class="sidebar-list-item">
+                            <v-list-tile class="sidebar-list-item" @click.native="togglePanel">
                                 <v-list-tile-action class="sidebar-item-action">
-                                    <img src="img/sidebar/hamb.svg" class="hamburger" @click="mini = !mini" alt="">
+                                    <img src="img/sidebar/hamb.svg" class="hamburger" alt="">
                                 </v-list-tile-action>
                             </v-list-tile>
 
@@ -297,6 +297,10 @@ export class AppFrame extends UI {
 
     private async openFeedBackDialog(): Promise<void> {
         await new FeedbackDialog().show(this.clientInfo);
+    }
+
+    private togglePanel(): void {
+        this.mini = !this.mini;
     }
 
     private get actualYear(): string {
