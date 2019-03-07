@@ -106,7 +106,7 @@ import {CustomDialog} from "./customDialog";
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn :loading="processState" :disabled="processState" color="primary" light @click.native="savePortfolio">
+                    <v-btn :loading="processState" :disabled="processState" color="primary" light @click.stop.native="savePortfolio">
                         {{ editMode ? 'Сохранить' : 'Добавить'}}
                         <span slot="loader" class="custom-loader">
                         <v-icon color="blue">fas fa-spinner fa-spin</v-icon>
@@ -170,7 +170,16 @@ export class PortfolioEditDialog extends CustomDialog<PortfolioDialogData, boole
         await this.portfolioService.createOrUpdatePortfolio(this.portfolioParams);
         this.$snotify.info(`Портфель успешно ${this.portfolioParams.id ? "изменен" : "создан"}`);
         this.processState = false;
-        UI.emit(EventType.PORTFOLIO_CREATED);
+        if (this.portfolioParams.id) {
+            // если валюта была изменена, необходимо обновить данные по портфелю, иначе просто обновляем сам портфель
+            if (this.portfolioParams.viewCurrency !== this.data.portfolioParams.viewCurrency) {
+                UI.emit(EventType.PORTFOLIO_RELOAD, this.portfolioParams);
+            } else {
+                UI.emit(EventType.PORTFOLIO_UPDATED, this.portfolioParams);
+            }
+        } else {
+            UI.emit(EventType.PORTFOLIO_CREATED);
+        }
         this.close(true);
     }
 

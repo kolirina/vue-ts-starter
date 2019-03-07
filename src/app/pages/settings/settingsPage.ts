@@ -1,11 +1,10 @@
-import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
 import {PortfolioEditDialog} from "../../components/dialogs/portfolioEditDialog";
 import {PortfoliosTable} from "../../components/portfoliosTable";
 import {ClientInfo} from "../../services/clientService";
-import {PortfolioParams, PortfolioService} from "../../services/portfolioService";
+import {PortfolioParams} from "../../services/portfolioService";
 import {EventType} from "../../types/eventType";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
@@ -33,12 +32,22 @@ export class SettingsPage extends UI {
     private reloadPortfolios: () => Promise<void>;
     @MainStore.Mutation(MutationType.UPDATE_PORTFOLIO)
     private updatePortfolio: (portfolio: PortfolioParams) => Promise<void>;
-    @Inject
-    private portfolioService: PortfolioService;
+    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
+    private reloadPortfolio: (id: string) => Promise<void>;
 
     created(): void {
         UI.on(EventType.PORTFOLIO_CREATED, async () => this.reloadPortfolios());
-        UI.on(EventType.PORTFOLIO_UPDATED, async ($event) => this.updatePortfolio($event));
+        UI.on(EventType.PORTFOLIO_UPDATED, async (portfolio: PortfolioParams) => this.updatePortfolio(portfolio));
+        UI.on(EventType.PORTFOLIO_RELOAD, async (portfolio: PortfolioParams) => {
+            console.log("FIRED!");
+            await this.reloadPortfolio(portfolio.id);
+        });
+    }
+
+    beforeDestroy(): void {
+        UI.off(EventType.PORTFOLIO_CREATED);
+        UI.off(EventType.PORTFOLIO_UPDATED);
+        UI.off(EventType.PORTFOLIO_RELOAD);
     }
 
     private async openDialog(): Promise<void> {
