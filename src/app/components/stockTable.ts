@@ -44,7 +44,7 @@ const MainStore = namespace(StoreType.MAIN);
         <v-data-table class="data-table" :headers="headers" :items="filteredRows" item-key="stock.id"
                       :search="search" :custom-sort="customSort" :custom-filter="customFilter" hide-actions>
             <v-progress-linear slot="progress" color="blue" indeterminate></v-progress-linear>
-            <template slot="items" slot-scope="props">
+            <template #items="props">
                 <tr class="selectable" @dblclick="props.expanded = !props.expanded">
                     <td>
                         <span @click="props.expanded = !props.expanded" class="data-table-cell" :class="{'data-table-cell-open': props.expanded, 'path': true}"></span>
@@ -129,7 +129,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </tr>
             </template>
 
-            <template slot="expand" slot-scope="props">
+            <template #expand="props">
                 <table-extended-info :headers="headers" :table-name="TABLES_NAME.STOCK"
                                      :asset="AssetType.STOCK" :row-item="props.item" :ticker="props.item.stock.ticker">
                     <div class="extended-info__cell label">Время нахождения в портфеле</div>

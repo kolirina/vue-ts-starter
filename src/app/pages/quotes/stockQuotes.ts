@@ -22,7 +22,7 @@ const MainStore = namespace(StoreType.MAIN);
             <v-data-table :headers="headers" :items="stocks" item-key="id" :pagination.sync="pagination"
                           :rows-per-page-items="[25, 50, 100, 200]"
                           :total-items="totalItems">
-                <template slot="items" slot-scope="props">
+                <template #items="props">
                     <tr class="selectable">
                         <td class="text-xs-left">
                             <stock-link :ticker="props.item.ticker"></stock-link>

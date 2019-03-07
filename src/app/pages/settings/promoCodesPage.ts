@@ -35,7 +35,7 @@ const MainStore = namespace(StoreType.MAIN);
                             <div class="promo-codes">
                                 <div class="promo-codes__subtitle">Промокод</div>
                                 <div class="promo-code__wrapper">
-                                    <div class="promo-code">{{ clientInfo.user.promoCode.val }}</div>
+                                    <div class="promo-code selectable">{{ clientInfo.user.promoCode.val }}</div>
                                     <div class="btns">
                                         <v-btn v-clipboard="() => clientInfo.user.promoCode.val" @click="copyPromoCode">Копировать промокод</v-btn>
                                         <v-btn v-clipboard="() => refLink" @click="copyRefLink">Копировать ссылку</v-btn>
@@ -60,7 +60,7 @@ const MainStore = namespace(StoreType.MAIN);
                             </div>
 
                             <expanded-panel :value="$uistate.referralStatisticsPanel" :state="$uistate.REFERRAL_STATISTICS_PANEL" class="promo-codes__statistics">
-                                <template slot="header">Статистика по реферальной программе</template>
+                                <template #header>Статистика по реферальной программе</template>
                                 <div v-if="promoCodeStatistics" class="statistics">
                                     <div>
                                         <span>Привлеченных пользователей:</span>{{ promoCodeStatistics.referralCount }}

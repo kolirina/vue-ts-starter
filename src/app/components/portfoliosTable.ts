@@ -3,6 +3,9 @@ import Component from "vue-class-component";
 import {Prop} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
+import {CatchErrors} from "../platform/decorators/catchErrors";
+import {DisableConcurrentExecution} from "../platform/decorators/disableConcurrentExecution";
+import {ShowProgress} from "../platform/decorators/showProgress";
 import {ClientInfo} from "../services/clientService";
 import {PortfolioParams, PortfolioService} from "../services/portfolioService";
 import {EventType} from "../types/eventType";
@@ -21,7 +24,7 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-data-table :headers="headers" :items="portfolios" item-key="id" hide-actions>
-            <template slot="items" slot-scope="props">
+            <template #items="props">
                 <tr class="selectable" @dblclick="props.expanded = !props.expanded">
                     <td>
                         <span @click="props.expanded = !props.expanded" class="data-table-cell" :class="{'data-table-cell-open': props.expanded, 'path': true}"></span>
@@ -49,7 +52,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </tr>
             </template>
 
-            <template slot="expand" slot-scope="props">
+            <template #expand="props">
                 <v-card flat>
                     <v-card-text>
                         <div class="extended-info one-column">
@@ -132,6 +135,9 @@ export class PortfoliosTable extends UI {
         await new PortfolioEditDialog().show({store: this.$store.state[StoreType.MAIN], router: this.$router, portfolioParams});
     }
 
+    @CatchErrors
+    @ShowProgress
+    @DisableConcurrentExecution
     private async deletePortfolio(portfolio: PortfolioParams): Promise<void> {
         const result = await new ConfirmDialog().show(`Вы собираетесь удалить портфель ${portfolio.name}.
                                               Все сделки по акциям, облигациям и дивиденды,
@@ -143,6 +149,9 @@ export class PortfoliosTable extends UI {
         }
     }
 
+    @CatchErrors
+    @ShowProgress
+    @DisableConcurrentExecution
     private async clonePortfolio(id: string): Promise<void> {
         await this.portfolioService.createPortfolioCopy(id);
         this.$snotify.info("Копия портфеля успешно создана");
@@ -169,6 +178,9 @@ export class PortfoliosTable extends UI {
         await new SharePortfolioDialog().show({portfolio: portfolio, clientInfo: this.clientInfo});
     }
 
+    @CatchErrors
+    @ShowProgress
+    @DisableConcurrentExecution
     private async onProfessionalModeChange(portfolio: PortfolioParams): Promise<void> {
         const result = await this.portfolioService.updatePortfolio(portfolio);
         this.$snotify.info(`Профессиональный режим для портфеля ${result.professionalMode ? "включен" : "выключен"}`);

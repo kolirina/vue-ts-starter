@@ -26,9 +26,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <v-flex xs5>
                         <inplace-input name="email" @update:editMode="onModeChange('email', $event)" :editMode="editMode.email" :value="email" @input="onEmailChange">
                             <v-tooltip content-class="custom-tooltip-wrap" max-width="250px" slot="afterText" top>
-                                <template slot="activator">
-                                    <v-icon v-if="!clientInfo.user.emailConfirmed" class="profile-not-confirmed-email">fas fa-exclamation-triangle</v-icon>
-                                </template>
+                                <v-icon slot="activator" v-if="!clientInfo.user.emailConfirmed" class="profile-not-confirmed-email">fas fa-exclamation-triangle</v-icon>
                                 <span>Адрес не подтвержден. Пожалуйста подтвердите Ваш адрес эл.почты что воспользоваться всеми функциями сервиса.</span>
                             </v-tooltip>
                         </inplace-input>

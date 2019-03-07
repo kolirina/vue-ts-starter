@@ -16,7 +16,7 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-data-table :headers="headers" :items="assets" hide-actions>
-            <template slot="items" slot-scope="props">
+            <template #items="props">
                 <tr class="selectable">
                     <td>{{ props.item.type | assetDesc }}</td>
                     <td class="text-xs-right ii-number-cell">{{ props.item.currCost | amount(true) }}</td>

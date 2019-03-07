@@ -9,7 +9,7 @@ import {TableHeader} from "../types/types";
     template: `
         <v-data-table class="data-table" :headers="headers" :items="rows" item-key="ticker" hide-actions>
             <v-progress-linear slot="progress" color="blue" indeterminate></v-progress-linear>
-            <template slot="items" slot-scope="props">
+            <template #items="props">
                 <tr class="selectable">
                     <td class="text-xs-left">
                         <stock-link :ticker="props.item.ticker"></stock-link>

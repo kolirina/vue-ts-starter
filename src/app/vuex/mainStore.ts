@@ -50,13 +50,15 @@ const Mutations = {
     },
     [MutationType.RELOAD_PORTFOLIO](state: StateHolder, portfolio: Portfolio): void {
         state.currentPortfolio = portfolio;
+        const withoutCurrent = state.clientInfo.user.portfolios.filter(p => p.id !== portfolio.id);
+        state.clientInfo.user.portfolios = [...withoutCurrent, portfolio.portfolioParams];
     },
     [MutationType.RELOAD_PORTFOLIOS](state: StateHolder, portfolios: PortfolioParams[]): void {
         state.clientInfo.user.portfolios = [...portfolios];
     },
     [MutationType.UPDATE_PORTFOLIO](state: StateHolder, portfolio: PortfolioParams): void {
-        const result = state.clientInfo.user.portfolios.filter(p => p.id !== portfolio.id);
-        state.clientInfo.user.portfolios = [...result, portfolio];
+        const withoutCurrent = state.clientInfo.user.portfolios.filter(p => p.id !== portfolio.id);
+        state.clientInfo.user.portfolios = [...withoutCurrent, portfolio];
     }
 };
 

@@ -9,7 +9,7 @@ import {TableHeader} from "../types/types";
     template: `
         <v-data-table class="data-table" :headers="headers" :items="rows" item-key="year" hide-actions>
             <v-progress-linear slot="progress" color="blue" indeterminate></v-progress-linear>
-            <template slot="items" slot-scope="props">
+            <template #items="props">
                 <tr class="selectable">
                     <td class="text-xs-left">{{ props.item.year }}</td>
                     <td class="text-xs-right ii-number-cell">{{ props.item.dividendsAmount | amount(true) }}</td>

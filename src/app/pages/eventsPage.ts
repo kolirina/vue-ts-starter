@@ -81,7 +81,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </div>
 
                     <v-data-table :headers="headers" :items="events" item-key="id" :custom-sort="customSort" hide-actions>
-                        <template slot="items" slot-scope="props">
+                        <template #items="props">
                             <tr class="selectable">
                                 <td>{{ props.item.label }}</td>
                                 <td>{{ props.item.share.shortname }}</td>

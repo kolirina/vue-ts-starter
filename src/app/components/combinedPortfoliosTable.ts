@@ -8,7 +8,7 @@ import {TableHeader} from "../types/types";
     // language=Vue
     template: `
         <v-data-table class="data-table" :headers="headers" :items="portfolios" item-key="id" hide-actions @click.stop>
-            <template slot="items" slot-scope="props">
+            <template #items="props">
                 <tr class="selectable">
                     <td>
                         <v-checkbox v-model="props.item.combined" @change="onSetCombined(props.item)" hide-details></v-checkbox>

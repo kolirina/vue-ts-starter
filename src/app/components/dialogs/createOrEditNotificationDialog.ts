@@ -22,7 +22,7 @@ import {CustomDialog} from "./customDialog";
                     <share-search :filteredShares="filteredShares" :assetType="assetType" @clear="onShareClear" @change="onShareSearchChange"></share-search>
 
                     <v-switch v-model="buyPriceNotification">
-                        <template slot="label">
+                        <template #label>
                             <span>Получать уведомления об изменении цены покупки</span>
                             <v-tooltip content-class="custom-tooltip-wrap" bottom>
                                 <sup class="custom-tooltip" slot="activator">
@@ -59,7 +59,7 @@ import {CustomDialog} from "./customDialog";
                     </v-expansion-panel>
 
                     <v-switch v-model="sellPriceNotification">
-                        <template slot="label">
+                        <template #label>
                             <span>Получать уведомления об изменении цены продажи</span>
                             <v-tooltip content-class="custom-tooltip-wrap" bottom>
                                 <sup class="custom-tooltip" slot="activator">
@@ -96,7 +96,7 @@ import {CustomDialog} from "./customDialog";
                     </v-expansion-panel>
 
                     <v-switch v-if="isStockNotification" v-model="newsNotification" @change="onNewsNotificationChange">
-                        <template slot="label">
+                        <template #label>
                             <span>Получать уведомления о новостях</span>
                             <v-tooltip content-class="custom-tooltip-wrap" bottom>
                                 <sup class="custom-tooltip" slot="activator">
@@ -136,7 +136,7 @@ import {CustomDialog} from "./customDialog";
                     </v-expansion-panel>
 
                     <v-switch v-if="isStockNotification" v-model="dividendNotification" @change="onDividendNotificationChange">
-                        <template slot="label">
+                        <template #label>
                             <span>Получать уведомления о планируемых дивидендах</span>
                             <v-tooltip content-class="custom-tooltip-wrap" bottom>
                                 <sup class="custom-tooltip" slot="activator">
@@ -151,7 +151,7 @@ import {CustomDialog} from "./customDialog";
                     </v-switch>
 
                     <v-switch v-if="!isStockNotification" :readonly="!isStockNotification" v-model="bondEventNotification">
-                        <template slot="label">
+                        <template #label>
                             <span>Получать уведомления о событиях</span>
                             <v-tooltip content-class="custom-tooltip-wrap" bottom>
                                 <sup class="custom-tooltip" slot="activator">

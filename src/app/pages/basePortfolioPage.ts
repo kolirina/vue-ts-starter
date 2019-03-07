@@ -55,7 +55,7 @@ const MainStore = namespace(StoreType.MAIN);
             <div style="height: 30px"></div>
 
             <expanded-panel :value="$uistate.stocksTablePanel" :withMenu="true" name="stock" :state="$uistate.STOCKS" @click="onStockTablePanelClick">
-                <template slot="header">
+                <template #header>
                     <span>Акции</span>
                     <v-fade-transition mode="out-in">
                         <span v-if="stockTablePanelClosed" class="v-expansion-panel__header-info">
@@ -63,7 +63,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </span>
                     </v-fade-transition>
                 </template>
-                <template slot="list">
+                <template #list>
                     <v-list-tile-title @click="openTableHeadersDialog(TABLES_NAME.STOCK)">Настроить колонки</v-list-tile-title>
                     <v-list-tile-title v-if="exportable" @click="exportTable(ExportType.STOCKS)">Экспорт в xlsx</v-list-tile-title>
                 </template>
@@ -74,7 +74,7 @@ const MainStore = namespace(StoreType.MAIN);
             <div style="height: 30px"></div>
 
             <expanded-panel :value="$uistate.bondsTablePanel" :withMenu="true" name="bond" :state="$uistate.BONDS" @click="onBondTablePanelClick">
-                <template slot="header">
+                <template #header>
                     <span>Облигации</span>
                     <v-fade-transition mode="out-in">
                         <span v-if="bondTablePanelClosed" class="v-expansion-panel__header-info">
@@ -83,7 +83,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </span>
                     </v-fade-transition>
                 </template>
-                <template slot="list">
+                <template #list>
                     <v-list-tile-title @click="openTableHeadersDialog('bondTable')">Настроить колонки</v-list-tile-title>
                     <v-list-tile-title v-if="exportable" @click="exportTable(ExportType.BONDS)">Экспорт в xlsx</v-list-tile-title>
                 </template>
@@ -94,7 +94,7 @@ const MainStore = namespace(StoreType.MAIN);
             <div style="height: 30px"></div>
 
             <expanded-panel :value="$uistate.historyPanel" :state="$uistate.HISTORY_PANEL" @click="onPortfolioLineChartPanelStateChanges">
-                <template slot="header">Стоимость портфеля</template>
+                <template #header>Стоимость портфеля</template>
                 <v-card-text>
                     <portfolio-line-chart v-if="lineChartData && lineChartEvents" :data="lineChartData"
                                           :state-key="StoreKeys.PORTFOLIO_CHART_RANGE"
@@ -112,7 +112,7 @@ const MainStore = namespace(StoreType.MAIN);
             <div style="height: 30px"></div>
 
             <expanded-panel :value="$uistate.assetGraph" :state="$uistate.ASSET_CHART_PANEL">
-                <template slot="header">Состав портфеля по активам</template>
+                <template #header>Состав портфеля по активам</template>
                 <v-card-text>
                     <pie-chart :data="assetsPieChartData" :balloon-title="portfolioName"></pie-chart>
                 </v-card-text>
@@ -121,7 +121,7 @@ const MainStore = namespace(StoreType.MAIN);
             <div style="height: 30px"></div>
 
             <expanded-panel :value="$uistate.stockGraph" :state="$uistate.STOCK_CHART_PANEL">
-                <template slot="header">Состав портфеля акций</template>
+                <template #header>Состав портфеля акций</template>
                 <v-card-text>
                     <pie-chart :data="stockPieChartData"></pie-chart>
                 </v-card-text>
@@ -130,7 +130,7 @@ const MainStore = namespace(StoreType.MAIN);
             <div style="height: 30px" v-if="overview.bondPortfolio.rows.length > 0"></div>
 
             <expanded-panel v-if="overview.bondPortfolio.rows.length > 0" :value="$uistate.bondGraph" :state="$uistate.BOND_CHART_PANEL">
-                <template slot="header">Состав портфеля облигаций</template>
+                <template #header>Состав портфеля облигаций</template>
                 <v-card-text>
                     <pie-chart :data="bondPieChartData"></pie-chart>
                 </v-card-text>
@@ -139,7 +139,7 @@ const MainStore = namespace(StoreType.MAIN);
             <div style="height: 30px"></div>
 
             <expanded-panel :value="$uistate.sectorsGraph" :state="$uistate.SECTORS_PANEL">
-                <template slot="header">Состав портфеля по секторам</template>
+                <template #header>Состав портфеля по секторам</template>
                 <v-card-text>
                     <pie-chart :data="sectorsChartData.data" :balloon-title="portfolioName"></pie-chart>
                 </v-card-text>
