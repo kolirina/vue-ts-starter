@@ -8,10 +8,11 @@ import {BtnReturn, CustomDialog} from "./customDialog";
             <v-card class="dialog-wrap">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
 
-                <v-toolbar dark color="primary">
-                    <v-toolbar-title><b>Обновления сервиса</b></v-toolbar-title>
+                <v-card-title class="paddB0">
+                    <span class="headline">Обновления сервиса</span>
                     <v-spacer></v-spacer>
-                </v-toolbar>
+                </v-card-title>
+
                 <v-card-text>
                     <v-container class="selectable">
                         Сервисом стало удобно пользоваться не только в web-версии, а также и с мобильных устройств. Мы поддерживаем как ios, так и android.
