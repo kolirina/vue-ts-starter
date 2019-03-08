@@ -24,9 +24,23 @@ const MainStore = namespace(StoreType.MAIN);
                     <img src="img/notification/notifications_icon.png"/>
                 </h1>
 
-                <div @click="addNotificationDialog" class="notifications-open-dialog-btn">
-                    <v-icon>add</v-icon>
-                </div>
+                <v-menu transition="slide-y-transition" nudge-bottom="50" nudge-left="10">
+                    <v-btn color="primary" slot="activator">
+                        Добавить
+                    </v-btn>
+                    <v-list dense>
+                        <v-list-tile @click="addNotificationDialog(NotificationType.stock)">
+                            <v-list-tile-title>
+                                По акции
+                            </v-list-tile-title>
+                        </v-list-tile>
+                        <v-list-tile @click="addNotificationDialog(NotificationType.bond)">
+                            <v-list-tile-title>
+                                По облигации
+                            </v-list-tile-title>
+                        </v-list-tile>
+                    </v-list>
+                </v-menu>
             </v-card>
 
             <v-card v-if="notifications.length === 0" class="notifications-card notifications-card-empty">
@@ -111,8 +125,8 @@ export class NotificationsPage extends UI {
         await this.loadNotifications();
     }
 
-    async addNotificationDialog(): Promise<void> {
-        const result = await new CreateOrEditNotificationDialog().show();
+    async addNotificationDialog(notificationType: NotificationType): Promise<void> {
+        const result = await new CreateOrEditNotificationDialog().show({type: notificationType});
         if (result) {
             await this.loadNotifications();
         }

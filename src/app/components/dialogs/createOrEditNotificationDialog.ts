@@ -197,7 +197,7 @@ export class CreateOrEditNotificationDialog extends CustomDialog<Notification, b
     private notification: Notification = null;
 
     async mounted(): Promise<void> {
-        if (this.data) {
+        if (this.data.id) {
             this.notification = {...this.data};
             this.bondEventNotification = this.notification.type === NotificationType.bond;
             this.buyPriceNotification = CommonUtils.exists(this.notification.buyPrice);
@@ -211,9 +211,8 @@ export class CreateOrEditNotificationDialog extends CustomDialog<Notification, b
             }
             this.filteredShares = [this.share];
         } else {
-            this.notification = {
-                type: NotificationType.stock
-            };
+            // здесь всегда будет только тип
+            this.notification = {...this.data};
         }
     }
 
