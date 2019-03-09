@@ -15,10 +15,14 @@
  */
 
 .custom-tooltip {
-  i {
-    font-size: 10px;
-    margin-left: 8px;
-  }
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-left: 4px;
+  background: url("../img/notification/info.svg") no-repeat center;
+  background-size: contain;
+
+  i {display: none}
 
   &-wrap {
     background-color: #fff;

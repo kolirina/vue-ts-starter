@@ -14,7 +14,7 @@ import {CustomDialog} from "./customDialog";
 @Component({
     // language=Vue
     template: `
-        <v-dialog v-model="showed" persistent max-width="480px">
+        <v-dialog v-model="showed" persistent max-width="600px">
             <v-card v-if="notification" class="add-notification dialog-wrap">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
                 <v-card-title class="headline add-notification-title">{{ notification.id ? "Редактирование" : "Создание" }} уведомления</v-card-title>
@@ -46,14 +46,8 @@ import {CustomDialog} from "./customDialog";
                     <v-expansion-panel :value="[buyPriceNotification]" expand>
                         <v-expansion-panel-content>
                             <div class="add-notification-conditional">
-                                <div class="add-notification-conditional-block">
-                                    <label for="buyPrice">Целевая цена покупки</label>
-                                    <ii-number-field v-model="notification.buyPrice" id="buyPrice" :decimals="2"></ii-number-field>
-                                </div>
-                                <div class="add-notification-conditional-block">
-                                    <label for="buyVariation">Допуск цены покупки</label>
-                                    <ii-number-field v-model="notification.buyVariation" id="buyVariation" :decimals="2"></ii-number-field>
-                                </div>
+                                <ii-number-field label="Целевая цена покупки" v-model="notification.buyPrice" id="buyPrice" :decimals="2"></ii-number-field>
+                                <ii-number-field label="Допуск цены покупки" v-model="notification.buyVariation" id="buyVariation" :decimals="2"></ii-number-field>
                             </div>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
@@ -83,14 +77,8 @@ import {CustomDialog} from "./customDialog";
                     <v-expansion-panel :value="[sellPriceNotification]" expand>
                         <v-expansion-panel-content>
                             <div class="add-notification-conditional">
-                                <div class="add-notification-conditional-block">
-                                    <label for="sellPrice">Целевая цена продажи</label>
-                                    <ii-number-field v-model="notification.sellPrice" id="sellPrice" :decimals="2"></ii-number-field>
-                                </div>
-                                <div class="add-notification-conditional-block">
-                                    <label for="sellVariation">Допуск цены продажи</label>
-                                    <ii-number-field v-model="notification.sellVariation" id="sellVariation" :decimals="2"></ii-number-field>
-                                </div>
+                                <ii-number-field label="Целевая цена продажи" v-model="notification.sellPrice" id="sellPrice" :decimals="2"></ii-number-field>
+                                <ii-number-field label="Допуск цены продажи" v-model="notification.sellVariation" id="sellVariation" :decimals="2"></ii-number-field>
                             </div>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
@@ -125,12 +113,8 @@ import {CustomDialog} from "./customDialog";
                     <v-expansion-panel :value="[newsNotification]" expand>
                         <v-expansion-panel-content>
                             <div class="add-notification-conditional">
-                                <div class="add-notification-conditional-block">
-                                    <v-text-field label="Ключевые слова для поиска" v-model="notification.keywords"></v-text-field>
-                                </div>
-                                <div class="add-notification-conditional-block">
-                                    <v-select label="Тип поиска слов" v-model="notification.keyWordsSearchType" :items="selectParams"></v-select>
-                                </div>
+                                <v-text-field label="Ключевые слова для поиска" v-model="notification.keywords"></v-text-field>
+                                <v-select label="Тип поиска слов" v-model="notification.keyWordsSearchType" :items="selectParams"></v-select>
                             </div>
                         </v-expansion-panel-content>
                     </v-expansion-panel>

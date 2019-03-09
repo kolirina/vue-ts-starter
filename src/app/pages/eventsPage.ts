@@ -71,7 +71,7 @@ const MainStore = namespace(StoreType.MAIN);
 
                         <span class="item-block">
                             <span class="eventLegend repayment"/>
-                            <span :class="portfolio.portfolioParams.viewCurrency.toLowerCase()">Поагешния {{ eventsAggregateInfo.totalRepaymentsAmount | number }} </span>
+                            <span :class="portfolio.portfolioParams.viewCurrency.toLowerCase()">Погашения {{ eventsAggregateInfo.totalRepaymentsAmount | number }} </span>
                         </span>
 
                         <span class="item-block">

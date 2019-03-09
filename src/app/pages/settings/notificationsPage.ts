@@ -18,14 +18,17 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <div class="notifications">
-            <v-card class="notifications-card notifications-card-main">
-                <h1 class="notifications-title">
-                    Уведомления
-                    <img src="img/notification/notifications_icon.png"/>
-                </h1>
+            <div class="section-title">Уведомления</div>
+            <v-card :class="{'notifications-card notifications-card-main': true, 'notifications-card-full': notifications.length !== 0}">
+                <div>
+                    Здесь будут Ваши настройки уведомлений о дивидендах,<br>
+                    достижении целевых цен на акции и облигации, а также<br>
+                    о новостях интересующих эмитентов.
+                </div>
+                <div>Добавьте первое уведомление</div>
 
                 <v-menu transition="slide-y-transition" nudge-bottom="50" nudge-left="10">
-                    <v-btn color="primary" slot="activator">
+                    <v-btn class="big_btn primary" slot="activator">
                         Добавить
                     </v-btn>
                     <v-list dense>
@@ -43,36 +46,43 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-menu>
             </v-card>
 
-            <v-card v-if="notifications.length === 0" class="notifications-card notifications-card-empty">
-            <span>Здесь можно настроить уведомления о дивидендах, о достижении целевых цен на акции,
-            а также подписаться на новости интересующих эмитентов. Добавьте первое уведомление, нажав на кнопку “+“ в правом верхнем углу.</span>
-            </v-card>
 
-            <v-card v-else class="notifications-card" v-for="notification in notifications" :key="notification.id">
+            <v-card v-if="notifications.length !== 0" class="notifications-card" v-for="notification in notifications" :key="notification.id">
                 <div class="notifications-card-header">
                     <div class="notifications-card-header-title">{{notification.share.shortname}}</div>
                     <div class="notifications-card-header-price">
-                        Цена
-                        <span>{{ getNotificationPrice(notification) }}
+                        Цена {{ getNotificationPrice(notification) }}
                         <i :class="notification.share.currency.toLowerCase()"></i>
-                    </span>
                     </div>
                     <div class="notifications-card-header-actions">
-                        <img src="img/notification/edit.png" @click="editNotificationDialog(notification)" alt="Edit">
-                        <img src="img/notification/remove.png" @click="removeNotificationDialog(notification)" alt="Remove">
+                        <v-menu transition="slide-y-transition" nudge-bottom="50" nudge-left="10">
+                            <div class="notifications-card__menu" slot="activator"></div>
+                            <v-list dense>
+                                <v-list-tile @click="editNotificationDialog(notification)">
+                                    <v-list-tile-title>
+                                        Редактировать
+                                    </v-list-tile-title>
+                                </v-list-tile>
+                                <v-list-tile @click="removeNotificationDialog(notification)">
+                                    <v-list-tile-title>
+                                        Удалить
+                                    </v-list-tile-title>
+                                </v-list-tile>
+                            </v-list>
+                        </v-menu>
                     </div>
                 </div>
-                <v-layout class="notifications-card-body" row>
-                    <v-flex v-if="notification.buyPrice || notification.sellPrice" class="notifications-card-body-prices with-padding">
+                <div class="notifications-card-body">
+                    <v-flex v-if="notification.buyPrice || notification.sellPrice" class="notifications-card-body-prices">
                         <div v-if="notification.buyPrice">
-                            Целевая цена покупки
+                            <div class="notifications-card-body-title w180">Целевая цена покупки</div>
                             <span class="notifications-card-body-prices-price">{{notification.buyPrice}}</span>
                             <span v-if="notification.buyVariation" class="notifications-card-body-prices-sign">±</span>
                             <span v-if="notification.buyVariation" class="notifications-card-body-prices-variation">{{ notification.buyVariation }}</span>
                             <i class="notifications-card-body-prices-currency" :class="notification.share.currency.toLowerCase()"></i>
                         </div>
                         <div v-if="notification.sellPrice">
-                            Целевая цена продажи
+                            <div class="notifications-card-body-title w180">Целевая цена продажи</div>
                             <span class="notifications-card-body-prices-price">{{notification.sellPrice}}</span>
                             <span v-if="notification.sellVariation" class="notifications-card-body-prices-sign">±</span>
                             <span v-if="notification.sellVariation" class="notifications-card-body-prices-variation">{{ notification.sellVariation }}</span>
@@ -80,19 +90,18 @@ const MainStore = namespace(StoreType.MAIN);
                         </div>
                     </v-flex>
                     <div v-if="hasPriceAndNews(notification)" class="notifications-card-body-line"></div>
-                    <v-flex v-if="isNewsNotification(notification)"
-                            :class="['notifications-card-body-news', hasPriceAndNews(notification) ? 'with-padding' : '']">
-                        <div v-if="notification.keywords">
+                    <v-flex v-if="!isNewsNotification(notification)" class="notifications-card-body-news">
+                        <div class="notifications-card-body-title" v-if="notification.keywords">
                             Ключевые слова: <span>{{ notification.keywords }}</span>
                         </div>
-                        <div v-if="notification.keywords">
+                        <div class="notifications-card-body-title" v-if="notification.keywords">
                             Тип слов: <span>{{ searchTypesTitle[notification.keyWordsSearchType] }}</span>
                         </div>
-                        <div v-if="!notification.keywords">
+                        <div class="notifications-card-body-title" v-if="!notification.keywords">
                             Вы будете получать уведомления о всех новостях
                         </div>
                     </v-flex>
-                    <v-flex v-if="isDividendNotification(notification)" :class="['notifications-card-body-news', hasPriceAndNews(notification) ? 'with-padding' : '']">
+                    <v-flex v-if="isDividendNotification(notification)" class="notifications-card-body-news">
                         <div>
                             Уведомление о предстоящих дивидендах
                         </div>
@@ -102,7 +111,7 @@ const MainStore = namespace(StoreType.MAIN);
                             Уведомление о событиях (Купонные выплаты, амортизация, погашение)
                         </div>
                     </v-flex>
-                </v-layout>
+                </div>
                 <div class="notifications-card-last-notification">
                     <span>Дата последнего уведомления {{ notification.lastNotification }}</span>
                 </div>

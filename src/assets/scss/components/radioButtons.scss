@@ -14,8 +14,11 @@
       top: 50%;
       left: 3px;
       transform: translateY(-50%);
+      transition: border-color 0.1s ease;
     }
   }
+
+  &:hover .v-input--selection-controls__input:before {border-color: #96A5BE}
 
   &.accent--text .v-input--selection-controls__input:before {border: 5px solid $sidebar-blue-color}
 

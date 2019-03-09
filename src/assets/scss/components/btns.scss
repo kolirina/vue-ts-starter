@@ -65,6 +65,9 @@
     }
   }
 
+  &.theme--dark,
+  &.primary {color: #fff}
+
   &.v-btn--disabled {
     border-color: #EBEFF7 !important;
     background-color: #EBEFF7 !important;
@@ -80,7 +83,8 @@
     border: 1px solid #CACED5;
   }
 
-  &.selected {
+  &.selected,
+  &.primary {
     background-color: $sidebar-blue-color !important;
     border-color: $sidebar-blue-color;
     color: #fff !important;
