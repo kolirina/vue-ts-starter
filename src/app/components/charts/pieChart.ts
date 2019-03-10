@@ -31,7 +31,7 @@ export class PieChart extends UI {
         container: HTMLElement
     };
 
-    @Prop({required: true, type: String})
+    @Prop({required: false, default: null, type: String})
     private viewCurrency: string;
 
     @Prop({default: "", type: String})
@@ -68,8 +68,8 @@ export class PieChart extends UI {
                 text: this.title
             },
             tooltip: {
-                pointFormat: "<b>{point.y}, ({point.percentage:.2f}%)</b> <br/>{point.tickers}",
-                valueSuffix: " " + TradeUtils.getCurrencySymbol(this.viewCurrency)
+                pointFormat: "<b>{point.y} {point.description} ({point.percentage:.2f}%)</b> <br/>{point.tickers}",
+                valueSuffix: `${this.viewCurrency ? ` ${TradeUtils.getCurrencySymbol(this.viewCurrency) }` : ""}`
             },
             plotOptions: {
                 pie: {
