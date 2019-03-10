@@ -12,7 +12,7 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <pie-chart :data="chartData" :balloon-title="portfolio.portfolioParams.name"></pie-chart>
+        <pie-chart :data="chartData" :balloon-title="portfolio.portfolioParams.name" :view-currency="portfolio.portfolioParams.viewCurrency"></pie-chart>
     `
 })
 export class SectorsChart extends UI {

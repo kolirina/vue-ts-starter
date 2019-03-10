@@ -3,7 +3,7 @@ import Component from "vue-class-component";
 import {Prop, Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
-import {Portfolio} from "../../types/types";
+import {TradeUtils} from "../../utils/tradeUtils";
 import {StoreType} from "../../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -31,8 +31,8 @@ export class PieChart extends UI {
         container: HTMLElement
     };
 
-    @MainStore.Getter
-    private portfolio: Portfolio;
+    @Prop({required: true, type: String})
+    private viewCurrency: string;
 
     @Prop({default: "", type: String})
     private title: string;
@@ -69,7 +69,7 @@ export class PieChart extends UI {
             },
             tooltip: {
                 pointFormat: "<b>{point.y}, ({point.percentage:.2f}%)</b> <br/>{point.tickers}",
-                valueSuffix: " ₽"
+                valueSuffix: " " + TradeUtils.getCurrencySymbol(this.viewCurrency)
             },
             plotOptions: {
                 pie: {

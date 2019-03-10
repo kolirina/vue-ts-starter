@@ -114,7 +114,7 @@ const MainStore = namespace(StoreType.MAIN);
             <expanded-panel :value="$uistate.assetGraph" :state="$uistate.ASSET_CHART_PANEL">
                 <template #header>Состав портфеля по активам</template>
                 <v-card-text>
-                    <pie-chart :data="assetsPieChartData" :balloon-title="portfolioName"></pie-chart>
+                    <pie-chart :data="assetsPieChartData" :balloon-title="portfolioName" :view-currency="viewCurrency"></pie-chart>
                 </v-card-text>
             </expanded-panel>
 
@@ -123,7 +123,7 @@ const MainStore = namespace(StoreType.MAIN);
             <expanded-panel :value="$uistate.stockGraph" :state="$uistate.STOCK_CHART_PANEL">
                 <template #header>Состав портфеля акций</template>
                 <v-card-text>
-                    <pie-chart :data="stockPieChartData"></pie-chart>
+                    <pie-chart :data="stockPieChartData" :view-currency="viewCurrency"></pie-chart>
                 </v-card-text>
             </expanded-panel>
 
@@ -132,7 +132,7 @@ const MainStore = namespace(StoreType.MAIN);
             <expanded-panel v-if="overview.bondPortfolio.rows.length > 0" :value="$uistate.bondGraph" :state="$uistate.BOND_CHART_PANEL">
                 <template #header>Состав портфеля облигаций</template>
                 <v-card-text>
-                    <pie-chart :data="bondPieChartData"></pie-chart>
+                    <pie-chart :data="bondPieChartData" :view-currency="viewCurrency"></pie-chart>
                 </v-card-text>
             </expanded-panel>
 
@@ -141,7 +141,7 @@ const MainStore = namespace(StoreType.MAIN);
             <expanded-panel :value="$uistate.sectorsGraph" :state="$uistate.SECTORS_PANEL">
                 <template #header>Состав портфеля по секторам</template>
                 <v-card-text>
-                    <pie-chart :data="sectorsChartData.data" :balloon-title="portfolioName"></pie-chart>
+                    <pie-chart :data="sectorsChartData.data" :balloon-title="portfolioName" :view-currency="viewCurrency"></pie-chart>
                 </v-card-text>
             </expanded-panel>
         </v-container>
@@ -165,6 +165,8 @@ export class BasePortfolioPage extends UI {
     /** Признак доступности экспорта таблиц */
     @Prop({type: Boolean, required: false})
     private exportable: boolean;
+    @Prop({required: true, type: String})
+    private viewCurrency: string;
     @Inject
     private tablesService: TablesService;
     @Inject

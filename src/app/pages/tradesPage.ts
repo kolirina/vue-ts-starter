@@ -70,10 +70,10 @@ export class TradesPage extends UI {
     private StoreKeys = StoreKeys;
 
     private pagination: Pagination = {
-        descending: false,
+        descending: true,
         page: 1,
         rowsPerPage: 50,
-        sortBy: "ticker",
+        sortBy: "date",
         totalItems: this.totalTrades
     };
 

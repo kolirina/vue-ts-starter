@@ -1,10 +1,14 @@
+import moment from "moment";
 import {Filters} from "../platform/filters/Filters";
+import {Client} from "../services/clientService";
 import {ShareEvent} from "../services/eventService";
 import {TableName} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
 import {Operation} from "../types/operation";
-import {ErrorInfo, TradeRow} from "../types/types";
+import {Permission} from "../types/permission";
+import {ErrorInfo, Portfolio, TradeRow} from "../types/types";
+import {DateUtils} from "./dateUtils";
 
 export class TradeUtils {
 
@@ -83,5 +87,30 @@ export class TradeUtils {
             return fieldError.errorMessage;
         }
         return error.message;
+    }
+
+    static isPortfolioProModeEnabled(portfolio: Portfolio, clientInfo: Client): boolean {
+        return portfolio && portfolio.portfolioParams.professionalMode && this.isProfessionalModeAvailable(clientInfo);
+    }
+
+    /**
+     * Проверяет, доступен ли профессиональный режим
+     * @return {@code true} если профессиональный режим доступен
+     */
+    static isProfessionalModeAvailable(clientInfo: Client): boolean {
+        return clientInfo.tariff.hasPermission(Permission.PROFF_MODE) &&
+            moment().isBefore(DateUtils.parseDate(clientInfo.paidTill));
+    }
+
+    static getCurrencySymbol(currencyCode: string): string {
+        switch (currencyCode) {
+            case "RUB":
+                return "₽";
+            case "USD":
+                return "$";
+            case "EUR":
+                return "€";
+        }
+        return currencyCode;
     }
 }

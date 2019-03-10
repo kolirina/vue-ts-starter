@@ -59,6 +59,7 @@ const Mutations = {
     [MutationType.UPDATE_PORTFOLIO](state: StateHolder, portfolio: PortfolioParams): void {
         const withoutCurrent = state.clientInfo.user.portfolios.filter(p => p.id !== portfolio.id);
         state.clientInfo.user.portfolios = [...withoutCurrent, portfolio];
+        state.currentPortfolio.portfolioParams = portfolio;
     }
 };
 

@@ -3,6 +3,7 @@ import Component from "vue-class-component";
 import {Prop, Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class";
 import {UI} from "../app/ui";
+import {ClientService} from "../services/clientService";
 import {TableHeadersState, TABLES_NAME, TablesService} from "../services/tablesService";
 import {TradeFields} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
@@ -35,7 +36,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </td>
                     <td v-if="tableHeadersState.name">{{ props.item.companyName }}</td>
                     <td v-if="tableHeadersState.operationLabel">{{ props.item.operationLabel }}</td>
-                    <td v-if="tableHeadersState.date" class="text-xs-center">{{ props.item.date | date }}</td>
+                    <td v-if="tableHeadersState.date" class="text-xs-center">{{ getTradeDate(props.item) }}</td>
                     <td v-if="tableHeadersState.quantity" class="text-xs-right ii-number-cell">{{ props.item.quantity }}</td>
                     <td v-if="tableHeadersState.price" class="text-xs-right ii-number-cell">{{ getPrice(props.item) }}</td>
                     <td v-if="tableHeadersState.facevalue">{{ props.item.facevalue }}</td>
@@ -158,6 +159,8 @@ export class TradesTable extends UI {
 
     @Inject
     private tablesService: TablesService;
+    @Inject
+    private clientService: ClientService;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
     private reloadPortfolio: (id: string) => Promise<void>;
     @MainStore.Getter
@@ -179,14 +182,18 @@ export class TradesTable extends UI {
     private TABLES_NAME = TABLES_NAME;
     /** Типы активов */
     private AssetType = AssetType;
+    /** Признак доступности профессионального режима */
+    private portfolioProModeEnabled = false;
 
     /**
      * Инициализация данных
      * @inheritDoc
      */
-    created(): void {
+    async created(): Promise<void> {
         /** Установка состояния заголовков таблицы */
         this.setHeadersState();
+        const clientInfo = await this.clientService.getClientInfo();
+        this.portfolioProModeEnabled = TradeUtils.isPortfolioProModeEnabled(this.portfolio, clientInfo);
     }
 
     @Watch("headers")
@@ -248,6 +255,12 @@ export class TradesTable extends UI {
 
     private async deleteTrade(tradeRow: TradeRow): Promise<void> {
         this.$emit("delete", tradeRow);
+    }
+
+    private getTradeDate(trade: TradeRow): string {
+        const date = TradeUtils.getDateString(trade.date);
+        const time = TradeUtils.getTimeString(trade.date);
+        return this.portfolioProModeEnabled ? `${date} ${time}` : date;
     }
 
     private getPrice(trade: TradeRow): string {

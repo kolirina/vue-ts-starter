@@ -18,7 +18,7 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <base-portfolio-page v-if="overview" :overview="overview" :line-chart-data="lineChartData" :line-chart-events="lineChartEvents"
+        <base-portfolio-page v-if="overview" :overview="overview" :line-chart-data="lineChartData" :line-chart-events="lineChartEvents" :view-currency="viewCurrency"
                              @reloadLineChart="loadPortfolioLineChart">
             <template #afterDashboard>
                 <expanded-panel :value="$uistate.combinedPanel" :state="$uistate.COMBINED_CONTROL_PANEL">

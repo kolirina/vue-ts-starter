@@ -123,7 +123,7 @@ export class PortfoliosTable extends UI {
         {text: "", align: "center", value: "", sortable: false, width: "100"},
         {text: "Фикс. комиссия", align: "right", value: "fixFee", width: "50"},
         {text: "Валюта", align: "center", value: "viewCurrency"},
-        {text: "Тип счета", align: "center", value: "accountType"},
+        {text: "Тип счета", align: "center", value: "accountType.description"},
         {text: "Дата открытия", align: "center", value: "openDate"},
         {text: "Меню", value: "", align: "center", width: "30", sortable: false}
     ];
