@@ -89,9 +89,11 @@ export class ChartUtils {
     static doAssetsPieChartData(overview: Overview): DataPoint[] {
         const data: DataPoint[] = [];
         overview.assetRows.filter(value => new BigMoney(value.currCost).amount.toString() !== "0").forEach(row => {
+            const currCost = new BigMoney(row.currCost);
             data.push({
                 name: Filters.assetDesc(row.type),
-                y: new BigMoney(row.currCost).amount.abs().toDP(2, Decimal.ROUND_HALF_UP).toNumber()
+                description: currCost.currencySymbol,
+                y: currCost.amount.abs().toDP(2, Decimal.ROUND_HALF_UP).toNumber()
             });
         });
         return data;

@@ -22,7 +22,6 @@ import {AssetTable} from "../components/assetTable";
 import {BondTable} from "../components/bondTable";
 import {AssetChart} from "../components/charts/assetChart";
 import {PortfolioLineChart} from "../components/charts/portfolioLineChart";
-import {SectorsChart} from "../components/charts/sectorsChart";
 import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog";
 import {PortfolioRowFilter, PortfolioRowsTableFilter} from "../components/portfolioRowsTableFilter";
 import {StockTable} from "../components/stockTable";
@@ -114,7 +113,8 @@ const MainStore = namespace(StoreType.MAIN);
             <expanded-panel :value="$uistate.assetGraph" :state="$uistate.ASSET_CHART_PANEL">
                 <template #header>Состав портфеля по активам</template>
                 <v-card-text>
-                    <pie-chart :data="assetsPieChartData" :balloon-title="portfolioName" :view-currency="viewCurrency"></pie-chart>
+                    <!-- Валюта тут не нужна так как валюта будет браться из каждого актива в отдельности -->
+                    <pie-chart :data="assetsPieChartData" :balloon-title="portfolioName"></pie-chart>
                 </v-card-text>
             </expanded-panel>
 
@@ -146,7 +146,7 @@ const MainStore = namespace(StoreType.MAIN);
             </expanded-panel>
         </v-container>
     `,
-    components: {AssetTable, StockTable, BondTable, PortfolioLineChart, SectorsChart, PortfolioRowsTableFilter}
+    components: {AssetTable, StockTable, BondTable, PortfolioLineChart, PortfolioRowsTableFilter}
 })
 export class BasePortfolioPage extends UI {
 
