@@ -6,6 +6,7 @@ import {Watch} from "vue-property-decorator";
 import {VueRouter} from "vue-router/types/router";
 import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
+import {ClientService} from "../../services/clientService";
 import {EventFields} from "../../services/eventService";
 import {MarketHistoryService} from "../../services/marketHistoryService";
 import {MarketService} from "../../services/marketService";
@@ -178,6 +179,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     };
 
     @Inject
+    private clientService: ClientService;
+    @Inject
     private marketService: MarketService;
     @Inject
     private tradeService: TradeService;
@@ -234,10 +237,14 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private processState = false;
 
     private moneyResiduals: MoneyResiduals = null;
+    /** Признак доступности профессионального режима */
+    private portfolioProModeEnabled = false;
 
     async mounted(): Promise<void> {
         this.assetType = this.data.assetType || AssetType.STOCK;
         this.portfolio = (this.data.store as any).currentPortfolio;
+        const clientInfo = await this.clientService.getClientInfo();
+        this.portfolioProModeEnabled = TradeUtils.isPortfolioProModeEnabled(this.portfolio, clientInfo);
         this.moneyResiduals = await this.portfolioService.getMoneyResiduals(this.portfolio.id);
         this.share = this.data.share || null;
         this.operation = this.data.operation || Operation.BUY;
@@ -574,10 +581,6 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     private set keepMoney(newValue: boolean) {
         this.keepMoneyValue = newValue;
-    }
-
-    private get portfolioProModeEnabled(): boolean {
-        return this.portfolio && this.portfolio.portfolioParams.professionalMode;
     }
 
     // tslint:disable
