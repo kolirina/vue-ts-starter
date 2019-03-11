@@ -30,6 +30,7 @@ export type HighStockEventsGroup = {
     data: HighStockEventData[]
     onSeries: string,
     shape: string,
+    name?: string,
     color: string,
     fillColor: string,
     stackDistance: number,

@@ -6,6 +6,7 @@ import {ShowProgress} from "../platform/decorators/showProgress";
 import {ExportService, ExportType} from "../services/exportService";
 import {OverviewService} from "../services/overviewService";
 import {HighStockEventsGroup} from "../types/charts/types";
+import {StoreKeys} from "../types/storeKeys";
 import {Portfolio} from "../types/types";
 import {UiStateHelper} from "../utils/uiStateHelper";
 import {StoreType} from "../vuex/storeType";
@@ -18,6 +19,7 @@ const MainStore = namespace(StoreType.MAIN);
     template: `
         <base-portfolio-page v-if="portfolio" :overview="portfolio.overview" :portfolio-name="portfolio.portfolioParams.name"
                              :line-chart-data="lineChartData" :line-chart-events="lineChartEvents" :view-currency="portfolio.portfolioParams.viewCurrency"
+                             :state-key-prefix="StoreKeys.PORTFOLIO_CHART"
                              @reloadLineChart="loadPortfolioLineChart" @exportTable="onExportTable" exportable></base-portfolio-page>
     `,
     components: {BasePortfolioPage}
@@ -32,6 +34,8 @@ export class PortfolioPage extends UI {
     private exportService: ExportService;
     private lineChartData: any[] = null;
     private lineChartEvents: HighStockEventsGroup[] = null;
+    /** Ключи для сохранения информации */
+    private StoreKeys = StoreKeys;
 
     /**
      * Инициализация данных страницы

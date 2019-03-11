@@ -94,7 +94,7 @@ const MainStore = namespace(StoreType.MAIN);
                 <template #header>Стоимость портфеля</template>
                 <v-card-text>
                     <portfolio-line-chart v-if="lineChartData && lineChartEvents" :data="lineChartData"
-                                          :state-key="StoreKeys.PORTFOLIO_CHART_RANGE"
+                                          :state-key-prefix="stateKeyPrefix"
                                           :events-chart-data="lineChartEvents" :balloon-title="portfolioName"></portfolio-line-chart>
                     <v-container v-else grid-list-md text-xs-center>
                         <v-layout row wrap>
@@ -165,6 +165,9 @@ export class BasePortfolioPage extends UI {
     private exportable: boolean;
     @Prop({required: true, type: String})
     private viewCurrency: string;
+    /** Префикс ключа под которым будет хранится состояние */
+    @Prop({type: String, required: true})
+    private stateKeyPrefix: string;
     @Inject
     private tablesService: TablesService;
     @Inject
