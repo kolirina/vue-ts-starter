@@ -41,8 +41,8 @@ const MainStore = namespace(StoreType.MAIN);
                     <td v-if="tableHeadersState.quantity" class="text-xs-right ii-number-cell">{{props.item.quantity}}</td>
                     <td v-if="tableHeadersState.avgBuy" class="text-xs-right ii-number-cell">{{ props.item.avgBuy | number }}</td>
                     <td v-if="tableHeadersState.currPrice" class="text-xs-right ii-number-cell">{{ props.item.currPrice | number }}</td>
-                    <td v-if="tableHeadersState.bCost" class="text-xs-right ii-number-cell">{{props.item.bcost | amount}}</td>
-                    <td v-if="tableHeadersState.sCost" class="text-xs-right ii-number-cell">{{props.item.scost | amount}}</td>
+                    <td v-if="tableHeadersState.bcost" class="text-xs-right ii-number-cell">{{props.item.bcost | amount}}</td>
+                    <td v-if="tableHeadersState.scost" class="text-xs-right ii-number-cell">{{props.item.scost | amount}}</td>
                     <td v-if="tableHeadersState.currCost" class="text-xs-right ii-number-cell">{{ props.item.currCost | amount(true) }}</td>
                     <td v-if="tableHeadersState.nominal" class="text-xs-right ii-number-cell">{{props.item.nominal | amount}}</td>
                     <td v-if="tableHeadersState.profitFromCoupons" class="text-xs-right ii-number-cell">{{props.item.profitFromCoupons | amount}}</td>

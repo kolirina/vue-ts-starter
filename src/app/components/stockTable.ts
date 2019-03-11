@@ -57,8 +57,8 @@ const MainStore = namespace(StoreType.MAIN);
                     <td v-if="tableHeadersState.quantity" class="text-xs-right ii-number-cell">{{props.item.quantity}}</td>
                     <td v-if="tableHeadersState.avgBuy" class="text-xs-right ii-number-cell">{{ props.item.avgBuy | amount }}</td>
                     <td v-if="tableHeadersState.currPrice" class="text-xs-right ii-number-cell">{{ props.item.currPrice| amount(true) }}</td>
-                    <td v-if="tableHeadersState.bCost" class="text-xs-right ii-number-cell">{{ props.item.bcost | amount }}</td>
-                    <td v-if="tableHeadersState.sCost" class="text-xs-right ii-number-cell">{{ props.item.scost | amount }}</td>
+                    <td v-if="tableHeadersState.bcost" class="text-xs-right ii-number-cell">{{ props.item.bcost | amount }}</td>
+                    <td v-if="tableHeadersState.scost" class="text-xs-right ii-number-cell">{{ props.item.scost | amount }}</td>
                     <td v-if="tableHeadersState.currCost" class="text-xs-right ii-number-cell">{{ props.item.currCost| amount(true) }}</td>
                     <td v-if="tableHeadersState.profitFromDividends" class="text-xs-right ii-number-cell">{{ props.item.profitFromDividends | amount }}</td>
                     <td v-if="tableHeadersState.profitFromDividendsPercent" class="text-xs-right ii-number-cell">{{ props.item.profitFromDividendsPercent }}</td>
@@ -70,12 +70,11 @@ const MainStore = namespace(StoreType.MAIN);
                         {{ props.item.profit| amount(true) }}
                     </td>
                     <td v-if="tableHeadersState.percProfit"
-                        :class="[( Number(props.item.percProfit) >= 0 ) ? 'ii--green-markup' :
-                        'ii--red-markup', 'ii-number-cell', 'text-xs-right']">
+                        :class="[( Number(props.item.percProfit) >= 0 ) ? 'ii--green-markup' : 'ii--red-markup', 'ii-number-cell', 'text-xs-right']">
                         {{ props.item.percProfit | number }}
                     </td>
                     <td v-if="tableHeadersState.yearYield" class="text-xs-right ii-number-cell">{{ props.item.yearYield }}</td>
-                    <td v-if="tableHeadersState.dailyPl" class="text-xs-right ii-number-cell">{{ props.item.dailyP | amount }}</td>
+                    <td v-if="tableHeadersState.dailyPl" class="text-xs-right ii-number-cell">{{ props.item.dailyPl | amount }}</td>
                     <td v-if="tableHeadersState.dailyPlPercent" class="text-xs-right ii-number-cell">{{ props.item.dailyPlPercent }}</td>
                     <td v-if="tableHeadersState.summFee" class="text-xs-right ii-number-cell">{{ props.item.summFee | amount }}</td>
                     <td v-if="tableHeadersState.percCurrShare" class="text-xs-right ii-number-cell">{{ props.item.percCurrShare | number }}</td>
