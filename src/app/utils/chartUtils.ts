@@ -3,10 +3,17 @@ import Highcharts, {ChartObject, DataPoint, Gradient, PlotLines} from "highchart
 import Highstock from "highcharts/highstock";
 import {Filters} from "../platform/filters/Filters";
 import {BigMoney} from "../types/bigMoney";
-import {EventChartData, HighStockEventData, HighStockEventsGroup, SectorChartData} from "../types/charts/types";
+import {EventChartData, HighStockEventData, HighStockEventsGroup, PieChartTooltipFormat, SectorChartData} from "../types/charts/types";
 import {Overview, StockPortfolioRow} from "../types/types";
+import {TradeUtils} from "./tradeUtils";
 
 export class ChartUtils {
+
+    /** Типы форматов для тултипа */
+    static PIE_CHART_TOOLTIP_FORMAT = {
+        COMMON: "<b>{point.y}, ({point.percentage:.2f} %)</b> <br/>{point.tickers}",
+        ASSETS: "<b>{point.y:.2f} % ({point.description})</b>"
+    };
 
     private constructor() {
     }
@@ -90,10 +97,11 @@ export class ChartUtils {
         const data: DataPoint[] = [];
         overview.assetRows.filter(value => new BigMoney(value.currCost).amount.toString() !== "0").forEach(row => {
             const currCost = new BigMoney(row.currCost);
+            const currCostAmount = currCost.amount.abs().toDP(2, Decimal.ROUND_HALF_UP).toNumber();
             data.push({
                 name: Filters.assetDesc(row.type),
-                description: currCost.currencySymbol,
-                y: currCost.amount.abs().toDP(2, Decimal.ROUND_HALF_UP).toNumber()
+                description: `${currCostAmount} ${currCost.currencySymbol}`,
+                y: Number(row.percCurrShare)
             });
         });
         return data;
@@ -248,6 +256,53 @@ export class ChartUtils {
             exporting: {
                 enabled: true
             }
+        });
+    }
+
+    /**
+     * Отрисовывает график и возвращает объект
+     * @param container контейнер где будет рисоваться график
+     * @param chartData данные для графика
+     * @param balloonTitle заголовок в тултипе
+     * @param title заголовк графика
+     * @param viewCurrency валюта
+     * @param tooltipFormat формат тултипа
+     */
+    static drawPieChart(container: HTMLElement, chartData: any[], balloonTitle: string, title: string = "", viewCurrency: string = "",
+                        tooltipFormat: PieChartTooltipFormat = PieChartTooltipFormat.COMMON): ChartObject {
+        return Highcharts.chart(container, {
+            chart: {
+                type: "pie",
+                backgroundColor: null,
+                style: {
+                    fontFamily: "\"OpenSans\" sans-serif",
+                    fontSize: "12px"
+                }
+            },
+            title: {
+                text: title
+            },
+            tooltip: {
+                pointFormat: this.PIE_CHART_TOOLTIP_FORMAT[tooltipFormat],
+                valueSuffix: `${viewCurrency ? ` ${TradeUtils.getCurrencySymbol(viewCurrency)}` : ""}`
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: "pointer",
+                    dataLabels: {
+                        enabled: true,
+                        format: "<b>{point.name}</b>: {point.percentage:.2f} %",
+                        style: {
+                            color: "black"
+                        }
+                    }
+                }
+            },
+            series: [{
+                name: balloonTitle,
+                data: chartData
+            }]
         });
     }
 }

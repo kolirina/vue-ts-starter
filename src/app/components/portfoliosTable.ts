@@ -76,8 +76,8 @@ const MainStore = namespace(StoreType.MAIN);
                             <div class="extended-info__cell label">Время с момента открытия</div>
                             <div class="extended-info__cell">{{ props.item.openDate }}</div>
 
-                            <div class="extended-info__cell label">Брокер</div>
-                            <div class="extended-info__cell">{{props.item.brokerName}}</div>
+                            <div v-if="props.item.brokerName" class="extended-info__cell label">Брокер</div>
+                            <div v-if="props.item.brokerName" class="extended-info__cell">{{props.item.brokerName}}</div>
 
                             <div class="extended-info__cell label">Настройка доступа</div>
                             <div class="extended-info__cell">

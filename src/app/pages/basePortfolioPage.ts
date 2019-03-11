@@ -43,8 +43,6 @@ const MainStore = namespace(StoreType.MAIN);
         <v-container v-if="overview" fluid class="paddT0">
             <dashboard :data="overview.dashboardData"></dashboard>
 
-            <div style="height: 30px"></div>
-
             <slot name="afterDashboard"></slot>
 
             <div style="height: 30px"></div>
@@ -114,7 +112,7 @@ const MainStore = namespace(StoreType.MAIN);
                 <template #header>Состав портфеля по активам</template>
                 <v-card-text>
                     <!-- Валюта тут не нужна так как валюта будет браться из каждого актива в отдельности -->
-                    <pie-chart :data="assetsPieChartData" :balloon-title="portfolioName"></pie-chart>
+                    <pie-chart :data="assetsPieChartData" :balloon-title="portfolioName" tooltip-format="ASSETS"></pie-chart>
                 </v-card-text>
             </expanded-panel>
 
