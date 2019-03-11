@@ -56,10 +56,12 @@ export class ChartUtils {
             result[current.backgroundColor].push({x: new Date(current.date).getTime(), title: current.text, text: current.description});
             return result;
         }, {} as { [key: string]: HighStockEventData[] });
+        let count = 0;
         Object.keys(temp).forEach(key => {
             eventsGroups.push({
                 type: flags,
                 data: temp[key],
+                name: `events${count++}`,
                 onSeries: onSeries,
                 shape: shape,
                 color: key,
@@ -296,7 +298,8 @@ export class ChartUtils {
                         style: {
                             color: "black"
                         }
-                    }
+                    },
+                    showInLegend: true
                 }
             },
             series: [{

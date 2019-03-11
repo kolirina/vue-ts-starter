@@ -12,6 +12,7 @@ import {OverviewService} from "../services/overviewService";
 import {HighStockEventsGroup} from "../types/charts/types";
 import {CombinedData} from "../types/eventObjects";
 import {Permission} from "../types/permission";
+import {StoreKeys} from "../types/storeKeys";
 import {ForbiddenCode, Overview} from "../types/types";
 import {UiStateHelper} from "../utils/uiStateHelper";
 import {StoreType} from "../vuex/storeType";
@@ -22,7 +23,8 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <base-portfolio-page v-if="overview" :overview="overview" :line-chart-data="lineChartData" :line-chart-events="lineChartEvents" :view-currency="viewCurrency"
+        <base-portfolio-page v-if="overview" :overview="overview" :line-chart-data="lineChartData" :line-chart-events="lineChartEvents"
+                             :view-currency="viewCurrency" :state-key-prefix="StoreKeys.PORTFOLIO_COMBINED_CHART"
                              @reloadLineChart="loadPortfolioLineChart">
             <template #afterDashboard>
                 <expanded-panel :value="$uistate.combinedPanel" :state="$uistate.COMBINED_CONTROL_PANEL">
@@ -59,6 +61,8 @@ export class CombinedPortfolioPage extends UI {
     private viewCurrency = "RUB";
     private lineChartData: any[] = null;
     private lineChartEvents: HighStockEventsGroup[] = null;
+    /** Ключи для сохранения информации */
+    private StoreKeys = StoreKeys;
 
     async created(): Promise<void> {
         await this.doCombinedPortfolio();
