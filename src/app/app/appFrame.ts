@@ -56,7 +56,7 @@ const MainStore = namespace(StoreType.MAIN);
             </template>
 
             <template v-if="!loading && (loggedIn || externalAuth)">
-                <v-navigation-drawer disable-resize-watcher fixed stateless app class="sidebar" v-model="drawer" :mini-variant.sync="mini">
+                <v-navigation-drawer disable-resize-watcher fixed stateless app class="sidebar" v-model="drawer" :mini-variant="mini">
                     <vue-scroll>
                         <v-list dense class="sidebar-list">
                             <v-list-tile class="sidebar-list-item" @click.native="togglePanel">
