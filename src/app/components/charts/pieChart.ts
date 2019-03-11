@@ -1,9 +1,10 @@
-import Highcharts, {ChartObject} from "highcharts";
+import {ChartObject, DataPoint} from "highcharts";
 import Component from "vue-class-component";
 import {Prop, Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
-import {TradeUtils} from "../../utils/tradeUtils";
+import {PieChartTooltipFormat} from "../../types/charts/types";
+import {ChartUtils} from "../../utils/chartUtils";
 import {StoreType} from "../../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -31,18 +32,22 @@ export class PieChart extends UI {
         container: HTMLElement
     };
 
+    /** Валюта просмотра. Может быть не указана, тогда будет браться значения из данных о точке */
     @Prop({required: false, default: null, type: String})
     private viewCurrency: string;
-
+    /** Заголовок графика */
     @Prop({default: "", type: String})
     private title: string;
-
+    /** Заголовок тултипа */
     @Prop({default: "", type: String})
     private balloonTitle: string;
-
-    @Prop()
-    private data: any[];
-
+    /** Формат тултипа. Пол умолчанию для типов Акции, Облигации, Сектора */
+    @Prop({default: "COMMON", type: String})
+    private tooltipFormat: string;
+    /** Данные */
+    @Prop({required: true})
+    private data: DataPoint[];
+    /** Объект графика */
     private chart: ChartObject = null;
 
     async mounted(): Promise<void> {
@@ -55,39 +60,6 @@ export class PieChart extends UI {
     }
 
     private async draw(): Promise<void> {
-        this.chart = Highcharts.chart(this.$refs.container, {
-            chart: {
-                type: "pie",
-                backgroundColor: null,
-                style: {
-                    fontFamily: "\"OpenSans\" sans-serif",
-                    fontSize: "12px"
-                }
-            },
-            title: {
-                text: this.title
-            },
-            tooltip: {
-                pointFormat: "<b>{point.y} {point.description} ({point.percentage:.2f}%)</b> <br/>{point.tickers}",
-                valueSuffix: `${this.viewCurrency ? ` ${TradeUtils.getCurrencySymbol(this.viewCurrency) }` : ""}`
-            },
-            plotOptions: {
-                pie: {
-                    allowPointSelect: true,
-                    cursor: "pointer",
-                    dataLabels: {
-                        enabled: true,
-                        format: "<b>{point.name}</b>: {point.percentage:.1f} %",
-                        style: {
-                            color: "black"
-                        }
-                    }
-                }
-            },
-            series: [{
-                name: this.balloonTitle,
-                data: this.data
-            }]
-        });
+        this.chart = ChartUtils.drawPieChart(this.$refs.container, this.data, this.balloonTitle, this.title, this.viewCurrency, this.tooltipFormat as PieChartTooltipFormat);
     }
 }

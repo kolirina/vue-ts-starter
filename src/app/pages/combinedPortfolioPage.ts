@@ -1,14 +1,18 @@
-import {Inject} from "typescript-ioc";
+import {Container, Inject} from "typescript-ioc";
+import {Route} from "vue-router";
 import {namespace} from "vuex-class/lib/bindings";
+import {Resolver} from "../../../typings/vue";
 import {Component, UI} from "../app/ui";
 import {CombinedPortfoliosTable} from "../components/combinedPortfoliosTable";
+import {BlockByTariffDialog} from "../components/dialogs/blockByTariffDialog";
 import {CatchErrors} from "../platform/decorators/catchErrors";
 import {ShowProgress} from "../platform/decorators/showProgress";
-import {ClientInfo} from "../services/clientService";
+import {ClientInfo, ClientService} from "../services/clientService";
 import {OverviewService} from "../services/overviewService";
 import {HighStockEventsGroup} from "../types/charts/types";
 import {CombinedData} from "../types/eventObjects";
-import {Overview} from "../types/types";
+import {Permission} from "../types/permission";
+import {ForbiddenCode, Overview} from "../types/types";
 import {UiStateHelper} from "../utils/uiStateHelper";
 import {StoreType} from "../vuex/storeType";
 import {BasePortfolioPage} from "./basePortfolioPage";
@@ -58,6 +62,26 @@ export class CombinedPortfolioPage extends UI {
 
     async created(): Promise<void> {
         await this.doCombinedPortfolio();
+    }
+
+    /**
+     * Осуществляет проверку доступа к разделу
+     * @param {Route} to      целевой объект Route, к которому осуществляется переход.
+     * @param {Route} from    текущий путь, с которого осуществляется переход к новому.
+     * @param {Resolver} next функция, вызов которой разрешает хук.
+     * @inheritDoc
+     * @returns {Promise<void>}
+     */
+    @CatchErrors
+    async beforeRouteEnter(to: Route, from: Route, next: Resolver): Promise<void> {
+        const clientService: ClientService = Container.get(ClientService);
+        const clientInfo = await clientService.getClientInfo();
+        if (!clientInfo.tariff.hasPermission(Permission.COMBINED_PORTFOLIO)) {
+            await new BlockByTariffDialog().show(ForbiddenCode.PERMISSION_DENIED);
+            next(false);
+            return;
+        }
+        next();
     }
 
     @CatchErrors

@@ -51,3 +51,8 @@ export type ColumnChartData = {
     categoryNames: string[],
     series: ColumnDataSeries[]
 };
+
+export enum PieChartTooltipFormat {
+    COMMON = "COMMON",
+    ASSETS = "ASSETS"
+}
