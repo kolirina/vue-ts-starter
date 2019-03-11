@@ -36,12 +36,12 @@ import {TableHeader} from "../types/types";
                     <slot></slot>
 
                     <template v-for="header in hiddenHeaders">
-                        <div class="extended-info__cell label">{{ header.text }}</div>
-                        <div v-if="header.value !== 'ticker'" :class="['extended-info__cell']">
+                        <div v-if="rowItem[header.value]" class="extended-info__cell label">{{ header.text }}</div>
+                        <div v-if="rowItem[header.value] && header.value !== 'ticker'" :class="['extended-info__cell']">
                             {{ getCellValue(rowItem[header.value]) }}
                             <span :class="['extended-info__cell__second', getCellClass(rowItem[header.value])]"></span>
                         </div>
-                        <div v-else-if="ticker" class="extended-info__cell">
+                        <div v-else-if="rowItem[header.value] && ticker" class="extended-info__cell">
                             <stock-link v-if="asset === AssetType.STOCK" :ticker="ticker"></stock-link>
                             <bond-link v-if="asset === AssetType.BOND" :ticker="ticker"></bond-link>
                         </div>
