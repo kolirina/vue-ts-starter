@@ -14,9 +14,9 @@
  * (c) ООО "Интеллектуальные инвестиции", 2019
  */
 .portfolio-rows-filter {
-  display: grid;
-  grid-template-columns: 150px 1fr 30px;
-  margin-left: 15px;
+  display: flex;
+  align-items: center;
+  padding: 16px 20px 24px;
 
   &__button {
     width: 122px;
@@ -46,8 +46,32 @@
   }
 
   .v-text-field {
-    padding-top: 2px !important;
-    margin-top: 0 !important;
+    margin-left: 20px;
+    align-items: center !important;
+
+    .v-input {
+
+      &__slot {
+        height: auto;
+        background: none;
+        align-items: center;
+
+        &:before,
+        &:after {content: none !important}
+
+        .v-label {
+          font-size: 14px;
+          left: 8px !important;
+        }
+      }
+
+      &__prepend-outer {margin: 0 !important;}
+    }
+
+    input {
+      padding: 0 8px !important;
+      height: auto;
+    }
   }
 
   &__menu {
@@ -73,6 +97,7 @@
 .portfolio-rows-filter__settings {
 
   .trades-filter {
+    margin-bottom: 0;
 
     &__label {
       opacity: 0.48;
@@ -89,10 +114,12 @@
     }
 
     &__operations {
-      display: grid;
-      margin-left: 20px;
-      grid-template-columns: 50% 50%;
+      display: flex;
+      flex-wrap: wrap;
       margin-top: 15px;
+      width: 400px;
+
+      > .v-input {width: 50%}
     }
 
     .v-input--selection-controls {

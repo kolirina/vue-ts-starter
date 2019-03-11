@@ -26,7 +26,7 @@ import {TableFilterBase} from "./tableFilterBase";
     // language=Vue
     template: `
         <table-filter-base @search="onSearch" :search-label="searchLabel" :min-length="2">
-            <v-switch v-model="filter.showLinkedMoneyTrades" @change="onChange">
+            <v-switch v-model="filter.showLinkedMoneyTrades" @change="onChange" class="margT0">
                 <template #label>
                     <span>Связанные сделки</span>
                 </template>
@@ -62,7 +62,7 @@ export class TradesTableFilter extends UI {
     @Prop({required: true, type: Object})
     private filter: TradesFilter;
     /** Плэйсхолдер строки поиска */
-    private searchLabel = "Поиск по названию бумаги,по тикеру бумаги, по заметке к сделке";
+    private searchLabel = "Поиск по названию бумаги, по тикеру бумаги, по заметке к сделке";
     /** Текущий объект таймера */
     private currentTimer: number = null;
     /** Список типов */
