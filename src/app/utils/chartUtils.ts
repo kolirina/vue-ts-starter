@@ -296,7 +296,8 @@ export class ChartUtils {
                         style: {
                             color: "black"
                         }
-                    }
+                    },
+                    showInLegend: true
                 }
             },
             series: [{

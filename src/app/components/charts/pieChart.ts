@@ -22,7 +22,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-layout>
             </v-container>
 
-            <div v-show="chart" ref="container" style="min-width: 500px; width: 100%; height: 500px; margin: 0 auto"></div>
+            <div v-show="chart" ref="container" style="min-width: 500px; width: 99%; height: 500px; margin: 0 auto"></div>
         </div>
     `
 })
