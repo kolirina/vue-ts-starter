@@ -38,10 +38,7 @@ export class SettingsPage extends UI {
     created(): void {
         UI.on(EventType.PORTFOLIO_CREATED, async () => this.reloadPortfolios());
         UI.on(EventType.PORTFOLIO_UPDATED, async (portfolio: PortfolioParams) => this.updatePortfolio(portfolio));
-        UI.on(EventType.PORTFOLIO_RELOAD, async (portfolio: PortfolioParams) => {
-            console.log("FIRED!");
-            await this.reloadPortfolio(portfolio.id);
-        });
+        UI.on(EventType.PORTFOLIO_RELOAD, async (portfolio: PortfolioParams) => await this.reloadPortfolio(portfolio.id));
     }
 
     beforeDestroy(): void {

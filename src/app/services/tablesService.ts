@@ -9,24 +9,24 @@ export class TablesService {
     headers: TableHeaders = {
         stockTable: [
             {text: "", align: "left", ghost: true, sortable: false, value: "", active: true},
-            {text: "Компания", align: "left", sortable: false, value: TABLE_HEADERS.COMPANY, active: true},
+            {text: "Компания", align: "left", value: TABLE_HEADERS.COMPANY, active: true},
             {text: "Тикер", align: "left", value: TABLE_HEADERS.TICKER, active: false},
             {text: "Количество", align: "left", value: TABLE_HEADERS.QUANTITY, active: false},
-            {text: "Ср. цена", align: "right", value: TABLE_HEADERS.AVG_BUY, active: true},
-            {text: "Тек. цена", align: "right", value: TABLE_HEADERS.CURR_PRICE, active: true},
+            {text: "Ср. цена", align: "right", value: TABLE_HEADERS.AVG_BUY, sortable: false, active: true},
+            {text: "Тек. цена", align: "right", value: TABLE_HEADERS.CURR_PRICE, sortable: false, active: true},
             {text: "Стоимость покупок", align: "left", value: TABLE_HEADERS.B_COST, active: false},
             {text: "Стоимость продаж", align: "left", value: TABLE_HEADERS.S_COST, active: false},
-            {text: "Тек. стоимость", align: "right", value: TABLE_HEADERS.CURR_COST, sortable: false, active: true},
-            {text: "Дивиденды", align: "right", value: TABLE_HEADERS.PROFIT_FROM_DIVIDENDS, sortable: false, active: false},
-            {text: "Прибыль по дивидендам, %", align: "right", value: TABLE_HEADERS.PROFIT_FROM_DIVIDENDS_PERCENT, sortable: false, active: false},
-            {text: "Курс. прибыль", align: "right", value: TABLE_HEADERS.RATE_PROFIT, sortable: false, active: false},
+            {text: "Тек. стоимость", align: "right", value: TABLE_HEADERS.CURR_COST, active: true},
+            {text: "Дивиденды", align: "right", value: TABLE_HEADERS.PROFIT_FROM_DIVIDENDS, active: false},
+            {text: "Прибыль по дивидендам, %", align: "right", value: TABLE_HEADERS.PROFIT_FROM_DIVIDENDS_PERCENT, active: false},
+            {text: "Курс. прибыль", align: "right", value: TABLE_HEADERS.RATE_PROFIT, active: false},
             {text: "Курс. прибыль, %", align: "right", value: TABLE_HEADERS.RATE_PROFIT_PERCENT, active: false},
-            {text: "Прибыль по сделкам", align: "right", value: TABLE_HEADERS.EXCHANGE_PROFIT, sortable: false, active: false},
+            {text: "Прибыль по сделкам", align: "right", value: TABLE_HEADERS.EXCHANGE_PROFIT, active: false},
             {text: "Прибыль по сделкам, %", align: "right", value: TABLE_HEADERS.EXCHANGE_PROFIT_PERCENT, active: false},
-            {text: "Прибыль", align: "right", value: TABLE_HEADERS.PROFIT, sortable: false, active: true},
+            {text: "Прибыль", align: "right", value: TABLE_HEADERS.PROFIT, active: true},
             {text: "Прибыль, %", align: "right", value: TABLE_HEADERS.PERC_PROFIT, active: true},
             {text: "Доходность, %", align: "right", value: TABLE_HEADERS.YEAR_YIELD, active: false},
-            {text: "P/L за день", align: "right", value: TABLE_HEADERS.DAILY_PL, sortable: false, active: false},
+            {text: "P/L за день", align: "right", value: TABLE_HEADERS.DAILY_PL, active: false},
             {text: "P/L за день, %", align: "right", value: TABLE_HEADERS.DAILY_PL_PERCENT, active: false},
             {text: "Комиссия", align: "right", value: TABLE_HEADERS.SUMM_FEE, active: false},
             {text: "Тек. доля", align: "right", value: TABLE_HEADERS.PERC_CURR_SHARE, active: true},
@@ -34,27 +34,27 @@ export class TablesService {
         ],
         bondTable: [
             {text: "", align: "left", ghost: true, sortable: false, value: "", active: true},
-            {text: "Компания", align: "left", sortable: false, value: TABLE_HEADERS.COMPANY, active: true},
+            {text: "Компания", align: "left", value: TABLE_HEADERS.COMPANY, active: true},
             {text: "Тикер", align: "left", value: TABLE_HEADERS.TICKER, active: false},
             {text: "Количество", align: "left", value: TABLE_HEADERS.QUANTITY, active: false},
-            {text: "Ср. цена", align: "right", value: TABLE_HEADERS.AVG_BUY, active: true},
-            {text: "Тек. цена", align: "right", value: TABLE_HEADERS.CURR_PRICE, active: true},
+            {text: "Ср. цена", align: "right", value: TABLE_HEADERS.AVG_BUY, sortable: false, active: true},
+            {text: "Тек. цена", align: "right", value: TABLE_HEADERS.CURR_PRICE, sortable: false, active: true},
             {text: "Стоимость покупок", align: "right", value: TABLE_HEADERS.B_COST, active: false},
             {text: "Стоимость продаж", align: "right", value: TABLE_HEADERS.S_COST, active: false},
-            {text: "Тек. стоимость", align: "right", value: TABLE_HEADERS.CURR_COST, sortable: false, active: true},
+            {text: "Тек. стоимость", align: "right", value: TABLE_HEADERS.CURR_COST, active: true},
             {text: "Средний номинал", align: "right", value: TABLE_HEADERS.NOMINAL, sortable: false, active: false},
             {text: "Прибыль от купонов", align: "right", value: TABLE_HEADERS.PROFIT_FROM_COUPONS, active: false},
             {text: "Прибыль от купонов, %", align: "right", value: TABLE_HEADERS.PROFIT_FROM_COUPONS_PERCENT, active: false},
-            {text: "Прибыль по сделкам", align: "right", value: TABLE_HEADERS.EXCHANGE_PROFIT, sortable: false, active: false},
+            {text: "Прибыль по сделкам", align: "right", value: TABLE_HEADERS.EXCHANGE_PROFIT, active: false},
             {text: "Прибыль по сделкам, %", align: "right", value: TABLE_HEADERS.EXCHANGE_PROFIT_PERCENT, active: false},
-            {text: "Курс. прибыль", align: "right", value: TABLE_HEADERS.RATE_PROFIT, sortable: false, active: false},
+            {text: "Курс. прибыль", align: "right", value: TABLE_HEADERS.RATE_PROFIT, active: false},
             {text: "Курс. прибыль, %", align: "right", value: TABLE_HEADERS.RATE_PROFIT_PERCENT, active: false},
             {text: "Выплаченный НКД", align: "right", value: TABLE_HEADERS.BUY_NKD, active: false},
             {text: "Полученный НКД", align: "right", value: TABLE_HEADERS.SELL_NKD, active: false},
-            {text: "Прибыль", align: "right", value: TABLE_HEADERS.PROFIT, sortable: false, active: true},
+            {text: "Прибыль", align: "right", value: TABLE_HEADERS.PROFIT, active: true},
             {text: "Прибыль, %", align: "right", value: TABLE_HEADERS.PERC_PROFIT, active: true},
             {text: "Доходность, %", align: "right", value: TABLE_HEADERS.YEAR_YIELD, active: false},
-            {text: "P/L за день", align: "right", value: TABLE_HEADERS.DAILY_PL, sortable: false, active: false},
+            {text: "P/L за день", align: "right", value: TABLE_HEADERS.DAILY_PL, active: false},
             {text: "P/L за день, %", align: "right", value: TABLE_HEADERS.DAILY_PL_PERCENT, active: false},
             {text: "Комиссия", align: "right", value: TABLE_HEADERS.SUMM_FEE, active: false},
             {text: "Тек. доля", align: "right", value: TABLE_HEADERS.PERC_CURR_SHARE, active: true},
@@ -92,7 +92,7 @@ export class TablesService {
     getHeadersState(headers: TableHeader[]): TableHeadersState {
         const result: TableHeadersState = {};
         headers.forEach(header => {
-            result[header.value] = header.active;
+            (result as any)[header.value] = header.active;
         });
         return result;
     }
@@ -170,5 +170,39 @@ export interface TableHeaders {
 }
 
 export interface TableHeadersState {
-    [key: string]: boolean;
+    company?: boolean;
+    ticker?: boolean;
+    quantity?: boolean;
+    avgBuy?: boolean;
+    currPrice?: boolean;
+    bcost?: boolean;
+    scost?: boolean;
+    currCost?: boolean;
+    profitFromDividends?: boolean;
+    profitFromDividendsPercent?: boolean;
+    rateProfit?: boolean;
+    rateProfitPercent?: boolean;
+    exchangeProfit?: boolean;
+    exchangeProfitPercent?: boolean;
+    profit?: boolean;
+    percProfit?: boolean;
+    yearYield?: boolean;
+    dailyPl?: boolean;
+    dailyPlPercent?: boolean;
+    summFee?: boolean;
+    nominal?: boolean;
+    profitFromCoupons?: boolean;
+    profitFromCouponsPercent?: boolean;
+    buyNkd?: boolean;
+    sellNkd?: boolean;
+    percCurrShare?: boolean;
+    name?: boolean;
+    operationLabel?: boolean;
+    date?: boolean;
+    price?: boolean;
+    facevalue?: boolean;
+    nkd?: boolean;
+    fee?: boolean;
+    signedTotal?: boolean;
+    totalWithoutFee?: boolean;
 }
