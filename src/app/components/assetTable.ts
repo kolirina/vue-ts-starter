@@ -5,6 +5,7 @@ import {UI} from "../app/ui";
 import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
 import {Operation} from "../types/operation";
+import {PortfolioAssetType} from "../types/portfolioAssetType";
 import {AssetRow, Portfolio, TableHeader} from "../types/types";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
@@ -30,16 +31,40 @@ const MainStore = namespace(StoreType.MAIN);
                                 <span class="menuDots"></span>
                             </v-btn>
                             <v-list dense>
-                                <v-list-tile @click.stop="openTradeDialog(props.item, operation.BUY)">
+                                <v-list-tile v-if="!isMoneyTrade(props.item)" @click.stop="openTradeDialog(props.item, operation.BUY)">
                                     <v-list-tile-title>
                                         <v-icon color="primary" small>fas fa-plus</v-icon>
                                         Купить
                                     </v-list-tile-title>
                                 </v-list-tile>
-                                <v-list-tile @click.stop="openTradeDialog(props.item, operation.SELL)">
+                                <v-list-tile v-if="!isMoneyTrade(props.item)" @click.stop="openTradeDialog(props.item, operation.SELL)">
                                     <v-list-tile-title>
                                         <v-icon color="primary" small>fas fa-minus</v-icon>
                                         Продать
+                                    </v-list-tile-title>
+                                </v-list-tile>
+                                <v-list-tile v-if="isMoneyTrade(props.item)" @click.stop="openTradeDialog(props.item, operation.DEPOSIT)">
+                                    <v-list-tile-title>
+                                        <v-icon color="primary" small>fas fa-plus</v-icon>
+                                        Внести
+                                    </v-list-tile-title>
+                                </v-list-tile>
+                                <v-list-tile v-if="isMoneyTrade(props.item)" @click.stop="openTradeDialog(props.item, operation.WITHDRAW)">
+                                    <v-list-tile-title>
+                                        <v-icon color="primary" small>fas fa-minus</v-icon>
+                                        Вывести
+                                    </v-list-tile-title>
+                                </v-list-tile>
+                                <v-list-tile v-if="isStockTrade(props.item)" @click.stop="openTradeDialog(props.item, operation.DIVIDEND)">
+                                    <v-list-tile-title>
+                                        <v-icon color="primary" small>fas fa-calendar-alt</v-icon>
+                                        Дивиденд
+                                    </v-list-tile-title>
+                                </v-list-tile>
+                                <v-list-tile v-if="isBondTrade(props.item)" @click.stop="openTradeDialog(props.item, operation.COUPON)">
+                                    <v-list-tile-title>
+                                        <v-icon color="primary" small>fas fa-calendar-alt</v-icon>
+                                        Купон
                                     </v-list-tile-title>
                                 </v-list-tile>
                             </v-list>
@@ -71,11 +96,13 @@ export class AssetTable extends UI {
     private operation = Operation;
 
     private async openTradeDialog(assetRow: AssetRow, operation: Operation): Promise<void> {
+        const assetType = PortfolioAssetType.valueByName(assetRow.type);
         const result = await new AddTradeDialog().show({
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
             operation,
-            assetType: assetRow.type === "STOCK" ? AssetType.STOCK : AssetType.BOND
+            moneyCurrency: assetType.currency ? assetType.currency.code : null,
+            assetType: assetType.assetType
         });
         if (result) {
             await this.reloadPortfolio(this.portfolio.id);
@@ -88,5 +115,17 @@ export class AssetTable extends UI {
         }
         const amount = new BigMoney(value);
         return amount.amount.toNumber();
+    }
+
+    private isBondTrade(item: AssetRow): boolean {
+        return PortfolioAssetType.valueByName(item.type).assetType === AssetType.BOND;
+    }
+
+    private isStockTrade(item: AssetRow): boolean {
+        return PortfolioAssetType.valueByName(item.type).assetType === AssetType.STOCK;
+    }
+
+    private isMoneyTrade(item: AssetRow): boolean {
+        return PortfolioAssetType.valueByName(item.type).assetType === AssetType.MONEY;
     }
 }

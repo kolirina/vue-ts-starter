@@ -242,6 +242,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     async mounted(): Promise<void> {
         this.assetType = this.data.assetType || AssetType.STOCK;
+        this.moneyCurrency = this.data.moneyCurrency || "RUB";
         this.portfolio = (this.data.store as any).currentPortfolio;
         const clientInfo = await this.clientService.getClientInfo();
         this.portfolioProModeEnabled = TradeUtils.isPortfolioProModeEnabled(this.portfolio, clientInfo);
@@ -646,5 +647,6 @@ export type TradeDialogData = {
     quantity?: number,
     eventFields?: EventFields,
     operation?: Operation,
-    assetType?: AssetType
+    assetType?: AssetType,
+    moneyCurrency?: string
 };
