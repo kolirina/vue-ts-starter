@@ -21,3 +21,9 @@
 .v-autocomplete.v-input>.v-input__control>.v-input__slot {
   cursor: pointer !important;
 }
+
+.v-menu {
+  &__content {
+    z-index: 999 !important;
+  }
+}
