@@ -65,10 +65,10 @@ export class TradeUtils {
         throw new Error(`Неизвестный тип события ${type}`);
     }
 
-    // 2018-09-12T21:00:00Z
+    // 2019-03-11 00:00:00
     static getDateString(date: string): string {
         if (date) {
-            const timeDateIndex = date.indexOf("T");
+            const timeDateIndex = date.indexOf(" ");
             return timeDateIndex === -1 ? date : date.substr(0, timeDateIndex);
         }
         return null;
@@ -76,7 +76,10 @@ export class TradeUtils {
 
     static getTimeString(date: string): string {
         if (date) {
-            return date.substr(date.indexOf("T") + 1, 5);
+            const separatorIndex = date.indexOf(" ");
+            if (separatorIndex !== -1) {
+                return date.substr(separatorIndex + 1, date.length);
+            }
         }
         return null;
     }
