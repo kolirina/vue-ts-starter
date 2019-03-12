@@ -260,7 +260,7 @@ export class TradesTable extends UI {
     private getTradeDate(trade: TradeRow): string {
         const date = TradeUtils.getDateString(trade.date);
         const time = TradeUtils.getTimeString(trade.date);
-        return this.portfolioProModeEnabled ? `${date} ${time}` : date;
+        return this.portfolioProModeEnabled && !!time ? `${date} ${time}` : date;
     }
 
     private getPrice(trade: TradeRow): string {
