@@ -87,4 +87,56 @@
       }
     }
   }
+
+  // Select
+  &.v-select:not(.v-autocomplete) {
+    .v-input__slot {
+      align-items: center;
+      background: none;
+
+      &:before,
+      &:after {content: none}
+    }
+
+    .v-select__selections {
+      padding-left: 0;
+
+      input {display: none}
+    }
+
+    .v-input__append-inner {
+      margin-top: 0 !important;
+      align-self: center;
+      margin-left: 8px;
+
+      .v-input__icon {
+        background: url("../img/common/icon-dropdown.svg") no-repeat center;
+        transform: rotate(180deg);
+
+        i {display: none}
+      }
+    }
+
+    .v-label {display: none}
+
+    &.v-select--is-menu-active {
+      .v-input__append-inner .v-input__icon {
+        transform: rotate(360deg);
+        transition: transform 0.2s ease;
+      }
+    }
+  }
+}
+
+.v-menu__content {
+  border-radius: $form-element--border-radius;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+
+  .v-list {padding: 0}
+
+  .v-select-list {
+    .v-list__tile__title {font-size: 13px}
+
+    .v-list__tile--active .v-list__tile__title {color: $font-color--lite}
+  }
 }
