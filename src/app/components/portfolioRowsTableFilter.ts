@@ -22,7 +22,7 @@ import {TableFilterBase} from "./tableFilterBase";
 @Component({
     // language=Vue
     template: `
-        <table-filter-base @search="$emit('update:search', $event)" :search-label="searchLabel" :min-length="0">
+        <table-filter-base @search="$emit('update:search', $event)" :search-label="searchLabel" :min-length="0" :is-default="isDefaultFilter">
             <v-switch v-model="filter.hideSoldRows" @change="onChange">
                 <template #label>
                     <span>Скрыть проданные</span>
@@ -56,6 +56,10 @@ export class PortfolioRowsTableFilter extends UI {
     private onChange(): void {
         this.$emit("update:filter", this.filter);
         this.storageService.set(this.storeKey, this.filter);
+    }
+
+    private get isDefaultFilter(): boolean {
+        return this.filter.hideSoldRows === false;
     }
 }
 

@@ -25,7 +25,7 @@ import {TableFilterBase} from "./tableFilterBase";
 @Component({
     // language=Vue
     template: `
-        <table-filter-base @search="onSearch" :search-label="searchLabel" :min-length="2">
+        <table-filter-base @search="onSearch" :search-label="searchLabel" :min-length="2" :is-default="isDefault">
             <v-switch v-model="filter.showLinkedMoneyTrades" @change="onChange" class="margT0">
                 <template #label>
                     <span>Связанные сделки</span>
@@ -61,6 +61,9 @@ export class TradesTableFilter extends UI {
     /** Фильтр */
     @Prop({required: true, type: Object})
     private filter: TradesFilter;
+    /** Признак дефолтного фильтра */
+    @Prop({default: false, type: Boolean})
+    private isDefault: boolean;
     /** Плэйсхолдер строки поиска */
     private searchLabel = "Поиск по названию бумаги, по тикеру бумаги, по заметке к сделке";
     /** Текущий объект таймера */
@@ -69,8 +72,6 @@ export class TradesTableFilter extends UI {
     private listTypes = [TradeListType.FULL, TradeListType.STOCK, TradeListType.BOND, TradeListType.MONEY];
     /** Список операций */
     private operations: Operation[] = TradesTableFilter.DEFAULT_OPERATIONS;
-
-    private test = "1";
 
     private onChange(): void {
         this.$emit("filter", this.filter);

@@ -79,6 +79,17 @@ export class FilterService {
         };
     }
 
+    /**
+     * Возвращает признак установленного дефолтного фильтра
+     * @param filter
+     */
+    isDefaultFilter(filter: TradesFilter): boolean {
+        const defaultFilter = this.getDefaultFilter();
+        return filter.listType === defaultFilter.listType && filter.showLinkedMoneyTrades === defaultFilter.showLinkedMoneyTrades &&
+            filter.showMoneyTrades === defaultFilter.showMoneyTrades && filter.search === defaultFilter.search &&
+            filter.operation.every(operation => this.getDefaultFilter().operation.includes(operation));
+    }
+
     private getTradeFilterFromPlainObject(filter: TradesFilterRequest): TradesFilter {
         return {
             operation: filter.operation.map(operation => Operation.valueByName(operation)),

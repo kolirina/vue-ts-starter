@@ -33,7 +33,8 @@ const MainStore = namespace(StoreType.MAIN);
                     <v-list-tile-title @click="openTableSettings(TABLES_NAME.TRADE)">Настроить колонки</v-list-tile-title>
                     <v-list-tile-title @click="exportTable(ExportType.TRADES)">Экспорт в xlsx</v-list-tile-title>
                 </template>
-                <trades-table-filter v-if="tradesFilter" :store-key="StoreKeys.TRADES_FILTER_SETTINGS_KEY" @filter="onFilterChange" :filter="tradesFilter"></trades-table-filter>
+                <trades-table-filter v-if="tradesFilter" :store-key="StoreKeys.TRADES_FILTER_SETTINGS_KEY" @filter="onFilterChange" :filter="tradesFilter"
+                                     :is-default="isDefaultFilter"></trades-table-filter>
                 <trades-table v-if="tradePagination" :trades="trades" :trade-pagination="tradePagination"
                               :headers="getHeaders(TABLES_NAME.TRADE)" @delete="onDelete"></trades-table>
             </expanded-panel>
@@ -164,5 +165,9 @@ export class TradesPage extends UI {
         // при смене фильтра сбрасываем паджинацию чтобы не остаться на несуществующей странице
         this.pagination.page = 1;
         this.filterService.saveFilter(StoreKeys.TRADES_FILTER_SETTINGS_KEY, this.tradesFilter);
+    }
+
+    private get isDefaultFilter(): boolean {
+        return this.filterService.isDefaultFilter(this.tradesFilter);
     }
 }
