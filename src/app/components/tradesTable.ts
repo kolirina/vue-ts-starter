@@ -23,7 +23,7 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-data-table class="data-table" :headers="headers" :items="trades" item-key="id" :pagination.sync="tradePagination.pagination"
-                      :total-items="tradePagination.totalItems" hide-actions>
+                      :total-items="tradePagination.totalItems" :custom-sort="customSort" hide-actions>
             <template #items="props">
                 <tr class="selectable" @dblclick="props.expanded = !props.expanded">
                     <td>
@@ -290,5 +290,9 @@ export class TradesTable extends UI {
 
     private isMoneyTrade(trade: TradeRow): boolean {
         return AssetType.valueByName(trade.asset) === AssetType.MONEY;
+    }
+
+    private customSort(items: TradeRow[], index: string, isDesc: boolean): TradeRow[] {
+        return items;
     }
 }

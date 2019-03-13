@@ -25,5 +25,8 @@
 .v-menu {
   &__content {
     z-index: 999 !important;
+    .v-icon {
+      margin-right: 5px;
+    }
   }
 }

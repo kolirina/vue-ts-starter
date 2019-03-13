@@ -8,6 +8,7 @@ import {BigMoney} from "../types/bigMoney";
 import {Operation} from "../types/operation";
 import {Permission} from "../types/permission";
 import {ErrorInfo, Portfolio, TradeRow} from "../types/types";
+import {CommonUtils} from "./commonUtils";
 import {DateUtils} from "./dateUtils";
 
 export class TradeUtils {
@@ -115,5 +116,25 @@ export class TradeUtils {
                 return "€";
         }
         return currencyCode;
+    }
+
+    static compareValues(first: any, second: any): number {
+        if (!CommonUtils.exists(first) || !CommonUtils.exists(second)) {
+            return first > second ? 1 : -1;
+        }
+        if (!isNaN(first) && !isNaN(second)) {
+            return +first - +second;
+        }
+        const regex = new RegExp("^(RUB|RUR|USD|EUR)");
+        if (regex.test(first) && regex.test(second)) {
+            try {
+                return new BigMoney(first).amount.comparedTo(new BigMoney(second).amount);
+            } catch (ignored) {
+            }
+        }
+        if (typeof first === "string" && typeof second === "string") {
+            return first.toUpperCase() > second.toUpperCase() ? 1 : -1;
+        }
+        return first > second ? 1 : -1;
     }
 }

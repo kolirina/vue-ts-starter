@@ -20,7 +20,7 @@ import {namespace} from "vuex-class/lib/bindings";
 import {UI, Watch} from "../app/ui";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {PortfolioService} from "../services/portfolioService";
-import {TableHeadersState, TABLES_NAME, TablesService} from "../services/tablesService";
+import {TABLE_HEADERS, TableHeadersState, TABLES_NAME, TablesService} from "../services/tablesService";
 import {TradeService} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
@@ -277,17 +277,25 @@ export class StockTable extends UI {
 
     private customSort(items: StockPortfolioRow[], index: string, isDesc: boolean): StockPortfolioRow[] {
         items.sort((a: StockPortfolioRow, b: StockPortfolioRow): number => {
-            if (index === "ticker") {
+            if (index === TABLE_HEADERS.TICKER) {
                 if (!isDesc) {
                     return a.stock.ticker.localeCompare(b.stock.ticker);
                 } else {
                     return b.stock.ticker.localeCompare(a.stock.ticker);
                 }
-            } else {
+            }  else if (index === TABLE_HEADERS.COMPANY) {
                 if (!isDesc) {
-                    return (a as any)[index] < (b as any)[index] ? -1 : 1;
+                    return a.stock.shortname.localeCompare(b.stock.shortname);
                 } else {
-                    return (b as any)[index] < (a as any)[index] ? -1 : 1;
+                    return b.stock.shortname.localeCompare(a.stock.shortname);
+                }
+            } else {
+                const first = (a as any)[index];
+                const second = (b as any)[index];
+                if (!isDesc) {
+                    return TradeUtils.compareValues(first, second) * -1;
+                } else {
+                    return TradeUtils.compareValues(first, second);
                 }
             }
         });

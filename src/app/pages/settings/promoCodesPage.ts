@@ -118,6 +118,8 @@ export class PromoCodesPage extends UI {
     }
 
     @Watch("clientInfo.user.referralAwardType")
+    @CatchErrors
+    @ShowProgress
     private async onReferralAwardTypeChange(): Promise<void> {
         await this.promoCodeService.changeReferralAwardType(this.clientInfo.user.referralAwardType);
     }
