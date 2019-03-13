@@ -33,7 +33,7 @@ const MainStore = namespace(StoreType.MAIN);
                             {{ props.item.change }}&nbsp;%
                         </td>
                         <td class="text-xs-right ii-number-cell">{{ props.item.lotsize }}</td>
-                        <td class="text-xs-right">
+                        <td class="text-xs-right" style="min-width: 200px">
                             <v-rating v-model="props.item.rating" dense readonly></v-rating>
                         </td>
                         <td class="text-xs-right">
@@ -96,7 +96,7 @@ export class StockQuotes extends UI {
         {text: "Цена", align: "right", value: "price", width: "60"},
         {text: "Изменение", align: "left", value: "change", width: "70"},
         {text: "Размер лота", align: "right", value: "lotsize", width: "45", sortable: false},
-        {text: "Рейтинг", align: "center", value: "rating", width: "240"},
+        {text: "Рейтинг", align: "center", value: "rating", width: "200"},
         {text: "Профиль эмитента", align: "right", value: "profile", width: "60", sortable: false},
         {text: "Меню", value: "", align: "center", width: "30", sortable: false}
     ];

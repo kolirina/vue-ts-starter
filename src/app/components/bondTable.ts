@@ -5,13 +5,14 @@ import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {PortfolioService} from "../services/portfolioService";
-import {TableHeadersState, TABLES_NAME, TablesService} from "../services/tablesService";
+import {TABLE_HEADERS, TableHeadersState, TABLES_NAME, TablesService} from "../services/tablesService";
 import {TradeService} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
 import {Operation} from "../types/operation";
 import {BondPortfolioRow, Portfolio, TableHeader} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
+import {TradeUtils} from "../utils/tradeUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {AddTradeDialog} from "./dialogs/addTradeDialog";
@@ -294,17 +295,25 @@ export class BondTable extends UI {
 
     private customSort(items: BondPortfolioRow[], index: string, isDesc: boolean): BondPortfolioRow[] {
         items.sort((a: BondPortfolioRow, b: BondPortfolioRow): number => {
-            if (index === "ticker") {
+            if (index === TABLE_HEADERS.TICKER) {
                 if (!isDesc) {
                     return a.bond.ticker.localeCompare(b.bond.ticker);
                 } else {
                     return b.bond.ticker.localeCompare(a.bond.ticker);
                 }
-            } else {
+            } else if (index === TABLE_HEADERS.COMPANY) {
                 if (!isDesc) {
-                    return (a as any)[index] < (b as any)[index] ? -1 : 1;
+                    return a.bond.shortname.localeCompare(b.bond.shortname);
                 } else {
-                    return (b as any)[index] < (a as any)[index] ? -1 : 1;
+                    return b.bond.shortname.localeCompare(a.bond.shortname);
+                }
+            } else {
+                const first = (a as any)[index];
+                const second = (b as any)[index];
+                if (!isDesc) {
+                    return TradeUtils.compareValues(first, second) * -1;
+                } else {
+                    return TradeUtils.compareValues(first, second);
                 }
             }
         });

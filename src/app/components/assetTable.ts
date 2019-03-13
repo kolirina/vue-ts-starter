@@ -7,6 +7,7 @@ import {BigMoney} from "../types/bigMoney";
 import {Operation} from "../types/operation";
 import {PortfolioAssetType} from "../types/portfolioAssetType";
 import {AssetRow, Portfolio, TableHeader} from "../types/types";
+import {TradeUtils} from "../utils/tradeUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {AddTradeDialog} from "./dialogs/addTradeDialog";
@@ -16,7 +17,7 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-data-table :headers="headers" :items="assets" hide-actions>
+        <v-data-table :headers="headers" :items="assets" :custom-sort="customSort" hide-actions>
             <template #items="props">
                 <tr class="selectable">
                     <td>{{ props.item.type | assetDesc }}</td>
@@ -87,7 +88,7 @@ export class AssetTable extends UI {
         {text: "Текущая стоимость", align: "center", value: "currCost"},
         {text: "Прибыль", align: "center", value: "profit"},
         {text: "Текущая доля", align: "center", value: "percCurrShare"},
-        {text: "Действия", align: "center", value: "name", sortable: false, width: "25"}
+        {text: "Действия", align: "center", value: "actions", sortable: false, width: "25"}
     ];
 
     @Prop({default: [], required: true})
@@ -127,5 +128,18 @@ export class AssetTable extends UI {
 
     private isMoneyTrade(item: AssetRow): boolean {
         return PortfolioAssetType.valueByName(item.type).assetType === AssetType.MONEY;
+    }
+
+    private customSort(items: AssetRow[], index: string, isDesc: boolean): AssetRow[] {
+        items.sort((a: AssetRow, b: AssetRow): number => {
+            const first = (a as any)[index];
+            const second = (b as any)[index];
+            if (!isDesc) {
+                return TradeUtils.compareValues(first, second) * -1;
+            } else {
+                return TradeUtils.compareValues(first, second);
+            }
+        });
+        return items;
     }
 }
