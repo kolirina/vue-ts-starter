@@ -45,7 +45,7 @@ import {CustomDialog} from "./customDialog";
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="primary" @click.native="goToPortfolio" dark small>
+                    <v-btn color="primary" @click.native="goToPortfolio" dark>
                         Перейти к портфелю
                     </v-btn>
                     <v-btn color="info lighten-2" flat @click.native="close">Отмена</v-btn>

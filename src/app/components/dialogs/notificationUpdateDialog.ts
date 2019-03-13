@@ -49,7 +49,7 @@ import {BtnReturn, CustomDialog} from "./customDialog";
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="primary" @click.native="acceptAndClose" dark small>
+                    <v-btn color="primary" @click.native="acceptAndClose" dark>
                         Понятно. Закрыть
                     </v-btn>
                     <v-btn color="info lighten-2" flat @click.native="close">Отмена</v-btn>

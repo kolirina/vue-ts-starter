@@ -24,10 +24,12 @@ export class ImportService {
      * Отправляет файлы на сервер
      * @param provider
      * @param portfolioId
-     * @param report
+     * @param files файлы для загрузки
      * @param importRequest
      */
-    async importReport(provider: string, portfolioId: string, report: FormData, importRequest: ImportProviderFeatures): Promise<ImportResponse> {
+    async importReport(provider: string, portfolioId: string, files: File[], importRequest: ImportProviderFeatures): Promise<ImportResponse> {
+        const report = new FormData();
+        files.forEach(file => report.append("files", file, file.name));
         return this.http.post<ImportResponse>(`/import/${provider}/to/${portfolioId}`, report, importRequest as any, {headers: this.http.importHeaders});
     }
 

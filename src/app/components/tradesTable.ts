@@ -125,8 +125,9 @@ const MainStore = namespace(StoreType.MAIN);
                                         Погашение
                                     </v-list-tile-title>
                                 </v-list-tile>
-                                <v-divider></v-divider>
-                                <v-list-tile @click="deleteTrade(props.item)">
+                                <!-- Связанную сделку удалить можно только удалив родительскую -->
+                                <v-divider v-if="!props.item.parentTradeId"></v-divider>
+                                <v-list-tile v-if="!props.item.parentTradeId" @click="deleteTrade(props.item)">
                                     <v-list-tile-title>
                                         <v-icon color="primary" small>fas fa-trash-alt</v-icon>
                                         Удалить

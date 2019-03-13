@@ -42,7 +42,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-flex>
                 </v-layout>
 
-                <v-btn @click.native="changePassword" class="btn-dialog btn-hover-black">
+                <v-btn @click.native="changePassword" color="primary" class="big_btn" dark>
                     Сменить пароль
                 </v-btn>
             </v-card>

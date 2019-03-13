@@ -36,7 +36,7 @@ import {CustomDialog} from "./customDialog";
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="primary" @click.native="close" dark small>
+                    <v-btn color="primary" @click.native="close" dark>
                         Закрыть
                     </v-btn>
                 </v-card-actions>
