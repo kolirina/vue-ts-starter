@@ -3,6 +3,7 @@ import Component from "vue-class-component";
 import {Prop, Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
+import {ShowProgress} from "../platform/decorators/showProgress";
 import {PortfolioService} from "../services/portfolioService";
 import {TableHeadersState, TABLES_NAME, TablesService} from "../services/tablesService";
 import {TradeService} from "../services/tradeService";
@@ -238,6 +239,7 @@ export class BondTable extends UI {
         this.tableHeadersState = this.tablesService.getHeadersState(this.headers);
     }
 
+    @ShowProgress
     private async openShareTradesDialog(ticker: string): Promise<void> {
         await new ShareTradesDialog().show({trades: await this.tradeService.getShareTrades(this.portfolio.id, ticker), ticker});
     }
@@ -260,6 +262,7 @@ export class BondTable extends UI {
      * Обновляет заметки по бумага в портфеле
      * @param ticker тикер по которому редактируется заметка
      */
+    @ShowProgress
     private async openEditShareNoteDialog(ticker: string): Promise<void> {
         const result = await new EditShareNoteDialog().show({ticker, note: this.portfolio.portfolioParams.shareNotes[ticker]});
         if (result) {
@@ -268,6 +271,7 @@ export class BondTable extends UI {
         }
     }
 
+    @ShowProgress
     private async deleteAllTrades(bondRow: BondPortfolioRow): Promise<void> {
         const result = await new ConfirmDialog().show(`Вы уверены, что хотите удалить все сделки по ценной бумаге?`);
         if (result === BtnReturn.YES) {

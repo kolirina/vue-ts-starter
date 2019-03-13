@@ -32,14 +32,14 @@ const MainStore = namespace(StoreType.MAIN);
                         При необходимости Вы можете <a @click="openDialog">внести выплату вручную</a>.
                     </div>
                     <div v-if="eventsAggregateInfo" class="eventsControls">
-                        <v-btn color="primary" @click.native="confirmDeleteAllEvents" dark small>
+                        <v-btn color="primary" @click.native="confirmDeleteAllEvents" dark>
                             Удалить все
                         </v-btn>
-                        <v-btn color="primary" @click.native="executeAllEvents" dark small>
+                        <v-btn color="primary" @click.native="executeAllEvents" dark>
                             Исполнить все
                         </v-btn>
                         <div>
-                            <v-btn color="primary" @click.native="executeAllEventsWithoutMoney" dark small>
+                            <v-btn color="primary" @click.native="executeAllEventsWithoutMoney" dark>
                                 Исполнить все без зачисления денег
                             </v-btn>
                             <v-tooltip content-class="custom-tooltip-wrap" :max-width="250" top>

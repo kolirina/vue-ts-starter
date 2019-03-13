@@ -36,7 +36,7 @@ import {UI} from "../app/ui";
                             :placeholder="placeholder">
                         </v-text-field>
                     </v-flex>
-                    <v-flex xs4 offset-xs1>
+                    <v-flex xs4 offset-xs1 style="display: flex; align-items: center;">
                         <div class="profile-icons">
                             <div @click.stop="emitCompleteEvent" class="profile-icons-complete"></div>
                             <div @click.stop="dismissChanges" class="profile-icons-dismiss"></div>

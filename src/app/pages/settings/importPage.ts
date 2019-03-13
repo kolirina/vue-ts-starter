@@ -97,7 +97,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     <v-checkbox v-model="importProviderFeatures.autoCommission">
                                         <template #label>
                                             <span>
-                                                Автоматически рассчитывать комисию для сделок
+                                                Автоматически рассчитывать комиссию для сделок
                                                 <v-tooltip content-class="custom-tooltip-wrap" :max-width="250" top>
                                                     <i slot="activator" class="far fa-question-circle"></i>
                                                     <span>
@@ -247,10 +247,9 @@ export class ImportPage extends UI {
     @ShowProgress
     private async uploadFile(): Promise<void> {
         if (this.files && this.files.length && this.selectedProvider) {
-            const data = new FormData();
-            this.files.forEach(file => data.append("files", file, file.name));
-            const response = await this.importService.importReport(this.selectedProvider, this.portfolio.id, data, this.importProviderFeatures);
+            const response = await this.importService.importReport(this.selectedProvider, this.portfolio.id, this.files, this.importProviderFeatures);
             await this.handleUploadResponse(response);
+            this.files = [];
         }
     }
 
@@ -272,6 +271,10 @@ export class ImportPage extends UI {
                 errors: response.errors, router: this.$router,
                 validatedTradesCount: response.validatedTradesCount
             });
+            // отображаем диалог с ошибками, но информацию по портфелю надо перезагрузить если были успешно импортированы сделки
+            if (response.validatedTradesCount) {
+                await this.reloadPortfolio(this.portfolio.id);
+            }
             return;
         }
         if (response.validatedTradesCount) {

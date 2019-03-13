@@ -2,6 +2,7 @@ import Component from "vue-class-component";
 import {VueRouter} from "vue-router/types/router";
 import {ImportResponse} from "../../services/importService";
 import {Portfolio} from "../../types/types";
+import {CommonUtils} from "../../utils/commonUtils";
 import {MainStore} from "../../vuex/mainStore";
 import {CustomDialog} from "./customDialog";
 
@@ -11,14 +12,14 @@ import {CustomDialog} from "./customDialog";
 @Component({
     // language=Vue
     template: `
-        <v-dialog v-model="showed" max-width="550px">
+        <v-dialog v-model="showed" max-width="550px" persistent>
             <v-card class="dialog-wrap">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
 
                 <v-card-title>
                     <span class="headline">Завершение импорта</span>
                 </v-card-title>
-                <v-card-text>
+                <v-card-text @click.stop>
                         <span v-if="step === 0">
                             <h4>Остался последний шаг и ваш портфель будет готов.</h4>
                             <h4>Пожалуйста, укажите остаток денежных средств в портфеле на данный момент:
@@ -38,9 +39,12 @@ import {CustomDialog} from "./customDialog";
                                 </v-tooltip>
                             </h4>
 
-                            <span style="display: block; margin: auto; max-width: 200px;">
-                                <v-text-field v-if="portfolio" label="Текущий остаток денежных средств на счете" v-model="currentMoneyRemainder"
-                                              :class="portfolio.portfolioParams.viewCurrency.toLowerCase()"></v-text-field>
+                            <span style="display: block; margin: auto; max-width: 305px; margin-top: 15px">
+                                <v-text-field v-if="portfolio" label="Текущий остаток денежных средств на счете" v-model="currentMoneyRemainder">
+                                    <span slot="append-outer">
+                                        <span :class="portfolio.portfolioParams.viewCurrency.toLowerCase()"></span>
+                                    </span>
+                                </v-text-field>
                             </span>
                         </span>
 
@@ -52,10 +56,10 @@ import {CustomDialog} from "./customDialog";
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn v-if="step === 0" color="primary" @click.native="goToNextStep" dark small>
+                    <v-btn v-if="step === 0" :disabled="disabledFirstStepButton" color="primary" @click.native="goToNextStep" dark>
                         Продолжить
                     </v-btn>
-                    <v-btn v-if="step === 1" color="primary" @click.native="saveRemainderAndClose" dark small>
+                    <v-btn v-if="step === 1" color="primary" @click.native="saveRemainderAndClose" dark>
                         Перейти к портфелю
                     </v-btn>
                 </v-card-actions>
@@ -73,6 +77,7 @@ export class ImportSuccessDialog extends CustomDialog<ImportSuccessDialogData, s
 
     mounted(): void {
         this.portfolio = (this.data.store as any).currentPortfolio;
+        this.currentMoneyRemainder = this.data.currentMoneyRemainder;
     }
 
     private goToNextStep(): void {
@@ -81,6 +86,10 @@ export class ImportSuccessDialog extends CustomDialog<ImportSuccessDialogData, s
 
     private saveRemainderAndClose(): void {
         this.close(this.currentMoneyRemainder);
+    }
+
+    private get disabledFirstStepButton(): boolean {
+        return CommonUtils.isBlank(this.currentMoneyRemainder);
     }
 }
 

@@ -17,7 +17,7 @@ import {CustomDialog} from "./customDialog";
             <v-card class="change-password-d dialog-wrap">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
                 <v-card-title class="headline change-password-d-title">
-                    Смена пароля
+                    Сменить пароль
                     <img src="img/profile/lock.png">
                 </v-card-title>
                 <v-card-text class="change-password-d-text">
@@ -35,6 +35,7 @@ import {CustomDialog} from "./customDialog";
                             autofocus
                             :type="showPassword ? 'text' : 'password'"
                             autocomplete="off"
+                            browser-autocomplete="off"
                             @click:append="showPassword = !showPassword">
                         </v-text-field>
 
@@ -53,6 +54,7 @@ import {CustomDialog} from "./customDialog";
                             ref="newPassword"
                             :type="showNewPassword ? 'text' : 'password'"
                             autocomplete="off"
+                            browser-autocomplete="off"
                             hint="Пароль может содержать строчные и прописные латинские буквы, цифры, спецсимволы. Минимум 6 символов"
                             @click:append="showNewPassword = !showNewPassword">
                         </v-text-field>
