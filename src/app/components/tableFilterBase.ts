@@ -27,6 +27,7 @@ import {Bond, Share} from "../types/types";
     // language=Vue
     template: `
         <div class="portfolio-rows-filter">
+            <span v-if="!isDefault" class="custom-filter" title="Настроен фильтр"></span>
             <v-menu v-model="menu" :close-on-content-click="false" :nudge-width="416" :nudge-bottom="40" bottom>
                 <v-btn slot="activator" round class="portfolio-rows-filter__button">
                     Фильтры
@@ -47,6 +48,9 @@ export class TableFilterBase extends UI {
     private searchLabel: string;
     @Prop({required: false, type: Number, default: 0})
     private minLength: number;
+    /** Признак дефолтного фильтра */
+    @Prop({default: false, type: Boolean})
+    private isDefault: boolean;
     private searchQuery: string = null;
     private menu = false;
 
