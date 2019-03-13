@@ -1,5 +1,5 @@
 .tariff {
-  max-width: 1066px;
+  max-width: 1510px;
   min-width: 800px;
   margin: 0 auto;
   color: $main--font-color;
@@ -60,10 +60,6 @@
 
         &.no-borders td {
           border: none;
-
-          &:first-child {border-left: 1px solid #E8E9ED;}
-
-          &:last-child {border-right: 1px solid #E8E9ED;}
         }
       }
 
@@ -75,7 +71,10 @@
         &:first-child {
           width: 288px;
           text-align: left;
+          border-left: none;
         }
+
+        &:last-child {border-right: none}
 
         &:nth-child(n + 2) {
           width: calc((100% - 288px) / 3);
