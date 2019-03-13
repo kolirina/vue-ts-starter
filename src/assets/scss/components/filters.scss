@@ -84,29 +84,30 @@
       box-shadow: none !important;
     }
   }
-
-  &__settings {
-    padding: 20px 25px 0;
-    background: #ffffff;
-    border-radius: 4px !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
-  }
 }
 
 
 .portfolio-rows-filter__settings {
+  padding: 24px 20px;
+  background: #ffffff;
+  border-radius: 4px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
+
+  .v-input--selection-controls {
+    padding-top: 0;
+
+    .v-input__slot {margin-bottom: 0}
+  }
 
   .trades-filter {
     margin-bottom: 0;
 
     &__label {
-      opacity: 0.48;
-      color: #4f5d75;
-      font-family: $main--font-family;
+      color: $font-color--lite;
       font-size: 12px;
-      font-weight: 400;
       line-height: 16px;
       letter-spacing: 0.2px;
+      margin: 24px 0 20px;
     }
 
     &__list-types {
@@ -116,10 +117,13 @@
     &__operations {
       display: flex;
       flex-wrap: wrap;
-      margin-top: 15px;
-      width: 400px;
+      width: 360px;
 
-      > .v-input {width: 50%}
+      > .v-input {
+        width: 50%;
+
+        &:nth-child(n + 3) {margin-top: 15px !important;}
+      }
     }
 
     .v-input--selection-controls {
@@ -137,4 +141,6 @@
     font-size: 14px !important;
     color: #3d4656 !important;
   }
+
+  .v-messages {min-height: 0}
 }

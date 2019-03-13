@@ -33,12 +33,12 @@ import {TableFilterBase} from "./tableFilterBase";
             </v-switch>
 
             <div class="trades-filter">
-                <span class="trades-filter__label">Тип списка</span>
+                <div class="trades-filter__label">Тип списка</div>
                 <v-radio-group v-model="filter.listType" @change="onListTypeChange" style="margin-top: 15px !important;" column>
                     <v-radio v-for="listType in listTypes" :label="listType.description" :value="listType" :key="listType.enumName"></v-radio>
                 </v-radio-group>
 
-                <span class="trades-filter__label">Тип операции сделок</span>
+                <div class="trades-filter__label">Тип операции сделок</div>
                 <div class="trades-filter__operations">
                     <v-switch v-for="op in operations" @change="onOperationChange($event, op)" :label="op.description"
                               v-model="filter.operation.includes(op)" :key="op.enumName">
