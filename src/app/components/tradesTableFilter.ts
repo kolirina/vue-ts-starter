@@ -40,7 +40,7 @@ import {TableFilterBase} from "./tableFilterBase";
 
                 <div class="trades-filter__label">Тип операции сделок</div>
                 <div class="trades-filter__operations">
-                    <v-switch v-for="op in operations" @change="onOperationChange($event, op)" :label="op.description"
+                    <v-switch v-for="op in operations" @change="onOperationChange($event, op)" :disabled="!filter.operation.includes(op)" :label="op.description"
                               v-model="filter.operation.includes(op)" :key="op.enumName">
                     </v-switch>
                 </div>
