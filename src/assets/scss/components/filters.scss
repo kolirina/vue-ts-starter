@@ -61,6 +61,7 @@
     margin-left: 20px;
     align-items: center!important;
     height: 38px;
+    line-height: 38px;
     cursor: pointer;
   }
 
@@ -101,6 +102,8 @@
       box-shadow: none !important;
     }
   }
+
+  .v-input__icon--clear {display: none}
 }
 
 
