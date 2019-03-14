@@ -590,7 +590,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     getDate(): string {
-        return this.portfolioProModeEnabled ? `${this.date} ${this.time}` : `${this.date} 12:00:00`;
+        const time = DateUtils.isCurrentDate(DateUtils.parseDate(this.date)) ? DateUtils.currentTime() : "12:00";
+        return this.portfolioProModeEnabled ? `${this.date} ${this.time}` : `${this.date} ${time}`;
     }
 
     getQuantity(): number {

@@ -34,12 +34,12 @@ const MainStore = namespace(StoreType.MAIN);
 })
 export class TariffLimitExceedInfo extends UI {
 
-    @Prop({required: true, type: String})
-    private portfoliosCount: string;
-    @Prop({required: true, type: String})
-    private sharesCount: string;
+    @Prop({required: true, type: Number})
+    private portfoliosCount: number;
+    @Prop({required: true, type: Number})
+    private sharesCount: number;
     @Prop({default: false, type: Boolean})
-    private foreignShares: string;
+    private foreignShares: boolean;
 }
 
 @Component({
