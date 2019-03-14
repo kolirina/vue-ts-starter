@@ -20,7 +20,7 @@ const MainStore = namespace(StoreType.MAIN);
         <v-data-table :headers="headers" :items="assets" :custom-sort="customSort" hide-actions>
             <template #items="props">
                 <tr class="selectable">
-                    <td>{{ props.item.type | assetDesc }}</td>
+                    <td class="text-xs-left">{{ props.item.type | assetDesc }}</td>
                     <td class="text-xs-right ii-number-cell">{{ props.item.currCost | amount(true) }}</td>
                     <td :class="[( amount(props.item.profit) >= 0 ) ? 'ii--green-markup' : 'ii--red-markup', 'ii-number-cell', 'text-xs-right']">
                         {{ props.item.profit | amount(true) }}
@@ -84,10 +84,10 @@ export class AssetTable extends UI {
     private portfolio: Portfolio;
 
     private headers: TableHeader[] = [
-        {text: "Актив", sortable: false, value: "name"},
-        {text: "Текущая стоимость", align: "center", value: "currCost"},
-        {text: "Прибыль", align: "center", value: "profit"},
-        {text: "Текущая доля", align: "center", value: "percCurrShare"},
+        {text: "Актив", sortable: false, align: "left", value: "name"},
+        {text: "Текущая стоимость", align: "right", value: "currCost"},
+        {text: "Прибыль", align: "right", value: "profit"},
+        {text: "Текущая доля", align: "right", value: "percCurrShare"},
         {text: "Действия", align: "center", value: "actions", sortable: false, width: "25"}
     ];
 

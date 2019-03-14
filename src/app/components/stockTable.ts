@@ -51,11 +51,11 @@ const MainStore = namespace(StoreType.MAIN);
                     <td>
                         <span @click="props.expanded = !props.expanded" class="data-table-cell" :class="{'data-table-cell-open': props.expanded, 'path': true}"></span>
                     </td>
-                    <td v-if="tableHeadersState.company">
+                    <td v-if="tableHeadersState.company" class="text-xs-left">
                         <span>{{ props.item.stock.shortname }}</span>&nbsp;
                         <span :class="[(props.item.stock.change >= 0) ? 'ii--green-markup' : 'ii--red-markup', 'ii-number-cell']">{{ props.item.stock.change }}&nbsp;%</span>
                     </td>
-                    <td v-if="tableHeadersState.ticker" class="text-xs-right ii-number-cell"><stock-link :ticker="props.item.stock.ticker"></stock-link></td>
+                    <td v-if="tableHeadersState.ticker" class="text-xs-left"><stock-link :ticker="props.item.stock.ticker"></stock-link></td>
                     <td v-if="tableHeadersState.quantity" class="text-xs-right ii-number-cell">{{props.item.quantity}}</td>
                     <td v-if="tableHeadersState.avgBuy" class="text-xs-right ii-number-cell">{{ props.item.avgBuy | amount }}</td>
                     <td v-if="tableHeadersState.currPrice" class="text-xs-right ii-number-cell">{{ props.item.currPrice| amount(true) }}</td>

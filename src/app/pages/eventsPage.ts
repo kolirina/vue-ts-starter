@@ -83,9 +83,9 @@ const MainStore = namespace(StoreType.MAIN);
                     <v-data-table :headers="headers" :items="events" item-key="id" :custom-sort="customSort" hide-actions>
                         <template #items="props">
                             <tr class="selectable">
-                                <td>{{ props.item.label }}</td>
-                                <td>{{ props.item.share.shortname }}</td>
-                                <td>
+                                <td class="text-xs-left">{{ props.item.label }}</td>
+                                <td class="text-xs-left">{{ props.item.share.shortname }}</td>
+                                <td class="text-xs-left">
                                     <stock-link v-if="props.item.type === 'DIVIDEND'" :ticker="props.item.share.ticker"></stock-link>
 
                                     <bond-link v-if="props.item.type !== 'DIVIDEND'" :ticker="props.item.share.ticker"></bond-link>
@@ -139,7 +139,7 @@ export class EventsPage extends UI {
     private eventsAggregateInfo: EventsAggregateInfo = null;
     /** Зголовки таблицы */
     private headers: TableHeader[] = [
-        {text: "Событие", align: "left", value: "label", width: "120"},
+        {text: "Событие", align: "left", value: "label", width: "150"},
         {text: "Компания", align: "left", value: "shortname"},
         {text: "Тикер/ISIN", align: "left", value: "ticker", width: "100"},
         {text: "Дата выплаты", align: "center", value: "date", width: "50"},

@@ -36,7 +36,7 @@ const MainStore = namespace(StoreType.MAIN);
                         <td class="text-xs-right" style="min-width: 200px">
                             <v-rating v-model="props.item.rating" dense readonly></v-rating>
                         </td>
-                        <td class="text-xs-right">
+                        <td class="text-xs-center">
                             <a v-if="props.item.currency === 'RUB'" :href="'http://moex.com/ru/issue.aspx?code=' + props.item.ticker" target="_blank"
                                :title="'Профиль эмитента ' + props.item.name + ' на сайте биржи'">
                                 <i class="fas fa-external-link-alt"></i>
@@ -94,10 +94,10 @@ export class StockQuotes extends UI {
         {text: "Тикер", align: "left", value: "ticker", width: "50"},
         {text: "Компания", align: "left", value: "shortname"},
         {text: "Цена", align: "right", value: "price", width: "60"},
-        {text: "Изменение", align: "left", value: "change", width: "70"},
+        {text: "Изменение", align: "right", value: "change", width: "70"},
         {text: "Размер лота", align: "right", value: "lotsize", width: "45", sortable: false},
         {text: "Рейтинг", align: "center", value: "rating", width: "200"},
-        {text: "Профиль эмитента", align: "right", value: "profile", width: "60", sortable: false},
+        {text: "Профиль эмитента", align: "center", value: "profile", width: "60", sortable: false},
         {text: "Меню", value: "", align: "center", width: "30", sortable: false}
     ];
 

@@ -39,14 +39,14 @@ const MainStore = namespace(StoreType.MAIN);
                     <td class="text-xs-center">{{ props.item.accountType.description }}</td>
                     <td class="text-xs-center">{{ props.item.openDate }}</td>
                     <td class="justify-center layout px-0">
-                        <v-btn icon class="mx-0" @click.stop="openDialogForEdit(props.item)">
-                            <v-icon color="teal">edit</v-icon>
+                        <v-btn icon class="mx-0" @click.stop="openDialogForEdit(props.item)" title="Редактировать портфель">
+                            <v-icon small color="teal">edit</v-icon>
                         </v-btn>
-                        <v-btn icon class="mx-0" @click.stop="deletePortfolio(props.item)">
-                            <v-icon color="pink">delete</v-icon>
+                        <v-btn icon class="mx-0" @click.stop="deletePortfolio(props.item)" title="Удалить портфель">
+                            <v-icon small color="pink">delete</v-icon>
                         </v-btn>
-                        <v-btn icon class="mx-0" @click.stop="clonePortfolio(props.item.id)">
-                            <v-icon color="blue">far fa-clone</v-icon>
+                        <v-btn icon class="mx-0" @click.stop="clonePortfolio(props.item.id)" title="Копировать портфель">
+                            <v-icon small color="blue">far fa-clone</v-icon>
                         </v-btn>
                     </td>
                 </tr>
