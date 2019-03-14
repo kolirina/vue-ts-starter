@@ -3,7 +3,7 @@ import moment from "moment";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
-import {UI} from "../../app/ui";
+import {Prop, UI} from "../../app/ui";
 import {ApplyPromoCodeDialog} from "../../components/dialogs/applyPromoCodeDialog";
 import {CatchErrors} from "../../platform/decorators/catchErrors";
 import {ShowProgress} from "../../platform/decorators/showProgress";
@@ -17,6 +17,30 @@ import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
+
+@Component({
+    // language=Vue
+    template: `
+        <span>
+            Превышены лимиты
+            <p>
+                Создано портфелей: <b>{{ portfoliosCount }}</b>, добавлено ценных бумаг: <b>{{ sharesCount }}</b>
+            </p>
+            <p v-if="foreignShares">
+                В ваших портфелях имеются сделки с валютой или по иностранным ценным бумагам
+            </p>
+        </span>
+    `
+})
+export class TariffLimitExceedInfo extends UI {
+
+    @Prop({required: true, type: String})
+    private portfoliosCount: string;
+    @Prop({required: true, type: String})
+    private sharesCount: string;
+    @Prop({default: false, type: Boolean})
+    private foreignShares: string;
+}
 
 @Component({
     // language=Vue
@@ -50,17 +74,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </div>
 
                     <div class="tariff__info">
-                        <p>
-                            <span id="payment-loader" style="display: none">
-                                <span id="check_payment"/>
-                            </span>
-                        </p>
-                        <p>
-                            Создано портфелей: <b>{{ clientInfo.user.portfoliosCount }}</b>, добавлено ценных бумаг: <b>{{ clientInfo.user.sharesCount }}</b>
-                        </p>
-                        <p v-if="clientInfo.user.foreignShares">
-                            В ваших портфелях имеются сделки с валютой или по иностранным ценным бумагам
-                        </p>
+
                     </div>
 
                     <p v-if="isDiscountApplied()" class="promotion">
@@ -89,9 +103,9 @@ const MainStore = namespace(StoreType.MAIN);
                                             <span v-if="!busyState[Tariff.FREE.name]">{{ getButtonLabel(Tariff.FREE) }}</span>
                                             <v-progress-circular v-if="busyState[Tariff.FREE.name]" indeterminate color="primary" :size="20"></v-progress-circular>
                                         </v-btn>
-                                        <span>
-                                        Переход на Бесплатный тарифный план <br/> возможен только если не превышены лимиты.
-                                    </span>
+                                        <tariff-limit-exceed-info v-if="!isAvailable(Tariff.FREE)" :portfolios-count="clientInfo.user.portfoliosCount"
+                                                                  :shares-count="clientInfo.user.sharesCount" :foreign-shares="clientInfo.user.foreignShares">
+                                        </tariff-limit-exceed-info>
                                     </v-tooltip>
                                     <div class="tariff__plan_expires" v-if="isSelected(Tariff.FREE)">
                                         {{ getExpirationDescription() }}
@@ -110,9 +124,9 @@ const MainStore = namespace(StoreType.MAIN);
                                             <span v-if="!busyState[Tariff.STANDARD.name]">{{ getButtonLabel(Tariff.STANDARD) }}</span>
                                             <v-progress-circular v-if="busyState[Tariff.STANDARD.name]" indeterminate color="primary" :size="20"></v-progress-circular>
                                         </v-btn>
-                                        <span>
-                                        Переход на Стандарт тарифный план <br/> возможен только если не превышены лимиты.
-                                    </span>
+                                        <tariff-limit-exceed-info v-if="!isAvailable(Tariff.FREE)" :portfolios-count="clientInfo.user.portfoliosCount"
+                                                                  :shares-count="clientInfo.user.sharesCount" :foreign-shares="clientInfo.user.foreignShares">
+                                        </tariff-limit-exceed-info>
                                     </v-tooltip>
                                     <div v-if="isSelected(Tariff.STANDARD)" class="tariff__plan_expires">
                                         {{ getExpirationDescription() }}
@@ -199,7 +213,9 @@ const MainStore = namespace(StoreType.MAIN);
                     </div>
                 </div>
             </v-card>
-        </v-container>`
+        </v-container>
+    `,
+    components: {TariffLimitExceedInfo}
 })
 export class TariffsPage extends UI {
 
