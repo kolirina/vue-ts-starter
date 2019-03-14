@@ -4,9 +4,11 @@ import {namespace} from "vuex-class";
 import {UI} from "../app/ui";
 import {BondPaymentsChart} from "../components/charts/bondPaymentsChart";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
+import {CreateOrEditNotificationDialog} from "../components/dialogs/createOrEditNotificationDialog";
 import {CatchErrors} from "../platform/decorators/catchErrors";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {MarketService} from "../services/marketService";
+import {NotificationType} from "../services/notificationsService";
 import {AssetType} from "../types/assetType";
 import {ColumnChartData, Dot, HighStockEventsGroup} from "../types/charts/types";
 import {Operation} from "../types/operation";
@@ -95,6 +97,14 @@ const MainStore = namespace(StoreType.MAIN);
                                 </v-btn>
                             </td>
                         </tr>
+                        <tr>
+                            <td>Добавить уведомление</td>
+                            <td>
+                                <v-btn fab dark small color="primary" @click.stop="openCreateNotificationDialog">
+                                    <v-icon dark>far fa-bell</v-icon>
+                                </v-btn>
+                            </td>
+                        </tr>
                         </tbody>
                     </table>
                 </v-card-text>
@@ -167,6 +177,10 @@ export class BondInfoPage extends UI {
         if (result) {
             await this.reloadPortfolio(this.portfolio.id);
         }
+    }
+
+    private async openCreateNotificationDialog(): Promise<void> {
+        await new CreateOrEditNotificationDialog().show({type: NotificationType.bond, shareId: this.share.id});
     }
 
     private get portfolioAvgPrice(): number {
