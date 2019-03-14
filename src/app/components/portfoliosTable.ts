@@ -136,17 +136,21 @@ export class PortfoliosTable extends UI {
     }
 
     @CatchErrors
-    @ShowProgress
     @DisableConcurrentExecution
     private async deletePortfolio(portfolio: PortfolioParams): Promise<void> {
         const result = await new ConfirmDialog().show(`Вы собираетесь удалить портфель ${portfolio.name}.
                                               Все сделки по акциям, облигациям и дивиденды,
                                               связанные с этим портфелем будут удалены.`);
         if (result === BtnReturn.YES) {
-            await this.portfolioService.deletePortfolio(portfolio.id);
-            await this.reloadPortfolios();
-            this.$snotify.info("Портфель успешно удален");
+            await this.deletePortfolioAndShowMessage(portfolio.id);
         }
+    }
+
+    @ShowProgress
+    private async deletePortfolioAndShowMessage(id: string): Promise<void> {
+        await this.portfolioService.deletePortfolio(id);
+        await this.reloadPortfolios();
+        this.$snotify.info("Портфель успешно удален");
     }
 
     @CatchErrors

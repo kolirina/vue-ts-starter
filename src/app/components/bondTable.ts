@@ -18,7 +18,7 @@ import {StoreType} from "../vuex/storeType";
 import {AddTradeDialog} from "./dialogs/addTradeDialog";
 import {ConfirmDialog} from "./dialogs/confirmDialog";
 import {BtnReturn} from "./dialogs/customDialog";
-import {EditShareNoteDialog} from "./dialogs/editShareNoteDialog";
+import {EditShareNoteDialog, EditShareNoteDialogData} from "./dialogs/editShareNoteDialog";
 import {ShareTradesDialog} from "./dialogs/shareTradesDialog";
 import {PortfolioRowFilter} from "./portfolioRowsTableFilter";
 import {TableExtendedInfo} from "./tableExtendedInfo";
@@ -242,7 +242,7 @@ export class BondTable extends UI {
 
     @ShowProgress
     private async openShareTradesDialog(ticker: string): Promise<void> {
-        await new ShareTradesDialog().show({trades: await this.tradeService.getShareTrades(this.portfolio.id, ticker), ticker});
+        new ShareTradesDialog().show({trades: await this.tradeService.getShareTrades(this.portfolio.id, ticker), ticker});
     }
 
     private async openTradeDialog(bondRow: BondPortfolioRow, operation: Operation): Promise<void> {
@@ -263,13 +263,17 @@ export class BondTable extends UI {
      * Обновляет заметки по бумага в портфеле
      * @param ticker тикер по которому редактируется заметка
      */
-    @ShowProgress
     private async openEditShareNoteDialog(ticker: string): Promise<void> {
-        const result = await new EditShareNoteDialog().show({ticker, note: this.portfolio.portfolioParams.shareNotes[ticker]});
-        if (result) {
-            await this.portfolioService.updateShareNotes(this.portfolio, result);
-            this.$snotify.info(`Заметка по бумаге ${ticker} была успешно сохранена`);
+        const data = await new EditShareNoteDialog().show({ticker, note: this.portfolio.portfolioParams.shareNotes[ticker]});
+        if (data) {
+            await this.editShareNote(data);
         }
+    }
+
+    @ShowProgress
+    private async editShareNote(data: EditShareNoteDialogData): Promise<void> {
+        await this.portfolioService.updateShareNotes(this.portfolio, data);
+        this.$snotify.info(`Заметка по бумаге ${data.ticker} была успешно сохранена`);
     }
 
     @ShowProgress
