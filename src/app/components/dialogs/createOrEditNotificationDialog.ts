@@ -188,15 +188,17 @@ export class CreateOrEditNotificationDialog extends CustomDialog<Notification, b
             this.sellPriceNotification = CommonUtils.exists(this.notification.sellPrice);
             this.dividendNotification = CommonUtils.exists(this.notification.keywords) && this.notificationsService.DIVIDEND_WORDS === this.notification.keywords;
             this.newsNotification = CommonUtils.exists(this.notification.keyWordsSearchType) && this.notificationsService.DIVIDEND_WORDS !== this.notification.keywords;
+        } else {
+            // здесь всегда будет только тип
+            this.notification = {...this.data};
+        }
+        if (this.notification.shareId) {
             if (this.notification.type === NotificationType.stock) {
                 this.share = (await this.marketService.getStockById(this.notification.shareId)).stock;
             } else if (this.notification.type === NotificationType.bond) {
                 this.share = (await this.marketService.getBondById(this.notification.shareId)).bond;
             }
             this.filteredShares = [this.share];
-        } else {
-            // здесь всегда будет только тип
-            this.notification = {...this.data};
         }
     }
 

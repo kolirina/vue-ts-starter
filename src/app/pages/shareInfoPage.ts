@@ -8,6 +8,7 @@ import {CreateOrEditNotificationDialog} from "../components/dialogs/createOrEdit
 import {CatchErrors} from "../platform/decorators/catchErrors";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {MarketService} from "../services/marketService";
+import {NotificationType} from "../services/notificationsService";
 import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
 import {BaseChartDot, Dot, HighStockEventsGroup} from "../types/charts/types";
@@ -201,7 +202,7 @@ export class ShareInfoPage extends UI {
     }
 
     private async openCreateNotificationDialog(): Promise<void> {
-        await new CreateOrEditNotificationDialog().show();
+        await new CreateOrEditNotificationDialog().show({type: NotificationType.stock, shareId: this.share.id});
     }
 
     private get portfolioAvgPrice(): number {
