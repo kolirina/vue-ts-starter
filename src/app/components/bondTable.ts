@@ -36,8 +36,8 @@ const MainStore = namespace(StoreType.MAIN);
                     <td>
                         <span @click="props.expanded = !props.expanded" class="data-table-cell" :class="{'data-table-cell-open': props.expanded, 'path': true}"></span>
                     </td>
-                    <td v-if="tableHeadersState.company">{{ props.item.bond.shortname }}</td>
-                    <td v-if="tableHeadersState.ticker">
+                    <td class="text-xs-left" v-if="tableHeadersState.company">{{ props.item.bond.shortname }}</td>
+                    <td class="text-xs-left" v-if="tableHeadersState.ticker">
                         <bond-link :ticker="props.item.bond.ticker"></bond-link>
                     </td>
                     <td v-if="tableHeadersState.quantity" class="text-xs-right ii-number-cell">{{props.item.quantity}}</td>

@@ -33,7 +33,7 @@ const MainStore = namespace(StoreType.MAIN);
                         <td class="text-xs-right">{{ props.item.yield }}%</td>
                         <td class="text-xs-right">{{ props.item.accruedint | amount(true) }}</td>
                         <td class="text-xs-right">{{ props.item.couponvalue | amount(true) }}</td>
-                        <td class="text-xs-center">{{ props.item.nextcoupon }}</td>
+                        <td class="text-xs-right">{{ props.item.nextcoupon }}</td>
                         <td class="text-xs-right">{{ props.item.facevalue | amount(true) }}</td>
                         <td class="text-xs-right">{{ props.item.duration }}</td>
                         <td class="text-xs-center">
@@ -106,7 +106,7 @@ export class BondQuotes extends UI {
         {text: "ISIN", align: "left", value: "isin", width: "50"},
         {text: "Компания", align: "left", value: "shortname"},
         {text: "Цена", align: "right", value: "prevprice", width: "60"},
-        {text: "Изменение", align: "left", value: "change", width: "60"},
+        {text: "Изменение", align: "right", value: "change", width: "60"},
         {text: "Доходность", align: "right", value: "yield", width: "60"},
         {text: "НКД", align: "right", value: "accruedint", width: "45"},
         {text: "Купон", align: "right", value: "couponvalue", width: "45"},

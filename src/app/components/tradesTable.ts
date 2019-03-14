@@ -29,22 +29,22 @@ const MainStore = namespace(StoreType.MAIN);
                     <td>
                         <span @click="props.expanded = !props.expanded" class="data-table-cell" :class="{'data-table-cell-open': props.expanded, 'path': true}"></span>
                     </td>
-                    <td v-if="tableHeadersState.ticker">
+                    <td v-if="tableHeadersState.ticker" class="text-xs-left">
                         <stock-link v-if="props.item.asset === 'STOCK'" :ticker="props.item.ticker"></stock-link>
                         <bond-link v-if="props.item.asset === 'BOND'" :ticker="props.item.ticker"></bond-link>
                         <span v-if="props.item.asset === 'MONEY'">{{ props.item.ticker }}</span>
                     </td>
-                    <td v-if="tableHeadersState.name">{{ props.item.companyName }}</td>
-                    <td v-if="tableHeadersState.operationLabel">{{ props.item.operationLabel }}</td>
+                    <td v-if="tableHeadersState.name" class="text-xs-left">{{ props.item.companyName }}</td>
+                    <td v-if="tableHeadersState.operationLabel" class="text-xs-left">{{ props.item.operationLabel }}</td>
                     <td v-if="tableHeadersState.date" class="text-xs-center">{{ getTradeDate(props.item) }}</td>
                     <td v-if="tableHeadersState.quantity" class="text-xs-right ii-number-cell">{{ props.item.quantity }}</td>
                     <td v-if="tableHeadersState.price" class="text-xs-right ii-number-cell">{{ getPrice(props.item) }}</td>
-                    <td v-if="tableHeadersState.facevalue">{{ props.item.facevalue }}</td>
-                    <td v-if="tableHeadersState.nkd">{{ props.item.nkd }}</td>
+                    <td v-if="tableHeadersState.facevalue" class="text-xs-right ii-number-cell">{{ props.item.facevalue }}</td>
+                    <td v-if="tableHeadersState.nkd" class="text-xs-right ii-number-cell">{{ props.item.nkd }}</td>
                     <td v-if="tableHeadersState.fee" class="text-xs-right ii-number-cell">{{ getFee(props.item) }}</td>
                     <td v-if="tableHeadersState.signedTotal" class="text-xs-right ii-number-cell">{{ props.item.signedTotal | amount(true) }}</td>
                     <td v-if="tableHeadersState.totalWithoutFee" class="text-xs-right ii-number-cell">{{ props.item.totalWithoutFee | amount }}</td>
-                    <td v-if="props.item.parentTradeId" class="justify-center px-0" @click.stop>
+                    <td v-if="props.item.parentTradeId" class="justify-center px-0" style="text-align: center" @click.stop>
                         <v-tooltip content-class="custom-tooltip-wrap" :max-width="250" top>
                             <a slot="activator">
                                 <v-icon color="primary" small>fas fa-link</v-icon>
@@ -54,7 +54,7 @@ const MainStore = namespace(StoreType.MAIN);
                             </span>
                         </v-tooltip>
                     </td>
-                    <td v-else class="justify-center px-0" @click.stop="openEditTradeDialog(props.item)">
+                    <td v-else class="justify-center px-0" style="text-align: center" @click.stop="openEditTradeDialog(props.item)">
                         <a>
                             <v-icon color="primary" small>fas fa-pencil-alt</v-icon>
                         </a>

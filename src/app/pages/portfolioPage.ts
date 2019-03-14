@@ -20,7 +20,17 @@ const MainStore = namespace(StoreType.MAIN);
         <base-portfolio-page v-if="portfolio" :overview="portfolio.overview" :portfolio-name="portfolio.portfolioParams.name"
                              :line-chart-data="lineChartData" :line-chart-events="lineChartEvents" :view-currency="portfolio.portfolioParams.viewCurrency"
                              :state-key-prefix="StoreKeys.PORTFOLIO_CHART"
-                             @reloadLineChart="loadPortfolioLineChart" @exportTable="onExportTable" exportable></base-portfolio-page>
+                             @reloadLineChart="loadPortfolioLineChart" @exportTable="onExportTable" exportable>
+            <template #afterDashboard>
+                <v-alert v-if="isEmptyBlockShowed" :value="true" type="info" outline>
+                    Для начала работы заполните свой портфель. Вы можете
+                    <router-link to="/import">загрузить отчет</router-link>
+                    со сделками вашего брокера или просто
+                    <router-link to="/balances">указать остатки</router-link>
+                    портфеля, если знаете цену или стоимость покупки бумаг
+                </v-alert>
+            </template>
+        </base-portfolio-page>
     `,
     components: {BasePortfolioPage}
 })
@@ -63,5 +73,9 @@ export class PortfolioPage extends UI {
     @ShowProgress
     private async onExportTable(exportType: ExportType): Promise<void> {
         await this.exportService.exportReport(this.portfolio.id, exportType);
+    }
+
+    private get isEmptyBlockShowed(): boolean {
+        return this.portfolio && this.portfolio.overview.stockPortfolio.rows.length === 0 && this.portfolio.overview.bondPortfolio.rows.length === 0;
     }
 }
