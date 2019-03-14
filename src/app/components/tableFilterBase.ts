@@ -28,7 +28,7 @@ import {Bond, Share} from "../types/types";
     template: `
         <div class="portfolio-rows-filter">
             <span v-if="!isDefault" class="custom-filter" title="Настроен фильтр"></span>
-            <v-menu v-model="menu" :close-on-content-click="false" :nudge-width="416" :nudge-bottom="40" bottom>
+            <v-menu v-model="menu" :close-on-content-click="false" :nudge-width="294" :nudge-bottom="40" bottom>
                 <v-btn slot="activator" round class="portfolio-rows-filter__button">
                     Фильтры
                     <span class="portfolio-rows-filter__button__icon"></span>
@@ -38,7 +38,11 @@ import {Bond, Share} from "../types/types";
                     <slot></slot>
                 </v-card>
             </v-menu>
-            <v-text-field v-model="searchQuery" @click:clear="onClear" prepend-icon="search" :label="searchLabel" clearable single-line hide-details></v-text-field>
+            <v-icon @click.native="toggleSearch">search</v-icon>
+            <v-slide-x-transition>
+                <v-text-field v-if="showSearch" v-model="searchQuery" @click:clear="onClear" :label="searchLabel"
+                              clearable single-line hide-details autofocus></v-text-field>
+            </v-slide-x-transition>
         </div>
     `
 })
@@ -53,6 +57,7 @@ export class TableFilterBase extends UI {
     private isDefault: boolean;
     private searchQuery: string = null;
     private menu = false;
+    private showSearch = false;
 
     @Watch("searchQuery")
     private async onSearch(): Promise<void> {
@@ -65,5 +70,9 @@ export class TableFilterBase extends UI {
 
     private onClear(): void {
         this.$emit("search", "");
+    }
+
+    private toggleSearch(): void {
+        this.showSearch = !this.showSearch;
     }
 }
