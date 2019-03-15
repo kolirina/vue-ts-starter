@@ -1,11 +1,8 @@
 import {AppFrame} from "./app/app/appFrame";
 import {UIRegistry} from "./app/app/uiRegistry";
 import {RouterConfiguration} from "./app/router/routerConfiguration";
+import {InactivityMonitor} from "./app/services/inactivityMonitor";
 import {VuexConfiguration} from "./app/vuex/vuexConfiguration";
-
-const initialized = UIRegistry.init();
-const router = RouterConfiguration.getRouter();
-const store = VuexConfiguration.getStore();
 
 /**
  * Запуск приложения
@@ -15,6 +12,10 @@ const store = VuexConfiguration.getStore();
  */
 async function _start(resolve: () => void, reject: () => void): Promise<void> {
     try {
+        UIRegistry.init();
+        const router = RouterConfiguration.getRouter();
+        const store = VuexConfiguration.getStore();
+        InactivityMonitor.getInstance().start();
         const app = new AppFrame({router, store});
         app.$mount("#app");
         resolve();
