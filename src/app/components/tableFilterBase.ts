@@ -41,7 +41,7 @@ import {Bond, Share} from "../types/types";
             <v-icon @click.native="toggleSearch">search</v-icon>
             <v-slide-x-transition>
                 <v-text-field v-if="showSearch" v-model="searchQuery" @click:clear="onClear" :label="searchLabel"
-                              clearable single-line hide-details autofocus></v-text-field>
+                              single-line hide-details autofocus></v-text-field>
             </v-slide-x-transition>
         </div>
     `
