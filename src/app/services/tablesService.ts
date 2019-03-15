@@ -8,8 +8,8 @@ import {TableHeader} from "../types/types";
 export class TablesService {
     headers: TableHeaders = {
         stockTable: [
-            {text: "", align: "left", ghost: true, sortable: false, value: "", active: true},
-            {text: "Компания", align: "left", value: TABLE_HEADERS.COMPANY, active: true},
+            {text: "", align: "left", ghost: true, sortable: false, value: "", active: true, width: "50"},
+            {text: "Компания", align: "left", value: TABLE_HEADERS.COMPANY, active: true, width: "200"},
             {text: "Тикер", align: "left", value: TABLE_HEADERS.TICKER, active: false},
             {text: "Количество", align: "right", value: TABLE_HEADERS.QUANTITY, active: false},
             {text: "Ср. цена", align: "right", value: TABLE_HEADERS.AVG_BUY, sortable: false, active: true},
