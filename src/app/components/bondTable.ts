@@ -32,13 +32,16 @@ const MainStore = namespace(StoreType.MAIN);
                       :search="search" :custom-sort="customSort" :custom-filter="customFilter" hide-actions>
             <v-progress-linear slot="progress" color="blue" indeterminate></v-progress-linear>
             <template #items="props">
-                <tr class="selectable" @dblclick="props.expanded = !props.expanded">
+                <tr :class="['selectable', {'bold-row': !props.item.bond}]" @dblclick="props.expanded = !props.expanded">
                     <td>
-                        <span @click="props.expanded = !props.expanded" class="data-table-cell" :class="{'data-table-cell-open': props.expanded, 'path': true}"></span>
+                        <span v-if="props.item.bond" @click="props.expanded = !props.expanded"
+                              :class="{'data-table-cell-open': props.expanded, 'path': true, 'data-table-cell': true}"></span>
                     </td>
-                    <td class="text-xs-left" v-if="tableHeadersState.company">{{ props.item.bond.shortname }}</td>
-                    <td class="text-xs-left" v-if="tableHeadersState.ticker">
-                        <bond-link :ticker="props.item.bond.ticker"></bond-link>
+                    <td v-if="tableHeadersState.company" class="text-xs-left">
+                        <span v-if="props.item.bond">{{ props.item.bond.shortname }}</span>
+                    </td>
+                    <td v-if="tableHeadersState.ticker" class="text-xs-left">
+                        <bond-link v-if="props.item.bond" :ticker="props.item.bond.ticker"></bond-link>
                     </td>
                     <td v-if="tableHeadersState.quantity" class="text-xs-right ii-number-cell">{{props.item.quantity}}</td>
                     <td v-if="tableHeadersState.avgBuy" class="text-xs-right ii-number-cell">{{ props.item.avgBuy | number }}</td>
@@ -69,7 +72,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <td v-if="tableHeadersState.summFee" class="text-xs-right ii-number-cell">{{props.item.summFee | amount}}</td>
                     <td v-if="tableHeadersState.percCurrShare" class="text-xs-right ii-number-cell">{{ props.item.percCurrShare | number }}</td>
                     <td class="justify-center layout px-0" @click.stop>
-                        <v-menu transition="slide-y-transition" bottom left>
+                        <v-menu v-if="props.item.bond" transition="slide-y-transition" bottom left>
                             <v-btn slot="activator" flat icon dark>
                                 <span class="menuDots"></span>
                             </v-btn>
@@ -303,6 +306,12 @@ export class BondTable extends UI {
 
     private customSort(items: BondPortfolioRow[], index: string, isDesc: boolean): BondPortfolioRow[] {
         items.sort((a: BondPortfolioRow, b: BondPortfolioRow): number => {
+            if (!CommonUtils.exists(a.bond)) {
+                return 1;
+            }
+            if (!CommonUtils.exists(b.bond)) {
+                return -1;
+            }
             if (index === TABLE_HEADERS.TICKER) {
                 if (!isDesc) {
                     return a.bond.ticker.localeCompare(b.bond.ticker);
@@ -334,10 +343,10 @@ export class BondTable extends UI {
         }
         search = search.toLowerCase();
         return items.filter(row => {
-            return row.bond.shortname.toLowerCase().includes(search) ||
+            return row.bond && (row.bond.shortname.toLowerCase().includes(search) ||
                 row.bond.ticker.toLowerCase().includes(search) ||
                 row.bond.price.includes(search) ||
-                row.yearYield.includes(search);
+                row.yearYield.includes(search));
         });
     }
 }

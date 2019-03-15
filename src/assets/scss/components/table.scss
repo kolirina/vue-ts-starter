@@ -32,6 +32,13 @@
 }
 
 .data-table {
+
+  tr {
+    +.bold-row {
+      // background-color: #0404271f !important;
+    }
+  }
+
   &-cell {
     transition: .3s ease-in-out;
   }

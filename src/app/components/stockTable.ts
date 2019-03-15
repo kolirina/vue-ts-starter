@@ -47,16 +47,18 @@ const MainStore = namespace(StoreType.MAIN);
                       :search="search" :custom-sort="customSort" :custom-filter="customFilter" hide-actions>
             <v-progress-linear slot="progress" color="blue" indeterminate></v-progress-linear>
             <template #items="props">
-                <tr class="selectable" @dblclick="props.expanded = !props.expanded">
+                <tr :class="['selectable', {'bold-row': !props.item.stock}]" @dblclick="props.expanded = !props.expanded">
                     <td>
-                        <span @click="props.expanded = !props.expanded" class="data-table-cell" :class="{'data-table-cell-open': props.expanded, 'path': true}"></span>
+                        <span v-if="props.item.stock" @click="props.expanded = !props.expanded"
+                              :class="{'data-table-cell-open': props.expanded, 'path': true, 'data-table-cell': true}"></span>
                     </td>
                     <td v-if="tableHeadersState.company" class="text-xs-left">
-                        <span>{{ props.item.stock.shortname }}</span>&nbsp;
-                        <span :class="[(props.item.stock.change >= 0) ? 'ii--green-markup' : 'ii--red-markup', 'ii-number-cell']">{{ props.item.stock.change }}&nbsp;%</span>
+                        <span v-if="props.item.stock">{{ props.item.stock.shortname }}</span>&nbsp;
+                        <span v-if="props.item.stock"
+                              :class="[(props.item.stock.change >= 0) ? 'ii--green-markup' : 'ii--red-markup', 'ii-number-cell']">{{ props.item.stock.change }}&nbsp;%</span>
                     </td>
                     <td v-if="tableHeadersState.ticker" class="text-xs-left">
-                        <stock-link :ticker="props.item.stock.ticker"></stock-link>
+                        <stock-link v-if="props.item.stock" :ticker="props.item.stock.ticker"></stock-link>
                     </td>
                     <td v-if="tableHeadersState.quantity" class="text-xs-right ii-number-cell">{{props.item.quantity}}</td>
                     <td v-if="tableHeadersState.avgBuy" class="text-xs-right ii-number-cell">{{ props.item.avgBuy | amount }}</td>
@@ -83,7 +85,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <td v-if="tableHeadersState.summFee" class="text-xs-right ii-number-cell">{{ props.item.summFee | amount }}</td>
                     <td v-if="tableHeadersState.percCurrShare" class="text-xs-right ii-number-cell">{{ props.item.percCurrShare | number }}</td>
                     <td class="justify-center layout px-0" @click.stop>
-                        <v-menu transition="slide-y-transition" bottom left>
+                        <v-menu v-if="props.item.stock" transition="slide-y-transition" bottom left>
                             <v-btn slot="activator" flat icon dark>
                                 <span class="menuDots"></span>
                             </v-btn>
@@ -287,6 +289,12 @@ export class StockTable extends UI {
 
     private customSort(items: StockPortfolioRow[], index: string, isDesc: boolean): StockPortfolioRow[] {
         items.sort((a: StockPortfolioRow, b: StockPortfolioRow): number => {
+            if (!CommonUtils.exists(a.stock)) {
+                return 1;
+            }
+            if (!CommonUtils.exists(b.stock)) {
+                return -1;
+            }
             if (index === TABLE_HEADERS.TICKER) {
                 if (!isDesc) {
                     return a.stock.ticker.localeCompare(b.stock.ticker);
@@ -318,10 +326,10 @@ export class StockTable extends UI {
         }
         search = search.toLowerCase();
         return items.filter(row => {
-            return row.stock.shortname.toLowerCase().includes(search) ||
+            return row.stock && (row.stock.shortname.toLowerCase().includes(search) ||
                 row.stock.ticker.toLowerCase().includes(search) ||
                 row.stock.price.includes(search) ||
-                row.yearYield.includes(search);
+                row.yearYield.includes(search));
         });
     }
 }

@@ -30,7 +30,7 @@ import {ExportType} from "../services/exportService";
 import {TableHeaders, TABLES_NAME, TablesService} from "../services/tablesService";
 import {HighStockEventsGroup, SectorChartData} from "../types/charts/types";
 import {StoreKeys} from "../types/storeKeys";
-import {Overview, TableHeader} from "../types/types";
+import {BondPortfolioRow, Overview, StockPortfolioRow, TableHeader} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
 import {UiStateHelper} from "../utils/uiStateHelper";
 import {StoreType} from "../vuex/storeType";
@@ -65,7 +65,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <v-list-tile-title v-if="exportable" @click="exportTable(ExportType.STOCKS)">Экспорт в xlsx</v-list-tile-title>
                 </template>
                 <portfolio-rows-table-filter :search.sync="stockSearch" :filter.sync="stockFilter" :store-key="StoreKeys.STOCKS_TABLE_FILTER_KEY"></portfolio-rows-table-filter>
-                <stock-table :rows="overview.stockPortfolio.rows" :headers="getHeaders(TABLES_NAME.STOCK)" :search="stockSearch" :filter="stockFilter"></stock-table>
+                <stock-table :rows="stockRows" :headers="getHeaders(TABLES_NAME.STOCK)" :search="stockSearch" :filter="stockFilter"></stock-table>
             </expanded-panel>
 
             <div style="height: 30px"></div>
@@ -85,7 +85,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <v-list-tile-title v-if="exportable" @click="exportTable(ExportType.BONDS)">Экспорт в xlsx</v-list-tile-title>
                 </template>
                 <portfolio-rows-table-filter :search.sync="bondSearch" :filter.sync="bondFilter" :store-key="StoreKeys.BONDS_TABLE_FILTER_KEY"></portfolio-rows-table-filter>
-                <bond-table :rows="overview.bondPortfolio.rows" :headers="getHeaders(TABLES_NAME.BOND)" :search="bondSearch" :filter="bondFilter"></bond-table>
+                <bond-table :rows="bondRows" :headers="getHeaders(TABLES_NAME.BOND)" :search="bondSearch" :filter="bondFilter"></bond-table>
             </expanded-panel>
 
             <div style="height: 30px"></div>
@@ -265,6 +265,14 @@ export class BasePortfolioPage extends UI {
 
     private async exportTable(exportType: ExportType): Promise<void> {
         this.$emit(EventType.exportTable, exportType);
+    }
+
+    private get stockRows(): StockPortfolioRow[] {
+        return [...this.overview.stockPortfolio.rows, this.overview.stockPortfolio.sumRow as StockPortfolioRow];
+    }
+
+    private get bondRows(): BondPortfolioRow[] {
+        return [...this.overview.bondPortfolio.rows, this.overview.bondPortfolio.sumRow as BondPortfolioRow];
     }
 }
 

@@ -3,6 +3,7 @@
  */
 import Highcharts from "highcharts";
 import Highcharts3D from "highcharts-3d";
+import Highstock from "highcharts/highstock";
 import exporting from "highcharts/modules/exporting";
 import Clipboard from "v-clipboard";
 import VeeValidate, {Validator} from "vee-validate";
@@ -26,6 +27,7 @@ import {ShareSearchComponent} from "../components/shareSearchComponent";
 import {StockLink} from "../components/stockLink";
 import {StateDirective} from "../platform/directives/stateDirective";
 import {Filters} from "../platform/filters/Filters";
+import {highchartsRu} from "../platform/locale/highchartsRu";
 import {RU} from "../platform/locale/ru";
 import {ruLocale} from "../platform/locale/veeValidateMessages";
 import {UiStateHelper} from "../utils/uiStateHelper";
@@ -39,7 +41,7 @@ export class UIRegistry {
     /**
      * Инициализация реестра компонентов, фильтров и директив
      */
-    static init(): boolean {
+    static init(): void {
 
         Vue.use(Clipboard);
 
@@ -122,7 +124,8 @@ export class UIRegistry {
         Validator.dictionary.setDateFormat("ru", "DD.MM.YYYY");
         // устанавливаем локализованные сообщения
         Validator.localize("ru", ruLocale);
-
-        return true;
+        // локализация highcharts
+        Highcharts.setOptions({lang: highchartsRu});
+        Highstock.setOptions({lang: highchartsRu});
     }
 }
