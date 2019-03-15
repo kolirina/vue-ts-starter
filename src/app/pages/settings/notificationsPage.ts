@@ -55,7 +55,7 @@ const MainStore = namespace(StoreType.MAIN);
                         <i :class="notification.share.currency.toLowerCase()"></i>
                     </div>
                     <div class="notifications-card-header-actions">
-                        <v-menu transition="slide-y-transition" nudge-bottom="50" nudge-left="10">
+                        <v-menu transition="slide-y-transition" nudge-bottom="30" nudge-left="10">
                             <div class="notifications-card__menu" slot="activator"></div>
                             <v-list dense>
                                 <v-list-tile @click="editNotificationDialog(notification)">
