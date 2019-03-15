@@ -19,7 +19,7 @@ import {CustomDialog} from "./customDialog";
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
                 <v-card-title class="headline add-notification-title">{{ notification.id ? "Редактирование" : "Создание" }} уведомления</v-card-title>
                 <div>
-                    <share-search :filteredShares="filteredShares" :assetType="assetType" @clear="onShareClear" @change="onShareSearchChange"></share-search>
+                    <share-search :filteredShares="filteredShares" :assetType="assetType" @clear="onShareClear" @change="onShareSearchChange" class="margB32"></share-search>
 
                     <v-switch v-model="buyPriceNotification">
                         <template #label>
@@ -151,7 +151,6 @@ import {CustomDialog} from "./customDialog";
 
                     <v-card-actions class="btn-group-right">
                         <v-btn @click.native="save" color="primary" light>{{ notification.id ? "Сохранить" : "Добавить" }}</v-btn>
-                        <v-btn @click.native="close">Отмена</v-btn>
                     </v-card-actions>
                 </div>
             </v-card>
