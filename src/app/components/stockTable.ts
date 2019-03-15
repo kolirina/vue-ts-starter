@@ -55,7 +55,9 @@ const MainStore = namespace(StoreType.MAIN);
                         <span>{{ props.item.stock.shortname }}</span>&nbsp;
                         <span :class="[(props.item.stock.change >= 0) ? 'ii--green-markup' : 'ii--red-markup', 'ii-number-cell']">{{ props.item.stock.change }}&nbsp;%</span>
                     </td>
-                    <td v-if="tableHeadersState.ticker" class="text-xs-left"><stock-link :ticker="props.item.stock.ticker"></stock-link></td>
+                    <td v-if="tableHeadersState.ticker" class="text-xs-left">
+                        <stock-link :ticker="props.item.stock.ticker"></stock-link>
+                    </td>
                     <td v-if="tableHeadersState.quantity" class="text-xs-right ii-number-cell">{{props.item.quantity}}</td>
                     <td v-if="tableHeadersState.avgBuy" class="text-xs-right ii-number-cell">{{ props.item.avgBuy | amount }}</td>
                     <td v-if="tableHeadersState.currPrice" class="text-xs-right ii-number-cell">{{ props.item.currPrice| amount(true) }}</td>
@@ -99,19 +101,19 @@ const MainStore = namespace(StoreType.MAIN);
                                     </v-list-tile-title>
                                 </v-list-tile>
                                 <v-divider></v-divider>
-                                <v-list-tile @click.stop="openTradeDialog(props.item, operation.BUY)">
+                                <v-list-tile @click="openTradeDialog(props.item, operation.BUY)">
                                     <v-list-tile-title>
                                         <v-icon color="primary" small>fas fa-plus</v-icon>
                                         Купить
                                     </v-list-tile-title>
                                 </v-list-tile>
-                                <v-list-tile @click.stop="openTradeDialog(props.item, operation.SELL)">
+                                <v-list-tile @click="openTradeDialog(props.item, operation.SELL)">
                                     <v-list-tile-title>
                                         <v-icon color="primary" small>fas fa-minus</v-icon>
                                         Продать
                                     </v-list-tile-title>
                                 </v-list-tile>
-                                <v-list-tile @click.stop="openTradeDialog(props.item, operation.DIVIDEND)">
+                                <v-list-tile @click="openTradeDialog(props.item, operation.DIVIDEND)">
                                     <v-list-tile-title>
                                         <v-icon color="primary" small>fas fa-calendar-alt</v-icon>
                                         Дивиденд
@@ -258,17 +260,21 @@ export class StockTable extends UI {
         }
     }
 
-    @ShowProgress
     private async deleteAllTrades(stockRow: StockPortfolioRow): Promise<void> {
         const result = await new ConfirmDialog().show(`Вы уверены, что хотите удалить все сделки по ценной бумаге?`);
         if (result === BtnReturn.YES) {
-            await this.tradeService.deleteAllTrades({
-                assetType: "STOCK",
-                ticker: stockRow.stock.ticker,
-                portfolioId: this.portfolio.id
-            });
-            await this.reloadPortfolio(this.portfolio.id);
+            await this.deleteAllTradesAndReloadData(stockRow);
         }
+    }
+
+    @ShowProgress
+    private async deleteAllTradesAndReloadData(stockRow: StockPortfolioRow): Promise<void> {
+        await this.tradeService.deleteAllTrades({
+            assetType: AssetType.STOCK.enumName,
+            ticker: stockRow.stock.ticker,
+            portfolioId: this.portfolio.id
+        });
+        await this.reloadPortfolio(this.portfolio.id);
     }
 
     private amount(value: string): number {

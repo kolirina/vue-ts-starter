@@ -87,31 +87,31 @@ const MainStore = namespace(StoreType.MAIN);
                                     </v-list-tile-title>
                                 </v-list-tile>
                                 <v-divider></v-divider>
-                                <v-list-tile @click.stop="openTradeDialog(props.item, operation.BUY)">
+                                <v-list-tile @click="openTradeDialog(props.item, operation.BUY)">
                                     <v-list-tile-title>
                                         <v-icon color="primary" small>fas fa-plus</v-icon>
                                         Купить
                                     </v-list-tile-title>
                                 </v-list-tile>
-                                <v-list-tile @click.stop="openTradeDialog(props.item, operation.SELL)">
+                                <v-list-tile @click="openTradeDialog(props.item, operation.SELL)">
                                     <v-list-tile-title>
                                         <v-icon color="primary" small>fas fa-minus</v-icon>
                                         Продать
                                     </v-list-tile-title>
                                 </v-list-tile>
-                                <v-list-tile @click.stop="openTradeDialog(props.item, operation.COUPON)">
+                                <v-list-tile @click="openTradeDialog(props.item, operation.COUPON)">
                                     <v-list-tile-title>
                                         <v-icon color="primary" small>fas fa-calendar-alt</v-icon>
                                         Купон
                                     </v-list-tile-title>
                                 </v-list-tile>
-                                <v-list-tile @click.stop="openTradeDialog(props.item, operation.AMORTIZATION)">
+                                <v-list-tile @click="openTradeDialog(props.item, operation.AMORTIZATION)">
                                     <v-list-tile-title>
                                         <v-icon color="primary" small>fas fa-hourglass-half</v-icon>
                                         Амортизация
                                     </v-list-tile-title>
                                 </v-list-tile>
-                                <v-list-tile @click.stop="openTradeDialog(props.item, operation.REPAYMENT)">
+                                <v-list-tile @click="openTradeDialog(props.item, operation.REPAYMENT)">
                                     <v-list-tile-title>
                                         <v-icon color="primary" small>fas fa-recycle</v-icon>
                                         Погашение
@@ -276,17 +276,21 @@ export class BondTable extends UI {
         this.$snotify.info(`Заметка по бумаге ${data.ticker} была успешно сохранена`);
     }
 
-    @ShowProgress
     private async deleteAllTrades(bondRow: BondPortfolioRow): Promise<void> {
         const result = await new ConfirmDialog().show(`Вы уверены, что хотите удалить все сделки по ценной бумаге?`);
         if (result === BtnReturn.YES) {
-            await this.tradeService.deleteAllTrades({
-                assetType: "BOND",
-                ticker: bondRow.bond.ticker,
-                portfolioId: this.portfolio.id
-            });
-            await this.reloadPortfolio(this.portfolio.id);
+            await this.deleteAllTradesAndReloadData(bondRow);
         }
+    }
+
+    @ShowProgress
+    private async deleteAllTradesAndReloadData(bondRow: BondPortfolioRow): Promise<void> {
+        await this.tradeService.deleteAllTrades({
+            assetType: AssetType.BOND.enumName,
+            ticker: bondRow.bond.ticker,
+            portfolioId: this.portfolio.id
+        });
+        await this.reloadPortfolio(this.portfolio.id);
     }
 
     private amount(value: string): number {

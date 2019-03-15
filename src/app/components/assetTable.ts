@@ -32,37 +32,37 @@ const MainStore = namespace(StoreType.MAIN);
                                 <span class="menuDots"></span>
                             </v-btn>
                             <v-list dense>
-                                <v-list-tile v-if="!isMoneyTrade(props.item)" @click.stop="openTradeDialog(props.item, operation.BUY)">
+                                <v-list-tile v-if="!isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.BUY)">
                                     <v-list-tile-title>
                                         <v-icon color="primary" small>fas fa-plus</v-icon>
                                         Купить
                                     </v-list-tile-title>
                                 </v-list-tile>
-                                <v-list-tile v-if="!isMoneyTrade(props.item)" @click.stop="openTradeDialog(props.item, operation.SELL)">
+                                <v-list-tile v-if="!isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.SELL)">
                                     <v-list-tile-title>
                                         <v-icon color="primary" small>fas fa-minus</v-icon>
                                         Продать
                                     </v-list-tile-title>
                                 </v-list-tile>
-                                <v-list-tile v-if="isMoneyTrade(props.item)" @click.stop="openTradeDialog(props.item, operation.DEPOSIT)">
+                                <v-list-tile v-if="isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.DEPOSIT)">
                                     <v-list-tile-title>
                                         <v-icon color="primary" small>fas fa-plus</v-icon>
                                         Внести
                                     </v-list-tile-title>
                                 </v-list-tile>
-                                <v-list-tile v-if="isMoneyTrade(props.item)" @click.stop="openTradeDialog(props.item, operation.WITHDRAW)">
+                                <v-list-tile v-if="isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.WITHDRAW)">
                                     <v-list-tile-title>
                                         <v-icon color="primary" small>fas fa-minus</v-icon>
                                         Вывести
                                     </v-list-tile-title>
                                 </v-list-tile>
-                                <v-list-tile v-if="isStockTrade(props.item)" @click.stop="openTradeDialog(props.item, operation.DIVIDEND)">
+                                <v-list-tile v-if="isStockTrade(props.item)" @click="openTradeDialog(props.item, operation.DIVIDEND)">
                                     <v-list-tile-title>
                                         <v-icon color="primary" small>fas fa-calendar-alt</v-icon>
                                         Дивиденд
                                     </v-list-tile-title>
                                 </v-list-tile>
-                                <v-list-tile v-if="isBondTrade(props.item)" @click.stop="openTradeDialog(props.item, operation.COUPON)">
+                                <v-list-tile v-if="isBondTrade(props.item)" @click="openTradeDialog(props.item, operation.COUPON)">
                                     <v-list-tile-title>
                                         <v-icon color="primary" small>fas fa-calendar-alt</v-icon>
                                         Купон

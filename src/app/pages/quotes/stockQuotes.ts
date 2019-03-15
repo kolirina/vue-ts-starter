@@ -52,19 +52,19 @@ const MainStore = namespace(StoreType.MAIN);
                                     <span class="menuDots"></span>
                                 </v-btn>
                                 <v-list dense>
-                                    <v-list-tile @click.stop="openTradeDialog(props.item, operation.BUY)">
+                                    <v-list-tile @click="openTradeDialog(props.item, operation.BUY)">
                                         <v-list-tile-title>
                                             <v-icon color="primary" small>fas fa-plus</v-icon>
                                             Купить
                                         </v-list-tile-title>
                                     </v-list-tile>
-                                    <v-list-tile @click.stop="openTradeDialog(props.item, operation.SELL)">
+                                    <v-list-tile @click="openTradeDialog(props.item, operation.SELL)">
                                         <v-list-tile-title>
                                             <v-icon color="primary" small>fas fa-minus</v-icon>
                                             Продать
                                         </v-list-tile-title>
                                     </v-list-tile>
-                                    <v-list-tile @click.stop="openTradeDialog(props.item, operation.DIVIDEND)">
+                                    <v-list-tile @click="openTradeDialog(props.item, operation.DIVIDEND)">
                                         <v-list-tile-title>
                                             <v-icon color="primary" small>fas fa-calendar-alt</v-icon>
                                             Дивиденд
