@@ -25,10 +25,10 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-container fluid>
+            <div class="section-title">Импорт сделок</div>
             <v-card>
                 <v-card-text>
                     <div class="import-wrapper">
-                        <h4 class="display-1">Импорт сделок</h4>
                         <p>
                             Здесь вы можете быстро перенести все ваши сделки в автоматическом режиме. Для этого выберите вашего брокера или торговый терминал и
                             ознакомьтесь с инструкцией по созданию файла для импорта. <a href="#/help#import">Как работает импорт?</a>
@@ -99,7 +99,9 @@ const MainStore = namespace(StoreType.MAIN);
                                             <span>
                                                 Автоматически рассчитывать комиссию для сделок
                                                 <v-tooltip content-class="custom-tooltip-wrap" :max-width="250" top>
-                                                    <i slot="activator" class="far fa-question-circle"></i>
+                                                    <sup class="custom-tooltip" slot="activator">
+                                                        <v-icon>fas fa-info-circle</v-icon>
+                                                    </sup>
                                                     <span>
                                                         Если включено, комиссия для каждой сделки по ценной бумаге будет рассчитана в соответствии
                                                         со значением фиксированной комиссии, заданной для портфеля. Если комиссия для бумаги есть в отчете
@@ -169,7 +171,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-card-text>
                     </expanded-panel>
 
-                    <v-btn color="primary" @click="uploadFile" :disabled="!selectedProvider || files.length === 0">Загрузить</v-btn>
+                    <v-btn color="primary" class="big_btn" @click="uploadFile" :disabled="!selectedProvider || files.length === 0">Загрузить</v-btn>
                 </v-card-text>
             </v-card>
         </v-container>
@@ -249,7 +251,7 @@ export class ImportPage extends UI {
         if (this.files && this.files.length && this.selectedProvider) {
             const response = await this.importService.importReport(this.selectedProvider, this.portfolio.id, this.files, this.importProviderFeatures);
             await this.handleUploadResponse(response);
-            this.files = [];
+            this.clearFiles();
         }
     }
 
@@ -310,5 +312,10 @@ export class ImportPage extends UI {
         if (this.selectedProvider === DealsImportProvider.INTELINVEST) {
             this.importProviderFeatures.createLinkedTrade = false;
         }
+        this.clearFiles();
+    }
+
+    private clearFiles(): void {
+        this.files = [];
     }
 }

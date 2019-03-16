@@ -28,7 +28,7 @@ import {CustomDialog} from "./customDialog";
 
                 <v-card-title class="headline">Заметка к бумаге {{ data.ticker }}</v-card-title>
                 <v-card-text>
-                    <v-textarea v-model="data.note"></v-textarea>
+                    <v-textarea v-model="data.note" autofocus @keydown.ctrl.enter="close(data)"></v-textarea>
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>

@@ -15,11 +15,18 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-container v-if="clientInfo && clientInfo.user" fluid>
-            <v-btn @click.stop="openDialog" color="primary" dark>
-                <v-icon>add_circle_outline</v-icon>
-                Добавить портфель
-            </v-btn>
-            <portfolios-table :portfolios="clientInfo.user.portfolios"></portfolios-table>
+            <v-layout row wrap>
+                <v-flex>
+                    <div class="section-title">Управление портфелями</div>
+                    <v-card :class="{'portfolio-settings-card portfolio-settings-card-main': true, 'portfolio-settings-card-full': true}">
+                        <v-btn @click.stop="openDialog" class="big_btn primary">
+                            Добавить портфель
+                        </v-btn>
+                    </v-card>
+
+                    <portfolios-table :portfolios="clientInfo.user.portfolios"></portfolios-table>
+                </v-flex>
+            </v-layout>
         </v-container>
     `,
     components: {PortfoliosTable}

@@ -46,6 +46,24 @@ const MainStore = namespace(StoreType.MAIN);
         <v-data-table class="data-table" :headers="headers" :items="filteredRows" item-key="stock.id"
                       :search="search" :custom-sort="customSort" :custom-filter="customFilter" hide-actions>
             <v-progress-linear slot="progress" color="blue" indeterminate></v-progress-linear>
+            <template #headerCell="props">
+                <v-tooltip v-if="props.header.tooltip" content-class="custom-tooltip-wrap" bottom>
+                    <template #activator="{ on }">
+                        <span>
+                            {{ props.header.text }}
+                        </span>
+                        <sup class="custom-tooltip" v-on="on">
+                            <v-icon>fas fa-info-circle</v-icon>
+                        </sup>
+                    </template>
+                    <span>
+                      {{ props.header.tooltip }}
+                    </span>
+                </v-tooltip>
+                <span v-else>
+                    {{ props.header.text }}
+                </span>
+            </template>
             <template #items="props">
                 <tr :class="['selectable', {'bold-row': !props.item.stock}]" @dblclick="props.expanded = !props.expanded">
                     <td>

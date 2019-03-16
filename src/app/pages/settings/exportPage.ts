@@ -19,10 +19,10 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-container fluid>
+            <div class="section-title">Экспорт сделок</div>
             <v-card>
                 <v-card-text>
                     <div class="trades-export-wrapper">
-                        <h4 class="display-1">Экспорт сделок</h4>
                         <p>
                             Выгрузите сделки вашего текущего портфеля в csv или json формате.
                             Данный файл содержит полную информацию о всех сделках и является полностью совместимым для обратного импорта в сервис.
@@ -47,8 +47,9 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-btn>
                         <div class="EmptyBox20"></div>
 
-                        <h1>Автоматический бэкап портфеля</h1>
-                        <p>Настройте автоматический бэкап портфеля. Файлы выбранных портфелей (в csv формате) будут отравляться на вашу эл почту по заданному расписанию.</p>
+                        <h3>Автоматический бэкап портфеля</h3>
+                        <p>Настройте автоматический бэкап портфеля. Файлы выбранных портфелей (в csv формате) будут отравляться на вашу эл почту по заданному
+                            расписанию.</p>
                         <div class="EmptyBox20"></div>
                         <v-data-table v-if="portfolios"
                                       :headers="headers"
@@ -57,7 +58,7 @@ const MainStore = namespace(StoreType.MAIN);
                                       v-model="selectedPortfolios"
                                       item-key="id"
                                       select-all
-                                      class="elevation-1" style="max-width: 1000px">
+                                      class="elevation-1">
                             <template #headerCell="props">
                                 <v-tooltip content-class="custom-tooltip-wrap" bottom>
                                     <span slot="activator">
@@ -78,18 +79,21 @@ const MainStore = namespace(StoreType.MAIN);
                             </template>
                         </v-data-table>
 
-                        <v-btn-toggle v-model="selectedDays" multiple dark>
-                            <v-btn v-for="day in days" :value="day" :key="day" color="info">
-                                {{ day }}
-                            </v-btn>
-                        </v-btn-toggle>
+                        <div class="margT24">
+                            <span>Присылать резервные копии по дням:</span>
+                            <v-btn-toggle v-model="selectedDays" multiple dark>
+                                <v-btn v-for="day in days" :value="day" :key="day" color="info">
+                                    {{ day }}
+                                </v-btn>
+                            </v-btn-toggle>
+                        </div>
 
                         <div class="EmptyBox20"></div>
                         <span>Отправка бэкапов осуществляется по выбранным дням в 9:30 минут.</span>
                         <div class="EmptyBox20"></div>
-                        <v-btn color="primary" @click="saveBackupSchedule" :disabled="!clientInfo.user.emailConfirmed || isDownloadNotAllowed()">
+                        <v-btn color="primary" class="big_btn" @click="saveBackupSchedule"
+                               :disabled="!clientInfo.user.emailConfirmed || isDownloadNotAllowed()">
                             Сохранить расписание
-                            <v-icon right dark>fas fa-save</v-icon>
                         </v-btn>
                         <v-tooltip v-if="!clientInfo.user.emailConfirmed || isDownloadNotAllowed()" content-class="custom-tooltip-wrap" bottom>
                             <sup class="custom-tooltip" slot="activator">
