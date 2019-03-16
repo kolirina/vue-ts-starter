@@ -99,6 +99,50 @@
     }
   }
 }
+
+.ext-info {
+  margin: 16px 20px 20px 55px;
+  font-size: 12px;
+  line-height: 26px;
+  border-collapse: collapse;
+
+  tr {
+    border: none !important;
+
+    &:hover {background: none !important;}
+
+    &:nth-child(n+2) td,
+    &:nth-child(n+2) td:first-child {
+      padding-top: 20px !important;
+    }
+
+    td {
+      vertical-align: top;
+      padding: 0 !important;
+      text-align: left !important;
+
+      &:first-child {
+        padding: 0 !important;
+      }
+
+      &:nth-child(n+2) {
+        padding-left: 60px !important;
+      }
+    }
+  }
+
+  &__item {
+    display: inline-block;
+    padding: 16px;
+    background-color: #fcfdfd;
+    text-align: left;
+
+    > span:not(.ext-info__ticker) {color: $font-color--lite}
+  }
+
+  &__ticker {color: $sidebar-blue-color}
+}
+
 // ======================= перекрываем кастомные стили
 /** Убираем нижнюю границу у заголовка таблиц */
 .theme--light.v-table thead tr:first-child {
