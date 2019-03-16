@@ -104,3 +104,8 @@
 .theme--light.v-table thead tr:first-child {
   border-bottom: none !important;
 }
+
+/** Убираем перекрытие иконки тултипа с подсказкой у столбца */
+.v-datatable thead th.column.sortable:focus .v-icon, .v-datatable thead th.column.sortable:hover .v-icon {
+  opacity: 0 !important;
+}

@@ -9,55 +9,215 @@ export class TablesService {
     headers: TableHeaders = {
         stockTable: [
             {text: "", align: "left", ghost: true, sortable: false, value: "", active: true, width: "50"},
-            {text: "Компания", align: "left", value: TABLE_HEADERS.COMPANY, active: true, width: "200"},
-            {text: "Тикер", align: "left", value: TABLE_HEADERS.TICKER, active: false},
-            {text: "Количество", align: "right", value: TABLE_HEADERS.QUANTITY, active: false},
-            {text: "Ср. цена", align: "right", value: TABLE_HEADERS.AVG_BUY, sortable: false, active: true},
-            {text: "Тек. цена", align: "right", value: TABLE_HEADERS.CURR_PRICE, sortable: false, active: true},
-            {text: "Стоимость покупок", align: "right", value: TABLE_HEADERS.B_COST, active: false},
-            {text: "Стоимость продаж", align: "right", value: TABLE_HEADERS.S_COST, active: false},
-            {text: "Тек. стоимость", align: "right", value: TABLE_HEADERS.CURR_COST, active: true},
-            {text: "Дивиденды", align: "right", value: TABLE_HEADERS.PROFIT_FROM_DIVIDENDS, active: false},
-            {text: "Прибыль по дивидендам, %", align: "right", value: TABLE_HEADERS.PROFIT_FROM_DIVIDENDS_PERCENT, active: false},
-            {text: "Курс. прибыль", align: "right", value: TABLE_HEADERS.RATE_PROFIT, active: false},
-            {text: "Курс. прибыль, %", align: "right", value: TABLE_HEADERS.RATE_PROFIT_PERCENT, active: false},
-            {text: "Прибыль по сделкам", align: "right", value: TABLE_HEADERS.EXCHANGE_PROFIT, active: false},
-            {text: "Прибыль по сделкам, %", align: "right", value: TABLE_HEADERS.EXCHANGE_PROFIT_PERCENT, active: false},
-            {text: "Прибыль", align: "right", value: TABLE_HEADERS.PROFIT, active: true},
-            {text: "Прибыль, %", align: "right", value: TABLE_HEADERS.PERC_PROFIT, active: true},
-            {text: "Доходность, %", align: "right", value: TABLE_HEADERS.YEAR_YIELD, active: false},
-            {text: "P/L за день", align: "right", value: TABLE_HEADERS.DAILY_PL, active: false},
-            {text: "P/L за день, %", align: "right", value: TABLE_HEADERS.DAILY_PL_PERCENT, active: false},
-            {text: "Комиссия", align: "right", value: TABLE_HEADERS.SUMM_FEE, active: false},
-            {text: "Тек. доля", align: "right", value: TABLE_HEADERS.PERC_CURR_SHARE, active: true},
+            {text: "Компания", align: "left", value: TABLE_HEADERS.COMPANY, active: true, width: "120"},
+            {text: "Тикер", align: "left", value: TABLE_HEADERS.TICKER, active: false, width: "90"},
+            {text: "Количество", align: "right", value: TABLE_HEADERS.QUANTITY, active: false, width: "60"},
+            {
+                text: "Ср. цена",
+                align: "right",
+                value: TABLE_HEADERS.AVG_BUY,
+                sortable: false,
+                active: true,
+                width: "65",
+                tooltip: StockTooltips[TABLE_HEADERS.AVG_BUY]
+            },
+            {
+                text: "Тек. цена",
+                align: "right",
+                value: TABLE_HEADERS.CURR_PRICE,
+                sortable: false,
+                active: true,
+                width: "80",
+                tooltip: StockTooltips[TABLE_HEADERS.CURR_PRICE]
+            },
+            {text: "Стоимость покупок", align: "right", value: TABLE_HEADERS.B_COST, active: false, width: "80", tooltip: StockTooltips[TABLE_HEADERS.B_COST]},
+            {text: "Стоимость продаж", align: "right", value: TABLE_HEADERS.S_COST, active: false, width: "90", tooltip: StockTooltips[TABLE_HEADERS.S_COST]},
+            {
+                text: "Тек. стоимость",
+                align: "right",
+                value: TABLE_HEADERS.CURR_COST,
+                active: true,
+                width: "80",
+                tooltip: StockTooltips[TABLE_HEADERS.CURR_COST]
+            },
+            {
+                text: "Дивиденды",
+                align: "right",
+                value: TABLE_HEADERS.PROFIT_FROM_DIVIDENDS,
+                active: false,
+                width: "80",
+                tooltip: StockTooltips[TABLE_HEADERS.PROFIT_FROM_DIVIDENDS]
+            },
+            {
+                text: "Прибыль по дивидендам, %",
+                align: "right",
+                value: TABLE_HEADERS.PROFIT_FROM_DIVIDENDS_PERCENT,
+                active: false,
+                width: "80",
+                tooltip: StockTooltips[TABLE_HEADERS.PROFIT_FROM_DIVIDENDS_PERCENT]
+            },
+            {
+                text: "Курс. прибыль",
+                align: "right",
+                value: TABLE_HEADERS.RATE_PROFIT,
+                active: false,
+                width: "80",
+                tooltip: StockTooltips[TABLE_HEADERS.RATE_PROFIT]
+            },
+            {
+                text: "Курс. прибыль, %",
+                align: "right",
+                value: TABLE_HEADERS.RATE_PROFIT_PERCENT,
+                active: false,
+                width: "80",
+                tooltip: StockTooltips[TABLE_HEADERS.RATE_PROFIT_PERCENT]
+            },
+            {
+                text: "Прибыль по сделкам",
+                align: "right",
+                value: TABLE_HEADERS.EXCHANGE_PROFIT,
+                active: false,
+                width: "80",
+                tooltip: StockTooltips[TABLE_HEADERS.EXCHANGE_PROFIT]
+            },
+            {
+                text: "Прибыль по сделкам, %",
+                align: "right",
+                value: TABLE_HEADERS.EXCHANGE_PROFIT_PERCENT,
+                active: false,
+                width: "80",
+                tooltip: StockTooltips[TABLE_HEADERS.EXCHANGE_PROFIT_PERCENT]
+            },
+            {text: "Прибыль", align: "right", value: TABLE_HEADERS.PROFIT, active: true, width: "80", tooltip: StockTooltips[TABLE_HEADERS.PROFIT]},
+            {
+                text: "Прибыль, %",
+                align: "right",
+                value: TABLE_HEADERS.PERC_PROFIT,
+                active: true,
+                width: "60",
+                tooltip: StockTooltips[TABLE_HEADERS.PERC_PROFIT]
+            },
+            {
+                text: "Доходность, %",
+                align: "right",
+                value: TABLE_HEADERS.YEAR_YIELD,
+                active: false,
+                width: "65",
+                tooltip: StockTooltips[TABLE_HEADERS.YEAR_YIELD]
+            },
+            {text: "P/L за день", align: "right", value: TABLE_HEADERS.DAILY_PL, active: false, width: "60", tooltip: CommonTooltips[TABLE_HEADERS.DAILY_PL]},
+            {
+                text: "P/L за день, %",
+                align: "right",
+                value: TABLE_HEADERS.DAILY_PL_PERCENT,
+                active: false,
+                width: "60",
+                tooltip: CommonTooltips[TABLE_HEADERS.DAILY_PL_PERCENT]
+            },
+            {text: "Комиссия", align: "right", value: TABLE_HEADERS.SUMM_FEE, active: false, width: "60", tooltip: StockTooltips[TABLE_HEADERS.SUMM_FEE]},
+            {text: "Тек. доля", align: "right", value: TABLE_HEADERS.PERC_CURR_SHARE, active: true, width: "50"},
             {text: "Действия", align: "center", ghost: true, value: "actions", sortable: false, width: "25", active: true},
         ],
+
         bondTable: [
-            {text: "", align: "left", ghost: true, sortable: false, value: "", active: true},
-            {text: "Компания", align: "left", value: TABLE_HEADERS.COMPANY, active: true},
-            {text: "Тикер", align: "left", value: TABLE_HEADERS.TICKER, active: false},
-            {text: "Количество", align: "right", value: TABLE_HEADERS.QUANTITY, active: false},
-            {text: "Ср. цена", align: "right", value: TABLE_HEADERS.AVG_BUY, sortable: false, active: true},
-            {text: "Тек. цена", align: "right", value: TABLE_HEADERS.CURR_PRICE, sortable: false, active: true},
-            {text: "Стоимость покупок", align: "right", value: TABLE_HEADERS.B_COST, active: false},
-            {text: "Стоимость продаж", align: "right", value: TABLE_HEADERS.S_COST, active: false},
-            {text: "Тек. стоимость", align: "right", value: TABLE_HEADERS.CURR_COST, active: true},
-            {text: "Средний номинал", align: "right", value: TABLE_HEADERS.NOMINAL, sortable: false, active: false},
-            {text: "Прибыль от купонов", align: "right", value: TABLE_HEADERS.PROFIT_FROM_COUPONS, active: false},
-            {text: "Прибыль от купонов, %", align: "right", value: TABLE_HEADERS.PROFIT_FROM_COUPONS_PERCENT, active: false},
-            {text: "Прибыль по сделкам", align: "right", value: TABLE_HEADERS.EXCHANGE_PROFIT, active: false},
-            {text: "Прибыль по сделкам, %", align: "right", value: TABLE_HEADERS.EXCHANGE_PROFIT_PERCENT, active: false},
-            {text: "Курс. прибыль", align: "right", value: TABLE_HEADERS.RATE_PROFIT, active: false},
-            {text: "Курс. прибыль, %", align: "right", value: TABLE_HEADERS.RATE_PROFIT_PERCENT, active: false},
-            {text: "Выплаченный НКД", align: "right", value: TABLE_HEADERS.BUY_NKD, active: false},
-            {text: "Полученный НКД", align: "right", value: TABLE_HEADERS.SELL_NKD, active: false},
-            {text: "Прибыль", align: "right", value: TABLE_HEADERS.PROFIT, active: true},
-            {text: "Прибыль, %", align: "right", value: TABLE_HEADERS.PERC_PROFIT, active: true},
-            {text: "Доходность, %", align: "right", value: TABLE_HEADERS.YEAR_YIELD, active: false},
-            {text: "P/L за день", align: "right", value: TABLE_HEADERS.DAILY_PL, active: false},
-            {text: "P/L за день, %", align: "right", value: TABLE_HEADERS.DAILY_PL_PERCENT, active: false},
-            {text: "Комиссия", align: "right", value: TABLE_HEADERS.SUMM_FEE, active: false},
-            {text: "Тек. доля", align: "right", value: TABLE_HEADERS.PERC_CURR_SHARE, active: true},
+            {text: "", align: "left", ghost: true, sortable: false, value: "", active: true, width: "50"},
+            {text: "Компания", align: "left", value: TABLE_HEADERS.COMPANY, active: true, width: "135"},
+            {text: "Тикер", align: "left", value: TABLE_HEADERS.TICKER, active: false, width: "90"},
+            {text: "Количество", align: "right", value: TABLE_HEADERS.QUANTITY, active: false, width: "60"},
+            {
+                text: "Ср. цена",
+                align: "right",
+                value: TABLE_HEADERS.AVG_BUY,
+                sortable: false,
+                active: true,
+                width: "65",
+                tooltip: BondTooltips[TABLE_HEADERS.AVG_BUY]
+            },
+            {
+                text: "Тек. цена",
+                align: "right",
+                value: TABLE_HEADERS.CURR_PRICE,
+                sortable: false,
+                active: true,
+                width: "65",
+                tooltip: BondTooltips[TABLE_HEADERS.CURR_PRICE]
+            },
+            {text: "Стоимость покупок", align: "right", value: TABLE_HEADERS.B_COST, active: false, width: "80", tooltip: BondTooltips[TABLE_HEADERS.B_COST]},
+            {text: "Стоимость продаж", align: "right", value: TABLE_HEADERS.S_COST, active: false, width: "80", tooltip: BondTooltips[TABLE_HEADERS.S_COST]},
+            {text: "Тек. стоимость", align: "right", value: TABLE_HEADERS.CURR_COST, active: true, width: "80", tooltip: BondTooltips[TABLE_HEADERS.CURR_COST]},
+            {
+                text: "Средний номинал",
+                align: "right",
+                value: TABLE_HEADERS.NOMINAL,
+                sortable: false,
+                active: false,
+                width: "65",
+                tooltip: BondTooltips[TABLE_HEADERS.NOMINAL]
+            },
+            {
+                text: "Прибыль от купонов",
+                align: "right",
+                value: TABLE_HEADERS.PROFIT_FROM_COUPONS,
+                active: false,
+                width: "65",
+                tooltip: BondTooltips[TABLE_HEADERS.PROFIT_FROM_COUPONS]
+            },
+            {
+                text: "Прибыль от купонов, %",
+                align: "right",
+                value: TABLE_HEADERS.PROFIT_FROM_COUPONS_PERCENT,
+                active: false,
+                width: "65",
+                tooltip: BondTooltips[TABLE_HEADERS.PROFIT_FROM_COUPONS_PERCENT]
+            },
+            {
+                text: "Прибыль по сделкам",
+                align: "right",
+                value: TABLE_HEADERS.EXCHANGE_PROFIT,
+                active: false,
+                width: "65",
+                tooltip: BondTooltips[TABLE_HEADERS.EXCHANGE_PROFIT]
+            },
+            {
+                text: "Прибыль по сделкам, %",
+                align: "right",
+                value: TABLE_HEADERS.EXCHANGE_PROFIT_PERCENT,
+                active: false,
+                width: "65",
+                tooltip: BondTooltips[TABLE_HEADERS.EXCHANGE_PROFIT_PERCENT]
+            },
+            {
+                text: "Курс. прибыль",
+                align: "right",
+                value: TABLE_HEADERS.RATE_PROFIT,
+                active: false,
+                width: "65",
+                tooltip: BondTooltips[TABLE_HEADERS.RATE_PROFIT]
+            },
+            {
+                text: "Курс. прибыль, %",
+                align: "right",
+                value: TABLE_HEADERS.RATE_PROFIT_PERCENT,
+                active: false,
+                width: "65",
+                tooltip: BondTooltips[TABLE_HEADERS.RATE_PROFIT_PERCENT]
+            },
+            {text: "Выплаченный НКД", align: "right", value: TABLE_HEADERS.BUY_NKD, active: false, width: "85", tooltip: BondTooltips[TABLE_HEADERS.BUY_NKD]},
+            {text: "Полученный НКД", align: "right", value: TABLE_HEADERS.SELL_NKD, active: false, width: "85", tooltip: BondTooltips[TABLE_HEADERS.SELL_NKD]},
+            {text: "Прибыль", align: "right", value: TABLE_HEADERS.PROFIT, active: true, width: "80", tooltip: BondTooltips[TABLE_HEADERS.PROFIT]},
+            {text: "Прибыль, %", align: "right", value: TABLE_HEADERS.PERC_PROFIT, active: true, width: "65", tooltip: BondTooltips[TABLE_HEADERS.PERC_PROFIT]},
+            {text: "Доходность, %", align: "right", value: TABLE_HEADERS.YEAR_YIELD, active: false, width: "65", tooltip: BondTooltips[TABLE_HEADERS.YEAR_YIELD]},
+            {text: "P/L за день", align: "right", value: TABLE_HEADERS.DAILY_PL, active: false, width: "60", tooltip: CommonTooltips[TABLE_HEADERS.DAILY_PL]},
+            {
+                text: "P/L за день, %",
+                align: "right",
+                value: TABLE_HEADERS.DAILY_PL_PERCENT,
+                active: false,
+                width: "60",
+                tooltip: CommonTooltips[TABLE_HEADERS.DAILY_PL_PERCENT]
+            },
+            {text: "Комиссия", align: "right", value: TABLE_HEADERS.SUMM_FEE, active: false, width: "65", tooltip: BondTooltips[TABLE_HEADERS.SUMM_FEE]},
+            {text: "Тек. доля", align: "right", value: TABLE_HEADERS.PERC_CURR_SHARE, active: true, width: "50", tooltip: BondTooltips[TABLE_HEADERS.PERC_CURR_SHARE]},
             {text: "Действия", align: "center", value: "actions", ghost: true, sortable: false, width: "25", active: true},
         ],
         tradesTable: [
@@ -206,3 +366,78 @@ export interface TableHeadersState {
     signedTotal?: boolean;
     totalWithoutFee?: boolean;
 }
+
+/** Общие тултипы */
+export const CommonTooltips: { [key: string]: string } = {
+    [TABLE_HEADERS.DAILY_PL]: "Это дневная прибыль/убыток, по отношению к предыдущему дню.",
+    [TABLE_HEADERS.DAILY_PL_PERCENT]: "Это дневная прибыль/убыток, по отношению к предыдущему дню в процентах.",
+};
+
+/** Тултипы для акций */
+export const StockTooltips: { [key: string]: string } = {
+    [TABLE_HEADERS.AVG_BUY]: "Средняя цена покупки. Если акция несколько раз покупалась и продавалась, " +
+    "                        то средняя цена будет посчитана среди тех бумаг, которые остались сейчас в портфеле. " +
+    "                        Учет оставшихся в портфеле бумаг ведется по методу FIFO (первая купленная бумага продается в первую очередь).",
+    [TABLE_HEADERS.CURR_PRICE]: "Текущая биржевая цена акции. Если торги завершились, то отображается цена закрытия. " +
+    "                        Данные предоставляются с задержкой в 15 минут. Для архивных (неторгуемых) акций текущая цена будет всегда 0.",
+    [TABLE_HEADERS.B_COST]: "Сумма всех денежных средств, затраченных на покупку акции в портфель за все время. Включает в себя комиссию брокера.",
+    [TABLE_HEADERS.S_COST]: "Сумма всех денежных средств, вырученных от продаж акции из портфеля за все время. Включает в себя комиссию брокера.",
+    [TABLE_HEADERS.CURR_COST]: "Стоимость остатка акций в портфеле на данный момент. Рассчитывается исходя из текущей биржевой цены и количества.",
+    [TABLE_HEADERS.PROFIT_FROM_DIVIDENDS]: "Сумма всех дивидендных выплат по акции. Представляет собой дивидендную прибыль от владения бумагой.",
+    [TABLE_HEADERS.PROFIT_FROM_DIVIDENDS_PERCENT]: "Прибыль по дивидендам, или дивидендная доходность акции. " +
+    "                        Рассчитывается как сумма всех дивидендных выплат по отношению к средневзвешенной стоимости вложений в акцию.",
+    [TABLE_HEADERS.RATE_PROFIT]: "Прибыль, образованная за счет изменения биржевой цены акций, находящихся на данный момент в портфеле (открытые позиции)." +
+    "                        Это та прибыль, которая будет зафиксирована, если закрыть позицию, т.е. продать все акции по текущей цене." +
+    "                        Следует отличать эту прибыль от Прибыли по сделкам, которая отражает зафиксированную ранее прибыль от закрытия позиций.",
+    [TABLE_HEADERS.RATE_PROFIT_PERCENT]: "Это курсовая прибыль, выраженная в процентах по отношению к стоимости покупок открытых на данный момент позиций." +
+    "                        Иначе говоря, это доходность от изменения цены открытой позиции.",
+    [TABLE_HEADERS.EXCHANGE_PROFIT]: "Это прибыль, зафиксированная ранее при закрытии позиции по акции, т.е. при её продаже когда цена изменилась. " +
+    "                        Прибыль по сделкам отражает финансовый результат уже совершенных сделок покупки и продажи, " +
+    "                        и не зависит от текущей цены открытых на данный момент позиций. " +
+    "                        Для отслеживания курсовой прибыли по открытой позиции предназначена колонка \"Курсовая прибыль\".",
+    [TABLE_HEADERS.EXCHANGE_PROFIT_PERCENT]: "Это прибыль по сделкам, выраженная в процентах по отношению к средневзвешенной стоимости вложений в акцию. " +
+    "                        Иначе говоря, это доходность от закрытых позиций по акции.",
+    [TABLE_HEADERS.PROFIT]: "Это суммарная прибыль по акции за все время работы портфеля." +
+    "                        Она включает в себя: прибыль по уже закрытым сделкам, курсовую прибыль, дивиденды, комиссию брокера." +
+    "                        Для отслеживания прибыли от изменения биржевой цены открытой позиции предназначена колонка \"Курсовая прибыль\".",
+    [TABLE_HEADERS.PERC_PROFIT]: "Это суммарная прибыль, выраженная в процентах по отношению к средневзвешенной стоимости вложений в акцию.",
+    [TABLE_HEADERS.YEAR_YIELD]: "Это доходность в процентах годовых, посчитанная по отношению к средневзвешенной сумме " +
+    "                        вложений в данную бумагу. Рассчитывается исходя из прибыли по акции с даты первой сделки по текущий момент." +
+    "                        Например, если акция за полгода в портфеле принесла 8%, то её годовая доходность будет 16%.",
+    [TABLE_HEADERS.SUMM_FEE]: "Это сумма всех комиссий, уплаченных брокеру за время работы с акцией.",
+};
+
+/** Тултипы для облигаций */
+export const BondTooltips: { [key: string]: string } = {
+    [TABLE_HEADERS.AVG_BUY]: "Средняя цена покупки облигации.",
+    [TABLE_HEADERS.CURR_PRICE]: "Текущая биржевая цена облигации. Если торги завершились, то отображается цена закрытия. " +
+    "                        Данные предоставляются с задержкой в 15 минут. Для погашенных облигаций текущая цена будет всегда 0.",
+    [TABLE_HEADERS.B_COST]: "Сумма всех денежных средств, затраченных на покупку облигации в портфель за все время. " +
+    "                        Включает в себя комиссию брокера.",
+    [TABLE_HEADERS.S_COST]: "Сумма всех денежных средств, вырученных от продаж облигации из портфеля за все время. " +
+    "                        Включает в себя комиссию брокера.",
+    [TABLE_HEADERS.CURR_COST]: "Стоимость остатка облигаций в портфеле на данный момент. Рассчитывается исходя из текущей биржевой цены и количества.",
+    [TABLE_HEADERS.NOMINAL]: "Средний номинал облигации.",
+    [TABLE_HEADERS.PROFIT_FROM_COUPONS]: "Сумма всех купонных выплат по облигации.",
+    [TABLE_HEADERS.PROFIT_FROM_COUPONS_PERCENT]: "Процентная прибыль по выплаченным купонам, или купонная доходность облигации. " +
+    "                        Рассчитывается как сумма всех купонных выплат по отношению к средневзвешенной стоимости вложений в облигацию.",
+    [TABLE_HEADERS.EXCHANGE_PROFIT]: "Это прибыль, зафиксированная ранее при закрытии позиции по облигации, т.е. при её продаже когда цена изменилась. " +
+    "                        Прибыль по сделкам отражает финансовый результат уже совершенных сделок покупки и продажи, " +
+    "                        и не зависит от текущей цены открытых на данный момент позиций. " +
+    "                        Для отслеживания курсовой прибыли по открытой позиции предназначена колонка \"Курсовая прибыль\".",
+    [TABLE_HEADERS.EXCHANGE_PROFIT_PERCENT]: "Это прибыль по сделкам, выраженная в процентах по отношению к средневзвешенной стоимости вложений в облигацию.",
+    [TABLE_HEADERS.RATE_PROFIT]: "Курсовая прибыль это доходность от изменения стоимости открытой позиции. " +
+    "                        Здесь же учитываются полученные амортизационные начисления.",
+    [TABLE_HEADERS.RATE_PROFIT_PERCENT]: "Это курсовая прибыль, выраженная в процентах по отношению к стоимости покупок открытых на данный момент позиций. " +
+    "                        Иначе говоря, это доходность от изменения цены открытой позиции.",
+    [TABLE_HEADERS.BUY_NKD]: "Суммарный выплаченный вами НКД при покупке облигаций.",
+    [TABLE_HEADERS.SELL_NKD]: "Суммарный полученный вами НКД при продаже облигаций.",
+    [TABLE_HEADERS.PROFIT]: "Это суммарная прибыль по облигации в портфеле. Она включает в себя прибыль связанную с изменением " +
+    "                        биржевого курса облигации, прибыль от сделок, купонные выплаты, потенциальный НКД, " +
+    "                        который вы получите/выплатите при закрытии позиции, полученный и выплаченный НКД, за вычетом всех комиссий.",
+    [TABLE_HEADERS.PERC_PROFIT]: "Это суммарная прибыль, выраженная в процентах по отношению к средневзвешенной стоимости вложений в облигацию.",
+    [TABLE_HEADERS.YEAR_YIELD]: "Это доходность в процентах годовых, посчитанная по отношению к средневзвешенной сумме " +
+    "                        вложений в данную бумагу (без учета денег). Рассчитывается исходя из прибыли по облигации с даты первой сделки по текущий момент. " +
+    "                        Например, если облигация за полгода в портфеле принесла 8%, то её годовая доходность будет 16%.",
+    [TABLE_HEADERS.SUMM_FEE]: "Это сумма всех комиссий, уплаченных брокеру за время работы с облигацией.",
+};

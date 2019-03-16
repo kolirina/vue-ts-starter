@@ -225,6 +225,8 @@ export type TableHeader = {
     active?: boolean,
     /** Определяет показ элемента в диалоге переключения калонок. */
     ghost?: boolean,
+    /** Текст подсказки к столбцу */
+    tooltip?: string
 };
 
 export type DashboardData = {
