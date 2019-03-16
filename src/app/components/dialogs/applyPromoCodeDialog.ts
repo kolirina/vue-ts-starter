@@ -29,20 +29,18 @@ import {BtnReturn, CustomDialog} from "./customDialog";
 @Component({
     // language=Vue
     template: `
-        <v-dialog v-model="showed" persistent max-width="300px">
-            <v-card class="dialog-wrap">
-                <v-icon class="closeDialog" @click.native="close">close</v-icon>
-
-                <v-card-title class="headline">Введите промокод</v-card-title>
-                <v-card-text>
+        <v-dialog v-model="showed" persistent max-width="600px">
+            <v-icon class="closeDialog" @click.native="close">close</v-icon>
+            <v-card class="dialog-wrap enterPromoCode-dialog">
+                <div class="enterPromoCode-dialog__content">
+                    <div class="enterPromoCode-dialog__title">Ввод промокода</div>
                     <v-text-field v-model.trim="promoCode" maxlength="10" size="10" @keypress.enter="applyPromoCode"
                                   label="Введите промокод" clearable></v-text-field>
-                </v-card-text>
-                <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn color="primary" :disabled="!promoCode" @click.native="applyPromoCode">Применить</v-btn>
-                    <v-btn @click.native="close('NO')">Отмена</v-btn>
-                </v-card-actions>
+
+                    <v-card-actions>
+                        <v-btn :disabled="!promoCode" class="big_btn" @click.native="applyPromoCode">Применить</v-btn>
+                    </v-card-actions>
+                </div>
             </v-card>
         </v-dialog>
     `
