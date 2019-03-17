@@ -152,6 +152,77 @@ const MainStore = namespace(StoreType.MAIN);
             </template>
 
             <template #expand="props">
+                <!-- todo вывести значения
+                <table class="ext-info">
+                    <tr>
+                        <td>
+                            <div class="ext-info__item">
+                                В портфеле {{ props.item.ownedDays }} {{ props.item.ownedDays | declension("день", "дня", "дней")}}, c {{ props.item.firstBuy | date }}<br>
+                                Дата погашения - {{ props.item.bond.matdate }}<br>
+                                Количество - 22
+                            </div>
+                        </td>
+                        <td>
+                            <div class="ext-info__item">
+                                Номинал покупки - {{ props.item.nominal | amount(true) }}<br>
+                                Дисконт - {{ props.item.bond.amortization | amount(true) }}<br>
+                                Купон - {{ props.item.bond.couponvalue | amount(true) }}<br>
+                                След купон - {{ props.item.bond.nextcoupon | date }}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="ext-info__item">
+                                Средняя цена - 122 442 <span>RUB</span><br>
+                                Средний номинал - 5 <span>RUB</span><br>
+                                Текущая цена - 0 <span>RUB</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="ext-info__item">
+                                Прибыль от купонов - 47 777 <span>RUB</span><br>
+                                Прибыль от купонов - 47 <span>%</span><br>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="ext-info__item">
+                                Прибыль по сделкам - 47 777 <span>RUB</span><br>
+                                Прибыль по сделкам - 47 <span>%</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="ext-info__item">
+                                Курс.прибыль - 2 248.172 <span>RUB</span><br>
+                                Курс.прибыль - 1.31 <span>%</span><br>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="ext-info__item">
+                                НКД - {{ props.item.bond.accruedint | amount(true) }}<br>
+                                Выплаченный НКД - 16 788,648 <span>RUB</span><br>
+                                Полученный НКД - 16 788,648 <span>RUB</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="ext-info__item">
+                                Доходность - 1.31 <span>%</span><br>
+                                P/L за день - 2 248.172 <span>RUB</span><br>
+                                P/L за день - 1.31 <span>%</span><br>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="ext-info__item">
+                                Стоимость покупок - 122 442 <span>RUB</span><br>
+                                Стоимость продаж - 0 <span>RUB</span><br>
+                                Коммиссия - 834 <span>RUB</span>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                -->
                 <table-extended-info :headers="headers" :table-name="TABLES_NAME.BOND"
                                      :asset="AssetType.BOND" :row-item="props.item" :ticker="props.item.bond.ticker">
                     <div class="extended-info__cell label">Время нахождения в портфеле</div>
