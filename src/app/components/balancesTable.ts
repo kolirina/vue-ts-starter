@@ -7,6 +7,7 @@ import {TradeService} from "../services/tradeService";
 import {BigMoney} from "../types/bigMoney";
 import {Operation} from "../types/operation";
 import {AssetRow, Portfolio, StockPortfolioRow, TableHeader} from "../types/types";
+import {TradeUtils} from "../utils/tradeUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {ConfirmDialog} from "./dialogs/confirmDialog";
@@ -17,13 +18,13 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-data-table :headers="headers" :items="rows" item-key="id" hide-actions>
+        <v-data-table class="data-table" :headers="headers" :items="rows" item-key="id" :custom-sort="customSort" hide-actions>
             <v-progress-linear slot="progress" color="blue" indeterminate></v-progress-linear>
             <template #items="props">
                 <tr class="selectable">
-                    <td><span>{{ props.item.company}}</span>
+                    <td class="text-xs-left"><span>{{ props.item.company}}</span>
                     </td>
-                    <td>
+                    <td class="text-xs-left">
                         <stock-link v-if="props.item.ticker" :ticker="props.item.ticker"></stock-link>
                     </td>
                     <td class="text-xs-right">{{ props.item.quantity }}</td>
@@ -53,12 +54,12 @@ export class BalancesTable extends UI {
     private operation = Operation;
 
     private headers: TableHeader[] = [
-        {text: "Актив", align: "left", sortable: false, value: "company"},
-        {text: "Тикер", align: "left", value: "ticker"},
-        {text: "Количество", align: "right", value: "quantity", width: "200"},
-        {text: "Ср. цена", align: "right", value: "avgBuy", width: "200"},
-        {text: "Тек. стоимость", align: "right", value: "currCost", sortable: false, width: "200"},
-        {text: "Действия", align: "right", value: "actions", sortable: false, width: "200"}
+        {text: "Актив", align: "left", sortable: false, value: "company", width: "80"},
+        {text: "Тикер", align: "left", value: "ticker", width: "45"},
+        {text: "Количество", align: "right", value: "quantity", width: "60"},
+        {text: "Ср. цена", align: "right", value: "avgBuy", width: "60"},
+        {text: "Тек. стоимость", align: "right", value: "currCost", width: "65"},
+        {text: "Действия", align: "center", value: "actions", sortable: false, width: "25"}
     ];
 
     @Prop({default: [], required: true})
@@ -66,6 +67,10 @@ export class BalancesTable extends UI {
 
     @Prop({default: [], required: true})
     private assets: AssetRow[];
+
+    created(): void {
+        this.prepareRows();
+    }
 
     private async deleteAllTrades(stockRow: BalancesTableRow): Promise<void> {
         const result = await new ConfirmDialog().show(`Вы уверены, что хотите удалить все сделки по ценной бумаге?`);
@@ -81,6 +86,14 @@ export class BalancesTable extends UI {
 
     @Watch("portfolio")
     private onPortfolioChange(): void {
+        this.prepareRows();
+    }
+
+    private get rows(): BalancesTableRow[] {
+        return this.balancesTableRow;
+    }
+
+    private prepareRows(): void {
         this.balancesTableRow = [];
         for (const row of this.stocks) {
             this.balancesTableRow.push({
@@ -131,56 +144,8 @@ export class BalancesTable extends UI {
         }
     }
 
-    private get rows(): BalancesTableRow[] {
-        this.balancesTableRow = [];
-        for (const row of this.stocks) {
-            this.balancesTableRow.push({
-                id: row.id,
-                type: "STOCK",
-                company: row.stock.shortname,
-                ticker: row.stock.ticker,
-                quantity: row.quantity,
-                avgBuy: row.avgBuy,
-                currCost: row.currCost
-            });
-        }
-        for (const row of this.assets) {
-            if (row.assetType === "MONEY") {
-                const currCost = new BigMoney(row.currCost);
-                if (currCost.currency === "EUR") {
-                    this.balancesTableRow.push({
-                        id: "",
-                        type: "EURO",
-                        company: "Евро",
-                        ticker: "",
-                        quantity: null,
-                        avgBuy: "",
-                        currCost: row.currCost
-                    });
-                } else if (currCost.currency === "RUB") {
-                    this.balancesTableRow.push({
-                        id: "",
-                        type: "RUBLE",
-                        company: "Рубль",
-                        ticker: "",
-                        quantity: null,
-                        avgBuy: "",
-                        currCost: row.currCost
-                    });
-                } else if (currCost.currency === "USD") {
-                    this.balancesTableRow.push({
-                        id: "",
-                        type: "DOLLAR",
-                        company: "Доллар США",
-                        ticker: "",
-                        quantity: null,
-                        avgBuy: "",
-                        currCost: row.currCost
-                    });
-                }
-            }
-        }
-        return this.balancesTableRow;
+    private customSort(items: BalancesTableRow[], index: string, isDesc: boolean): BalancesTableRow[] {
+        return TradeUtils.simpleSort(items, index, isDesc);
     }
 }
 
