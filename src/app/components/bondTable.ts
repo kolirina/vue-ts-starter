@@ -21,7 +21,6 @@ import {BtnReturn} from "./dialogs/customDialog";
 import {EditShareNoteDialog, EditShareNoteDialogData} from "./dialogs/editShareNoteDialog";
 import {ShareTradesDialog} from "./dialogs/shareTradesDialog";
 import {PortfolioRowFilter} from "./portfolioRowsTableFilter";
-import {TableExtendedInfo} from "./tableExtendedInfo";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -152,109 +151,88 @@ const MainStore = namespace(StoreType.MAIN);
             </template>
 
             <template #expand="props">
-                <!-- todo вывести значения
-                <table class="ext-info">
+                <table class="ext-info" @click.stop>
                     <tr>
                         <td>
                             <div class="ext-info__item">
+                                Тикер
+                                <span class="ext-info__ticker">
+                                    <bond-link :ticker="props.item.bond.ticker"></bond-link>
+                                </span><br>
                                 В портфеле {{ props.item.ownedDays }} {{ props.item.ownedDays | declension("день", "дня", "дней")}}, c {{ props.item.firstBuy | date }}<br>
                                 Дата погашения - {{ props.item.bond.matdate }}<br>
-                                Количество - 22
+                                Количество {{ props.item.quantity }}
                             </div>
                         </td>
                         <td>
                             <div class="ext-info__item">
-                                Номинал покупки - {{ props.item.nominal | amount(true) }}<br>
-                                Дисконт - {{ props.item.bond.amortization | amount(true) }}<br>
-                                Купон - {{ props.item.bond.couponvalue | amount(true) }}<br>
-                                След купон - {{ props.item.bond.nextcoupon | date }}
+                                Номинал покупки {{ props.item.nominal | amount(true) }} <span>{{ portfolioCurrency }}</span><br>
+                                Дисконт {{ props.item.amortization | amount(true) }} <span>{{ props.item.bond.currency }}</span><br>
+                                <template v-if="!props.item.bond.isRepaid">Купон {{ props.item.bond.couponvalue | amount(true) }}
+                                    <span>{{ props.item.bond.currency }}</span></template>
+                                <br>
+                                <template v-if="!props.item.bond.isRepaid">След купон {{ props.item.bond.nextcoupon | date }}
+                                    <span>{{ props.item.bond.currency }}</span></template>
+                                <br>
+                                <template v-if="props.item.bond.isRepaid">Статус Погашена</template>
+                                <br>
                             </div>
                         </td>
                         <td>
                             <div class="ext-info__item">
-                                Средняя цена - 122 442 <span>RUB</span><br>
-                                Средний номинал - 5 <span>RUB</span><br>
-                                Текущая цена - 0 <span>RUB</span>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="ext-info__item">
-                                Прибыль от купонов - 47 777 <span>RUB</span><br>
-                                Прибыль от купонов - 47 <span>%</span><br>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="ext-info__item">
-                                Прибыль по сделкам - 47 777 <span>RUB</span><br>
-                                Прибыль по сделкам - 47 <span>%</span>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="ext-info__item">
-                                Курс.прибыль - 2 248.172 <span>RUB</span><br>
-                                Курс.прибыль - 1.31 <span>%</span><br>
+                                Средняя цена {{ props.item.avgBuy | number }} <span>%</span><br>
+                                Средний номинал {{props.item.nominal | amount}} <span>{{ portfolioCurrency }}</span><br>
+                                Текущая цена {{ props.item.currPrice | number }} <span>%</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
                             <div class="ext-info__item">
-                                НКД - {{ props.item.bond.accruedint | amount(true) }}<br>
-                                Выплаченный НКД - 16 788,648 <span>RUB</span><br>
-                                Полученный НКД - 16 788,648 <span>RUB</span>
+                                Прибыль от купонов {{props.item.profitFromCoupons | amount}} <span>{{ portfolioCurrency }}</span><br>
+                                Прибыль от купонов {{props.item.profitFromCouponsPercent}} <span>%</span><br>
                             </div>
                         </td>
                         <td>
                             <div class="ext-info__item">
-                                Доходность - 1.31 <span>%</span><br>
-                                P/L за день - 2 248.172 <span>RUB</span><br>
-                                P/L за день - 1.31 <span>%</span><br>
+                                Прибыль по сделкам {{props.item.exchangeProfit | amount}} <span>{{ portfolioCurrency }}</span><br>
+                                Прибыль по сделкам {{props.item.exchangeProfitPercent}} <span>%</span>
                             </div>
                         </td>
                         <td>
                             <div class="ext-info__item">
-                                Стоимость покупок - 122 442 <span>RUB</span><br>
-                                Стоимость продаж - 0 <span>RUB</span><br>
-                                Коммиссия - 834 <span>RUB</span>
+                                Курс.прибыль {{props.item.rateProfit | amount}} <span>{{ portfolioCurrency }}</span><br>
+                                Курс.прибыль {{props.item.rateProfitPercent}} <span>%</span><br>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="ext-info__item">
+                                <template v-if="!props.item.bond.isRepaid">НКД {{ props.item.bond.accruedint | amount(true) }}</template><br>
+                                Выплаченный НКД {{props.item.buyNkd | amount}} <span>{{ portfolioCurrency }}</span><br>
+                                Полученный НКД {{props.item.sellNkd | amount}} <span>{{ portfolioCurrency }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="ext-info__item">
+                                Доходность {{props.item.yearYield}} <span>%</span><br>
+                                P/L за день {{props.item.dailyPl | amount}} <span>{{ portfolioCurrency }}</span><br>
+                                P/L за день {{props.item.dailyPlPercent}} <span>%</span><br>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="ext-info__item">
+                                Стоимость покупок {{props.item.bcost | amount}} <span>{{ portfolioCurrency }}</span><br>
+                                Стоимость продаж {{props.item.scost | amount}} <span>{{ portfolioCurrency }}</span><br>
+                                Коммиссия {{props.item.summFee | amount}} <span>{{ portfolioCurrency }}</span>
                             </div>
                         </td>
                     </tr>
                 </table>
-                -->
-                <table-extended-info :headers="headers" :table-name="TABLES_NAME.BOND"
-                                     :asset="AssetType.BOND" :row-item="props.item" :ticker="props.item.bond.ticker">
-                    <div class="extended-info__cell label">Время нахождения в портфеле</div>
-                    <div class="extended-info__cell">
-                        {{ props.item.ownedDays }} {{ props.item.ownedDays | declension("день", "дня", "дней")}}, c {{ props.item.firstBuy | date }}
-                    </div>
-
-                    <div v-if="!props.item.bond.isRepaid" class="extended-info__cell label">След. купон:</div>
-                    <div v-if="!props.item.bond.isRepaid" class="extended-info__cell">{{ props.item.bond.nextcoupon | date }}</div>
-
-                    <div v-if="!props.item.bond.isRepaid" class="extended-info__cell label">Купон</div>
-                    <div v-if="!props.item.bond.isRepaid" class="extended-info__cell">{{ props.item.bond.couponvalue | amount(true) }}</div>
-
-                    <div v-if="!props.item.bond.isRepaid" class="extended-info__cell label">НКД</div>
-                    <div v-if="!props.item.bond.isRepaid" class="extended-info__cell">{{ props.item.bond.accruedint | amount(true) }}</div>
-
-                    <div v-if="props.item.bond.isRepaid" class="extended-info__cell label">Статус</div>
-                    <div v-if="props.item.bond.isRepaid" class="extended-info__cell">Погашена</div>
-
-                    <div class="extended-info__cell label">Дата погашения</div>
-                    <div class="extended-info__cell">{{ props.item.bond.matdate }}</div>
-
-                    <div class="extended-info__cell label">Номинал покупки</div>
-                    <div class="extended-info__cell">{{ props.item.nominal | amount(true) }}</div>
-
-                    <div class="extended-info__cell label">Дисконт</div>
-                    <div class="extended-info__cell">{{ props.item.bond.amortization | amount(true) }}</div>
-                </table-extended-info>
             </template>
         </v-data-table>
-    `,
-    components: {TableExtendedInfo}
+    `
 })
 export class BondTable extends UI {
 
@@ -437,5 +415,9 @@ export class BondTable extends UI {
                 row.bond.price.includes(search) ||
                 row.yearYield.includes(search));
         });
+    }
+
+    private get portfolioCurrency(): string {
+        return this.portfolio.portfolioParams.viewCurrency;
     }
 }
