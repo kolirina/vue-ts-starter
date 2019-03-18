@@ -153,6 +153,54 @@ const MainStore = namespace(StoreType.MAIN);
             </template>
 
             <template #expand="props">
+                <!-- todo вывести значения для полей и раскомментировать
+                <table class="ext-info">
+                    <tr>
+                        <td>
+                            <div class="ext-info__item">
+                                Тикер <span class="ext-info__ticker">GMKN</span><br>
+                                В портфеле {{ props.item.ownedDays }} {{ props.item.ownedDays | declension("день", "дня", "дней")}}, c {{ props.item.firstBuy | date }}<br>
+                                Кол-во полных лотов - {{ props.item.lotCounts }} <span>шт.</span><br>
+                                Всего - 12 <span>акций</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="ext-info__item">
+                                Прибыль по сделкам - 0 <span>RUB</span><br>
+                                Прибыль по сделкам - 0.00 <span>%</span><br>
+                                Доходность - 34.57 <span>%</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="ext-info__item">
+                                Стоимость покупок - 122 442 <span>RUB</span><br>
+                                Стоимость продаж - 0 <span>RUB</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="ext-info__item">
+                                Курсовая прибыль - 47 777 <span>RUB</span><br>
+                                Курсовая прибыль - 47 <span>%</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="ext-info__item">
+                                P/L за день - 2 248.172 <span>RUB</span><br>
+                                P/L за день - 1.31 <span>%</span><br>
+                                Коммиссия - 834 <span>RUB</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="ext-info__item">
+                                Дивиденды - 16 788,648 <span>RUB</span><br>
+                                Прибыль по дивидендам - 13.71 <span>%</span>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                -->
                 <table-extended-info :headers="headers" :table-name="TABLES_NAME.STOCK"
                                      :asset="AssetType.STOCK" :row-item="props.item" :ticker="props.item.stock.ticker">
                     <div class="extended-info__cell label">Время нахождения в портфеле</div>
