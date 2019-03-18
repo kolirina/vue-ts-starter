@@ -132,9 +132,29 @@ export class TradeUtils {
             } catch (ignored) {
             }
         }
+        const dateRegex = new RegExp("\\d{4}-\\d{2}-\\d{2}");
+        if (dateRegex.test(first) && dateRegex.test(second)) {
+            try {
+                return DateUtils.parseDate(first).isAfter(DateUtils.parseDate(second)) ? 1 : -1;
+            } catch (ignored) {
+            }
+        }
         if (typeof first === "string" && typeof second === "string") {
             return first.toUpperCase() > second.toUpperCase() ? 1 : -1;
         }
         return first > second ? 1 : -1;
+    }
+
+    static simpleSort(items: any[], index: string, isDesc: boolean): any[] {
+        items.sort((a: any, b: any): number => {
+            const first = (a as any)[index];
+            const second = (b as any)[index];
+            if (!isDesc) {
+                return TradeUtils.compareValues(first, second) * -1;
+            } else {
+                return TradeUtils.compareValues(first, second);
+            }
+        });
+        return items;
     }
 }
