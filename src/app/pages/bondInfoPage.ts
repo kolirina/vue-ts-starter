@@ -38,7 +38,7 @@ const MainStore = namespace(StoreType.MAIN);
                         <tbody>
                         <tr>
                             <td>SECID</td>
-                            <td>{{ share.ыусшв }}</td>
+                            <td>{{ share.secid }}</td>
                         </tr>
                         <tr>
                             <td>ISIN</td>

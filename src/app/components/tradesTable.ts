@@ -23,7 +23,8 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-data-table class="data-table" :headers="headers" :items="trades" item-key="id" :pagination.sync="tradePagination.pagination"
-                      :total-items="tradePagination.totalItems" :custom-sort="customSort" hide-actions>
+                      :total-items="tradePagination.totalItems" :custom-sort="customSort"
+                      :no-data-text="tradePagination.totalItems ? 'Ничего не найдено' : 'Добавьте свою первую сделку и она отобразится здесь'" hide-actions>
             <template #items="props">
                 <tr class="selectable" @dblclick="props.expanded = !props.expanded">
                     <td>
@@ -145,12 +146,6 @@ const MainStore = namespace(StoreType.MAIN);
                     <div class="extended-info__cell label">Заметка</div>
                     <div class="extended-info__cell">{{ props.item.note }}</div>
                 </table-extended-info>
-            </template>
-
-            <template slot="no-data">
-                <v-alert :value="true" color="info" icon="info">
-                    {{ tradePagination.totalItems ? "Ничего не найдено" : "Добавьте свою первую сделку и она отобразится здесь"}}
-                </v-alert>
             </template>
         </v-data-table>
     `,
