@@ -187,6 +187,7 @@ export class EventsPage extends UI {
         });
         if (result) {
             await this.reloadPortfolio(this.portfolio.id);
+            await this.loadEvents();
         }
     }
 
@@ -208,12 +209,14 @@ export class EventsPage extends UI {
 
     private async executeAllEventsWithoutMoney(): Promise<void> {
         await this.eventService.executeAllEvents(this.portfolio.id, false);
+        await this.reloadPortfolio(this.portfolio.id);
         await this.loadEvents();
         this.$snotify.info("Начисления успешно исполнены");
     }
 
     private async executeAllEvents(): Promise<void> {
         await this.eventService.executeAllEvents(this.portfolio.id, true);
+        await this.reloadPortfolio(this.portfolio.id);
         await this.loadEvents();
         this.$snotify.info("Начисления успешно исполнены");
     }

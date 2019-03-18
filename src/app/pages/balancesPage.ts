@@ -30,7 +30,7 @@ const MainStore = namespace(StoreType.MAIN);
                 <v-flex xs12>
                     <v-card>
                         <v-card-title>
-                            <span class="headline">Текущие остатки портфеля</span>
+                            <span class="headline">Задать текущие остатки портфеля</span>
                         </v-card-title>
                         <v-card-text>
                             <p>Перечислите все ценные бумаги и денежные остатки в составе портфеля.
@@ -56,11 +56,11 @@ const MainStore = namespace(StoreType.MAIN);
                                 <v-flex d-flex xs5>
                                     <v-layout column wrap>
                                         <div class="title">Добавить ценную бумагу</div>
-                                        <v-form ref="stockForm" v-model="stockFormIsValid" lazy-validation>
+                                        <v-form ref="stockForm" v-model="stockFormIsValid" class="mt-4" lazy-validation>
                                             <v-flex>
                                                 <share-search :asset-type="assetType" @change="onShareSelect"></share-search>
                                             </v-flex>
-                                            <v-flex>
+                                            <v-flex class="mt-4">
                                                 <v-menu v-model="dateMenuValue" full-width lazy min-width="290px" offset-y ref="dateMenu"
                                                         transition="scale-transition" :close-on-content-click="false" :return-value.sync="date">
                                                     <v-text-field v-model="date" required :rules="rulesDate" slot="activator" label="Дата покупки" append-icon="event" readonly>
@@ -68,20 +68,17 @@ const MainStore = namespace(StoreType.MAIN);
                                                     <v-date-picker v-model="date" locale="ru" :no-title="true" :first-day-of-week="1" @input="onDateSelected"></v-date-picker>
                                                 </v-menu>
                                             </v-flex>
-                                            <v-flex>
+                                            <v-flex class="mt-4">
                                                 <ii-number-field v-model="quantity" required :rules="rulesQuantity" :decimals="0" label="Количество" name="quantity"
                                                                  @keyup="calculateOnQuantity" @change="changeOnQuantity">
                                                 </ii-number-field>
                                             </v-flex>
-                                            <v-flex class="subtitle" v-if="closePrice !== null">
-                                                Цена закрытия: <b>{{ closePrice.amount.toString() }} {{ closePrice.currencySymbol }}</b>
-                                                <v-icon color="primary" title="указать в цене сделки" style="cursor: pointer"
-                                                        @click.native="price = closePrice.amount.toString(); calculateOnPrice()">
-                                                    fas fa-arrow-alt-circle-down
-                                                </v-icon>
+                                            <v-flex class="mt-1" style="font-size: 12px;" v-if="closePrice !== null">
+                                                Цена закрытия: <a @click="setClosePrice"
+                                                                  title="Указать в качестве цены">{{ closePrice.amount.toString() }} {{ closePrice.currencySymbol }}</a>
                                             </v-flex>
                                             <v-layout wrap>
-                                                <v-flex>
+                                                <v-flex class="mt-4">
                                                     <ii-number-field v-model="price" label="Цена акции" messages="Укажите цену акции или стоимость сделки"
                                                                      name="price" required :rules="rulesPrice" @keyup="calculateOnPrice">
                                                     </ii-number-field>
@@ -93,8 +90,9 @@ const MainStore = namespace(StoreType.MAIN);
                                             </v-layout>
                                         </v-form>
                                         <v-spacer></v-spacer>
-                                        <div>
-                                            <v-btn color="primary" :loading="processState" :disabled="!stockFormIsValid || processState" @click.native="addStock()">
+                                        <div class="margT20">
+                                            <v-btn color="primary" class="big_btn" :loading="processState"
+                                                   :disabled="!stockFormIsValid || processState" @click.native="addStock()">
                                                 Добавить
                                                 <span slot="loader" class="custom-loader">
                                                 <v-icon light>fas fa-spinner fa-spin</v-icon>
@@ -106,7 +104,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 <v-flex d-flex xs5>
                                     <v-layout column wrap>
                                         <div class="title">Добавить остатки денежных средств</div>
-                                        <v-form ref="moneyForm" v-model="moneyFormIsValid" lazy-validation>
+                                        <v-form ref="moneyForm" v-model="moneyFormIsValid" class="mt-4" lazy-validation>
                                             <v-flex xs12>
                                                 <v-layout wrap>
                                                     <v-flex xs12 lg8>
@@ -119,8 +117,9 @@ const MainStore = namespace(StoreType.MAIN);
                                                 </v-layout>
                                             </v-flex>
                                         </v-form>
-                                        <div>
-                                            <v-btn color="primary" :loading="processState" :disabled="!moneyFormIsValid || processState" @click.native="addMoney()">
+                                        <div class="margT20">
+                                            <v-btn color="primary" class="big_btn" :loading="processState"
+                                                   :disabled="!moneyFormIsValid || processState" @click.native="addMoney()">
                                                 Добавить
                                                 <span slot="loader" class="custom-loader">
                                                 <v-icon light>fas fa-spinner fa-spin</v-icon>
@@ -242,6 +241,11 @@ export class BalancesPage extends UI implements TradeDataHolder {
         await this.fillFieldsFromShare();
     }
 
+    private setClosePrice(): void {
+        this.price = this.closePrice.amount.toString();
+        this.calculateOnPrice();
+    }
+
     private async fillFieldsFromShare(): Promise<void> {
         // при очистке поля автокомплита
         if (!this.share) {
@@ -265,8 +269,7 @@ export class BalancesPage extends UI implements TradeDataHolder {
         this.currency = this.share.currency;
         await this.addTrade();
         await this.$refs.stockForm.reset();
-        this.closePrice = null;
-        this.date = DateUtils.currentDate();
+        this.resetForm();
     }
 
     private async addMoney(): Promise<void> {
@@ -280,6 +283,7 @@ export class BalancesPage extends UI implements TradeDataHolder {
         this.currency = this.moneyCurrency;
         await this.addTrade();
         await this.$refs.moneyForm.reset();
+        this.resetForm();
         this.moneyCurrency = this.currencyList.filter(cur => cur !== currentCurrency)[0] || CurrencyUnit.RUB.code;
     }
 
@@ -308,6 +312,7 @@ export class BalancesPage extends UI implements TradeDataHolder {
                 fields: trade
             });
             await this.reloadPortfolio(this.portfolio.id);
+            this.resetForm();
             this.$snotify.info("Баланс успешно сохранен");
         } catch (e) {
             this.handleError(e);
@@ -393,6 +398,14 @@ export class BalancesPage extends UI implements TradeDataHolder {
 
     private get shareTicker(): string {
         return this.share ? this.share.ticker : null;
+    }
+
+    private resetForm(): void {
+        this.closePrice = null;
+        this.date = DateUtils.currentDate();
+        this.assetType = AssetType.STOCK;
+        this.price = null;
+        this.total = null;
     }
 
     // tslint:disable:member-ordering
