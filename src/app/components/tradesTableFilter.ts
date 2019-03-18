@@ -40,7 +40,7 @@ import {TableFilterBase} from "./tableFilterBase";
 
                 <div class="trades-filter__label">Тип операции сделок</div>
                 <div class="trades-filter__operations">
-                    <v-switch v-for="op in operations" @change="onOperationChange($event, op)" :disabled="!filter.operation.includes(op)" :label="op.description"
+                    <v-switch v-for="op in operations" @change="onOperationChange($event, op)" :disabled="!operationEnabled(op)" :label="op.description"
                               v-model="filter.operation.includes(op)" :key="op.enumName">
                     </v-switch>
                 </div>
@@ -107,20 +107,7 @@ export class TradesTableFilter extends UI {
     }
 
     private onListTypeChange(): void {
-        switch (this.filter.listType) {
-            case TradeListType.FULL:
-                this.filter.operation = [...TradesTableFilter.DEFAULT_OPERATIONS];
-                break;
-            case TradeListType.STOCK:
-                this.filter.operation = [Operation.BUY, Operation.SELL, Operation.DIVIDEND];
-                break;
-            case TradeListType.BOND:
-                this.filter.operation = [Operation.BUY, Operation.SELL, Operation.COUPON, Operation.AMORTIZATION];
-                break;
-            case TradeListType.MONEY:
-                this.filter.operation = [Operation.BUY, Operation.SELL, Operation.INCOME, Operation.LOSS];
-                break;
-        }
+        this.filter.operation = this.getDefaultOperations();
         this.emitFilterChange();
     }
 
@@ -131,6 +118,24 @@ export class TradesTableFilter extends UI {
             this.filter.operation = this.filter.operation.filter(operation => operation !== op);
         }
         this.emitFilterChange();
+    }
+
+    private getDefaultOperations(): Operation[] {
+        switch (this.filter.listType) {
+            case TradeListType.FULL:
+                return [...TradesTableFilter.DEFAULT_OPERATIONS];
+            case TradeListType.STOCK:
+                return [Operation.BUY, Operation.SELL, Operation.DIVIDEND];
+            case TradeListType.BOND:
+                return [Operation.BUY, Operation.SELL, Operation.COUPON, Operation.AMORTIZATION];
+            case TradeListType.MONEY:
+                return [Operation.BUY, Operation.SELL, Operation.INCOME, Operation.LOSS];
+        }
+        return [...TradesTableFilter.DEFAULT_OPERATIONS];
+    }
+
+    private operationEnabled(operation: Operation): boolean {
+        return this.getDefaultOperations().includes(operation);
     }
 
     private emitFilterChange(): void {
