@@ -75,6 +75,17 @@
     i {
       color: #fff !important;
     }
+  }
 
+  .v-list__group__header__append-icon {
+    background: url("../img/common/icon-dropdown.svg") no-repeat center;
+    transform: rotate(180deg);
+    transition: transform 0.1s ease;
+
+    i {opacity: 0}
+  }
+
+  .v-list__group__header--active .v-list__group__header__append-icon {
+    transform: rotate(0);
   }
 }
