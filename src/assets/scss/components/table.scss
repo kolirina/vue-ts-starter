@@ -150,6 +150,7 @@
 }
 
 /** Убираем перекрытие иконки тултипа с подсказкой у столбца */
-.v-datatable thead th.column.sortable:focus .v-icon, .v-datatable thead th.column.sortable:hover .v-icon {
+.v-datatable thead th.column.sortable .v-icon.fa-info-circle,
+.v-datatable thead th.column.sortable .v-icon.fa-info-circle {
   opacity: 0 !important;
 }
