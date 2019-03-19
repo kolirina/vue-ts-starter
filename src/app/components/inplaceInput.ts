@@ -12,19 +12,24 @@ import {UI} from "../app/ui";
 
             <template v-if="!editMode">
                 <a v-if="emptyLinkText" style="color: darkgray" class="inplace-out underline" @click="onEdit" :title="emptyLinkText">{{ emptyLinkText }}</a>
-                <v-layout row wrap>
-                    <v-flex xs7>
-                        <span v-if="!emptyLinkText"class="inplace-out" @dblclick="onEdit" title="Редактировать">{{ value }}</span>
-                        <slot name="afterText"></slot>
-                    </v-flex>
-                    <v-flex xs4 offset-xs1 class="profile-edit">
-                        <span  v-if="!emptyLinkText"  @click="onEdit">Изменить</span>
-                    </v-flex>
-                </v-layout>
+                <div class="profile__line">
+                    <v-text-field
+                            v-if="!emptyLinkText"
+                            class="inplace-out"
+                            @dblclick="onEdit"
+                            title="Редактировать"
+                            disabled
+                            :value="value">
+                    </v-text-field>
+                    <slot name="afterText"></slot>
+                    <div class="profile-edit">
+                        <span v-if="!emptyLinkText" @click="onEdit">Изменить</span>
+                    </div>
+                </div>
             </template>
             <template v-else>
                 <v-layout row wrap>
-                    <v-flex xs7>
+                    <div class="profile__line">
                         <v-text-field
                         v-model.trim="editableValue"
                         @keyup.enter="emitCompleteEvent"
@@ -35,13 +40,11 @@ import {UI} from "../app/ui";
                             :maxlength="maxLength"
                             :placeholder="placeholder">
                         </v-text-field>
-                    </v-flex>
-                    <v-flex xs4 offset-xs1 style="display: flex; align-items: center;">
-                        <div class="profile-icons">
-                            <div @click.stop="emitCompleteEvent" class="profile-icons-complete"></div>
-                            <div @click.stop="dismissChanges" class="profile-icons-dismiss"></div>
-                        </div>
-                    </v-flex>
+                    </div>
+                    <div class="profile-icons">
+                        <div @click.stop="emitCompleteEvent" class="profile-icons-complete"></div>
+                        <div @click.stop="dismissChanges" class="profile-icons-dismiss"></div>
+                    </div>
                 </v-layout>
             </template>
         </div>

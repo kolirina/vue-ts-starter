@@ -1,19 +1,25 @@
 .profile {
-  padding: 28px 35px;
+  padding: 20px 16px;
   box-sizing: border-box;
-  font-size: 13px;
+  font-size: 14px;
 
-  &-title {
-    font-size: 24px;
-    font-family: "Open Sans Bold";
-    margin-bottom: 50px;
-
-    img {
-      height: 25px;
-      width: 25px;
-      margin-left: 10px;
-    }
+  &__subtitle {
+    font-size: 12px;
+    color: $font-color--lite;
+    margin: 10px 0;
   }
+
+  &__line {
+    display: flex;
+    align-items: center;
+  }
+
+  .inplace-out {
+    margin-right: 24px;
+    line-height: 1;
+  }
+
+  .v-btn {margin-top: 30px !important;}
 
   &-edit {
     color: $main-color-2;
@@ -24,6 +30,8 @@
 
   &-icons {
     display: flex;
+    align-items: center;
+    margin-left: 24px;
 
     &-complete,
     &-dismiss {
@@ -92,19 +100,10 @@
     }
   }
 
-  &-line {
-    margin-bottom: 40px;
-    &:last-child {
-      margin-bottom: 25px;
-    }
-
-    .v-input__slot::before {
-      border-color: rgb(0, 0, 0) !important;
-    }
-
-    .v-input__slot::after {
-      display: none;
-    }
+  .inplace-input-field,
+  .inplace-out {
+    width: 232px;
+    flex: none;
   }
 
   &-not-confirmed-email {
