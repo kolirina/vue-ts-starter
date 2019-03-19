@@ -90,7 +90,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </div>
                     </v-flex>
                     <div v-if="hasPriceAndNews(notification)" class="notifications-card-body-line"></div>
-                    <v-flex v-if="!isNewsNotification(notification)" class="notifications-card-body-news">
+                    <v-flex v-if="isNewsNotification(notification)" class="notifications-card-body-news">
                         <div class="notifications-card-body-title" v-if="notification.keywords">
                             Ключевые слова: <span>{{ notification.keywords }}</span>
                         </div>

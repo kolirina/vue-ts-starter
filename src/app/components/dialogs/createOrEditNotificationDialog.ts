@@ -14,10 +14,27 @@ import {CustomDialog} from "./customDialog";
 @Component({
     // language=Vue
     template: `
-        <v-dialog v-model="showed" persistent max-width="600px">
+        <v-dialog v-model="showed" max-width="600px">
             <v-card v-if="notification" class="add-notification dialog-wrap">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
-                <v-card-title class="headline add-notification-title">{{ notification.id ? "Редактирование" : "Создание" }} уведомления</v-card-title>
+                <v-card-title class="headline add-notification-title">
+                    {{ notification.id ? "Редактирование" : "Создание" }} уведомления по
+                    <v-menu transition="slide-y-transition" nudge-bottom="50" nudge-left="10">
+                        <a slot="activator"><span>&nbsp;{{ assetType === AssetType.STOCK ? "акции" : "облигации" }}</span></a>
+                        <v-list dense>
+                            <v-list-tile @click="changeNotificationType(NotificationType.stock)">
+                                <v-list-tile-title>
+                                    По акции
+                                </v-list-tile-title>
+                            </v-list-tile>
+                            <v-list-tile @click="changeNotificationType(NotificationType.bond)">
+                                <v-list-tile-title>
+                                    По облигации
+                                </v-list-tile-title>
+                            </v-list-tile>
+                        </v-list>
+                    </v-menu>
+                </v-card-title>
                 <div>
                     <share-search :filteredShares="filteredShares" :assetType="assetType" @clear="onShareClear" @change="onShareSearchChange" class="margB32"></share-search>
 
@@ -169,7 +186,8 @@ export class CreateOrEditNotificationDialog extends CustomDialog<Notification, b
         {text: "Вхождение всех слов", value: KeyWordsSearchType.CONTAINS_ALL}
     ];
 
-    private assetType = AssetType.STOCK;
+    private AssetType = AssetType;
+    private NotificationType = NotificationType;
     private share: Share = null;
     private filteredShares: Share[] = [];
     private buyPriceNotification = false;
@@ -282,6 +300,13 @@ export class CreateOrEditNotificationDialog extends CustomDialog<Notification, b
         this.share = share;
     }
 
+    private changeNotificationType(notificationType: NotificationType): void {
+        this.notification = {};
+        this.notification.type = notificationType;
+        this.share = null;
+        this.filteredShares = [];
+    }
+
     private get sharePrice(): string {
         if (!this.share) {
             return "220";
@@ -305,5 +330,12 @@ export class CreateOrEditNotificationDialog extends CustomDialog<Notification, b
                 return "евро";
         }
         return "рублей";
+    }
+
+    private get assetType(): AssetType {
+        if (this.notification.type === NotificationType.stock) {
+            return AssetType.STOCK;
+        }
+        return AssetType.BOND;
     }
 }

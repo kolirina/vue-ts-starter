@@ -13,12 +13,11 @@ import {CustomDialog} from "./customDialog";
 @Component({
     // language=Vue
     template: `
-        <v-dialog v-model="showed" persistent max-width="380px">
+        <v-dialog v-model="showed" max-width="380px">
             <v-card class="change-password-d dialog-wrap">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
                 <v-card-title class="headline change-password-d-title">
                     Сменить пароль
-                    <img src="img/profile/lock.png">
                 </v-card-title>
                 <v-card-text class="change-password-d-text">
                     <v-form ref="form" v-model="valid" lazy-validation>
@@ -62,7 +61,6 @@ import {CustomDialog} from "./customDialog";
                 </v-card-text>
                 <v-card-actions class="margT20">
                     <v-btn :disabled="!valid" @click.native="validateAndChangePassword" color="primary" light>Сменить пароль</v-btn>
-                    <v-btn @click.native="close">Отмена</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>

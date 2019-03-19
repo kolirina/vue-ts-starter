@@ -21,6 +21,10 @@
   z-index: auto;
 }
 
+.v-overlay {
+  transition: none;
+}
+
 .v-overlay:before {
   background-color: #040427;
   opacity: 0.8;

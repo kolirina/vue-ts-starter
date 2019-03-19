@@ -14,13 +14,9 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-card>
+        <v-container fluid>
+            <div class="section-title">Профиль</div>
             <v-card class="profile">
-                <h1 class="profile-title">
-                    Профиль
-                    <img src="img/profile/profile-user.png"/>
-                </h1>
-
                 <v-layout row wrap class="profile-line">
                     <v-flex xs2>Email:</v-flex>
                     <v-flex xs5>
@@ -46,7 +42,7 @@ const MainStore = namespace(StoreType.MAIN);
                     Сменить пароль
                 </v-btn>
             </v-card>
-        </v-card>
+        </v-container>
     `
 })
 export class ProfilePage extends UI {
