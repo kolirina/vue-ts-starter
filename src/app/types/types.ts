@@ -226,7 +226,9 @@ export type TableHeader = {
     /** Определяет показ элемента в диалоге переключения калонок. */
     ghost?: boolean,
     /** Текст подсказки к столбцу */
-    tooltip?: string
+    tooltip?: string,
+    /** Признак что столбец отображает значение с валютой, чтобы подставить знак валюты */
+    currency?: boolean
 };
 
 export type DashboardData = {

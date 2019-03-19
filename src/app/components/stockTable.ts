@@ -49,7 +49,7 @@ const MainStore = namespace(StoreType.MAIN);
                 <v-tooltip v-if="props.header.tooltip" content-class="custom-tooltip-wrap" bottom>
                     <template #activator="{ on }">
                         <span>
-                            {{ props.header.text }}
+                            {{ getHeaderText(props.header) }}
                         </span>
                         <sup class="custom-tooltip" v-on="on">
                             <v-icon>fas fa-info-circle</v-icon>
@@ -60,7 +60,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </span>
                 </v-tooltip>
                 <span v-else>
-                    {{ props.header.text }}
+                    {{ getHeaderText(props.header) }}
                 </span>
             </template>
             <template #items="props">
@@ -386,6 +386,10 @@ export class StockTable extends UI {
                 row.stock.price.includes(search) ||
                 row.yearYield.includes(search));
         });
+    }
+
+    private getHeaderText(header: TableHeader): string {
+        return header.currency ? `${header.text} ${TradeUtils.getCurrencySymbol(this.portfolioCurrency)}` : header.text;
     }
 
     private get portfolioCurrency(): string {

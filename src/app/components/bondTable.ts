@@ -34,7 +34,7 @@ const MainStore = namespace(StoreType.MAIN);
                 <v-tooltip v-if="props.header.tooltip" content-class="custom-tooltip-wrap" bottom>
                     <template #activator="{ on }">
                         <span>
-                            {{ props.header.text }}
+                            {{ getHeaderText(props.header) }}
                         </span>
                         <sup class="custom-tooltip" v-on="on">
                             <v-icon>fas fa-info-circle</v-icon>
@@ -45,7 +45,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </span>
                 </v-tooltip>
                 <span v-else>
-                    {{ props.header.text }}
+                    {{ getHeaderText(props.header) }}
                 </span>
             </template>
             <template #items="props">
@@ -209,7 +209,8 @@ const MainStore = namespace(StoreType.MAIN);
                     <tr>
                         <td>
                             <div class="ext-info__item">
-                                <template v-if="!props.item.bond.isRepaid">НКД {{ props.item.bond.accruedint | amount(true) }}</template><br>
+                                <template v-if="!props.item.bond.isRepaid">НКД {{ props.item.bond.accruedint | amount(true) }}</template>
+                                <br>
                                 Выплаченный НКД {{props.item.buyNkd | amount}} <span>{{ portfolioCurrency }}</span><br>
                                 Полученный НКД {{props.item.sellNkd | amount}} <span>{{ portfolioCurrency }}</span>
                             </div>
@@ -415,6 +416,10 @@ export class BondTable extends UI {
                 row.bond.price.includes(search) ||
                 row.yearYield.includes(search));
         });
+    }
+
+    private getHeaderText(header: TableHeader): string {
+        return header.currency ? `${header.text} ${TradeUtils.getCurrencySymbol(this.portfolioCurrency)}` : header.text;
     }
 
     private get portfolioCurrency(): string {
