@@ -24,11 +24,11 @@ import {CustomDialog} from "./customDialog";
                     <v-container grid-list-md>
                         <v-layout wrap>
                             <v-flex xs12 sm12>
-                                <v-text-field label="От кого" v-model.trim="data.user.username" :readonly="isDemoUser()" append-icon="fas fa-user"></v-text-field>
+                                <v-text-field label="От кого" v-model.trim="data.user.username" :readonly="isDemoUser()"></v-text-field>
                             </v-flex>
 
                             <v-flex xs12 sm12>
-                                <v-text-field label="Email" v-model.trim="data.user.email" :readonly="isDemoUser()" append-icon="fas fa-at"></v-text-field>
+                                <v-text-field label="Email" v-model.trim="data.user.email" :readonly="isDemoUser()"></v-text-field>
                             </v-flex>
 
                             <v-flex xs12 sm12>

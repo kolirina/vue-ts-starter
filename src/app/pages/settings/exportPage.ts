@@ -27,9 +27,8 @@ const MainStore = namespace(StoreType.MAIN);
                             Выгрузите сделки вашего текущего портфеля в csv или json формате.
                             Данный файл содержит полную информацию о всех сделках и является полностью совместимым для обратного импорта в сервис.
                         </p>
-                        <v-btn color="primary" @click="downloadFile" :disabled="isDownloadNotAllowed()">
+                        <v-btn color="primary" class="big_btn" @click="downloadFile" :disabled="isDownloadNotAllowed()">
                             Экспорт сделок в csv
-                            <v-icon right dark>fas fa-download</v-icon>
                         </v-btn>
                         <!-- На триале и если тариф истек экспортировать сделки нельзя -->
                         <v-tooltip v-if="!isDownloadNotAllowed" content-class="custom-tooltip-wrap" bottom>
@@ -41,12 +40,12 @@ const MainStore = namespace(StoreType.MAIN);
                                 подписку чтобы иметь возможность экспортировать сделки в csv формат.
                                 Или воспользуйтесь экспортом в xlsx.</span>
                         </v-tooltip>
-                        <v-btn color="primary" @click="exportPortfolio">
+                        <v-btn color="primary" class="big_btn" @click="exportPortfolio">
                             Экспорт портфеля в xlsx
-                            <v-icon right dark>fas fa-download</v-icon>
                         </v-btn>
                         <div class="EmptyBox20"></div>
 
+                        <!-- TODO раскомментировать после стилизации
                         <h3>Автоматический бэкап портфеля</h3>
                         <p>Настройте автоматический бэкап портфеля. Файлы выбранных портфелей (в csv формате) будут отравляться на вашу эл почту по заданному
                             расписанию.</p>
@@ -108,6 +107,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 Или воспользуйтесь экспортом в xlsx.
                             </span>
                         </v-tooltip>
+                        -->
                     </div>
                 </v-card-text>
             </v-card>
