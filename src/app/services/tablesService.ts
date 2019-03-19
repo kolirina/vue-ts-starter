@@ -1,13 +1,17 @@
 import {Inject, Singleton} from "typescript-ioc";
+import * as versionConfig from "../../version.json";
 import {Service} from "../platform/decorators/service";
 import {Storage} from "../platform/services/storage";
+import {StoreKeys} from "../types/storeKeys";
 import {TableHeader} from "../types/types";
+import {DateUtils} from "../utils/dateUtils";
 
 @Service("TablesService")
 @Singleton
 export class TablesService {
-    headers: TableHeaders = {
-        stockTable: [
+
+    readonly HEADERS: TableHeaders = {
+        [TABLES_NAME.STOCK]: [
             {text: "", align: "left", ghost: true, sortable: false, value: "", active: true, width: "50"},
             {text: "Компания", align: "left", value: TABLE_HEADERS.COMPANY, active: true, width: "120"},
             {text: "Тикер", align: "left", value: TABLE_HEADERS.TICKER, active: false, width: "90"},
@@ -28,17 +32,19 @@ export class TablesService {
                 sortable: false,
                 active: true,
                 width: "80",
-                tooltip: StockTooltips[TABLE_HEADERS.CURR_PRICE]
+                tooltip: StockTooltips[TABLE_HEADERS.CURR_PRICE],
+                currency: true
             },
-            {text: "Стоимость покупок", align: "right", value: TABLE_HEADERS.B_COST, active: false, width: "80", tooltip: StockTooltips[TABLE_HEADERS.B_COST]},
-            {text: "Стоимость продаж", align: "right", value: TABLE_HEADERS.S_COST, active: false, width: "90", tooltip: StockTooltips[TABLE_HEADERS.S_COST]},
+            {text: "Стоимость покупок", align: "right", value: TABLE_HEADERS.B_COST, active: false, width: "80", tooltip: StockTooltips[TABLE_HEADERS.B_COST], currency: true},
+            {text: "Стоимость продаж", align: "right", value: TABLE_HEADERS.S_COST, active: false, width: "90", tooltip: StockTooltips[TABLE_HEADERS.S_COST], currency: true},
             {
                 text: "Тек. стоимость",
                 align: "right",
                 value: TABLE_HEADERS.CURR_COST,
                 active: true,
                 width: "80",
-                tooltip: StockTooltips[TABLE_HEADERS.CURR_COST]
+                tooltip: StockTooltips[TABLE_HEADERS.CURR_COST],
+                currency: true
             },
             {
                 text: "Дивиденды",
@@ -46,7 +52,8 @@ export class TablesService {
                 value: TABLE_HEADERS.PROFIT_FROM_DIVIDENDS,
                 active: false,
                 width: "80",
-                tooltip: StockTooltips[TABLE_HEADERS.PROFIT_FROM_DIVIDENDS]
+                tooltip: StockTooltips[TABLE_HEADERS.PROFIT_FROM_DIVIDENDS],
+                currency: true
             },
             {
                 text: "Прибыль по дивидендам, %",
@@ -62,7 +69,8 @@ export class TablesService {
                 value: TABLE_HEADERS.RATE_PROFIT,
                 active: false,
                 width: "80",
-                tooltip: StockTooltips[TABLE_HEADERS.RATE_PROFIT]
+                tooltip: StockTooltips[TABLE_HEADERS.RATE_PROFIT],
+                currency: true
             },
             {
                 text: "Курс. прибыль, %",
@@ -78,7 +86,8 @@ export class TablesService {
                 value: TABLE_HEADERS.EXCHANGE_PROFIT,
                 active: false,
                 width: "80",
-                tooltip: StockTooltips[TABLE_HEADERS.EXCHANGE_PROFIT]
+                tooltip: StockTooltips[TABLE_HEADERS.EXCHANGE_PROFIT],
+                currency: true
             },
             {
                 text: "Прибыль по сделкам, %",
@@ -88,7 +97,7 @@ export class TablesService {
                 width: "80",
                 tooltip: StockTooltips[TABLE_HEADERS.EXCHANGE_PROFIT_PERCENT]
             },
-            {text: "Прибыль", align: "right", value: TABLE_HEADERS.PROFIT, active: true, width: "80", tooltip: StockTooltips[TABLE_HEADERS.PROFIT]},
+            {text: "Прибыль", align: "right", value: TABLE_HEADERS.PROFIT, active: true, width: "80", tooltip: StockTooltips[TABLE_HEADERS.PROFIT], currency: true},
             {
                 text: "Прибыль, %",
                 align: "right",
@@ -105,7 +114,7 @@ export class TablesService {
                 width: "65",
                 tooltip: StockTooltips[TABLE_HEADERS.YEAR_YIELD]
             },
-            {text: "P/L за день", align: "right", value: TABLE_HEADERS.DAILY_PL, active: false, width: "60", tooltip: CommonTooltips[TABLE_HEADERS.DAILY_PL]},
+            {text: "P/L за день", align: "right", value: TABLE_HEADERS.DAILY_PL, active: false, width: "60", tooltip: CommonTooltips[TABLE_HEADERS.DAILY_PL], currency: true},
             {
                 text: "P/L за день, %",
                 align: "right",
@@ -114,12 +123,12 @@ export class TablesService {
                 width: "60",
                 tooltip: CommonTooltips[TABLE_HEADERS.DAILY_PL_PERCENT]
             },
-            {text: "Комиссия", align: "right", value: TABLE_HEADERS.SUMM_FEE, active: false, width: "60", tooltip: StockTooltips[TABLE_HEADERS.SUMM_FEE]},
+            {text: "Комиссия", align: "right", value: TABLE_HEADERS.SUMM_FEE, active: false, width: "60", tooltip: StockTooltips[TABLE_HEADERS.SUMM_FEE], currency: true},
             {text: "Тек. доля", align: "right", value: TABLE_HEADERS.PERC_CURR_SHARE, active: true, width: "50"},
             {text: "Действия", align: "center", ghost: true, value: "actions", sortable: false, width: "25", active: true},
         ],
 
-        bondTable: [
+        [TABLES_NAME.BOND]: [
             {text: "", align: "left", ghost: true, sortable: false, value: "", active: true, width: "50"},
             {text: "Компания", align: "left", value: TABLE_HEADERS.COMPANY, active: true, width: "135"},
             {text: "Тикер", align: "left", value: TABLE_HEADERS.TICKER, active: false, width: "90"},
@@ -142,9 +151,9 @@ export class TablesService {
                 width: "65",
                 tooltip: BondTooltips[TABLE_HEADERS.CURR_PRICE]
             },
-            {text: "Стоимость покупок", align: "right", value: TABLE_HEADERS.B_COST, active: false, width: "80", tooltip: BondTooltips[TABLE_HEADERS.B_COST]},
-            {text: "Стоимость продаж", align: "right", value: TABLE_HEADERS.S_COST, active: false, width: "80", tooltip: BondTooltips[TABLE_HEADERS.S_COST]},
-            {text: "Тек. стоимость", align: "right", value: TABLE_HEADERS.CURR_COST, active: true, width: "80", tooltip: BondTooltips[TABLE_HEADERS.CURR_COST]},
+            {text: "Стоимость покупок", align: "right", value: TABLE_HEADERS.B_COST, active: false, width: "80", tooltip: BondTooltips[TABLE_HEADERS.B_COST], currency: true},
+            {text: "Стоимость продаж", align: "right", value: TABLE_HEADERS.S_COST, active: false, width: "80", tooltip: BondTooltips[TABLE_HEADERS.S_COST], currency: true},
+            {text: "Тек. стоимость", align: "right", value: TABLE_HEADERS.CURR_COST, active: true, width: "80", tooltip: BondTooltips[TABLE_HEADERS.CURR_COST], currency: true},
             {
                 text: "Средний номинал",
                 align: "right",
@@ -152,7 +161,8 @@ export class TablesService {
                 sortable: false,
                 active: false,
                 width: "65",
-                tooltip: BondTooltips[TABLE_HEADERS.NOMINAL]
+                tooltip: BondTooltips[TABLE_HEADERS.NOMINAL],
+                currency: true
             },
             {
                 text: "Прибыль от купонов",
@@ -160,7 +170,8 @@ export class TablesService {
                 value: TABLE_HEADERS.PROFIT_FROM_COUPONS,
                 active: false,
                 width: "65",
-                tooltip: BondTooltips[TABLE_HEADERS.PROFIT_FROM_COUPONS]
+                tooltip: BondTooltips[TABLE_HEADERS.PROFIT_FROM_COUPONS],
+                currency: true
             },
             {
                 text: "Прибыль от купонов, %",
@@ -176,7 +187,8 @@ export class TablesService {
                 value: TABLE_HEADERS.EXCHANGE_PROFIT,
                 active: false,
                 width: "65",
-                tooltip: BondTooltips[TABLE_HEADERS.EXCHANGE_PROFIT]
+                tooltip: BondTooltips[TABLE_HEADERS.EXCHANGE_PROFIT],
+                currency: true
             },
             {
                 text: "Прибыль по сделкам, %",
@@ -192,7 +204,8 @@ export class TablesService {
                 value: TABLE_HEADERS.RATE_PROFIT,
                 active: false,
                 width: "65",
-                tooltip: BondTooltips[TABLE_HEADERS.RATE_PROFIT]
+                tooltip: BondTooltips[TABLE_HEADERS.RATE_PROFIT],
+                currency: true
             },
             {
                 text: "Курс. прибыль, %",
@@ -202,12 +215,12 @@ export class TablesService {
                 width: "65",
                 tooltip: BondTooltips[TABLE_HEADERS.RATE_PROFIT_PERCENT]
             },
-            {text: "Выплаченный НКД", align: "right", value: TABLE_HEADERS.BUY_NKD, active: false, width: "85", tooltip: BondTooltips[TABLE_HEADERS.BUY_NKD]},
-            {text: "Полученный НКД", align: "right", value: TABLE_HEADERS.SELL_NKD, active: false, width: "85", tooltip: BondTooltips[TABLE_HEADERS.SELL_NKD]},
-            {text: "Прибыль", align: "right", value: TABLE_HEADERS.PROFIT, active: true, width: "80", tooltip: BondTooltips[TABLE_HEADERS.PROFIT]},
+            {text: "Выплаченный НКД", align: "right", value: TABLE_HEADERS.BUY_NKD, active: false, width: "85", tooltip: BondTooltips[TABLE_HEADERS.BUY_NKD], currency: true},
+            {text: "Полученный НКД", align: "right", value: TABLE_HEADERS.SELL_NKD, active: false, width: "85", tooltip: BondTooltips[TABLE_HEADERS.SELL_NKD], currency: true},
+            {text: "Прибыль", align: "right", value: TABLE_HEADERS.PROFIT, active: true, width: "80", tooltip: BondTooltips[TABLE_HEADERS.PROFIT], currency: true},
             {text: "Прибыль, %", align: "right", value: TABLE_HEADERS.PERC_PROFIT, active: true, width: "65", tooltip: BondTooltips[TABLE_HEADERS.PERC_PROFIT]},
             {text: "Доходность, %", align: "right", value: TABLE_HEADERS.YEAR_YIELD, active: false, width: "65", tooltip: BondTooltips[TABLE_HEADERS.YEAR_YIELD]},
-            {text: "P/L за день", align: "right", value: TABLE_HEADERS.DAILY_PL, active: false, width: "60", tooltip: CommonTooltips[TABLE_HEADERS.DAILY_PL]},
+            {text: "P/L за день", align: "right", value: TABLE_HEADERS.DAILY_PL, active: false, width: "60", tooltip: CommonTooltips[TABLE_HEADERS.DAILY_PL], currency: true},
             {
                 text: "P/L за день, %",
                 align: "right",
@@ -216,11 +229,12 @@ export class TablesService {
                 width: "60",
                 tooltip: CommonTooltips[TABLE_HEADERS.DAILY_PL_PERCENT]
             },
-            {text: "Комиссия", align: "right", value: TABLE_HEADERS.SUMM_FEE, active: false, width: "65", tooltip: BondTooltips[TABLE_HEADERS.SUMM_FEE]},
+            {text: "Комиссия", align: "right", value: TABLE_HEADERS.SUMM_FEE, active: false, width: "65", tooltip: BondTooltips[TABLE_HEADERS.SUMM_FEE], currency: true},
             {text: "Тек. доля", align: "right", value: TABLE_HEADERS.PERC_CURR_SHARE, active: true, width: "50", tooltip: BondTooltips[TABLE_HEADERS.PERC_CURR_SHARE]},
             {text: "Действия", align: "center", value: "actions", ghost: true, sortable: false, width: "25", active: true},
         ],
-        tradesTable: [
+
+        [TABLES_NAME.TRADE]: [
             {text: "", align: "left", ghost: true, sortable: false, value: "", active: true},
             {text: "Тикер/ISIN", align: "left", value: TABLE_HEADERS.TICKER, active: true},
             {text: "Название", align: "left", value: TABLE_HEADERS.NAME, active: true},
@@ -238,11 +252,25 @@ export class TablesService {
         ]
     };
 
+    headers: TableHeaders = null;
+
     @Inject
     private localStorage: Storage;
 
+    /**
+     * Проверяет localStorage на дату последенго изменения и выставляет колонки по умолчанию
+     */
     constructor() {
-        this.headers = this.localStorage.get("tableHeadersParams", this.headers);
+        const needUpdate = this.needUpdate();
+        const headersFromStorage = this.localStorage.get<TableHeaders>("tableHeadersParams", null);
+        if (needUpdate) {
+            this.headers = {...this.HEADERS};
+            this.localStorage.set<TableHeaders>("tableHeadersParams", this.headers);
+            this.localStorage.set<string>(StoreKeys.LOCAL_STORAGE_LAST_UPDATE_DATE_KEY, versionConfig.date);
+        } else {
+            // если восстановили из localStorage или берем по умолчанию
+            this.headers = headersFromStorage ? {...headersFromStorage} : {...this.HEADERS};
+        }
     }
 
     /**
@@ -278,6 +306,16 @@ export class TablesService {
      */
     getHiddenHeaders(name: string): TableHeader[] {
         return (this.headers[name] || []).filter(el => !el.active && !el.ghost);
+    }
+
+    /**
+     * Возвращает признак необходимости обновления данных.
+     * Если дата в localStorage не совпадает с датой версии
+     */
+    private needUpdate(): boolean {
+        const currentDate = DateUtils.currentDate();
+        const lastUpdateDate = DateUtils.parseDate(this.localStorage.get<string>(StoreKeys.LOCAL_STORAGE_LAST_UPDATE_DATE_KEY, currentDate));
+        return !DateUtils.parseDate(versionConfig.date).isSame(lastUpdateDate, "day");
     }
 }
 
