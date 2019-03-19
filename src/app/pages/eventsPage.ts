@@ -80,7 +80,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </span>
                     </div>
 
-                    <v-data-table :headers="headers" :items="events" item-key="id" :custom-sort="customSort" hide-actions>
+                    <v-data-table :headers="headers" :items="events" item-key="id" :custom-sort="customSort" :no-data-text="emptyTableText" hide-actions>
                         <template #items="props">
                             <tr class="selectable">
                                 <td class="text-xs-left">{{ props.item.label }}</td>
@@ -113,12 +113,6 @@ const MainStore = namespace(StoreType.MAIN);
                                     </v-tooltip>
                                 </td>
                             </tr>
-                        </template>
-
-                        <template slot="no-data">
-                            <v-alert :value="true" color="info" icon="info">
-                                {{ emptyTableText }}
-                            </v-alert>
                         </template>
                     </v-data-table>
                 </v-card-text>
