@@ -13,55 +13,56 @@ import {CustomDialog} from "./customDialog";
 @Component({
     // language=Vue
     template: `
-        <v-dialog v-model="showed" max-width="380px">
+        <v-dialog v-model="showed" max-width="600px">
             <v-card class="change-password-d dialog-wrap">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
-                <v-card-title class="headline change-password-d-title">
-                    Сменить пароль
-                </v-card-title>
-                <v-card-text class="change-password-d-text">
-                    <v-form ref="form" v-model="valid" lazy-validation>
-                        <v-text-field
-                            class="change-password-d-input"
-                            id="currentPassword"
-                            v-model="password"
-                            :append-icon="showPassword ? 'visibility_off' : 'visibility'"
-                            v-validate="'required|max:50|min:6'"
-                            :error-messages="errors.collect('password')"
-                            data-vv-name="password"
-                            label="Текущий пароль"
-                            required
-                            autofocus
-                            :type="showPassword ? 'text' : 'password'"
-                            autocomplete="off"
-                            browser-autocomplete="off"
-                            @click:append="showPassword = !showPassword">
-                        </v-text-field>
+                <div class="change-password-d__content">
+                    <div class="change-password-d__title">Смена пароля</div>
+                    <div class="change-password-d-text">
+                        <v-form ref="form" v-model="valid" lazy-validation>
+                            <v-text-field
+                                    class="change-password-d-input"
+                                    :class="showPassword ? 'show-password' : 'hide-password'"
+                                    id="currentPassword"
+                                    v-model="password"
+                                    append-icon="visibility"
+                                    v-validate="'required|max:50|min:6'"
+                                    :error-messages="errors.collect('password')"
+                                    data-vv-name="password"
+                                    label="Текущий пароль"
+                                    required
+                                    autofocus
+                                    :type="showPassword ? 'text' : 'password'"
+                                    autocomplete="off"
+                                    browser-autocomplete="off"
+                                    @click:append="showPassword = !showPassword">
+                            </v-text-field>
 
-                        <v-text-field
-                            class="change-password-d-input"
-                            id="newPassword"
-                            v-model="newPassword"
-                            :append-icon="showNewPassword ? 'visibility_off' : 'visibility'"
-                            v-validate="'required|max:50|min:6'"
-                            :counter="50"
-                            :error-messages="errors.collect('newPassword')"
-                            data-vv-name="newPassword"
-                            label="Новый пароль"
-                            required
-                            :persistent-hint="true"
-                            ref="newPassword"
-                            :type="showNewPassword ? 'text' : 'password'"
-                            autocomplete="off"
-                            browser-autocomplete="off"
-                            hint="Пароль может содержать строчные и прописные латинские буквы, цифры, спецсимволы. Минимум 6 символов"
-                            @click:append="showNewPassword = !showNewPassword">
-                        </v-text-field>
-                    </v-form>
-                </v-card-text>
-                <v-card-actions class="margT20">
-                    <v-btn :disabled="!valid" @click.native="validateAndChangePassword" color="primary" light>Сменить пароль</v-btn>
-                </v-card-actions>
+                            <v-text-field
+                                    class="change-password-d-input"
+                                    :class="showNewPassword ? 'show-password' : 'hide-password'"
+                                    id="newPassword"
+                                    v-model="newPassword"
+                                    append-icon="visibility"
+                                    v-validate="'required|max:50|min:6'"
+                                    :error-messages="errors.collect('newPassword')"
+                                    data-vv-name="newPassword"
+                                    label="Новый пароль"
+                                    required
+                                    :persistent-hint="true"
+                                    ref="newPassword"
+                                    :type="showNewPassword ? 'text' : 'password'"
+                                    autocomplete="off"
+                                    browser-autocomplete="off"
+                                    hint="Пароль может содержать строчные и прописные латинские буквы, цифры, спецсимволы. Минимум 6 символов"
+                                    @click:append="showNewPassword = !showNewPassword">
+                            </v-text-field>
+                        </v-form>
+                    </div>
+                    <v-card-actions class="margT20">
+                        <v-btn :disabled="!valid" @click.native="validateAndChangePassword" light>Применить</v-btn>
+                    </v-card-actions>
+                </div>
             </v-card>
         </v-dialog>
     `

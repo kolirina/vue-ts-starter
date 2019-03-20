@@ -17,28 +17,18 @@ const MainStore = namespace(StoreType.MAIN);
         <v-container fluid>
             <div class="section-title">Профиль</div>
             <v-card class="profile">
-                <v-layout row wrap class="profile-line">
-                    <v-flex xs2>Email:</v-flex>
-                    <v-flex xs5>
-                        <inplace-input name="email" @update:editMode="onModeChange('email', $event)" :editMode="editMode.email" :value="email" @input="onEmailChange">
-                            <v-tooltip content-class="custom-tooltip-wrap" max-width="250px" slot="afterText" top>
-                                <v-icon slot="activator" v-if="!clientInfo.user.emailConfirmed" class="profile-not-confirmed-email">fas fa-exclamation-triangle</v-icon>
-                                <span>Адрес не подтвержден. Пожалуйста подтвердите Ваш адрес эл.почты что воспользоваться всеми функциями сервиса.</span>
-                            </v-tooltip>
-                        </inplace-input>
-                    </v-flex>
-                </v-layout>
-
-                <v-layout row wrap class="profile-line">
-                    <v-flex xs2>Имя пользователя:</v-flex>
-                    <v-flex xs5>
-                        <inplace-input name="username"
-                                       @update:editMode="onModeChange('username', $event)"
-                                       :editMode="editMode.username" :value="username" @input="onUserNameChange"></inplace-input>
-                    </v-flex>
-                </v-layout>
-
-                <v-btn @click.native="changePassword" color="primary" class="big_btn" dark>
+                <div class="profile__subtitle margT0">Email</div>
+                <inplace-input name="email" @update:editMode="onModeChange('email', $event)" :editMode="editMode.email" :value="email" @input="onEmailChange">
+                    <v-tooltip content-class="custom-tooltip-wrap" max-width="250px" slot="afterText" top>
+                        <v-icon slot="activator" v-if="!clientInfo.user.emailConfirmed" class="profile-not-confirmed-email">fas fa-exclamation-triangle</v-icon>
+                        <span>Адрес не подтвержден. Пожалуйста подтвердите Ваш адрес эл.почты что воспользоваться всеми функциями сервиса.</span>
+                    </v-tooltip>
+                </inplace-input>
+                <div class="profile__subtitle">Имя пользователя</div>
+                <inplace-input name="username"
+                               @update:editMode="onModeChange('username', $event)"
+                               :editMode="editMode.username" :value="username" @input="onUserNameChange"></inplace-input>
+                <v-btn @click.native="changePassword" class="big_btn">
                     Сменить пароль
                 </v-btn>
             </v-card>
