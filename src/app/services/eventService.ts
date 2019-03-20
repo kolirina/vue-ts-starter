@@ -42,6 +42,14 @@ export class EventService {
     async deleteAllEvents(portfolioId: string): Promise<void> {
         await this.http.post(`/events/list/${portfolioId}/delete`);
     }
+
+    /**
+     * Удаляет все события пользователя
+     * @param portfolioId идентификатор портфеля
+     */
+    async rejectEvent(request: RejectShareEventRequest): Promise<void> {
+        await this.http.post(`/events/reject`, request);
+    }
 }
 
 /** Информация о событии по ценной бумаге */
@@ -70,6 +78,24 @@ export interface ShareEvent {
     totalAmount: string;
     /** Назавание события */
     label: string;
+    /** Период выплаты */
+    period?: string;
+    /** Тип события */
+    type: string;
+}
+
+/** Информация для отклонения события по ценной бумаге */
+export interface RejectShareEventRequest {
+    /** Бумага события */
+    shareId: number;
+    /** Дата наступления события */
+    date: string;
+    /** Количество бумаг события */
+    quantity: number;
+    /** Идентификатор портфеля */
+    portfolioId: number;
+    /** Итоговая сумма начисления (включая налог) */
+    totalAmount: string;
     /** Период выплаты */
     period?: string;
     /** Тип события */

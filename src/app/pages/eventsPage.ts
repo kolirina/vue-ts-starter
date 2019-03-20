@@ -246,7 +246,15 @@ export class EventsPage extends UI {
 
     @ShowProgress
     private async rejectEvent(event: ShareEvent): Promise<void> {
-        // await this.eventService.executeAllEvents(this.portfolio.id, true);
+        await this.eventService.rejectEvent({
+            date: event.date,
+            totalAmount: event.totalAmount,
+            period: event.period,
+            portfolioId: event.portfolioId,
+            quantity: event.quantity,
+            shareId: event.share.id,
+            type: event.type
+        });
         await this.loadEvents();
         this.$snotify.info("Начисление удалено");
     }
