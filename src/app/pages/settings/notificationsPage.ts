@@ -18,7 +18,7 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <div class="notifications">
-            <div class="section-title">Уведомления</div>
+            <div class="section-title" style="margin-bottom: 3px">Уведомления</div>
             <v-card :class="{'notifications-card notifications-card-main': true, 'notifications-card-full': notifications.length !== 0}">
                 <div>
                     Здесь будут Ваши настройки уведомлений о дивидендах,<br>

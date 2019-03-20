@@ -17,7 +17,7 @@ const MainStore = namespace(StoreType.MAIN);
         <v-container v-if="clientInfo && clientInfo.user" fluid>
             <v-layout row wrap>
                 <v-flex>
-                    <div class="section-title">Управление портфелями</div>
+                    <div class="section-title" style="margin-bottom: 3px">Управление портфелями</div>
                     <v-card :class="{'portfolio-settings-card portfolio-settings-card-main': true, 'portfolio-settings-card-full': true}">
                         <v-btn @click.stop="openDialog" class="primary">
                             Добавить портфель
