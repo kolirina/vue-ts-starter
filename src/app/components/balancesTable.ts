@@ -7,7 +7,7 @@ import {TradeService} from "../services/tradeService";
 import {BigMoney} from "../types/bigMoney";
 import {Operation} from "../types/operation";
 import {AssetRow, Portfolio, StockPortfolioRow, TableHeader} from "../types/types";
-import {TradeUtils} from "../utils/tradeUtils";
+import {SortUtils} from "../utils/sortUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {ConfirmDialog} from "./dialogs/confirmDialog";
@@ -145,7 +145,7 @@ export class BalancesTable extends UI {
     }
 
     private customSort(items: BalancesTableRow[], index: string, isDesc: boolean): BalancesTableRow[] {
-        return TradeUtils.simpleSort(items, index, isDesc);
+        return SortUtils.simpleSort(items, index, isDesc);
     }
 }
 

@@ -26,6 +26,7 @@ import {BigMoney} from "../../types/bigMoney";
 import {Operation} from "../../types/operation";
 import {Portfolio, TableHeader} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
+import {SortUtils} from "../../utils/sortUtils";
 import {TradeUtils} from "../../utils/tradeUtils";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
@@ -147,6 +148,6 @@ export class DividendTradesTable extends UI {
     }
 
     private customSort(items: DividendInfo[], index: string, isDesc: boolean): DividendInfo[] {
-        return TradeUtils.simpleSort(items, index, isDesc);
+        return SortUtils.simpleSort(items, index, isDesc);
     }
 }

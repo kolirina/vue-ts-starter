@@ -21,7 +21,7 @@ import {namespace} from "vuex-class";
 import {UI} from "../../app/ui";
 import {DividendInfo, DividendService} from "../../services/dividendService";
 import {Portfolio, TableHeader} from "../../types/types";
-import {TradeUtils} from "../../utils/tradeUtils";
+import {SortUtils} from "../../utils/sortUtils";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 import {ConfirmDialog} from "../dialogs/confirmDialog";
@@ -108,6 +108,6 @@ export class DividendsByYearAndTickerTable extends UI {
     }
 
     private customSort(items: DividendInfo[], index: string, isDesc: boolean): DividendInfo[] {
-        return TradeUtils.simpleSort(items, index, isDesc);
+        return SortUtils.simpleSort(items, index, isDesc);
     }
 }

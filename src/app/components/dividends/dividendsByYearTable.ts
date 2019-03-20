@@ -19,7 +19,7 @@ import {Prop} from "vue-property-decorator";
 import {UI} from "../../app/ui";
 import {DividendInfo, DividendsByYearRow} from "../../services/dividendService";
 import {TableHeader} from "../../types/types";
-import {TradeUtils} from "../../utils/tradeUtils";
+import {SortUtils} from "../../utils/sortUtils";
 
 @Component({
     // language=Vue
@@ -76,6 +76,6 @@ export class DividendsByYearTable extends UI {
     private rows: DividendsByYearRow[];
 
     private customSort(items: DividendInfo[], index: string, isDesc: boolean): DividendInfo[] {
-        return TradeUtils.simpleSort(items, index, isDesc);
+        return SortUtils.simpleSort(items, index, isDesc);
     }
 }

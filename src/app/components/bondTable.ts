@@ -12,6 +12,7 @@ import {BigMoney} from "../types/bigMoney";
 import {Operation} from "../types/operation";
 import {BondPortfolioRow, Portfolio, TableHeader} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
+import {SortUtils} from "../utils/sortUtils";
 import {TradeUtils} from "../utils/tradeUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
@@ -373,36 +374,7 @@ export class BondTable extends UI {
     }
 
     private customSort(items: BondPortfolioRow[], index: string, isDesc: boolean): BondPortfolioRow[] {
-        items.sort((a: BondPortfolioRow, b: BondPortfolioRow): number => {
-            if (!CommonUtils.exists(a.bond)) {
-                return 1;
-            }
-            if (!CommonUtils.exists(b.bond)) {
-                return -1;
-            }
-            if (index === TABLE_HEADERS.TICKER) {
-                if (!isDesc) {
-                    return a.bond.ticker.localeCompare(b.bond.ticker);
-                } else {
-                    return b.bond.ticker.localeCompare(a.bond.ticker);
-                }
-            } else if (index === TABLE_HEADERS.COMPANY) {
-                if (!isDesc) {
-                    return a.bond.shortname.localeCompare(b.bond.shortname);
-                } else {
-                    return b.bond.shortname.localeCompare(a.bond.shortname);
-                }
-            } else {
-                const first = (a as any)[index];
-                const second = (b as any)[index];
-                if (!isDesc) {
-                    return TradeUtils.compareValues(first, second) * -1;
-                } else {
-                    return TradeUtils.compareValues(first, second);
-                }
-            }
-        });
-        return items;
+        return SortUtils.bondSort(items, index, isDesc);
     }
 
     private customFilter(items: BondPortfolioRow[], search: string): BondPortfolioRow[] {

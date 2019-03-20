@@ -19,7 +19,7 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-container fluid>
-            <div class="section-title">Экспорт сделок</div>
+            <div class="section-title" style="margin-bottom: 28px">Экспорт сделок</div>
             <v-card>
                 <v-card-text>
                     <div class="trades-export-wrapper">
@@ -27,7 +27,7 @@ const MainStore = namespace(StoreType.MAIN);
                             Выгрузите сделки вашего текущего портфеля в csv или json формате.
                             Данный файл содержит полную информацию о всех сделках и является полностью совместимым для обратного импорта в сервис.
                         </p>
-                        <v-btn color="primary" class="big_btn" @click="downloadFile" :disabled="isDownloadNotAllowed()">
+                        <v-btn class="primary" @click="downloadFile" :disabled="isDownloadNotAllowed()">
                             Экспорт сделок в csv
                         </v-btn>
                         <!-- На триале и если тариф истек экспортировать сделки нельзя -->
@@ -40,7 +40,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 подписку чтобы иметь возможность экспортировать сделки в csv формат.
                                 Или воспользуйтесь экспортом в xlsx.</span>
                         </v-tooltip>
-                        <v-btn color="primary" class="big_btn" @click="exportPortfolio">
+                        <v-btn class="primary" @click="exportPortfolio">
                             Экспорт портфеля в xlsx
                         </v-btn>
                         <div class="EmptyBox20"></div>
