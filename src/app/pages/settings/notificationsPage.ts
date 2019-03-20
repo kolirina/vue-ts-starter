@@ -28,7 +28,7 @@ const MainStore = namespace(StoreType.MAIN);
                 <div>Добавьте первое уведомление</div>
 
                 <v-menu transition="slide-y-transition" nudge-bottom="50" nudge-left="10">
-                    <v-btn class="big_btn primary" slot="activator">
+                    <v-btn class="primary" slot="activator">
                         Добавить
                     </v-btn>
                     <v-list dense>

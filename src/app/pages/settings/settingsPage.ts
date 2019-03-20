@@ -19,7 +19,7 @@ const MainStore = namespace(StoreType.MAIN);
                 <v-flex>
                     <div class="section-title">Управление портфелями</div>
                     <v-card :class="{'portfolio-settings-card portfolio-settings-card-main': true, 'portfolio-settings-card-full': true}">
-                        <v-btn @click.stop="openDialog" class="big_btn primary">
+                        <v-btn @click.stop="openDialog" class="primary">
                             Добавить портфель
                         </v-btn>
                     </v-card>
