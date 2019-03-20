@@ -39,6 +39,17 @@ export class Filters {
         }
     }
 
+    static currency(value: string): string {
+        if (!value) {
+            return "";
+        }
+        try {
+           return new BigMoney(value).currency;
+        } catch (e) {
+            return "";
+        }
+    }
+
     static formatNumber(value: string): string {
         if (!value) {
             return "0.00";

@@ -7,7 +7,7 @@ import {BigMoney} from "../types/bigMoney";
 import {Operation} from "../types/operation";
 import {PortfolioAssetType} from "../types/portfolioAssetType";
 import {AssetRow, Portfolio, TableHeader} from "../types/types";
-import {TradeUtils} from "../utils/tradeUtils";
+import {SortUtils} from "../utils/sortUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {AddTradeDialog} from "./dialogs/addTradeDialog";
@@ -131,15 +131,6 @@ export class AssetTable extends UI {
     }
 
     private customSort(items: AssetRow[], index: string, isDesc: boolean): AssetRow[] {
-        items.sort((a: AssetRow, b: AssetRow): number => {
-            const first = (a as any)[index];
-            const second = (b as any)[index];
-            if (!isDesc) {
-                return TradeUtils.compareValues(first, second) * -1;
-            } else {
-                return TradeUtils.compareValues(first, second);
-            }
-        });
-        return items;
+        return SortUtils.simpleSort(items, index, isDesc);
     }
 }

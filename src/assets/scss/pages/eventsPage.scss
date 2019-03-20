@@ -66,3 +66,11 @@
   flex-direction: row;
   justify-content: space-around;
 }
+
+.events {
+
+    .amount__currency {
+      color: $font-color--lite;
+      font-family: "OpenSans";
+    }
+}

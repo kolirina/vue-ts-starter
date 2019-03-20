@@ -27,6 +27,7 @@ import {BigMoney} from "../types/bigMoney";
 import {Operation} from "../types/operation";
 import {Portfolio, StockPortfolioRow, TableHeader} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
+import {SortUtils} from "../utils/sortUtils";
 import {TradeUtils} from "../utils/tradeUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
@@ -343,36 +344,7 @@ export class StockTable extends UI {
     }
 
     private customSort(items: StockPortfolioRow[], index: string, isDesc: boolean): StockPortfolioRow[] {
-        items.sort((a: StockPortfolioRow, b: StockPortfolioRow): number => {
-            if (!CommonUtils.exists(a.stock)) {
-                return 1;
-            }
-            if (!CommonUtils.exists(b.stock)) {
-                return -1;
-            }
-            if (index === TABLE_HEADERS.TICKER) {
-                if (!isDesc) {
-                    return a.stock.ticker.localeCompare(b.stock.ticker);
-                } else {
-                    return b.stock.ticker.localeCompare(a.stock.ticker);
-                }
-            } else if (index === TABLE_HEADERS.COMPANY) {
-                if (!isDesc) {
-                    return a.stock.shortname.localeCompare(b.stock.shortname);
-                } else {
-                    return b.stock.shortname.localeCompare(a.stock.shortname);
-                }
-            } else {
-                const first = (a as any)[index];
-                const second = (b as any)[index];
-                if (!isDesc) {
-                    return TradeUtils.compareValues(first, second) * -1;
-                } else {
-                    return TradeUtils.compareValues(first, second);
-                }
-            }
-        });
-        return items;
+        return SortUtils.stockSort(items, index, isDesc);
     }
 
     private customFilter(items: StockPortfolioRow[], search: string): StockPortfolioRow[] {

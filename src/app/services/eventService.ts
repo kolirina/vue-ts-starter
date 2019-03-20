@@ -19,6 +19,14 @@ export class EventService {
     }
 
     /**
+     * Возвращает список дивидендных новостей
+     * @param portfolioId идентификатор портфеля
+     */
+    async getDividendNews(portfolioId: string): Promise<DividendNewsItem[]> {
+        return this.http.get<DividendNewsItem[]>(`/events/news/${portfolioId}`);
+    }
+
+    /**
      * Исполняет все события пользователя с зачислением денег или без
      * @param portfolioId идентификатор портфеля
      * @param withMoney признак исполнения событий с зачислением денег
@@ -96,4 +104,40 @@ export interface EventsAggregateInfo {
     totalRepaymentsAmount: string;
     /** Сумма начислений событий по всем событиям */
     totalAmount: string;
+}
+
+/** Сущность дивидендной новости */
+export interface DividendNewsItem {
+    /** Тикер */
+    ticker: string;
+    /** Краткое название */
+    shortname: string;
+    /** Дата собрания */
+    meetDate?: string;
+    /** Дата фиксации реестра */
+    cutDate?: string;
+    /** Ставка, рекомендованная по обыкновенным акциям */
+    recCommonValue?: string;
+    /** Ставка, рекомендованная по привилегированным акциям */
+    recPrivilegedValue?: string;
+    /** Ставка, определенная по обыкновенным акциям */
+    usualCommonValue?: string;
+    /** Ставка, определенная по привилегированным акциям */
+    usualPrivilegedValue?: string;
+    /** Дивиденды за период */
+    period?: string;
+    /** Дата появления события в ленте новостей */
+    foundDate?: string;
+    /** Источник */
+    source?: string;
+    /** ИНН эмитента */
+    inn?: string;
+    /** Дивидендная доходность (TODO сделать расчет на дату отсечки) */
+    yield: string;
+    /** Валюта начисления */
+    currency: string;
+    /** ISIN эмитента */
+    isin?: string;
+    /** Идентификатор бумаги в системе */
+    stockId: number;
 }
