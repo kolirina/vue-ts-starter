@@ -227,7 +227,7 @@ const MainStore = namespace(StoreType.MAIN);
                             <div class="ext-info__item">
                                 Стоимость покупок {{props.item.bcost | amount}} <span>{{ portfolioCurrency }}</span><br>
                                 Стоимость продаж {{props.item.scost | amount}} <span>{{ portfolioCurrency }}</span><br>
-                                Коммиссия {{props.item.summFee | amount}} <span>{{ portfolioCurrency }}</span>
+                                Комиссия {{props.item.summFee | amount}} <span>{{ portfolioCurrency }}</span>
                             </div>
                         </td>
                     </tr>

@@ -144,12 +144,17 @@ const MainStore = namespace(StoreType.MAIN);
                     <tr>
                         <td>
                             <div class="ext-info__item">
-                                <template v-if="tableHeadersState.ticker && props.item.asset !== 'MONEY'">Тикер</template>
-                                <span v-if="tableHeadersState.ticker" class="ext-info__ticker">
-                                    <stock-link v-if="props.item.asset === 'STOCK'" :ticker="props.item.ticker"></stock-link>
-                                    <bond-link v-if="props.item.asset === 'BOND'" :ticker="props.item.ticker"></bond-link>
-                                    <span v-if="props.item.asset === 'MONEY'">{{ props.item.ticker }}</span>
-                                </span><br>
+                                <template v-if="tableHeadersState.ticker && props.item.asset !== 'MONEY'">
+                                    Тикер
+                                    <span class="ext-info__ticker">
+                                        <stock-link v-if="props.item.asset === 'STOCK'" :ticker="props.item.ticker"></stock-link>
+                                        <bond-link v-if="props.item.asset === 'BOND'" :ticker="props.item.ticker"></bond-link>
+                                    </span>
+                                </template>
+                                <template v-if="tableHeadersState.ticker && props.item.asset === 'MONEY'">
+                                    Тип {{ props.item.ticker }}
+                                </template>
+                                <br>
                                 <template v-if="props.item.companyName">Название {{ props.item.companyName }}<br></template>
                                 Заметка {{ props.item.note }}
                             </div>

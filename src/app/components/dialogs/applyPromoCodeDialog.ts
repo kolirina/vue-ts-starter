@@ -35,7 +35,7 @@ import {BtnReturn, CustomDialog} from "./customDialog";
                 <div class="enterPromoCode-dialog__content">
                     <div class="enterPromoCode-dialog__title">Ввод промокода</div>
                     <v-text-field v-model.trim="promoCode" maxlength="10" size="10" @keypress.enter="applyPromoCode"
-                                  label="Введите промокод" clearable></v-text-field>
+                                  label="Введите промокод"></v-text-field>
 
                     <v-card-actions>
                         <v-btn :disabled="!promoCode" class="big_btn" @click.native="applyPromoCode">Применить</v-btn>

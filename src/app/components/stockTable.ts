@@ -191,7 +191,7 @@ const MainStore = namespace(StoreType.MAIN);
                             <div class="ext-info__item">
                                 P/L за день {{ props.item.dailyPl | amount }} <span>{{ portfolioCurrency }}</span><br>
                                 P/L за день {{ props.item.dailyPlPercent }} <span>%</span><br>
-                                Коммиссия {{ props.item.summFee | amount }} <span>{{ portfolioCurrency }}</span>
+                                Комиссия {{ props.item.summFee | amount }} <span>{{ portfolioCurrency }}</span>
                             </div>
                         </td>
                         <td>
