@@ -15,7 +15,6 @@ import {TradeUtils} from "../utils/tradeUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {AddTradeDialog} from "./dialogs/addTradeDialog";
-import {TableExtendedInfo} from "./tableExtendedInfo";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -141,15 +140,58 @@ const MainStore = namespace(StoreType.MAIN);
             </template>
 
             <template #expand="props">
-                <table-extended-info :headers="headers" :table-name="TABLES_NAME.TRADE"
-                                     :asset="AssetType.valueByName(props.item.asset)" :row-item="props.item" :ticker="props.item.ticker">
-                    <div class="extended-info__cell label">Заметка</div>
-                    <div class="extended-info__cell">{{ props.item.note }}</div>
-                </table-extended-info>
+                <table class="ext-info" @click.stop>
+                    <tr>
+                        <td>
+                            <div class="ext-info__item">
+                                <template v-if="tableHeadersState.ticker && props.item.asset !== 'MONEY'">Тикер</template>
+                                <span v-if="tableHeadersState.ticker" class="ext-info__ticker">
+                                    <stock-link v-if="props.item.asset === 'STOCK'" :ticker="props.item.ticker"></stock-link>
+                                    <bond-link v-if="props.item.asset === 'BOND'" :ticker="props.item.ticker"></bond-link>
+                                    <span v-if="props.item.asset === 'MONEY'">{{ props.item.ticker }}</span>
+                                </span><br>
+                                <template v-if="props.item.companyName">Название {{ props.item.companyName }}<br></template>
+                                Заметка {{ props.item.note }}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="ext-info__item">
+                                Операция {{ props.item.operationLabel }}<br>
+                                Дата {{ getTradeDate(props.item) }}<br>
+                                <template v-if="props.item.quantity">Количество {{ props.item.quantity }} <span>шт.</span></template>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="ext-info__item">
+                                <template v-if="getPrice(props.item)">Цена {{ getPrice(props.item) }} <span>{{ props.item.currency }}</span><br></template>
+                                <template v-if="props.item.facevalue">Номинал {{ props.item.facevalue }} <span>{{ props.item.currency }}</span><br></template>
+                                <template v-if="props.item.nkd">НКД {{ props.item.nkd }} <span>{{ props.item.currency }}</span></template>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="ext-info__item">
+                                <template v-if="props.item.signedTotal">Сумма {{ props.item.signedTotal | amount(true) }} <span>{{ props.item.currency }}</span><br></template>
+                                <template v-if="getFee(props.item)">Комиссия {{ getFee(props.item) }} <span>{{ props.item.currency }}</span><br></template>
+                                <template v-if="props.item.totalWithoutFee">
+                                    Сумма без комиссии {{ props.item.totalWithoutFee | amount }} <span>{{ props.item.currency }}</span>
+                                </template>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="ext-info__item">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="ext-info__item">
+                            </div>
+                        </td>
+                    </tr>
+                </table>
             </template>
         </v-data-table>
-    `,
-    components: {TableExtendedInfo}
+    `
 })
 export class TradesTable extends UI {
 
