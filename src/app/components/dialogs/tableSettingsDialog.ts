@@ -10,7 +10,7 @@ import {CustomDialog} from "./customDialog";
 @Component({
   // language=Vue
   template: `
-    <v-dialog v-model="showed" persistent max-width="400px">
+    <v-dialog v-model="showed" max-width="600px">
       <v-card class="table-settings">
         <v-icon class="closeDialog" @click.native="close">close</v-icon>
         <v-card-title class="headline">Настройка колонок</v-card-title>
@@ -30,7 +30,6 @@ import {CustomDialog} from "./customDialog";
         </v-card-text>
         <v-card-actions class="dialog-actions">
           <v-btn @click.native="filterHeaders" color="primary" light>ОК</v-btn>
-          <v-btn @click.native="close">Отмена</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
