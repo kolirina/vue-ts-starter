@@ -1,6 +1,5 @@
 import {namespace} from "vuex-class/lib/bindings";
 import {Component, UI, Watch} from "../app/ui";
-import {CatchErrors} from "../platform/decorators/catchErrors";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {ClientInfo} from "../services/clientService";
 import {PortfolioParams} from "../services/portfolioService";
@@ -71,7 +70,6 @@ export class PortfolioSwitcher extends UI {
         this.selected = this.getSelected();
     }
 
-    @CatchErrors
     @ShowProgress
     private async onSelect(selected: PortfolioParams): Promise<void> {
         await this.setDefaultPortfolio(selected.id);

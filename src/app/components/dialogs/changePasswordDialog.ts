@@ -1,7 +1,6 @@
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {Vue} from "vue/types/vue";
-import {CatchErrors} from "../../platform/decorators/catchErrors";
 import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {ClientInfo, ClientService} from "../../services/clientService";
@@ -86,7 +85,6 @@ export class ChangePasswordDialog extends CustomDialog<ClientInfo, string> {
     /**
      * Отправляет запрос на смену пароля пользователя
      */
-    @CatchErrors
     @ShowProgress
     @DisableConcurrentExecution
     private async validateAndChangePassword(): Promise<void> {

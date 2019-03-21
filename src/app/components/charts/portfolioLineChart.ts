@@ -2,7 +2,6 @@ import {ChartObject} from "highcharts";
 import Highstock from "highcharts/highstock";
 import {Inject} from "typescript-ioc";
 import {Component, Prop, UI, Watch} from "../../app/ui";
-import {CatchErrors} from "../../platform/decorators/catchErrors";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {Storage} from "../../platform/services/storage";
 import {HighStockEventsGroup} from "../../types/charts/types";
@@ -62,7 +61,6 @@ export class PortfolioLineChart extends UI {
     /** Признак отображения сделок на графике */
     private showTrades = true;
 
-    @CatchErrors
     async mounted(): Promise<void> {
         this.showTrades = this.localStorage.get<string>(`${this.stateKeyPrefix}_SHOW_EVENTS`, "true") === "true";
         this.ranges = [...ChartUtils.getChartRanges()];

@@ -4,7 +4,6 @@ import {Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
 import {ExpandedPanel} from "../../components/expandedPanel";
-import {CatchErrors} from "../../platform/decorators/catchErrors";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {ClientInfo, ClientService} from "../../services/clientService";
 import {PromoCodeService, PromoCodeStatistics} from "../../services/promoCodeService";
@@ -111,14 +110,12 @@ export class PromoCodesPage extends UI {
      * Инициализация компонента
      * @inheritDoc
      */
-    @CatchErrors
     @ShowProgress
     async created(): Promise<void> {
         this.promoCodeStatistics = await this.promoCodeService.getPromoCodeStatistics(this.clientInfo.user.id);
     }
 
     @Watch("clientInfo.user.referralAwardType")
-    @CatchErrors
     @ShowProgress
     private async onReferralAwardTypeChange(): Promise<void> {
         await this.promoCodeService.changeReferralAwardType(this.clientInfo.user.referralAwardType);

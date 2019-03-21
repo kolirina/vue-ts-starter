@@ -9,7 +9,6 @@ import {DividendsByYearAndTickerTable} from "../components/dividends/dividendsBy
 import {DividendsByYearTable} from "../components/dividends/dividendsByYearTable";
 import {DividendTradesTable} from "../components/dividends/dividendTradesTable";
 import {ExpandedPanel} from "../components/expandedPanel";
-import {CatchErrors} from "../platform/decorators/catchErrors";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {DividendAggregateInfo, DividendService} from "../services/dividendService";
 import {ExportService, ExportType} from "../services/exportService";
@@ -81,13 +80,11 @@ export class DividendsPage extends UI {
         await this.loadDividendAggregateInfo();
     }
 
-    @CatchErrors
     @ShowProgress
     private async loadDividendAggregateInfo(): Promise<void> {
         this.dividendInfo = await this.dividendService.getDividendAggregateInfo(this.portfolio.id);
     }
 
-    @CatchErrors
     @ShowProgress
     private async exportTable(exportType: ExportType): Promise<void> {
         await this.exportService.exportReport(this.portfolio.id, exportType);

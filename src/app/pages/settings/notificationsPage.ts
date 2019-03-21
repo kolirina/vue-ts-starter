@@ -4,7 +4,6 @@ import {Component, UI} from "../../app/ui";
 import {CreateOrEditNotificationDialog} from "../../components/dialogs/createOrEditNotificationDialog";
 import {BtnReturn} from "../../components/dialogs/customDialog";
 import {RemoveNotificationDialog} from "../../components/dialogs/removeNotificationDialog";
-import {CatchErrors} from "../../platform/decorators/catchErrors";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {Filters} from "../../platform/filters/Filters";
 import {Notification, NotificationsService, NotificationType} from "../../services/notificationsService";
@@ -155,7 +154,6 @@ export class NotificationsPage extends UI {
         }
     }
 
-    @CatchErrors
     @ShowProgress
     private async loadNotifications(): Promise<void> {
         this.notifications = await this.notificationsService.getNotifications();

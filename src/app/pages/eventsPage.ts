@@ -6,7 +6,6 @@ import {UI} from "../app/ui";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
 import {ConfirmDialog} from "../components/dialogs/confirmDialog";
 import {BtnReturn} from "../components/dialogs/customDialog";
-import {CatchErrors} from "../platform/decorators/catchErrors";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {DividendNewsItem, EventService, ShareEvent} from "../services/eventService";
 import {AssetType} from "../types/assetType";
@@ -178,7 +177,6 @@ export class EventsPage extends UI {
         await this.loadEvents();
     }
 
-    @CatchErrors
     @ShowProgress
     private async loadEvents(): Promise<void> {
         const eventsResponse = await this.eventService.getEvents(this.portfolio.id);

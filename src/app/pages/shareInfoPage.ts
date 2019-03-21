@@ -5,7 +5,6 @@ import {UI} from "../app/ui";
 import {DividendChart} from "../components/charts/dividendChart";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
 import {CreateOrEditNotificationDialog} from "../components/dialogs/createOrEditNotificationDialog";
-import {CatchErrors} from "../platform/decorators/catchErrors";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {MarketService} from "../services/marketService";
 import {NotificationType} from "../services/notificationsService";
@@ -162,7 +161,6 @@ export class ShareInfoPage extends UI {
     private dividends: BaseChartDot[] = [];
     private events: HighStockEventsGroup[] = [];
 
-    @CatchErrors
     @ShowProgress
     async created(): Promise<void> {
         const ticker = this.$route.params.ticker;
@@ -175,7 +173,6 @@ export class ShareInfoPage extends UI {
         }
     }
 
-    @CatchErrors
     @ShowProgress
     private async onShareSelect(share: Share): Promise<void> {
         this.share = share;

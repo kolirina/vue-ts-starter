@@ -1,7 +1,6 @@
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {UI} from "../../app/ui";
-import {CatchErrors} from "../../platform/decorators/catchErrors";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {MarketService} from "../../services/marketService";
 import {Currency} from "../../types/types";
@@ -35,7 +34,6 @@ export class CurrencyQuotes extends UI {
      * Загрузка данных для компонента
      * @inheritDoc
      */
-    @CatchErrors
     @ShowProgress
     async created(): Promise<void> {
         const array = await this.marketservice.loadCurrencies();

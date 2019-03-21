@@ -5,7 +5,6 @@ import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
 import {Prop, UI} from "../../app/ui";
 import {ApplyPromoCodeDialog} from "../../components/dialogs/applyPromoCodeDialog";
-import {CatchErrors} from "../../platform/decorators/catchErrors";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {ClientInfo, ClientService} from "../../services/clientService";
 import {TariffService} from "../../services/tariffService";
@@ -262,7 +261,6 @@ export class TariffsPage extends UI {
      * @param tariff выбранный тариф
      */
     @ShowProgress
-    @CatchErrors
     private async makePayment(tariff: Tariff): Promise<void> {
         if (this.isProgress) {
             return;

@@ -1,7 +1,6 @@
 import {Inject} from "typescript-ioc";
 import {namespace} from "vuex-class/lib/bindings";
 import {Component, UI, Watch} from "../app/ui";
-import {CatchErrors} from "../platform/decorators/catchErrors";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {ExportService, ExportType} from "../services/exportService";
 import {OverviewService} from "../services/overviewService";
@@ -60,7 +59,6 @@ export class PortfolioPage extends UI {
         await this.loadPortfolioLineChart();
     }
 
-    @CatchErrors
     @ShowProgress
     private async loadPortfolioLineChart(): Promise<void> {
         if (UiStateHelper.historyPanel[0] === 1) {
@@ -69,7 +67,6 @@ export class PortfolioPage extends UI {
         }
     }
 
-    @CatchErrors
     @ShowProgress
     private async onExportTable(exportType: ExportType): Promise<void> {
         await this.exportService.exportReport(this.portfolio.id, exportType);

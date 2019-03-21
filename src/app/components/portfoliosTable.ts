@@ -3,7 +3,6 @@ import Component from "vue-class-component";
 import {Prop} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
-import {CatchErrors} from "../platform/decorators/catchErrors";
 import {DisableConcurrentExecution} from "../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {ClientInfo} from "../services/clientService";
@@ -135,7 +134,6 @@ export class PortfoliosTable extends UI {
         await new PortfolioEditDialog().show({store: this.$store.state[StoreType.MAIN], router: this.$router, portfolioParams});
     }
 
-    @CatchErrors
     @DisableConcurrentExecution
     private async deletePortfolio(portfolio: PortfolioParams): Promise<void> {
         const result = await new ConfirmDialog().show(`Вы собираетесь удалить портфель ${portfolio.name}.
@@ -153,7 +151,6 @@ export class PortfoliosTable extends UI {
         this.$snotify.info("Портфель успешно удален");
     }
 
-    @CatchErrors
     @ShowProgress
     @DisableConcurrentExecution
     private async clonePortfolio(id: string): Promise<void> {
@@ -182,7 +179,6 @@ export class PortfoliosTable extends UI {
         await new SharePortfolioDialog().show({portfolio: portfolio, clientInfo: this.clientInfo});
     }
 
-    @CatchErrors
     @ShowProgress
     @DisableConcurrentExecution
     private async onProfessionalModeChange(portfolio: PortfolioParams): Promise<void> {

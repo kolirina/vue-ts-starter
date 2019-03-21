@@ -1,6 +1,5 @@
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
-import {CatchErrors} from "../../platform/decorators/catchErrors";
 import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {Filters} from "../../platform/filters/Filters";
@@ -220,7 +219,6 @@ export class CreateOrEditNotificationDialog extends CustomDialog<Notification, b
     }
 
     @ShowProgress
-    @CatchErrors
     @DisableConcurrentExecution
     private async save(): Promise<void> {
         if (!this.isValid()) {

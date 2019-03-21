@@ -7,7 +7,6 @@ import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog";
 import {ExpandedPanel} from "../components/expandedPanel";
 import {TradesTable} from "../components/tradesTable";
 import {TradesTableFilter} from "../components/tradesTableFilter";
-import {CatchErrors} from "../platform/decorators/catchErrors";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {ExportService, ExportType} from "../services/exportService";
 import {FilterService} from "../services/filterService";
@@ -128,7 +127,6 @@ export class TradesPage extends UI {
         await this.loadTrades();
     }
 
-    @CatchErrors
     @ShowProgress
     private async onDelete(tradeRow: TradeRow): Promise<void> {
         await this.tradeService.deleteTrade({portfolioId: this.portfolio.id, tradeId: tradeRow.id});
@@ -138,7 +136,6 @@ export class TradesPage extends UI {
             `по бумаге ${tradeRow.ticker}`} была успешно удалена`);
     }
 
-    @CatchErrors
     @ShowProgress
     private async loadTrades(): Promise<void> {
         const result = await this.tradeService.loadTrades(
@@ -154,7 +151,6 @@ export class TradesPage extends UI {
         this.pages = result.pages;
     }
 
-    @CatchErrors
     @ShowProgress
     private async exportTable(exportType: ExportType): Promise<void> {
         await this.exportService.exportReport(this.portfolio.id, exportType);

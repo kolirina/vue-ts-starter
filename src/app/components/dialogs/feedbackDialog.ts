@@ -1,6 +1,5 @@
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
-import {CatchErrors} from "../../platform/decorators/catchErrors";
 import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {ClientInfo} from "../../services/clientService";
@@ -85,7 +84,6 @@ export class FeedbackDialog extends CustomDialog<ClientInfo, void> {
     /**
      * Валидирует данные и отправляет запрос с сообщением
      */
-    @CatchErrors
     @ShowProgress
     @DisableConcurrentExecution
     private async sendFeedback(): Promise<void> {
