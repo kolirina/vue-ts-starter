@@ -4,7 +4,6 @@ import {Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
 import {AddTradeDialog} from "../../components/dialogs/addTradeDialog";
-import {CatchErrors} from "../../platform/decorators/catchErrors";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {MarketService} from "../../services/marketService";
 import {AssetType} from "../../types/assetType";
@@ -122,7 +121,6 @@ export class StockQuotes extends UI {
         await this.loadStocks();
     }
 
-    @CatchErrors
     @ShowProgress
     private async loadStocks(): Promise<void> {
         const response = await this.marketservice.loadStocks(this.pagination.rowsPerPage * (this.pagination.page - 1),

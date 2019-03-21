@@ -3,7 +3,6 @@ import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
-import {CatchErrors} from "../../platform/decorators/catchErrors";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {ClientInfo} from "../../services/clientService";
 import {ExportService, ExportType} from "../../services/exportService";
@@ -153,7 +152,6 @@ export class ExportPage extends UI {
      * Инициализация компонента, загрузка портфелей
      * @inheritDoc
      */
-    @CatchErrors
     @ShowProgress
     async mounted(): Promise<void> {
         this.portfolios = this.clientInfo.user.portfolios;
@@ -187,7 +185,6 @@ export class ExportPage extends UI {
     /**
      * Сохраняет выбранные настройки расписания
      */
-    @CatchErrors
     @ShowProgress
     private async saveBackupSchedule(): Promise<void> {
         const days = this.selectedDaysInner.map(day => this.days.indexOf(day) + 2);
@@ -197,7 +194,6 @@ export class ExportPage extends UI {
         this.$snotify.info("Настройки бэкапа успешно обновлены");
     }
 
-    @CatchErrors
     @ShowProgress
     private async exportPortfolio(): Promise<void> {
         await this.exportService.exportReport(this.portfolio.id, ExportType.COMPLEX);

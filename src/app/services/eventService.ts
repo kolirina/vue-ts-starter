@@ -45,7 +45,7 @@ export class EventService {
 
     /**
      * Удаляет все события пользователя
-     * @param portfolioId идентификатор портфеля
+     * @param request запрос на отклонение сделки
      */
     async rejectEvent(request: RejectShareEventRequest): Promise<void> {
         await this.http.post(`/events/reject`, request);

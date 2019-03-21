@@ -16,7 +16,6 @@
 
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
-import {CatchErrors} from "../../platform/decorators/catchErrors";
 import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {TariffService} from "../../services/tariffService";
@@ -53,7 +52,6 @@ export class ApplyPromoCodeDialog extends CustomDialog<void, BtnReturn> {
     private promoCode = "";
 
     @ShowProgress
-    @CatchErrors
     @DisableConcurrentExecution
     private async applyPromoCode(): Promise<void> {
         if (CommonUtils.isBlank(this.promoCode)) {

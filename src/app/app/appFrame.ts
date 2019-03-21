@@ -7,7 +7,6 @@ import {FeedbackDialog} from "../components/dialogs/feedbackDialog";
 import {NotificationUpdateDialog} from "../components/dialogs/notificationUpdateDialog";
 import {ErrorHandler} from "../components/errorHandler";
 import {PortfolioSwitcher} from "../components/portfolioSwitcher";
-import {CatchErrors} from "../platform/decorators/catchErrors";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {Storage} from "../platform/services/storage";
 import {ClientInfo, ClientService} from "../services/clientService";
@@ -235,7 +234,6 @@ export class AppFrame extends UI {
     ];
 
     @ShowProgress
-    @CatchErrors
     async created(): Promise<void> {
         if (this.localStorage.get(StoreKeys.TOKEN_KEY, null)) {
             await this.startup();
@@ -254,7 +252,6 @@ export class AppFrame extends UI {
             await this.loadUser({token: this.localStorage.get(StoreKeys.TOKEN_KEY, null), user: client});
             await this.setCurrentPortfolio(this.$store.state[StoreType.MAIN].clientInfo.user.currentPortfolioId);
         } catch (e) {
-            this.$snotify.error("При авторизации пользователя", "Ошибка", {timeout: 0});
             throw e;
         } finally {
             this.loading = false;

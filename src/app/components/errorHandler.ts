@@ -12,9 +12,9 @@ export class ErrorHandler extends UI {
      * @inheritDoc
      */
     created(): void {
-        UI.on(EventType.HANDLE_ERROR, (error: Error) => {
-            this.$snotify.error(error.message);
-            window.console.error(error);
+        UI.on(EventType.HANDLE_ERROR, (error: Error | string) => {
+            const message = error instanceof Error ? (window.console.error(error), error.message) : error;
+            this.$snotify.error(message);
         });
     }
 }

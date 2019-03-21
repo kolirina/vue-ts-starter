@@ -5,7 +5,6 @@ import {Resolver} from "../../../typings/vue";
 import {Component, UI} from "../app/ui";
 import {CombinedPortfoliosTable} from "../components/combinedPortfoliosTable";
 import {BlockByTariffDialog} from "../components/dialogs/blockByTariffDialog";
-import {CatchErrors} from "../platform/decorators/catchErrors";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {ClientInfo, ClientService} from "../services/clientService";
 import {OverviewService} from "../services/overviewService";
@@ -76,7 +75,6 @@ export class CombinedPortfolioPage extends UI {
      * @inheritDoc
      * @returns {Promise<void>}
      */
-    @CatchErrors
     async beforeRouteEnter(to: Route, from: Route, next: Resolver): Promise<void> {
         const clientService: ClientService = Container.get(ClientService);
         const clientInfo = await clientService.getClientInfo();
@@ -88,7 +86,6 @@ export class CombinedPortfolioPage extends UI {
         next();
     }
 
-    @CatchErrors
     @ShowProgress
     private async doCombinedPortfolio(): Promise<void> {
         const ids = this.clientInfo.user.portfolios.filter(value => value.combined).map(value => value.id);
@@ -96,7 +93,6 @@ export class CombinedPortfolioPage extends UI {
         await this.loadPortfolioLineChart();
     }
 
-    @CatchErrors
     @ShowProgress
     private async onSetCombined(data: CombinedData): Promise<void> {
         await this.overviewService.setCombinedFlag(data.id, data.combined);

@@ -1,6 +1,5 @@
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
-import {CatchErrors} from "../../platform/decorators/catchErrors";
 import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {Filters} from "../../platform/filters/Filters";
@@ -42,7 +41,6 @@ export class RemoveNotificationDialog extends CustomDialog<Notification, BtnRetu
     /** Тип уведомления */
     private NotificationType = NotificationType;
 
-    @CatchErrors
     @ShowProgress
     @DisableConcurrentExecution
     private async removeNotification(): Promise<void> {

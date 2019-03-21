@@ -3,7 +3,6 @@ import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {VueRouter} from "vue-router/types/router";
 import {UI} from "../../app/ui";
-import {CatchErrors} from "../../platform/decorators/catchErrors";
 import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {IisType, PortfolioAccountType, PortfolioParams, PortfolioService} from "../../services/portfolioService";
@@ -158,7 +157,6 @@ export class PortfolioEditDialog extends CustomDialog<PortfolioDialogData, boole
         }
     }
 
-    @CatchErrors
     @ShowProgress
     @DisableConcurrentExecution
     private async savePortfolio(): Promise<void> {

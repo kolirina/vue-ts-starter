@@ -2,7 +2,6 @@ import moment from "moment";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {UI} from "../../app/ui";
-import {CatchErrors} from "../../platform/decorators/catchErrors";
 import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {ClientInfo} from "../../services/clientService";
@@ -171,7 +170,6 @@ export class SharePortfolioDialog extends CustomDialog<SharePortfolioDialogData,
         this.dashboardAccess = this.data.portfolio.dashboardAccess;
     }
 
-    @CatchErrors
     @ShowProgress
     private async generateTokenLink(): Promise<void> {
         const isValid = this.isValid();
@@ -183,7 +181,6 @@ export class SharePortfolioDialog extends CustomDialog<SharePortfolioDialogData,
         });
     }
 
-    @CatchErrors
     @ShowProgress
     @DisableConcurrentExecution
     private async savePublicParams(): Promise<void> {

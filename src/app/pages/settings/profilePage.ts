@@ -3,7 +3,6 @@ import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
 import {ChangePasswordDialog} from "../../components/dialogs/changePasswordDialog";
-import {CatchErrors} from "../../platform/decorators/catchErrors";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {ClientInfo, ClientService} from "../../services/clientService";
 import {CommonUtils} from "../../utils/commonUtils";
@@ -81,7 +80,6 @@ export class ProfilePage extends UI {
      * Обабатывает смену email пользователя
      * @param email
      */
-    @CatchErrors
     @ShowProgress
     private async onEmailChange(email: string): Promise<void> {
         this.email = CommonUtils.isBlank(email) ? this.clientInfo.user.email : email;
@@ -113,7 +111,6 @@ export class ProfilePage extends UI {
      * Обрабатывает смену имени пользователя
      * @param username
      */
-    @CatchErrors
     @ShowProgress
     private async onUserNameChange(username: string): Promise<void> {
         this.username = CommonUtils.isBlank(username) ? this.clientInfo.user.username : username;

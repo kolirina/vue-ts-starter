@@ -5,7 +5,6 @@ import {UI} from "../app/ui";
 import {BondPaymentsChart} from "../components/charts/bondPaymentsChart";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
 import {CreateOrEditNotificationDialog} from "../components/dialogs/createOrEditNotificationDialog";
-import {CatchErrors} from "../platform/decorators/catchErrors";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {MarketService} from "../services/marketService";
 import {NotificationType} from "../services/notificationsService";
@@ -140,7 +139,6 @@ export class BondInfoPage extends UI {
     private events: HighStockEventsGroup[] = [];
     private assetType = AssetType;
 
-    @CatchErrors
     @ShowProgress
     async created(): Promise<void> {
         const isin = this.$route.params.isin;
@@ -153,7 +151,6 @@ export class BondInfoPage extends UI {
         }
     }
 
-    @CatchErrors
     @ShowProgress
     private async onShareSelect(share: Share): Promise<void> {
         this.share = share;
