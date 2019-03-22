@@ -440,11 +440,11 @@ export enum Status {
 }
 
 export type Pagination = {
-    descending: boolean,
-    page: number,
-    rowsPerPage: number,
-    sortBy: string,
-    totalItems: number
+    descending?: boolean,
+    page?: number,
+    rowsPerPage?: number,
+    sortBy?: string,
+    totalItems?: number
 };
 
 export type TablePagination = {

@@ -104,7 +104,7 @@ import {CustomDialog} from "./customDialog";
                                 <v-layout wrap>
                                     <v-flex xs12 lg6>
                                         <ii-number-field label="НКД" v-model="nkd" @keyup="calculateFee" :decimals="2" name="nkd"
-                                                         v-validate="'required'" :error-messages="errors.collect('nkd')">
+                                                         v-validate="nkdValidationString" :error-messages="errors.collect('nkd')">
                                         </ii-number-field>
                                     </v-flex>
                                     <v-flex v-if="calculationAssetType || bondTrade" xs12 lg6>
@@ -192,6 +192,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private portfolio: Portfolio = null;
 
     private assetTypes = AssetType.values();
+    private Operation = Operation;
 
     private assetType = AssetType.STOCK;
 
@@ -224,6 +225,12 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private fee: string = null;
 
     private note: string = null;
+    /** Период события */
+    private eventPeriod: string = null;
+    /** Дата события */
+    private eventDate: string = null;
+    /** Признак исполнения события */
+    private processShareEvent: boolean = false;
 
     private dateMenuValue = false;
     private timeMenuValue = false;
@@ -259,6 +266,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             await this.setTradeFields();
         } else if (this.data.eventFields) {
             this.filteredShares = this.share ? [this.share] : [];
+            this.fillFieldsFromShare();
             await this.setEventFields();
         } else {
             this.fillFieldsFromShare();
@@ -402,6 +410,9 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             asset: this.assetType.enumName,
             operation: this.operation.enumName,
             createLinkedTrade: this.isKeepMoney(),
+            eventDate: this.eventDate,
+            eventPeriod: this.eventPeriod,
+            processShareEvent: this.processShareEvent,
             fields: tradeFields
         });
     }
@@ -455,6 +466,9 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         this.nkd = null;
         this.facevalue = null;
         this.moneyAmount = null;
+        this.eventDate = null;
+        this.eventPeriod = null;
+        this.processShareEvent = false;
     }
 
     private onShareClear(): void {
@@ -493,11 +507,23 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private async setEventFields(): Promise<void> {
-        this.price = TradeUtils.decimal(this.data.eventFields.amount);
+        // при погашении нет НКД и комиссий, цена всегда 100%
+        if (this.operation === Operation.REPAYMENT) {
+            this.price = "100.00";
+            this.facevalue = TradeUtils.decimal(this.data.eventFields.amount);
+            this.nkd = "";
+            this.fee = "";
+        } else {
+            this.price = TradeUtils.decimal(this.data.eventFields.amount);
+        }
         this.currency = this.share.currency;
         this.quantity = this.data.eventFields.quantity;
         this.note = this.data.eventFields.note;
         this.perOne = this.data.eventFields.perOne;
+        this.eventDate = this.data.eventFields.eventDate;
+        this.date = TradeUtils.getDateString(this.data.eventFields.eventDate);
+        this.eventPeriod = this.data.eventFields.eventPeriod;
+        this.processShareEvent = true;
     }
 
     private get shareTicker(): string {
@@ -547,7 +573,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             case AssetType.STOCK:
                 return this.share && this.date && this.price && this.quantity > 0;
             case AssetType.BOND:
-                return this.share && this.date && this.price && this.facevalue && this.quantity > 0;
+                return this.share && this.date && this.price && (!!this.facevalue || [Operation.COUPON, Operation.AMORTIZATION].includes(this.operation)) && this.quantity > 0;
             case AssetType.MONEY:
                 return !!this.date && !!this.moneyAmount;
         }
@@ -582,6 +608,10 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     private set keepMoney(newValue: boolean) {
         this.keepMoneyValue = newValue;
+    }
+
+    private get nkdValidationString(): string {
+        return [Operation.BUY, Operation.SELL].includes(this.operation) ? "required" : "";
     }
 
     // tslint:disable

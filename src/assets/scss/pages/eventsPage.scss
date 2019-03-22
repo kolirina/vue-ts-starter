@@ -69,6 +69,27 @@
 
 .events {
 
+  .pr3 {
+    padding-right: 3px !important;
+  }
+
+  .v-card__text {
+    padding: 0 !important;
+  }
+
+  .headline {
+    font-size: 18px !important;
+    padding: 11px 3px 16px 20px !important;
+  }
+
+  &__menu-btn {
+    height: 10px !important;
+  }
+
+  .events-table, .dividend-news-table {
+    padding: 0 !important;
+  }
+
     .amount__currency {
       color: $font-color--lite;
       font-family: "OpenSans";

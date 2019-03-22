@@ -7,7 +7,7 @@ import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
 import {ConfirmDialog} from "../components/dialogs/confirmDialog";
 import {BtnReturn} from "../components/dialogs/customDialog";
 import {ShowProgress} from "../platform/decorators/showProgress";
-import {DividendNewsItem, EventService, ShareEvent} from "../services/eventService";
+import {DividendNewsItem, EventsAggregateInfo, EventService, ShareEvent} from "../services/eventService";
 import {AssetType} from "../types/assetType";
 import {Operation} from "../types/operation";
 import {Portfolio, TableHeader} from "../types/types";
@@ -34,7 +34,7 @@ const MainStore = namespace(StoreType.MAIN);
                     Новые события
                     <v-spacer></v-spacer>
                     <v-menu transition="slide-y-transition" bottom left>
-                        <v-btn slot="activator" flat icon dark>
+                        <v-btn slot="activator" class="events__menu-btn" flat icon dark>
                             <span class="menuDots"></span>
                         </v-btn>
                         <v-list dense style="cursor: pointer;">
@@ -76,7 +76,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     {{ props.item.cleanAmount | amount(true) }}
                                     <span class="amount__currency">{{ props.item.cleanAmount | currency }}</span>
                                 </td>
-                                <td class="justify-center layout px-0" @click.stop>
+                                <td class="justify-end layout pr3" @click.stop>
                                     <v-menu transition="slide-y-transition" bottom left>
                                         <v-btn slot="activator" flat icon dark>
                                             <span class="menuDots"></span>
@@ -103,7 +103,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-card-text>
             </v-card>
 
-            <v-card style="margin-top: 25px">
+            <v-card style="margin-top: 30px">
                 <v-card-title class="headline" style="padding-left: 35px;">Дивидендные новости</v-card-title>
 
                 <v-card-text>
@@ -142,6 +142,7 @@ export class EventsPage extends UI {
     private eventService: EventService;
     /** События */
     private events: ShareEvent[] = null;
+    private eventsAggregateInfo: EventsAggregateInfo = null;
     /** Дивидендные новости */
     private dividendNews: DividendNewsItem[] = null;
     /** Зголовки таблицы События */
@@ -168,19 +169,26 @@ export class EventsPage extends UI {
      * Инициализация данных
      * @inheritDoc
      */
+    @ShowProgress
     async created(): Promise<void> {
         await this.loadEvents();
+        await this.loadDividendNews();
     }
 
     @Watch("portfolio")
+    @ShowProgress
     private async onPortfolioChange(): Promise<void> {
         await this.loadEvents();
+        await this.loadDividendNews();
     }
 
-    @ShowProgress
     private async loadEvents(): Promise<void> {
         const eventsResponse = await this.eventService.getEvents(this.portfolio.id);
         this.events = eventsResponse.events;
+        this.eventsAggregateInfo = eventsResponse.eventsAggregateInfo;
+    }
+
+    private async loadDividendNews(): Promise<void> {
         this.dividendNews = await this.eventService.getDividendNews(this.portfolio.id);
     }
 
@@ -193,6 +201,8 @@ export class EventsPage extends UI {
             eventFields: {
                 amount: event.cleanAmountPerShare || event.amountPerShare,
                 quantity: event.quantity,
+                eventPeriod: event.period,
+                eventDate: event.date,
                 note: TradeUtils.eventNote(event),
                 perOne: true,
             },
@@ -200,8 +210,8 @@ export class EventsPage extends UI {
             assetType: operation === Operation.DIVIDEND ? AssetType.STOCK : AssetType.BOND
         });
         if (result) {
+            // только перезагружаем портфель, вотчер перезагрузит события и дивиденды
             await this.reloadPortfolio(this.portfolio.id);
-            await this.loadEvents();
         }
     }
 
@@ -230,7 +240,6 @@ export class EventsPage extends UI {
     private async executeAllEventsWithoutMoney(): Promise<void> {
         await this.eventService.executeAllEvents(this.portfolio.id, false);
         await this.reloadPortfolio(this.portfolio.id);
-        await this.loadEvents();
         this.$snotify.info("Начисления успешно исполнены");
     }
 
@@ -238,7 +247,6 @@ export class EventsPage extends UI {
     private async executeAllEvents(): Promise<void> {
         await this.eventService.executeAllEvents(this.portfolio.id, true);
         await this.reloadPortfolio(this.portfolio.id);
-        await this.loadEvents();
         this.$snotify.info("Начисления успешно исполнены");
     }
 

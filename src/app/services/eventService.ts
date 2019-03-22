@@ -108,6 +108,8 @@ export interface EventFields {
     amount: string;
     note: string;
     perOne: boolean;
+    eventPeriod: string;
+    eventDate: string;
 }
 
 /** Информация о событиях портфеля */
