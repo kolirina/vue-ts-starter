@@ -199,30 +199,36 @@ input[type="search"] {
 
 .rur:after {
   @extend %fa_icon_custom;
+  color: $font-color--lite;
   content: '\f158';
 }
 
 .rub:after {
   content: '\f158';
+  color: $font-color--lite;
   @extend %fa_icon_custom;
 }
 
 .usd:after {
   content: '\f155';
+  color: $font-color--lite;
   @extend %fa_icon_custom;
 }
 
 .eur:after {
   content: '\f153';
+  color: $font-color--lite;
   @extend %fa_icon_custom;
 }
 
 .jpy:after {
   content: '\f157';
+  color: $font-color--lite;
   @extend %fa_icon_custom;
 }
 .percent:after {
   content: '%';
+  color: $font-color--lite;
   @extend %fa_icon_custom;
 }
 

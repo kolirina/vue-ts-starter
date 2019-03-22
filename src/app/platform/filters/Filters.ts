@@ -27,13 +27,14 @@ export class Filters {
         throw new Error("Неизвестный тип актива: " + type);
     }
 
-    static formatMoneyAmount(value: string, needRound?: boolean, scale?: number): string {
+    static formatMoneyAmount(value: string, needRound?: boolean, scale?: number, returnZeros: boolean = true): string {
         if (!value) {
-            return "0.00";
+            return returnZeros ? "0.00" : "";
         }
         const amount = new BigMoney(value);
         if (needRound) {
-            return DF.format(amount.amount.toDP(DEFAULT_SCALE, Decimal.ROUND_HALF_UP).toNumber());
+            const am = amount.amount.toDP(DEFAULT_SCALE, Decimal.ROUND_HALF_UP).toNumber();
+            return DF.format(am);
         } else {
             return DF_NO_SCALE.format(scale ? amount.amount.toDP(scale, Decimal.ROUND_HALF_UP).toNumber() : amount.amount.toNumber());
         }
@@ -45,6 +46,17 @@ export class Filters {
         }
         try {
            return new BigMoney(value).currency;
+        } catch (e) {
+            return "";
+        }
+    }
+
+    static currencySymbol(value: string): string {
+        if (!value) {
+            return "";
+        }
+        try {
+           return new BigMoney(value).currencySymbol;
         } catch (e) {
             return "";
         }
