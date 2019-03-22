@@ -93,8 +93,10 @@
   .btns & + & {margin-left: 12px}
 }
 
+.v-btn__content {line-height: 1}
+
 .v-card__actions {
-  .v-btn {
+  .v-btn + .v-btn {
     margin-left: 10px !important;
   }
 }
