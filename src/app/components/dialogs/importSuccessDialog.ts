@@ -12,7 +12,7 @@ import {CustomDialog} from "./customDialog";
 @Component({
     // language=Vue
     template: `
-        <v-dialog v-model="showed" max-width="550px" persistent>
+        <v-dialog v-model="showed" max-width="600px" persistent>
             <v-card class="dialog-wrap">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
 

@@ -24,7 +24,7 @@ import {BtnReturn, CustomDialog} from "./customDialog";
 @Component({
     // language=Vue
     template: `
-        <v-dialog v-model="showed" persistent max-width="500px">
+        <v-dialog v-model="showed" max-width="600px">
             <v-card class="dialog-wrap">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
 

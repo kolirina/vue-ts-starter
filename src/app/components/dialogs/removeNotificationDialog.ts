@@ -10,7 +10,7 @@ import {BtnReturn, CustomDialog} from "./customDialog";
 @Component({
     // language=Vue
     template: `
-        <v-dialog v-model="showed" persistent max-width="480px">
+        <v-dialog v-model="showed" max-width="600px">
             <v-card class="remove-notification dialog-wrap">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
                 <v-card-title class="headline add-notification-title">Удаление уведомления</v-card-title>
@@ -28,7 +28,6 @@ import {BtnReturn, CustomDialog} from "./customDialog";
                 </div>
                 <v-card-actions class="btn-group-right">
                     <v-btn @click.native="removeNotification" color="primary" light>Удалить</v-btn>
-                    <v-btn @click.native="close">Отмена</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>

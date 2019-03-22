@@ -52,13 +52,13 @@ export class CustomDialog<ParamType, ReturnType> extends UI {
 
     private bindListeners(): void {
         if (CustomDialog.instances.length === 0) {
-            document.body.addEventListener("keyup", this.onEscapeListener);
+            document.body.addEventListener("keyup", ($event: any) => this.onEscapeListener($event));
         }
     }
 
     private unbindListeners(): void {
         if (CustomDialog.instances.length === 0) {
-            document.body.removeEventListener("keyup", this.onEscapeListener);
+            document.body.removeEventListener("keyup", ($event: any) => this.onEscapeListener($event));
         }
     }
 
@@ -79,12 +79,12 @@ export class CustomDialog<ParamType, ReturnType> extends UI {
             return true;
         }
         // Первым в списке всегда идет компонент формы, причем не важно какой - DialogForm или SimpleDialogForm
-        const dialogFormProps: any = this.$children[0].$options.propsData;
-        if (!dialogFormProps) {
+        const dialogFormAttrs: any = this.$children[0].$attrs;
+        if (!dialogFormAttrs) {
             return true;
         }
         // Аттрибут closable должен быть установлен явно в false. Если это не так, считаем что диалог закрываемый
-        return dialogFormProps.closable !== false;
+        return dialogFormAttrs.closable !== false;
     }
 }
 

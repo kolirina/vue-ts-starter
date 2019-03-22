@@ -19,12 +19,12 @@ import {VueRouter} from "vue-router/types/router";
 import {BtnReturn, CustomDialog} from "./customDialog";
 
 /**
- * Диалог для демо - режима
+ * Диалог блокировки экрана при истекшем тарифе
  */
 @Component({
     // language=Vue
     template: `
-        <v-dialog v-model="showed" persistent max-width="500px" closable>
+        <v-dialog v-model="showed" persistent max-width="600px">
             <v-card class="dialog-wrap">
                 <v-icon v-if="allowClose" class="closeDialog" @click.native="closeDialog">close</v-icon>
                 <span v-else class="closeDialog">{{ count }}</span>

@@ -12,7 +12,7 @@ import {CustomDialog} from "./customDialog";
 @Component({
     // language=Vue
     template: `
-        <v-dialog v-model="showed" max-width="550px">
+        <v-dialog v-model="showed" max-width="600px">
             <v-card class="dialog-wrap">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
 
@@ -48,7 +48,6 @@ import {CustomDialog} from "./customDialog";
                     <v-btn color="primary" @click.native="sendFeedback" dark>
                         Отправить
                     </v-btn>
-                    <v-btn color="info lighten-2" flat @click.native="close">Отмена</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
