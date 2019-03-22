@@ -38,12 +38,24 @@ const MainStore = namespace(StoreType.MAIN);
                     <td v-if="tableHeadersState.operationLabel" class="text-xs-left">{{ props.item.operationLabel }}</td>
                     <td v-if="tableHeadersState.date" class="text-xs-center">{{ getTradeDate(props.item) }}</td>
                     <td v-if="tableHeadersState.quantity" class="text-xs-right ii-number-cell">{{ props.item.quantity }}</td>
-                    <td v-if="tableHeadersState.price" class="text-xs-right ii-number-cell">{{ getPrice(props.item) }}</td>
-                    <td v-if="tableHeadersState.facevalue" class="text-xs-right ii-number-cell">{{ props.item.facevalue }}</td>
-                    <td v-if="tableHeadersState.nkd" class="text-xs-right ii-number-cell">{{ props.item.nkd }}</td>
-                    <td v-if="tableHeadersState.fee" class="text-xs-right ii-number-cell">{{ getFee(props.item) }}</td>
-                    <td v-if="tableHeadersState.signedTotal" class="text-xs-right ii-number-cell">{{ props.item.signedTotal | amount(true) }}</td>
-                    <td v-if="tableHeadersState.totalWithoutFee" class="text-xs-right ii-number-cell">{{ props.item.totalWithoutFee | amount }}</td>
+                    <td v-if="tableHeadersState.price" :class="['text-xs-right', 'ii-number-cell']">
+                        {{ getPrice(props.item) }}&nbsp;<span class="second-value">{{ currencyForPrice(props.item) }}</span>
+                    </td>
+                    <td v-if="tableHeadersState.facevalue" :class="['text-xs-right', 'ii-number-cell']">
+                        {{ props.item.facevalue | amount(false, null, false) }}&nbsp;<span class="second-value">{{ props.item.facevalue | currencySymbol }}</span>
+                    </td>
+                    <td v-if="tableHeadersState.nkd" :class="['text-xs-right', 'ii-number-cell']">
+                        {{ props.item.nkd | amount(false, null, false) }}&nbsp;<span class="second-value">{{ props.item.nkd | currencySymbol }}</span>
+                    </td>
+                    <td v-if="tableHeadersState.fee" :class="['text-xs-right', 'ii-number-cell']">
+                        {{ getFee(props.item) }}&nbsp;<span class="second-value">{{ props.item.fee | currencySymbol }}</span>
+                    </td>
+                    <td v-if="tableHeadersState.signedTotal" :class="['text-xs-right', 'ii-number-cell']">
+                        {{ props.item.signedTotal | amount(true) }}&nbsp;<span class="second-value">{{ props.item.signedTotal | currencySymbol }}</span>
+                    </td>
+                    <td v-if="tableHeadersState.totalWithoutFee" :class="['text-xs-right', 'ii-number-cell']">
+                        {{ props.item.totalWithoutFee | amount }}&nbsp;<span class="second-value">{{ props.item.totalWithoutFee | currencySymbol }}</span>
+                    </td>
                     <td v-if="props.item.parentTradeId" class="justify-center px-0" style="text-align: center" @click.stop>
                         <v-tooltip content-class="custom-tooltip-wrap" :max-width="250" top>
                             <a slot="activator">
@@ -168,19 +180,23 @@ const MainStore = namespace(StoreType.MAIN);
                         </td>
                         <td>
                             <div class="ext-info__item">
-                                <template v-if="getPrice(props.item)">Цена {{ getPrice(props.item) }} <span>{{ props.item.currency }}</span><br></template>
-                                <template v-if="props.item.facevalue">Номинал {{ props.item.facevalue }} <span>{{ props.item.currency }}</span><br></template>
-                                <template v-if="props.item.nkd">НКД {{ props.item.nkd }} <span>{{ props.item.currency }}</span></template>
+                                <template v-if="getPrice(props.item)">Цена {{ getPrice(props.item) }} <span>{{ currencyForPrice(props.item) }}</span><br></template>
+                                <template v-if="props.item.facevalue">
+                                    Номинал {{ props.item.facevalue | amount }} <span>{{ props.item.facevalue | currencySymbol }}</span><br>
+                                </template>
+                                <template v-if="props.item.nkd">НКД {{ props.item.nkd | amount }} <span>{{ props.item.nkd | currencySymbol }}</span></template>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
                             <div class="ext-info__item">
-                                <template v-if="props.item.signedTotal">Сумма {{ props.item.signedTotal | amount(true) }} <span>{{ props.item.currency }}</span><br></template>
-                                <template v-if="getFee(props.item)">Комиссия {{ getFee(props.item) }} <span>{{ props.item.currency }}</span><br></template>
+                                <template v-if="props.item.signedTotal">
+                                    Сумма {{ props.item.signedTotal | amount(true) }} <span>{{ props.item.signedTotal | currencySymbol }}</span><br>
+                                </template>
+                                <template v-if="getFee(props.item)">Комиссия {{ getFee(props.item) }} <span>{{ props.item.fee | currencySymbol }}</span><br></template>
                                 <template v-if="props.item.totalWithoutFee">
-                                    Сумма без комиссии {{ props.item.totalWithoutFee | amount }} <span>{{ props.item.currency }}</span>
+                                    Сумма без комиссии {{ props.item.totalWithoutFee | amount }} <span>{{ props.item.totalWithoutFee | currencySymbol }}</span>
                                 </template>
                             </div>
                         </td>
@@ -332,6 +348,15 @@ export class TradesTable extends UI {
 
     private isMoneyTrade(trade: TradeRow): boolean {
         return AssetType.valueByName(trade.asset) === AssetType.MONEY;
+    }
+
+    private currencyForPrice(trade: TradeRow): string {
+        return this.moneyPrice(trade) ? TradeUtils.currencySymbolByAmount(trade.moneyPrice).toLowerCase() : this.percentPrice(trade) ? "%" : "";
+    }
+
+    private currency(amount: string): string {
+        const currencyCode = TradeUtils.currencySymbolByAmount(amount);
+        return currencyCode ? currencyCode.toLowerCase() : "";
     }
 
     private customSort(items: TradeRow[], index: string, isDesc: boolean): TradeRow[] {

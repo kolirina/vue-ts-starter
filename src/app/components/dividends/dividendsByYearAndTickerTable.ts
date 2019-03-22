@@ -89,7 +89,7 @@ export class DividendsByYearAndTickerTable extends UI {
         {text: "Компания", align: "left", value: "shortName", width: "120"},
         {text: "Год", align: "right", value: "year", width: "30"},
         {text: "Кол-во, шт.", align: "right", value: "quantity", width: "65"},
-        {text: "На одну акцию", align: "right", sortable: false, value: "perOne", width: "65"},
+        {text: "На одну акцию", align: "right", value: "perOne", width: "65"},
         {text: "Сумма", align: "right", value: "amount", width: "65"},
         {text: "Доходность, %", align: "right", value: "yield", width: "80", tooltip: "Дивидендная доходность посчитанная по отношению к исторической цене акции на конец года."},
         {text: "Действия", align: "center", value: "actions", sortable: false, width: "25"}

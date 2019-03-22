@@ -111,6 +111,7 @@ export class UIRegistry {
         UI.filter("date", Filters.formatDate);
         UI.filter("declension", Filters.declension);
         UI.filter("currency", Filters.currency);
+        UI.filter("currencySymbol", Filters.currencySymbol);
 
         // директивы
         UI.directive(StateDirective.NAME, new StateDirective());

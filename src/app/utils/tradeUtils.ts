@@ -22,7 +22,7 @@ export class TradeUtils {
     }
 
     static getFee(trade: TradeRow): string {
-        return trade.asset === AssetType.MONEY.enumName ? null : Filters.formatMoneyAmount(trade.fee, true);
+        return trade.asset === AssetType.MONEY.enumName ? null : Filters.formatMoneyAmount(trade.fee, true, null, false);
     }
 
     static percentPrice(trade: TradeRow): boolean {
@@ -116,5 +116,12 @@ export class TradeUtils {
                 return "€";
         }
         return currencyCode;
+    }
+
+    static currencySymbolByAmount(value: string): string {
+        if (value) {
+            return new BigMoney(value).currencySymbol;
+        }
+        return null;
     }
 }
