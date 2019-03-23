@@ -14,19 +14,15 @@ const MainStore = namespace(StoreType.MAIN);
     template: `
         <v-card dark class="dashboard-card" :class="{ 'dashboard-border': !block.hasNotBorderLeft }">
             <v-card-title primary-title class="pb-2 dashboard-card-string">
-                <div>
                     <span>{{ block.name }}</span>
                     <v-tooltip content-class="custom-tooltip-wrap" :max-width="450" bottom right>
-                        <v-icon class="custom-tooltip" style="color: #55556d!important" slot="activator" small>far fa-question-circle</v-icon>
+                        <v-icon class="custom-tooltip" slot="activator" small>far fa-question-circle</v-icon>
                         <span v-html="block.tooltip"></span>
                     </v-tooltip>
-                </div>
             </v-card-title>
             <v-container fluid pl-3 pt-0>
                 <v-layout row class="mx-0 py-2 ">
-                    <div class="headline">
-                        <span class="dashboard-currency dashboard-card-big-nums" :class="block.mainCurrency"><b>{{ block.mainValue }}</b></span>
-                    </div>
+                    <span class="dashboard-currency dashboard-card-big-nums" :class="block.mainCurrency">{{ block.mainValue }} </span>
                 </v-layout>
                 <v-layout row class="mx-0 dashboard-card-small-nums">
                     <div>
@@ -42,7 +38,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </template>
 
                         <template v-else>
-                            <span class="dashboard-currency" :class="block.secondCurrency"><b>{{ block.secondValue }}</b> </span>
+                            <span class="dashboard-currency" :class="block.secondCurrency">{{ block.secondValue }} </span>
                             <span class="dashboard-second-value-desc">{{ block.secondValueDesc }} </span>
                         </template>
                     </div>
