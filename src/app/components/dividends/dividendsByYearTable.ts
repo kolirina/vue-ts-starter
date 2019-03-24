@@ -48,9 +48,13 @@ import {SortUtils} from "../../utils/sortUtils";
             <template #items="props">
                 <tr class="selectable">
                     <td class="text-xs-left">{{ props.item.year }}</td>
-                    <td class="text-xs-right ii-number-cell">{{ props.item.dividendsAmount | amount(true) }}</td>
-                    <td class="text-xs-right ii-number-cell">{{ props.item.portfolioCosts | amount(true) }}</td>
-                    <td class="text-xs-right ii-number-cell">{{ props.item.yield }}</td>
+                    <td class="text-xs-right ii-number-cell">
+                        {{ props.item.dividendsAmount | amount(true) }}&nbsp;<span class="second-value">{{ props.item.dividendsAmount | currencySymbol }}</span>
+                    </td>
+                    <td class="text-xs-right ii-number-cell">
+                        {{ props.item.portfolioCosts | amount(true) }}&nbsp;<span class="second-value">{{ props.item.portfolioCosts | currencySymbol }}</span>
+                    </td>
+                    <td class="text-xs-right ii-number-cell">{{ props.item.yield }}&nbsp;<span class="second-value">%</span></td>
                 </tr>
             </template>
         </v-data-table>

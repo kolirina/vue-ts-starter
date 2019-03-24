@@ -51,8 +51,10 @@ import {SortUtils} from "../../utils/sortUtils";
                         <stock-link :ticker="props.item.ticker"></stock-link>
                     </td>
                     <td class="text-xs-left">{{ props.item.shortName }}</td>
-                    <td class="text-xs-right ii-number-cell">{{ props.item.amount | amount(true) }}</td>
-                    <td class="text-xs-right ii-number-cell">{{ props.item.yield }}</td>
+                    <td class="text-xs-right ii-number-cell">
+                        {{ props.item.amount | amount(true) }}&nbsp;<span class="second-value">{{ props.item.amount | currencySymbol }}</span>
+                    </td>
+                    <td class="text-xs-right ii-number-cell">{{ props.item.yield }}&nbsp;<span class="second-value">%</span></td>
                 </tr>
             </template>
         </v-data-table>
