@@ -26,7 +26,7 @@ export class SortUtils {
     private constructor() {
     }
 
-    static simpleSort(items: any[], index: string, isDesc: boolean): any[] {
+    static simpleSort<T>(items: T[], index: string, isDesc: boolean): T[] {
         items.sort((a: any, b: any): number => {
             const first = (a as any)[index];
             const second = (b as any)[index];
@@ -147,9 +147,9 @@ export class SortUtils {
         return items;
     }
 
-    private static compareValues(first: any, second: any): number {
+    static compareValues(first: any, second: any): number {
         if (!CommonUtils.exists(first) || !CommonUtils.exists(second)) {
-            return first > second ? 1 : -1;
+            return first > second ? 1 : first < second ? -1 : 0;
         }
         if (!isNaN(first) && !isNaN(second)) {
             return +first - +second;
@@ -169,8 +169,8 @@ export class SortUtils {
             }
         }
         if (typeof first === "string" && typeof second === "string") {
-            return first.toUpperCase() > second.toUpperCase() ? 1 : -1;
+            return first.toUpperCase() > second.toUpperCase() ? 1 : first.toUpperCase() < second.toUpperCase() ? -1 : 0;
         }
-        return first > second ? 1 : -1;
+        return first > second ? 1 : first < second ? -1 : 0;
     }
 }
