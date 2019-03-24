@@ -11,6 +11,8 @@
   }
 
   &-card-big-nums {
+    font-family: $dashbord--big-num--font-family !important;
+    font-weight: $dashbord--big-num--font-weight !important;
     font-size: $dashbord--big-num--font-size;
     color: $dashbord--big-num--font-color !important;
   }
@@ -63,7 +65,7 @@
         font-size: 20px;
         font-weight: bold;
       }
-      
+
     }
     &.arrow-up &-icon i {
       color: $dashboard--green-color !important;
