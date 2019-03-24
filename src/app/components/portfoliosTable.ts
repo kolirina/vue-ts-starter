@@ -9,6 +9,7 @@ import {ClientInfo} from "../services/clientService";
 import {PortfolioParams, PortfolioService} from "../services/portfolioService";
 import {EventType} from "../types/eventType";
 import {TableHeader} from "../types/types";
+import {SortUtils} from "../utils/sortUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {ConfirmDialog} from "./dialogs/confirmDialog";
@@ -22,7 +23,7 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-data-table :headers="headers" :items="portfolios" item-key="id" hide-actions>
+        <v-data-table :headers="headers" :items="portfolios" item-key="id" :custom-sort="customSort" hide-actions>
             <template #items="props">
                 <tr class="selectable" @dblclick="props.expanded = !props.expanded">
                     <td>
@@ -33,7 +34,7 @@ const MainStore = namespace(StoreType.MAIN);
                         <v-icon color="gray" small v-if="props.item.professionalMode" title="Профессиональный режим в действии">fas fa-rocket</v-icon>
                         <v-icon color="gray" small v-if="props.item.access" title="Открыт публичный доступ к портфелю">fas fa-share-alt</v-icon>
                     </td>
-                    <td class="text-xs-right">{{ props.item.fixFee }}</td>
+                    <td class="text-xs-right">{{ props.item.fixFee }}&nbsp;<span class="second-value">%</span></td>
                     <td class="text-xs-center">{{ props.item.viewCurrency }}</td>
                     <td class="text-xs-center">{{ props.item.accountType.description }}</td>
                     <td class="text-xs-center">{{ props.item.openDate }}</td>
@@ -180,10 +181,24 @@ export class PortfoliosTable extends UI {
     }
 
     @ShowProgress
-    @DisableConcurrentExecution
     private async onProfessionalModeChange(portfolio: PortfolioParams): Promise<void> {
         const result = await this.portfolioService.updatePortfolio(portfolio);
         this.$snotify.info(`Профессиональный режим для портфеля ${result.professionalMode ? "включен" : "выключен"}`);
         UI.emit(EventType.PORTFOLIO_UPDATED, result);
+    }
+
+    private customSort(items: PortfolioParams[], index: string, isDesc: boolean): PortfolioParams[] {
+        items.sort((a: PortfolioParams, b: PortfolioParams): number => {
+            const first = (a as any)[index];
+            const second = (b as any)[index];
+            if (!isDesc) {
+                const result = SortUtils.compareValues(first, second) * -1;
+                return result === 0 ? Number(b.id) - Number(a.id) : result;
+            } else {
+                const result = SortUtils.compareValues(first, second);
+                return result === 0 ? Number(a.id) - Number(b.id) : result;
+            }
+        });
+        return items;
     }
 }
