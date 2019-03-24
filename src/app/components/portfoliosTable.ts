@@ -33,7 +33,7 @@ const MainStore = namespace(StoreType.MAIN);
                         <v-icon color="gray" small v-if="props.item.professionalMode" title="Профессиональный режим в действии">fas fa-rocket</v-icon>
                         <v-icon color="gray" small v-if="props.item.access" title="Открыт публичный доступ к портфелю">fas fa-share-alt</v-icon>
                     </td>
-                    <td class="text-xs-right">{{ props.item.fixFee }}</td>
+                    <td class="text-xs-right">{{ props.item.fixFee }}&nbsp;<span class="second-value">%</span></td>
                     <td class="text-xs-center">{{ props.item.viewCurrency }}</td>
                     <td class="text-xs-center">{{ props.item.accountType.description }}</td>
                     <td class="text-xs-center">{{ props.item.openDate }}</td>

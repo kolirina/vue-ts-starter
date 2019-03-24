@@ -77,9 +77,9 @@ import {CustomDialog} from "./customDialog";
                             </v-flex>
 
                             <v-flex xs12>
-                                <v-text-field label="Фиксированная комиссия" v-model="portfolioParams.fixFee"
-                                              hint="Для автоматического рассчета комиссии при внесении сделок.">
-                                </v-text-field>
+                                <ii-number-field label="Фиксированная комиссия" v-model="portfolioParams.fixFee" hint="Для автоматического рассчета комиссии при внесении сделок."
+                                                 :decimals="5">
+                                </ii-number-field>
                             </v-flex>
 
                             <v-flex xs12>
