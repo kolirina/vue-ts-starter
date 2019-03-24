@@ -1,4 +1,5 @@
 .dashboard {
+
   &-wrap {
     background-color: $dashboard--bg-color;
   }
@@ -10,17 +11,26 @@
   }
 
   &-card-big-nums {
-    font-family: $dashbord--big-num--font-family !important;
-    font-size: $dashbord--big-num--font-size !important;;
-    font-weight: $dashbord--big-num--font-weight !important;;
-    color: $dashbord--big-num--font-color !important;;
+    font-size: $dashbord--big-num--font-size;
+    color: $dashbord--big-num--font-color !important;
   }
 
   &-card-string {
-    font-family: $dashbord--string--font-family;
-    font-size: $dashbord--string--font-size;
-    font-weight: $dashbord--string--font-weight;
-    color: $dashbord--string--font-color;
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    color: #fff;
+
+    .v-tooltip {
+      > span {
+        font-size: 0;
+
+        i {
+          font-size: 13px !important;
+          margin-left: 8px;
+        }
+      }
+    }
   }
 
   &-card-small-nums {
@@ -75,13 +85,6 @@
       color: $dashboard--red-color !important;
     }
   }
-
-  &-currency {
-    b {
-      margin-right: 6px;
-    }
-  }
-
 
   &-border {
     border-left: 1px solid #fff;

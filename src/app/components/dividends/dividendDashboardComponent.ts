@@ -41,13 +41,11 @@ const MainStore = namespace(StoreType.MAIN);
             </v-card-title>
             <v-container fluid pl-3 pt-0>
                 <v-layout row class="mx-0 py-2 dashboard-card-big-nums">
-                    <div class="headline">
-                        <span class="dashboard-currency" :class="block.mainCurrency"><b>{{ block.mainValue }}</b></span>
-                    </div>
+                    <span class="dashboard-currency" :class="block.mainCurrency">{{ block.mainValue }} </span>
                 </v-layout>
                 <v-layout row class="mx-0 dashboard-card-small-nums">
                     <div>
-                        <span class="dashboard-currency" :class="block.secondCurrency"><b>{{ block.secondValue }}</b> </span>
+                        <span class="dashboard-currency" :class="block.secondCurrency">{{ block.secondValue }} </span>
                         <span>{{ block.secondValueDesc }}</span>
                     </div>
                 </v-layout>
