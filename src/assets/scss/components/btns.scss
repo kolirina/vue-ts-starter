@@ -15,7 +15,7 @@
       background-color: $main-color-2 !important;
     }
   }
-  
+
   &-cancel {
     padding: 11px;
     height: auto;
@@ -55,6 +55,7 @@
   margin: 0;
   text-transform: none;
   color: #3D4656;
+  height: 36px;
 
   &:hover,
   &:focus {

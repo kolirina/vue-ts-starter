@@ -19,6 +19,8 @@ import Component from "vue-class-component";
 import {Prop} from "vue-property-decorator";
 import {namespace} from "vuex-class";
 import {UI} from "../../app/ui";
+import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
+import {ShowProgress} from "../../platform/decorators/showProgress";
 import {DividendInfo, DividendService} from "../../services/dividendService";
 import {TradeFields} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
@@ -31,6 +33,8 @@ import {TradeUtils} from "../../utils/tradeUtils";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 import {AddTradeDialog} from "../dialogs/addTradeDialog";
+import {ConfirmDialog} from "../dialogs/confirmDialog";
+import {BtnReturn} from "../dialogs/customDialog";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -65,7 +69,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </td>
                     <td class="text-xs-left">{{ props.item.shortName }}</td>
                     <td class="text-xs-right">{{ props.item.date }}</td>
-                    <td class="text-xs-right ii-number-cell">{{ props.item.quantity }}</td>
+                    <td class="text-xs-right ii-number-cell">{{ props.item.quantity | number }}</td>
                     <td class="text-xs-right ii-number-cell">{{ props.item.perOne | amount(true) }}</td>
                     <td class="text-xs-right ii-number-cell">{{ props.item.amount | amount(true) }}</td>
                     <td class="text-xs-right ii-number-cell">{{ props.item.yield }}</td>
@@ -143,7 +147,17 @@ export class DividendTradesTable extends UI {
     }
 
     private async deleteDividendTrade(dividendTrade: DividendInfo): Promise<void> {
+        const result = await new ConfirmDialog().show(`Вы уверены, что хотите удалить дивидендную сделку по акции ${dividendTrade.ticker}?`);
+        if (result === BtnReturn.YES) {
+            await this.deleteDividendTradeAndShowMessage(dividendTrade);
+        }
+    }
+
+    @ShowProgress
+    @DisableConcurrentExecution
+    private async deleteDividendTradeAndShowMessage(dividendTrade: DividendInfo): Promise<void> {
         await this.dividendService.deleteTrade({tradeId: dividendTrade.id, portfolioId: this.portfolio.id});
+        await this.reloadPortfolio(this.portfolio.id);
         this.$snotify.info("Сделка успешно удалена");
     }
 

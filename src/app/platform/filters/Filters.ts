@@ -62,11 +62,15 @@ export class Filters {
         }
     }
 
+    /**
+     * Используется для форматирования только целых чисел!!!
+     * @param value строка
+     */
     static formatNumber(value: string): string {
         if (!value) {
-            return "0.00";
+            return "0";
         }
-        return DF.format(new Decimal(value).toDP(DEFAULT_SCALE, Decimal.ROUND_HALF_UP).toNumber());
+        return DF_NO_SCALE.format(new Decimal(value).toDP(0, Decimal.ROUND_HALF_UP).toNumber());
 
     }
 
