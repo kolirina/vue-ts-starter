@@ -56,8 +56,9 @@ export class DashboardBrickComponent extends UI {
 @Component({
     // language=Vue
     template: `
-        <v-container v-if="data" px-0 grid-list-md text-xs-center fluid>
-            <v-layout class="dashboard-wrap px-4" row wrap>
+        <v-container v-if="data" px-0 grid-list-md text-xs-center fluid :class="{'fixed-dashboard': fixedDashboard}" v-scroll="setDashboardPosition">
+            <!--todo: вешать класс menu-open когда разворачивается меню-->
+            <v-layout class="dashboard-wrap px-4" row wrap :class="{'menu-open': false}">
                 <v-flex xl3 lg3 md6 sm12 xs12>
                     <dashboard-brick-component :block="blocks[0]"></dashboard-brick-component>
                 </v-flex>
@@ -83,6 +84,8 @@ export class Dashboard extends UI {
     private data: DashboardData;
 
     private blocks: DashboardBrick[] = [];
+
+    private fixedDashboard = false;
 
     created(): void {
         this.fillBricks(this.data);
@@ -146,5 +149,9 @@ export class Dashboard extends UI {
             tooltip: "Показывает на сколько изменилась курсовая суммарная стоимость портфеля за последний торговый день." +
                 "                                Эта разница возникает за счет изменения биржевой цены входящих в портфель активов."
         };
+    }
+
+    private setDashboardPosition(e: any): void {
+        this.fixedDashboard = e.target.scrollingElement.scrollTop > 24;
     }
 }

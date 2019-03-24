@@ -96,3 +96,32 @@
     }
   }
 }
+
+// Fixed dashboard
+.fixed-dashboard {
+  height: 100px;
+
+  .dashboard-wrap {
+    position: fixed;
+    top: 0;
+    left: 80px;
+    width: 100%;
+    z-index: 9999;
+    margin: 0 !important;
+
+    &.menu-open {
+      left: 300px;
+      width: calc(100% - 300px);
+    }
+
+    .dashboard-card-small-nums {display: none}
+
+    .dashboard-card-big-nums {
+      font-size: 16px;
+    }
+
+    .v-card__title--primary {padding-top: 16px}
+
+    .container {padding: 0}
+  }
+}
