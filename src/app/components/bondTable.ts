@@ -385,7 +385,7 @@ export class BondTable extends UI {
         return items.filter(row => {
             return row.bond && (row.bond.shortname.toLowerCase().includes(search) ||
                 row.bond.ticker.toLowerCase().includes(search) ||
-                row.bond.price.includes(search) ||
+                row.bond.prevprice.includes(search) ||
                 row.yearYield.includes(search));
         });
     }

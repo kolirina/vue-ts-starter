@@ -8,7 +8,7 @@ import {ShowProgress} from "../platform/decorators/showProgress";
 import {ClientInfo} from "../services/clientService";
 import {PortfolioParams, PortfolioService} from "../services/portfolioService";
 import {EventType} from "../types/eventType";
-import {TableHeader} from "../types/types";
+import {Portfolio, TableHeader} from "../types/types";
 import {SortUtils} from "../utils/sortUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
@@ -114,6 +114,8 @@ export class PortfoliosTable extends UI {
     private clientInfo: ClientInfo;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIOS)
     private reloadPortfolios: () => Promise<void>;
+    @MainStore.Action(MutationType.SET_CURRENT_PORTFOLIO)
+    private setCurrentPortfolio: (id: string) => Promise<Portfolio>;
     @Inject
     private portfolioService: PortfolioService;
 
@@ -135,7 +137,6 @@ export class PortfoliosTable extends UI {
         await new PortfolioEditDialog().show({store: this.$store.state[StoreType.MAIN], router: this.$router, portfolioParams});
     }
 
-    @DisableConcurrentExecution
     private async deletePortfolio(portfolio: PortfolioParams): Promise<void> {
         const result = await new ConfirmDialog().show(`Вы собираетесь удалить портфель ${portfolio.name}.
                                               Все сделки по акциям, облигациям и дивиденды,
@@ -146,9 +147,17 @@ export class PortfoliosTable extends UI {
     }
 
     @ShowProgress
+    @DisableConcurrentExecution
     private async deletePortfolioAndShowMessage(id: string): Promise<void> {
         await this.portfolioService.deletePortfolio(id);
+        // запоминаем текущий портфель, иначе ниже они может быть обновлен
+        const currentPortfolioId = this.clientInfo.user.currentPortfolioId;
         await this.reloadPortfolios();
+        // нужно обновлять данные только если удаляемый портфель был выбран текущим и соответственно теперь выбран другой
+        if (id === currentPortfolioId) {
+            // могли удалить текущий портфель, надо выставить портфель по умолчанию
+            await this.setCurrentPortfolio(this.clientInfo.user.portfolios[0].id);
+        }
         this.$snotify.info("Портфель успешно удален");
     }
 
