@@ -48,12 +48,16 @@ const MainStore = namespace(StoreType.MAIN);
                                     </v-radio-group>
                                     <div v-if="clientInfo.user.referralAwardType === 'SUBSCRIPTION'">
                                         После первой оплаты приглашенного Вами<br>
-                                        пользователя вы получите месяц подписки бесплатно.
+                                        пользователя Вы получите месяц подписки бесплатно.
                                     </div>
                                     <div v-if="clientInfo.user.referralAwardType === 'PAYMENT'">
                                         Вы будете получать 30% от суммы всех оплат<br>
                                         каждого приглашенного Вами пользователя навсегда.<br>
                                         Вывод от 3000 <span class="rewards-currency">RUB</span>
+                                        <div>
+                                            Для вывода средств обращайтесь в службу поддержки<br>
+                                            по адресу <a href="mailto:web@intelinvest.ru" target="_blank">web@intelinvest.ru</a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

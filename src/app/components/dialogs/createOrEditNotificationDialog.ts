@@ -18,7 +18,7 @@ import {CustomDialog} from "./customDialog";
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
                 <v-card-title class="headline add-notification-title">
                     {{ notification.id ? "Редактирование" : "Создание" }} уведомления по
-                    <v-menu transition="slide-y-transition" nudge-bottom="50" nudge-left="10">
+                    <v-menu v-if="!notification.id" transition="slide-y-transition" nudge-bottom="50" nudge-left="10">
                         <a slot="activator"><span>&nbsp;{{ assetType === AssetType.STOCK ? "акции" : "облигации" }}</span></a>
                         <v-list dense>
                             <v-list-tile @click="changeNotificationType(NotificationType.stock)">
@@ -33,6 +33,7 @@ import {CustomDialog} from "./customDialog";
                             </v-list-tile>
                         </v-list>
                     </v-menu>
+                    <template v-else>{{ assetType === AssetType.STOCK ? "акции" : "облигации" }}</template>
                 </v-card-title>
                 <div>
                     <share-search :filteredShares="filteredShares" :assetType="assetType" @clear="onShareClear" @change="onShareSearchChange" class="margB32"></share-search>
