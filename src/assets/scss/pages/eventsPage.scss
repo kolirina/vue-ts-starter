@@ -15,16 +15,15 @@
  */
 
 .coupon {
-  background: #C0A0FB !important;
+  background: #03A9F4 !important;
 }
 
 .amortization {
-  background: #FFC058 !important;
+  background: #9C27B0 !important;
 }
 
 .repayment {
-  background: rgba(1, 55, 89, 0.91) !important;
-  color: rgb(245, 245, 245) !important;
+  background: #4CAF50 !important;
 }
 
 .custom {
@@ -36,7 +35,7 @@
 }
 
 .dividend {
-  background-color: #93D8FF !important;
+  background-color: #F44336 !important;
 }
 
 .eventLegend {
@@ -51,13 +50,46 @@
 .eventsAggregateInfo {
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: flex-start;
   margin-bottom: 20px;
+  margin-left: 30px;
   flex-wrap: wrap;
-  margin-top: 10px;
 
   .item-block {
-    margin: 10px;
+    font-family: $main--font-family;
+    font-size: 12px;
+    line-height: 16px;
+    display: flex;
+
+    +.total {
+      font-family: $main--font-family;
+      font-style: normal;
+      font-weight: 600;
+      font-size: 12px;
+      line-height: 16px;
+      background: none !important;
+      margin-left: 14px;
+    }
+
+    color: #040427;
+    margin: 10px 30px 10px 0;
+    padding: 0 10px 0 0;
+    height: 24px;
+    background: #F7F9FB;
+    border-radius: 4px;
+
+    &__eventLegend {
+      width: 3px;
+      height: 24px;
+      margin-right: 10px;
+
+      background: #4CAF50;
+      border-radius: 4px 0 0 4px;
+    }
+
+    &__amount {
+      margin: auto;
+    }
   }
 }
 
@@ -69,6 +101,10 @@
 
 .events {
 
+  &__card {
+    min-width: 1000px;
+  }
+
   .pr3 {
     padding-right: 3px !important;
   }
@@ -79,7 +115,7 @@
 
   .headline {
     font-size: 18px !important;
-    padding: 11px 3px 16px 20px !important;
+    padding: 11px 3px 0px 30px!important;
   }
 
   &__menu-btn {
@@ -88,10 +124,11 @@
 
   .events-table, .dividend-news-table {
     padding: 0 !important;
+    margin-left: 6px;
   }
 
     .amount__currency {
       color: $font-color--lite;
-      font-family: "OpenSans";
+      font-family: $main--font-family;
     }
 }

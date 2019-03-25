@@ -29,8 +29,8 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-btn>
             </v-card>
 
-            <v-card>
-                <v-card-title class="headline" style="padding-left: 35px;">
+            <v-card class="events__card">
+                <v-card-title class="headline">
                     Новые события
                     <v-spacer></v-spacer>
                     <v-menu transition="slide-y-transition" bottom left>
@@ -59,6 +59,32 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-card-title>
 
                 <v-card-text>
+                    <div class="eventsAggregateInfo" v-if="eventsAggregateInfo">
+                        <span class="item-block">
+                            <span class="item-block__eventLegend dividend"/>
+                            <span :class="['item-block__amount', currency]">Дивиденды {{ eventsAggregateInfo.totalDividendsAmount | number }} </span>
+                        </span>
+
+                        <span class="item-block">
+                            <span class="item-block__eventLegend coupon"/>
+                            <span :class="['item-block__amount', currency]">Купоны {{ eventsAggregateInfo.totalCouponsAmount | number }} </span>
+                        </span>
+
+                        <span class="item-block">
+                            <span class="item-block__eventLegend amortization"/>
+                            <span :class="['item-block__amount', currency]">Амортизация {{ eventsAggregateInfo.totalAmortizationsAmount | number }} </span>
+                        </span>
+
+                        <span class="item-block">
+                            <span class="item-block__eventLegend repayment"/>
+                            <span :class="['item-block__amount', currency]">Погашения {{ eventsAggregateInfo.totalRepaymentsAmount | number }} </span>
+                        </span>
+
+                        <span class="item-block total">
+                            <span :class="['item-block__amount', currency]">Всего выплат {{ eventsAggregateInfo.totalAmount | number }} </span>
+                        </span>
+                    </div>
+
                     <v-data-table v-if="events" :headers="eventsHeaders" :items="events" item-key="id" :custom-sort="customSortEvents"
                                   class="events-table" hide-actions>
                         <template #items="props">
@@ -276,5 +302,9 @@ export class EventsPage extends UI {
 
     private customSortNews(items: DividendNewsItem[], index: string, isDesc: boolean): DividendNewsItem[] {
         return SortUtils.customSortNews(items, index, isDesc);
+    }
+
+    private get currency(): string {
+        return this.portfolio.portfolioParams.viewCurrency.toLowerCase();
     }
 }
