@@ -19,6 +19,7 @@ import {TradeDataHolder} from "../../types/trade/tradeDataHolder";
 import {TradeMap} from "../../types/trade/tradeMap";
 import {TradeValue} from "../../types/trade/tradeValue";
 import {Bond, CurrencyUnit, ErrorInfo, Portfolio, Share, Stock} from "../../types/types";
+import {CommonUtils} from "../../utils/commonUtils";
 import {DateUtils} from "../../utils/dateUtils";
 import {TradeUtils} from "../../utils/tradeUtils";
 import {MainStore} from "../../vuex/mainStore";
@@ -137,7 +138,8 @@ import {CustomDialog} from "./customDialog";
 
                             <!-- Заметка -->
                             <v-flex xs12>
-                                <v-text-field label="Заметка" v-model="note" :counter="160"></v-text-field>
+                                <v-text-field label="Заметка" v-model="note" :counter="160"
+                                              v-validate="'max:160'" :error-messages="errors.collect('note')" name="note"></v-text-field>
                             </v-flex>
                         </v-layout>
 
@@ -569,6 +571,10 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private get isValid(): boolean {
+        const noteValid = CommonUtils.isBlank(this.getNote()) || this.note.length <= 160;
+        if (!noteValid) {
+            return false;
+        }
         switch (this.assetType) {
             case AssetType.STOCK:
                 return this.share && this.date && this.price && this.quantity > 0;
