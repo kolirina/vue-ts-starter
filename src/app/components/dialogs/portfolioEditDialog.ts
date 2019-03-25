@@ -61,9 +61,8 @@ import {CustomDialog} from "./customDialog";
                                     <v-text-field
                                             slot="activator"
                                             v-model="portfolioParams.openDate"
-                                            v-validate="dateRule"
                                             :error-messages="errors.collect('openDate')"
-                                            data-vv-name="openDate"
+                                            name="openDate"
                                             label="Дата открытия"
                                             required
                                             append-icon="event"
@@ -169,7 +168,7 @@ export class PortfolioEditDialog extends CustomDialog<PortfolioDialogData, boole
     @DisableConcurrentExecution
     private async savePortfolio(): Promise<void> {
         if (!this.isValid) {
-            this.$snotify.warning("Заполните все обязательные поля");
+            this.$snotify.warning("Поля заполнены некорректно");
             return;
         }
         this.processState = true;
@@ -189,18 +188,23 @@ export class PortfolioEditDialog extends CustomDialog<PortfolioDialogData, boole
         this.close(true);
     }
 
+    /**
+     * Кастомная валидация изза какого-то бага с форматирование дат в либе v-validate
+     * @param date
+     */
     private async onDateSelected(date: string): Promise<void> {
         this.$refs.dateMenu.save(date);
+        if (moment().isBefore(DateUtils.parseDate(this.portfolioParams.openDate))) {
+            this.$validator.errors.add({field: "openDate", msg: "Дата открытия портфеля не может быть в будущем"});
+        } else {
+            this.$validator.errors.remove("openDate");
+        }
     }
 
     private get isValid(): boolean {
         return this.portfolioParams.name.length >= 3 && this.portfolioParams.name.length <= 40 &&
             (moment().isAfter(DateUtils.parseDate(this.portfolioParams.openDate)) || DateUtils.currentDate() === this.portfolioParams.openDate) &&
             (CommonUtils.isBlank(this.portfolioParams.note) || this.portfolioParams.note.length <= 500);
-    }
-
-    private get dateRule(): string {
-        return `date_format:YYYY-MM-DD|before:${DateUtils.currentDate()},true`;
     }
 
     private cancel(): void {
