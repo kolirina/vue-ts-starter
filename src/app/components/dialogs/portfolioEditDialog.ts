@@ -7,6 +7,7 @@ import {DisableConcurrentExecution} from "../../platform/decorators/disableConcu
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {IisType, PortfolioAccountType, PortfolioParams, PortfolioService} from "../../services/portfolioService";
 import {EventType} from "../../types/eventType";
+import {CommonUtils} from "../../utils/commonUtils";
 import {DateFormat, DateUtils} from "../../utils/dateUtils";
 import {MainStore} from "../../vuex/mainStore";
 import {CustomDialog} from "./customDialog";
@@ -26,7 +27,10 @@ import {CustomDialog} from "./customDialog";
                     <v-container grid-list-md class="paddT0 paddB0">
                         <v-layout wrap>
                             <v-flex xs12>
-                                <v-text-field label="Название" v-model.trim="portfolioParams.name" required autofocus :counter="40" class="required"></v-text-field>
+                                <v-text-field label="Название" v-model.trim="portfolioParams.name" required autofocus :counter="40"
+                                              class="required" v-validate="'required|max:40|min:3'"
+                                              :error-messages="errors.collect('name')"
+                                              data-vv-name="name"></v-text-field>
                             </v-flex>
 
                             <v-flex xs12 sm4>
@@ -57,12 +61,15 @@ import {CustomDialog} from "./customDialog";
                                     <v-text-field
                                             slot="activator"
                                             v-model="portfolioParams.openDate"
+                                            v-validate="dateRule"
+                                            :error-messages="errors.collect('openDate')"
+                                            data-vv-name="openDate"
                                             label="Дата открытия"
                                             required
                                             append-icon="event"
                                             readonly></v-text-field>
                                     <v-date-picker v-model="portfolioParams.openDate" :no-title="true" locale="ru" :first-day-of-week="1"
-                                                   @input="$refs.dateMenu.save(portfolioParams.openDate)"></v-date-picker>
+                                                   @input="onDateSelected"></v-date-picker>
                                 </v-menu>
                             </v-flex>
 
@@ -83,7 +90,8 @@ import {CustomDialog} from "./customDialog";
                             </v-flex>
 
                             <v-flex xs12>
-                                <v-textarea label="Заметка" v-model="portfolioParams.note" :rows="3" :counter="500"></v-textarea>
+                                <v-textarea label="Заметка" v-model="portfolioParams.note" :rows="3" :counter="500"
+                                            v-validate="'max:500'" :error-messages="errors.collect('note')" data-vv-name="note"></v-textarea>
                             </v-flex>
 
                             <v-flex xs12>
@@ -105,7 +113,7 @@ import {CustomDialog} from "./customDialog";
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn :loading="processState" :disabled="processState" color="primary" light @click.stop.native="savePortfolio">
+                    <v-btn :loading="processState" :disabled="!isValid || processState" color="primary" light @click.stop.native="savePortfolio">
                         {{ editMode ? 'Сохранить' : 'Добавить'}}
                         <span slot="loader" class="custom-loader">
                         <v-icon color="blue">fas fa-spinner fa-spin</v-icon>
@@ -160,7 +168,7 @@ export class PortfolioEditDialog extends CustomDialog<PortfolioDialogData, boole
     @ShowProgress
     @DisableConcurrentExecution
     private async savePortfolio(): Promise<void> {
-        if (!this.isValid()) {
+        if (!this.isValid) {
             this.$snotify.warning("Заполните все обязательные поля");
             return;
         }
@@ -181,8 +189,18 @@ export class PortfolioEditDialog extends CustomDialog<PortfolioDialogData, boole
         this.close(true);
     }
 
-    private isValid(): boolean {
-        return this.portfolioParams.name.length > 0;
+    private async onDateSelected(date: string): Promise<void> {
+        this.$refs.dateMenu.save(date);
+    }
+
+    private get isValid(): boolean {
+        return this.portfolioParams.name.length >= 3 && this.portfolioParams.name.length <= 40 &&
+            (moment().isAfter(DateUtils.parseDate(this.portfolioParams.openDate)) || DateUtils.currentDate() === this.portfolioParams.openDate) &&
+            (CommonUtils.isBlank(this.portfolioParams.note) || this.portfolioParams.note.length <= 500);
+    }
+
+    private get dateRule(): string {
+        return `date_format:YYYY-MM-DD|before:${DateUtils.currentDate()},true`;
     }
 
     private cancel(): void {

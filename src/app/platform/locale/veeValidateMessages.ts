@@ -4,7 +4,10 @@ const messages = {
     alpha_num: (field: string): string => `Поле может содержать только буквы и цифры.`,
     alpha_spaces: (field: string): string => `Поле может содержать только буквы и пробелы.`,
     alpha: (field: string): string => `Поле может содержать только буквы.`,
-    before: (field: string, target?: string): string => `В поле должна быть дата до ${target}.`,
+    before: (field: string, target?: string[]): string => {
+        const inclusive = !!target[1];
+        return `В поле дата должна быть меньше ${inclusive ? "или равна" : ""} ${target[0]}.`;
+    },
     between: (field: string, min?: number, max?: number): string => `Поле должно быть между ${min} и ${max}.`,
     confirmed: (field: string, confirmedField?: string): string => `Поле не совпадает с ${confirmedField}.`,
     credit_card: (field: string): string => `Поле должно быть действительным номером карты`,
