@@ -36,7 +36,7 @@ export class Filters {
             const am = amount.amount.toDP(DEFAULT_SCALE, Decimal.ROUND_HALF_UP).toNumber();
             return DF.format(am);
         } else {
-            return DF_NO_SCALE.format(scale ? amount.amount.toDP(scale, Decimal.ROUND_HALF_UP).toNumber() : amount.amount.toNumber());
+            return scale ? DF_NO_SCALE.format(amount.amount.toDP(scale, Decimal.ROUND_HALF_UP).toNumber()) : String(amount.amount.toNumber());
         }
     }
 
@@ -45,7 +45,7 @@ export class Filters {
             return "";
         }
         try {
-           return new BigMoney(value).currency;
+            return new BigMoney(value).currency;
         } catch (e) {
             return "";
         }
@@ -56,7 +56,7 @@ export class Filters {
             return "";
         }
         try {
-           return new BigMoney(value).currencySymbol;
+            return new BigMoney(value).currencySymbol;
         } catch (e) {
             return "";
         }
@@ -65,10 +65,11 @@ export class Filters {
     /**
      * Используется для форматирования чисел
      * @param value строка
+     * @param returnZeros признак возврата нулевого значения вместо пустого
      */
-    static formatNumber(value: string): string {
+    static formatNumber(value: string, returnZeros: boolean = true): string {
         if (!value) {
-            return "0.00";
+            return returnZeros ? "0.00" : "";
         }
         return DF.format(new Decimal(value).toDP(DEFAULT_SCALE, Decimal.ROUND_HALF_UP).toNumber());
 

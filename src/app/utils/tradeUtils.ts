@@ -17,7 +17,7 @@ export class TradeUtils {
     }
 
     static getPrice(trade: TradeRow): string {
-        return this.moneyPrice(trade) ? Filters.formatMoneyAmount(trade.moneyPrice, true) : this.percentPrice(trade) ? trade.bondPrice :
+        return this.moneyPrice(trade) ? Filters.formatMoneyAmount(trade.moneyPrice, false) : this.percentPrice(trade) ? trade.bondPrice :
             null;
     }
 
@@ -123,5 +123,9 @@ export class TradeUtils {
             return new BigMoney(value).currencySymbol;
         }
         return null;
+    }
+
+    static markupClasses(amount: number): string[] {
+        return [amount > 0 ? "ii--green-markup" : amount < 0 ? "ii--red-markup" : "", "ii-number-cell", "text-xs-right"];
     }
 }
