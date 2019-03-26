@@ -10,5 +10,7 @@ export enum MutationType {
     /** Запрос на обновление списка портфелей */
     RELOAD_PORTFOLIOS = "RELOAD_PORTFOLIOS",
     /** Обновление портфеля в сторе */
-    UPDATE_PORTFOLIO = "UPDATE_PORTFOLIO"
+    UPDATE_PORTFOLIO = "UPDATE_PORTFOLIO",
+    /** Обновление признака открытого меню */
+    CHANGE_SIDEBAR_STATE = "CHANGE_SIDEBAR_STATE"
 }
