@@ -29,6 +29,9 @@ export class DividendChart extends UI {
         container: HTMLElement
     };
 
+    /** Объект графика */
+    chart: ChartObject = null;
+
     @Prop({default: "", type: String})
     private title: string;
 
@@ -38,8 +41,6 @@ export class DividendChart extends UI {
     private chartData: number[] = [];
 
     private categoryNames: string[] = [];
-
-    private chart: ChartObject = null;
 
     async mounted(): Promise<void> {
         this.prepareData();
@@ -68,20 +69,22 @@ export class DividendChart extends UI {
                 backgroundColor: null
             },
             title: {
-                text: this.title
+                text: ""
             },
-            plotOptions: {
-
-            },
+            plotOptions: {},
             xAxis: {
                 categories: this.categoryNames,
-                crosshair: true
+                crosshair: true,
+                gridLineWidth: 1
             },
             yAxis: {
                 min: 0,
                 title: {
-                    text: "Дивиденды"
+                    text: ""
                 }
+            },
+            exporting: {
+                enabled: false
             },
             series: [{
                 data: this.chartData,

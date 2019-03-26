@@ -25,6 +25,8 @@ export class BondPaymentsChart extends UI {
     $refs: {
         container: HTMLElement
     };
+    /** Объект графика */
+    chart: ChartObject = null;
 
     @Prop({default: "", type: String})
     private title: string;
@@ -33,8 +35,6 @@ export class BondPaymentsChart extends UI {
     private data: ColumnChartData;
 
     private categoryNames: string[] = [];
-
-    private chart: ChartObject = null;
 
     async mounted(): Promise<void> {
         await this.draw();
@@ -52,7 +52,7 @@ export class BondPaymentsChart extends UI {
                 backgroundColor: null
             },
             title: {
-                text: this.title
+                text: ""
             },
             plotOptions: {
                 column: {
@@ -75,6 +75,9 @@ export class BondPaymentsChart extends UI {
                     text: "Амортизация / Погашение"
                 }
             }],
+            exporting: {
+                enabled: false
+            },
             series: this.data.series
         });
     }

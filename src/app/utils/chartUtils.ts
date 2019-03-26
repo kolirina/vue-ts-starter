@@ -15,13 +15,19 @@ export class ChartUtils {
         COMMON: "<b>{point.y}, ({point.percentage:.2f} %)</b> <br/>{point.tickers}",
         ASSETS: "<b>{point.y:.2f} % ({point.description})</b>"
     };
-
     /** Цвета операций */
     static OPERATION_COLORS: { [key: string]: string } = {
         [Operation.DIVIDEND.description]: "#F44336",
         [Operation.COUPON.description]: "#03A9F4",
         [Operation.AMORTIZATION.description]: "#9C27B0",
         [Operation.REPAYMENT.description]: "#4CAF50",
+    };
+    /** Типы экспорта графика */
+    static EXPORT_TYPES: { [key: string]: string } = {
+        PNG: "",
+        JPG: "image/jpeg",
+        PDF: "application/pdf",
+        SVG: "image/svg+xml"
     };
 
     private constructor() {

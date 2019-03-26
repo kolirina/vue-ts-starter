@@ -13,6 +13,7 @@ import Snotify, {SnotifyPosition} from "vue-snotify";
 import vuescroll from "vuescroll";
 import Vuetify from "vuetify";
 import {BondLink} from "../components/bondLink";
+import {ChartExportMenu} from "../components/charts/chartExportMenu";
 import {LineChart} from "../components/charts/lineChart";
 import {PieChart} from "../components/charts/pieChart";
 import {Dashboard} from "../components/dashboard";
@@ -110,6 +111,7 @@ export class UIRegistry {
         UI.component("ii-number-field", IINumberField);
         UI.component("share-search", ShareSearchComponent);
         UI.component("expanded-panel", ExpandedPanel);
+        UI.component("chart-export-menu", ChartExportMenu);
 
         // фильтры
         UI.filter("amount", Filters.formatMoneyAmount);
