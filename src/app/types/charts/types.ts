@@ -45,7 +45,9 @@ export type SectorChartData = {
 /** Данные для столбчатого графика */
 export type ColumnDataSeries = {
     name: string,
-    data: number[]
+    data: number[],
+    color?: string,
+    yAxis?: number,
 };
 
 export type ColumnChartData = {

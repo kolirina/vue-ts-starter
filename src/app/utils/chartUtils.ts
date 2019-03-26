@@ -3,7 +3,8 @@ import Highcharts, {ChartObject, DataPoint, Gradient, PlotLines} from "highchart
 import Highstock from "highcharts/highstock";
 import {Filters} from "../platform/filters/Filters";
 import {BigMoney} from "../types/bigMoney";
-import {EventChartData, HighStockEventData, HighStockEventsGroup, PieChartTooltipFormat, SectorChartData} from "../types/charts/types";
+import {ColumnChartData, ColumnDataSeries, EventChartData, HighStockEventData, HighStockEventsGroup, PieChartTooltipFormat, SectorChartData} from "../types/charts/types";
+import {Operation} from "../types/operation";
 import {Overview, StockPortfolioRow} from "../types/types";
 import {TradeUtils} from "./tradeUtils";
 
@@ -13,6 +14,20 @@ export class ChartUtils {
     static PIE_CHART_TOOLTIP_FORMAT = {
         COMMON: "<b>{point.y}, ({point.percentage:.2f} %)</b> <br/>{point.tickers}",
         ASSETS: "<b>{point.y:.2f} % ({point.description})</b>"
+    };
+    /** Цвета операций */
+    static OPERATION_COLORS: { [key: string]: string } = {
+        [Operation.DIVIDEND.description]: "#F44336",
+        [Operation.COUPON.description]: "#03A9F4",
+        [Operation.AMORTIZATION.description]: "#9C27B0",
+        [Operation.REPAYMENT.description]: "#4CAF50",
+    };
+    /** Типы экспорта графика */
+    static EXPORT_TYPES: { [key: string]: string } = {
+        PNG: "",
+        JPG: "image/jpeg",
+        PDF: "application/pdf",
+        SVG: "image/svg+xml"
     };
 
     private constructor() {
@@ -225,9 +240,8 @@ export class ChartUtils {
                             y2: 1
                         },
                         stops: [
-                            [0, Highcharts.getOptions().colors[0]],
-                            // @ts-ignore
-                            [1, (Highcharts.Color(Highcharts.getOptions().colors[0]) as Gradient).setOpacity(0).get("rgba")]
+                            [0, (Highcharts.Color(Highcharts.getOptions().colors[0]) as Gradient).setOpacity(0.2).get("rgba")],
+                            [1, (Highcharts.Color(Highcharts.getOptions().colors[0]) as Gradient).setOpacity(0.2).get("rgba")]
                         ]
                     },
                     marker: {
@@ -307,5 +321,48 @@ export class ChartUtils {
                 data: chartData
             }]
         });
+    }
+
+    static convertBondPayments(data: EventChartData[]): ColumnChartData {
+        const series: ColumnDataSeries[] = [];
+        const categoryNames: string[] = [];
+        const paymentTypes: { [key: string]: string } = {};
+        // собираем категории (даты выплат) и типы платежей
+        data.forEach(eventItem => {
+            categoryNames.push(eventItem.date);
+            // тип выплаты: купон, амортизация, погашение
+            const paymentType = eventItem.description.substring(0, eventItem.description.indexOf(":"));
+            paymentTypes[paymentType] = paymentType;
+        });
+
+        const result: { [key: string]: ColumnDataSeries } = {};
+        // раскладываем по массивам с пустыми блоками: Купон: [10, 20, 30, null], Амортизация: [null, null, null, 100]
+        for (let i = 0; i < data.length; i++) {
+            const eventItem = data[i];
+            const paymentType = eventItem.description.substring(0, eventItem.description.indexOf(":"));
+            Object.keys(paymentTypes).forEach(key => {
+                result[key] = result[key] || {name: key, data: []};
+                const pt = eventItem.description.substring(0, eventItem.description.indexOf(":"));
+                if (key === pt) {
+                    const amount = parseFloat(eventItem.description.substring(eventItem.description.indexOf(" ") + 1, eventItem.description.length));
+                    // если Амортизация и она последняя, значит это Погашение
+                    const repaymentKey = Operation.REPAYMENT.description;
+                    result[repaymentKey] = result[repaymentKey] || {name: repaymentKey, data: []};
+                    if (pt === Operation.AMORTIZATION.description && i === data.length - 1) {
+                        result[repaymentKey].data.push(amount);
+                        result[key].data.push(null);
+                    } else {
+                        result[key].data.push(amount);
+                        result[repaymentKey].data.push(null);
+                    }
+                } else {
+                    result[key].data.push(null);
+                }
+            });
+        }
+        Object.keys(result).forEach(key => {
+            series.push({name: key, data: result[key].data, color: ChartUtils.OPERATION_COLORS[key], yAxis: key === Operation.COUPON.description ? 0 : 1});
+        });
+        return {categoryNames, series};
     }
 }

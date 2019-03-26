@@ -13,6 +13,7 @@ import {BigMoney} from "../types/bigMoney";
 import {BaseChartDot, Dot, HighStockEventsGroup} from "../types/charts/types";
 import {Operation} from "../types/operation";
 import {Portfolio, Share} from "../types/types";
+import {ChartUtils} from "../utils/chartUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 
@@ -22,10 +23,9 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-container fluid>
-            <v-layout>
-                <share-search :asset-type="assetType.STOCK" @change="onShareSelect"></share-search>
-            </v-layout>
             <v-card v-if="share">
+                <share-search :asset-type="assetType.STOCK" @change="onShareSelect"></share-search>
+
                 <v-card-text>
                     <table>
                         <thead>
@@ -138,8 +138,13 @@ const MainStore = namespace(StoreType.MAIN);
 
             <div style="height: 20px"></div>
             <v-card v-if="share" style="overflow: auto;">
+                <v-card-title class="headline">
+                    Дивиденды
+                    <v-spacer></v-spacer>
+                    <chart-export-menu @print="print" @exportTo="exportTo($event)"></chart-export-menu>
+                </v-card-title>
                 <v-card-text>
-                    <dividend-chart :data="dividends" title="Дивиденды"></dividend-chart>
+                    <dividend-chart ref="chartComponent" :data="dividends" title="Дивиденды"></dividend-chart>
                 </v-card-text>
             </v-card>
         </v-container>
@@ -147,6 +152,10 @@ const MainStore = namespace(StoreType.MAIN);
     components: {DividendChart}
 })
 export class ShareInfoPage extends UI {
+
+    $refs: {
+        chartComponent: DividendChart
+    };
 
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
     private reloadPortfolio: (id: string) => Promise<void>;
@@ -200,6 +209,14 @@ export class ShareInfoPage extends UI {
 
     private async openCreateNotificationDialog(): Promise<void> {
         await new CreateOrEditNotificationDialog().show({type: NotificationType.stock, shareId: this.share.id});
+    }
+
+    private async print(): Promise<void> {
+        this.$refs.chartComponent.chart.print();
+    }
+
+    private async exportTo(type: string): Promise<void> {
+        this.$refs.chartComponent.chart.exportChart({type: ChartUtils.EXPORT_TYPES[type]});
     }
 
     private get portfolioAvgPrice(): number {

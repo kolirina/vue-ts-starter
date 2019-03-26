@@ -4,6 +4,8 @@ import Component from "vue-class-component";
 import {Prop, Watch} from "vue-property-decorator";
 import {UI} from "../../app/ui";
 import {BaseChartDot} from "../../types/charts/types";
+import {Operation} from "../../types/operation";
+import {ChartUtils} from "../../utils/chartUtils";
 
 @Component({
     // language=Vue
@@ -27,6 +29,9 @@ export class DividendChart extends UI {
         container: HTMLElement
     };
 
+    /** Объект графика */
+    chart: ChartObject = null;
+
     @Prop({default: "", type: String})
     private title: string;
 
@@ -36,8 +41,6 @@ export class DividendChart extends UI {
     private chartData: number[] = [];
 
     private categoryNames: string[] = [];
-
-    private chart: ChartObject = null;
 
     async mounted(): Promise<void> {
         this.prepareData();
@@ -63,36 +66,30 @@ export class DividendChart extends UI {
         this.chart = Highcharts.chart(this.$refs.container, {
             chart: {
                 type: "column",
-                backgroundColor: null,
-                options3d: {
-                    enabled: true,
-                    alpha: 0,
-                    beta: 0,
-                    depth: 20,
-                    viewDistance: 25
-                }
+                backgroundColor: null
             },
             title: {
-                text: this.title
+                text: ""
             },
-            plotOptions: {
-                column: {
-                    depth: 25
-                }
-            },
+            plotOptions: {},
             xAxis: {
                 categories: this.categoryNames,
-                crosshair: true
+                crosshair: true,
+                gridLineWidth: 1
             },
             yAxis: {
                 min: 0,
                 title: {
-                    text: "Дивиденды"
+                    text: ""
                 }
+            },
+            exporting: {
+                enabled: false
             },
             series: [{
                 data: this.chartData,
                 name: "Дивиденд",
+                color: ChartUtils.OPERATION_COLORS[Operation.DIVIDEND.description]
             }]
         });
     }

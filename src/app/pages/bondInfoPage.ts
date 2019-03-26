@@ -12,6 +12,7 @@ import {AssetType} from "../types/assetType";
 import {ColumnChartData, Dot, HighStockEventsGroup} from "../types/charts/types";
 import {Operation} from "../types/operation";
 import {Portfolio, Share} from "../types/types";
+import {ChartUtils} from "../utils/chartUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 
@@ -116,8 +117,13 @@ const MainStore = namespace(StoreType.MAIN);
             </v-card>
             <div style="height: 20px"></div>
             <v-card style="overflow: auto;">
+                <v-card-title class="headline">
+                    Начисления
+                    <v-spacer></v-spacer>
+                    <chart-export-menu @print="print" @exportTo="exportTo($event)"></chart-export-menu>
+                </v-card-title>
                 <v-card-text>
-                    <bond-payments-chart :data="paymentsData" title="Платежи по бумаге"></bond-payments-chart>
+                    <bond-payments-chart ref="chartComponent" :data="paymentsData" title="Платежи по бумаге"></bond-payments-chart>
                 </v-card-text>
             </v-card>
         </v-container>
@@ -125,6 +131,10 @@ const MainStore = namespace(StoreType.MAIN);
     components: {BondPaymentsChart}
 })
 export class BondInfoPage extends UI {
+
+    $refs: {
+        chartComponent: BondPaymentsChart
+    };
 
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
     private reloadPortfolio: (id: string) => Promise<void>;
@@ -178,6 +188,14 @@ export class BondInfoPage extends UI {
 
     private async openCreateNotificationDialog(): Promise<void> {
         await new CreateOrEditNotificationDialog().show({type: NotificationType.bond, shareId: this.share.id});
+    }
+
+    private async print(): Promise<void> {
+        this.$refs.chartComponent.chart.print();
+    }
+
+    private async exportTo(type: string): Promise<void> {
+        this.$refs.chartComponent.chart.exportChart({type: ChartUtils.EXPORT_TYPES[type]});
     }
 
     private get portfolioAvgPrice(): number {

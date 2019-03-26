@@ -2,17 +2,18 @@
  * Реестр стандартных UI-компонтентов, фильтров и директив
  */
 import Highcharts from "highcharts";
-import Highcharts3D from "highcharts-3d";
 import Highstock from "highcharts/highstock";
 import exporting from "highcharts/modules/exporting";
 import Clipboard from "v-clipboard";
 import VeeValidate, {Validator} from "vee-validate";
 import Vue from "vue";
+import VueGtm from "vue-gtm";
 import VueQriously from "vue-qriously";
 import Snotify, {SnotifyPosition} from "vue-snotify";
 import vuescroll from "vuescroll";
 import Vuetify from "vuetify";
 import {BondLink} from "../components/bondLink";
+import {ChartExportMenu} from "../components/charts/chartExportMenu";
 import {LineChart} from "../components/charts/lineChart";
 import {PieChart} from "../components/charts/pieChart";
 import {Dashboard} from "../components/dashboard";
@@ -30,10 +31,10 @@ import {Filters} from "../platform/filters/Filters";
 import {highchartsRu} from "../platform/locale/highchartsRu";
 import {RU} from "../platform/locale/ru";
 import {ruLocale} from "../platform/locale/veeValidateMessages";
+import {RouterConfiguration} from "../router/routerConfiguration";
 import {UiStateHelper} from "../utils/uiStateHelper";
 import {UI} from "./ui";
 
-Highcharts3D(Highcharts);
 exporting(Highcharts);
 
 export class UIRegistry {
@@ -87,6 +88,13 @@ export class UIRegistry {
                 pauseOnHover: true
             }
         });
+        Vue.use(VueGtm, {
+            id: "GTM-5WP2PK2", // Your GTM ID
+            enabled: true, // defaults to true. Plugin can be disabled by setting this to false for Ex: enabled: !!GDPR_Cookie (optional)
+            debug: false, // Whether or not display console logs debugs (optional)
+            vueRouter: RouterConfiguration.getRouter(), // Pass the router instance to automatically sync with router (optional)
+            ignoredViews: [] // If router, you can exclude some routes name (case insensitive) (optional)
+        });
 
         // компоненты
         UI.component("dashboard", Dashboard);
@@ -103,6 +111,7 @@ export class UIRegistry {
         UI.component("ii-number-field", IINumberField);
         UI.component("share-search", ShareSearchComponent);
         UI.component("expanded-panel", ExpandedPanel);
+        UI.component("chart-export-menu", ChartExportMenu);
 
         // фильтры
         UI.filter("amount", Filters.formatMoneyAmount);
