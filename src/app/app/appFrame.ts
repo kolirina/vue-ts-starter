@@ -180,6 +180,9 @@ export class AppFrame extends UI {
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
     private reloadPortfolio: (id: string) => Promise<void>;
 
+    @MainStore.Mutation(MutationType.CHANGE_SIDEBAR_STATE)
+    private changeSideBarState: (sideBarState: boolean) => void;
+
     private username: string = null;
 
     private password: string = null;
@@ -298,6 +301,7 @@ export class AppFrame extends UI {
 
     private togglePanel(): void {
         this.mini = !this.mini;
+        this.changeSideBarState(this.mini);
     }
 
     private get actualYear(): string {

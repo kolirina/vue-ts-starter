@@ -24,6 +24,8 @@ export class StateHolder {
     currentPortfolio: Portfolio = null;
     /** Версия стора */
     version = "1.0";
+    /** Признак открытого меню */
+    sideBarOpened: boolean = true;
 }
 
 const Getters = {
@@ -32,6 +34,9 @@ const Getters = {
     },
     [GetterType.CLIENT_INFO](state: StateHolder): ClientInfo {
         return state.clientInfo;
+    },
+    [GetterType.SIDEBAR_OPENED](state: StateHolder): boolean {
+        return state.sideBarOpened;
     }
 };
 
@@ -60,7 +65,10 @@ const Mutations = {
         const withoutCurrent = state.clientInfo.user.portfolios.filter(p => p.id !== portfolio.id);
         state.clientInfo.user.portfolios = [...withoutCurrent, portfolio];
         state.currentPortfolio.portfolioParams = portfolio;
-    }
+    },
+    [MutationType.CHANGE_SIDEBAR_STATE](state: StateHolder, sideBarState: boolean): void {
+        state.sideBarOpened = sideBarState;
+    },
 };
 
 /** Действия хранилища */

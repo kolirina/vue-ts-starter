@@ -63,7 +63,7 @@ export class DashboardBrickComponent extends UI {
     // language=Vue
     template: `
         <v-container v-if="data" px-0 grid-list-md text-xs-center fluid :class="{'fixed-dashboard': fixedDashboard}" v-scroll="setDashboardPosition">
-            <v-layout class="dashboard-wrap px-4" row wrap :class="{'menu-open': false}">
+            <v-layout class="dashboard-wrap px-4" row wrap :class="{'menu-open': !sideBarOpened}">
                 <v-flex xl6 lg6 md6 sm12 xs12>
                     <dashboard-brick-component :block="blocks[0]"></dashboard-brick-component>
                 </v-flex>
@@ -78,6 +78,8 @@ export class DashboardBrickComponent extends UI {
 export class DividendDashboardComponent extends UI {
     @MainStore.Getter
     private portfolio: Portfolio;
+    @MainStore.Getter
+    private sideBarOpened: boolean;
 
     @Prop({required: true})
     private data: DividendDashboard;
