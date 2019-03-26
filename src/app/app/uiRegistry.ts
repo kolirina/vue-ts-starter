@@ -2,7 +2,6 @@
  * Реестр стандартных UI-компонтентов, фильтров и директив
  */
 import Highcharts from "highcharts";
-import Highcharts3D from "highcharts-3d";
 import Highstock from "highcharts/highstock";
 import exporting from "highcharts/modules/exporting";
 import Clipboard from "v-clipboard";
@@ -33,7 +32,6 @@ import {ruLocale} from "../platform/locale/veeValidateMessages";
 import {UiStateHelper} from "../utils/uiStateHelper";
 import {UI} from "./ui";
 
-Highcharts3D(Highcharts);
 exporting(Highcharts);
 
 export class UIRegistry {

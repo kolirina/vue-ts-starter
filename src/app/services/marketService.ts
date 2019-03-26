@@ -1,7 +1,7 @@
 import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {Http, UrlParams} from "../platform/services/http";
-import {BaseChartDot, ColumnChartData, ColumnDataSeries, Dot, EventChartData, HighStockEventData, HighStockEventsGroup} from "../types/charts/types";
+import {BaseChartDot, Dot, EventChartData, HighStockEventData, HighStockEventsGroup} from "../types/charts/types";
 import {Bond, BondInfo, Currency, PageableResponse, Share, Stock, StockInfo} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
 import {CommonUtils} from "../utils/commonUtils";
@@ -48,7 +48,7 @@ export class MarketService {
         return {
             bond: result.bond,
             history: this.convertDots(result.history),
-            payments: this.convertBondPayments(result.payments),
+            payments: ChartUtils.convertBondPayments(result.payments),
             events: ChartUtils.processEventsChartData(result.payments)
         };
     }
@@ -58,7 +58,7 @@ export class MarketService {
         return {
             bond: result.bond,
             history: this.convertDots(result.history),
-            payments: this.convertBondPayments(result.payments),
+            payments: ChartUtils.convertBondPayments(result.payments),
             events: ChartUtils.processEventsChartData(result.payments)
         };
     }
@@ -128,39 +128,6 @@ export class MarketService {
             stackDistance: 20,
             width: 10
         };
-    }
-
-    private convertBondPayments(data: EventChartData[]): ColumnChartData {
-        const series: ColumnDataSeries[] = [];
-        const categoryNames: string[] = [];
-        const paymentTypes: { [key: string]: string } = {};
-        const events: HighStockEventData[] = [];
-        // собираем категории (даты выплат) и типы платежей
-        data.forEach(eventItem => {
-            categoryNames.push(eventItem.date);
-            // тип выплаты: купон, амортизация, погашение
-            const paymentType = eventItem.description.substring(0, eventItem.description.indexOf(":"));
-            paymentTypes[paymentType] = paymentType;
-        });
-
-        const result: { [key: string]: ColumnDataSeries } = {};
-        // раскладываем по массивам с пустыми блоками: Купон: [10, 20, 30, null], Амортизация: [null, null, null, 100]
-        data.forEach(eventItem => {
-            const paymentType = eventItem.description.substring(0, eventItem.description.indexOf(":"));
-            Object.keys(paymentTypes).forEach(key => {
-                result[key] = result[key] || {name: key, data: []};
-                const pt = eventItem.description.substring(0, eventItem.description.indexOf(":"));
-                if (key === pt) {
-                    result[key].data.push(parseFloat(eventItem.description.substring(eventItem.description.indexOf(" ") + 1, eventItem.description.length)));
-                } else {
-                    result[key].data.push(null);
-                }
-            });
-        });
-        Object.keys(result).forEach(key => {
-            series.push({name: key, data: result[key].data});
-        });
-        return {categoryNames, series};
     }
 }
 

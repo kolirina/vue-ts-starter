@@ -49,33 +49,32 @@ export class BondPaymentsChart extends UI {
         this.chart = Highcharts.chart(this.$refs.container, {
             chart: {
                 type: "column",
-                backgroundColor: null,
-                options3d: {
-                    enabled: true,
-                    alpha: 0,
-                    beta: 0,
-                    depth: 20,
-                    viewDistance: 25
-                }
+                backgroundColor: null
             },
             title: {
                 text: this.title
             },
             plotOptions: {
                 column: {
-                    depth: 25
+                    pointWidth: 40,
+                    pointPadding: 0.5,
                 }
             },
             xAxis: {
                 categories: this.data.categoryNames,
-                crosshair: true
+                crosshair: true,
+                gridLineWidth: 1
             },
-            yAxis: {
-                min: 0,
+            yAxis: [{
                 title: {
-                    text: "Платежи по бумаге"
+                    text: "Купоны"
                 }
-            },
+            }, {
+                opposite: true,
+                title: {
+                    text: "Амортизация / Погашение"
+                }
+            }],
             series: this.data.series
         });
     }

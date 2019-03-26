@@ -4,6 +4,8 @@ import Component from "vue-class-component";
 import {Prop, Watch} from "vue-property-decorator";
 import {UI} from "../../app/ui";
 import {BaseChartDot} from "../../types/charts/types";
+import {Operation} from "../../types/operation";
+import {ChartUtils} from "../../utils/chartUtils";
 
 @Component({
     // language=Vue
@@ -63,22 +65,13 @@ export class DividendChart extends UI {
         this.chart = Highcharts.chart(this.$refs.container, {
             chart: {
                 type: "column",
-                backgroundColor: null,
-                options3d: {
-                    enabled: true,
-                    alpha: 0,
-                    beta: 0,
-                    depth: 20,
-                    viewDistance: 25
-                }
+                backgroundColor: null
             },
             title: {
                 text: this.title
             },
             plotOptions: {
-                column: {
-                    depth: 25
-                }
+
             },
             xAxis: {
                 categories: this.categoryNames,
@@ -93,6 +86,7 @@ export class DividendChart extends UI {
             series: [{
                 data: this.chartData,
                 name: "Дивиденд",
+                color: ChartUtils.OPERATION_COLORS[Operation.DIVIDEND.description]
             }]
         });
     }
