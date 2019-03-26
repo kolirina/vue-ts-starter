@@ -17,99 +17,115 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-container fluid>
-            <div class="section-title" style="margin-bottom: 28px">Экспорт сделок</div>
-            <v-card>
-                <v-card-text>
-                    <div class="trades-export-wrapper">
-                        <p>
-                            Выгрузите сделки вашего текущего портфеля в csv или json формате.
-                            Данный файл содержит полную информацию о всех сделках и является полностью совместимым для обратного импорта в сервис.
-                        </p>
-                        <v-btn class="primary" @click="downloadFile" :disabled="isDownloadNotAllowed()">
-                            Экспорт сделок в csv
-                        </v-btn>
-                        <!-- На триале и если тариф истек экспортировать сделки нельзя -->
-                        <v-tooltip v-if="!isDownloadNotAllowed" content-class="custom-tooltip-wrap" bottom>
-                            <sup class="custom-tooltip" slot="activator">
-                                <v-icon>fas fa-info-circle</v-icon>
-                            </sup>
-                            <span>Экспорт сделок в csv-формат недоступен на TRIAL-плане.
+        <v-container v-if="clientInfo && clientInfo.user" fluid>
+            <v-layout row wrap>
+                <v-flex>
+                    <div class="section-title" style="margin-bottom: 3px">Экспорт сделок</div>
+                    <v-card class="portfolio-settings-card portfolio-settings-card-main portfolio-settings-card-full">
+                        <v-menu transition="slide-y-transition" nudge-bottom="50" nudge-left="10">
+                            <v-btn class="primary" slot="activator">
+                                Экспорт
+                            </v-btn>
+                            <v-list dense>
+                                <v-list-tile @click="downloadFile" :disabled="isDownloadNotAllowed()">
+                                    <v-list-tile-title>
+                                        Экспорт сделок в csv
+                                    </v-list-tile-title>
+                                </v-list-tile>
+                                <v-list-tile @click="exportPortfolio">
+                                    <v-list-tile-title>
+                                        Экспорт портфеля в xlsx
+                                    </v-list-tile-title>
+                                </v-list-tile>
+                            </v-list>
+                        </v-menu>
+                    </v-card>
+
+                    <v-card class="export-page">
+                        <v-card-text class="export-page__content">
+                            <div class="info-block">
+                                Выгрузите сделки вашего текущего портфеля в csv или xlsx формате.
+                                <!-- На триале и если тариф истек экспортировать сделки нельзя -->
+                                <v-tooltip v-if="!isDownloadNotAllowed()" content-class="custom-tooltip-wrap" bottom>
+                                    <sup class="custom-tooltip" slot="activator">
+                                        <v-icon>fas fa-info-circle</v-icon>
+                                    </sup>
+                                    <span>Экспорт сделок в csv-формат недоступен на TRIAL-плане.
                                 Пожалуйства <a href="/#/tariffs">обновите</a>
                                 подписку чтобы иметь возможность экспортировать сделки в csv формат.
                                 Или воспользуйтесь экспортом в xlsx.</span>
-                        </v-tooltip>
-                        <v-btn class="primary" @click="exportPortfolio">
-                            Экспорт портфеля в xlsx
-                        </v-btn>
-                        <div class="EmptyBox20"></div>
+                                </v-tooltip><br>
+                                <br>
+                                Данный файл содержит полную информацию о всех сделках и является полностью совместимым для обратного импорта в сервис.
+                            </div>
 
-                        <!-- TODO раскомментировать после стилизации
-                        <h3>Автоматический бэкап портфеля</h3>
-                        <p>Настройте автоматический бэкап портфеля. Файлы выбранных портфелей (в csv формате) будут отравляться на вашу эл почту по заданному
-                            расписанию.</p>
-                        <div class="EmptyBox20"></div>
-                        <v-data-table v-if="portfolios"
-                                      :headers="headers"
-                                      :items="portfolios"
-                                      :search="search"
-                                      v-model="selectedPortfolios"
-                                      item-key="id"
-                                      select-all
-                                      class="elevation-1">
-                            <template #headerCell="props">
-                                <v-tooltip content-class="custom-tooltip-wrap" bottom>
-                                    <span slot="activator">
-                                      {{ props.header.text }}
-                                    </span>
-                                    <span>
-                                      {{ props.header.text }}
-                                    </span>
-                                </v-tooltip>
-                            </template>
-                            <template #items="props">
-                                <td style="width: 50px">
-                                    <v-checkbox v-model="props.selected" primary hide-details></v-checkbox>
-                                </td>
-                                <td class="text-xs-left">{{ props.item.id }}</td>
-                                <td class="text-xs-left">{{ props.item.name }}</td>
-                                <td class="text-xs-center">{{ props.item.viewCurrency }}</td>
-                            </template>
-                        </v-data-table>
+                            <!-- TODO раскомментировать после стилизации
+                            <h3>Автоматический бэкап портфеля</h3>
+                            <p>Настройте автоматический бэкап портфеля. Файлы выбранных портфелей (в csv формате) будут отравляться на вашу эл почту по заданному
+                                расписанию.</p>
+                            <div class="EmptyBox20"></div>
+                            <v-data-table v-if="portfolios"
+                                          :headers="headers"
+                                          :items="portfolios"
+                                          :search="search"
+                                          v-model="selectedPortfolios"
+                                          item-key="id"
+                                          select-all
+                                          class="elevation-1">
+                                <template #headerCell="props">
+                                    <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                                        <span slot="activator">
+                                          {{ props.header.text }}
+                                        </span>
+                                        <span>
+                                          {{ props.header.text }}
+                                        </span>
+                                    </v-tooltip>
+                                </template>
+                                <template #items="props">
+                                    <td style="width: 50px">
+                                        <v-checkbox v-model="props.selected" primary hide-details></v-checkbox>
+                                    </td>
+                                    <td class="text-xs-left">{{ props.item.id }}</td>
+                                    <td class="text-xs-left">{{ props.item.name }}</td>
+                                    <td class="text-xs-center">{{ props.item.viewCurrency }}</td>
+                                </template>
+                            </v-data-table>
 
-                        <div class="margT24">
-                            <span>Присылать резервные копии по дням:</span>
-                            <v-btn-toggle v-model="selectedDays" multiple dark>
-                                <v-btn v-for="day in days" :value="day" :key="day" color="info">
-                                    {{ day }}
-                                </v-btn>
-                            </v-btn-toggle>
-                        </div>
+                            <div class="margT24">
+                                <span>Присылать резервные копии по дням:</span>
+                                <v-btn-toggle v-model="selectedDays" multiple dark>
+                                    <v-btn v-for="day in days" :value="day" :key="day" color="info">
+                                        {{ day }}
+                                    </v-btn>
+                                </v-btn-toggle>
+                            </div>
 
-                        <div class="EmptyBox20"></div>
-                        <span>Отправка бэкапов осуществляется по выбранным дням в 9:30 минут.</span>
-                        <div class="EmptyBox20"></div>
-                        <v-btn color="primary" class="big_btn" @click="saveBackupSchedule"
-                               :disabled="!clientInfo.user.emailConfirmed || isDownloadNotAllowed()">
-                            Сохранить расписание
-                        </v-btn>
-                        <v-tooltip v-if="!clientInfo.user.emailConfirmed || isDownloadNotAllowed()" content-class="custom-tooltip-wrap" bottom>
-                            <sup class="custom-tooltip" slot="activator">
-                                <v-icon>fas fa-info-circle</v-icon>
-                            </sup>
-                            <span v-if="!clientInfo.user.emailConfirmed">
-                                Вам необходимо подтвердить адрес электронной почты чтобы воспользоваться данным функционалом.
-                            </span>
-                            <span v-if="isDownloadNotAllowed()">Экспорт сделок в csv-формат недоступен на TRIAL-плане.
-                                Пожалуйства <a href="/#/tariffs">обновите</a>
-                                подписку чтобы иметь возможность экспортировать сделки в csv формат.
-                                Или воспользуйтесь экспортом в xlsx.
-                            </span>
-                        </v-tooltip>
-                        -->
-                    </div>
-                </v-card-text>
-            </v-card>
+                            <div class="EmptyBox20"></div>
+                            <span>Отправка бэкапов осуществляется по выбранным дням в 9:30 минут.</span>
+                            <div class="EmptyBox20"></div>
+                            <v-btn color="primary" class="big_btn" @click="saveBackupSchedule"
+                                   :disabled="!clientInfo.user.emailConfirmed || isDownloadNotAllowed()">
+                                Сохранить расписание
+                            </v-btn>
+                            <v-tooltip v-if="!clientInfo.user.emailConfirmed || isDownloadNotAllowed()" content-class="custom-tooltip-wrap" bottom>
+                                <sup class="custom-tooltip" slot="activator">
+                                    <v-icon>fas fa-info-circle</v-icon>
+                                </sup>
+                                <span v-if="!clientInfo.user.emailConfirmed">
+                                    Вам необходимо подтвердить адрес электронной почты чтобы воспользоваться данным функционалом.
+                                </span>
+                                <span v-if="isDownloadNotAllowed()">Экспорт сделок в csv-формат недоступен на TRIAL-плане.
+                                    Пожалуйства <a href="/#/tariffs">обновите</a>
+                                    подписку чтобы иметь возможность экспортировать сделки в csv формат.
+                                    Или воспользуйтесь экспортом в xlsx.
+                                </span>
+                            </v-tooltip>
+                            -->
+                        </v-card-text>
+                    </v-card>
+                </v-flex>
+            </v-layout>
         </v-container>
     `
 })

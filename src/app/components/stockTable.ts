@@ -72,8 +72,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </td>
                     <td v-if="tableHeadersState.company" class="text-xs-left">
                         <span v-if="props.item.stock">{{ props.item.stock.shortname }}</span>&nbsp;
-                        <span v-if="props.item.stock"
-                              :class="[(props.item.stock.change >= 0) ? 'ii--green-markup' : 'ii--red-markup', 'ii-number-cell']">{{ props.item.stock.change }}&nbsp;%</span>
+                        <span v-if="props.item.stock" :class="markupClasses(Number(props.item.stock.change))">{{ props.item.stock.change }}&nbsp;%</span>
                     </td>
                     <td v-if="tableHeadersState.ticker" class="text-xs-left">
                         <stock-link v-if="props.item.stock" :ticker="props.item.stock.ticker"></stock-link>
@@ -87,7 +86,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </td>
                     <td v-if="tableHeadersState.bcost" class="text-xs-right ii-number-cell">{{ props.item.bcost | amount(true) }}</td>
                     <td v-if="tableHeadersState.scost" class="text-xs-right ii-number-cell">{{ props.item.scost | amount(true) }}</td>
-                    <td v-if="tableHeadersState.currCost" class="text-xs-right ii-number-cell">{{ props.item.currCost| amount(true) }}</td>
+                    <td v-if="tableHeadersState.currCost" class="text-xs-right ii-number-cell">{{ props.item.currCost | amount(true) }}</td>
                     <td v-if="tableHeadersState.profitFromDividends" :class="markupClasses(amount(props.item.profitFromDividends))">
                         {{ props.item.profitFromDividends | amount(true) }}
                     </td>

@@ -71,7 +71,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <td v-if="tableHeadersState.bcost" class="text-xs-right ii-number-cell">{{ props.item.bcost | amount(true) }}</td>
                     <td v-if="tableHeadersState.scost" class="text-xs-right ii-number-cell">{{ props.item.scost | amount(true) }}</td>
                     <td v-if="tableHeadersState.currCost" class="text-xs-right ii-number-cell">{{ props.item.currCost | amount(true) }}</td>
-                    <td v-if="tableHeadersState.nominal" class="text-xs-right ii-number-cell">{{ props.item.nominal | amount }}</td>
+                    <td v-if="tableHeadersState.nominal" class="text-xs-right ii-number-cell">{{ props.item.nominal | amount(false, null, false) }}</td>
                     <td v-if="tableHeadersState.profitFromCoupons" :class="markupClasses(amount(props.item.profitFromCoupons))">
                         {{ props.item.profitFromCoupons | amount(true) }}
                     </td>
