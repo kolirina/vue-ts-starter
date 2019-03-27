@@ -15,6 +15,7 @@ import {TradeUtils} from "../utils/tradeUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {AddTradeDialog} from "./dialogs/addTradeDialog";
+import {TradesTableExtInfo} from "./tradesTableExtInfo";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -79,61 +80,51 @@ const MainStore = namespace(StoreType.MAIN);
                             <v-list dense>
                                 <v-list-tile v-if="!isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.BUY)">
                                     <v-list-tile-title>
-                                        <v-icon color="primary" small>fas fa-plus</v-icon>
                                         Купить
                                     </v-list-tile-title>
                                 </v-list-tile>
                                 <v-list-tile v-if="!isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.SELL)">
                                     <v-list-tile-title>
-                                        <v-icon color="primary" small>fas fa-minus</v-icon>
                                         Продать
                                     </v-list-tile-title>
                                 </v-list-tile>
                                 <v-list-tile v-if="isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.DEPOSIT)">
                                     <v-list-tile-title>
-                                        <v-icon color="primary" small>fas fa-plus</v-icon>
                                         Внести
                                     </v-list-tile-title>
                                 </v-list-tile>
                                 <v-list-tile v-if="isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.WITHDRAW)">
                                     <v-list-tile-title>
-                                        <v-icon color="primary" small>fas fa-minus</v-icon>
                                         Вывести
                                     </v-list-tile-title>
                                 </v-list-tile>
                                 <v-list-tile v-if="isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.INCOME)">
                                     <v-list-tile-title>
-                                        <v-icon color="primary" small>far fa-grin-beam</v-icon>
                                         Доход
                                     </v-list-tile-title>
                                 </v-list-tile>
                                 <v-list-tile v-if="isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.LOSS)">
                                     <v-list-tile-title>
-                                        <v-icon color="primary" small>far fa-sad-tear</v-icon>
                                         Расход
                                     </v-list-tile-title>
                                 </v-list-tile>
                                 <v-list-tile v-if="isStockTrade(props.item)" @click="openTradeDialog(props.item, operation.DIVIDEND)">
                                     <v-list-tile-title>
-                                        <v-icon color="primary" small>fas fa-calendar-alt</v-icon>
                                         Дивиденд
                                     </v-list-tile-title>
                                 </v-list-tile>
                                 <v-list-tile v-if="isBondTrade(props.item)" @click="openTradeDialog(props.item, operation.COUPON)">
                                     <v-list-tile-title>
-                                        <v-icon color="primary" small>fas fa-calendar-alt</v-icon>
                                         Купон
                                     </v-list-tile-title>
                                 </v-list-tile>
                                 <v-list-tile v-if="isBondTrade(props.item)" @click="openTradeDialog(props.item, operation.AMORTIZATION)">
                                     <v-list-tile-title>
-                                        <v-icon color="primary" small>fas fa-hourglass-half</v-icon>
                                         Амортизация
                                     </v-list-tile-title>
                                 </v-list-tile>
                                 <v-list-tile v-if="isBondTrade(props.item)" @click="openTradeDialog(props.item, operation.REPAYMENT)">
                                     <v-list-tile-title>
-                                        <v-icon color="primary" small>fas fa-recycle</v-icon>
                                         Погашение
                                     </v-list-tile-title>
                                 </v-list-tile>
@@ -141,7 +132,6 @@ const MainStore = namespace(StoreType.MAIN);
                                 <v-divider v-if="!props.item.parentTradeId"></v-divider>
                                 <v-list-tile v-if="!props.item.parentTradeId" @click="deleteTrade(props.item)">
                                     <v-list-tile-title>
-                                        <v-icon color="primary" small>fas fa-trash-alt</v-icon>
                                         Удалить
                                     </v-list-tile-title>
                                 </v-list-tile>
@@ -152,67 +142,11 @@ const MainStore = namespace(StoreType.MAIN);
             </template>
 
             <template #expand="props">
-                <table class="ext-info" @click.stop>
-                    <tr>
-                        <td>
-                            <div class="ext-info__item">
-                                <template v-if="tableHeadersState.ticker && props.item.asset !== 'MONEY'">
-                                    Тикер
-                                    <span class="ext-info__ticker">
-                                        <stock-link v-if="props.item.asset === 'STOCK'" :ticker="props.item.ticker"></stock-link>
-                                        <bond-link v-if="props.item.asset === 'BOND'" :ticker="props.item.ticker"></bond-link>
-                                    </span>
-                                </template>
-                                <template v-if="tableHeadersState.ticker && props.item.asset === 'MONEY'">
-                                    Тип {{ props.item.ticker }}
-                                </template>
-                                <br>
-                                <template v-if="props.item.companyName">Название {{ props.item.companyName }}<br></template>
-                                Заметка {{ props.item.note }}
-                            </div>
-                        </td>
-                        <td>
-                            <div class="ext-info__item">
-                                Операция {{ props.item.operationLabel }}<br>
-                                Дата {{ getTradeDate(props.item) }}<br>
-                                <template v-if="props.item.quantity">Количество {{ props.item.quantity }} <span>шт.</span></template>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="ext-info__item">
-                                <template v-if="getPrice(props.item)">Цена {{ getPrice(props.item) }} <span>{{ currencyForPrice(props.item) }}</span><br></template>
-                                <template v-if="props.item.facevalue">
-                                    Номинал {{ props.item.facevalue | amount }} <span>{{ props.item.facevalue | currencySymbol }}</span><br>
-                                </template>
-                                <template v-if="props.item.nkd">НКД {{ props.item.nkd | amount }} <span>{{ props.item.nkd | currencySymbol }}</span></template>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="ext-info__item">
-                                <template v-if="props.item.signedTotal">
-                                    Сумма {{ props.item.signedTotal | amount(true) }} <span>{{ props.item.signedTotal | currencySymbol }}</span><br>
-                                </template>
-                                <template v-if="getFee(props.item)">Комиссия {{ getFee(props.item) }} <span>{{ props.item.fee | currencySymbol }}</span><br></template>
-                                <template v-if="props.item.totalWithoutFee">
-                                    Сумма без комиссии {{ props.item.totalWithoutFee | amount }} <span>{{ props.item.totalWithoutFee | currencySymbol }}</span>
-                                </template>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="ext-info__item">
-                            </div>
-                        </td>
-                        <td>
-                            <div class="ext-info__item">
-                            </div>
-                        </td>
-                    </tr>
-                </table>
+                <trades-table-ext-info :trade-row="props.item" :portfolio-pro-mode="portfolioProModeEnabled"></trades-table-ext-info>
             </template>
         </v-data-table>
-    `
+    `,
+    components: {TradesTableExtInfo}
 })
 export class TradesTable extends UI {
 
