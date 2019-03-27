@@ -164,15 +164,15 @@ const MainStore = namespace(StoreType.MAIN);
                                     <stock-link :ticker="props.item.stock.ticker"></stock-link>
                                 </span><br>
                                 В портфеле {{ props.item.ownedDays }} {{ props.item.ownedDays | declension("день", "дня", "дней") }}, c {{ props.item.firstBuy | date }}<br>
-                                Кол-во полных лотов {{ props.item.lotCounts }} <span>шт.</span><br>
-                                Всего {{ props.item.quantity }} <span>{{ props.item.quantity | declension("акция", "акции", "акций") }}</span>
+                                Кол-во полных лотов {{ props.item.lotCounts | number }} <span>шт.</span><br>
+                                Всего {{ props.item.quantity | number }} <span>{{ props.item.quantity | declension("акция", "акции", "акций") }}</span>
                             </div>
                         </td>
                         <td>
                             <div class="ext-info__item">
                                 Прибыль по сделкам {{ props.item.exchangeProfit | amount }} <span>{{ portfolioCurrency }}</span><br>
-                                Прибыль по сделкам {{ props.item.exchangeProfitPercent }} <span>%</span><br>
-                                Доходность {{ props.item.yearYield }} <span>%</span>
+                                Прибыль по сделкам {{ props.item.exchangeProfitPercent | number }} <span>%</span><br>
+                                Доходность {{ props.item.yearYield | number }} <span>%</span>
                             </div>
                         </td>
                         <td>
@@ -186,20 +186,20 @@ const MainStore = namespace(StoreType.MAIN);
                         <td>
                             <div class="ext-info__item">
                                 Курсовая прибыль {{ props.item.rateProfit | amount }} <span>{{ portfolioCurrency }}</span><br>
-                                Курсовая прибыль {{ props.item.rateProfitPercent }} <span>%</span>
+                                Курсовая прибыль {{ props.item.rateProfitPercent | number }} <span>%</span>
                             </div>
                         </td>
                         <td>
                             <div class="ext-info__item">
                                 P/L за день {{ props.item.dailyPl | amount }} <span>{{ portfolioCurrency }}</span><br>
-                                P/L за день {{ props.item.dailyPlPercent }} <span>%</span><br>
+                                P/L за день {{ props.item.dailyPlPercent | number }} <span>%</span><br>
                                 Комиссия {{ props.item.summFee | amount }} <span>{{ portfolioCurrency }}</span>
                             </div>
                         </td>
                         <td>
                             <div class="ext-info__item">
                                 Дивиденды {{ props.item.profitFromDividends | amount }} <span>{{ portfolioCurrency }}</span><br>
-                                Прибыль по дивидендам {{ props.item.profitFromDividendsPercent }} <span>%</span>
+                                Прибыль по дивидендам {{ props.item.profitFromDividendsPercent | number }} <span>%</span>
                             </div>
                         </td>
                     </tr>
@@ -371,6 +371,6 @@ export class StockTable extends UI {
     }
 
     private get portfolioCurrency(): string {
-        return this.portfolio.portfolioParams.viewCurrency;
+        return TradeUtils.getCurrencySymbol(this.portfolio.portfolioParams.viewCurrency);
     }
 }

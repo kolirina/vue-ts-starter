@@ -36,7 +36,7 @@ export class Filters {
             const am = amount.amount.toDP(DEFAULT_SCALE, Decimal.ROUND_HALF_UP).toNumber();
             return DF.format(am);
         } else {
-            return scale ? DF_NO_SCALE.format(amount.amount.toDP(scale, Decimal.ROUND_HALF_UP).toNumber()) : String(amount.amount.toNumber());
+            return DF_NO_SCALE.format(scale ? amount.amount.toDP(scale, Decimal.ROUND_HALF_UP).toNumber() : amount.amount.toNumber());
         }
     }
 

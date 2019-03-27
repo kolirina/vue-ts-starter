@@ -239,7 +239,7 @@ export class TablesService {
             {text: "Тикер/ISIN", align: "left", value: TABLE_HEADERS.TICKER, active: true, width: "90"},
             {text: "Название", align: "left", value: TABLE_HEADERS.NAME, active: true, width: "160"},
             {text: "Операция", align: "left", value: TABLE_HEADERS.OPERATION_LABEL, active: true, width: "100"},
-            {text: "Дата", align: "center", value: TABLE_HEADERS.DATE, active: true, width: "60"},
+            {text: "Дата сделки", align: "center", value: TABLE_HEADERS.DATE, active: true, width: "80"},
             {text: "Количество", align: "right", value: TABLE_HEADERS.QUANTITY, sortable: false, active: false, width: "50"},
             {text: "Цена", align: "right", value: TABLE_HEADERS.PRICE, sortable: false, active: true, width: "90"},
             {text: "Номинал", align: "right", value: TABLE_HEADERS.FACE_VALUE, sortable: false, active: false, width: "50"},
@@ -248,7 +248,7 @@ export class TablesService {
             {text: "Сумма", align: "right", value: TABLE_HEADERS.SIGNED_TOTAL, active: true, width: "65"},
             {text: "Сумма без комисс.", align: "right", value: TABLE_HEADERS.TOTAL_WITHOUT_FEE, active: false, width: "65"},
             {text: "", align: "center", value: "links", ghost: true, sortable: false, width: "25", active: true},
-            {text: "Действия", align: "center", value: "actions", ghost: true, sortable: false, width: "25", active: true},
+            {text: "", align: "center", value: "actions", ghost: true, sortable: false, width: "25", active: true},
         ]
     };
 

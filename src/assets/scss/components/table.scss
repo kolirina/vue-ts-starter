@@ -107,6 +107,15 @@
     }
   }
 
+  &__grid {
+    display: grid;
+    grid-template-columns: minmax(auto, max-content) minmax(auto, max-content);
+    column-gap: 16px;
+    margin-left: 16px;
+
+    span:not(.ext-info__ticker) {color: $font-color--lite}
+  }
+
   &__item {
     display: inline-block;
     padding: 16px;
