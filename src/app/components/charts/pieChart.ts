@@ -31,7 +31,8 @@ export class PieChart extends UI {
     $refs: {
         container: HTMLElement
     };
-
+    /** Объект графика */
+    chart: ChartObject = null;
     /** Валюта просмотра. Может быть не указана, тогда будет браться значения из данных о точке */
     @Prop({required: false, default: null, type: String})
     private viewCurrency: string;
@@ -47,8 +48,6 @@ export class PieChart extends UI {
     /** Данные */
     @Prop({required: true})
     private data: DataPoint[];
-    /** Объект графика */
-    private chart: ChartObject = null;
 
     async mounted(): Promise<void> {
         await this.draw();

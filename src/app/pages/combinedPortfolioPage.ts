@@ -27,7 +27,7 @@ const MainStore = namespace(StoreType.MAIN);
                              @reloadLineChart="loadPortfolioLineChart">
             <template #afterDashboard>
                 <expanded-panel :value="$uistate.combinedPanel" :state="$uistate.COMBINED_CONTROL_PANEL">
-                    <template #header>Управление комбинированным портфелем</template>
+                    <template #header>Управление составным портфелем</template>
 
                     <v-card-text>
                         <combined-portfolios-table :portfolios="clientInfo.user.portfolios" @change="onSetCombined"></combined-portfolios-table>

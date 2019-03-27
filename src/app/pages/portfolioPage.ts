@@ -16,7 +16,7 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <base-portfolio-page v-if="portfolio" :overview="portfolio.overview" :portfolio-name="portfolio.portfolioParams.name"
+        <base-portfolio-page v-if="portfolio" :overview="portfolio.overview" :portfolio-name="portfolio.portfolioParams.name" :portfolio-id="portfolio.portfolioParams.id"
                              :line-chart-data="lineChartData" :line-chart-events="lineChartEvents" :view-currency="portfolio.portfolioParams.viewCurrency"
                              :state-key-prefix="StoreKeys.PORTFOLIO_CHART"
                              @reloadLineChart="loadPortfolioLineChart" @exportTable="onExportTable" exportable>

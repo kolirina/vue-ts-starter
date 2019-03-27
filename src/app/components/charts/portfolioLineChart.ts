@@ -35,6 +35,8 @@ export class PortfolioLineChart extends UI {
         container: HTMLElement
     };
 
+    /** Объект графика */
+    chart: ChartObject = null;
     @Inject
     private localStorage: Storage;
 
@@ -50,8 +52,6 @@ export class PortfolioLineChart extends UI {
     /** Префикс ключа под которым будет хранится состояние */
     @Prop({type: String, required: false})
     private stateKeyPrefix: string;
-    /** Объект графика */
-    private chart: ChartObject = null;
     /** Набор доступных для выбора диапазонов дат */
     private ranges: Highstock.RangeSelectorButton[] = [];
     /** Индекс выбранного диапазона */

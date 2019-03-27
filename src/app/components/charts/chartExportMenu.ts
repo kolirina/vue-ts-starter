@@ -19,8 +19,8 @@ import {EventType} from "../../types/eventType";
 @Component({
     // language=Vue
     template: `
-        <v-menu transition="slide-y-transition" bottom left>
-            <v-btn slot="activator" flat icon dark>
+        <v-menu v-model="visible" transition="slide-y-transition" bottom left>
+            <v-btn slot="activator" flat icon dark @click.stop="toggleMenu">
                 <span class="menuDots"></span>
             </v-btn>
             <v-list dense style="cursor: pointer;">
@@ -54,6 +54,12 @@ import {EventType} from "../../types/eventType";
     `
 })
 export class ChartExportMenu extends UI {
+
+    visible = false;
+
+    toggleMenu(): void {
+        this.visible = !this.visible;
+    }
 
     private print(): void {
         this.$emit(EventType.PRINT);
