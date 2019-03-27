@@ -20,7 +20,7 @@ import {namespace} from "vuex-class/lib/bindings";
 import {Component, Prop, UI, Watch} from "../app/ui";
 import {AssetTable} from "../components/assetTable";
 import {BondTable} from "../components/bondTable";
-import {AssetChart} from "../components/charts/assetChart";
+import {PieChart} from "../components/charts/pieChart";
 import {PortfolioLineChart} from "../components/charts/portfolioLineChart";
 import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog";
 import {PortfolioRowFilter, PortfolioRowsTableFilter} from "../components/portfolioRowsTableFilter";
@@ -90,10 +90,14 @@ const MainStore = namespace(StoreType.MAIN);
 
             <div style="height: 30px"></div>
 
-            <expanded-panel :value="$uistate.historyPanel" :state="$uistate.HISTORY_PANEL" @click="onPortfolioLineChartPanelStateChanges">
+            <expanded-panel :value="$uistate.historyPanel" :state="$uistate.HISTORY_PANEL" @click="onPortfolioLineChartPanelStateChanges" customMenu>
                 <template #header>Стоимость портфеля</template>
+                <template #customMenu>
+                    <chart-export-menu v-if="lineChartData && lineChartEvents" @print="print('portfolioLineChart')" @exportTo="exportTo('portfolioLineChart', $event)"
+                                       class="exp-panel-menu"></chart-export-menu>
+                </template>
                 <v-card-text>
-                    <portfolio-line-chart v-if="lineChartData && lineChartEvents" :data="lineChartData"
+                    <portfolio-line-chart v-if="lineChartData && lineChartEvents" ref="portfolioLineChart" :data="lineChartData"
                                           :state-key-prefix="stateKeyPrefix"
                                           :events-chart-data="lineChartEvents" :balloon-title="portfolioName"></portfolio-line-chart>
                     <v-container v-else grid-list-md text-xs-center>
@@ -108,38 +112,50 @@ const MainStore = namespace(StoreType.MAIN);
 
             <div style="height: 30px"></div>
 
-            <expanded-panel :value="$uistate.assetGraph" :state="$uistate.ASSET_CHART_PANEL">
+            <expanded-panel :value="$uistate.assetGraph" :state="$uistate.ASSET_CHART_PANEL" customMenu>
                 <template #header>Состав портфеля по активам</template>
+                <template #customMenu>
+                    <chart-export-menu @print="print('assetsPieChart')" @exportTo="exportTo('assetsPieChart', $event)" class="exp-panel-menu"></chart-export-menu>
+                </template>
                 <v-card-text>
                     <!-- Валюта тут не нужна так как валюта будет браться из каждого актива в отдельности -->
-                    <pie-chart :data="assetsPieChartData" :balloon-title="portfolioName" tooltip-format="ASSETS"></pie-chart>
+                    <pie-chart ref="assetsPieChart" :data="assetsPieChartData" :balloon-title="portfolioName" tooltip-format="ASSETS"></pie-chart>
                 </v-card-text>
             </expanded-panel>
 
             <div style="height: 30px"></div>
 
-            <expanded-panel :value="$uistate.stockGraph" :state="$uistate.STOCK_CHART_PANEL">
+            <expanded-panel :value="$uistate.stockGraph" :state="$uistate.STOCK_CHART_PANEL" customMenu>
                 <template #header>Состав портфеля акций</template>
+                <template #customMenu>
+                    <chart-export-menu @print="print('stockPieChart')" @exportTo="exportTo('stockPieChart', $event)" class="exp-panel-menu"></chart-export-menu>
+                </template>
                 <v-card-text>
-                    <pie-chart :data="stockPieChartData" :view-currency="viewCurrency"></pie-chart>
+                    <pie-chart ref="stockPieChart" :data="stockPieChartData" :view-currency="viewCurrency"></pie-chart>
                 </v-card-text>
             </expanded-panel>
 
             <div style="height: 30px" v-if="overview.bondPortfolio.rows.length > 0"></div>
 
-            <expanded-panel v-if="overview.bondPortfolio.rows.length > 0" :value="$uistate.bondGraph" :state="$uistate.BOND_CHART_PANEL">
+            <expanded-panel v-if="overview.bondPortfolio.rows.length > 0" :value="$uistate.bondGraph" :state="$uistate.BOND_CHART_PANEL" customMenu>
                 <template #header>Состав портфеля облигаций</template>
+                <template #customMenu>
+                    <chart-export-menu @print="print('bondPieChart')" @exportTo="exportTo('bondPieChart', $event)" class="exp-panel-menu"></chart-export-menu>
+                </template>
                 <v-card-text>
-                    <pie-chart :data="bondPieChartData" :view-currency="viewCurrency"></pie-chart>
+                    <pie-chart ref="bondPieChart" :data="bondPieChartData" :view-currency="viewCurrency"></pie-chart>
                 </v-card-text>
             </expanded-panel>
 
             <div style="height: 30px"></div>
 
-            <expanded-panel :value="$uistate.sectorsGraph" :state="$uistate.SECTORS_PANEL">
+            <expanded-panel :value="$uistate.sectorsGraph" :state="$uistate.SECTORS_PANEL" customMenu>
                 <template #header>Состав портфеля по секторам</template>
+                <template #customMenu>
+                    <chart-export-menu @print="print('sectorsChart')" @exportTo="exportTo('sectorsChart', $event)" class="exp-panel-menu"></chart-export-menu>
+                </template>
                 <v-card-text>
-                    <pie-chart :data="sectorsChartData.data" :balloon-title="portfolioName" :view-currency="viewCurrency"></pie-chart>
+                    <pie-chart ref="sectorsChart" :data="sectorsChartData.data" :balloon-title="portfolioName" :view-currency="viewCurrency"></pie-chart>
                 </v-card-text>
             </expanded-panel>
         </v-container>
@@ -148,12 +164,23 @@ const MainStore = namespace(StoreType.MAIN);
 })
 export class BasePortfolioPage extends UI {
 
+    $refs: {
+        portfolioLineChart: PortfolioLineChart,
+        assetsPieChart: PieChart,
+        stockPieChart: PieChart,
+        bondPieChart: PieChart,
+        sectorsChart: PieChart
+    };
+
     /** Данные по портфелю */
     @Prop({default: null, required: true})
     private overview: Overview;
-    /** Данные по портфелю */
+    /** Название портфеля */
     @Prop({default: "", type: String, required: false})
     private portfolioName: string;
+    /** Идентификатор портфеля */
+    @Prop({default: null, type: Number, required: false})
+    private portfolioId: string;
     /** Данные по графику стоимости портфеля */
     @Prop({required: false})
     private lineChartData: any[];
@@ -265,6 +292,14 @@ export class BasePortfolioPage extends UI {
 
     private async exportTable(exportType: ExportType): Promise<void> {
         this.$emit(EventType.exportTable, exportType);
+    }
+
+    private async print(chart: string): Promise<void> {
+        ((this.$refs as any)[chart] as PieChart).chart.print();
+    }
+
+    private async exportTo(chart: string, type: string): Promise<void> {
+        ((this.$refs as any)[chart] as PieChart).chart.exportChart({type: ChartUtils.EXPORT_TYPES[type], filename: `${chart}_${this.portfolioId || "combined"}`});
     }
 
     private get stockRows(): StockPortfolioRow[] {

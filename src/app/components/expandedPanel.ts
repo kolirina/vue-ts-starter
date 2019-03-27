@@ -6,7 +6,8 @@ import {UI} from "../app/ui";
     // language=Vue
     template: `
         <div class="exp-panel" @click="$emit('click')">
-            <v-menu v-if="withMenu" :attach="'#exp-panel-attach' + name" class="exp-panel-menu" @click.stop>
+            <slot v-if="customMenu" name="customMenu"></slot>
+            <v-menu v-if="withMenu && !customMenu" :attach="'#exp-panel-attach' + name" class="exp-panel-menu" @click.stop>
                 <v-btn slot="activator" icon>
                     <v-icon>more_horiz</v-icon>
                 </v-btn>
@@ -48,6 +49,8 @@ export class ExpandedPanel extends UI {
     private name: string;
     @Prop()
     private withMenu: boolean;
+    @Prop({type: Boolean, default: false})
+    private customMenu: boolean;
     @Prop()
     private alwaysOpen: boolean;
 }

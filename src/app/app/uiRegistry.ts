@@ -36,6 +36,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
 import {UI} from "./ui";
 
 exporting(Highcharts);
+exporting(Highstock);
 
 export class UIRegistry {
 

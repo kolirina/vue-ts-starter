@@ -256,7 +256,9 @@ export class ChartUtils {
                     threshold: null
                 }
             },
-
+            exporting: {
+                enabled: false
+            },
             series: [{
                 type: "area",
                 name: balloonTitle,
@@ -268,10 +270,8 @@ export class ChartUtils {
                 }
             },
                 // @ts-ignore
-                ...eventsChartData || []],
-            exporting: {
-                enabled: true
-            }
+                ...eventsChartData || []
+            ],
         });
     }
 
@@ -315,6 +315,9 @@ export class ChartUtils {
                     },
                     showInLegend: true
                 }
+            },
+            exporting: {
+                enabled: false
             },
             series: [{
                 name: balloonTitle,
