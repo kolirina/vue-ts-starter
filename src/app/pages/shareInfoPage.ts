@@ -22,132 +22,250 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-container fluid>
-            <v-card v-if="share">
-                <share-search :asset-type="assetType.STOCK" @change="onShareSelect"></share-search>
+        <div>
+            <div class="title-page">
+                <span>
+                    Информация
+                </span>
+            </div>
+            <v-container fluid>
+                <v-card flat class="info-share-page">
+                    <share-search :asset-type="assetType.STOCK" @change="onShareSelect"></share-search>
+                    <div v-if="share">
+                        <v-layout class="info-share-page__name-stock-block" justify-space-between align-center>
+                            <div>
+                                <div class="info-share-page__name-stock-block__title">
+                                    <span>
+                                        {{ share.name }}
+                                    </span>
+                                    <span>
+                                        <strong>
+                                            {{ share.ticker }}
+                                        </strong>
+                                    </span>
+                                    <span>
+                                        (ISIN {{ share.isin }})
+                                    </span>
+                                </div>
+                                <div>
+                                    <div>
+                                        <span class="info-share-page__name-stock-block__subtitle">
+                                            Сектор - {{ share.sector.name }}
+                                        </span>
+                                        <span class="info-share-page__name-stock-block__subtitle" v-if="share.sector.parent">родительский сектор: {{ share.sector.parent.name }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <v-btn class="info-share-page__name-stock-block__action-btn" outline color="#3D4656" @click.stop="openDialog">Добавить в портфель</v-btn>
+                                <v-btn class="info-share-page__name-stock-block__action-btn" outline color="#3D4656" @click.stop="openCreateNotificationDialog">Добавить уведомление</v-btn>
+                            </div>
+                        </v-layout>
+                    </div>
+                    <div class="info-share-page__empty" v-else>
+                        <span>
+                            Здесь будет показана информация об интересующих Вас акциях, а также о доходности по ним.
+                        </span>
+                    </div>
+                    <v-card-text class="info-about-stock">
+                        <v-layout justify-space-between wrap>
+                            <div>
+                                <div class="info-about-stock__title">
+                                    Об акции
+                                </div>
+                                <table class="info-about-stock__content">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 200px"></th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="info-about-stock__content-title">
+                                                Размер лота
+                                            </td>
+                                            <td><strong>{{ share.lotsize }}</strong> <span class="info-about-stock__content-legend">шт.</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="info-about-stock__content-title">Последняя цена</td>
+                                            <td><strong>{{ share.price | amount }}</strong> <span class="info-about-stock__content-legend">RUB</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="info-about-stock__content-title">Кол-во акций в обращении</td>
+                                            <td><strong>{{ share.issueSize | number }}</strong></td>
+                                        </tr>
+                                        <tr v-if="share.issueCapitalization">
+                                            <td class="info-about-stock__content-title">Рыночная капитализация</td>
+                                            <td><strong>{{ share.issueCapitalization | number }}</strong> <span class="info-about-stock__content-legend">RUB</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="info-share-page__dynamics">
+                                <div>
+                                    <div class="info-about-stock__title">
+                                        Динамика
+                                    </div>
+                                    <table class="info-about-stock__content">
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 110px"></th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="info-about-stock__content-title">За 1 месяц</td>
+                                                <td>
+                                                    <v-layout align-center>
+                                                        <img src="img/share/plus.png">
+                                                        <span class="info-about-stock__content__above-zero">0,86%</span>
+                                                    </v-layout>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="info-about-stock__content-title">За 6 месяцев</td>
+                                                <td>
+                                                    <v-layout align-center>
+                                                        <img src="img/share/minus.png">
+                                                        <span class="info-about-stock__content__less-than-zero">-2,07%</span>
+                                                    </v-layout>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="info-about-stock__content-title">За 12 месяцев</td>
+                                                <td> 
+                                                    <v-layout align-center>
+                                                        <img src="img/share/plus.png">
+                                                        <span class="info-about-stock__content__above-zero">9,78%</span>
+                                                    </v-layout>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div style="margin-left: 50px">
+                                    <div class="info-about-stock__title">
+                                        За год
+                                    </div>
+                                    <table class="info-about-stock__content">
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 100px"></th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="info-about-stock__content-title">Минимум</td>
+                                                <td>
+                                                    <span>
+                                                        <strong>
+                                                            134,4
+                                                        </strong>
+                                                        <span class="info-about-stock__content-legend">RUB</span>
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="info-about-stock__content-title">Максимум</td>
+                                                <td>
+                                                    <span>
+                                                        <strong>
+                                                            172,11
+                                                        </strong>
+                                                        <span class="info-about-stock__content-legend">RUB</span>
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </v-layout>
+                        <v-layout justify-space-between wrap>
+                            <div>
+                                <div class="info-about-stock__title">
+                                    Доходность
+                                </div>
+                                <table class="info-about-stock__content">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 200px"></th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="info-about-stock__content-title">Див. доходность за 3 года</td>
+                                            <td>
+                                                <strong>{{ share.yield3 }}</strong>
+                                                <span class="info-about-stock__content-legend">%</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="info-about-stock__content-title">Див. доходность за 5 лет</td>
+                                            <td>
+                                                <strong>{{ share.yield5 }}</strong>
+                                                <span class="info-about-stock__content-legend">%</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="info-about-stock__content-title">Див. доходность суммарная</td>
+                                            <td>
+                                                <strong>{{ share.yieldAll }}</strong>
+                                                <span class="info-about-stock__content-legend">%</span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div style="max-width: 435px; padding-top: 30px;" class="">
+                                <v-card v-if="share" style="overflow: auto;" flat>
+                                    <div>
+                                        <line-chart :data="history" :events-chart-data="events" :balloon-title="share.ticker" :avg-line-value="portfolioAvgPrice"></line-chart>
+                                    </div>
+                                </v-card>
+                            </div>
+                        </v-layout>
+                        <div class="info-share-page__footer">
+                            <a class="info-share-page__footer__link" v-if="share.currency === 'RUB'" :href="'http://moex.com/ru/issue.aspx?code=' + share.ticker" target="_blank"
+                                :title="'Профиль эмитента' + share.companyName + ' на сайте биржи'">
+                                Перейти на профиль эмитента
+                            </a>
 
-                <v-card-text>
-                    <table>
-                        <thead>
-                        <tr>
-                            <th style="width: 250px"></th>
-                            <th></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td>Тикер</td>
-                            <td>{{ share.ticker }}</td>
-                        </tr>
-                        <tr>
-                            <td>Компания</td>
-                            <td>{{ share.name }}</td>
-                        </tr>
-                        <tr>
-                            <td>ISIN</td>
-                            <td>{{ share.isin }}</td>
-                        </tr>
-                        <tr>
-                            <td>Сектор</td>
-                            <td>
-                                <div>{{ share.sector.name }}</div>
-                                <span v-if="share.sector.parent">родительский сектор: {{ share.sector.parent.name }}</span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Размер лота</td>
-                            <td>{{ share.lotsize }}</td>
-                        </tr>
-                        <tr>
-                            <td>Последняя цена</td>
-                            <td>{{ share.price | amount }}</td>
-                        </tr>
-                        <tr>
-                            <td>Кол-во акций в обращении</td>
-                            <td>{{ share.issueSize | number }}</td>
-                        </tr>
-                        <tr v-if="share.issueCapitalization">
-                            <td>Рыночная капитализация</td>
-                            <td>{{ share.issueCapitalization | number }}</td>
-                        </tr>
-                        <tr>
-                            <td>Див. доходность за 3 года</td>
-                            <td>
-                                {{ share.yield3 }} %
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Див. доходность за 5 лет</td>
-                            <td>
-                                {{ share.yield5 }} %
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Див. доходность суммарная</td>
-                            <td>
-                                {{ share.yieldAll }} %
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Рейтинг</td>
-                            <td>
-                                <v-rating v-model="share.rating" dense readonly></v-rating>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Профиль эмитента</td>
-                            <td>
-                                <a v-if="share.currency === 'RUB'" :href="'http://moex.com/ru/issue.aspx?code=' + share.ticker" target="_blank"
-                                   :title="'Профиль эмитента' + share.companyName + ' на сайте биржи'" style="word-break: break-all;">
-                                    {{ 'http://moex.com/ru/issue.aspx?code=' + share.ticker }}
-                                </a>
+                            <a class="info-share-page__footer__link" v-else :href="'https://finance.yahoo.com/quote/' + share.ticker" target="_blank"
+                                :title="'Профиль эмитента' + share.companyName + '  на сайте Yahoo Finance'">
+                                Перейти на профиль эмитента
+                            </a>
+                        </div>
+                    </v-card-text>
+                </v-card>
 
-                                <a v-else :href="'https://finance.yahoo.com/quote/' + share.ticker" target="_blank"
-                                   :title="'Профиль эмитента' + share.companyName + '  на сайте Yahoo Finance'" style="word-break: break-all;">
-                                    {{ 'https://finance.yahoo.com/quote/' + share.ticker }}
-                                </a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Добавить в портфель</td>
-                            <td>
-                                <v-btn fab dark small color="primary" @click.stop="openDialog">
-                                    <v-icon dark>add</v-icon>
-                                </v-btn>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Добавить уведомление</td>
-                            <td>
-                                <v-btn fab dark small color="primary" @click.stop="openCreateNotificationDialog">
-                                    <v-icon dark>far fa-bell</v-icon>
-                                </v-btn>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </v-card-text>
-            </v-card>
+                <div style="height: 20px"></div>
+                <v-card v-if="share" style="overflow: auto;" flat>
+                    <v-card-title class="headline">
+                        Цена бумаги
+                    </v-card-title>
+                    <v-card-text>
+                        <line-chart :data="history" :events-chart-data="events" :balloon-title="share.ticker" :avg-line-value="portfolioAvgPrice"></line-chart>
+                    </v-card-text>
+                </v-card>
 
-            <div style="height: 20px"></div>
-            <v-card v-if="share" style="overflow: auto;">
-                <v-card-text>
-                    <line-chart :data="history" :events-chart-data="events" :balloon-title="share.ticker" :avg-line-value="portfolioAvgPrice"></line-chart>
-                </v-card-text>
-            </v-card>
-
-            <div style="height: 20px"></div>
-            <v-card v-if="share" style="overflow: auto;">
-                <v-card-title class="headline">
-                    Дивиденды
-                    <v-spacer></v-spacer>
-                    <chart-export-menu @print="print" @exportTo="exportTo($event)"></chart-export-menu>
-                </v-card-title>
-                <v-card-text>
-                    <dividend-chart ref="chartComponent" :data="dividends" title="Дивиденды"></dividend-chart>
-                </v-card-text>
-            </v-card>
-        </v-container>
+                <div style="height: 20px"></div>
+                <v-card v-if="share" style="overflow: auto;" flat>
+                    <v-card-title class="headline">
+                        Дивиденды
+                        <v-spacer></v-spacer>
+                        <chart-export-menu @print="print" @exportTo="exportTo($event)"></chart-export-menu>
+                    </v-card-title>
+                    <v-card-text>
+                        <dividend-chart ref="chartComponent" :data="dividends" title="Дивиденды"></dividend-chart>
+                    </v-card-text>
+                </v-card>
+            </v-container>
+        </div>
     `,
     components: {DividendChart}
 })
