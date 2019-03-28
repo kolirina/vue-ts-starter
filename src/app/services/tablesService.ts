@@ -125,7 +125,7 @@ export class TablesService {
             },
             {text: "Комиссия", align: "right", value: TABLE_HEADERS.SUMM_FEE, active: false, width: "60", tooltip: StockTooltips[TABLE_HEADERS.SUMM_FEE], currency: true},
             {text: "Тек. доля", align: "right", value: TABLE_HEADERS.PERC_CURR_SHARE, active: true, width: "50"},
-            {text: "Действия", align: "center", ghost: true, value: "actions", sortable: false, width: "25", active: true},
+            {text: "", align: "center", ghost: true, value: "actions", sortable: false, width: "25", active: true},
         ],
 
         [TABLES_NAME.BOND]: [
@@ -231,7 +231,7 @@ export class TablesService {
             },
             {text: "Комиссия", align: "right", value: TABLE_HEADERS.SUMM_FEE, active: false, width: "65", tooltip: BondTooltips[TABLE_HEADERS.SUMM_FEE], currency: true},
             {text: "Тек. доля", align: "right", value: TABLE_HEADERS.PERC_CURR_SHARE, active: true, width: "50", tooltip: BondTooltips[TABLE_HEADERS.PERC_CURR_SHARE]},
-            {text: "Действия", align: "center", value: "actions", ghost: true, sortable: false, width: "25", active: true},
+            {text: "", align: "center", value: "actions", ghost: true, sortable: false, width: "25", active: true},
         ],
 
         [TABLES_NAME.TRADE]: [

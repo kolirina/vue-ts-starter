@@ -99,51 +99,43 @@ const MainStore = namespace(StoreType.MAIN);
                             <v-list dense>
                                 <v-list-tile @click="openShareTradesDialog(props.item.bond.ticker)">
                                     <v-list-tile-title>
-                                        <v-icon color="primary" small>fas fa-list-alt</v-icon>
                                         Все сделки
                                     </v-list-tile-title>
                                 </v-list-tile>
                                 <v-list-tile @click="openEditShareNoteDialog(props.item.bond.ticker)">
                                     <v-list-tile-title>
-                                        <v-icon color="primary" small>fas fa-sticky-note</v-icon>
                                         Заметка
                                     </v-list-tile-title>
                                 </v-list-tile>
                                 <v-divider></v-divider>
                                 <v-list-tile @click="openTradeDialog(props.item, operation.BUY)">
                                     <v-list-tile-title>
-                                        <v-icon color="primary" small>fas fa-plus</v-icon>
                                         Купить
                                     </v-list-tile-title>
                                 </v-list-tile>
                                 <v-list-tile @click="openTradeDialog(props.item, operation.SELL)">
                                     <v-list-tile-title>
-                                        <v-icon color="primary" small>fas fa-minus</v-icon>
                                         Продать
                                     </v-list-tile-title>
                                 </v-list-tile>
                                 <v-list-tile @click="openTradeDialog(props.item, operation.COUPON)">
                                     <v-list-tile-title>
-                                        <v-icon color="primary" small>fas fa-calendar-alt</v-icon>
                                         Купон
                                     </v-list-tile-title>
                                 </v-list-tile>
                                 <v-list-tile @click="openTradeDialog(props.item, operation.AMORTIZATION)">
                                     <v-list-tile-title>
-                                        <v-icon color="primary" small>fas fa-hourglass-half</v-icon>
                                         Амортизация
                                     </v-list-tile-title>
                                 </v-list-tile>
                                 <v-list-tile @click="openTradeDialog(props.item, operation.REPAYMENT)">
                                     <v-list-tile-title>
-                                        <v-icon color="primary" small>fas fa-recycle</v-icon>
                                         Погашение
                                     </v-list-tile-title>
                                 </v-list-tile>
                                 <v-divider></v-divider>
                                 <v-list-tile @click="deleteAllTrades(props.item)">
                                     <v-list-tile-title>
-                                        <v-icon color="primary" small>fas fa-trash-alt</v-icon>
                                         Удалить
                                     </v-list-tile-title>
                                 </v-list-tile>
