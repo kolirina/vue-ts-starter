@@ -1,3 +1,21 @@
+.indent-between-title-value-200{
+    width: 200px;
+}
+.indent-between-title-value-110{
+    width: 110px;
+}
+.indent-between-title-value-100{
+    width: 100px;
+}
+.chart-overflow{
+    overflow: auto;
+}
+.space-between-blocks{
+    height: 20px;
+}
+.wrapper-all-page{
+    min-width: 800px;
+}
 .title-page{
     color: #040427;
     letter-spacing: -0.3px;
@@ -35,6 +53,10 @@
             line-height: 20px;
             color: #3D4656;
         }
+        &__sector-rating{
+            display: flex;
+            align-items: flex-end;
+        }
     }
     &__footer{
         text-align: right;
@@ -47,6 +69,9 @@
     &__dynamics{
         display: flex;
         flex-wrap: wrap;
+        &__for-year{
+            margin-left: 50px
+        }
     }
     .info-about-stock{
         padding: 0px 0px 26px 20px;
@@ -60,6 +85,12 @@
             color: #040427;
             line-height: 26px;
         }
+        &__content-value{
+            font-size: 13px;
+            color: #040427;
+            line-height: 26px;
+            font-weight: 600;
+        }
         &__content-legend{
             font-size: 13px;
             color: #A1A6B6;
@@ -67,7 +98,7 @@
         &__content{
             &__above-zero{
                 margin-left:12px;
-                color: #91DA4A;
+                color: #91DA4A !important;
                 font-weight: 600;
                 font-size: 13px;
             }
@@ -77,6 +108,10 @@
                 font-weight: 600;
                 font-size: 13px;
             }
+        }
+        &__chart{
+            max-width: 435px;
+            padding-top: 30px;
         }
     }
 }

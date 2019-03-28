@@ -340,6 +340,19 @@ export type Stock = Share & {
     moexId: string;
 };
 
+export type StockYields = Share & {
+    /** Минимальная за год */
+    minYearPrice: string;
+    /** Максимальная за год */
+    maxYearPrice: string;
+    /** Динамика за 1 месяц */
+    yieldMonth1: string;
+    /** Динамика за 6 месяцев */
+    yieldMonth6: string;
+    /** Динамика за 12 месяцев */
+    yieldMonth12: string;
+};
+
 export type StockHistoryResponse = {
     stock: Stock;
     date: string;
@@ -395,6 +408,8 @@ export type StockInfo = {
     history: Dot[];
     /** Дивиденды */
     dividends: BaseChartDot[];
+    /** Динамика */
+    stockYields: StockYields;
     /** События. В данном случае дивиденды */
     events: HighStockEventsGroup;
 };
