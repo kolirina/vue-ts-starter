@@ -21,13 +21,13 @@ import {namespace} from "vuex-class";
 import {UI} from "../../app/ui";
 import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
+import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {DividendInfo, DividendService} from "../../services/dividendService";
 import {Portfolio, TableHeader} from "../../types/types";
 import {SortUtils} from "../../utils/sortUtils";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 import {ConfirmDialog} from "../dialogs/confirmDialog";
-import {BtnReturn} from "../dialogs/customDialog";
 
 const MainStore = namespace(StoreType.MAIN);
 

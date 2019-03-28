@@ -10,7 +10,7 @@ import {ImageDialog} from "../../../components/dialogs/imageDialog";
                 Перейдите на сайт <a href="https://www.tinkoff.ru/">https://www.tinkoff.ru</a>,
                 в правой панели выберите <b>Брокерский счет</b>. Выберите в меню пункт <b>О счете</b>.
                 <br/>
-                <v-img :src="IMAGES[0]" height="350" width="360" class="grey darken-4" @click="openImage(IMAGES[0])"></v-img>
+                <v-img :src="IMAGES[0]" height="350" width="360" class="grey darken-4" @click.stop="openImage(IMAGES[0])"></v-img>
                 Убедитесь что подготавливаите отчет в формате Тинькофф банка.
                 Настройте параметры отчета:
             <ul>
@@ -18,7 +18,7 @@ import {ImageDialog} from "../../../components/dialogs/imageDialog";
                 <li>Год</li>
                 <li>Нажмите кнопку <b><i>Скачать</i></b></li>
             </ul>
-            <v-img :src="IMAGES[1]" height="320" width="350" class="grey darken-4" @click="openImage(IMAGES[1])"></v-img>
+            <v-img :src="IMAGES[1]" height="320" width="350" class="grey darken-4" @click.stop="openImage(IMAGES[1])"></v-img>
             Полученный файл используйте для импорта.
             </p>
         </div>

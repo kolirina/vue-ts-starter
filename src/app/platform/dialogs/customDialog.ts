@@ -1,3 +1,19 @@
+/*
+ * STRICTLY CONFIDENTIAL
+ * TRADE SECRET
+ * PROPRIETARY:
+ *       "Intelinvest" Ltd, TIN 1655386205
+ *       420107, REPUBLIC OF TATARSTAN, KAZAN CITY, SPARTAKOVSKAYA STREET, HOUSE 2, ROOM 119
+ * (c) "Intelinvest" Ltd, 2019
+ *
+ * СТРОГО КОНФИДЕНЦИАЛЬНО
+ * КОММЕРЧЕСКАЯ ТАЙНА
+ * СОБСТВЕННИК:
+ *       ООО "Интеллектуальные инвестиции", ИНН 1655386205
+ *       420107, РЕСПУБЛИКА ТАТАРСТАН, ГОРОД КАЗАНЬ, УЛИЦА СПАРТАКОВСКАЯ, ДОМ 2, ПОМЕЩЕНИЕ 119
+ * (c) ООО "Интеллектуальные инвестиции", 2019
+ */
+
 import {UI} from "../../app/ui";
 
 export class CustomDialog<ParamType, ReturnType> extends UI {
@@ -34,6 +50,20 @@ export class CustomDialog<ParamType, ReturnType> extends UI {
 
             this.bindListeners();
             CustomDialog.instances.push(this);
+            // перекрываем клик по оверлею когда открыт диалог
+            // это необходимо для того чтобы диалог удалялся из DOM, так как мы его монтируем вручную всегда
+            // оставлена поддержка свойства диалога persistent, для этого нужно задать для диалога ref="dialog"
+            const overlay = document.querySelector("[data-app]") as HTMLDivElement;
+            const dialogRef: any = (this.$refs as any).dialog;
+            overlay.onclick = (e: MouseEvent): void => {
+                if (dialogRef && dialogRef.persistent) {
+                    return;
+                }
+                setTimeout(() => this.close(), 0);
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                e.preventDefault();
+            };
         }).then((buttonData) => {
             this.showed = false;
             this.$destroy();

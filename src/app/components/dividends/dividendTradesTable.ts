@@ -21,6 +21,7 @@ import {namespace} from "vuex-class";
 import {UI} from "../../app/ui";
 import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
+import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {DividendInfo, DividendService} from "../../services/dividendService";
 import {TradeFields} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
@@ -34,7 +35,6 @@ import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 import {AddTradeDialog} from "../dialogs/addTradeDialog";
 import {ConfirmDialog} from "../dialogs/confirmDialog";
-import {BtnReturn} from "../dialogs/customDialog";
 
 const MainStore = namespace(StoreType.MAIN);
 

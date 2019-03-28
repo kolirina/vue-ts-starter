@@ -13,7 +13,7 @@ import {ImageDialog} from "../../../components/dialogs/imageDialog";
                 обратившись в вашему персональному менеджеру по email или контактному телефону.
                 <br></br>
                 Контактная информация о менеджере указана в отчете.
-                <v-img :src="IMAGES[0]" height="105" width="380" class="grey darken-4" @click="openImage(IMAGES[0])"></v-img>
+                <v-img :src="IMAGES[0]" height="105" width="380" class="grey darken-4" @click.stop="openImage(IMAGES[0])"></v-img>
                 Полученный файлы используйте для импорта.
             </p>
         </div>

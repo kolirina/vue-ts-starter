@@ -16,7 +16,7 @@
 
 import Component from "vue-class-component";
 import {VueRouter} from "vue-router/types/router";
-import {BtnReturn, CustomDialog} from "./customDialog";
+import {BtnReturn, CustomDialog} from "../../platform/dialogs/customDialog";
 
 /**
  * Диалог блокировки экрана при истекшем тарифе

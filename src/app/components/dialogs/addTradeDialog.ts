@@ -6,6 +6,7 @@ import {Watch} from "vue-property-decorator";
 import {VueRouter} from "vue-router/types/router";
 import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
+import {CustomDialog} from "../../platform/dialogs/customDialog";
 import {ClientService} from "../../services/clientService";
 import {EventFields} from "../../services/eventService";
 import {MarketHistoryService} from "../../services/marketHistoryService";
@@ -23,12 +24,11 @@ import {CommonUtils} from "../../utils/commonUtils";
 import {DateUtils} from "../../utils/dateUtils";
 import {TradeUtils} from "../../utils/tradeUtils";
 import {MainStore} from "../../vuex/mainStore";
-import {CustomDialog} from "./customDialog";
 
 @Component({
     // language=Vue
     template: `
-        <v-dialog v-model="showed" persistent max-width="700px">
+        <v-dialog v-model="showed" ref="dialog" persistent max-width="700px">
             <v-card class="dialog-wrap">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
 
@@ -433,7 +433,13 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private handleError(error: ErrorInfo): void {
-        const validatorFields = this.$validator.fields.items.map(f => f.name);
+        if (!CommonUtils.exists(error.fields)) {
+            if (error.message !== "Доступ запрещен") {
+                throw error;
+            }
+            return;
+        }
+        const validatorFields = this.$validator.fields.items.map((f: any) => f.name);
         for (const errorInfo of error.fields) {
             if (validatorFields.includes(errorInfo.name)) {
                 this.$validator.errors.add({field: errorInfo.name, msg: errorInfo.errorMessage});

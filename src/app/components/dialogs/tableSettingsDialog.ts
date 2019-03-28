@@ -1,8 +1,8 @@
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
+import {CustomDialog} from "../../platform/dialogs/customDialog";
 import {TablesService} from "../../services/tablesService";
 import {TableHeader} from "../../types/types";
-import {CustomDialog} from "./customDialog";
 
 /**
  * Диалог подтверждения
