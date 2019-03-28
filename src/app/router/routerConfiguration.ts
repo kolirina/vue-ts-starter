@@ -56,8 +56,9 @@ export class RouterConfiguration {
                 scrollBehavior: ((): any => ({x: 0, y: 0}))
             });
             RouterConfiguration.router.beforeEach(async (to: Route, from: Route, next: Resolver): Promise<void> => {
+                RouterConfiguration.renderMetaTags(to);
                 // осуществляем переход по роуту если пользователь залогинен, его тариф не Бесплатный и тариф действущий
-                const tariffAllowed = (to.meta as ShowTariffMeta).tariffAllowed;
+                const tariffAllowed = (to.meta as RouteMeta).tariffAllowed;
                 const authorized = !!localStorage.get(StoreKeys.TOKEN_KEY, null);
                 if (!tariffAllowed && authorized) {
                     const client = await clientService.getClientInfo();
@@ -91,33 +92,51 @@ export class RouterConfiguration {
             {
                 name: "portfolio",
                 path: "/portfolio",
-                component: PortfolioPage
+                component: PortfolioPage,
+                meta: {
+                    title: "Портфель"
+                }
             },
             {
                 name: "events",
                 path: "/events",
-                component: EventsPage
+                component: EventsPage,
+                meta: {
+                    title: "События"
+                }
             },
             {
                 name: "dividends",
                 path: "/dividends",
-                component: DividendsPage
+                component: DividendsPage,
+                meta: {
+                    title: "Дивиденды"
+                }
             },
             {
                 name: "trades",
                 path: "/trades",
-                component: TradesPage
+                component: TradesPage,
+                meta: {
+                    title: "Сделки"
+                }
             },
             {
                 name: "combined-portfolio",
                 path: "/combined-portfolio",
-                component: CombinedPortfolioPage
+                component: CombinedPortfolioPage,
+                meta: {
+                    title: "Составной портфель"
+                }
             },
             {
                 name: "quotes",
                 path: "/quotes",
-                meta: {tariffAllowed: true},
-                component: QuotesPage
+                meta: {
+                    tariffAllowed: true,
+                    title: "Котировки"
+                },
+                component: QuotesPage,
             },
             {
                 path: "/share-info",
@@ -131,77 +150,123 @@ export class RouterConfiguration {
                     {
                         path: "",
                         name: "share",
-                        meta: {tariffAllowed: true},
+                        meta: {
+                            tariffAllowed: true,
+                            title: "Информация по бумаге"
+                        },
                         component: ShareInfoPage
                     }
                 ],
             },
             {
                 name: "bond-info",
-                meta: {tariffAllowed: true},
+                meta: {
+                    tariffAllowed: true,
+                    title: "Информация по бумаге"
+                },
                 path: "/bond-info/:isin",
                 component: BondInfoPage
             },
             {
                 name: "portfolio-settings",
                 path: "/portfolio-settings",
-                meta: {tariffAllowed: true},
+                meta: {
+                    tariffAllowed: true,
+                    title: "Управление портфелями"
+                },
                 component: SettingsPage
             },
             {
                 name: "help",
                 path: "/help",
-                meta: {tariffAllowed: true},
+                meta: {
+                    tariffAllowed: true,
+                    title: "Справка"
+                },
                 component: HelpPage
             },
             {
                 name: "export",
                 path: "/export",
-                component: ExportPage
+                component: ExportPage,
+                meta: {
+                    title: "Экспорт сделок"
+                }
             },
             {
                 name: "import",
                 path: "/import",
-                component: ImportPage
+                component: ImportPage,
+                meta: {
+                    title: "Импорт сделок"
+                }
             },
             {
                 name: "profile",
                 path: "/profile",
-                meta: {tariffAllowed: true},
+                meta: {
+                    tariffAllowed: true,
+                    title: "Профиль"
+                },
                 component: ProfilePage
             },
             {
                 name: "tariffs",
                 path: "/tariffs/",
-                meta: {tariffAllowed: true},
+                meta: {
+                    tariffAllowed: true,
+                    title: "Тарифы"
+                },
                 component: TariffsPage
             },
             {
                 name: "tariffs_status",
                 path: "/tariffs/:status",
-                meta: {tariffAllowed: true},
+                meta: {
+                    tariffAllowed: true,
+                    title: "Тарифы"
+                },
                 component: TariffsPage
             },
             {
                 name: "promo-codes",
                 path: "/promo-codes",
-                meta: {tariffAllowed: true},
+                meta: {
+                    tariffAllowed: true,
+                    title: "Промокоды"
+                },
                 component: PromoCodesPage
             },
             {
                 name: "notifications",
                 path: "/notifications",
-                component: NotificationsPage
+                component: NotificationsPage,
+                meta: {
+                    title: "Уведомления"
+                }
             },
             {
                 name: "balances",
                 path: "/balances",
-                component: BalancesPage
+                component: BalancesPage,
+                meta: {
+                    title: "Балансы"
+                }
             }
         ];
     }
+
+    /**
+     * Обрабатывает  meta-тэги. На данном этапе только меняет title страницы
+     * @param to route к которому осуществляется переход
+     */
+    private static renderMetaTags(to: Route): void {
+        const title = (to.meta as RouteMeta).title;
+        document.title = title || "Intelinvest";
+    }
 }
 
-interface ShowTariffMeta {
+interface RouteMeta {
     tariffAllowed: boolean;
+    title?: string;
 }
