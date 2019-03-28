@@ -30,7 +30,7 @@ import {CustomDialog} from "./customDialog";
                                 <v-text-field label="Название" v-model.trim="portfolioParams.name" required autofocus :counter="40"
                                               class="required" v-validate="'required|max:40|min:3'"
                                               :error-messages="errors.collect('name')"
-                                              data-vv-name="name"></v-text-field>
+                                              data-vv-name="name" @keyup.enter="savePortfolio"></v-text-field>
                             </v-flex>
 
                             <v-flex xs12 sm4>
@@ -83,8 +83,8 @@ import {CustomDialog} from "./customDialog";
                             </v-flex>
 
                             <v-flex xs12>
-                                <ii-number-field label="Фиксированная комиссия" v-model="portfolioParams.fixFee" hint="Для автоматического рассчета комиссии при внесении сделок."
-                                                 :decimals="5">
+                                <ii-number-field label="Фиксированная комиссия" v-model="portfolioParams.fixFee"
+                                                 hint="Для автоматического рассчета комиссии при внесении сделок." :decimals="5" @keyup.enter="savePortfolio">
                                 </ii-number-field>
                             </v-flex>
 
