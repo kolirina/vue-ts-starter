@@ -7,7 +7,7 @@ import exporting from "highcharts/modules/exporting";
 import Clipboard from "v-clipboard";
 import VeeValidate, {Validator} from "vee-validate";
 import Vue from "vue";
-import VueGtm from "vue-gtm";
+// import VueGtm from "vue-gtm";
 import VueQriously from "vue-qriously";
 import Snotify, {SnotifyPosition} from "vue-snotify";
 import vuescroll from "vuescroll";
@@ -31,7 +31,7 @@ import {Filters} from "../platform/filters/Filters";
 import {highchartsRu} from "../platform/locale/highchartsRu";
 import {RU} from "../platform/locale/ru";
 import {ruLocale} from "../platform/locale/veeValidateMessages";
-import {RouterConfiguration} from "../router/routerConfiguration";
+// import {RouterConfiguration} from "../router/routerConfiguration";
 import {UiStateHelper} from "../utils/uiStateHelper";
 import {UI} from "./ui";
 
@@ -89,13 +89,13 @@ export class UIRegistry {
                 pauseOnHover: true
             }
         });
-        Vue.use(VueGtm, {
-            id: "GTM-5WP2PK2", // Your GTM ID
-            enabled: true, // defaults to true. Plugin can be disabled by setting this to false for Ex: enabled: !!GDPR_Cookie (optional)
-            debug: false, // Whether or not display console logs debugs (optional)
-            vueRouter: RouterConfiguration.getRouter(), // Pass the router instance to automatically sync with router (optional)
-            ignoredViews: [] // If router, you can exclude some routes name (case insensitive) (optional)
-        });
+        // Vue.use(VueGtm, {
+        //     id: "GTM-5WP2PK2", // Your GTM ID
+        //     enabled: true, // defaults to true. Plugin can be disabled by setting this to false for Ex: enabled: !!GDPR_Cookie (optional)
+        //     debug: false, // Whether or not display console logs debugs (optional)
+        //     vueRouter: RouterConfiguration.getRouter(), // Pass the router instance to automatically sync with router (optional)
+        //     ignoredViews: [] // If router, you can exclude some routes name (case insensitive) (optional)
+        // });
 
         // компоненты
         UI.component("dashboard", Dashboard);

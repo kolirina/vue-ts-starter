@@ -38,23 +38,23 @@ const MainStore = namespace(StoreType.MAIN);
                     <td class="text-xs-center">{{ props.item.viewCurrency }}</td>
                     <td class="text-xs-center">{{ props.item.accountType.description }}</td>
                     <td class="text-xs-center">{{ props.item.openDate }}</td>
-                    <td class="justify-center layout px-0">
+                    <td class="justify-center layout px-0" @click.stop>
                         <v-menu transition="slide-y-transition" bottom left>
                             <v-btn slot="activator" flat icon dark>
                                 <span class="menuDots"></span>
                             </v-btn>
                             <v-list dense>
-                                <v-list-tile @click.stop="openDialogForEdit(props.item)">
+                                <v-list-tile @click="openDialogForEdit(props.item)">
                                     <v-list-tile-title>
                                         Редактировать портфель
                                     </v-list-tile-title>
                                 </v-list-tile>
-                                <v-list-tile @click.stop="deletePortfolio(props.item)">
+                                <v-list-tile @click="deletePortfolio(props.item)">
                                     <v-list-tile-title>
                                         Удалить портфель
                                     </v-list-tile-title>
                                 </v-list-tile>
-                                <v-list-tile @click.stop="clonePortfolio(props.item.id)">
+                                <v-list-tile @click="clonePortfolio(props.item.id)">
                                     <v-list-tile-title>
                                         Копировать портфель
                                     </v-list-tile-title>
