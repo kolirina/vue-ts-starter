@@ -27,7 +27,7 @@ const MainStore = namespace(StoreType.MAIN);
                 <inplace-input name="username"
                                @update:editMode="onModeChange('username', $event)"
                                :editMode="editMode.username" :value="username" @input="onUserNameChange"></inplace-input>
-                <v-btn @click.native="changePassword" class="big_btn">
+                <v-btn @click.stop="changePassword" class="big_btn">
                     Сменить пароль
                 </v-btn>
             </v-card>

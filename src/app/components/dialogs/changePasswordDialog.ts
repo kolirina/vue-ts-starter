@@ -3,8 +3,8 @@ import Component from "vue-class-component";
 import {Vue} from "vue/types/vue";
 import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
+import {CustomDialog} from "../../platform/dialogs/customDialog";
 import {ClientInfo, ClientService} from "../../services/clientService";
-import {CustomDialog} from "./customDialog";
 
 /**
  * Диалог подтверждения

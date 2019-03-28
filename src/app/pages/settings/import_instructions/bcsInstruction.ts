@@ -8,14 +8,14 @@ import {ImageDialog} from "../../../components/dialogs/imageDialog";
         <div>
             <p>
                 Зайти в Личный кабинет, нажать на "Отчетность", выбрать "Отчетность (БКС Россия)" если работаем с Московской биржей.
-                <v-img :src="IMAGES[0]" height="120" width="300" class="grey darken-4" @click="openImage(IMAGES[0])"></v-img>
+                <v-img :src="IMAGES[0]" height="120" width="300" class="grey darken-4" @click.stop="openImage(IMAGES[0])"></v-img>
                 В строке с типом отчета можно выбрать ежедневный, ежемесячный и с начала текущего месяца.
-                <v-img :src="IMAGES[1]" height="160" width="320" class="grey darken-4" @click="openImage(IMAGES[1])"></v-img>
+                <v-img :src="IMAGES[1]" height="160" width="320" class="grey darken-4" @click.stop="openImage(IMAGES[1])"></v-img>
                 В ежемесячном типе отчета можно выбрать период по месяцам и годам. С начала текущего месяца отчет нужно запрашивать, нажав на "Запросить".
                 Ниже будут представлены отчеты за выбранный период времени.
-                <v-img :src="IMAGES[2]" height="160" width="320" class="grey darken-4" @click="openImage(IMAGES[2])"></v-img>
+                <v-img :src="IMAGES[2]" height="160" width="320" class="grey darken-4" @click.stop="openImage(IMAGES[2])"></v-img>
                 Выбираем нужный, открываем, и он скачивается в формате xls.
-                <v-img :src="IMAGES[3]" height="160" width="320" class="grey darken-4" @click="openImage(IMAGES[3])"></v-img>
+                <v-img :src="IMAGES[3]" height="160" width="320" class="grey darken-4" @click.stop="openImage(IMAGES[3])"></v-img>
             </p>
         </div>
     `

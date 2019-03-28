@@ -3,6 +3,7 @@ import Component from "vue-class-component";
 import {Prop, Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
+import {BtnReturn} from "../platform/dialogs/customDialog";
 import {TradeService} from "../services/tradeService";
 import {BigMoney} from "../types/bigMoney";
 import {Operation} from "../types/operation";
@@ -11,7 +12,6 @@ import {SortUtils} from "../utils/sortUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {ConfirmDialog} from "./dialogs/confirmDialog";
-import {BtnReturn} from "./dialogs/customDialog";
 
 const MainStore = namespace(StoreType.MAIN);
 

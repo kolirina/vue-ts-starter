@@ -16,9 +16,9 @@
 
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
+import {BtnReturn, CustomDialog} from "../../platform/dialogs/customDialog";
 import {Storage} from "../../platform/services/storage";
 import {StoreKeys} from "../../types/storeKeys";
-import {BtnReturn, CustomDialog} from "./customDialog";
 
 /**
  * Диалог для демо - режима

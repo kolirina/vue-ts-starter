@@ -19,6 +19,7 @@ import {Prop} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI, Watch} from "../app/ui";
 import {ShowProgress} from "../platform/decorators/showProgress";
+import {BtnReturn} from "../platform/dialogs/customDialog";
 import {PortfolioService} from "../services/portfolioService";
 import {TableHeadersState, TABLES_NAME, TablesService} from "../services/tablesService";
 import {TradeService} from "../services/tradeService";
@@ -33,7 +34,6 @@ import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {AddTradeDialog} from "./dialogs/addTradeDialog";
 import {ConfirmDialog} from "./dialogs/confirmDialog";
-import {BtnReturn} from "./dialogs/customDialog";
 import {EditShareNoteDialog, EditShareNoteDialogData} from "./dialogs/editShareNoteDialog";
 import {ShareTradesDialog} from "./dialogs/shareTradesDialog";
 import {PortfolioRowFilter} from "./portfolioRowsTableFilter";
@@ -280,7 +280,7 @@ export class StockTable extends UI {
 
     @ShowProgress
     private async openShareTradesDialog(ticker: string): Promise<void> {
-        new ShareTradesDialog().show({trades: await this.tradeService.getShareTrades(this.portfolio.id, ticker), ticker});
+        await new ShareTradesDialog().show({trades: await this.tradeService.getShareTrades(this.portfolio.id, ticker), ticker});
     }
 
     /**

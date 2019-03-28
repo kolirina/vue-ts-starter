@@ -2,9 +2,9 @@ import {Inject} from "typescript-ioc";
 import {namespace} from "vuex-class/lib/bindings";
 import {Component, UI} from "../../app/ui";
 import {CreateOrEditNotificationDialog} from "../../components/dialogs/createOrEditNotificationDialog";
-import {BtnReturn} from "../../components/dialogs/customDialog";
 import {RemoveNotificationDialog} from "../../components/dialogs/removeNotificationDialog";
 import {ShowProgress} from "../../platform/decorators/showProgress";
+import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {Filters} from "../../platform/filters/Filters";
 import {Notification, NotificationsService, NotificationType} from "../../services/notificationsService";
 import {Bond} from "../../types/types";
@@ -31,12 +31,12 @@ const MainStore = namespace(StoreType.MAIN);
                         Добавить
                     </v-btn>
                     <v-list dense>
-                        <v-list-tile @click="addNotificationDialog(NotificationType.stock)">
+                        <v-list-tile @click.stop="addNotificationDialog(NotificationType.stock)">
                             <v-list-tile-title>
                                 По акции
                             </v-list-tile-title>
                         </v-list-tile>
-                        <v-list-tile @click="addNotificationDialog(NotificationType.bond)">
+                        <v-list-tile @click.stop="addNotificationDialog(NotificationType.bond)">
                             <v-list-tile-title>
                                 По облигации
                             </v-list-tile-title>
@@ -57,12 +57,12 @@ const MainStore = namespace(StoreType.MAIN);
                         <v-menu transition="slide-y-transition" nudge-bottom="30" nudge-left="10">
                             <div class="notifications-card__menu" slot="activator"></div>
                             <v-list dense>
-                                <v-list-tile @click="editNotificationDialog(notification)">
+                                <v-list-tile @click.stop="editNotificationDialog(notification)">
                                     <v-list-tile-title>
                                         Редактировать
                                     </v-list-tile-title>
                                 </v-list-tile>
-                                <v-list-tile @click="removeNotificationDialog(notification)">
+                                <v-list-tile @click.stop="removeNotificationDialog(notification)">
                                     <v-list-tile-title>
                                         Удалить
                                     </v-list-tile-title>

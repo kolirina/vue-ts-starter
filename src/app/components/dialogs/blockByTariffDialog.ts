@@ -15,8 +15,8 @@
  */
 
 import Component from "vue-class-component";
+import {BtnReturn, CustomDialog} from "../../platform/dialogs/customDialog";
 import {ForbiddenCode} from "../../types/types";
-import {BtnReturn, CustomDialog} from "./customDialog";
 
 /**
  * Диалог блокировки по тарифу

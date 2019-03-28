@@ -12,11 +12,11 @@ import {ImageDialog} from "../../../components/dialogs/imageDialog";
             </p>
             <p>
                 Для получения файла импорта в терминале QUIK
-                <v-img :src="IMAGES[0]" height="240" width="300" class="grey darken-4" @click="openImage(IMAGES[0])"></v-img>
+                <v-img :src="IMAGES[0]" height="240" width="300" class="grey darken-4" @click.stop="openImage(IMAGES[0])"></v-img>
                 перейдите в меню Отчет - Отчет по всем сделкам клиента.
-                <v-img :src="IMAGES[1]" height="80" width="320" class="grey darken-4" @click="openImage(IMAGES[1])"></v-img>
+                <v-img :src="IMAGES[1]" height="80" width="320" class="grey darken-4" @click.stop="openImage(IMAGES[1])"></v-img>
                 Сформируйте отчет за требуемый вам период.
-                <v-img :src="IMAGES[2]" height="120" width="300" class="grey darken-4" @click="openImage(IMAGES[2])"></v-img>
+                <v-img :src="IMAGES[2]" height="120" width="300" class="grey darken-4" @click.stop="openImage(IMAGES[2])"></v-img>
                 Полученный файл используйте для импорта.
             </p>
         </div>

@@ -1,8 +1,8 @@
 import Component from "vue-class-component";
 import {VueRouter} from "vue-router/types/router";
+import {CustomDialog} from "../../platform/dialogs/customDialog";
 import {DealImportError} from "../../services/importService";
 import {TableHeader} from "../../types/types";
-import {CustomDialog} from "./customDialog";
 
 /**
  * Диалог получения кода для встраиваемого блока

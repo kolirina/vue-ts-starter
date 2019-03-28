@@ -14,7 +14,7 @@
  * (c) ООО "Интеллектуальные инвестиции", 2018
  */
 import Component from "vue-class-component";
-import {CustomDialog} from "./customDialog";
+import {CustomDialog} from "../../platform/dialogs/customDialog";
 
 /**
  * Диалог подтверждения

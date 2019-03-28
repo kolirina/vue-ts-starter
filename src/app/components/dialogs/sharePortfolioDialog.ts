@@ -4,12 +4,12 @@ import Component from "vue-class-component";
 import {UI} from "../../app/ui";
 import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
+import {BtnReturn, CustomDialog} from "../../platform/dialogs/customDialog";
 import {ClientInfo} from "../../services/clientService";
 import {PortfolioParams, PortfolioService} from "../../services/portfolioService";
 import {EventType} from "../../types/eventType";
 import {CommonUtils} from "../../utils/commonUtils";
 import {DateFormat, DateUtils} from "../../utils/dateUtils";
-import {BtnReturn, CustomDialog} from "./customDialog";
 
 /**
  * Диалог получения ссылки публичного портфеля

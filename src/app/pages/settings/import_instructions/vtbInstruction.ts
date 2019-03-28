@@ -16,15 +16,15 @@ import {ImageDialog} from "../../../components/dialogs/imageDialog";
             <ul>
                 <li>
                     <b>Реестр сделок</b>
-                    <v-img :src="IMAGES[0]" height="160" width="250" class="grey darken-4" @click="openImage(IMAGES[0])"></v-img>
+                    <v-img :src="IMAGES[0]" height="160" width="250" class="grey darken-4" @click.stop="openImage(IMAGES[0])"></v-img>
                 </li>
                 <li>
                     <b>Движение денег</b>
-                    <v-img :src="IMAGES[1]" height="160" width="250" class="grey darken-4" @click="openImage(IMAGES[1])"></v-img>
+                    <v-img :src="IMAGES[1]" height="160" width="250" class="grey darken-4" @click.stop="openImage(IMAGES[1])"></v-img>
                 </li>
                 <li>
                     <b>Реестр комиссий за период</b>
-                    <v-img :src="IMAGES[2]" height="160" width="250" class="grey darken-4" @click="openImage(IMAGES[2])"></v-img>
+                    <v-img :src="IMAGES[2]" height="160" width="250" class="grey darken-4" @click.stop="openImage(IMAGES[2])"></v-img>
                 </li>
             </ul>
             </p>
