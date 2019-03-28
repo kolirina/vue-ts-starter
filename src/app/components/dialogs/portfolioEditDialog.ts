@@ -5,17 +5,17 @@ import {VueRouter} from "vue-router/types/router";
 import {UI} from "../../app/ui";
 import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
+import {CustomDialog} from "../../platform/dialogs/customDialog";
 import {IisType, PortfolioAccountType, PortfolioParams, PortfolioService} from "../../services/portfolioService";
 import {EventType} from "../../types/eventType";
 import {CommonUtils} from "../../utils/commonUtils";
 import {DateFormat, DateUtils} from "../../utils/dateUtils";
 import {MainStore} from "../../vuex/mainStore";
-import {CustomDialog} from "./customDialog";
 
 @Component({
     // language=Vue
     template: `
-        <v-dialog v-model="showed" persistent max-width="600px">
+        <v-dialog v-model="showed" ref="dialog" persistent max-width="600px">
             <v-card v-if="portfolioParams" class="dialog-wrap">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
 

@@ -1,6 +1,6 @@
 import Component from "vue-class-component";
 import {VueRouter} from "vue-router/types/router";
-import {CustomDialog} from "./customDialog";
+import {CustomDialog} from "../../platform/dialogs/customDialog";
 
 /**
  * Диалог получения кода для встраиваемого блока

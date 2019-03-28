@@ -1,7 +1,7 @@
 import Component from "vue-class-component";
+import {CustomDialog} from "../../platform/dialogs/customDialog";
 import {TableHeader, TradeRow} from "../../types/types";
 import {TradeUtils} from "../../utils/tradeUtils";
-import {CustomDialog} from "./customDialog";
 
 /**
  * Диалог получения кода для встраиваемого блока

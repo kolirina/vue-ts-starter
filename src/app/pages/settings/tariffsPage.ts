@@ -60,7 +60,7 @@ export class TariffLimitExceedInfo extends UI {
                             </div>
                         </div>
                         <div class="promo-code-component">
-                            <span @click="applyPromoCode">Применить промокод</span>
+                            <span @click.stop="applyPromoCode">Применить промокод</span>
                             <v-tooltip content-class="custom-tooltip-wrap" :max-width="250" bottom>
                                 <div v-if="clientInfo.user.promoCode" slot="activator" class="promo-code-component__icon"></div>
                                 <div>

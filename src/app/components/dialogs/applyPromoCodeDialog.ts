@@ -18,9 +18,9 @@ import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
+import {BtnReturn, CustomDialog} from "../../platform/dialogs/customDialog";
 import {TariffService} from "../../services/tariffService";
 import {CommonUtils} from "../../utils/commonUtils";
-import {BtnReturn, CustomDialog} from "./customDialog";
 
 /**
  * Диалог ввода промокода

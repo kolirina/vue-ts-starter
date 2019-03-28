@@ -19,9 +19,9 @@ import {ImageDialog} from "../../../components/dialogs/imageDialog";
                 <li>Укажите формат отчета <b><i>xml</i></b></li>
                 <li>Нажмите кнопку <b><i>Заказать отчет / справку</i></b></li>
             </ul>
-            <v-img :src="IMAGES[0]" height="240" width="300" class="grey darken-4" @click="openImage(IMAGES[0])"></v-img>
+            <v-img :src="IMAGES[0]" height="240" width="300" class="grey darken-4" @click.stop="openImage(IMAGES[0])"></v-img>
             После успешного формирования отчета он появится в таблице ниже в статусе готово.
-            <v-img :src="IMAGES[1]" height="240" width="300" class="grey darken-4" @click="openImage(IMAGES[1])"></v-img>
+            <v-img :src="IMAGES[1]" height="240" width="300" class="grey darken-4" @click.stop="openImage(IMAGES[1])"></v-img>
             Полученный файл используйте для импорта.
             </p>
         </div>

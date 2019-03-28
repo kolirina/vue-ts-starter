@@ -5,6 +5,7 @@ import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
 import {DisableConcurrentExecution} from "../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../platform/decorators/showProgress";
+import {BtnReturn} from "../platform/dialogs/customDialog";
 import {ClientInfo} from "../services/clientService";
 import {PortfolioParams, PortfolioService} from "../services/portfolioService";
 import {EventType} from "../types/eventType";
@@ -13,7 +14,6 @@ import {SortUtils} from "../utils/sortUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {ConfirmDialog} from "./dialogs/confirmDialog";
-import {BtnReturn} from "./dialogs/customDialog";
 import {EmbeddedBlocksDialog} from "./dialogs/embeddedBlocksDialog";
 import {PortfolioEditDialog} from "./dialogs/portfolioEditDialog";
 import {SharePortfolioDialog} from "./dialogs/sharePortfolioDialog";
@@ -94,7 +94,7 @@ const MainStore = namespace(StoreType.MAIN);
 
                             <div class="extended-info__cell label">Настройка доступа</div>
                             <div class="extended-info__cell">
-                                <v-btn dark color="primary" @click.native="openSharePortfolioDialog(props.item)" small>
+                                <v-btn dark color="primary" @click.stop="openSharePortfolioDialog(props.item)" small>
                                     Настройка доступа
                                 </v-btn>
                             </div>

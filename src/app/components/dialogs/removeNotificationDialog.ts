@@ -2,10 +2,10 @@ import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
+import {BtnReturn, CustomDialog} from "../../platform/dialogs/customDialog";
 import {Filters} from "../../platform/filters/Filters";
 import {Notification, NotificationsService, NotificationType} from "../../services/notificationsService";
 import {Bond} from "../../types/types";
-import {BtnReturn, CustomDialog} from "./customDialog";
 
 @Component({
     // language=Vue

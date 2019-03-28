@@ -1,5 +1,5 @@
 import Component from "vue-class-component";
-import {BtnReturn, CustomDialog} from "./customDialog";
+import {BtnReturn, CustomDialog} from "../../platform/dialogs/customDialog";
 
 /**
  * Диалог получения кода для встраиваемого блока

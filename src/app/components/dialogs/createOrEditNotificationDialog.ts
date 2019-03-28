@@ -2,18 +2,18 @@ import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
+import {CustomDialog} from "../../platform/dialogs/customDialog";
 import {Filters} from "../../platform/filters/Filters";
 import {MarketService} from "../../services/marketService";
 import {KeyWordsSearchType, Notification, NotificationsService, NotificationType} from "../../services/notificationsService";
 import {AssetType} from "../../types/assetType";
 import {Bond, Share} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
-import {CustomDialog} from "./customDialog";
 
 @Component({
     // language=Vue
     template: `
-        <v-dialog v-model="showed" max-width="600px">
+        <v-dialog v-model="showed" ref="dialog" persistent max-width="600px">
             <v-card v-if="notification" class="add-notification dialog-wrap">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
                 <v-card-title class="headline add-notification-title">

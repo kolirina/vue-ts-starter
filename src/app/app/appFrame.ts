@@ -2,12 +2,12 @@ import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
-import {BtnReturn} from "../components/dialogs/customDialog";
 import {FeedbackDialog} from "../components/dialogs/feedbackDialog";
 import {NotificationUpdateDialog} from "../components/dialogs/notificationUpdateDialog";
 import {ErrorHandler} from "../components/errorHandler";
 import {PortfolioSwitcher} from "../components/portfolioSwitcher";
 import {ShowProgress} from "../platform/decorators/showProgress";
+import {BtnReturn} from "../platform/dialogs/customDialog";
 import {Storage} from "../platform/services/storage";
 import {ClientInfo, ClientService} from "../services/clientService";
 import {StoreKeys} from "../types/storeKeys";
@@ -152,7 +152,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-tooltip>
 
                     <v-tooltip content-class="custom-tooltip-wrap" top>
-                        <a slot="activator" class="white--text margR16" @click="openFeedBackDialog">Обратная связь <i class="fas fa-envelope"></i></a>
+                        <a slot="activator" class="white--text margR16" @click.stop="openFeedBackDialog">Обратная связь <i class="fas fa-envelope"></i></a>
                         <span>Напишите нам по email</span>
                     </v-tooltip>
                 </v-footer>

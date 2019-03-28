@@ -7,6 +7,7 @@ import {OverviewService} from "../services/overviewService";
 import {HighStockEventsGroup} from "../types/charts/types";
 import {StoreKeys} from "../types/storeKeys";
 import {Portfolio} from "../types/types";
+import {CommonUtils} from "../utils/commonUtils";
 import {UiStateHelper} from "../utils/uiStateHelper";
 import {StoreType} from "../vuex/storeType";
 import {BasePortfolioPage} from "./basePortfolioPage";
@@ -56,12 +57,14 @@ export class PortfolioPage extends UI {
 
     @Watch("portfolio")
     private async onPortfolioChange(): Promise<void> {
+        this.lineChartData = null;
+        this.lineChartEvents = null;
         await this.loadPortfolioLineChart();
     }
 
     @ShowProgress
     private async loadPortfolioLineChart(): Promise<void> {
-        if (UiStateHelper.historyPanel[0] === 1) {
+        if (UiStateHelper.historyPanel[0] === 1 && !CommonUtils.exists(this.lineChartData) && !CommonUtils.exists(this.lineChartEvents)) {
             this.lineChartData = await this.overviewService.getCostChart(this.portfolio.id);
             this.lineChartEvents = await this.overviewService.getEventsChartDataWithDefaults(this.portfolio.id);
         }

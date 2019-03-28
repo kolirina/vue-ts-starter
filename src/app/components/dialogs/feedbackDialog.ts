@@ -2,9 +2,9 @@ import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
+import {CustomDialog} from "../../platform/dialogs/customDialog";
 import {ClientInfo} from "../../services/clientService";
 import {FeedbackService, FeedbackType} from "../../services/feedbackService";
-import {CustomDialog} from "./customDialog";
 
 /**
  * Диалог обратной связи
@@ -12,7 +12,7 @@ import {CustomDialog} from "./customDialog";
 @Component({
     // language=Vue
     template: `
-        <v-dialog v-model="showed" max-width="600px">
+        <v-dialog v-model="showed" ref="dialog" persistent max-width="600px">
             <v-card class="dialog-wrap">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
 

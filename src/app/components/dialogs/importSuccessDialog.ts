@@ -1,10 +1,10 @@
 import Component from "vue-class-component";
 import {VueRouter} from "vue-router/types/router";
+import {CustomDialog} from "../../platform/dialogs/customDialog";
 import {ImportResponse} from "../../services/importService";
 import {Portfolio} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {MainStore} from "../../vuex/mainStore";
-import {CustomDialog} from "./customDialog";
 
 /**
  * Диалог ввода остатка денежных средств
