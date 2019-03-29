@@ -1,4 +1,4 @@
-import moment from "moment";
+import dayjs from "dayjs";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {VueRouter} from "vue-router/types/router";
@@ -158,7 +158,7 @@ export class PortfolioEditDialog extends CustomDialog<PortfolioDialogData, boole
                 name: "",
                 access: false,
                 viewCurrency: "RUB",
-                openDate: DateUtils.formatDate(moment(), DateFormat.DATE2),
+                openDate: DateUtils.formatDate(dayjs(), DateFormat.DATE2),
                 accountType: PortfolioAccountType.BROKERAGE
             };
         }
@@ -194,7 +194,7 @@ export class PortfolioEditDialog extends CustomDialog<PortfolioDialogData, boole
      */
     private async onDateSelected(date: string): Promise<void> {
         this.$refs.dateMenu.save(date);
-        if (moment().isBefore(DateUtils.parseDate(this.portfolioParams.openDate))) {
+        if (dayjs().isBefore(DateUtils.parseDate(this.portfolioParams.openDate))) {
             this.$validator.errors.add({field: "openDate", msg: "Дата открытия портфеля не может быть в будущем"});
         } else {
             this.$validator.errors.remove("openDate");
@@ -203,7 +203,7 @@ export class PortfolioEditDialog extends CustomDialog<PortfolioDialogData, boole
 
     private get isValid(): boolean {
         return this.portfolioParams.name.length >= 3 && this.portfolioParams.name.length <= 40 &&
-            (moment().isAfter(DateUtils.parseDate(this.portfolioParams.openDate)) || DateUtils.currentDate() === this.portfolioParams.openDate) &&
+            (dayjs().isAfter(DateUtils.parseDate(this.portfolioParams.openDate)) || DateUtils.currentDate() === this.portfolioParams.openDate) &&
             (CommonUtils.isBlank(this.portfolioParams.note) || this.portfolioParams.note.length <= 500);
     }
 

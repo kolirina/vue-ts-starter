@@ -1,4 +1,4 @@
-import moment from "moment";
+import dayjs from "dayjs";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
@@ -195,7 +195,7 @@ export class ExportPage extends UI {
     private isDownloadNotAllowed(): boolean {
         const userTariff = this.clientInfo.user.tariff;
         return userTariff === Tariff.TRIAL ||
-            (moment().isAfter(DateUtils.parseDate(this.clientInfo.user.paidTill)) && userTariff !== Tariff.FREE);
+            (dayjs().isAfter(DateUtils.parseDate(this.clientInfo.user.paidTill)) && userTariff !== Tariff.FREE);
     }
 
     /**

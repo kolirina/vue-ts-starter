@@ -1,4 +1,4 @@
-import moment from "moment";
+import dayjs from "dayjs";
 import {Filters} from "../platform/filters/Filters";
 import {Client} from "../services/clientService";
 import {ShareEvent} from "../services/eventService";
@@ -103,7 +103,7 @@ export class TradeUtils {
      */
     static isProfessionalModeAvailable(clientInfo: Client): boolean {
         return clientInfo.tariff.hasPermission(Permission.PROFF_MODE) &&
-            moment().isBefore(DateUtils.parseDate(clientInfo.paidTill));
+            dayjs().isBefore(DateUtils.parseDate(clientInfo.paidTill));
     }
 
     static getCurrencySymbol(currencyCode: string): string {

@@ -1,5 +1,5 @@
+import dayjs from "dayjs";
 import Decimal from "decimal.js";
-import moment from "moment";
 import {Inject} from "typescript-ioc";
 import {Component} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
@@ -255,7 +255,7 @@ export class BalancesPage extends UI implements TradeDataHolder {
         this.closePrice = null;
         if (this.date) {
             this.closePrice = new BigMoney((await this.marketHistoryService.getStockHistory(this.share.ticker,
-                moment(this.date).format("DD.MM.YYYY"))).price);
+                dayjs(this.date).format("DD.MM.YYYY"))).price);
         }
     }
 

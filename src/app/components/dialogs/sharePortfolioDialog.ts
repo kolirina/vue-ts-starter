@@ -1,4 +1,4 @@
-import moment from "moment";
+import dayjs from "dayjs";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {UI} from "../../app/ui";
@@ -153,7 +153,7 @@ export class SharePortfolioDialog extends CustomDialog<SharePortfolioDialogData,
     private tradeAccess = false;
     private lineDataAccess = false;
     private dashboardAccess = false;
-    private expiredDate: string = DateUtils.formatDate(moment().add(7, "days"), DateFormat.DATE2);
+    private expiredDate: string = DateUtils.formatDate(dayjs().add(7, "day"), DateFormat.DATE2);
     private dateMenuValue = false;
     private userId = "";
     private shareUrlsCache: { [key: string]: string } = {
@@ -208,7 +208,7 @@ export class SharePortfolioDialog extends CustomDialog<SharePortfolioDialogData,
         if (this.shareOption === ShareAccessType.DEFAULT_ACCESS) {
             return true;
         }
-        if (this.expiredDate === null || moment().isAfter(DateUtils.parseDate(this.expiredDate))) {
+        if (this.expiredDate === null || dayjs().isAfter(DateUtils.parseDate(this.expiredDate))) {
             this.$snotify.warning("Срок действия токена должна быть больше текущей даты");
             return false;
         }

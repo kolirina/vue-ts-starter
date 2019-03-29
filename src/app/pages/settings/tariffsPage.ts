@@ -1,5 +1,5 @@
+import dayjs from "dayjs";
 import Decimal from "decimal.js";
-import moment from "moment";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
@@ -306,7 +306,7 @@ export class TariffsPage extends UI {
      * Возвращает признак истекшей подписки
      */
     private isSubscriptionExpired(): boolean {
-        return moment().isAfter(DateUtils.parseDate(this.clientInfo.user.paidTill));
+        return dayjs().isAfter(DateUtils.parseDate(this.clientInfo.user.paidTill));
     }
 
     /**
@@ -319,7 +319,7 @@ export class TariffsPage extends UI {
      */
     private isDiscountApplied(): boolean {
         const nextPurchaseDiscountExpired = DateUtils.parseDate(this.clientInfo.user.nextPurchaseDiscountExpired);
-        return (nextPurchaseDiscountExpired == null || moment().isBefore(nextPurchaseDiscountExpired)) && this.clientInfo.user.nextPurchaseDiscount > 0;
+        return (nextPurchaseDiscountExpired == null || dayjs().isBefore(nextPurchaseDiscountExpired)) && this.clientInfo.user.nextPurchaseDiscount > 0;
     }
 
     private isSelected(tariff: Tariff): boolean {
@@ -348,7 +348,7 @@ export class TariffsPage extends UI {
 
     private getExpirationDescription(): string {
         const paidTill = DateUtils.parseDate(this.clientInfo.user.paidTill);
-        return (paidTill.isAfter(moment()) ? "Действует до " : "Истек ") + this.getExpirationDate();
+        return (paidTill.isAfter(dayjs()) ? "Действует до " : "Истек ") + this.getExpirationDate();
     }
 
     private getExpirationDate(): string {

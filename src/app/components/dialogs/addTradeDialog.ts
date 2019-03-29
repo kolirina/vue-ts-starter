@@ -1,5 +1,5 @@
+import dayjs from "dayjs";
 import Decimal from "decimal.js";
-import moment from "moment";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {Watch} from "vue-property-decorator";
@@ -304,10 +304,10 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             }
         } else if (DateUtils.isBefore(date)) {
             if (this.assetType === AssetType.STOCK) {
-                const stock = (await this.marketHistoryService.getStockHistory(this.share.ticker, moment(this.date).format("DD.MM.YYYY")));
+                const stock = (await this.marketHistoryService.getStockHistory(this.share.ticker, dayjs(this.date).format("DD.MM.YYYY")));
                 this.fillFieldsFromStock(stock);
             } else if (this.assetType === AssetType.BOND) {
-                const bond = (await this.marketHistoryService.getBondHistory(this.share.ticker, moment(this.date).format("DD.MM.YYYY")));
+                const bond = (await this.marketHistoryService.getBondHistory(this.share.ticker, dayjs(this.date).format("DD.MM.YYYY")));
                 this.fillFieldsFromBond(bond);
             }
         }

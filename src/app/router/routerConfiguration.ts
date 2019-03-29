@@ -1,4 +1,4 @@
-import moment from "moment";
+import dayjs from "dayjs";
 import {Container} from "typescript-ioc";
 import Vue from "vue";
 import VueRouter, {Route} from "vue-router";
@@ -62,7 +62,7 @@ export class RouterConfiguration {
                 const authorized = !!localStorage.get(StoreKeys.TOKEN_KEY, null);
                 if (!tariffAllowed && authorized) {
                     const client = await clientService.getClientInfo();
-                    const tariffExpired = client.tariff !== Tariff.FREE && DateUtils.parseDate(client.paidTill).isBefore(moment());
+                    const tariffExpired = client.tariff !== Tariff.FREE && DateUtils.parseDate(client.paidTill).isBefore(dayjs());
                     if (tariffExpired) {
                         await new TariffExpiredDialog().show(RouterConfiguration.router);
                         next(false);
