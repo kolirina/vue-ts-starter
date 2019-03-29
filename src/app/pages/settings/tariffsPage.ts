@@ -95,9 +95,8 @@ export class TariffLimitExceedInfo extends UI {
                                 <td>
                                     <div class="tariff__plan_name">Бесплатный</div>
                                     <div class="tariff__plan_price">{{ getPriceLabel(Tariff.FREE) }} <span>RUB</span></div>
-                                    <v-tooltip content-class="custom-tooltip-wrap" bottom>
-                                        <v-btn slot="activator" @click="makePayment(Tariff.FREE)"
-                                               :class="{'big_btn': true, 'selected': isSelected(Tariff.FREE)}"
+                                    <v-tooltip v-if="!isAvailable(Tariff.FREE)" content-class="custom-tooltip-wrap" bottom>
+                                        <v-btn slot="activator" @click="makePayment(Tariff.FREE)" :class="{'big_btn': true, 'selected': isSelected(Tariff.FREE)}"
                                                :disabled="!isAvailable(Tariff.FREE) || isSelected(Tariff.FREE) || isProgress">
                                             <span v-if="!busyState[Tariff.FREE.name]">{{ getButtonLabel(Tariff.FREE) }}</span>
                                             <v-progress-circular v-if="busyState[Tariff.FREE.name]" indeterminate color="primary" :size="20"></v-progress-circular>
@@ -106,6 +105,11 @@ export class TariffLimitExceedInfo extends UI {
                                                                   :shares-count="clientInfo.user.sharesCount" :foreign-shares="clientInfo.user.foreignShares">
                                         </tariff-limit-exceed-info>
                                     </v-tooltip>
+                                    <v-btn v-else @click="makePayment(Tariff.FREE)" :class="{'big_btn': true, 'selected': isSelected(Tariff.FREE)}"
+                                           :disabled="!isAvailable(Tariff.FREE) || isSelected(Tariff.FREE) || isProgress">
+                                        <span v-if="!busyState[Tariff.FREE.name]">{{ getButtonLabel(Tariff.FREE) }}</span>
+                                        <v-progress-circular v-if="busyState[Tariff.FREE.name]" indeterminate color="primary" :size="20"></v-progress-circular>
+                                    </v-btn>
                                     <div class="tariff__plan_expires" v-if="isSelected(Tariff.FREE)">
                                         {{ getExpirationDescription() }}
                                     </div>
@@ -116,17 +120,23 @@ export class TariffLimitExceedInfo extends UI {
                                         {{ getNoDiscountPriceLabel(Tariff.STANDARD) }} <span>RUB</span>
                                     </div>
                                     <div class="tariff__plan_price">{{ getPriceLabel(Tariff.STANDARD) }} <span>RUB</span></div>
-                                    <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                                    <v-tooltip v-if="!isAvailable(Tariff.STANDARD)" content-class="custom-tooltip-wrap" bottom>
                                         <v-btn slot="activator" @click="makePayment(Tariff.STANDARD)"
                                                :class="{'big_btn': true, 'selected': isSelected(Tariff.STANDARD)}"
                                                :disabled="!isAvailable(Tariff.STANDARD) || isProgress">
                                             <span v-if="!busyState[Tariff.STANDARD.name]">{{ getButtonLabel(Tariff.STANDARD) }}</span>
                                             <v-progress-circular v-if="busyState[Tariff.STANDARD.name]" indeterminate color="primary" :size="20"></v-progress-circular>
                                         </v-btn>
-                                        <tariff-limit-exceed-info v-if="!isAvailable(Tariff.FREE)" :portfolios-count="clientInfo.user.portfoliosCount"
+                                        <tariff-limit-exceed-info v-if="!isAvailable(Tariff.STANDARD)" :portfolios-count="clientInfo.user.portfoliosCount"
                                                                   :shares-count="clientInfo.user.sharesCount" :foreign-shares="clientInfo.user.foreignShares">
                                         </tariff-limit-exceed-info>
                                     </v-tooltip>
+                                    <v-btn v-else @click="makePayment(Tariff.STANDARD)"
+                                           :class="{'big_btn': true, 'selected': isSelected(Tariff.STANDARD)}"
+                                           :disabled="!isAvailable(Tariff.STANDARD) || isProgress">
+                                        <span v-if="!busyState[Tariff.STANDARD.name]">{{ getButtonLabel(Tariff.STANDARD) }}</span>
+                                        <v-progress-circular v-if="busyState[Tariff.STANDARD.name]" indeterminate color="primary" :size="20"></v-progress-circular>
+                                    </v-btn>
                                     <div v-if="isSelected(Tariff.STANDARD)" class="tariff__plan_expires">
                                         {{ getExpirationDescription() }}
                                     </div>
@@ -226,8 +236,8 @@ export class TariffsPage extends UI {
     private clientInfo: ClientInfo;
     @MainStore.Getter
     private portfolio: Portfolio;
-    @MainStore.Action(MutationType.SET_CLIENT_INFO)
-    private loadUser: (clientInfo: ClientInfo) => Promise<void>;
+    @MainStore.Action(MutationType.RELOAD_CLIENT_INFO)
+    private reloadUser: () => Promise<void>;
 
     private Tariff = Tariff;
 
@@ -244,6 +254,8 @@ export class TariffsPage extends UI {
      * Проверка успешно завершенной оплаты
      */
     async created(): Promise<void> {
+        this.clientService.resetClientInfo();
+        await this.reloadUser();
         if (this.$route.params.status) {
             await this.afterSuccessPayment();
         }
@@ -283,8 +295,7 @@ export class TariffsPage extends UI {
 
     private async afterSuccessPayment(): Promise<void> {
         this.clientService.resetClientInfo();
-        const client = await this.clientService.getClientInfo();
-        await this.loadUser({token: this.clientInfo.token, user: client});
+        await this.reloadUser();
         this.$snotify.info("Оплата заказа успешно завершена");
     }
 
