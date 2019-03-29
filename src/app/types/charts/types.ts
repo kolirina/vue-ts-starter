@@ -2,7 +2,10 @@ export type BaseChartDot = {
     date: string,
     amount: string
 };
-
+export type BasePriceDot = {
+    date: string,
+    price: string
+};
 export type Dot = [number, number];
 
 export type LineChartItem = BaseChartDot & {
