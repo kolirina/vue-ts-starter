@@ -357,7 +357,7 @@ export type StockDynamic = {
     /** Текущая цена */
     current: string;
     /** Сдвиг для линейного графика */
-    shift: number;
+    shift: string;
 };
 
 export type StockHistoryResponse = {
