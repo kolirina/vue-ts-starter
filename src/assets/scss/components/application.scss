@@ -20,6 +20,10 @@
 .v-select>.v-input__control>.v-input__slot,
 .v-autocomplete.v-input>.v-input__control>.v-input__slot {
   cursor: pointer !important;
+
+  i {
+    display: none;
+  }
 }
 
 .v-menu {
