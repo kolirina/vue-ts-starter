@@ -2,7 +2,7 @@ import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {Http, UrlParams} from "../platform/services/http";
 import {BaseChartDot, Dot, EventChartData, HighStockEventData, HighStockEventsGroup} from "../types/charts/types";
-import {Bond, BondInfo, Currency, PageableResponse, Share, Stock, StockInfo} from "../types/types";
+import {Bond, BondInfo, Currency, PageableResponse, Share, Stock, StockInfo, StockYields} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
 import {CommonUtils} from "../utils/commonUtils";
 
@@ -29,6 +29,7 @@ export class MarketService {
             stock: result.stock,
             history: this.convertDots(result.history),
             dividends: result.dividends,
+            stockYields: result.stockYields,
             events: this.convertStockEvents(result.dividends, ticker)
         };
     }
@@ -39,6 +40,7 @@ export class MarketService {
             stock: result.stock,
             history: this.convertDots(result.history),
             dividends: result.dividends,
+            stockYields: result.stockYields,
             events: this.convertStockEvents(result.dividends, result.stock.ticker)
         };
     }
@@ -139,6 +141,8 @@ type _stockInfo = {
     history: _baseChartDot[];
     /** Дивиденды */
     dividends: BaseChartDot[];
+    /** Динамика */
+    stockYields: StockYields;
 };
 
 /** Информация по акции */
