@@ -126,6 +126,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </tr>
                         </tbody>
                     </table>
+                    <micro-line-chart :data="microChartData" :height="300" :width="400"></micro-line-chart>
                 </v-card-text>
             </v-card>
 
@@ -169,29 +170,31 @@ export class ShareInfoPage extends UI {
     private history: Dot[] = [];
     private dividends: BaseChartDot[] = [];
     private events: HighStockEventsGroup[] = [];
+    /** Данные для микрографика */
+    private microChartData: any[] = [];
 
-    @ShowProgress
     async created(): Promise<void> {
         const ticker = this.$route.params.ticker;
         if (ticker) {
-            const result = await this.marketService.getStockInfo(ticker);
-            this.share = result.stock;
-            this.history = result.history;
-            this.dividends = result.dividends;
-            this.events.push(result.events);
+            await this.loadShareInfo(ticker);
+        }
+    }
+
+    private async onShareSelect(share: Share): Promise<void> {
+        this.share = share;
+        if (this.share) {
+            await this.loadShareInfo(share.ticker);
         }
     }
 
     @ShowProgress
-    private async onShareSelect(share: Share): Promise<void> {
-        this.share = share;
-        if (this.share) {
-            const result = await this.marketService.getStockInfo(this.share.ticker);
-            this.share = result.stock;
-            this.history = result.history;
-            this.dividends = result.dividends;
-            this.events.push(result.events);
-        }
+    private async loadShareInfo(ticker: string): Promise<void> {
+        const result = await this.marketService.getStockInfo(ticker);
+        this.share = result.stock;
+        this.history = result.history;
+        this.dividends = result.dividends;
+        this.events.push(result.events);
+        this.microChartData = ChartUtils.convertPriceDataDots(result.stockDynamic.yearHistory);
     }
 
     private async openDialog(): Promise<void> {

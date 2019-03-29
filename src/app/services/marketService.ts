@@ -2,7 +2,7 @@ import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {Http, UrlParams} from "../platform/services/http";
 import {BaseChartDot, Dot, EventChartData, HighStockEventData, HighStockEventsGroup} from "../types/charts/types";
-import {Bond, BondInfo, Currency, PageableResponse, Share, Stock, StockInfo} from "../types/types";
+import {Bond, BondInfo, Currency, PageableResponse, Share, Stock, StockDynamic, StockInfo} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
 import {CommonUtils} from "../utils/commonUtils";
 
@@ -29,8 +29,9 @@ export class MarketService {
             stock: result.stock,
             history: this.convertDots(result.history),
             dividends: result.dividends,
+            stockDynamic: result.stockDynamic,
             events: this.convertStockEvents(result.dividends, ticker)
-        };
+        } as StockInfo;
     }
 
     async getStockById(id: number): Promise<StockInfo> {
@@ -39,8 +40,9 @@ export class MarketService {
             stock: result.stock,
             history: this.convertDots(result.history),
             dividends: result.dividends,
+            stockDynamic: result.stockDynamic,
             events: this.convertStockEvents(result.dividends, result.stock.ticker)
-        };
+        } as StockInfo;
     }
 
     async getBondById(id: number): Promise<BondInfo> {
@@ -139,6 +141,8 @@ type _stockInfo = {
     history: _baseChartDot[];
     /** Дивиденды */
     dividends: BaseChartDot[];
+    /** Динамика */
+    stockDynamic: StockDynamic;
 };
 
 /** Информация по акции */

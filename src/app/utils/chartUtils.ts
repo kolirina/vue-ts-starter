@@ -1,9 +1,18 @@
 import {Decimal} from "decimal.js";
-import Highcharts, {ChartObject, DataPoint, Gradient, PlotLines} from "highcharts";
+import Highcharts, {AreaChart, ChartObject, DataPoint, Gradient, PlotLines, SeriesChart} from "highcharts";
 import Highstock from "highcharts/highstock";
 import {Filters} from "../platform/filters/Filters";
 import {BigMoney} from "../types/bigMoney";
-import {ColumnChartData, ColumnDataSeries, EventChartData, HighStockEventData, HighStockEventsGroup, PieChartTooltipFormat, SectorChartData} from "../types/charts/types";
+import {
+    BasePriceDot,
+    ColumnChartData,
+    ColumnDataSeries,
+    EventChartData,
+    HighStockEventData,
+    HighStockEventsGroup,
+    PieChartTooltipFormat,
+    SectorChartData
+} from "../types/charts/types";
 import {Operation} from "../types/operation";
 import {Overview, StockPortfolioRow} from "../types/types";
 import {TradeUtils} from "./tradeUtils";
@@ -124,6 +133,14 @@ export class ChartUtils {
         return data;
     }
 
+    static convertPriceDataDots(data: BasePriceDot[]): any[] {
+        const result: any[] = [];
+        data.forEach(value => {
+            result.push([new Date(value.date).getTime(), parseFloat(value.price)]);
+        });
+        return result;
+    }
+
     // tslint:disable-next-line
     private static readonly ranges: Highstock.RangeSelectorButton[] = [
         {
@@ -154,6 +171,32 @@ export class ChartUtils {
             type: "all",
             text: "All"
         }];
+
+    // tslint:disable-next-line
+    private static readonly areaChart: AreaChart = {
+        fillColor: {
+            linearGradient: {
+                x1: 0,
+                y1: 0,
+                x2: 0,
+                y2: 1
+            },
+            stops: [
+                [0, (Highcharts.Color(Highcharts.getOptions().colors[0]) as Gradient).setOpacity(0.2).get("rgba")],
+                [1, (Highcharts.Color(Highcharts.getOptions().colors[0]) as Gradient).setOpacity(0.2).get("rgba")]
+            ]
+        },
+        marker: {
+            radius: 2
+        },
+        lineWidth: 1,
+        states: {
+            hover: {
+                lineWidth: 1
+            }
+        },
+        threshold: null
+    };
 
     static getChartRanges(): Highstock.RangeSelectorButton[] {
         return this.ranges;
@@ -196,7 +239,7 @@ export class ChartUtils {
                 text: title
             },
             subtitle: {
-                text: "Выделите участок для увеличения"
+                text: ""
             },
             rangeSelector: {
                 buttons: ranges,
@@ -231,32 +274,12 @@ export class ChartUtils {
                 enabled: false
             },
             plotOptions: {
-                area: {
-                    fillColor: {
-                        linearGradient: {
-                            x1: 0,
-                            y1: 0,
-                            x2: 0,
-                            y2: 1
-                        },
-                        stops: [
-                            [0, (Highcharts.Color(Highcharts.getOptions().colors[0]) as Gradient).setOpacity(0.2).get("rgba")],
-                            [1, (Highcharts.Color(Highcharts.getOptions().colors[0]) as Gradient).setOpacity(0.2).get("rgba")]
-                        ]
-                    },
-                    marker: {
-                        radius: 2
-                    },
-                    lineWidth: 1,
-                    states: {
-                        hover: {
-                            lineWidth: 1
-                        }
-                    },
-                    threshold: null
-                }
+                area: ChartUtils.areaChart
             },
             exporting: {
+                enabled: false
+            },
+            scrollbar: {
                 enabled: false
             },
             series: [{
@@ -323,6 +346,64 @@ export class ChartUtils {
                 name: balloonTitle,
                 data: chartData
             }]
+        });
+    }
+
+    static drawMicroLineChart(container: HTMLElement, chartData: any[], callback: () => void = null): ChartObject {
+        return Highstock.stockChart(container, {
+            chart: {
+                backgroundColor: null,
+                events: {
+                    load(event: Event): void {
+                        if (callback) {
+                            callback();
+                        }
+                    }
+                }
+            },
+            title: {
+                text: ""
+            },
+            subtitle: {
+                text: ""
+            },
+            rangeSelector: {
+                enabled: false
+            },
+            navigator: {
+                enabled: false
+            },
+            scrollbar: {
+                enabled: false
+            },
+            tooltip: {
+                enabled: false
+            },
+            xAxis: {
+                type: "datetime",
+                crosshair: false,
+                visible: false
+            },
+            yAxis: {
+                crosshair: false,
+                visible: false
+            },
+            legend: {
+                enabled: false
+            },
+            plotOptions: {
+                area: ChartUtils.areaChart
+            },
+            exporting: {
+                enabled: false
+            },
+            series: [{
+                type: "area",
+                name: "",
+                data: chartData,
+                id: "dataseries",
+                enableMouseTracking: false
+            } as SeriesChart],
         });
     }
 

@@ -15,6 +15,7 @@ import Vuetify from "vuetify";
 import {BondLink} from "../components/bondLink";
 import {ChartExportMenu} from "../components/charts/chartExportMenu";
 import {LineChart} from "../components/charts/lineChart";
+import {MicroLineChart} from "../components/charts/microLineChart";
 import {PieChart} from "../components/charts/pieChart";
 import {Dashboard} from "../components/dashboard";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
@@ -113,6 +114,7 @@ export class UIRegistry {
         UI.component("share-search", ShareSearchComponent);
         UI.component("expanded-panel", ExpandedPanel);
         UI.component("chart-export-menu", ChartExportMenu);
+        UI.component("micro-line-chart", MicroLineChart);
 
         // фильтры
         UI.filter("amount", Filters.formatMoneyAmount);

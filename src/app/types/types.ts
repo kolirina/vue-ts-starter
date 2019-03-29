@@ -1,6 +1,6 @@
 import {Enum, EnumType, IStaticEnum} from "../platform/enum";
 import {PortfolioParams} from "../services/portfolioService";
-import {BaseChartDot, ColumnChartData, Dot, HighStockEventsGroup} from "./charts/types";
+import {BaseChartDot, BasePriceDot, ColumnChartData, Dot, HighStockEventsGroup} from "./charts/types";
 
 export type _portfolioRow = {
     /** Прибыль */
@@ -340,6 +340,26 @@ export type Stock = Share & {
     moexId: string;
 };
 
+/** Информация по динамике ценной бумаги */
+export type StockDynamic = {
+    /** Минимальная за год */
+    minYearPrice: string;
+    /** Максимальная за год */
+    maxYearPrice: string;
+    /** Динамика за 1 месяц */
+    yieldMonth1: string;
+    /** Динамика за 6 месяцев */
+    yieldMonth6: string;
+    /** Динамика за 12 месяцев */
+    yieldMonth12: string;
+    /** График цены за год */
+    yearHistory: BasePriceDot[];
+    /** Текущая цена */
+    current: string;
+    /** Сдвиг для линейного графика */
+    shift: number;
+};
+
 export type StockHistoryResponse = {
     stock: Stock;
     date: string;
@@ -395,6 +415,8 @@ export type StockInfo = {
     history: Dot[];
     /** Дивиденды */
     dividends: BaseChartDot[];
+    /** Динамика */
+    stockDynamic: StockDynamic;
     /** События. В данном случае дивиденды */
     events: HighStockEventsGroup;
 };
