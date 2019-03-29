@@ -15,7 +15,7 @@ const MainStore = namespace(StoreType.MAIN);
         <v-card dark class="dashboard-card" :class="{ 'dashboard-border': !block.hasNotBorderLeft }">
             <v-card-title primary-title class="pb-2 dashboard-card-string">
                     <span>{{ block.name }}</span>
-                    <v-tooltip content-class="custom-tooltip-wrap" :max-width="450" bottom right>
+                    <v-tooltip content-class="custom-tooltip-wrap dashboard-tooltip" :max-width="450" bottom right>
                         <v-icon class="custom-tooltip" slot="activator" small>far fa-question-circle</v-icon>
                         <span v-html="block.tooltip"></span>
                     </v-tooltip>

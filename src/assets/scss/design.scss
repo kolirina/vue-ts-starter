@@ -37,6 +37,8 @@
     &.menuable__content__active {
       opacity: 1 !important;
     }
+
+    &.dashboard-tooltip {z-index: 9999 !important;}
   }
 }
 
