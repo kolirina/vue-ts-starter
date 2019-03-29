@@ -1,7 +1,7 @@
 import {Container} from "typescript-ioc";
 import {ActionContext, Module} from "vuex";
 import {Storage} from "../platform/services/storage";
-import {ClientInfo} from "../services/clientService";
+import {Client, ClientInfo, ClientService} from "../services/clientService";
 import {OverviewService} from "../services/overviewService";
 import {PortfolioParams, PortfolioService} from "../services/portfolioService";
 import {StoreKeys} from "../types/storeKeys";
@@ -9,8 +9,10 @@ import {Portfolio} from "../types/types";
 import {GetterType} from "./getterType";
 import {MutationType} from "./mutationType";
 
-/** Сервис работы с клиентом */
+/** Сервис работы с портфелем */
 const overviewService: OverviewService = Container.get(OverviewService);
+/** Сервис работы с клиентом */
+const clientService: ClientService = Container.get(ClientService);
 /** Сервис работы с портфелями клиента */
 const portfolioService: PortfolioService = Container.get(PortfolioService);
 /** Сервис работы с localStorage */
@@ -45,6 +47,9 @@ const Mutations = {
     /** Мутатор проставлящий информацию о клиенте */
     [MutationType.SET_CLIENT_INFO](state: StateHolder, clientInfo: ClientInfo): void {
         state.clientInfo = clientInfo;
+    },
+    [MutationType.SET_CLIENT](state: StateHolder, client: Client): void {
+        state.clientInfo.user = client;
     },
     [MutationType.SET_CURRENT_PORTFOLIO](state: StateHolder, portfolio: Portfolio): void {
         state.currentPortfolio = portfolio;
@@ -90,6 +95,14 @@ const Actions = {
         return new Promise<void>((resolve): void => {
             overviewService.setDefaultPortfolio(id).then(() => {
                 context.commit(MutationType.SET_DEFAULT_PORTFOLIO, id);
+                resolve();
+            });
+        });
+    },
+    [MutationType.RELOAD_CLIENT_INFO](context: ActionContext<StateHolder, void>): Promise<void> {
+        return new Promise<void>((resolve): void => {
+            clientService.getClientInfo().then((client: Client) => {
+                context.commit(MutationType.SET_CLIENT, client);
                 resolve();
             });
         });
