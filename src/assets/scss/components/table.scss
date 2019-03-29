@@ -47,6 +47,11 @@
     transform: rotate(90deg);
   }
 
+  &__header-with-tooltip {
+    border-bottom: 1px #c0c4cd dashed;
+    cursor: help;
+  }
+
   td:nth-child(1) {
     padding: 0 5px 0 20px !important;
     text-align: center;

@@ -39,12 +39,9 @@ const MainStore = namespace(StoreType.MAIN);
             <template #headerCell="props">
                 <v-tooltip v-if="props.header.tooltip" content-class="custom-tooltip-wrap" bottom>
                     <template #activator="{ on }">
-                        <span>
+                        <span class="data-table__header-with-tooltip" v-on="on">
                             {{ props.header.text }}
                         </span>
-                        <sup class="custom-tooltip" v-on="on">
-                            <v-icon>fas fa-info-circle</v-icon>
-                        </sup>
                     </template>
                     <span>
                       {{ props.header.tooltip }}
