@@ -1,3 +1,4 @@
+import Decimal from "decimal.js";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class";
@@ -12,7 +13,7 @@ import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
 import {BaseChartDot, Dot, HighStockEventsGroup} from "../types/charts/types";
 import {Operation} from "../types/operation";
-import {Portfolio, Share, StockDynamic} from "../types/types";
+import {Portfolio, Share, Stock, StockDynamic} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
@@ -34,7 +35,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <div v-if="share">
                         <v-layout class="info-share-page__name-stock-block" justify-space-between align-center>
                             <div>
-                                <div class="info-share-page__name-stock-block__title">
+                                <div class="info-share-page__name-stock-block__title selectable">
                                     <span>
                                         {{ share.name }}
                                     </span>
@@ -55,8 +56,13 @@ const MainStore = namespace(StoreType.MAIN);
                                         <span v-if="share.sector.parent" class="info-share-page__name-stock-block__subtitle">
                                             родительский сектор: {{ share.sector.parent.name }}
                                         </span>
-                                        <v-rating color="#A1A6B6" size="10" v-model="share.rating" dense readonly full-icon="fiber_manual_record"
-                                                  empty-icon="panorama_fish_eye"></v-rating>
+                                        <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                                            <v-rating slot="activator" color="#A1A6B6" size="10" v-model="share.rating" dense readonly full-icon="fiber_manual_record"
+                                                      empty-icon="panorama_fish_eye" title=""></v-rating>
+                                            <span>Рейтинг {{ share.rating }} из 5 расчитан на основе {{ totalVoices }} пользовательских
+                                                {{ share.maxRating / share.rating | declension("оценки", "оценок", "оценок") }}</span>
+                                        </v-tooltip>
+
                                     </div>
                                 </div>
                             </div>
@@ -388,5 +394,14 @@ export class ShareInfoPage extends UI {
     private get portfolioAvgPrice(): number {
         const row = this.portfolio.overview.stockPortfolio.rows.find(r => r.stock.ticker === this.share.ticker);
         return row ? new BigMoney(row.avgBuy).amount.toNumber() : null;
+    }
+
+    private get totalVoices(): number {
+        try {
+            const stock: Stock = this.share as Stock;
+            return new Decimal(stock.maxRating / stock.rating).toDP(0).toNumber();
+        } catch (e) {
+            return 50;
+        }
     }
 }

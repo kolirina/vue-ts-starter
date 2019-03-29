@@ -311,9 +311,9 @@ export type Stock = Share & {
     /** Размер лота */
     lotsize: number;
     /** Рейтинг */
-    rating: string;
+    rating: number;
     /** Максимальный рейтинг по акции */
-    maxRating: string;
+    maxRating: number;
     /** Последний рейтинг по акции */
     lastRating: string;
     /** Интервал */
