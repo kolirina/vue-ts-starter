@@ -27,7 +27,7 @@
 
   &-wrap {
     background-color: #fff;
-    z-index: 999 !important;
+    z-index: 99 !important;
     color: #000;
     box-sizing: border-box;
     padding: 15px;
@@ -38,7 +38,7 @@
       opacity: 1 !important;
     }
 
-    &.dashboard-tooltip {z-index: 9999 !important;}
+    &.dashboard-tooltip {z-index: 100 !important;}
   }
 }
 
