@@ -62,7 +62,7 @@ import {MainStore} from "../../vuex/mainStore";
                                 <v-menu ref="dateMenu" :close-on-content-click="false" v-model="dateMenuValue" :nudge-right="40" :return-value.sync="date"
                                         lazy transition="scale-transition" offset-y full-width min-width="290px">
                                     <v-text-field name="date" slot="activator" v-model="date" label="Дата" v-validate="'required'"
-                                                  :error-messages="errors.collect('date')" readonly></v-text-field>
+                                                  :error-messages="errors.collect('date')" readonly class="required"></v-text-field>
                                     <v-date-picker v-model="date" :no-title="true" locale="ru" :first-day-of-week="1" @input="onDateSelected"></v-date-picker>
                                 </v-menu>
                             </v-flex>
@@ -88,15 +88,16 @@ import {MainStore} from "../../vuex/mainStore";
 
                             <!-- Количество -->
                             <v-flex v-if="shareAssetType" xs12 sm6>
-                                <ii-number-field label="Количество" v-model="quantity" @keyup="calculateFee" :hint="lotSizeHint" persistent-hint
-                                                 name="quantity" :decimals="0" v-validate="'required'" :error-messages="errors.collect('quantity')">
+                                <ii-number-field label="Количество" v-model="quantity" @keyup="calculateFee" :hint="lotSizeHint"
+                                                 persistent-hint name="quantity" :decimals="0"
+                                                 v-validate="'required'" :error-messages="errors.collect('quantity')" class="required">
                                 </ii-number-field>
                             </v-flex>
 
                             <!-- Номинал -->
                             <v-flex v-if="bondTrade" xs12 sm3>
                                 <ii-number-field label="Номинал" v-model="facevalue" @keyup="calculateFee" :decimals="2" name="facevalue"
-                                                 v-validate="'required'" :error-messages="errors.collect('facevalue')">
+                                                 v-validate="'required'" :error-messages="errors.collect('facevalue')" class="required">
                                 </ii-number-field>
                             </v-flex>
 
@@ -166,7 +167,6 @@ import {MainStore} from "../../vuex/mainStore";
                         <v-icon light>fas fa-spinner fa-spin</v-icon>
                       </span>
                     </v-btn>
-                    <v-btn color="info lighten-2" flat @click.native="close">Отмена</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
