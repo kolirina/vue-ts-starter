@@ -297,3 +297,6 @@ input[type="search"] {
 .overflowV {overflow: visible}
 .overflowXA {overflow-x: auto}
 .required label::after {content: " *"}
+.line-through {
+  text-decoration: line-through;
+}
