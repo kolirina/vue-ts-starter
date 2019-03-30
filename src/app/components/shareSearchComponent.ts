@@ -27,7 +27,7 @@ import {Bond, Share} from "../types/types";
     // language=Vue
     template: `
         <v-autocomplete :items="filteredSharesMutated" v-model="share" @change="onShareSelect" @click:clear="onSearchClear"
-                        label="Введите тикер или название компании"
+                        :label="placeholder"
                         :loading="shareSearch" no-data-text="Ничего не найдено" clearable required
                         dense :hide-no-data="true" :no-filter="true" :search-input.sync="searchQuery" :autofocus="autofocus">
             <template #selection="data">
@@ -47,6 +47,9 @@ export class ShareSearchComponent extends UI {
 
     @Prop({required: false})
     private filteredShares: Share[];
+
+    @Prop({required: false, type: String, default: "Введите тикер или название компании"})
+    private placeholder: string;
 
     @Prop({required: false, type: Boolean, default: false})
     private autofocus: boolean;

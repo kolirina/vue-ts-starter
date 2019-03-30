@@ -55,6 +55,7 @@ import {MainStore} from "../../vuex/mainStore";
                             <!-- Тикер бумаги -->
                             <v-flex v-if="shareAssetType" xs12 :class="portfolioProModeEnabled ? 'sm6' : 'sm9'">
                                 <share-search :asset-type="assetType" :filtered-shares="filteredShares"
+                                              placeholder="Тикер или название компании" class="required"
                                               @change="onShareSelect" @clear="onShareClear" autofocus></share-search>
                             </v-flex>
 
