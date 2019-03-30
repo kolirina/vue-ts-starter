@@ -6,6 +6,7 @@ import {namespace} from "vuex-class/lib/bindings";
 import {Prop, UI} from "../../app/ui";
 import {ApplyPromoCodeDialog} from "../../components/dialogs/applyPromoCodeDialog";
 import {ShowProgress} from "../../platform/decorators/showProgress";
+import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {ClientInfo, ClientService} from "../../services/clientService";
 import {TariffService} from "../../services/tariffService";
 import {Permission} from "../../types/permission";
@@ -265,7 +266,11 @@ export class TariffsPage extends UI {
      * Открывает диалог для ввода промокода пользователя
      */
     private async applyPromoCode(): Promise<void> {
-        await new ApplyPromoCodeDialog().show();
+        const result = await new ApplyPromoCodeDialog().show();
+        if (result === BtnReturn.YES) {
+            this.clientService.resetClientInfo();
+            await this.reloadUser();
+        }
     }
 
     /**
@@ -330,7 +335,8 @@ export class TariffsPage extends UI {
      */
     private isDiscountApplied(): boolean {
         const nextPurchaseDiscountExpired = DateUtils.parseDate(this.clientInfo.user.nextPurchaseDiscountExpired);
-        return (nextPurchaseDiscountExpired == null || dayjs().isBefore(nextPurchaseDiscountExpired)) && this.clientInfo.user.nextPurchaseDiscount > 0;
+        return (this.clientInfo.user.nextPurchaseDiscountExpired == null || dayjs().isBefore(nextPurchaseDiscountExpired)) &&
+            this.clientInfo.user.nextPurchaseDiscount > 0;
     }
 
     private isSelected(tariff: Tariff): boolean {
