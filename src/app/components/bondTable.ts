@@ -11,7 +11,7 @@ import {TradeService} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
 import {Operation} from "../types/operation";
-import {BondPortfolioRow, Portfolio, TableHeader} from "../types/types";
+import {BondPortfolioRow, Pagination, Portfolio, TableHeader} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
 import {SortUtils} from "../utils/sortUtils";
 import {TradeUtils} from "../utils/tradeUtils";
@@ -29,7 +29,7 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-data-table class="data-table" :headers="headers" :items="filteredRows" item-key="bond.id"
-                      :search="search" :custom-sort="customSort" :custom-filter="customFilter" hide-actions>
+                      :search="search" :custom-sort="customSort" :custom-filter="customFilter" :pagination.sync="pagination" hide-actions>
             <v-progress-linear slot="progress" color="blue" indeterminate></v-progress-linear>
             <template #headerCell="props">
                 <v-tooltip v-if="props.header.tooltip" content-class="custom-tooltip-wrap" bottom>
@@ -265,6 +265,12 @@ export class BondTable extends UI {
     private TABLES_NAME = TABLES_NAME;
     /** Типы активов */
     private AssetType = AssetType;
+    /** Паджинация для задания дефолтной сортировки */
+    private pagination: Pagination = {
+        descending: false,
+        sortBy: "percCurrShare",
+        rowsPerPage: -1
+    };
 
     /**
      * Инициализация данных
@@ -303,9 +309,8 @@ export class BondTable extends UI {
         this.tableHeadersState = this.tablesService.getHeadersState(this.headers);
     }
 
-    @ShowProgress
     private async openShareTradesDialog(ticker: string): Promise<void> {
-        new ShareTradesDialog().show({trades: await this.tradeService.getShareTrades(this.portfolio.id, ticker), ticker});
+        await new ShareTradesDialog().show({trades: await this.tradeService.getShareTrades(this.portfolio.id, ticker), ticker});
     }
 
     private async openTradeDialog(bondRow: BondPortfolioRow, operation: Operation): Promise<void> {

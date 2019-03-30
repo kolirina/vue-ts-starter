@@ -1,6 +1,7 @@
 import Component from "vue-class-component";
 import {CustomDialog} from "../../platform/dialogs/customDialog";
-import {TableHeader, TradeRow} from "../../types/types";
+import {Pagination, TableHeader, TradeRow} from "../../types/types";
+import {SortUtils} from "../../utils/sortUtils";
 import {TradeUtils} from "../../utils/tradeUtils";
 
 /**
@@ -18,7 +19,8 @@ import {TradeUtils} from "../../utils/tradeUtils";
                     <v-spacer></v-spacer>
                 </v-card-title>
                 <v-card-text>
-                    <v-data-table :headers="headers" :items="data.trades" item-key="id" hide-actions>
+                    <v-data-table :headers="headers" :items="data.trades" item-key="id"
+                                  :custom-sort="customSort" :pagination.sync="pagination" hide-actions>
                         <template #items="props">
                             <tr class="selectable" @click="props.expanded = !props.expanded">
                                 <td>{{ props.item.operationLabel }}</td>
@@ -57,6 +59,12 @@ export class ShareTradesDialog extends CustomDialog<ShareTradesDialogData, void>
         {text: "Итого", align: "right", value: "signedTotal"}
     ];
 
+    private pagination: Pagination = {
+        descending: false,
+        sortBy: "date",
+        rowsPerPage: -1
+    };
+
     private getPrice(trade: TradeRow): string {
         return TradeUtils.getPrice(trade);
     }
@@ -71,6 +79,10 @@ export class ShareTradesDialog extends CustomDialog<ShareTradesDialogData, void>
 
     private moneyPrice(trade: TradeRow): boolean {
         return TradeUtils.moneyPrice(trade);
+    }
+
+    private customSort(items: TradeRow[], index: string, isDesc: boolean): TradeRow[] {
+        return SortUtils.simpleSort<TradeRow>(items, index, isDesc);
     }
 }
 

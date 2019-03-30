@@ -6,7 +6,7 @@ import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
 import {Operation} from "../types/operation";
 import {PortfolioAssetType} from "../types/portfolioAssetType";
-import {AssetRow, Portfolio, TableHeader} from "../types/types";
+import {AssetRow, Pagination, Portfolio, TableHeader} from "../types/types";
 import {SortUtils} from "../utils/sortUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
@@ -17,7 +17,7 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-data-table :headers="headers" :items="assets" :custom-sort="customSort" hide-actions>
+        <v-data-table :headers="headers" :items="assets" :custom-sort="customSort" :pagination.sync="pagination" hide-actions>
             <template #items="props">
                 <tr class="selectable">
                     <td class="text-xs-left">{{ props.item.type | assetDesc }}</td>
@@ -84,6 +84,12 @@ export class AssetTable extends UI {
         {text: "Текущая доля", align: "right", value: "percCurrShare"},
         {text: "", align: "center", value: "actions", sortable: false, width: "25"}
     ];
+    /** Паджинация для задания дефолтной сортировки */
+    private pagination: Pagination = {
+        descending: false,
+        sortBy: "percCurrShare",
+        rowsPerPage: -1
+    };
 
     @Prop({default: [], required: true})
     private assets: AssetRow[];
