@@ -1,5 +1,4 @@
 import {Inject, Singleton} from "typescript-ioc";
-import * as tinkoff from "../../assets/js/tinkoff";
 import {Service} from "../platform/decorators/service";
 import {Http} from "../platform/services/http";
 import {Tariff} from "../types/tariff";
@@ -27,18 +26,6 @@ export class TariffService {
      */
     async applyPromoCode(promoCode: string): Promise<void> {
         await this.http.post(`/tariff/apply-promo-code/${promoCode}`);
-    }
-
-    openPaymentFrame(order: PayTariffResponse, clientInfo: ClientInfo): void {
-        const params: PaymentParams = {
-            TerminalKey: order.terminalKey,
-            Amount: order.paymentOrder.amount,
-            OrderId: order.paymentOrder.orderId,
-            Description: `Оплата тарифного плана ${order.paymentOrder.tariff.name}`,
-            DATA: `Email=${clientInfo.user.email}|Name=${clientInfo.user.username}`,
-            Frame: true
-        };
-        tinkoff.doPay(params);
     }
 }
 

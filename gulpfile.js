@@ -70,6 +70,9 @@ gulp.task("assets", () => {
     gulp.src("./src/assets/img/**/*.*")
         .pipe(gulp.dest(TARGET_DIR + "/img"));
 
+    gulp.src("./src/assets/js/**/*.*")
+        .pipe(gulp.dest(TARGET_DIR + "/js"));
+
     gulp.src("./src/assets/fonts/**/*.*")
         .pipe(gulp.dest(TARGET_DIR + "/fonts"));
 
