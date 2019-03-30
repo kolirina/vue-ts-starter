@@ -53,7 +53,9 @@ const MainStore = namespace(StoreType.MAIN);
                               :class="{'data-table-cell-open': props.expanded, 'path': true, 'data-table-cell': true}"></span>
                     </td>
                     <td v-if="tableHeadersState.company" class="text-xs-left">
-                        <span v-if="props.item.bond">{{ props.item.bond.shortname }}</span>
+                        <span v-if="props.item.bond" :class="props.item.quantity !== 0 ? '' : 'line-through'">{{ props.item.bond.shortname }}</span>&nbsp;
+                        <span v-if="props.item.bond && props.item.quantity !== 0"
+                              :class="markupClasses(Number(props.item.bond.change))">{{ props.item.bond.change }}&nbsp;%</span>
                     </td>
                     <td v-if="tableHeadersState.ticker" class="text-xs-left">
                         <bond-link v-if="props.item.bond" :ticker="props.item.bond.ticker"></bond-link>
