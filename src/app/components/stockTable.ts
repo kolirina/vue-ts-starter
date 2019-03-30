@@ -76,10 +76,10 @@ const MainStore = namespace(StoreType.MAIN);
                     </td>
                     <td v-if="tableHeadersState.quantity" class="text-xs-right ii-number-cell">{{props.item.quantity}}</td>
                     <td v-if="tableHeadersState.avgBuy" class="text-xs-right ii-number-cell">
-                        <template>{{ props.item.avgBuy | amount(false, null, false) }}</template>
+                        <template>{{ props.item.avgBuy | amount(false, null, false, false) }}</template>
                     </td>
                     <td v-if="tableHeadersState.currPrice" class="text-xs-right ii-number-cell">
-                        <template>{{ props.item.currPrice | amount(false, null, false) }}</template>
+                        <template>{{ props.item.currPrice | amount(false, null, false, false) }}</template>
                     </td>
                     <td v-if="tableHeadersState.bcost" class="text-xs-right ii-number-cell">{{ props.item.bcost | amount(true) }}</td>
                     <td v-if="tableHeadersState.scost" class="text-xs-right ii-number-cell">{{ props.item.scost | amount(true) }}</td>
