@@ -26,7 +26,7 @@ import {TradeService} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
 import {Operation} from "../types/operation";
-import {Portfolio, StockPortfolioRow, TableHeader} from "../types/types";
+import {Pagination, Portfolio, StockPortfolioRow, TableHeader} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
 import {SortUtils} from "../utils/sortUtils";
 import {TradeUtils} from "../utils/tradeUtils";
@@ -44,7 +44,7 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-data-table class="data-table" :headers="headers" :items="filteredRows" item-key="stock.id"
-                      :search="search" :custom-sort="customSort" :custom-filter="customFilter" hide-actions>
+                      :search="search" :custom-sort="customSort" :custom-filter="customFilter" :pagination.sync="pagination" hide-actions>
             <v-progress-linear slot="progress" color="blue" indeterminate></v-progress-linear>
             <template #headerCell="props">
                 <v-tooltip v-if="props.header.tooltip" content-class="custom-tooltip-wrap" bottom>
@@ -68,18 +68,19 @@ const MainStore = namespace(StoreType.MAIN);
                               :class="{'data-table-cell-open': props.expanded, 'path': true, 'data-table-cell': true}"></span>
                     </td>
                     <td v-if="tableHeadersState.company" class="text-xs-left">
-                        <span v-if="props.item.stock">{{ props.item.stock.shortname }}</span>&nbsp;
-                        <span v-if="props.item.stock" :class="markupClasses(Number(props.item.stock.change))">{{ props.item.stock.change }}&nbsp;%</span>
+                        <span v-if="props.item.stock" :class="props.item.quantity !== 0 ? '' : 'line-through'">{{ props.item.stock.shortname }}</span>&nbsp;
+                        <span v-if="props.item.stock && props.item.quantity !== 0"
+                              :class="markupClasses(Number(props.item.stock.change))">{{ props.item.stock.change }}&nbsp;%</span>
                     </td>
                     <td v-if="tableHeadersState.ticker" class="text-xs-left">
                         <stock-link v-if="props.item.stock" :ticker="props.item.stock.ticker"></stock-link>
                     </td>
                     <td v-if="tableHeadersState.quantity" class="text-xs-right ii-number-cell">{{props.item.quantity}}</td>
                     <td v-if="tableHeadersState.avgBuy" class="text-xs-right ii-number-cell">
-                        <template>{{ props.item.avgBuy | amount(false, null, false) }}</template>
+                        <template>{{ props.item.avgBuy | amount(false, null, false, false) }}</template>
                     </td>
                     <td v-if="tableHeadersState.currPrice" class="text-xs-right ii-number-cell">
-                        <template>{{ props.item.currPrice | amount(false, null, false) }}</template>
+                        <template>{{ props.item.currPrice | amount(false, null, false, false) }}</template>
                     </td>
                     <td v-if="tableHeadersState.bcost" class="text-xs-right ii-number-cell">{{ props.item.bcost | amount(true) }}</td>
                     <td v-if="tableHeadersState.scost" class="text-xs-right ii-number-cell">{{ props.item.scost | amount(true) }}</td>
@@ -237,6 +238,12 @@ export class StockTable extends UI {
     private TABLES_NAME = TABLES_NAME;
     /** Типы активов */
     private AssetType = AssetType;
+    /** Паджинация для задания дефолтной сортировки */
+    private pagination: Pagination = {
+        descending: false,
+        sortBy: "percCurrShare",
+        rowsPerPage: -1
+    };
 
     /**
      * Инициализация данных
@@ -275,7 +282,6 @@ export class StockTable extends UI {
         this.tableHeadersState = this.tablesService.getHeadersState(this.headers);
     }
 
-    @ShowProgress
     private async openShareTradesDialog(ticker: string): Promise<void> {
         await new ShareTradesDialog().show({trades: await this.tradeService.getShareTrades(this.portfolio.id, ticker), ticker});
     }

@@ -119,7 +119,7 @@ export class Dashboard extends UI {
             mainValue: Filters.formatMoneyAmount(newValue.profit, true),
             secondValue: newValue.percentProfit,
             isSummaryIncome: {
-                isUpward: parseInt(newValue.percentProfit, 10) > 0
+                isUpward: parseFloat(newValue.percentProfit) > 0
             },
             mainCurrency,
             secondCurrency: "percent",
@@ -145,6 +145,9 @@ export class Dashboard extends UI {
             name: "Изменение за день",
             mainValue: Filters.formatMoneyAmount(newValue.dailyChanges, true),
             secondValue: Filters.formatNumber(newValue.dailyChangesPercent),
+            isSummaryIncome: {
+                isUpward: parseFloat(Filters.formatNumber(newValue.dailyChangesPercent)) > 0
+            },
             mainCurrency,
             secondCurrency: "percent",
             tooltip: "Показывает на сколько изменилась курсовая суммарная стоимость портфеля за последний торговый день." +

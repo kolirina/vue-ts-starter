@@ -288,12 +288,10 @@ export class ImportPage extends UI {
                     importResult: response
                 });
                 await this.overviewService.saveOrUpdateCurrentMoney(this.portfolio.id, enteredMoneyRemainder);
-                this.$router.push("portfolio");
-                this.$snotify.info(`${firstWord} ${response.validatedTradesCount} ${secondWord}.`, "Результат импорта");
-            } else {
-                this.$snotify.info(`Импорт прошел успешно. ${firstWord} ${response.validatedTradesCount} ${secondWord}.`, "Результат импорта");
             }
             await this.reloadPortfolio(this.portfolio.id);
+            this.$snotify.info(`Импорт прошел успешно. ${firstWord} ${response.validatedTradesCount} ${secondWord}.`, "Результат импорта");
+            this.$router.push("portfolio");
         } else {
             this.$snotify.warning("В отчете не содержится информации по сделкам.", "Импорт завершен");
         }

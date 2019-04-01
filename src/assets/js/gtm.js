@@ -1,4 +1,4 @@
-/*!
+/*
  * STRICTLY CONFIDENTIAL
  * TRADE SECRET
  * PROPRIETARY:
@@ -14,34 +14,8 @@
  * (c) ООО "Интеллектуальные инвестиции", 2019
  */
 
-.custom-tooltip {
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  margin-left: 4px;
-  background: url("../img/notification/info.svg") no-repeat center;
-  background-size: contain;
-  cursor: pointer;
-
-  i {display: none}
-
-  &-wrap {
-    background-color: #fff;
-    z-index: 99 !important;
-    color: #000;
-    box-sizing: border-box;
-    padding: 15px;
-    max-width: 400px;
-    font-size: 13px;
-
-    &.menuable__content__active {
-      opacity: 1 !important;
-    }
-
-    &.dashboard-tooltip {z-index: 100 !important;}
-  }
-}
-
-.second-value {
-  color: $font-color--lite;
-}
+(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-5WP2PK2');

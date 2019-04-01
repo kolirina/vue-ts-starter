@@ -54,7 +54,9 @@ import {MainStore} from "../../vuex/mainStore";
 
                             <!-- Тикер бумаги -->
                             <v-flex v-if="shareAssetType" xs12 :class="portfolioProModeEnabled ? 'sm6' : 'sm9'">
-                                <share-search :asset-type="assetType" :filtered-shares="filteredShares" @change="onShareSelect" @clear="onShareClear"></share-search>
+                                <share-search :asset-type="assetType" :filtered-shares="filteredShares"
+                                              placeholder="Тикер или название компании" class="required"
+                                              @change="onShareSelect" @clear="onShareClear" autofocus></share-search>
                             </v-flex>
 
                             <!-- Дата сделки -->
@@ -62,7 +64,7 @@ import {MainStore} from "../../vuex/mainStore";
                                 <v-menu ref="dateMenu" :close-on-content-click="false" v-model="dateMenuValue" :nudge-right="40" :return-value.sync="date"
                                         lazy transition="scale-transition" offset-y full-width min-width="290px">
                                     <v-text-field name="date" slot="activator" v-model="date" label="Дата" v-validate="'required'"
-                                                  :error-messages="errors.collect('date')" readonly></v-text-field>
+                                                  :error-messages="errors.collect('date')" readonly class="required"></v-text-field>
                                     <v-date-picker v-model="date" :no-title="true" locale="ru" :first-day-of-week="1" @input="onDateSelected"></v-date-picker>
                                 </v-menu>
                             </v-flex>
@@ -81,22 +83,23 @@ import {MainStore} from "../../vuex/mainStore";
 
                             <!-- Цена -->
                             <v-flex v-if="shareAssetType" xs12 sm6>
-                                <ii-number-field :label="priceLabel" v-model="price" class="required" name="price" v-validate="'required'"
+                                <ii-number-field :label="priceLabel" v-model="price" class="required" name="price" v-validate="'required|min_value:0.000001'"
                                                  :error-messages="errors.collect('price')" @keyup="calculateFee">
                                 </ii-number-field>
                             </v-flex>
 
                             <!-- Количество -->
                             <v-flex v-if="shareAssetType" xs12 sm6>
-                                <ii-number-field label="Количество" v-model="quantity" @keyup="calculateFee" :hint="lotSizeHint" persistent-hint
-                                                 name="quantity" :decimals="0" v-validate="'required'" :error-messages="errors.collect('quantity')">
+                                <ii-number-field label="Количество" v-model="quantity" @keyup="calculateFee" :hint="lotSizeHint"
+                                                 persistent-hint name="quantity" :decimals="0"
+                                                 v-validate="'required|min_value:1'" :error-messages="errors.collect('quantity')" class="required">
                                 </ii-number-field>
                             </v-flex>
 
                             <!-- Номинал -->
                             <v-flex v-if="bondTrade" xs12 sm3>
                                 <ii-number-field label="Номинал" v-model="facevalue" @keyup="calculateFee" :decimals="2" name="facevalue"
-                                                 v-validate="'required'" :error-messages="errors.collect('facevalue')">
+                                                 v-validate="'required|min_value:0.01'" :error-messages="errors.collect('facevalue')" class="required">
                                 </ii-number-field>
                             </v-flex>
 
@@ -105,7 +108,7 @@ import {MainStore} from "../../vuex/mainStore";
                                 <v-layout wrap>
                                     <v-flex xs12 lg6>
                                         <ii-number-field label="НКД" v-model="nkd" @keyup="calculateFee" :decimals="2" name="nkd"
-                                                         v-validate="nkdValidationString" :error-messages="errors.collect('nkd')">
+                                                         v-validate="nkdValidationString" :error-messages="errors.collect('nkd')" class="required">
                                         </ii-number-field>
                                     </v-flex>
                                     <v-flex v-if="calculationAssetType || bondTrade" xs12 lg6>
@@ -128,7 +131,8 @@ import {MainStore} from "../../vuex/mainStore";
                             <v-flex v-if="moneyTrade" xs12>
                                 <v-layout wrap>
                                     <v-flex xs12 lg8>
-                                        <ii-number-field label="Сумма" v-model="moneyAmount" :decimals="2"></ii-number-field>
+                                        <ii-number-field label="Сумма" v-model="moneyAmount" :decimals="2" name="money_amount" v-validate="'required|min_value:0.01'"
+                                                         :error-messages="errors.collect('money_amount')" class="required"></ii-number-field>
                                     </v-flex>
                                     <v-flex xs12 lg4>
                                         <v-select :items="currencyList" v-model="moneyCurrency" label="Валюта сделки"></v-select>
@@ -166,7 +170,6 @@ import {MainStore} from "../../vuex/mainStore";
                         <v-icon light>fas fa-spinner fa-spin</v-icon>
                       </span>
                     </v-btn>
-                    <v-btn color="info lighten-2" flat @click.native="close">Отмена</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>

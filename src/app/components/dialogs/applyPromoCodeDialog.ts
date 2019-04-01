@@ -33,7 +33,7 @@ import {CommonUtils} from "../../utils/commonUtils";
             <v-card class="dialog-wrap enterPromoCode-dialog">
                 <div class="enterPromoCode-dialog__content">
                     <div class="enterPromoCode-dialog__title">Ввод промокода</div>
-                    <v-text-field v-model.trim="promoCode" maxlength="10" size="10" @keypress.enter="applyPromoCode"
+                    <v-text-field ref="input" v-model.trim="promoCode" maxlength="10" size="10" @keypress.enter="applyPromoCode"
                                   label="Введите промокод"></v-text-field>
 
                     <v-card-actions>
@@ -46,10 +46,21 @@ import {CommonUtils} from "../../utils/commonUtils";
 })
 export class ApplyPromoCodeDialog extends CustomDialog<void, BtnReturn> {
 
+    $refs: {
+        input: any;
+    };
+
     @Inject
     private tariffService: TariffService;
     /** Введенный промокод */
     private promoCode = "";
+
+    mounted(): void {
+        this.$nextTick(() => {
+            const input = this.$refs.input;
+            input.focus();
+        });
+    }
 
     @ShowProgress
     @DisableConcurrentExecution

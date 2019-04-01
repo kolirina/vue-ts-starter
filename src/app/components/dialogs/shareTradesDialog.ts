@@ -1,6 +1,7 @@
 import Component from "vue-class-component";
 import {CustomDialog} from "../../platform/dialogs/customDialog";
-import {TableHeader, TradeRow} from "../../types/types";
+import {Pagination, TableHeader, TradeRow} from "../../types/types";
+import {SortUtils} from "../../utils/sortUtils";
 import {TradeUtils} from "../../utils/tradeUtils";
 
 /**
@@ -18,14 +19,15 @@ import {TradeUtils} from "../../utils/tradeUtils";
                     <v-spacer></v-spacer>
                 </v-card-title>
                 <v-card-text>
-                    <v-data-table :headers="headers" :items="data.trades" item-key="id" hide-actions>
+                    <v-data-table :headers="headers" :items="data.trades" item-key="id"
+                                  :custom-sort="customSort" :pagination.sync="pagination" hide-actions>
                         <template #items="props">
                             <tr class="selectable" @click="props.expanded = !props.expanded">
                                 <td>{{ props.item.operationLabel }}</td>
                                 <td class="text-xs-center">{{ props.item.date | date }}</td>
                                 <td class="text-xs-right">{{ props.item.quantity }}</td>
                                 <td class="text-xs-right">{{ getPrice(props.item) }}</td>
-                                <td class="text-xs-right">{{ getFee(props.item) }}</td>
+                                <td class="text-xs-right">{{ props.item.fee | amount(true) }}</td>
                                 <td class="text-xs-right">{{ props.item.signedTotal | amount(true) }}</td>
                             </tr>
                         </template>
@@ -57,12 +59,14 @@ export class ShareTradesDialog extends CustomDialog<ShareTradesDialogData, void>
         {text: "Итого", align: "right", value: "signedTotal"}
     ];
 
+    private pagination: Pagination = {
+        descending: false,
+        sortBy: "date",
+        rowsPerPage: -1
+    };
+
     private getPrice(trade: TradeRow): string {
         return TradeUtils.getPrice(trade);
-    }
-
-    private getFee(trade: TradeRow): string {
-        return TradeUtils.getFee(trade);
     }
 
     private percentPrice(trade: TradeRow): boolean {
@@ -71,6 +75,10 @@ export class ShareTradesDialog extends CustomDialog<ShareTradesDialogData, void>
 
     private moneyPrice(trade: TradeRow): boolean {
         return TradeUtils.moneyPrice(trade);
+    }
+
+    private customSort(items: TradeRow[], index: string, isDesc: boolean): TradeRow[] {
+        return SortUtils.simpleSort<TradeRow>(items, index, isDesc);
     }
 }
 

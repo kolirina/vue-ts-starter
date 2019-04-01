@@ -27,7 +27,7 @@ export class Filters {
         throw new Error("Неизвестный тип актива: " + type);
     }
 
-    static formatMoneyAmount(value: string, needRound?: boolean, scale?: number, returnZeros: boolean = true): string {
+    static formatMoneyAmount(value: string, needRound?: boolean, scale?: number, returnZeros: boolean = true, needFormat: boolean = true): string {
         if (!value) {
             return returnZeros ? "0.00" : "";
         }
@@ -36,7 +36,8 @@ export class Filters {
             const am = amount.amount.toDP(DEFAULT_SCALE, Decimal.ROUND_HALF_UP).toNumber();
             return DF.format(am);
         } else {
-            return DF_NO_SCALE.format(scale ? amount.amount.toDP(scale, Decimal.ROUND_HALF_UP).toNumber() : amount.amount.toNumber());
+            return needFormat ? DF_NO_SCALE.format(scale ? amount.amount.toDP(scale, Decimal.ROUND_HALF_UP).toNumber() : amount.amount.toNumber()) :
+                String(amount.amount.toNumber());
         }
     }
 

@@ -73,21 +73,23 @@ const MainStore = namespace(StoreType.MAIN);
                                                                  @keyup="calculateOnQuantity" @change="changeOnQuantity">
                                                 </ii-number-field>
                                             </v-flex>
+                                            <v-layout wrap>
+                                                <v-flex class="mt-4">
+                                                    <ii-number-field v-model="price" label="Цена акции" :error-messages="errors.collect('price')"
+                                                                     name="price" required :rules="rulesPrice" @keyup="calculateOnPrice">
+                                                    </ii-number-field>
+                                                </v-flex>
+                                                <v-flex class="mt-4"></v-flex>
+                                                <v-flex class="mt-4">
+                                                    <ii-number-field v-model="total" :decimals="2" label="Стоимость позиции" :error-messages="errors.collect('total')"
+                                                                     name="total" required :rules="rulesPrice" @keyup="calculateOnTotal" @change="changeOnTotal">
+                                                    </ii-number-field>
+                                                </v-flex>
+                                            </v-layout>
                                             <v-flex class="mt-1" style="font-size: 12px;" v-if="closePrice !== null">
                                                 Цена закрытия: <a @click="setClosePrice"
                                                                   title="Указать в качестве цены">{{ closePrice.amount.toString() }} {{ closePrice.currencySymbol }}</a>
                                             </v-flex>
-                                            <v-layout wrap>
-                                                <v-flex class="mt-4">
-                                                    <ii-number-field v-model="price" label="Цена акции" messages="Укажите цену акции или стоимость сделки"
-                                                                     name="price" required :rules="rulesPrice" @keyup="calculateOnPrice">
-                                                    </ii-number-field>
-                                                </v-flex>
-                                                <v-flex/>
-                                                <ii-number-field v-model="total" :decimals="2" label="Стоимость позиции" messages="Укажите цену акции или стоимость сделки"
-                                                                 name="total" required :rules="rulesPrice" @keyup="calculateOnTotal" @change="changeOnTotal">
-                                                </ii-number-field>
-                                            </v-layout>
                                         </v-form>
                                         <v-spacer></v-spacer>
                                         <div class="margT20">
@@ -215,7 +217,7 @@ export class BalancesPage extends UI implements TradeDataHolder {
 
     private rulesDate = [(val: string): boolean | string => !!val || "выберите дату"];
 
-    private rulesMoney = [(val: string): boolean | string => !!val || "укажите цену акции или стоимость сделки"];
+    private rulesMoney = [(val: string): boolean | string => !!val || "укажите сумму"];
 
     private rulesPrice = [(val: string): boolean | string => !!val || "укажите цену акции или стоимость сделки"];
 
