@@ -62,12 +62,12 @@ export class TariffLimitExceedInfo extends UI {
                         </div>
                         <div class="promo-code-component">
                             <span @click.stop="applyPromoCode">Применить промокод</span>
-                            <v-tooltip content-class="custom-tooltip-wrap" :max-width="250" bottom>
-                                <div v-if="clientInfo.user.promoCode" slot="activator" class="promo-code-component__icon"></div>
+                            <v-tooltip v-if="isDiscountApplied()" content-class="custom-tooltip-wrap" :max-width="250" bottom>
+                                <div slot="activator" class="promo-code-component__icon"></div>
                                 <div>
                                     <div>Активирован промокод</div>
-                                    <div>Скидка составляет {{ clientInfo.user.promoCode.discount }}%</div>
-                                    <div v-if="clientInfo.user.promoCode.expired">Срок действия до {{ clientInfo.user.promoCode.expired | date }}</div>
+                                    <div>Скидка составляет {{ clientInfo.user.nextPurchaseDiscount }}%</div>
+                                    <div v-if="clientInfo.user.nextPurchaseDiscountExpired">Срок действия до {{ clientInfo.user.nextPurchaseDiscountExpired | date }}</div>
                                 </div>
                             </v-tooltip>
                         </div>
