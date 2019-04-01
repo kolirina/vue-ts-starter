@@ -145,7 +145,6 @@ const MainStore = namespace(StoreType.MAIN);
                         </div>
                     </vue-scroll>
                 </v-content>
-                
                 <v-footer color="indigo" inset>
                     <span class="white--text" style="margin-left: 15px;">&copy; {{ actualYear }}</span>
                     <v-spacer></v-spacer>
@@ -196,7 +195,7 @@ export class AppFrame extends UI {
      * Переменная используется только для удобства локальной разработки при тестировании с отдельным приложением лэндинга
      * Ддля PRODUCTION режима используется внешняя аутентификация с лэндинга
      */
-    private externalAuth = false;
+    private externalAuth = true;
     private loggedIn = false;
 
     /* Пользователь уведомлен об обновлениях */
@@ -211,7 +210,6 @@ export class AppFrame extends UI {
     private cachedPages = ["PortfolioPage"];
 
     private drawer = true;
-    
     private config: any = {
         bar: {
             keepShow: true
