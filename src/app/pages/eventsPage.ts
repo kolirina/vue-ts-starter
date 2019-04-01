@@ -96,8 +96,8 @@ const MainStore = namespace(StoreType.MAIN);
 
                                     <bond-link v-if="props.item.type !== 'DIVIDEND'" :ticker="props.item.share.ticker"></bond-link>
                                 </td>
-                                <td class="text-xs-center">{{ props.item.date | date }}</td>
-                                <td class="text-xs-right">{{ props.item.period }}</td>
+                                <td class="text-xs-right">{{ props.item.date | date }}</td>
+                                <td class="text-xs-center">{{ props.item.period }}</td>
                                 <td class="text-xs-right ii-number-cell">
                                     {{ props.item.cleanAmount | amount(true) }}
                                     <span class="amount__currency">{{ props.item.cleanAmount | currency }}</span>
@@ -175,7 +175,7 @@ export class EventsPage extends UI {
     private eventsHeaders: TableHeader[] = [
         {text: "Событие", align: "left", value: "label", width: "150"},
         {text: "Компания", align: "left", value: "shortname", width: "120"},
-        {text: "Тикер", align: "center", value: "ticker", width: "100"},
+        {text: "Тикер", align: "left", value: "ticker", width: "100"},
         {text: "Дата выплаты/Закрытия реестра", align: "right", value: "date", width: "50"},
         {text: "Период", align: "center", value: "period", sortable: false, width: "180"},
         {text: "Начислено", align: "right", value: "cleanAmount", width: "150"},
@@ -187,7 +187,7 @@ export class EventsPage extends UI {
         {text: "Компания", align: "left", value: "shortname"},
         {text: "Дата собрания акционеров", align: "right", value: "meetDate", width: "70"},
         {text: "Закрытие реестра", align: "right", value: "cutDate", width: "70"},
-        {text: "Размер возможных дивидендов", align: "right", value: "recCommonValue", width: "100"},
+        {text: "Размер возможных дивидендов", align: "right", value: "recCommonValue", width: "60"},
         {text: "Источник", align: "center", value: "source", sortable: false, width: "70"}
     ];
 
