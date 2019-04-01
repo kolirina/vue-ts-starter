@@ -149,7 +149,7 @@ export class SortUtils {
 
     static compareValues(first: any, second: any): number {
         if (!CommonUtils.exists(first) || !CommonUtils.exists(second)) {
-            return first > second ? 1 : first < second ? -1 : 0;
+            return !CommonUtils.exists(first) ? -1 : !CommonUtils.exists(second) ? 1 : 0;
         }
         if (!isNaN(first) && !isNaN(second)) {
             return +first - +second;

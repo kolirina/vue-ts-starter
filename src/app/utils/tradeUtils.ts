@@ -16,9 +16,13 @@ export class TradeUtils {
     private constructor() {
     }
 
+    /**
+     * Возвращает строковое представление цены сделки. Используется для вывода цены в таблице Сделки, диалоге Сделки по бумаге.
+     * Не производит дополнительных преобразований с ценой.
+     * @param trade сделка
+     */
     static getPrice(trade: TradeRow): string {
-        return this.moneyPrice(trade) ? Filters.formatMoneyAmount(trade.moneyPrice, false) : this.percentPrice(trade) ? trade.bondPrice :
-            null;
+        return this.moneyPrice(trade) ? String(new BigMoney(trade.moneyPrice).amount) : this.percentPrice(trade) ? trade.bondPrice : null;
     }
 
     static getFee(trade: TradeRow): string {

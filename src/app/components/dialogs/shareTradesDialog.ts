@@ -27,7 +27,7 @@ import {TradeUtils} from "../../utils/tradeUtils";
                                 <td class="text-xs-center">{{ props.item.date | date }}</td>
                                 <td class="text-xs-right">{{ props.item.quantity }}</td>
                                 <td class="text-xs-right">{{ getPrice(props.item) }}</td>
-                                <td class="text-xs-right">{{ getFee(props.item) }}</td>
+                                <td class="text-xs-right">{{ props.item.fee | amount(true) }}</td>
                                 <td class="text-xs-right">{{ props.item.signedTotal | amount(true) }}</td>
                             </tr>
                         </template>
@@ -67,10 +67,6 @@ export class ShareTradesDialog extends CustomDialog<ShareTradesDialogData, void>
 
     private getPrice(trade: TradeRow): string {
         return TradeUtils.getPrice(trade);
-    }
-
-    private getFee(trade: TradeRow): string {
-        return TradeUtils.getFee(trade);
     }
 
     private percentPrice(trade: TradeRow): boolean {
