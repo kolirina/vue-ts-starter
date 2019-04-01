@@ -133,7 +133,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </div>
 
                 <v-content>
-                    <vue-scroll :ops="config">
+                    <vue-scroll :ops="horizontalScrollConfig">
                         <div class="wrapper-for-scroll-content">
                             <v-container fluid class="paddT0">
                                 <v-fade-transition mode="out-in">
@@ -210,7 +210,8 @@ export class AppFrame extends UI {
     private cachedPages = ["PortfolioPage"];
 
     private drawer = true;
-    private config: any = {
+    // Конфиг для горизонтального скролла страницы
+    private horizontalScrollConfig: any = {
         bar: {
             keepShow: true
         }

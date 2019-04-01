@@ -20,28 +20,31 @@ const MainStore = namespace(StoreType.MAIN);
         <v-container v-if="clientInfo && clientInfo.user" fluid>
             <v-layout row wrap>
                 <v-flex>
-                    <div class="section-title" style="margin-bottom: 3px">Экспорт сделок</div>
-                    <v-card class="portfolio-settings-card portfolio-settings-card-main portfolio-settings-card-full">
-                        <v-menu transition="slide-y-transition" nudge-bottom="50" nudge-left="10">
-                            <v-btn class="primary" slot="activator">
-                                Экспорт
-                            </v-btn>
-                            <v-list dense>
-                                <v-list-tile @click="downloadFile" :disabled="isDownloadNotAllowed()">
-                                    <v-list-tile-title>
-                                        Экспорт сделок в csv
-                                    </v-list-tile-title>
-                                </v-list-tile>
-                                <v-list-tile @click="exportPortfolio">
-                                    <v-list-tile-title>
-                                        Экспорт портфеля в xlsx
-                                    </v-list-tile-title>
-                                </v-list-tile>
-                            </v-list>
-                        </v-menu>
+                    <v-card flat class="header-first-card">
+                        <v-card-title class="header-first-card__title-card">
+                            <div class="section-title" style="margin-bottom: 0px">Экспорт сделок</div>
+                            <v-spacer></v-spacer>
+                            <v-menu transition="slide-y-transition" nudge-bottom="50" nudge-left="10">
+                                <v-btn class="primary" slot="activator">
+                                    Экспорт
+                                </v-btn>
+                                <v-list dense>
+                                    <v-list-tile @click="downloadFile" :disabled="isDownloadNotAllowed()">
+                                        <v-list-tile-title>
+                                            Экспорт сделок в csv
+                                        </v-list-tile-title>
+                                    </v-list-tile>
+                                    <v-list-tile @click="exportPortfolio">
+                                        <v-list-tile-title>
+                                            Экспорт портфеля в xlsx
+                                        </v-list-tile-title>
+                                    </v-list-tile>
+                                </v-list>
+                            </v-menu>
+                        </v-card-title>
                     </v-card>
 
-                    <v-card class="export-page">
+                    <v-card class="export-page" flat>
                         <v-card-text class="export-page__content">
                             <div class="info-block">
                                 Выгрузите сделки вашего текущего портфеля в csv или xlsx формате.
