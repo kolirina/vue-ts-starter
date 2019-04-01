@@ -78,8 +78,8 @@ export class TariffLimitExceedInfo extends UI {
                     </div>
 
                     <p v-if="isDiscountApplied()" class="promotion">
-                        Совершите покупку с вашей персональной скидкой <b>{{ clientInfo.user.nextPurchaseDiscount }}%</b>! (срок действия скидки до {{
-                        clientInfo.user.nextPurchaseDiscountExpired | date }})
+                        Совершите покупку с вашей персональной скидкой <b>{{ clientInfo.user.nextPurchaseDiscount }}%</b>!
+                        <template v-if="clientInfo.user.nextPurchaseDiscountExpired">(срок действия скидки до {{ clientInfo.user.nextPurchaseDiscountExpired | date }})</template>
                     </p>
 
                     <div class="tariff__plans">
@@ -95,7 +95,9 @@ export class TariffLimitExceedInfo extends UI {
                                 <td></td>
                                 <td>
                                     <div class="tariff__plan_name">Бесплатный</div>
-                                    <div class="tariff__plan_price">{{ getPriceLabel(Tariff.FREE) }} <span>RUB</span></div>
+                                    <div class="tariff__plan_price-block">
+                                        <div class="tariff__plan_price">{{ getPriceLabel(Tariff.FREE) }} <span>RUB</span></div>
+                                    </div>
                                     <v-tooltip v-if="!isAvailable(Tariff.FREE)" content-class="custom-tooltip-wrap" bottom>
                                         <v-btn slot="activator" @click="makePayment(Tariff.FREE)" :class="{'big_btn': true, 'selected': isSelected(Tariff.FREE)}"
                                                :disabled="!isAvailable(Tariff.FREE) || isSelected(Tariff.FREE) || isProgress">
@@ -117,10 +119,10 @@ export class TariffLimitExceedInfo extends UI {
                                 </td>
                                 <td>
                                     <div class="tariff__plan_name">Стандарт</div>
-                                    <div v-if="isDiscountApplied()" class="tariff__plan_old-price">
-                                        {{ getNoDiscountPriceLabel(Tariff.STANDARD) }} <span>RUB</span>
+                                    <div class="tariff__plan_price-block">
+                                        <span v-if="isDiscountApplied()" class="tariff__plan_old-price">{{ getNoDiscountPriceLabel(Tariff.STANDARD) }}</span>
+                                        <span class="tariff__plan_price">{{ getPriceLabel(Tariff.STANDARD) }} <span>RUB</span></span>
                                     </div>
-                                    <div class="tariff__plan_price">{{ getPriceLabel(Tariff.STANDARD) }} <span>RUB</span></div>
                                     <v-tooltip v-if="!isAvailable(Tariff.STANDARD)" content-class="custom-tooltip-wrap" bottom>
                                         <v-btn slot="activator" @click="makePayment(Tariff.STANDARD)"
                                                :class="{'big_btn': true, 'selected': isSelected(Tariff.STANDARD)}"
@@ -144,10 +146,10 @@ export class TariffLimitExceedInfo extends UI {
                                 </td>
                                 <td>
                                     <div class="tariff__plan_name">Профессионал</div>
-                                    <div v-if="isDiscountApplied()" class="tariff__plan_old-price">
-                                        {{ getNoDiscountPriceLabel(Tariff.PRO) }} <span>RUB</span>
+                                    <div class="tariff__plan_price-block">
+                                        <span v-if="isDiscountApplied()" class="tariff__plan_old-price">{{ getNoDiscountPriceLabel(Tariff.PRO) }}</span>
+                                        <span class="tariff__plan_price">{{ getPriceLabel(Tariff.PRO) }} <span>RUB</span></span>
                                     </div>
-                                    <div class="tariff__plan_price">{{ getPriceLabel(Tariff.PRO) }} <span>RUB</span></div>
                                     <v-btn @click="makePayment(Tariff.PRO)"
                                            :class="{'big_btn': true, 'selected': isSelected(Tariff.PRO)}"
                                            :disabled="!isAvailable(Tariff.PRO) || isProgress">

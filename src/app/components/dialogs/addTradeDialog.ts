@@ -83,7 +83,7 @@ import {MainStore} from "../../vuex/mainStore";
 
                             <!-- Цена -->
                             <v-flex v-if="shareAssetType" xs12 sm6>
-                                <ii-number-field :label="priceLabel" v-model="price" class="required" name="price" v-validate="'required'"
+                                <ii-number-field :label="priceLabel" v-model="price" class="required" name="price" v-validate="'required|min_value:0.000001'"
                                                  :error-messages="errors.collect('price')" @keyup="calculateFee">
                                 </ii-number-field>
                             </v-flex>
@@ -92,14 +92,14 @@ import {MainStore} from "../../vuex/mainStore";
                             <v-flex v-if="shareAssetType" xs12 sm6>
                                 <ii-number-field label="Количество" v-model="quantity" @keyup="calculateFee" :hint="lotSizeHint"
                                                  persistent-hint name="quantity" :decimals="0"
-                                                 v-validate="'required'" :error-messages="errors.collect('quantity')" class="required">
+                                                 v-validate="'required|min_value:1'" :error-messages="errors.collect('quantity')" class="required">
                                 </ii-number-field>
                             </v-flex>
 
                             <!-- Номинал -->
                             <v-flex v-if="bondTrade" xs12 sm3>
                                 <ii-number-field label="Номинал" v-model="facevalue" @keyup="calculateFee" :decimals="2" name="facevalue"
-                                                 v-validate="'required'" :error-messages="errors.collect('facevalue')" class="required">
+                                                 v-validate="'required|min_value:0.01'" :error-messages="errors.collect('facevalue')" class="required">
                                 </ii-number-field>
                             </v-flex>
 
@@ -108,7 +108,7 @@ import {MainStore} from "../../vuex/mainStore";
                                 <v-layout wrap>
                                     <v-flex xs12 lg6>
                                         <ii-number-field label="НКД" v-model="nkd" @keyup="calculateFee" :decimals="2" name="nkd"
-                                                         v-validate="nkdValidationString" :error-messages="errors.collect('nkd')">
+                                                         v-validate="nkdValidationString" :error-messages="errors.collect('nkd')" class="required">
                                         </ii-number-field>
                                     </v-flex>
                                     <v-flex v-if="calculationAssetType || bondTrade" xs12 lg6>
@@ -131,7 +131,8 @@ import {MainStore} from "../../vuex/mainStore";
                             <v-flex v-if="moneyTrade" xs12>
                                 <v-layout wrap>
                                     <v-flex xs12 lg8>
-                                        <ii-number-field label="Сумма" v-model="moneyAmount" :decimals="2"></ii-number-field>
+                                        <ii-number-field label="Сумма" v-model="moneyAmount" :decimals="2" name="money_amount" v-validate="'required|min_value:0.01'"
+                                                         :error-messages="errors.collect('money_amount')" class="required"></ii-number-field>
                                     </v-flex>
                                     <v-flex xs12 lg4>
                                         <v-select :items="currencyList" v-model="moneyCurrency" label="Валюта сделки"></v-select>
