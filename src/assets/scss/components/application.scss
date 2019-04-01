@@ -2,6 +2,10 @@
     font-family: $main--font-family;
 }
 
+.wrapper-for-scroll-content{
+  min-width: 800px;
+}
+
 .theme--light.application {
     background: $main--bg-color;
     color: $main--font-color;

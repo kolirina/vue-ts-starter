@@ -133,13 +133,17 @@ const MainStore = namespace(StoreType.MAIN);
                 </div>
 
                 <v-content>
-                    <v-container fluid class="paddT0">
-                        <v-fade-transition mode="out-in">
-                            <!--<keep-alive :include="cachedPages">-->
-                            <router-view></router-view>
-                            <!--</keep-alive>-->
-                        </v-fade-transition>
-                    </v-container>
+                    <vue-scroll :ops="config">
+                        <div class="wrapper-for-scroll-content">
+                            <v-container fluid class="paddT0">
+                                <v-fade-transition mode="out-in">
+                                    <!--<keep-alive :include="cachedPages">-->
+                                        <router-view></router-view>
+                                    <!--</keep-alive>-->
+                                </v-fade-transition>
+                            </v-container>
+                        </div>
+                    </vue-scroll>
                 </v-content>
                 <v-footer color="indigo" inset>
                     <span class="white--text" style="margin-left: 15px;">&copy; {{ actualYear }}</span>
@@ -206,6 +210,11 @@ export class AppFrame extends UI {
     private cachedPages = ["PortfolioPage"];
 
     private drawer = true;
+    private config: any = {
+        bar: {
+            keepShow: true
+        }
+    };
 
     private mini = true;
     private loading = false;
