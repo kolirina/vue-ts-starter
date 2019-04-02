@@ -26,7 +26,7 @@ import {MainStore} from "../../vuex/mainStore";
                         <span v-if="step === 0">
                             <h4>Остался последний шаг и ваш портфель будет готов.</h4>
                             <h4>Пожалуйста, укажите остаток денежных средств в портфеле на данный момент:
-                                <v-tooltip content-class="custom-tooltip-wrap" :max-width="250" top>
+                                <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" :max-width="250" top>
                                     <sup class="custom-tooltip" slot="activator">
                                         <v-icon>fas fa-info-circle</v-icon>
                                     </sup>

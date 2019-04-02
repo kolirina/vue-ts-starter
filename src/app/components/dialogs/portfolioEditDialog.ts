@@ -94,7 +94,7 @@ import {MainStore} from "../../vuex/mainStore";
                             </v-flex>
 
                             <v-flex xs12>
-                                <v-tooltip content-class="custom-tooltip-wrap" top>
+                                <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" top>
                                     <v-checkbox slot="activator" label="Профессиональный режим" v-model="portfolioParams.professionalMode" class="margT0"></v-checkbox>
                                     <span>
                                         Профессиональный режим включает дополнительные возможности, необходимые опытным инвесторам:

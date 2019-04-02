@@ -41,7 +41,7 @@ import {CommonUtils} from "../../utils/commonUtils";
                     <v-switch v-model="buyPriceNotification">
                         <template #label>
                             <span>Получать уведомления об изменении цены покупки</span>
-                            <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                            <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" bottom>
                                 <sup class="custom-tooltip" slot="activator">
                                     <v-icon>fas fa-info-circle</v-icon>
                                 </sup>
@@ -72,7 +72,7 @@ import {CommonUtils} from "../../utils/commonUtils";
                     <v-switch v-model="sellPriceNotification">
                         <template #label>
                             <span>Получать уведомления об изменении цены продажи</span>
-                            <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                            <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" bottom>
                                 <sup class="custom-tooltip" slot="activator">
                                     <v-icon>fas fa-info-circle</v-icon>
                                 </sup>
@@ -103,7 +103,7 @@ import {CommonUtils} from "../../utils/commonUtils";
                     <v-switch v-if="isStockNotification" v-model="newsNotification" @change="onNewsNotificationChange">
                         <template #label>
                             <span>Получать уведомления о новостях</span>
-                            <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                            <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" bottom>
                                 <sup class="custom-tooltip" slot="activator">
                                     <v-icon>fas fa-info-circle</v-icon>
                                 </sup>
@@ -139,7 +139,7 @@ import {CommonUtils} from "../../utils/commonUtils";
                     <v-switch v-if="isStockNotification" v-model="dividendNotification" @change="onDividendNotificationChange">
                         <template #label>
                             <span>Получать уведомления о планируемых дивидендах</span>
-                            <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                            <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" bottom>
                                 <sup class="custom-tooltip" slot="activator">
                                     <v-icon>fas fa-info-circle</v-icon>
                                 </sup>
@@ -154,7 +154,7 @@ import {CommonUtils} from "../../utils/commonUtils";
                     <v-switch v-if="!isStockNotification" :readonly="!isStockNotification" v-model="bondEventNotification">
                         <template #label>
                             <span>Получать уведомления о событиях</span>
-                            <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                            <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" bottom>
                                 <sup class="custom-tooltip" slot="activator">
                                     <v-icon>fas fa-info-circle</v-icon>
                                 </sup>
