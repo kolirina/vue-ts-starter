@@ -210,7 +210,7 @@ export class AppFrame extends UI {
     private cachedPages = ["PortfolioPage"];
 
     private drawer = true;
-    // Конфиг для горизонтального скролла страницы
+    /* Конфиг для горизонтального скролла страницы */
     private horizontalScrollConfig: any = {
         bar: {
             keepShow: true

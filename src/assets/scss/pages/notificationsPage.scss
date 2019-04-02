@@ -1,3 +1,6 @@
+.notifications-card:first-child{
+  margin-bottom: 0px;
+}
 .notifications {
   padding: 28px 44px 28px 28px;
   font-size: 14px;
@@ -28,10 +31,12 @@
         padding: 0;
         background: none;
         text-align: right;
-        margin-top: -28px;
 
-        > div:not(.v-menu) {display: none}
+        > div:not(.v-card__title) {display: none}
       }
+    }
+    &-card:first-child{
+      margin-bottom: 0px;
     }
 
     &-header {
