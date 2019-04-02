@@ -1,7 +1,10 @@
+import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {VueRouter} from "vue-router/types/router";
-import {CustomDialog} from "../../platform/dialogs/customDialog";
+import {ShowProgress} from "../../platform/decorators/showProgress";
+import {BtnReturn, CustomDialog} from "../../platform/dialogs/customDialog";
 import {ImportResponse} from "../../services/importService";
+import {OverviewService} from "../../services/overviewService";
 import {Portfolio} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {MainStore} from "../../vuex/mainStore";
@@ -59,7 +62,7 @@ import {MainStore} from "../../vuex/mainStore";
                     <v-btn v-if="step === 0" :disabled="disabledFirstStepButton" color="primary" @click.native="goToNextStep" dark>
                         Продолжить
                     </v-btn>
-                    <v-btn v-if="step === 1" color="primary" @click.native="saveRemainderAndClose" dark>
+                    <v-btn v-if="step === 1" color="primary" @click.native="close('YES')" dark>
                         Перейти к портфелю
                     </v-btn>
                 </v-card-actions>
@@ -67,25 +70,30 @@ import {MainStore} from "../../vuex/mainStore";
         </v-dialog>
     `
 })
-export class ImportSuccessDialog extends CustomDialog<ImportSuccessDialogData, string> {
+export class ImportSuccessDialog extends CustomDialog<ImportSuccessDialogData, BtnReturn> {
 
+    @Inject
+    private overviewService: OverviewService;
+    /** Текущий шаг */
     private step = 0;
-
+    /** Текущий остаток денег на счете */
     private currentMoneyRemainder: string = null;
-
+    /** Текущий выбранный портфель */
     private portfolio: Portfolio = null;
 
+    /**
+     * Инициализация данных диалога
+     * @inheritDoc
+     */
     mounted(): void {
         this.portfolio = (this.data.store as any).currentPortfolio;
         this.currentMoneyRemainder = this.data.currentMoneyRemainder;
     }
 
-    private goToNextStep(): void {
+    @ShowProgress
+    private async goToNextStep(): Promise<void> {
+        await this.overviewService.saveOrUpdateCurrentMoney(this.portfolio.id, this.currentMoneyRemainder);
         this.step++;
-    }
-
-    private saveRemainderAndClose(): void {
-        this.close(this.currentMoneyRemainder);
     }
 
     private get disabledFirstStepButton(): boolean {

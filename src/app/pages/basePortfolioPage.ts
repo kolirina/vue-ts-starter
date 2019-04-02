@@ -16,7 +16,6 @@
 
 import {DataPoint} from "highcharts";
 import {Inject} from "typescript-ioc";
-import {namespace} from "vuex-class/lib/bindings";
 import {Component, Prop, UI, Watch} from "../app/ui";
 import {AssetTable} from "../components/assetTable";
 import {BondTable} from "../components/bondTable";
@@ -33,9 +32,6 @@ import {StoreKeys} from "../types/storeKeys";
 import {BondPortfolioRow, Overview, StockPortfolioRow, TableHeader} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
 import {UiStateHelper} from "../utils/uiStateHelper";
-import {StoreType} from "../vuex/storeType";
-
-const MainStore = namespace(StoreType.MAIN);
 
 @Component({
     // language=Vue
