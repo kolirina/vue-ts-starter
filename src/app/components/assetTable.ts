@@ -18,6 +18,21 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-data-table :headers="headers" :items="assets" :custom-sort="customSort" :pagination.sync="pagination" hide-actions>
+            <template #headerCell="props">
+                <v-tooltip v-if="props.header.tooltip" content-class="custom-tooltip-wrap" bottom>
+                    <template #activator="{ on }">
+                        <span class="data-table__header-with-tooltip" v-on="on">
+                            {{ props.header.text }}
+                        </span>
+                    </template>
+                    <span>
+                      {{ props.header.tooltip }}
+                    </span>
+                </v-tooltip>
+                <span v-else>
+                    {{ props.header.text }}
+                </span>
+            </template>
             <template #items="props">
                 <tr class="selectable">
                     <td class="text-xs-left">{{ props.item.type | assetDesc }}</td>
@@ -80,7 +95,14 @@ export class AssetTable extends UI {
     private headers: TableHeader[] = [
         {text: "Актив", sortable: false, align: "left", value: "name"},
         {text: "Текущая стоимость", align: "right", value: "currCost"},
-        {text: "Прибыль", align: "right", value: "profit"},
+        {
+            text: "Прибыль",
+            align: "right",
+            value: "profit",
+            tooltip: "Прибыль, образованная активами данного типа за все время. Она включает в себя: прибыль от совершенных " +
+                "                        ранее сделок (бумага куплена дешевле и продана дороже), выплаченные дивиденды и купоны, " +
+                "                        курсовую прибыль (бумага куплена дешевле и подорожала, но еще не продана)."
+        },
         {text: "Текущая доля", align: "right", value: "percCurrShare"},
         {text: "", align: "center", value: "actions", sortable: false, width: "25"}
     ];

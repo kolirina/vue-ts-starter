@@ -1,6 +1,7 @@
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
+import * as versionConfig from "../../version.json";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
 import {FeedbackDialog} from "../components/dialogs/feedbackDialog";
 import {NotificationUpdateDialog} from "../components/dialogs/notificationUpdateDialog";
@@ -138,7 +139,7 @@ const MainStore = namespace(StoreType.MAIN);
                             <v-container fluid class="paddT0">
                                 <v-fade-transition mode="out-in">
                                     <!--<keep-alive :include="cachedPages">-->
-                                        <router-view></router-view>
+                                    <router-view></router-view>
                                     <!--</keep-alive>-->
                                 </v-fade-transition>
                             </v-container>
@@ -146,7 +147,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </vue-scroll>
                 </v-content>
                 <v-footer color="indigo" inset>
-                    <span class="white--text" style="margin-left: 15px;">&copy; {{ actualYear }}</span>
+                    <span class="white--text caption" style="margin-left: 128px;"><i class="far fa-copyright"></i> {{ copyrightInfo }}</span>
                     <v-spacer></v-spacer>
                     <v-tooltip content-class="custom-tooltip-wrap" top>
                         <a slot="activator" class="white--text margR16 decorationNone" href="https://telegram.me/intelinvestSupportBot">
@@ -317,6 +318,10 @@ export class AppFrame extends UI {
 
     private get actualYear(): string {
         return String(new Date().getFullYear());
+    }
+
+    private get copyrightInfo(): string {
+        return `Intelligent Investments 2012-${this.actualYear} версия ${versionConfig.version} сборка ${versionConfig.build} от ${versionConfig.date}`;
     }
 }
 
