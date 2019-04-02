@@ -24,8 +24,8 @@ import {LoaderState} from "../../components/loaderState";
  * @return {TypedPropertyDescriptor<T>} новый дескриптор метода
  */
 // tslint:disable-next-line
-export function ShowProgress<T extends Function>(target: any, propertyKey: string, descriptor: TypedPropertyDescriptor<(...args: any[]) => Promise<void>>):
-    TypedPropertyDescriptor<(...args: any[]) => Promise<void>> {
+export function ShowProgress<T extends Function>(target: any, propertyKey: string, descriptor: TypedPropertyDescriptor<(...args: any[]) => Promise<any>>):
+    TypedPropertyDescriptor<(...args: any[]) => Promise<any>> {
     const originalMethod = descriptor.value;
     // tslint:disable-next-line
     descriptor.value = async function (...args: any[]) {

@@ -7,6 +7,7 @@ import {ImportGeneralErrorDialog} from "../../components/dialogs/importGeneralEr
 import {ImportSuccessDialog} from "../../components/dialogs/importSuccessDialog";
 import {ExpandedPanel} from "../../components/expandedPanel";
 import {ShowProgress} from "../../platform/decorators/showProgress";
+import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {Filters} from "../../platform/filters/Filters";
 import {ClientInfo} from "../../services/clientService";
 import {DealsImportProvider, ImportProviderFeatures, ImportProviderFeaturesByProvider, ImportResponse, ImportService} from "../../services/importService";
@@ -51,7 +52,7 @@ const MainStore = namespace(StoreType.MAIN);
                             <div class="attachments-file-drop__content">
                                 Перетащите<br>
                                 или
-                                <file-link @select="onFileAdd" multiple>загрузите</file-link>
+                                <file-link @select="onFileAdd" :accept="allowedExtensions">загрузите</file-link>
                                 файл
                             </div>
                         </file-drop-area>
@@ -201,6 +202,8 @@ export class ImportPage extends UI {
     private selectedProvider: DealsImportProvider = null;
     /** Признак отображения панели с расширенными настройками */
     private showExtendedSettings = false;
+    /** Допустимые MIME типы */
+    private allowedExtensions = FileUtils.ALLOWED_MIME_TYPES;
 
     /**
      * Инициализирует необходимые для работы данные
@@ -241,15 +244,22 @@ export class ImportPage extends UI {
     }
 
     /**
-     * Отправляет отчет на сервер
+     * Отправляет отчет на сервер и обрабатывает ответ
      */
-    @ShowProgress
     private async uploadFile(): Promise<void> {
         if (this.files && this.files.length && this.selectedProvider) {
-            const response = await this.importService.importReport(this.selectedProvider, this.portfolio.id, this.files, this.importProviderFeatures);
+            const response = await this.importReport();
             await this.handleUploadResponse(response);
             this.clearFiles();
         }
+    }
+
+    /**
+     * Отправляет отчет на сервер
+     */
+    @ShowProgress
+    private async importReport(): Promise<ImportResponse> {
+        return this.importService.importReport(this.selectedProvider, this.portfolio.id, this.files, this.importProviderFeatures);
     }
 
     /**
@@ -279,19 +289,21 @@ export class ImportPage extends UI {
         if (response.validatedTradesCount) {
             const firstWord = Filters.declension(response.validatedTradesCount, "Добавлена", "Добавлено", "Добавлено");
             const secondWord = Filters.declension(response.validatedTradesCount, "сделка", "сделки", "сделок");
+            let navigateToPortfolioPage = true;
             if (this.importProviderFeatures.confirmMoneyBalance) {
                 const currentMoneyRemainder = await this.overviewService.getCurrentMoney(this.portfolio.id);
-                const enteredMoneyRemainder = await new ImportSuccessDialog().show({
+                navigateToPortfolioPage = await new ImportSuccessDialog().show({
                     currentMoneyRemainder,
                     router: this.$router,
                     store: this.$store.state[StoreType.MAIN],
                     importResult: response
-                });
-                await this.overviewService.saveOrUpdateCurrentMoney(this.portfolio.id, enteredMoneyRemainder);
+                }) === BtnReturn.YES;
             }
             await this.reloadPortfolio(this.portfolio.id);
             this.$snotify.info(`Импорт прошел успешно. ${firstWord} ${response.validatedTradesCount} ${secondWord}.`, "Результат импорта");
-            this.$router.push("portfolio");
+            if (navigateToPortfolioPage) {
+                this.$router.push("portfolio");
+            }
         } else {
             this.$snotify.warning("В отчете не содержится информации по сделкам.", "Импорт завершен");
         }
