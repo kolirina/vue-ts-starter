@@ -188,6 +188,7 @@ export class ExportPage extends UI {
     /**
      * Отправляет запрос на скачивание файла со сделками в формате csv
      */
+    @ShowProgress
     private async downloadFile(): Promise<void> {
         await this.exportService.exportTrades(this.portfolio.id);
     }
@@ -197,8 +198,7 @@ export class ExportPage extends UI {
      */
     private isDownloadNotAllowed(): boolean {
         const userTariff = this.clientInfo.user.tariff;
-        return userTariff === Tariff.TRIAL ||
-            (dayjs().isAfter(DateUtils.parseDate(this.clientInfo.user.paidTill)) && userTariff !== Tariff.FREE);
+        return userTariff === Tariff.TRIAL || (dayjs().isAfter(DateUtils.parseDate(this.clientInfo.user.paidTill)) && userTariff !== Tariff.FREE);
     }
 
     /**

@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {Watch} from "vue-property-decorator";
@@ -8,13 +9,16 @@ import {ExpandedPanel} from "../components/expandedPanel";
 import {TradesTable} from "../components/tradesTable";
 import {TradesTableFilter} from "../components/tradesTableFilter";
 import {ShowProgress} from "../platform/decorators/showProgress";
+import {ClientInfo} from "../services/clientService";
 import {ExportService, ExportType} from "../services/exportService";
 import {FilterService} from "../services/filterService";
 import {TableHeaders, TABLES_NAME, TablesService} from "../services/tablesService";
 import {TradeService, TradesFilter} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
 import {StoreKeys} from "../types/storeKeys";
+import {Tariff} from "../types/tariff";
 import {Pagination, Portfolio, TableHeader, TablePagination, TradeRow} from "../types/types";
+import {DateUtils} from "../utils/dateUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 
@@ -31,6 +35,7 @@ const MainStore = namespace(StoreType.MAIN);
                 <template #list>
                     <v-list-tile-title @click="openTableSettings(TABLES_NAME.TRADE)">Настроить колонки</v-list-tile-title>
                     <v-list-tile-title @click="exportTable(ExportType.TRADES)">Экспорт в xlsx</v-list-tile-title>
+                    <v-list-tile-title :disabled="isDownloadNotAllowed()" @click="downloadFile">Экспорт в csv</v-list-tile-title>
                 </template>
                 <trades-table-filter v-if="tradesFilter" :store-key="StoreKeys.TRADES_FILTER_SETTINGS_KEY" @filter="onFilterChange" :filter="tradesFilter"
                                      :is-default="isDefaultFilter"></trades-table-filter>
@@ -58,6 +63,9 @@ export class TradesPage extends UI {
     @Inject
     private exportService: ExportService;
 
+    /** Инофрмация о пользователе */
+    @MainStore.Getter
+    private clientInfo: ClientInfo;
     @MainStore.Getter
     private portfolio: Portfolio;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
@@ -156,6 +164,14 @@ export class TradesPage extends UI {
         await this.exportService.exportReport(this.portfolio.id, exportType);
     }
 
+    /**
+     * Отправляет запрос на скачивание файла со сделками в формате csv
+     */
+    @ShowProgress
+    private async downloadFile(): Promise<void> {
+        await this.exportService.exportTrades(this.portfolio.id);
+    }
+
     private async onFilterChange(): Promise<void> {
         await this.loadTrades();
         // при смене фильтра сбрасываем паджинацию чтобы не остаться на несуществующей странице
@@ -165,5 +181,13 @@ export class TradesPage extends UI {
 
     private get isDefaultFilter(): boolean {
         return this.filterService.isDefaultFilter(this.tradesFilter);
+    }
+
+    /**
+     * Возвращает признак доступности для загрузки файла со сделками
+     */
+    private isDownloadNotAllowed(): boolean {
+        const userTariff = this.clientInfo.user.tariff;
+        return userTariff === Tariff.TRIAL || (dayjs().isAfter(DateUtils.parseDate(this.clientInfo.user.paidTill)) && userTariff !== Tariff.FREE);
     }
 }

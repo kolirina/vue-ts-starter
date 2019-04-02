@@ -36,7 +36,7 @@ export class ExportService {
      */
     async exportReport(portfolioId: string, exportType: ExportType): Promise<any> {
         const response = await this.http.get<Response>(`/export/${exportType}/${portfolioId}`);
-        const fileName = this.getFileName(response.headers, exportType);
+        const fileName = this.getFileName(response.headers, portfolioId, exportType);
         if (!window.navigator.msSaveOrOpenBlob) {
             const blob = await response.blob();
             const binaryData = [];
@@ -54,13 +54,15 @@ export class ExportService {
     /**
      * Возвращает имя файла
      * @param headers заголовки ответа
+     * @param portfolioId идентификатор портфеля
+     * @param exportType тип экспорта
      */
-    private getFileName(headers: Headers, exportType: ExportType): string {
+    private getFileName(headers: Headers, portfolioId: string, exportType: ExportType): string {
         try {
             const contentDisposition = (headers as any)["content-disposition"];
             return contentDisposition.substring(contentDisposition.indexOf("=") + 1).trim();
         } catch (e) {
-            return `${exportType.toLowerCase()}.xlsx`;
+            return `${exportType.toLowerCase()}_portfolio_${portfolioId}.xlsx`;
         }
     }
 }
