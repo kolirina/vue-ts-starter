@@ -22,11 +22,14 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-container v-if="portfolio" fluid class="events">
-            <div class="section-title" style="margin-bottom: 3px">События</div>
-            <v-card class="portfolio-settings-card portfolio-settings-card-main portfolio-settings-card-full">
-                <v-btn @click.stop="openDialog" class="primary">
-                    Добавить событие
-                </v-btn>
+            <v-card flat class="header-first-card">
+                <v-card-title class="header-first-card__wrapper-title">
+                    <div class="section-title header-first-card__title-text">События</div>
+                    <v-spacer></v-spacer>
+                    <v-btn @click.stop="openDialog" class="primary">
+                        Добавить событие
+                    </v-btn>
+                </v-card-title>
             </v-card>
 
             <v-card class="events__card" flat>

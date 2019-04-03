@@ -17,7 +17,11 @@ const MainStore = namespace(StoreType.MAIN);
         <v-container fluid>
             <v-layout row wrap>
                 <v-flex>
-                    <div class="section-title">Промокоды</div>
+                    <v-card flat class="header-first-card">
+                        <v-card-title class="header-first-card__wrapper-title">
+                            <div class="section-title header-first-card__title-text">Промокоды</div>
+                        </v-card-title>
+                    </v-card>
                     <v-card class="overflowXA" flat>
                         <div class="promo-codes__steps">
                             <div class="promo-codes__step">

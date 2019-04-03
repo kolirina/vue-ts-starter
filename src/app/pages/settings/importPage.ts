@@ -25,7 +25,11 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-container fluid>
-            <div class="section-title">Импорт сделок</div>
+            <v-card flat class="header-first-card">
+                <v-card-title class="header-first-card__wrapper-title">
+                    <div class="section-title header-first-card__title-text">Импорт сделок</div>
+                </v-card-title>
+            </v-card>
             <v-card>
                 <v-card-text>
                     <div class="import-wrapper">

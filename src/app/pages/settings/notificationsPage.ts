@@ -17,14 +17,16 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <div class="notifications">
-            <div class="section-title" style="margin-bottom: 3px">Уведомления</div>
+            <div class="section-title header-first-card__title-text" :class="{'empty-notifications-title-page': notifications.length == 0}">Уведомления</div>
             <v-card :class="{'notifications-card notifications-card-main': true, 'notifications-card-full': notifications.length !== 0}">
                 <div>
-                    Здесь будут Ваши настройки уведомлений о дивидендах,<br>
-                    достижении целевых цен на акции и облигации, а также<br>
-                    о новостях интересующих эмитентов.
+                    <div class="text-empty-notifications">
+                        Здесь будут Ваши настройки уведомлений о дивидендах,<br>
+                        достижении целевых цен на акции и облигации, а также<br>
+                        о новостях интересующих эмитентов.
+                    </div>
+                    <div class="text-empty-notifications">Добавьте первое уведомление</div>
                 </div>
-                <div>Добавьте первое уведомление</div>
 
                 <v-menu transition="slide-y-transition" nudge-bottom="50" nudge-left="10">
                     <v-btn class="primary" slot="activator">
