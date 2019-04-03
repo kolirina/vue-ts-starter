@@ -1,0 +1,113 @@
+.wrapper-list-reference {
+    padding: 22px 0px 32px 30px;
+    background: #FFFFFF;
+    &__item {
+        margin-right: 66px;
+        &-content-wrapper {
+            a {
+                text-decoration: none;
+                color: #040427;
+                font-size: 14px;
+                line-height: 36px;
+            }
+            a:hover {
+                color: #3b6ec9;
+            }
+        }
+    }
+}
+.wrapper-panel .v-expansion-panel__container{
+    border-top: none !important;
+}
+.custom-action-icon {
+    font-size: 35px;
+    color: $non-active-table-th-color !important;
+    background: url("../img/common/arrow.svg") no-repeat center;
+    width: 10px;
+    height: 10px;
+    display: block;
+    transition: transform 0.2s ease;
+}
+.wrapper-content-panel {
+    font-size: 14px;
+    color: #040427;
+    p {
+        line-height: 24px;
+        margin-bottom: 25px;
+    }
+    a {
+        text-decoration: none;
+    }
+    &__paired-section {
+        display: flex;
+        padding: 22px 76px 22px 29px;
+        &-item {
+            max-width: 404px;
+            width: 100%;
+            &__add-deal-btn {
+                box-shadow: 0px 4px 7px rgba(4, 4, 39, 0.14) !important;
+                margin-top: 0px;
+                margin-bottom: 0px;
+                i {
+                    color: #FFFFFF !important;
+                }
+            }
+            p:last-child {
+                margin-bottom: 0px;
+            }
+            .apple-google-pic {
+                margin-top: 30px;
+                a img:first-child {
+                    margin-right: 10px;
+                }
+            }
+        }
+        &-item:first-child {
+            margin-right: 107px;
+        }
+    }
+    &__single-section {
+        padding: 22px 0px 22px 29px;
+        &-item {
+            max-width: 404px;
+            width: 100%;
+            p:last-child {
+                margin-bottom: 0px;
+            }
+        }
+    }
+    &__privacy-section {
+        padding: 0px 0px 0px 29px;
+        &-up-page-btn {
+            width: 52px;
+            height: 52px;
+        }
+    }
+}
+.border-block-in-paired-section {
+    margin: 0px -9px;
+}
+.gif-block {
+    padding: 0px 20px;
+    &-item {
+        padding: 22px 9px;
+        border-top: 2px solid #C4C4C4;
+        &__title {
+            font-size: 14px;
+            letter-spacing: -0.3px;
+            color: #040427;
+            line-height: 24px;
+            margin: 0px 0px 11px;
+        }
+    }
+    .title-gif-block {
+        font-size: 16px;
+        line-height: 24px;
+        letter-spacing: -0.3px;
+        color: #040427;
+        margin-bottom: 17px;
+    }
+}
+.non-cursor-click{
+    cursor: inherit !important;
+}
