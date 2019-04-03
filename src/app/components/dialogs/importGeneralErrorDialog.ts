@@ -25,7 +25,7 @@ import {CustomDialog} from "../../platform/dialogs/customDialog";
                         <div>
                             <span>Попробуйте указать </span><a @click="goToBalances">начальные балансы </a><i class="fa fa-balance-scale"/>
                             <span>для быстрого старта</span>
-                            <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                            <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" bottom>
                                 <sup class="custom-tooltip" slot="activator">
                                     <v-icon>fas fa-info-circle</v-icon>
                                 </sup>
