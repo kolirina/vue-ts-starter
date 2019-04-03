@@ -18,7 +18,7 @@ import {CommonUtils} from "../../utils/commonUtils";
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
                 <v-card-title class="headline add-notification-title">
                     {{ notification.id ? "Редактирование" : "Создание" }} уведомления по
-                    <v-menu v-if="!notification.id" transition="slide-y-transition" nudge-bottom="50" nudge-left="10">
+                    <v-menu v-if="!notification.id" transition="slide-y-transition" nudge-bottom="20" nudge-left="10">
                         <a slot="activator"><span>&nbsp;{{ assetType === AssetType.STOCK ? "акции" : "облигации" }}</span></a>
                         <v-list dense>
                             <v-list-tile @click="changeNotificationType(NotificationType.stock)">
@@ -41,7 +41,7 @@ import {CommonUtils} from "../../utils/commonUtils";
                     <v-switch v-model="buyPriceNotification">
                         <template #label>
                             <span>Получать уведомления об изменении цены покупки</span>
-                            <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                            <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" bottom>
                                 <sup class="custom-tooltip" slot="activator">
                                     <v-icon>fas fa-info-circle</v-icon>
                                 </sup>
@@ -72,7 +72,7 @@ import {CommonUtils} from "../../utils/commonUtils";
                     <v-switch v-model="sellPriceNotification">
                         <template #label>
                             <span>Получать уведомления об изменении цены продажи</span>
-                            <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                            <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" bottom>
                                 <sup class="custom-tooltip" slot="activator">
                                     <v-icon>fas fa-info-circle</v-icon>
                                 </sup>
@@ -103,7 +103,7 @@ import {CommonUtils} from "../../utils/commonUtils";
                     <v-switch v-if="isStockNotification" v-model="newsNotification" @change="onNewsNotificationChange">
                         <template #label>
                             <span>Получать уведомления о новостях</span>
-                            <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                            <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" bottom>
                                 <sup class="custom-tooltip" slot="activator">
                                     <v-icon>fas fa-info-circle</v-icon>
                                 </sup>
@@ -139,7 +139,7 @@ import {CommonUtils} from "../../utils/commonUtils";
                     <v-switch v-if="isStockNotification" v-model="dividendNotification" @change="onDividendNotificationChange">
                         <template #label>
                             <span>Получать уведомления о планируемых дивидендах</span>
-                            <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                            <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" bottom>
                                 <sup class="custom-tooltip" slot="activator">
                                     <v-icon>fas fa-info-circle</v-icon>
                                 </sup>
@@ -151,16 +151,16 @@ import {CommonUtils} from "../../utils/commonUtils";
                         </template>
                     </v-switch>
 
-                    <v-switch v-if="!isStockNotification" :readonly="!isStockNotification" v-model="bondEventNotification">
+                    <v-switch v-if="!isStockNotification" v-model="bondEventNotification">
                         <template #label>
                             <span>Получать уведомления о событиях</span>
-                            <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                            <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" bottom>
                                 <sup class="custom-tooltip" slot="activator">
                                     <v-icon>fas fa-info-circle</v-icon>
                                 </sup>
                                 <span>
                                   Вы будет получать письма как только эмитент <b>{{ share ? share.ticker : "" }}</b>
-                                  произведет выплату купона, амортизации или погашение.
+                                  произведет выплату купона, амортизацию или погашение.
                                 </span>
                             </v-tooltip>
                         </template>

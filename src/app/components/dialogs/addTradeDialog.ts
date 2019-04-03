@@ -112,7 +112,7 @@ import {MainStore} from "../../vuex/mainStore";
                                         </ii-number-field>
                                     </v-flex>
                                     <v-flex v-if="calculationAssetType || bondTrade" xs12 lg6>
-                                        <v-tooltip content-class="custom-tooltip-wrap" top>
+                                        <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" top>
                                             <v-checkbox slot="activator" label="Начисление на одну бумагу" v-model="perOne"></v-checkbox>
                                             <span>Отключите если вносите сумму начисления</span>
                                         </v-tooltip>
