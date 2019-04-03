@@ -61,9 +61,11 @@ export class TariffLimitExceedInfo extends UI {
                             </div>
                         </div>
                         <div class="promo-code-component">
-                            <span @click.stop="applyPromoCode">Применить промокод</span>
                             <v-tooltip v-if="isDiscountApplied()" content-class="custom-tooltip-wrap" :max-width="250" bottom>
-                                <div slot="activator" class="promo-code-component__icon"></div>
+                                <template #activator="{ on }">
+                                    <span @click.stop="applyPromoCode" v-on="on">Применить промокод</span>
+                                    <div v-on="on" class="promo-code-component__icon"></div>
+                                </template>
                                 <div>
                                     <div>Активирован промокод</div>
                                     <div>Скидка составляет {{ clientInfo.user.nextPurchaseDiscount }}%</div>
@@ -175,51 +177,79 @@ export class TariffLimitExceedInfo extends UI {
                             </tr>
                             <tr>
                                 <td>Базовый функционал</td>
-                                <td><div class="tariff__plans_check"></div></td>
-                                <td><div class="tariff__plans_check"></div></td>
-                                <td><div class="tariff__plans_check"></div></td>
+                                <td>
+                                    <div class="tariff__plans_check"></div>
+                                </td>
+                                <td>
+                                    <div class="tariff__plans_check"></div>
+                                </td>
+                                <td>
+                                    <div class="tariff__plans_check"></div>
+                                </td>
                             </tr>
                             <tr>
                                 <td>Доступ к разделу "Инвестиции"</td>
                                 <td></td>
-                                <td><div class="tariff__plans_check"></div></td>
-                                <td><div class="tariff__plans_check"></div></td>
+                                <td>
+                                    <div class="tariff__plans_check"></div>
+                                </td>
+                                <td>
+                                    <div class="tariff__plans_check"></div>
+                                </td>
                             </tr>
                             <tr>
                                 <td>Составной портфель</td>
                                 <td></td>
-                                <td><div class="tariff__plans_check"></div></td>
-                                <td><div class="tariff__plans_check"></div></td>
+                                <td>
+                                    <div class="tariff__plans_check"></div>
+                                </td>
+                                <td>
+                                    <div class="tariff__plans_check"></div>
+                                </td>
                             </tr>
                             <tr>
                                 <td>Доступ к функционалу "Стандарт"</td>
                                 <td></td>
-                                <td><div class="tariff__plans_check"></div></td>
-                                <td><div class="tariff__plans_check"></div></td>
+                                <td>
+                                    <div class="tariff__plans_check"></div>
+                                </td>
+                                <td>
+                                    <div class="tariff__plans_check"></div>
+                                </td>
                             </tr>
                             <tr>
                                 <td>Мобильное приложение</td>
                                 <td></td>
-                                <td><div class="tariff__plans_check"></div></td>
-                                <td><div class="tariff__plans_check"></div></td>
+                                <td>
+                                    <div class="tariff__plans_check"></div>
+                                </td>
+                                <td>
+                                    <div class="tariff__plans_check"></div>
+                                </td>
                             </tr>
                             <tr>
                                 <td>Учет зарубежных акций</td>
                                 <td></td>
                                 <td></td>
-                                <td><div class="tariff__plans_check"></div></td>
+                                <td>
+                                    <div class="tariff__plans_check"></div>
+                                </td>
                             </tr>
                             <tr>
                                 <td>Учет коротких позиций</td>
                                 <td></td>
                                 <td></td>
-                                <td><div class="tariff__plans_check"></div></td>
+                                <td>
+                                    <div class="tariff__plans_check"></div>
+                                </td>
                             </tr>
                             <tr>
                                 <td>Ранний доступ<br>к новому функционалу</td>
                                 <td></td>
                                 <td></td>
-                                <td><div class="tariff__plans_check"></div></td>
+                                <td>
+                                    <div class="tariff__plans_check"></div>
+                                </td>
                             </tr>
                         </table>
                     </div>
