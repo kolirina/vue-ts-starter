@@ -1,3 +1,14 @@
+.empty-notifications-title-page {
+  padding: 0px 0px 19px 24px;
+}
+.text-empty-notifications {
+  line-height: 22px;
+  letter-spacing: -0.3px;
+  margin-bottom: 18px;
+  &:last-child {
+    margin-bottom: 28px;
+  }
+}
 .notifications {
   padding: 28px 44px 28px 28px;
   font-size: 14px;
