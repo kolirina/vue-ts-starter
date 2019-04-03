@@ -17,6 +17,7 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <div class="notifications">
+            <div class="section-title header-first-card__title-text">Уведомления</div>
             <v-card :class="{'notifications-card notifications-card-main': true, 'notifications-card-full': notifications.length !== 0}">
                 <div>
                     Здесь будут Ваши настройки уведомлений о дивидендах,<br>
@@ -25,27 +26,23 @@ const MainStore = namespace(StoreType.MAIN);
                 </div>
                 <div>Добавьте первое уведомление</div>
 
-                <v-card-title class="header-first-card__wrapper-title">
-                    <div class="section-title header-first-card__title-text">Уведомления</div>
-                    <v-spacer></v-spacer>
-                    <v-menu transition="slide-y-transition" nudge-bottom="50" nudge-left="10">
-                        <v-btn class="primary" slot="activator">
-                            Добавить
-                        </v-btn>
-                        <v-list dense>
-                            <v-list-tile @click.stop="addNotificationDialog(NotificationType.stock)">
-                                <v-list-tile-title>
-                                    По акции
-                                </v-list-tile-title>
-                            </v-list-tile>
-                            <v-list-tile @click.stop="addNotificationDialog(NotificationType.bond)">
-                                <v-list-tile-title>
-                                    По облигации
-                                </v-list-tile-title>
-                            </v-list-tile>
-                        </v-list>
-                    </v-menu>
-                </v-card-title>
+                <v-menu transition="slide-y-transition" nudge-bottom="50" nudge-left="10">
+                    <v-btn class="primary" slot="activator">
+                        Добавить
+                    </v-btn>
+                    <v-list dense>
+                        <v-list-tile @click.stop="addNotificationDialog(NotificationType.stock)">
+                            <v-list-tile-title>
+                                По акции
+                            </v-list-tile-title>
+                        </v-list-tile>
+                        <v-list-tile @click.stop="addNotificationDialog(NotificationType.bond)">
+                            <v-list-tile-title>
+                                По облигации
+                            </v-list-tile-title>
+                        </v-list-tile>
+                    </v-list>
+                </v-menu>
             </v-card>
 
 
