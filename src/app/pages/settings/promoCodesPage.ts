@@ -22,7 +22,7 @@ const MainStore = namespace(StoreType.MAIN);
                             <div class="section-title header-first-card__title-text">Промокоды</div>
                         </v-card-title>
                     </v-card>
-                    <v-card class="overflowXA">
+                    <v-card class="overflowXA" flat>
                         <div class="promo-codes__steps">
                             <div class="promo-codes__step">
                                 <div>Поделитесь промокодом или<br>ссылкой на регистрацию</div>
