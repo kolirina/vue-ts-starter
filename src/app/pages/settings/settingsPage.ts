@@ -17,11 +17,14 @@ const MainStore = namespace(StoreType.MAIN);
         <v-container v-if="clientInfo && clientInfo.user" fluid>
             <v-layout row wrap>
                 <v-flex>
-                    <div class="section-title" style="margin-bottom: 3px">Управление портфелями</div>
-                    <v-card class="portfolio-settings-card portfolio-settings-card-main portfolio-settings-card-full">
-                        <v-btn @click.stop="openDialog" class="primary">
-                            Добавить портфель
-                        </v-btn>
+                    <v-card flat class="header-first-card">
+                        <v-card-title class="header-first-card__wrapper-title">
+                            <div class="section-title header-first-card__title-text">Управление портфелями</div>
+                            <v-spacer></v-spacer>
+                            <v-btn @click.stop="openDialog" class="primary">
+                                Добавить портфель
+                            </v-btn>
+                        </v-card-title>
                     </v-card>
 
                     <portfolios-table :portfolios="clientInfo.user.portfolios"></portfolios-table>
