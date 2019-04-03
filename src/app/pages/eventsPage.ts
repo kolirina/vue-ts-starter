@@ -29,7 +29,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-btn>
             </v-card>
 
-            <v-card class="events__card">
+            <v-card class="events__card" flat>
                 <v-card-title class="headline">
                     Новые события
                     <v-spacer></v-spacer>
@@ -86,7 +86,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </div>
 
                     <v-data-table v-if="events" :headers="eventsHeaders" :items="events" item-key="id" :custom-sort="customSortEvents"
-                                  class="events-table" hide-actions>
+                                  class="events-table data-table" hide-actions>
                         <template #items="props">
                             <tr class="selectable">
                                 <td class="text-xs-left">{{ props.item.label }}</td>
@@ -100,7 +100,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 <td class="text-xs-center">{{ props.item.period }}</td>
                                 <td class="text-xs-right ii-number-cell">
                                     {{ props.item.cleanAmount | amount(true) }}
-                                    <span class="amount__currency">{{ props.item.cleanAmount | currency }}</span>
+                                    <span class="amount__currency">{{ props.item.cleanAmount | currencySymbol }}</span>
                                 </td>
                                 <td class="justify-end layout pr3" @click.stop>
                                     <v-menu transition="slide-y-transition" bottom left>
@@ -129,12 +129,12 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-card-text>
             </v-card>
 
-            <v-card style="margin-top: 30px">
+            <v-card style="margin-top: 30px" flat>
                 <v-card-title class="headline" style="padding-left: 35px;">Дивидендные новости</v-card-title>
 
                 <v-card-text>
                     <v-data-table v-if="dividendNews" :headers="dividendNewsHeaders" :items="dividendNews" item-key="id" :custom-sort="customSortNews"
-                                  class="dividend-news-table" hide-actions>
+                                  class="dividend-news-table data-table" hide-actions>
                         <template #items="props">
                             <tr class="selectable">
                                 <td class="text-xs-left">

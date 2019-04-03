@@ -47,7 +47,7 @@ export class TariffLimitExceedInfo extends UI {
     template: `
         <v-container fluid>
             <div class="section-title">Тарифы</div>
-            <v-card class="overflowXA">
+            <v-card class="overflowXA" flat>
                 <div class="tariff">
                     <div class="tariff__header">
                         <div>
