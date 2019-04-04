@@ -1,0 +1,81 @@
+/*!
+ * STRICTLY CONFIDENTIAL
+ * TRADE SECRET
+ * PROPRIETARY:
+ *       "Intelinvest" Ltd, TIN 1655386205
+ *       420107, REPUBLIC OF TATARSTAN, KAZAN CITY, SPARTAKOVSKAYA STREET, HOUSE 2, ROOM 119
+ * (c) "Intelinvest" Ltd, 2019
+ *
+ * СТРОГО КОНФИДЕНЦИАЛЬНО
+ * КОММЕРЧЕСКАЯ ТАЙНА
+ * СОБСТВЕННИК:
+ *       ООО "Интеллектуальные инвестиции", ИНН 1655386205
+ *       420107, РЕСПУБЛИКА ТАТАРСТАН, ГОРОД КАЗАНЬ, УЛИЦА СПАРТАКОВСКАЯ, ДОМ 2, ПОМЕЩЕНИЕ 119
+ * (c) ООО "Интеллектуальные инвестиции", 2019
+ */
+
+$snotify-backdrop-color: #000 !default;
+$snotify-width: 300px !default;
+$snotify-offset: 10px !default;
+
+.snotify {
+  display: block;
+  position: fixed;
+  width: $snotify-width;
+  z-index: 9999;
+  box-sizing: border-box;
+  pointer-events: none;
+
+  * {
+    box-sizing: border-box;
+  }
+}
+
+.snotify-leftTop,
+.snotify-leftCenter,
+.snotify-leftBottom {
+  left: $snotify-offset;
+}
+
+.snotify-rightTop,
+.snotify-rightCenter,
+.snotify-rightBottom {
+  right: 43px;
+}
+
+.snotify-centerTop,
+.snotify-centerCenter,
+.snotify-centerBottom {
+  left: calc(50% - #{$snotify-width} / 2);
+}
+
+.snotify-leftTop,
+.snotify-centerTop,
+.snotify-rightTop {
+  top: 0;
+}
+
+.snotify-leftCenter,
+.snotify-rightCenter,
+.snotify-centerCenter {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.snotify-leftBottom,
+.snotify-rightBottom,
+.snotify-centerBottom {
+  bottom: $snotify-offset;
+}
+
+.snotify-backdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: $snotify-backdrop-color;
+  opacity: 0;
+  z-index: 9998;
+  transition: opacity .3s;
+}

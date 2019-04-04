@@ -1,10 +1,16 @@
 .closeDialog {
   position: fixed;
-  right: 24px;
-  top: 24px;
+  right: 0;
+  top: 0;
   cursor: pointer;
   font-size: 24px !important;
-  color: #fff !important;
+  color: #ffffff96!important;
+  padding: 24px;
+
+  &:hover {
+    background: #0000005c;
+    color: #fff !important;
+  }
 }
 
 .dialog-wrap {
