@@ -80,13 +80,13 @@ export class UIRegistry {
         Vue.use(Snotify, {
             global: {
                 maxOnScreen: 3,
-                preventDuplicates: true
+                preventDuplicates: false
             },
             toast: {
                 position: SnotifyPosition.rightTop,
-                timeout: 3000,
-                showProgressBar: true,
-                closeOnClick: false,
+                timeout: 5000,
+                showProgressBar: false,
+                closeOnClick: true,
                 pauseOnHover: true
             }
         });
