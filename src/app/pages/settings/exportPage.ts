@@ -24,7 +24,7 @@ const MainStore = namespace(StoreType.MAIN);
                         <v-card-title class="header-first-card__wrapper-title">
                             <div class="section-title header-first-card__title-text">Экспорт сделок</div>
                             <v-spacer></v-spacer>
-                            <v-menu transition="slide-y-transition" nudge-bottom="50" nudge-left="10">
+                            <v-menu transition="slide-y-transition" nudge-bottom="37" left>
                                 <v-btn class="primary" slot="activator">
                                     Экспорт
                                 </v-btn>

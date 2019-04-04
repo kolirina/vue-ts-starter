@@ -12,7 +12,11 @@
 .notifications {
   padding: 28px 44px 28px 28px;
   font-size: 14px;
-
+  .btn-menu {
+    .v-btn {
+      padding: 0px 19.1px;
+    }
+  }
   &-card {
     padding: 24px 24px 30px;
     box-sizing: border-box;
