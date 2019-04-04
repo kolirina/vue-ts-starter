@@ -3,15 +3,15 @@
  */
 
 import Component from "vue-class-component";
-import { namespace } from "vuex-class";
-import { UI } from "../app/ui";
-import { AddTradeDialog } from "../components/dialogs/addTradeDialog";
-import { FeedbackDialog } from "../components/dialogs/feedbackDialog";
-import { AssetType } from "../types/assetType";
-import { Operation } from "../types/operation";
-import { Portfolio } from "../types/types";
-import { MutationType } from "../vuex/mutationType";
-import { StoreType } from "../vuex/storeType";
+import {namespace} from "vuex-class";
+import {UI} from "../app/ui";
+import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
+import {FeedbackDialog} from "../components/dialogs/feedbackDialog";
+import {AssetType} from "../types/assetType";
+import {Operation} from "../types/operation";
+import {Portfolio} from "../types/types";
+import {MutationType} from "../vuex/mutationType";
+import {StoreType} from "../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -117,7 +117,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             инфляции, ставок по депозитам.
                                         </p>
                                         <p>
-                                            Основной единицей учета является сделка.Также для более
+                                            Основной единицей учета является сделка. Также для более
                                             точной оценки ваших инвестиций вы можете учитывать
                                             дивидендные, купонные и амортизационные выплаты, вести
                                             учет комиссий и расходов для каждого портфеля в
@@ -126,26 +126,23 @@ const MainStore = namespace(StoreType.MAIN);
                                     </div>
                                     <div class="wrapper-content-panel__paired-section-item">
                                         <p>
-                                            Сервисом пользоваться как в web-версии, так и с мобильных
-                                            устройств.
+                                            Сервисом удобно пользоваться как в web-версии,
+                                            так и с мобильных устройств.
                                         </p>
                                         <p>
-                                            Мы поддерживаем как ios, так и android.Скачать приложения
+                                            Мы поддерживаем как ios, так и android. Скачать приложения
                                             вы можете по указанным ссылкам.
                                         </p>
                                         <div class="apple-google-pic">
-                                            <a
-                                                href="https://itunes.apple.com/ru/app/intelinvest-%D1%83%D1%87%D0%B5%D1%82-
+                                            <a href="https://itunes.apple.com/ru/app/intelinvest-%D1%83%D1%87%D0%B5%D1%82-
                                                 %D0%B8%D0%BD%D0%B2%D0%B5%D1%81%D1%82%D0%B8%D1%86%D0%B8%D0%B9
                                                 /id1422478197?mt=8" title="Загрузите приложение в App Store" target="_blank">
-                                                <img src="./img/help/app-store-badge2.svg" alt="pic" />
+                                                <img src="./img/help/app-store-badge2.svg" alt="pic"/>
                                             </a>
-                                            <a
-                                                href="https://play.google.com/store/apps/details?id=ru.intelinvest.portfolio"
-                                                title="Загрузите приложение в Google Play"
-                                                target="_blank"
-                                            >
-                                                <img src="./img/help/google-play-badge2.svg" alt="pic" />
+                                            <a href="https://play.google.com/store/apps/details?id=ru.intelinvest.portfolio"
+                                               title="Загрузите приложение в Google Play"
+                                               target="_blank">
+                                                <img src="./img/help/google-play-badge2.svg" alt="pic"/>
                                             </a>
                                         </div>
                                     </div>
@@ -172,12 +169,14 @@ const MainStore = namespace(StoreType.MAIN);
                                         </p>
                                         <p>
                                             При нажатии открывается диалоговое окно, где можно выбрать
-                                            тип вносимой сделки (Акция, Облигация, Деньги) и дейс
-                                            твие, в зависимости от типа сделки.
+                                            тип вносимой сделки (Акция, Облигация, Деньги) и действие,
+                                            в зависимости от типа сделки.
                                         </p>
                                         <p>
-                                            Для акции это - Купить, Продать, Дивиденд;<br>Для облигации -
-                                            Купить, Продать, Погашение, Купон, Амортизация;<br> Для денег - Внести, Вывести, Доход, Расход.
+                                            Для акции это - Купить, Продать, Дивиденд;<br>
+                                            Для облигации - Купить, Продать, Погашение, Купон,
+                                            Амортизация;<br>
+                                            Для денег - Внести, Вывести, Доход, Расход.
                                         </p>
                                         <p>
                                             При внесении сделки автоматически подставляется на
@@ -221,7 +220,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             Покупка облигации
                                         </div>
                                         <div>
-                                            <img src="./img/help/add_stock.gif" />
+                                            <img src="./img/help/add_stock.gif"/>
                                         </div>
                                     </div>
                                     <div class="gif-block-item">
@@ -229,7 +228,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             Покупка акции
                                         </div>
                                         <div>
-                                            <img src="./img/help/add_bond.gif" />
+                                            <img src="./img/help/add_bond.gif"/>
                                         </div>
                                     </div>
                                     <div class="gif-block-item">
@@ -237,7 +236,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             Добавление дивиденда
                                         </div>
                                         <div>
-                                            <img src="./img/help/add_dividend.gif" />
+                                            <img src="./img/help/add_dividend.gif"/>
                                         </div>
                                     </div>
                                     <div class="gif-block-item">
@@ -245,7 +244,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             Добавление купонной выплаты
                                         </div>
                                         <div>
-                                            <img src="./img/help/add_coupon.gif" />
+                                            <img src="./img/help/add_coupon.gif"/>
                                         </div>
                                     </div>
                                     <div class="gif-block-item">
@@ -253,7 +252,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             Пополнение денежного счета
                                         </div>
                                         <div>
-                                            <img src="./img/help/add_money.gif" />
+                                            <img src="./img/help/add_money.gif"/>
                                         </div>
                                     </div>
                                 </div>
@@ -328,11 +327,9 @@ const MainStore = namespace(StoreType.MAIN);
                                             Как устроен импорт?
                                         </div>
                                         <p>
-                                            Для всех брокеров и терминалов, кроме АТОНа и ВТБ,
-                                            импортируются только сделки купли-продажи ценных бумаг.
-                                            Связанные сделки по деньгам на списание/внесение при этом
-                                            не создаются, так как это не влияет на расчет показателей
-                                            портфеля.
+                                            Для большинства брокеров и терминалов импортируются
+                                            не только сделки купли-продажи ценных бумаг, а также сделки
+                                            по движению денежных средств на счете.
                                         </p>
                                         <p>
                                             При завершении импорта мы просим указать текущий остаток
@@ -442,7 +439,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             размером доли в портфеле.
                                         </p>
                                         <p>
-                                            <img src="./img/help/table_menu.png" />
+                                            <img src="./img/help/table_menu.png"/>
                                         </p>
                                         <p>
                                             Более подробная информация по акциям и облигациям
@@ -452,6 +449,8 @@ const MainStore = namespace(StoreType.MAIN);
                                             Нажмите на кнопку напротив каждой бумаги чтобы просмотреть
                                             доступные с ней действия.
                                         </p>
+                                    </div>
+                                    <div class="wrapper-content-panel__paired-section-item">
                                         <p>
                                             Можно быстро купить, продать или внести начисление по
                                             дивиденду или купону, причем данные будут автоматически
@@ -461,23 +460,11 @@ const MainStore = namespace(StoreType.MAIN);
                                             Например, при нажатии Внести дивиденд, будет автоматически
                                             рассчитано количество акций на текущую дату.
                                         </p>
-                                    </div>
-                                    <div class="wrapper-content-panel__paired-section-item">
                                         <p>
                                             Также есть возможность просмотреть дополнительную
                                             информацию по каждой позиции в портфеле. Для этого
                                             необходимо развернуть строку в таблице нажатием на кнопку
                                             слева.
-                                        </p>
-                                        <p>
-                                            Там же есть возможность задания целевых показателей
-                                            (Максимальное время нахождения бумаги в портфеле, Целевая
-                                            цена, Stop-loss цена) для акции.
-                                        </p>
-                                        <p>
-                                            В таблице по Облигациям дополнительно предусмотрена
-                                            возможность подписаться на уведомления о выплате купонов.
-                                            Для этого необходимо проставить чекбокс.
                                         </p>
                                         <p>
                                             Для каждой таблицы предусмотрена диаграмма распределения
@@ -523,18 +510,18 @@ const MainStore = namespace(StoreType.MAIN);
                                             отображаемых колонок, сортировка и фильтрация.
                                         </p>
                                         <p>
-                                            Например, чтобы быстро просмотреть все сделки по продаже,
-                                            необходимо выбрать из выпадающего списка в колонке
-                                            Операция "Продажа".
+                                            Например, чтобы быстро просмотреть все сделки покупки
+                                            по акции, необходимо в фильтре установить Акции и Покупка.
+                                        </p>
+                                        <p>
+                                            Для просмотра всех денежных сделок, выключите Связанные сделки
+                                            и выберите тип списка Денежные средства.
                                         </p>
                                     </div>
                                     <div class="wrapper-content-panel__paired-section-item">
                                         <p>
                                             Для каждой сделки доступно редактирование параметров, оно
-                                            зависит от типа сделки (Акция, Облигация, Деньги). Для
-                                            более удобного восприятия, на левой границе каждой строки
-                                            есть цветная полоса, отмечающая тип актива Акция,
-                                            Облигация, Купон.
+                                            зависит от типа сделки (Акция, Облигация, Деньги).
                                         </p>
                                         <p>
                                             Из контекстного меню в таблице можно быстро добавить
@@ -578,8 +565,8 @@ const MainStore = namespace(StoreType.MAIN);
                                             сделку типа Расход.
                                         </p>
                                         <p>
-                                            А, например, полученные проценты по займам РЕПО, вы можете
-                                            внести как Доход. Чекбокс "Списать / Зачислить на счет"
+                                            А, например, полученные проценты по займам РЕПО, вычет по ИИС,
+                                            вы можете внести как Доход. Чекбокс "Списать / Зачислить на счет"
                                             включен по умолчанию, означает, что также будет добавлена
                                             сделка влияющая на остаток денежных средств на счете.
                                         </p>
@@ -832,15 +819,15 @@ const MainStore = namespace(StoreType.MAIN);
                                             будет вновь произвести оплату.
                                         </p>
                                         <div>
-                                            <a id="settings_promo_codes" class="non-cursor-click">Промо-коды</a>
+                                            <a id="settings_promo_codes" class="non-cursor-click">Промокоды</a>
                                         </div>
                                         <p>
                                             <a href="#/promo-codes">В данном</a> разделе будет
-                                            представлен личный промо код, которым вы сможете делиться
+                                            представлен личный промокод, которым вы сможете делиться
                                             со своими знакомыми. Воспользовавшись им, они получают
                                             скидку 20% на первую покупку любого тарифного плана, а вы
                                             получаете месяц подписки совершенно бесплатно с первой
-                                            оплаты либо 30% от всех последующих оплат приглашенного
+                                            оплаты, либо 30% от всех последующих оплат приглашенного
                                             Вами пользователя. Ниже можно настроить вид
                                             вознаграждения.
                                         </p>
@@ -849,9 +836,9 @@ const MainStore = namespace(StoreType.MAIN);
                                         </div>
                                         <p>
                                             <a href="#/notifications">Здесь</a> можно настроить
-                                            уведомления о достижении целевых цен на акции и
+                                            уведомления о достижении целевых цен на акции/облигации и
                                             подписаться на новости интересующих эмитентов. В первом
-                                            случае вы формируете список акций для оповещений, и
+                                            случае вы формируете список бумаг для оповещений, и
                                             задаете цены, при которых будет срабатывать уведомление.
                                             Для целевой цены можно можно задать допуск цены, чтобы
                                             увеличить диапазон срабатывания. При достижении целевой
