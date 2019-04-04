@@ -1,7 +1,109 @@
 .import-wrapper {
-  margin: 25px;
+  padding: 20px 20px 27px 20px;
+  &-header {
+    padding: 0px 0px 0px 12px;
+    &__title {
+      font-size: 16px;
+      line-height: 16px;
+      color: #040427;
+    }
+  }
+  &-content {
+    padding: 0px;
+    .intelinvest-section {
+      margin-top: 18px;
+      &__description {
+        max-width: 691px;
+        font-size: 13px;
+        line-height: 22px;
+        letter-spacing: -0.3px;
+        color: #040427;
+        a {
+          text-decoration: none;
+        }
+      }
+    }
+    .setings-menu {
+      margin: 27px 0px 20px 0px;
+      .v-btn {
+        padding: 0px 38px 0px 20px;
+        border-radius: 30px !important;
+        background: url("../img/fileimport/setings.svg") no-repeat;
+        background-position: 86% center;
+      }
+    }
+    .section-upload-file{
+      margin-bottom: 16px;
+      .v-btn {
+        margin-top: 20px;
+      }
+      .file-link__text{
+        background: #3b6ec9;
+        border-radius: 4px;
+        font-size: 14px;
+        line-height: 20px;
+        text-align: center;
+        color: #FFFFFF;
+        padding: 8px 20px;
+        height: 44px;
+        :hover {
+          text-decoration: none !important;
+        }
+      }
+    }
+  }
 }
-
+.dialog-setings-menu {
+  .v-list{
+    padding: 17px 9px 24px 20px !important;
+  }
+  .v-input__slot {
+    margin-bottom: 0px !important;
+  }
+  .title-setings {
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0.2px;
+    color: #4F5D75;
+    opacity: .48;
+    margin-bottom: 20px;
+  }
+}
+.hint-text-for-setings {
+  padding: 16px;
+  font-size: 13px;
+  line-height: 28px;
+  color: #040427;
+}
+.checkbox-setings {
+  margin-bottom: 5px;
+  &:last-child {
+    margin-bottom: 0px;
+  }
+  span {
+    font-size: 14px;
+    line-height: 20px;
+    color: #3D4656;
+  }
+}
+.item-files {
+  padding: 0px 16px 6px;
+  border-bottom: 2px solid #3B6EC9;
+  max-width: 308px;
+  &__name {
+    max-width: 159px;
+    font-size: 12px;
+    line-height: 22px;
+    letter-spacing: -0.3px;
+    color: #040427;
+    font-weight: 600;
+  }
+  &__size {
+    font-size: 10px;
+    letter-spacing: -0.3px;
+    color: #A1A6B6;
+  }
+}
 .providers {
   width: 100%;
   text-align: center;
@@ -12,96 +114,91 @@
 
   .item {
     height: 110px;
-    width: 110px;
+    width: 163px;
     background-size: 100px 100px;
     margin: 10px;
     display: flex;
     filter: grayscale(1);
-    box-shadow: 0 1px 2.5px 0 rgba(0, 0, 0, 0.26), 0 1px 5px 0 rgba(0, 0, 0, 0.16);
-    transition: background-color 0.3s;
   }
 
   .active {
     filter: none;
-    box-shadow: 0 1px 20px 2px rgba(0,0,0,.26), 0 1px 5px 0 rgba(0,0,0,.16);
-    transition: background-color 0.3s;
-    padding: 10px;
   }
 
   .alfadirect {
-    background: url("../img/fileimport/alfadirect.png") center no-repeat white;
-    background-size: 100px 100px;
+    background: url("../img/fileimport/alfadirect.svg") center no-repeat;
+    background-size: 100% 100%;
   }
   .itinvest {
-    background: url("../img/fileimport/itinvest.png") center no-repeat white;
-    background-size: 100px 100px;
+    background: url("../img/fileimport/itinvest.svg") center no-repeat;
+    background-size: 100% 100%;
   }
   .otkrytie {
-    background: url("../img/fileimport/otkrytie.png") center no-repeat white;
-    background-size: 100px 100px;
+    background: url("../img/fileimport/otkrytie.svg") center no-repeat;
+    background-size: 100% 100%;
   }
   .zerich {
-    background: url("../img/fileimport/zerich.png") center no-repeat white;
-    background-size: 100px 100px;
+    background: url("../img/fileimport/zerich.svg") center no-repeat;
+    background-size: 100% 100%;
   }
   .psbank {
-    background: url("../img/fileimport/psbank.png") center no-repeat white;
-    background-size: 100px 100px;
+    background: url("../img/fileimport/psbank.svg") center no-repeat;
+    background-size: 100% 100%;
   }
   .bcs {
-    background: url("../img/fileimport/bcs.png") center no-repeat white;
-    background-size: 100px 100px;
+    background: url("../img/fileimport/bcs.svg") center no-repeat;
+    background-size: 100% 100%;
   }
   .bcs_cyprus {
-    background: url("../img/fileimport/bcs_cyprus.png") center no-repeat white;
-    background-size: 100px 100px;
+    background: url("../img/fileimport/bcs_cyprus.svg") center no-repeat;
+    background-size: 100% 100%;
   }
   .finam {
-    background: url("../img/fileimport/finam.png") center no-repeat white;
-    background-size: 100px 100px;
+    background: url("../img/fileimport/finam.svg") center no-repeat;
+    background-size: 100% 100%;
   }
   .freedom_finance {
-    background: url("../img/fileimport/freedom.png") center no-repeat white;
-    background-size: 100px 100px;
+    background: url("../img/fileimport/freedom.svg") center no-repeat;
+    background-size: 100% 100%;
   }
   .kitfinance {
-    background: url("../img/fileimport/kit-finance.png") center no-repeat white;
-    background-size: 100px 100px;
+    background: url("../img/fileimport/kit-finance.svg") center no-repeat;
+    background-size: 100% 100%;
   }
   .uralsib {
-    background: url("../img/fileimport/uralsib.png") center no-repeat white;
-    background-size: 100px 100px;
+    background: url("../img/fileimport/uralsib.svg") center no-repeat;
+    background-size: 100% 100%;
   }
   .sberbank {
-    background: url("../img/fileimport/sberbank.png") center no-repeat white;
-    background-size: 100px 100px;
+    background: url("../img/fileimport/sberbank.svg") center no-repeat;
+    background-size: 100% 100%;
   }
   .vtb24 {
-    background: url("../img/fileimport/vtb24.png") center no-repeat white;
-    background-size: 100px 100px;
+    background: url("../img/fileimport/vtb24.svg") center no-repeat;
+    background-size: 100% 100%;
   }
   .interactive_brokers {
-    background: url("../img/fileimport/interactivebrokers.png") center no-repeat white;
-    background-size: 100px 100px;
+    background: url("../img/fileimport/interactivebrokers.svg") center no-repeat;
+    background-size: 100% 100%;
   }
   .tinkoff {
-    background: url("../img/fileimport/tinkoff.png") center no-repeat white;
-    background-size: 100px 100px;
+    background: url("../img/fileimport/tinkoff.svg") center no-repeat;
+    background-size: 100% 100%;
   }
   .nettrader {
-    background: url("../img/fileimport/nettrader.png") center no-repeat white;
-    background-size: 100px 100px;
+    background: url("../img/fileimport/nettrader.svg") center no-repeat;
+    background-size: 100% 100%;
   }
   .aton {
-    background: url("../img/fileimport/aton.png") center no-repeat white;
-    background-size: 100px 100px;
+    background: url("../img/fileimport/aton.svg") center no-repeat;
+    background-size: 100% 100%;
   }
   .intelinvest {
-    background: url("../img/fileimport/intelinvest.png") center no-repeat white;
-    background-size: 100px 100px;
+    background: url("../img/fileimport/intelinvest.svg") center no-repeat;
+    background-size: 100% 100%;
   }
   .quik {
-    background: url("../img/fileimport/quik.png") center no-repeat white;
-    background-size: 100px 100px;
+    background: url("../img/fileimport/quik.svg") center no-repeat;
+    background-size: 100% 100%;
   }
 }
