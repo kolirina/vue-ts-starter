@@ -27,11 +27,8 @@
   z-index: auto;
 }
 
-.v-overlay {
-  transition: none;
-}
-
-.v-overlay:before {
+/** Исправляет анимацию фона диалога. Вешать на v-overlay нельзя */
+.v-overlay--active:before {
+  opacity: 0.8 !important;
   background-color: #040427;
-  opacity: 0.8;
 }
