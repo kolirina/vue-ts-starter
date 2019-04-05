@@ -76,6 +76,7 @@ export class TariffLimitExceedInfo extends UI {
                                     <div v-if="clientInfo.user.nextPurchaseDiscountExpired">Срок действия до {{ clientInfo.user.nextPurchaseDiscountExpired | date }}</div>
                                 </div>
                             </v-tooltip>
+                            <span v-else @click.stop="applyPromoCode" v-on="on">Применить промокод</span>
                         </div>
                     </div>
 
