@@ -64,6 +64,9 @@ $message-error: #FF3E70 !default;
     font-style: normal;
     font-weight: normal;
     font-size: 14px;
+    text-align: center;
+    word-break: break-word;
+    padding: 0 10px 0 10px;
     line-height: 16px;
     color: #040427;
   }

@@ -400,7 +400,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
                 await this.saveTrade(tradeFields);
             }
 
-            this.$snotify.info(`Сделка успешно ${this.tradeId ? "отредактирована" : "добавлена"}`, "Выполнено");
+            this.$snotify.info(`Сделка успешно ${this.tradeId ? "отредактирована" : "добавлена"}`);
             this.close(true);
         } catch (e) {
             this.handleError(e);
