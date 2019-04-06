@@ -6,24 +6,28 @@ import {ImageDialog} from "../../../components/dialogs/imageDialog";
     // language=Vue
     template: `
         <div>
-            <p>
-                Перейдите в личный кабинет брокера. Перейдите на вкладку просмотра <b>Единой денежной позиции</b>
-                далее вкладка <b>Справка по счету</b>.
-                <br/>
-                <v-img :src="IMAGES[0]" height="210" width="330" class="grey darken-4" @click.stop="openImage(IMAGES[0])"></v-img>
-                <br/>
-                Настройте параметры отчета:
-            <ul>
-                <li>Укажите период</li>
-                <li>Укажите формат отчета <b><i>xml</i></b></li>
-                <li>Нажмите кнопку <b><i>Сформировать</i></b></li>
-            </ul>
-            <br/>
-            <v-img :src="IMAGES[1]" height="210" width="330" class="grey darken-4" @click.stop="openImage(IMAGES[1])"></v-img>
-            <br/>
-            После успешного формирования отчета появится запрос на скачивание отчета.
-            Полученный файл используйте для импорта.
-            </p>
+            <div>
+                <div class="import-default-text">
+                    Перейдите в личный кабинет брокера. Перейдите на вкладку просмотра <strong>Единой<br>
+                    денежной позиции</strong> далее вкладка <strong>Справка по счету.</strong>
+                </div>
+                    <v-img :src="IMAGES[0]" height="350" width="980" class="grey darken-4 image" @click.stop="openImage(IMAGES[0])"></v-img>
+                <div class="import-default-text">
+                    Настройте параметры отчета:
+                </div>
+                <div class="import-format-requirements-ul">
+                    <ul>
+                        <li>Укажите период</li>
+                        <li>Укажите формат отчета <b><i>xml</i></b></li>
+                        <li>Нажмите кнопку <b><i>Сформировать</i></b></li>
+                    </ul>
+                </div>
+                <v-img :src="IMAGES[1]" height="384" width="980" class="grey darken-4 image" @click.stop="openImage(IMAGES[1])"></v-img>
+                <div class="import-default-text">
+                    После успешного формирования отчета появится запрос на скачивание отчета.<br>
+                    Полученный файл используйте для импорта.
+                </div>
+            </div>
         </div>
     `
 })

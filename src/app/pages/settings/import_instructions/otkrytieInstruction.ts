@@ -6,24 +6,31 @@ import {ImageDialog} from "../../../components/dialogs/imageDialog";
     // language=Vue
     template: `
         <div>
-            <p>
-                Перейдите в личный кабинет брокера, в раздел <b>Отчеты и Налоги</b>. Перейдите на вкладку <b>Официальная отчетность</b>
-                далее вкладка <b>Отчеты и справки</b>.
-                <br/>
-                Настройте параметры отчета:
-            <ul>
-                <li><i>Тип отчета / справки</i> выберите пункт <i>Брокерский отчет</i></li>
-                <li>Выберите нужный инвестиционный счет</li>
-                <li>Портфель</li>
-                <li>Укажите период</li>
-                <li>Укажите формат отчета <b><i>xml</i></b></li>
-                <li>Нажмите кнопку <b><i>Заказать отчет / справку</i></b></li>
-            </ul>
-            <v-img :src="IMAGES[0]" height="240" width="300" class="grey darken-4" @click.stop="openImage(IMAGES[0])"></v-img>
-            После успешного формирования отчета он появится в таблице ниже в статусе готово.
-            <v-img :src="IMAGES[1]" height="240" width="300" class="grey darken-4" @click.stop="openImage(IMAGES[1])"></v-img>
-            Полученный файл используйте для импорта.
-            </p>
+            <div>
+                <div class="import-default-text">
+                    Перейдите в личный кабинет брокера, в раздел Отчеты и Налоги. Перейдите<br>
+                    на вкладку Официальная отчетность далее вкладка Отчеты и справки.
+                    Настройте параметры отчета:
+                </div>
+                <div class="import-format-requirements-ul">
+                    <ul>
+                        <li>Тип отчета / справки выберите пункт Брокерский отчет</li>
+                        <li>Выберите нужный инвестиционный счет</li>
+                        <li>Портфель</li>
+                        <li>Укажите период</li>
+                        <li>Укажите формат отчета <strong>xml</strong></li>
+                        <li>Нажмите кнопку <strong>Заказать отчет / справку</strong></li>
+                    </ul>
+                </div>
+                <v-img :src="IMAGES[0]" height="436" width="933" class="grey darken-4 image" @click.stop="openImage(IMAGES[0])"></v-img>
+                <div class="import-default-text">
+                    После успешного формирования отчета он появится в таблице ниже в статусе "готово".
+                </div>
+                <v-img :src="IMAGES[1]" height="148 " width="724.5" class="grey darken-4 image" @click.stop="openImage(IMAGES[1])"></v-img>
+                <div class="import-default-text">
+                    Полученный файл используйте для импорта.
+                </div>
+            </div>
         </div>
     `
 })

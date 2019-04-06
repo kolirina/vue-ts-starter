@@ -1,3 +1,9 @@
+.import-default-text {
+  font-size: 13px;
+  line-height: 22px;
+  letter-spacing: -0.3px;
+  color: #040427;
+}
 .import-wrapper {
   padding: 20px 20px 27px 20px;
   &-header {
@@ -33,7 +39,14 @@
       }
     }
     .section-upload-file{
-      margin-bottom: 16px;
+      margin: 20px 0px 16px;
+      .btn-show-instruction {
+        font-size: 12px;
+        line-height: 22px;
+        text-decoration-line: underline;
+        color: #A1A6B6;
+        cursor: pointer;
+      }
       .v-btn {
         margin-top: 20px;
       }
@@ -46,9 +59,7 @@
         color: #FFFFFF;
         padding: 8px 20px;
         height: 44px;
-        :hover {
-          text-decoration: none !important;
-        }
+        text-decoration: none !important;
       }
     }
   }
@@ -114,11 +125,12 @@
 
   .item {
     height: 110px;
-    width: 163px;
-    background-size: 100px 100px;
-    margin: 10px;
+    width: 167px;
+    margin: 30px 20px 10px 0px;
     display: flex;
     filter: grayscale(1);
+    background-size: contain !important;
+    cursor: pointer;
   }
 
   .active {
@@ -127,78 +139,56 @@
 
   .alfadirect {
     background: url("../img/fileimport/alfadirect.svg") center no-repeat;
-    background-size: 100% 100%;
   }
   .itinvest {
     background: url("../img/fileimport/itinvest.svg") center no-repeat;
-    background-size: 100% 100%;
   }
   .otkrytie {
     background: url("../img/fileimport/otkrytie.svg") center no-repeat;
-    background-size: 100% 100%;
   }
   .zerich {
     background: url("../img/fileimport/zerich.svg") center no-repeat;
-    background-size: 100% 100%;
   }
   .psbank {
     background: url("../img/fileimport/psbank.svg") center no-repeat;
-    background-size: 100% 100%;
   }
   .bcs {
     background: url("../img/fileimport/bcs.svg") center no-repeat;
-    background-size: 100% 100%;
   }
   .bcs_cyprus {
     background: url("../img/fileimport/bcs_cyprus.svg") center no-repeat;
-    background-size: 100% 100%;
   }
   .finam {
     background: url("../img/fileimport/finam.svg") center no-repeat;
-    background-size: 100% 100%;
   }
   .freedom_finance {
     background: url("../img/fileimport/freedom.svg") center no-repeat;
-    background-size: 100% 100%;
   }
   .kitfinance {
     background: url("../img/fileimport/kit-finance.svg") center no-repeat;
-    background-size: 100% 100%;
   }
   .uralsib {
     background: url("../img/fileimport/uralsib.svg") center no-repeat;
-    background-size: 100% 100%;
   }
   .sberbank {
     background: url("../img/fileimport/sberbank.svg") center no-repeat;
-    background-size: 100% 100%;
   }
   .vtb24 {
     background: url("../img/fileimport/vtb24.svg") center no-repeat;
-    background-size: 100% 100%;
   }
   .interactive_brokers {
     background: url("../img/fileimport/interactivebrokers.svg") center no-repeat;
-    background-size: 100% 100%;
   }
   .tinkoff {
     background: url("../img/fileimport/tinkoff.svg") center no-repeat;
-    background-size: 100% 100%;
   }
   .nettrader {
     background: url("../img/fileimport/nettrader.svg") center no-repeat;
-    background-size: 100% 100%;
   }
   .aton {
     background: url("../img/fileimport/aton.svg") center no-repeat;
-    background-size: 100% 100%;
-  }
-  .intelinvest {
-    background: url("../img/fileimport/intelinvest.svg") center no-repeat;
-    background-size: 100% 100%;
   }
   .quik {
     background: url("../img/fileimport/quik.svg") center no-repeat;
-    background-size: 100% 100%;
   }
 }

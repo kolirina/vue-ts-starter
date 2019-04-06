@@ -6,19 +6,27 @@ import {ImageDialog} from "../../../components/dialogs/imageDialog";
     // language=Vue
     template: `
         <div>
-            <p>
-                Отчеты из терминала QUIK это универсальный вариант, подходящий к разным брокерам,
-                которые дают возможность загрузить отчет через терминал.
-            </p>
-            <p>
+            <div class="import-default-text">
+                Отчеты из терминала QUIK это универсальный вариант, подходящий к разным<br>
+                брокерам, которые дают возможность загрузить отчет через терминал.
+            </div>
+            <div class="import-default-text import-default-text-margin-t">
                 Для получения файла импорта в терминале QUIK
-                <v-img :src="IMAGES[0]" height="240" width="300" class="grey darken-4" @click.stop="openImage(IMAGES[0])"></v-img>
-                перейдите в меню Отчет - Отчет по всем сделкам клиента.
-                <v-img :src="IMAGES[1]" height="80" width="320" class="grey darken-4" @click.stop="openImage(IMAGES[1])"></v-img>
-                Сформируйте отчет за требуемый вам период.
-                <v-img :src="IMAGES[2]" height="120" width="300" class="grey darken-4" @click.stop="openImage(IMAGES[2])"></v-img>
-                Полученный файл используйте для импорта.
-            </p>
+            </div>
+            <div>
+                <v-img :src="IMAGES[0]" height="250" width="948" class="grey darken-4 image" @click.stop="openImage(IMAGES[0])"></v-img>
+                <div class="import-default-text">
+                    Перейдите в меню "Расширения" -> "Отчеты" -> "Отчет по всем сделкам клиента".
+                </div>
+                <v-img :src="IMAGES[1]" height="159.5" width="622.5" class="grey darken-4 image" @click.stop="openImage(IMAGES[1])"></v-img>
+                <div class="import-default-text">
+                    Сформируйте отчет за требуемый вам период.
+                </div>
+                <v-img :src="IMAGES[2]" height="90" width="279" class="grey darken-4 image" @click.stop="openImage(IMAGES[2])"></v-img>
+                <div class="import-default-text">
+                    Полученный файл используйте для импорта.
+                </div>
+            </div>
         </div>
     `
 })

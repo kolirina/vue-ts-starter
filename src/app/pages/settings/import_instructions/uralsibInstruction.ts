@@ -6,16 +6,21 @@ import {ImageDialog} from "../../../components/dialogs/imageDialog";
     // language=Vue
     template: `
         <div>
-            <p>
-                Используйте для загрузки отчеты в формате xls, присылаемые вам на почту.
-                <br></br>
-                Вы также можете запросить отчеты за произвольный период,
-                обратившись в вашему персональному менеджеру по email или контактному телефону.
-                <br></br>
-                Контактная информация о менеджере указана в отчете.
-                <v-img :src="IMAGES[0]" height="105" width="380" class="grey darken-4" @click.stop="openImage(IMAGES[0])"></v-img>
-                Полученный файлы используйте для импорта.
-            </p>
+            <div>
+                <div class="import-default-text">
+                    Используйте для загрузки отчеты в формате xls, присылаемые вам на почту.<br>
+                    Вы также можете запросить отчеты за произвольный период, обратившись<br>
+                    к вашему персональному менеджеру по email или контактному телефону.<br>
+
+                    <div class="import-default-text-margin-t">
+                        Контактная информация о менеджере указана в отчете.
+                    </div>
+                </div>
+                <v-img :src="IMAGES[0]" height="207" width="980" class="grey darken-4 image" @click.stop="openImage(IMAGES[0])"></v-img>
+                <div class="import-default-text">
+                    Полученный файлы используйте для импорта.
+                </div>
+            </div>
         </div>
     `
 })

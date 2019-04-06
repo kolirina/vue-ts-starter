@@ -6,28 +6,38 @@ import {ImageDialog} from "../../../components/dialogs/imageDialog";
     // language=Vue
     template: `
         <div>
-            <p>
-                Используйте для импорта отчеты в формате xls.
-                При возникновении ошибок, попробуйте открыть файл в Excel и пересохраните в формате Excel-2003.
-                <br/>
-                Доступна загрузка сделок по бумагам, комиссий и денежных транзакций.
-                <br/>
-                Вы можете использовать следующие типы отчетов для импорта:
-            <ul>
-                <li>
-                    <b>Реестр сделок</b>
-                    <v-img :src="IMAGES[0]" height="160" width="250" class="grey darken-4" @click.stop="openImage(IMAGES[0])"></v-img>
-                </li>
-                <li>
-                    <b>Движение денег</b>
-                    <v-img :src="IMAGES[1]" height="160" width="250" class="grey darken-4" @click.stop="openImage(IMAGES[1])"></v-img>
-                </li>
-                <li>
-                    <b>Реестр комиссий за период</b>
-                    <v-img :src="IMAGES[2]" height="160" width="250" class="grey darken-4" @click.stop="openImage(IMAGES[2])"></v-img>
-                </li>
-            </ul>
-            </p>
+            <div>
+                <div class="import-default-text">
+                    Используйте для импорта отчеты в формате xls. При возникновении ошибок,<br>
+                    попробуйте открыть файл в Excel и пересохраните в формате Excel-2003.<br>
+                    Доступна загрузка сделок по бумагам, комиссий и денежных транзакций.
+                    <div class="import-default-text-margin-t">
+                        Вы можете использовать следующие типы отчетов для импорта:
+                    </div>
+                    <div class="import-default-text-margin-t">
+                        Реестр сделок
+                    </div>
+                </div>
+
+                <v-img :src="IMAGES[0]" height="265" width="980" class="grey darken-4 image" @click.stop="openImage(IMAGES[0])"></v-img>
+
+                <div class="import-default-text">
+                    <div class="import-default-text-margin-t">
+                        Движение денег
+                    </div>
+                </div>
+
+                <v-img :src="IMAGES[1]" height="300" width="980" class="grey darken-4 image" @click.stop="openImage(IMAGES[1])"></v-img>
+
+                <div class="import-default-text">
+                    <div class="import-default-text-margin-t">
+                    Реестр комиссий за период
+                    </div>
+                </div>
+
+                <v-img :src="IMAGES[2]" height="286" width="669" class="grey darken-4 image" @click.stop="openImage(IMAGES[2])"></v-img>
+
+            </div>
         </div>
     `
 })

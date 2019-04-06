@@ -8,46 +8,39 @@ import {CustomDialog} from "../../platform/dialogs/customDialog";
 @Component({
     // language=Vue
     template: `
-        <v-dialog v-model="showed" max-width="750px">
-            <v-card class="dialog-wrap">
+        <v-dialog v-model="showed" max-width="600px" persistent>
+            <v-card class="dialog-wrap import-dialog-wrapper import-general-error-wrapper">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
 
-                <v-card-title>
-                    <span class="headline">Ошибка импорта</span>
-                </v-card-title>
-                <v-card-text>
-                    <div>
-                        <p>
-                            <i class="fa fa-warning"></i>
-                            <span>Произошла ошибка импорта: {{ data.generalError }}</span>
-                        </p>
-
+                <div class="import-general-error-wrapper__element-centering">
+                    <v-card-title>
+                        <span class="import-dialog-wrapper__title-text">Ошибка импорта</span>
+                    </v-card-title>
+                    <v-card-text>
                         <div>
-                            <span>Попробуйте указать </span><a @click="goToBalances">начальные балансы </a><i class="fa fa-balance-scale"/>
-                            <span>для быстрого старта</span>
-                            <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" bottom>
-                                <sup class="custom-tooltip" slot="activator">
-                                    <v-icon>fas fa-info-circle</v-icon>
-                                </sup>
-                                <span>Если у Вас нет полной истории ваших сделок. Вы можете добавить дополнительные сделки позже.</span>
-                            </v-tooltip>
+                            <p class="import-dialog-wrapper__description-text import-default-text">
+                                Произошла ошибка импорта: {{ data.generalError }}
+                            </p>
+
+                            <div class="import-dialog-wrapper__description-text import-default-text">
+                                Попробуйте указать балансы для быстрого старта
+                            </div>
                         </div>
-                    </div>
-                </v-card-text>
-                <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn color="primary" @click.native="close" dark>
-                        Закрыть
-                    </v-btn>
-                </v-card-actions>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-btn color="primary" @click="goToPortfolio" dark>
+                            Перейти к портфелю
+                        </v-btn>
+                    </v-card-actions>
+                </div>
             </v-card>
         </v-dialog>
     `
 })
 export class ImportGeneralErrorDialog extends CustomDialog<ImportGeneralErrorDialogData, void> {
 
-    private goToBalances(): void {
-        this.data.router.push("trades");
+    private goToPortfolio(): void {
+        this.data.router.push("portfolio");
         this.close();
     }
 }
