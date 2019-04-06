@@ -295,7 +295,7 @@ export class ImportPage extends UI {
      */
     private async handleUploadResponse(response: ImportResponse): Promise<void> {
         if (response.status === Status.ERROR && CommonUtils.isBlank(response.generalError)) {
-            this.$snotify.error(response.message, "Ошибка");
+            this.$snotify.error(response.message);
             return;
         }
         if (response.generalError) {
@@ -327,12 +327,12 @@ export class ImportPage extends UI {
                 }) === BtnReturn.YES;
             }
             await this.reloadPortfolio(this.portfolio.id);
-            this.$snotify.info(`Импорт прошел успешно. ${firstWord} ${response.validatedTradesCount} ${secondWord}.`, "Результат импорта");
+            this.$snotify.info(`Импорт прошел успешно. ${firstWord} ${response.validatedTradesCount} ${secondWord}.`);
             if (navigateToPortfolioPage) {
                 this.$router.push("portfolio");
             }
         } else {
-            this.$snotify.warning("В отчете не содержится информации по сделкам.", "Импорт завершен");
+            this.$snotify.warning("Импорт завершен. В отчете не содержится информации по сделкам.");
         }
     }
 
