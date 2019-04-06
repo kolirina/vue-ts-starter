@@ -10,45 +10,37 @@ import {TableHeader} from "../../types/types";
 @Component({
     // language=Vue
     template: `
-        <v-dialog v-model="showed" max-width="750px">
-            <v-card class="dialog-wrap">
+        <v-dialog v-model="showed" max-width="600px" persistent>
+            <v-card class="dialog-wrap import-dialog-wrapper">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
 
-                <v-card-title>
-                    <span class="headline">Результаты импорта</span>
+                <v-card-title class="import-dialog-wrapper__title">
+                    <span class="import-dialog-wrapper__title-text">Результаты импорта</span>
                 </v-card-title>
-                <v-card-text>
-                    <h4>Успешно {{ data.validatedTradesCount | declension("добавлена", "добавлено", "добавлено") }}
-                        {{ data.validatedTradesCount }} {{ data.validatedTradesCount | declension("сделка", "сделки", "сделок") }}.</h4>
-                    <h4>Не получилось импортировать отчет?</h4>
-                    <div>
-                        <span>Попробуйте указать </span><a @click="goToBalances">начальные балансы </a><i class="fa fa-balance-scale"/>
-                        <span>для быстрого старта</span>
-                        <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" bottom>
-                            <sup class="custom-tooltip" slot="activator">
-                                <v-icon>fas fa-info-circle</v-icon>
-                            </sup>
-                            <span>Если у Вас нет полной истории ваших сделок. Вы можете добавить дополнительные сделки позже.</span>
-                        </v-tooltip>
+                <v-card-text class="import-dialog-wrapper__description">
+                    <div class="import-dialog-wrapper__description-text import-default-text">
+                        При импортировании отчета возникли ошибки, портфель небыл импортирован полностью. Чтобы завершить формирование пожалуйста внесите остатки вручную.
                     </div>
-
-                    <h4>Возникли следующие ошибки:</h4>
+                    <div class="import-dialog-wrapper__description-text import-default-text">
+                        Успешно {{ data.validatedTradesCount | declension("добавлена", "добавлено", "добавлено") }}
+                        {{ data.validatedTradesCount | declension("сделка", "сделки", "сделок") }} {{ data.validatedTradesCount }}</div>
+                </v-card-text>
+                <v-card-text class="import-dialog-wrapper__content">
                     <v-data-table :headers="headers" :items="data.errors" hide-actions>
                         <template #items="props">
                             <tr class="selectable">
-                                <td class="text-xs-left"><span v-if="props.item.dealDate">{{ props.item.dealDate | date }}</span></td>
+                                <td class="text-xs-center"><span v-if="props.item.dealDate">{{ props.item.dealDate | date }}</span></td>
                                 <td class="text-xs-left">{{ props.item.dealTicker }}</td>
-                                <td class="text-xs-left">{{ props.item.message }}</td>
+                                <td class="text-xs-right error-message">{{ props.item.message }}</td>
                             </tr>
                         </template>
                     </v-data-table>
                 </v-card-text>
-                <v-card-actions>
+                <v-card-actions class="import-dialog-wrapper__actions">
                     <v-spacer></v-spacer>
-                    <v-btn color="primary" @click.native="goToPortfolio" dark>
-                        Перейти к портфелю
+                    <v-btn color="primary" @click.native="goToBalances" dark>
+                        Указать текущие остатки
                     </v-btn>
-                    <v-btn color="info lighten-2" flat @click.native="close">Отмена</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -57,9 +49,9 @@ import {TableHeader} from "../../types/types";
 export class ImportErrorsDialog extends CustomDialog<importErrorsDialogData, void> {
 
     private headers: TableHeader[] = [
-        {text: "Дата", align: "left", value: "dealDate", sortable: false},
+        {text: "Дата", align: "center", value: "dealDate", sortable: false},
         {text: "Тикер", align: "left", value: "dealTicker", sortable: false},
-        {text: "Ошибка", align: "left", value: "message", sortable: false}
+        {text: "Ошибка", align: "center", value: "message", sortable: false}
     ];
 
     private goToBalances(): void {
@@ -67,10 +59,6 @@ export class ImportErrorsDialog extends CustomDialog<importErrorsDialogData, voi
         this.close();
     }
 
-    private goToPortfolio(): void {
-        this.data.router.push("portfolio");
-        this.close();
-    }
 }
 
 export type importErrorsDialogData = {

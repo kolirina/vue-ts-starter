@@ -32,10 +32,8 @@ const MainStore = namespace(StoreType.MAIN);
             </v-card>
             <v-card flat class="import-wrapper">
                 <v-card-title class="import-wrapper-header">
-                    <div>
-                        <div class="import-wrapper-header__title">
-                            Выберите своего брокера
-                        </div>
+                    <div class="import-wrapper-header__title">
+                        Выберите своего брокера
                     </div>
                 </v-card-title>
                 <v-card-text class="import-wrapper-content">
@@ -44,7 +42,7 @@ const MainStore = namespace(StoreType.MAIN);
                              :class="['item', provider.toLowerCase(), selectedProvider === provider ? 'active' : '']"></div>
                     </div>
 
-                    <v-layout justify-space-between class="intelinvest-section">
+                    <v-layout justify-space-between wrap class="intelinvest-section">
                         <div class="intelinvest-section__description">
                             Если в списке нет вашего брокера или терминала, вы всегда можете осуществить импорт через универсальный формат
                             <a @click="selectedProvider = providers.INTELINVEST">CSV</a>
@@ -188,12 +186,16 @@ const MainStore = namespace(StoreType.MAIN);
                         </div>
                     </div>
 
-                    <div class="section-upload-file">
+                    <v-layout align-center class="section-upload-file">
                         <v-btn v-if="importProviderFeatures && files.length" color="primary" class="big_btn" @click="uploadFile">Загрузить</v-btn>
                         <file-link @select="onFileAdd" :accept="allowedExtensions" v-if="importProviderFeatures && !files.length">Выбрать файл</file-link>
-                    </div>
+                        <v-spacer></v-spacer>
+                        <div @click="showInstruction = !showInstruction" class="btn-show-instruction" v-if="importProviderFeatures">
+                            Как сформировать отчет брокера {{ selectedProvider }}?
+                        </div>
+                    </v-layout>
 
-                    <import-instructions :provider="selectedProvider" @selectProvider="onSelectProvider"></import-instructions>
+                    <import-instructions v-if="showInstruction" :provider="selectedProvider" @selectProvider="onSelectProvider"></import-instructions>
 
                 </v-card-text>
             </v-card>
@@ -225,6 +227,8 @@ export class ImportPage extends UI {
     private selectedProvider: DealsImportProvider = null;
     /** Признак отображения панели с расширенными настройками */
     private showExtendedSettings = false;
+    /** Отображение инструкции к провайдеру */
+    private showInstruction: boolean = false;
     /** Допустимые MIME типы */
     private allowedExtensions = FileUtils.ALLOWED_MIME_TYPES;
 
@@ -337,6 +341,7 @@ export class ImportPage extends UI {
      * @param provider выбранный провайдер
      */
     private onSelectProvider(provider: DealsImportProvider): void {
+        this.showInstruction = false;
         this.selectedProvider = provider;
         this.importProviderFeatures = {...this.importProviderFeaturesByProvider[provider]};
         if (this.selectedProvider === DealsImportProvider.INTELINVEST) {

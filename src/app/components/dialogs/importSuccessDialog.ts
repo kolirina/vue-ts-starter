@@ -16,56 +16,50 @@ import {MainStore} from "../../vuex/mainStore";
     // language=Vue
     template: `
         <v-dialog v-model="showed" max-width="600px" persistent>
-            <v-card class="dialog-wrap">
+            <v-card class="dialog-wrap import-dialog-wrapper">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
-
-                <v-card-title>
-                    <span class="headline">Завершение импорта</span>
-                </v-card-title>
-                <v-card-text @click.stop>
+                <div class="import-general-error-wrapper__element-centering">
+                    <v-card-title>
+                        <span class="import-dialog-wrapper__title-text">Завершение импорта</span>
+                    </v-card-title>
+                    <v-card-text @click.stop>
                         <span v-if="step === 0">
-                            <h4>Остался последний шаг и ваш портфель будет готов.</h4>
-                            <h4>Пожалуйста, укажите остаток денежных средств в портфеле на данный момент:
-                                <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" :max-width="250" top>
-                                    <sup class="custom-tooltip" slot="activator">
-                                        <v-icon>fas fa-info-circle</v-icon>
-                                    </sup>
-                                    <span>
-                                        Мы просим вас указать текущий остаток чтобы сверить результаты и убедиться в точности импорта.
-                                        Остаток денежных средств вы можете узнать из:
-                                        <ul>
-                                            <li>загружаемого отчета</li>
-                                            <li>терминала брокера</li>
-                                            <li>в личном кабинете брокера</li>
-                                        </ul>
-                                    </span>
-                                </v-tooltip>
-                            </h4>
+                            <div class="balance-text">
+                                Пожалуйста внесите остаток денежных средств на данный момент
+                            </div>
 
-                            <span style="display: block; margin: auto; max-width: 305px; margin-top: 15px">
-                                <v-text-field v-if="portfolio" label="Текущий остаток денежных средств на счете" v-model="currentMoneyRemainder">
-                                    <span slot="append-outer">
-                                        <span :class="portfolio.portfolioParams.viewCurrency.toLowerCase()"></span>
-                                    </span>
-                                </v-text-field>
-                            </span>
+                            <div class="number-field-balance">
+                                <v-text-field
+                                    v-if="portfolio"
+                                    v-model="currentMoneyRemainder"
+                                    box
+                                    label="Текущий остаток"
+                                    suffix="RUB"
+                                    hide-details
+                                    single-line
+                                ></v-text-field>
+                            </div>
                         </span>
 
-                    <span v-if="step === 1">
-                        <h4>Поздравляем! Теперь ваш портфель сформирован и готов к работе.</h4>
-                        <h4>Успешно {{ data.importResult.validatedTradesCount | declension("добавлена", "добавлено", "добавлено") }}
-                        {{ data.importResult.validatedTradesCount }} {{ data.importResult.validatedTradesCount | declension("сделка", "сделки", "сделок") }}.</h4>
-                    </span>
-                </v-card-text>
-                <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn v-if="step === 0" :disabled="disabledFirstStepButton" color="primary" @click.native="goToNextStep" dark>
-                        Продолжить
-                    </v-btn>
-                    <v-btn v-if="step === 1" color="primary" @click.native="close('YES')" dark>
-                        Перейти к портфелю
-                    </v-btn>
-                </v-card-actions>
+                        <span v-if="step === 1">
+                            <div class="import-default-text">
+                                Поздравляем! Теперь ваш портфель сформирован и готов к работе.
+                            </div>
+                            <div class="import-default-text">
+                                Успешно {{ data.importResult.validatedTradesCount | declension("добавлена", "добавлено", "добавлено") }}
+                                {{ data.importResult.validatedTradesCount | declension("сделка", "сделки", "сделок") }} {{ data.importResult.validatedTradesCount }}
+                            </div>
+                        </span>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-btn v-if="step === 0" :disabled="disabledFirstStepButton" color="primary" @click.native="goToNextStep" dark>
+                            Продолжить
+                        </v-btn>
+                        <v-btn v-if="step === 1" color="primary" @click.native="close('YES')" dark>
+                            Перейти к портфелю
+                        </v-btn>
+                    </v-card-actions>
+                </div>
             </v-card>
         </v-dialog>
     `

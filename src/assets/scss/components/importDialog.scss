@@ -1,0 +1,68 @@
+.import-dialog-wrapper {
+    &__title {
+        padding: 16px 0px 16px 32px;
+        &-text {
+            font-size: 16px;
+            line-height: 24px;
+            letter-spacing: -0.3px;
+            color: #040427;
+            font-weight: bold;
+        }
+    }
+    &__description {
+        padding: 0px 0px 21px 32px;
+        &-text {
+            margin-bottom: 30px;
+            &:last-child {
+                margin-bottom: 0px;
+            }
+        }
+    }
+    &__content {
+        padding: 0px;
+        .error-message {
+            padding-right: 30px !important;
+        }
+        div .v-table__overflow .v-datatable thead tr th {
+            &:last-child {
+                padding-left: 50px;
+            }
+        }
+    }
+    &__actions {
+        padding-right: 30px;
+        .v-btn {
+            padding: 0px 20px;
+        }
+    }
+}
+.import-general-error-wrapper {
+    &__element-centering{
+        max-width: 373px;
+        margin: 0 auto;
+        .v-card__title, .v-card__actions{
+            justify-content: center;
+        }
+        .v-card__title {
+            padding: 163px 0px 0px 0px;
+        }
+        .v-card__text {
+            padding: 16px 0px 22px;
+        }
+        .v-card__actions {
+            padding: 0px 0px 163px 0px;
+        }
+    }
+}
+.balance-text {
+    font-size: 13px;
+    line-height: 22px;
+    letter-spacing: -0.3px;
+    color: #A3A8AF;
+}
+.number-field-balance {
+    margin: 26px 0px 10px 0px;
+    input {
+        margin-top: 0px !important;
+    }
+}

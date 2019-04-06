@@ -69,14 +69,14 @@ const MainStore = namespace(StoreType.MAIN);
 
                 <!-- FREEDOM_FINANCE -->
                 <div v-if="provider === providers.FREEDOM_FINANCE">
-                    <p>
+                    <p class="import-default-text">
                         Для импорта вы можете использовать отчеты, присылаемые брокером вам на электронную почту в формате xls.
                     </p>
                 </div>
 
                 <!-- KITFINANCE -->
                 <div v-if="provider === providers.KITFINANCE">
-                    <p>
+                    <p class="import-default-text">
                         Используйте для импорта отчеты в формате xlsx.
                     </p>
                 </div>
@@ -88,7 +88,7 @@ const MainStore = namespace(StoreType.MAIN);
 
                 <!-- SBERBANK -->
                 <div v-if="provider === providers.SBERBANK">
-                    <p>
+                    <p class="import-default-text">
                         Используйте для импорта отчеты в формате txt, которые брокер присылает вам на почту.
                         Обратите внимание, что загружены будут только сделки, исполненные в отчетном периоде, имеющие статус в отчете
                         "И - на конец периода сделка исполнена в полном объеме" для избежания дублирования сделок при загрузке нескольких отчетов
@@ -103,7 +103,7 @@ const MainStore = namespace(StoreType.MAIN);
 
                 <!-- Interactive brokers -->
                 <div v-if="provider === providers.INTERACTIVE_BROKERS">
-                    <p>
+                    <p class="import-default-text">
                         Используйте для импорта отчеты в формате cpt, xls, csv. Форматы отчетов указаны в порядке предпочтительности.
                         Если отчет не пройдет импорт, попробуйте пересохранить файл в кодировке UTF-8 или windows-1251
                     </p>
@@ -116,14 +116,14 @@ const MainStore = namespace(StoreType.MAIN);
 
                 <!-- Nettrader -->
                 <div v-if="provider === providers.NETTRADER">
-                    <p>
+                    <p class="import-default-text">
                         Используйте для импорта отчеты в формате csv или txt. Убедитесь что загружаемый файл имеет кодировку UTF-8
                     </p>
                 </div>
 
                 <!-- ATON -->
                 <div v-if="provider === providers.ATON">
-                    <p>
+                    <p class="import-default-text">
                         Используйте для импорта отчеты в формате xml. Будут импортированы сделки по бумагам, включая дивиденды, купоны, амортизацию,
                         и движения денежных средств.
                     </p>
@@ -140,12 +140,11 @@ const MainStore = namespace(StoreType.MAIN);
                 </div>
             </div>
 
-            <div v-if="provider" class="common-instructions">
+            <div v-if="provider" class="import-default-text">
                 <!-- Не отображаем блок про Квик если он уже выбран -->
-                <p v-if="provider !== providers.QUIK">
-                    Если у вас возникли сложности при загрузке отчетов брокера и вы используете Quik,
-                    можете
-                    <a @click="selectProvider(providers.QUIK)">импортировать</a>
+                <p v-if="provider !== providers.QUIK" class="import-default-text-margin-t">
+                    Если у вас возникли сложности при загрузке отчетов брокера и вы используете<br>
+                    Quik, можете <a @click="selectProvider(providers.QUIK)">импортировать</a>
                     отчеты из терминала.
                 </p>
             </div>
