@@ -23,7 +23,7 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <base-portfolio-page v-if="overview" :overview="overview" :line-chart-data="lineChartData" :line-chart-events="lineChartEvents"
-                             :view-currency="viewCurrency" :state-key-prefix="StoreKeys.PORTFOLIO_COMBINED_CHART"
+                             :view-currency="viewCurrency" :state-key-prefix="StoreKeys.PORTFOLIO_COMBINED_CHART" :side-bar-opened="sideBarOpened"
                              @reloadLineChart="loadPortfolioLineChart">
             <template #afterDashboard>
                 <expanded-panel :value="$uistate.combinedPanel" :state="$uistate.COMBINED_CONTROL_PANEL">
@@ -54,6 +54,8 @@ export class CombinedPortfolioPage extends UI {
 
     @MainStore.Getter
     private clientInfo: ClientInfo;
+    @MainStore.Getter
+    private sideBarOpened: boolean;
     @Inject
     private overviewService: OverviewService;
     private overview: Overview = null;

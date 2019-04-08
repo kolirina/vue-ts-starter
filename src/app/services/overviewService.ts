@@ -23,10 +23,10 @@ export class OverviewService {
 
     private cache: { [key: string]: Portfolio } = {};
 
-    async getById(id: string): Promise<Portfolio> {
+    async getById(id: string, publicZone: boolean = false): Promise<Portfolio> {
         let portfolio = this.cache[id];
         if (!portfolio) {
-            portfolio = await this.loadPortfolio(id);
+            portfolio = await this.loadPortfolio(id, publicZone);
             this.cache[id] = portfolio;
             return portfolio;
         }
@@ -84,8 +84,8 @@ export class OverviewService {
         await this.http.post(`/portfolios/${id}/default`);
     }
 
-    async getCostChart(id: string): Promise<any> {
-        const data = await this.http.get<LineChartItem[]>(`/portfolios/${id}/cost-chart`);
+    async getCostChart(id: string, publicZone: boolean = false): Promise<any> {
+        const data = await this.http.get<LineChartItem[]>(`${publicZone ? "public" : ""}/portfolios/${id}/cost-chart`);
         const result: any[] = [];
         data.forEach(value => {
             result.push([new Date(value.date).getTime(), new BigMoney(value.amount).amount.toDP(2, Decimal.ROUND_HALF_UP).toNumber()]);
@@ -93,12 +93,12 @@ export class OverviewService {
         return result;
     }
 
-    async getEventsChartDataWithDefaults(id: string): Promise<HighStockEventsGroup[]> {
-        return this.getEventsChartData(id);
+    async getEventsChartDataWithDefaults(id: string, publicZone: boolean = false): Promise<HighStockEventsGroup[]> {
+        return this.getEventsChartData(id, publicZone);
     }
 
-    async getEventsChartData(id: string): Promise<HighStockEventsGroup[]> {
-        const data = await this.http.get<EventChartData[]>(`/portfolios/${id}/events-chart-data`);
+    async getEventsChartData(id: string, publicZone: boolean = false): Promise<HighStockEventsGroup[]> {
+        const data = await this.http.get<EventChartData[]>(`${publicZone ? "public" : ""}/portfolios/${id}/events-chart-data`);
         return ChartUtils.processEventsChartData(data);
     }
 
@@ -118,17 +118,18 @@ export class OverviewService {
     /**
      * Возвращает данные по портфелю
      * @param {string} id идентификатор портфеля
+     * @param publicZone
      * @return {Promise<Portfolio>}
      */
-    private async loadPortfolio(id: string): Promise<Portfolio> {
-        const portfolioResponse: PortfolioParamsResponse = await this.http.get<PortfolioParamsResponse>(`/portfolios/${id}`);
+    private async loadPortfolio(id: string, publicZone: boolean = false): Promise<Portfolio> {
+        const portfolioResponse: PortfolioParamsResponse = await this.http.get<PortfolioParamsResponse>(`${publicZone ? "public" : ""}/portfolios/${id}`);
         const portfolio = {
             ...portfolioResponse,
             accountType: portfolioResponse.accountType ? PortfolioAccountType.valueByName(portfolioResponse.accountType) : null,
             iisType: portfolioResponse.iisType ? IisType.valueByName(portfolioResponse.iisType) : null,
             shareNotes: portfolioResponse.shareNotes ? portfolioResponse.shareNotes : {}
         } as PortfolioParams;
-        const overview = await this.http.get<Overview>(`/portfolios/${id}/overview`);
+        const overview = await this.http.get<Overview>(`${publicZone ? "public" : ""}/portfolios/${id}/overview`);
         // проставляем идентификаторы чтобы работали разворачиваютщиеся блоки в табилицах
         overview.stockPortfolio.rows.forEach((value, index) => value.id = index.toString());
         overview.bondPortfolio.rows.forEach((value, index) => value.id = index.toString());

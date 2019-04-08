@@ -108,17 +108,17 @@ const MainStore = namespace(StoreType.MAIN);
                                 <span class="menuDots"></span>
                             </v-btn>
                             <v-list dense>
-                                <v-list-tile @click="openShareTradesDialog(props.item.stock.ticker)">
+                                <v-list-tile v-if="portfolioId" @click="openShareTradesDialog(props.item.stock.ticker)">
                                     <v-list-tile-title>
                                         Все сделки
                                     </v-list-tile-title>
                                 </v-list-tile>
-                                <v-list-tile @click="openEditShareNoteDialog(props.item.stock.ticker)">
+                                <v-list-tile v-if="shareNotes" @click="openEditShareNoteDialog(props.item.stock.ticker)">
                                     <v-list-tile-title>
                                         Заметка
                                     </v-list-tile-title>
                                 </v-list-tile>
-                                <v-divider></v-divider>
+                                <v-divider v-if="portfolioId || shareNotes"></v-divider>
                                 <v-list-tile @click="openTradeDialog(props.item, operation.BUY)">
                                     <v-list-tile-title>
                                         Купить
@@ -208,10 +208,17 @@ export class StockTable extends UI {
     private tablesService: TablesService;
     @Inject
     private portfolioService: PortfolioService;
-    @MainStore.Getter
-    private portfolio: Portfolio;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
     private reloadPortfolio: (id: string) => Promise<void>;
+    /** Идентификатор портфеля */
+    @Prop({default: null, type: String, required: true})
+    private portfolioId: string;
+    /** Валюта просмотра информации */
+    @Prop({required: true, type: String})
+    private viewCurrency: string;
+    /** Заметки по бумагам портфеля */
+    @Prop({default: null, type: Object, required: false})
+    private shareNotes: { [key: string]: string };
     /** Список заголовков таблицы */
     @Prop()
     private headers: TableHeader[];
@@ -283,7 +290,7 @@ export class StockTable extends UI {
     }
 
     private async openShareTradesDialog(ticker: string): Promise<void> {
-        await new ShareTradesDialog().show({trades: await this.tradeService.getShareTrades(this.portfolio.id, ticker), ticker});
+        await new ShareTradesDialog().show({trades: await this.tradeService.getShareTrades(this.portfolioId, ticker), ticker});
     }
 
     /**
@@ -291,7 +298,7 @@ export class StockTable extends UI {
      * @param ticker тикер по которому редактируется заметка
      */
     private async openEditShareNoteDialog(ticker: string): Promise<void> {
-        const data = await new EditShareNoteDialog().show({ticker, note: this.portfolio.portfolioParams.shareNotes[ticker]});
+        const data = await new EditShareNoteDialog().show({ticker, note: this.shareNotes[ticker]});
         if (data) {
             await this.editShareNote(data);
         }
@@ -299,7 +306,7 @@ export class StockTable extends UI {
 
     @ShowProgress
     private async editShareNote(data: EditShareNoteDialogData): Promise<void> {
-        await this.portfolioService.updateShareNotes(this.portfolio, data);
+        await this.portfolioService.updateShareNotes(this.portfolioId, this.shareNotes, data);
         this.$snotify.info(`Заметка по бумаге ${data.ticker} была успешно сохранена`);
     }
 
@@ -313,7 +320,7 @@ export class StockTable extends UI {
             assetType: AssetType.STOCK
         });
         if (result) {
-            await this.reloadPortfolio(this.portfolio.id);
+            await this.reloadPortfolio(this.portfolioId);
         }
     }
 
@@ -329,9 +336,9 @@ export class StockTable extends UI {
         await this.tradeService.deleteAllTrades({
             assetType: AssetType.STOCK.enumName,
             ticker: stockRow.stock.ticker,
-            portfolioId: this.portfolio.id
+            portfolioId: this.portfolioId
         });
-        await this.reloadPortfolio(this.portfolio.id);
+        await this.reloadPortfolio(this.portfolioId);
     }
 
     private amount(value: string): number {
@@ -368,6 +375,6 @@ export class StockTable extends UI {
     }
 
     private get portfolioCurrency(): string {
-        return TradeUtils.getCurrencySymbol(this.portfolio.portfolioParams.viewCurrency);
+        return TradeUtils.getCurrencySymbol(this.viewCurrency);
     }
 }

@@ -72,8 +72,11 @@
     "curly": true,
     /** Включение консоли */
     "no-console": [
-      "log",
       "error"
-    ]
+    ],
+    /** Включаем camelCase нотацию для ts файлов */
+    "file-name-casing": [true, {
+      ".ts": "camel-case"
+    }]
   }
 }

@@ -12,6 +12,7 @@ import {DividendsPage} from "../pages/dividendsPage";
 import {EventsPage} from "../pages/eventsPage";
 import {HelpPage} from "../pages/helpPage";
 import {PortfolioPage} from "../pages/portfolioPage";
+import {PublicPortfolioPage} from "../pages/public/publicPortfolioPage";
 import {QuotesPage} from "../pages/quotes/quotesPage";
 import {ExportPage} from "../pages/settings/exportPage";
 import {ImportPage} from "../pages/settings/importPage";
@@ -252,6 +253,16 @@ export class RouterConfiguration {
                 meta: {
                     title: "Балансы"
                 }
+            },
+            // ============================== public urls ==============================
+            {
+                name: "public-portfolio",
+                path: "/public/portfolio/:id",
+                component: PublicPortfolioPage,
+                meta: {
+                    title: "Портфель",
+                    public: true
+                }
             }
         ];
     }
@@ -269,4 +280,5 @@ export class RouterConfiguration {
 interface RouteMeta {
     tariffAllowed: boolean;
     title?: string;
+    public?: boolean;
 }
