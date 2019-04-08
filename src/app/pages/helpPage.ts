@@ -57,11 +57,11 @@ const MainStore = namespace(StoreType.MAIN);
                     <div class="wrapper-list-reference__item-content-wrapper">
                         <a @click.stop="$vuetify.goTo('#events')">Страница События</a>
                     </div>
-                </div>
-                <div class="wrapper-list-reference__item">
                     <div class="wrapper-list-reference__item-content-wrapper">
                         <a @click.stop="$vuetify.goTo('#combined_portfolio')">Составной портфель</a>
                     </div>
+                </div>
+                <div class="wrapper-list-reference__item">
                     <div class="wrapper-list-reference__item-content-wrapper">
                         <a @click.stop="$vuetify.goTo('#dividends')">Дивиденды</a>
                     </div>
@@ -71,16 +71,16 @@ const MainStore = namespace(StoreType.MAIN);
                     <div class="wrapper-list-reference__item-content-wrapper">
                         <a @click.stop="$vuetify.goTo('#settings_portfolio')">Управление портфелями</a>
                     </div>
-                </div>
-                <div class="wrapper-list-reference__item">
                     <div class="wrapper-list-reference__item-content-wrapper">
                         <a @click.stop="$vuetify.goTo('#settings_public')">Публичный доступ</a>
                     </div>
+                </div>
+                <div class="wrapper-list-reference__item">
                     <div class="wrapper-list-reference__item-content-wrapper">
                         <a @click.stop="$vuetify.goTo('#tariffs_public')">Тарифы</a>
                     </div>
                     <div class="wrapper-list-reference__item-content-wrapper">
-                        <a @click.stop="$vuetify.goTo('#settings_promo_codes')">Промо-коды</a>
+                        <a @click.stop="$vuetify.goTo('#settings_promo_codes')">Промокоды</a>
                     </div>
                     <div class="wrapper-list-reference__item-content-wrapper">
                         <a @click.stop="$vuetify.goTo('#settings_notifications')">Уведомления</a>
@@ -107,8 +107,8 @@ const MainStore = namespace(StoreType.MAIN);
                                 <div class="wrapper-content-panel__paired-section">
                                     <div class="wrapper-content-panel__paired-section-item">
                                         <p>
-                                            Сервис позволяет учитывать <a href="#add_stock">акции</a>,
-                                            <a href="#add_bond">облигации</a>, ETF, ПИФы, валюты,
+                                            Сервис позволяет учитывать <a @click.stop="$vuetify.goTo('#buy_stock')">акции</a>,
+                                            <a @click.stop="$vuetify.goTo('#buy_bonds')">облигации</a>, ETF, ПИФы, валюты,
                                             драгоценные металлы и любые виды активов.
                                         </p>
                                         <p>
@@ -216,19 +216,19 @@ const MainStore = namespace(StoreType.MAIN);
                                         <div class="title-gif-block">
                                             Примеры сделок
                                         </div>
-                                        <div class="gif-block-item__title">
-                                            Покупка облигации
+                                        <div class="gif-block-item__title" id="buy_stock">
+                                            Покупка акции
                                         </div>
                                         <div>
                                             <img src="./img/help/add_stock.gif"/>
                                         </div>
-                                    </div>
-                                    <div class="gif-block-item">
-                                        <div class="gif-block-item__title">
-                                            Покупка акции
-                                        </div>
-                                        <div>
-                                            <img src="./img/help/add_bond.gif"/>
+                                        <div class="gif-block-item">
+                                            <div class="gif-block-item__title" id="buy_bonds">
+                                                Покупка облигации
+                                            </div>
+                                            <div>
+                                                <img src="./img/help/add_bond.gif"/>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="gif-block-item">
@@ -626,27 +626,14 @@ const MainStore = namespace(StoreType.MAIN);
                                     </div>
                                     <div class="wrapper-content-panel__paired-section-item">
                                         <p>
-                                            По умолчанию установлен чекбокс "Зачислить на счет", при
+                                            По умолчанию установлен чекбокс "Зачислить деньги", при
                                             исполнении выплаты, будет занесена сделка по добавлению
                                             начисления и сделка по зачислению денежных средств.
                                         </p>
                                         <p>
                                             Если убрать чекбокс, будет добавлена только сделка по
                                             зачислению начисления, если, например, вы выводите
-                                            полученные начисления сразу из портфеля.Ниже представлен
-                                            Календарь Событий.
-                                        </p>
-                                        <p>
-                                            В нем можно просматривать все прошлые и будущие выплаты
-                                            дивидендов, купонов, амортизации и погашений, а также
-                                            добавлять свои события, уведомления по вашим событиям
-                                            будут отправлены на почту при наступлении даты.
-                                        </p>
-                                        <p>
-                                            Все события легко фильтровать по типу, фильтр сохраняет
-                                            свое состояние. Фильтр "Пользовательские" позволяет
-                                            самостоятельно добавить событие, выбрать дату и указать
-                                            комментарий.
+                                            полученные начисления сразу из портфеля.
                                         </p>
                                     </div>
                                 </div>
@@ -754,7 +741,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             своем портфеле на своем сайте или в блоге.
                                         </p>
                                         <div>
-                                            <a class="non-cursor-click">Настройки пользователя</a>
+                                            <a class="non-cursor-click">Профиль</a>
                                         </div>
                                         <p>
                                             <a href="#/profile">Здесь</a> можно сменить пароль и адрес
@@ -783,9 +770,9 @@ const MainStore = namespace(StoreType.MAIN);
                                             <a id="tariffs_public" class="non-cursor-click">Тарифы</a>
                                         </div>
                                         <p>
-                                            В данном разделе вы можете посмотреть свой текущий
+                                            <a href="#/tariffs">В данном разделе</a> вы можете посмотреть свой текущий
                                             тарифный план , подключить или продлить подписку на
-                                            сервис, применить подарочные промо коды. Не все тарифные
+                                            сервис, применить подарочные промокоды. Не все тарифные
                                             планы могут быть доступны для выбора. Например, если у вас
                                             раньше был подключен тарифный план Профессионал, и у вас
                                             заведено 4 портфеля, то вы не сможете выбрать для
@@ -895,7 +882,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-expansion-panel>
             </div>
             <div>
-                <v-btn fixed fab bottom right color="#F0F3F8" @click.stop="$vuetify.goTo('#up')" class="wrapper-content-panel__privacy-section-up-page-btn">
+                <v-btn depressed fixed fab bottom right color="#F0F3F8" @click.stop="$vuetify.goTo('#up')" class="wrapper-content-panel__privacy-section-up-page-btn">
                     <v-icon color="#8a98af">keyboard_arrow_up</v-icon>
                 </v-btn>
             </div>
