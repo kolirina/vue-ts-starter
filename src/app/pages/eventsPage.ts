@@ -36,7 +36,7 @@ const MainStore = namespace(StoreType.MAIN);
                 <v-card-title class="headline">
                     Новые события
                     <v-spacer></v-spacer>
-                    <v-menu transition="slide-y-transition" bottom left>
+                    <v-menu v-if="events.length" transition="slide-y-transition" bottom left>
                         <v-btn slot="activator" class="events__menu-btn" flat icon dark>
                             <span class="menuDots"></span>
                         </v-btn>
@@ -88,7 +88,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </span>
                     </div>
 
-                    <v-data-table v-if="events" :headers="eventsHeaders" :items="events" item-key="id" :custom-sort="customSortEvents"
+                    <v-data-table v-if="events.length" :headers="eventsHeaders" :items="events" item-key="id" :custom-sort="customSortEvents"
                                   class="events-table data-table" hide-actions>
                         <template #items="props">
                             <tr class="selectable">
@@ -128,7 +128,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </template>
                     </v-data-table>
 
-                    <div v-else>{{ emptyTableText }}</div>
+                    <div v-else class="events-table__empty">{{ emptyTableText }}</div>
                 </v-card-text>
             </v-card>
 
@@ -136,7 +136,7 @@ const MainStore = namespace(StoreType.MAIN);
                 <v-card-title class="headline" style="padding-left: 35px;">Дивидендные новости</v-card-title>
 
                 <v-card-text>
-                    <v-data-table v-if="dividendNews" :headers="dividendNewsHeaders" :items="dividendNews" item-key="id" :custom-sort="customSortNews"
+                    <v-data-table v-if="dividendNews.length" :headers="dividendNewsHeaders" :items="dividendNews" item-key="id" :custom-sort="customSortNews"
                                   class="dividend-news-table data-table" hide-actions>
                         <template #items="props">
                             <tr class="selectable">
@@ -155,7 +155,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </template>
                     </v-data-table>
 
-                    <div v-else>Дивидендных новостей по вашим бумагам нет</div>
+                    <div v-else class="dividend-news-table__empty">Дивидендных новостей по вашим бумагам нет</div>
                 </v-card-text>
             </v-card>
         </v-container>
@@ -170,10 +170,10 @@ export class EventsPage extends UI {
     @Inject
     private eventService: EventService;
     /** События */
-    private events: ShareEvent[] = null;
+    private events: ShareEvent[] = [];
     private eventsAggregateInfo: EventsAggregateInfo = null;
     /** Дивидендные новости */
-    private dividendNews: DividendNewsItem[] = null;
+    private dividendNews: DividendNewsItem[] = [];
     /** Зголовки таблицы События */
     private eventsHeaders: TableHeader[] = [
         {text: "Событие", align: "left", value: "label", width: "150"},

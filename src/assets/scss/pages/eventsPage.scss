@@ -124,6 +124,13 @@
 
   .events-table, .dividend-news-table {
     padding: 0 !important;
+
+    &__empty {
+      margin: auto;
+      width: 500px;
+      padding: 20px;
+      font-size: 14px;
+    }
   }
 
     .amount__currency {
