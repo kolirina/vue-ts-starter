@@ -29,7 +29,7 @@ import {CustomDialog} from "../../platform/dialogs/customDialog";
                     </v-card-text>
                     <v-card-actions>
                         <v-btn color="primary" @click="goToBalances" dark>
-                            Перейти к портфелю
+                            Указать текущие остатки
                         </v-btn>
                     </v-card-actions>
                 </div>

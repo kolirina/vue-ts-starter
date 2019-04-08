@@ -131,6 +131,9 @@
     filter: grayscale(1);
     background-size: contain !important;
     cursor: pointer;
+    &:hover {
+      filter: none;
+    }
   }
 
   .active {

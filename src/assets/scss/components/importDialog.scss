@@ -63,15 +63,18 @@
 .number-field-balance {
     margin: 26px 0px 10px 0px;
     input {
-        margin-top: 0px !important;
-        &::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-        }
-        &::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-        }
+        padding: 4px 0px 4px 19px !important;
+    }
+    .v-text-field__suffix {
+        padding-right: 16px;
     }
 }
 .amount-deals{
     margin-left: 20px;
+}
+.wrapper-for-scroll-import-dialog {
+    max-height: 844px;
+}
+.import-errors-dialog-scroll {
+    overflow: hidden;
 }

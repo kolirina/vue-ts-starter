@@ -29,16 +29,12 @@ import {MainStore} from "../../vuex/mainStore";
                             </div>
 
                             <div class="number-field-balance">
-                                <v-text-field
+                                <ii-number-field
                                     v-if="portfolio"
-                                    v-model="currentMoneyRemainder"
-                                    box
-                                    label="Текущий остаток"
-                                    suffix="RUB"
-                                    hide-details
-                                    single-line
-                                    type="number"
-                                ></v-text-field>
+                                    suffix="RUB" label="Текущий остаток"
+                                    v-model="currentMoneyRemainder" name="currentMoney"
+                                    class="required">
+                                </ii-number-field>
                             </div>
                         </span>
 
