@@ -1,0 +1,19 @@
+.footer-app {
+    height: 100% !important;
+    &-wrap-content {
+        margin: 0px 48px;
+        border-top: 1px solid #CACED5;
+        padding: 16px 20px;
+        &__text {
+            font-size: 14px;
+            line-height: 20px;
+            color: #3D4656;
+            span {
+                margin-right: 4px;
+            }
+        }
+        .email-btn {
+            margin-right: 13px;
+        }
+    }
+}

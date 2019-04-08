@@ -115,24 +115,39 @@
     }
 
     &__content {
-      margin-left: 12px;
       font-weight: 600;
       font-size: 13px;
 
-      .above-zero {
+      .above-than-zero {
         color: #91DA4A !important;
+        margin-left: 12px;
       }
 
       .less-than-zero {
         color: #FF3E70;
+        margin-left: 12px;
       }
     }
 
     &__chart {
-      max-width: 435px;
+      max-width: 440px;
+      width: 100%;
       padding-top: 30px;
     }
   }
+}
+.dividends-chart {
+  .v-card__title {
+    padding: 16px 10px 0px 27px;
+  }
+}
+
+.chart-title {
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: -0.3px;
+  color: #040427;
+  padding-bottom: 10px;
 }
 
 .icon-positive {

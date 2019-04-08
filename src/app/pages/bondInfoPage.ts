@@ -154,7 +154,7 @@ const MainStore = namespace(StoreType.MAIN);
             </v-card>
             <div class="space-between-blocks"></div>
             <v-card v-if="share" class="chart-overflow" flat>
-                <v-card-title class="headline">
+                <v-card-title class="chart-title">
                     Цена облигации
                 </v-card-title>
                 <v-card-text>
@@ -162,8 +162,8 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-card-text>
             </v-card>
             <div class="space-between-blocks"></div>
-            <v-card v-if="share" class="chart-overflow" flat>
-                <v-card-title class="headline">
+            <v-card v-if="share" class="chart-overflow dividends-chart" flat>
+                <v-card-title class="chart-title">
                     Начисления
                     <v-spacer></v-spacer>
                     <chart-export-menu @print="print" @exportTo="exportTo($event)"></chart-export-menu>
