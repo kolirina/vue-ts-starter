@@ -148,14 +148,13 @@ export class PortfolioService {
 
     /**
      * Обновляет заметки по бумагам в портфеле
-     * @param portfolio портфель
-     * @param data заметка по бумагам
      */
-    async updateShareNotes(portfolio: Portfolio, data: EditShareNoteDialogData): Promise<void> {
-        const shareNotes = portfolio.portfolioParams.shareNotes || {};
+    async updateShareNotes(portfolioId: string, shareNotes: { [key: string]: string }, data: EditShareNoteDialogData): Promise<{ [key: string]: string }> {
+        const shareNotesRequest = shareNotes || {};
         shareNotes[data.ticker] = data.note;
-        await (await this.http.put(`/${this.ENDPOINT_BASE}/${portfolio.id}/shareNotes`, shareNotes));
-        portfolio.portfolioParams.shareNotes = shareNotes;
+        shareNotesRequest[data.ticker] = data.note;
+        await (await this.http.put(`/${this.ENDPOINT_BASE}/${portfolioId}/shareNotes`, shareNotesRequest));
+        return shareNotesRequest;
     }
 
     /**

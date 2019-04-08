@@ -72,7 +72,6 @@
     "curly": true,
     /** Включение консоли */
     "no-console": [
-      "log",
       "error"
     ]
   }
