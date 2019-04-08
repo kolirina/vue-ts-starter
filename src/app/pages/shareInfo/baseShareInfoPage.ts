@@ -158,7 +158,7 @@ import {StoreType} from "../../vuex/storeType";
                                             <v-layout align-center>
                                                 <div :class="stockDynamic.yieldMonth1 >= 0 ? 'icon-positive' : 'icon-negative'"></div>
                                                 <span :class="['info-about-stock__content', (stockDynamic.yieldMonth1 >= 0 ? 'above' : 'less') + '-than-zero']">
-                                                    {{ stockDynamic.yieldMonth1 }}
+                                                    {{ stockDynamic.yieldMonth1 }} %
                                                 </span>
                                             </v-layout>
                                         </td>
@@ -169,7 +169,7 @@ import {StoreType} from "../../vuex/storeType";
                                             <v-layout align-center>
                                                 <div :class="stockDynamic.yieldMonth6 >= 0 ? 'icon-positive' : 'icon-negative'"></div>
                                                 <span :class="['info-about-stock__content', (stockDynamic.yieldMonth6 >= 0 ? 'above' : 'less') + '-than-zero']">
-                                                    {{ stockDynamic.yieldMonth6 }}
+                                                    {{ stockDynamic.yieldMonth6 }} %
                                                 </span>
                                             </v-layout>
                                         </td>
@@ -180,7 +180,7 @@ import {StoreType} from "../../vuex/storeType";
                                             <v-layout align-center>
                                                 <div :class="stockDynamic.yieldMonth12 >= 0 ? 'icon-positive' : 'icon-negative'"></div>
                                                 <span :class="['info-about-stock__content', (stockDynamic.yieldMonth12 >= 0 ? 'above' : 'less') + '-than-zero']">
-                                                    {{ stockDynamic.yieldMonth12 }}
+                                                    {{ stockDynamic.yieldMonth12 }} %
                                                 </span>
                                             </v-layout>
                                         </td>
@@ -269,7 +269,7 @@ import {StoreType} from "../../vuex/storeType";
                         <div class="info-about-stock__chart">
                             <v-card v-if="share" class="chart-overflow" flat>
                                 <div>
-                                    <micro-line-chart :data="microChartData" :height="150" :width="400"></micro-line-chart>
+                                    <micro-line-chart :data="microChartData" :height="150" :width="440"></micro-line-chart>
                                 </div>
                             </v-card>
                         </div>
@@ -290,7 +290,7 @@ import {StoreType} from "../../vuex/storeType";
 
             <div class="space-between-blocks"></div>
             <v-card v-if="share" class="chart-overflow" flat>
-                <v-card-title class="headline">
+                <v-card-title class="chart-title">
                     Цена бумаги
                 </v-card-title>
                 <v-card-text>
@@ -300,8 +300,8 @@ import {StoreType} from "../../vuex/storeType";
 
             <template v-if="dividends.length">
                 <div class="space-between-blocks"></div>
-                <v-card v-if="share" flat>
-                    <v-card-title class="headline">
+                <v-card v-if="share" flat class="dividends-chart">
+                    <v-card-title class="chart-title">
                         Дивиденды
                         <v-spacer></v-spacer>
                         <chart-export-menu @print="print" @exportTo="exportTo($event)"></chart-export-menu>
