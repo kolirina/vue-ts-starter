@@ -73,10 +73,6 @@
     /** Включение консоли */
     "no-console": [
       "error"
-    ],
-    /** Включаем camelCase нотацию для ts файлов */
-    "file-name-casing": [true, {
-      ".ts": "camel-case"
-    }]
+    ]
   }
 }
