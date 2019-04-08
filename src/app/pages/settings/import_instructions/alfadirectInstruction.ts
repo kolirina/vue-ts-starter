@@ -11,7 +11,7 @@ import {ImageDialog} from "../../../components/dialogs/imageDialog";
                     Перейдите в личный кабинет брокера, и выберите пункт Отчеты.
                 </div>
 
-                <v-img :src="IMAGES[0]" height="479" width="800" class="grey darken-4 image" @click.stop="openImage(IMAGES[0])"></v-img>
+                <v-img :src="IMAGES[0]" height="479" width="800" class="grey darken-4 image"></v-img>
 
                 <div class="import-default-text">
                     Выберите тип отчета <b>Брокерский</b> Настройте параметры отчета:
@@ -25,7 +25,7 @@ import {ImageDialog} from "../../../components/dialogs/imageDialog";
                     </ul>
                 </div>
 
-                <v-img :src="IMAGES[1]" height="697" width="960" class="grey darken-4 image" @click.stop="openImage(IMAGES[1])"></v-img>
+                <v-img :src="IMAGES[1]" height="697" width="960" class="grey darken-4 image"></v-img>
 
                 <div class="import-default-text">
                     Полученный файл используйте для импорта.
@@ -40,7 +40,7 @@ import {ImageDialog} from "../../../components/dialogs/imageDialog";
                     В старой версии ЛК брокера
                 </div>
 
-                <v-img :src="IMAGES[2]" height="297" width="762" class="grey darken-4 image" @click.stop="openImage(IMAGES[2])"></v-img>
+                <v-img :src="IMAGES[2]" height="297" width="762" class="grey darken-4 image"></v-img>
 
                 <div class="import-default-text">
                     Выберите пункт меню Отчеты -> Бухгалтерские отчеты<br>
@@ -57,7 +57,7 @@ import {ImageDialog} from "../../../components/dialogs/imageDialog";
                     </ul>
                 </div>
 
-                <v-img :src="IMAGES[3]" height="264" width="980" class="grey darken-4 image" @click.stop="openImage(IMAGES[3])"></v-img>
+                <v-img :src="IMAGES[3]" height="264" width="980" class="grey darken-4 image"></v-img>
 
                 <div class="import-default-text">
                     После успешного формирования отчета он появится в таблице ниже<br>
@@ -76,9 +76,5 @@ export class AlfadirectInstruction extends UI {
         "./img/import_instructions/alfadirect/3.png",
         "./img/import_instructions/alfadirect/4.png"
     ];
-
-    private async openImage(url: string): Promise<void> {
-        await new ImageDialog().show(url);
-    }
 
 }

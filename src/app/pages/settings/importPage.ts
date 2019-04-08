@@ -191,7 +191,7 @@ const MainStore = namespace(StoreType.MAIN);
                         <file-link @select="onFileAdd" :accept="allowedExtensions" v-if="importProviderFeatures && !files.length">Выбрать файл</file-link>
                         <v-spacer></v-spacer>
                         <div @click="showInstruction = !showInstruction" class="btn-show-instruction" v-if="importProviderFeatures">
-                            Как сформировать отчет брокера {{ selectedProvider }}?
+                            Как сформировать отчет брокера?
                         </div>
                     </v-layout>
 

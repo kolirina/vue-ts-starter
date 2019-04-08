@@ -10,7 +10,7 @@ import {TableHeader} from "../../types/types";
 @Component({
     // language=Vue
     template: `
-        <v-dialog v-model="showed" max-width="600px" persistent>
+        <v-dialog v-model="showed" max-width="600px">
             <v-card class="dialog-wrap import-dialog-wrapper">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
 
@@ -19,11 +19,11 @@ import {TableHeader} from "../../types/types";
                 </v-card-title>
                 <v-card-text class="import-dialog-wrapper__description">
                     <div class="import-dialog-wrapper__description-text import-default-text">
-                        При импортировании отчета возникли ошибки, портфель небыл импортирован полностью. Чтобы завершить формирование пожалуйста внесите остатки вручную.
+                        При импортировании отчета возникли ошибки, портфель не был импортирован полностью. Чтобы завершить формирование пожалуйста внесите остатки вручную.
                     </div>
                     <div class="import-dialog-wrapper__description-text import-default-text">
                         Успешно {{ data.validatedTradesCount | declension("добавлена", "добавлено", "добавлено") }}
-                        {{ data.validatedTradesCount | declension("сделка", "сделки", "сделок") }} {{ data.validatedTradesCount }}</div>
+                        {{ data.validatedTradesCount | declension("сделка", "сделки", "сделок") }}<span class="amount-deals">{{ data.validatedTradesCount }}</span></div>
                 </v-card-text>
                 <v-card-text class="import-dialog-wrapper__content">
                     <v-data-table :headers="headers" :items="data.errors" hide-actions>

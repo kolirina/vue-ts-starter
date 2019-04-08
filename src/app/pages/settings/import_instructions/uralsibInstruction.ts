@@ -16,7 +16,7 @@ import {ImageDialog} from "../../../components/dialogs/imageDialog";
                         Контактная информация о менеджере указана в отчете.
                     </div>
                 </div>
-                <v-img :src="IMAGES[0]" height="207" width="980" class="grey darken-4 image" @click.stop="openImage(IMAGES[0])"></v-img>
+                <v-img :src="IMAGES[0]" height="207" width="980" class="grey darken-4 image"></v-img>
                 <div class="import-default-text">
                     Полученный файлы используйте для импорта.
                 </div>
@@ -30,7 +30,4 @@ export class UralsibInstruction extends UI {
         "./img/import_instructions/uralsib/1.png"
     ];
 
-    private async openImage(url: string): Promise<void> {
-        await new ImageDialog().show(url);
-    }
 }

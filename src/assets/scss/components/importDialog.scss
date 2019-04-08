@@ -10,7 +10,7 @@
         }
     }
     &__description {
-        padding: 0px 0px 21px 32px;
+        padding: 0px 32px 21px 32px;
         &-text {
             margin-bottom: 30px;
             &:last-child {
@@ -64,5 +64,14 @@
     margin: 26px 0px 10px 0px;
     input {
         margin-top: 0px !important;
+        &::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+        }
+        &::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+        }
     }
+}
+.amount-deals{
+    margin-left: 20px;
 }

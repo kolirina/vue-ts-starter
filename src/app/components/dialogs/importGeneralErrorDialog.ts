@@ -8,7 +8,7 @@ import {CustomDialog} from "../../platform/dialogs/customDialog";
 @Component({
     // language=Vue
     template: `
-        <v-dialog v-model="showed" max-width="600px" persistent>
+        <v-dialog v-model="showed" max-width="600px">
             <v-card class="dialog-wrap import-dialog-wrapper import-general-error-wrapper">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
 
@@ -28,7 +28,7 @@ import {CustomDialog} from "../../platform/dialogs/customDialog";
                         </div>
                     </v-card-text>
                     <v-card-actions>
-                        <v-btn color="primary" @click="goToPortfolio" dark>
+                        <v-btn color="primary" @click="goToBalances" dark>
                             Перейти к портфелю
                         </v-btn>
                     </v-card-actions>
@@ -39,8 +39,8 @@ import {CustomDialog} from "../../platform/dialogs/customDialog";
 })
 export class ImportGeneralErrorDialog extends CustomDialog<ImportGeneralErrorDialogData, void> {
 
-    private goToPortfolio(): void {
-        this.data.router.push("portfolio");
+    private goToBalances(): void {
+        this.data.router.push("trades");
         this.close();
     }
 }

@@ -14,15 +14,15 @@ import {ImageDialog} from "../../../components/dialogs/imageDialog";
                 Для получения файла импорта в терминале QUIK
             </div>
             <div>
-                <v-img :src="IMAGES[0]" height="250" width="948" class="grey darken-4 image" @click.stop="openImage(IMAGES[0])"></v-img>
+                <v-img :src="IMAGES[0]" height="250" width="948" class="grey darken-4 image"></v-img>
                 <div class="import-default-text">
                     Перейдите в меню "Расширения" -> "Отчеты" -> "Отчет по всем сделкам клиента".
                 </div>
-                <v-img :src="IMAGES[1]" height="159.5" width="622.5" class="grey darken-4 image" @click.stop="openImage(IMAGES[1])"></v-img>
+                <v-img :src="IMAGES[1]" height="159.5" width="622.5" class="grey darken-4 image"></v-img>
                 <div class="import-default-text">
                     Сформируйте отчет за требуемый вам период.
                 </div>
-                <v-img :src="IMAGES[2]" height="90" width="279" class="grey darken-4 image" @click.stop="openImage(IMAGES[2])"></v-img>
+                <v-img :src="IMAGES[2]" height="90" width="279" class="grey darken-4 image"></v-img>
                 <div class="import-default-text">
                     Полученный файл используйте для импорта.
                 </div>
@@ -38,7 +38,4 @@ export class QuikInstruction extends UI {
         "./img/import_instructions/quik/3.png"
     ];
 
-    private async openImage(url: string): Promise<void> {
-        await new ImageDialog().show(url);
-    }
 }

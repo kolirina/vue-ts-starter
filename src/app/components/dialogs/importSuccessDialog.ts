@@ -15,7 +15,7 @@ import {MainStore} from "../../vuex/mainStore";
 @Component({
     // language=Vue
     template: `
-        <v-dialog v-model="showed" max-width="600px" persistent>
+        <v-dialog v-model="showed" max-width="600px" persistent ref="dialog">
             <v-card class="dialog-wrap import-dialog-wrapper">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
                 <div class="import-general-error-wrapper__element-centering">
@@ -37,6 +37,7 @@ import {MainStore} from "../../vuex/mainStore";
                                     suffix="RUB"
                                     hide-details
                                     single-line
+                                    type="number"
                                 ></v-text-field>
                             </div>
                         </span>
@@ -47,7 +48,8 @@ import {MainStore} from "../../vuex/mainStore";
                             </div>
                             <div class="import-default-text">
                                 Успешно {{ data.importResult.validatedTradesCount | declension("добавлена", "добавлено", "добавлено") }}
-                                {{ data.importResult.validatedTradesCount | declension("сделка", "сделки", "сделок") }} {{ data.importResult.validatedTradesCount }}
+                                {{ data.importResult.validatedTradesCount | declension("сделка", "сделки", "сделок") }}
+                                <span class="amount-deals">{{ data.importResult.validatedTradesCount }}</span>
                             </div>
                         </span>
                     </v-card-text>

@@ -43,25 +43,25 @@ export class ImportService {
 
 /** Форматы поддерживаемых брокеров и отчетов */
 export enum DealsImportProvider {
-    ALFADIRECT = "ALFADIRECT",
-    ITINVEST = "ITINVEST",
-    OTKRYTIE = "OTKRYTIE",
-    ZERICH = "ZERICH",
-    PSBANK = "PSBANK",
-    BCS = "BCS",
-    BCS_CYPRUS = "BCS_CYPRUS",
-    FINAM = "FINAM",
-    FREEDOM_FINANCE = "FREEDOM_FINANCE",
-    KITFINANCE = "KITFINANCE",
-    URALSIB = "URALSIB",
     SBERBANK = "SBERBANK",
-    VTB24 = "VTB24",
-    INTERACTIVE_BROKERS = "INTERACTIVE_BROKERS",
+    BCS = "BCS",
     TINKOFF = "TINKOFF",
+    PSBANK = "PSBANK",
+    VTB24 = "VTB24",
+    OTKRYTIE = "OTKRYTIE",
+    QUIK = "QUIK",
+    FINAM = "FINAM",
+    ALFADIRECT = "ALFADIRECT",
+    URALSIB = "URALSIB",
+    KITFINANCE = "KITFINANCE",
+    INTERACTIVE_BROKERS = "INTERACTIVE_BROKERS",
+    ZERICH = "ZERICH",
+    BCS_CYPRUS = "BCS_CYPRUS",
+    FREEDOM_FINANCE = "FREEDOM_FINANCE",
     NETTRADER = "NETTRADER",
-    INTELINVEST = "INTELINVEST",
+    ITINVEST = "ITINVEST",
     ATON = "ATON",
-    QUIK = "QUIK"
+    INTELINVEST = "INTELINVEST"
 }
 
 export interface ImportResponse {

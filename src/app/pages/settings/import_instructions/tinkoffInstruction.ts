@@ -16,7 +16,7 @@ import {ImageDialog} from "../../../components/dialogs/imageDialog";
                         Выберите в меню пункт О счете.
                     </div>
                 </div>
-                <v-img :src="IMAGES[0]" height="235" width="582" class="grey darken-4 image" @click.stop="openImage(IMAGES[0])"></v-img>
+                <v-img :src="IMAGES[0]" height="235" width="582" class="grey darken-4 image"></v-img>
             </div>
             <div class="import-format-requirements-ul">
                 <div>
@@ -34,7 +34,7 @@ import {ImageDialog} from "../../../components/dialogs/imageDialog";
                     Полученный файл используйте для импорта.
                 </div>
             </div>
-            <v-img :src="IMAGES[1]" height="528" width="536" class="grey darken-4 image" @click.stop="openImage(IMAGES[1])"></v-img>
+            <v-img :src="IMAGES[1]" height="528" width="536" class="grey darken-4 image"></v-img>
         </div>
     `
 })
@@ -45,7 +45,4 @@ export class TinkoffInstruction extends UI {
         "./img/import_instructions/tinkoff/2.png"
     ];
 
-    private async openImage(url: string): Promise<void> {
-        await new ImageDialog().show(url);
-    }
 }
