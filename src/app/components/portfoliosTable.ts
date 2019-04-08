@@ -29,10 +29,24 @@ const MainStore = namespace(StoreType.MAIN);
                     <td>
                         <span @click="props.expanded = !props.expanded" class="data-table-cell" :class="{'data-table-cell-open': props.expanded, 'path': true}"></span>
                     </td>
-                    <td>{{ props.item.name }}</td>
-                    <td class="text-xs-center">
-                        <v-icon color="gray" small v-if="props.item.professionalMode" title="Профессиональный режим в действии">fas fa-rocket</v-icon>
-                        <v-icon color="gray" small v-if="props.item.access" title="Открыт публичный доступ к портфелю">fas fa-share-alt</v-icon>
+                    <td>
+                        <span>
+                            {{ props.item.name }}
+                        </span>
+                        <span class="section-icon-menu">
+                            <v-menu transition="slide-y-transition" right open-on-hover content-class="menu-icons" bottom nudge-bottom="13">
+                                <img src="img/portfolio/pro.svg" slot="activator">
+                                <div>
+                                    Активирован профессиональный режим
+                                </div>
+                            </v-menu>
+                            <v-menu transition="slide-y-transition" right open-on-hover content-class="menu-icons" bottom nudge-bottom="7" class="public-access">
+                                <img src="img/portfolio/share.svg" slot="activator">
+                                <div>
+                                    Открыт публичный доступ к портфелю
+                                </div>
+                            </v-menu>
+                        </span>
                     </td>
                     <td class="text-xs-right">{{ props.item.fixFee }}&nbsp;<span class="second-value">%</span></td>
                     <td class="text-xs-center">{{ props.item.viewCurrency }}</td>
@@ -133,9 +147,8 @@ export class PortfoliosTable extends UI {
     private portfolioService: PortfolioService;
 
     private headers: TableHeader[] = [
-        {text: "", align: "left", ghost: true, sortable: false, value: "", active: true},
+        {text: "", align: "left", ghost: true, sortable: false, value: "", active: true, width: "1"},
         {text: "Название", align: "left", value: "name"},
-        {text: "", align: "center", value: "", sortable: false, width: "100"},
         {text: "Фикс. комиссия", align: "right", value: "fixFee", width: "50"},
         {text: "Валюта", align: "center", value: "viewCurrency"},
         {text: "Тип счета", align: "center", value: "accountType.description"},
