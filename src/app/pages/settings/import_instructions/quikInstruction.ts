@@ -1,6 +1,5 @@
 import Component from "vue-class-component";
 import {UI} from "../../../app/ui";
-import {ImageDialog} from "../../../components/dialogs/imageDialog";
 
 @Component({
     // language=Vue

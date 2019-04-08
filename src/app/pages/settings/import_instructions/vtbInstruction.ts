@@ -1,6 +1,5 @@
 import Component from "vue-class-component";
 import {UI} from "../../../app/ui";
-import {ImageDialog} from "../../../components/dialogs/imageDialog";
 
 @Component({
     // language=Vue
@@ -49,7 +48,4 @@ export class VtbInstruction extends UI {
         "./img/import_instructions/vtb/3.png"
     ];
 
-    private async openImage(url: string): Promise<void> {
-        await new ImageDialog().show(url);
-    }
 }
