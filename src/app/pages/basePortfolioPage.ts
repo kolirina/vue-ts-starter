@@ -37,7 +37,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
     // language=Vue
     template: `
         <v-container v-if="overview" fluid class="paddT0">
-            <dashboard :data="overview.dashboardData"></dashboard>
+            <dashboard :data="overview.dashboardData" :view-currency="viewCurrency" :side-bar-opened="sideBarOpened"></dashboard>
 
             <slot name="afterDashboard"></slot>
 
@@ -61,7 +61,8 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                     <v-list-tile-title v-if="exportable" @click="exportTable(ExportType.STOCKS)">Экспорт в xlsx</v-list-tile-title>
                 </template>
                 <portfolio-rows-table-filter :search.sync="stockSearch" :filter.sync="stockFilter" :store-key="StoreKeys.STOCKS_TABLE_FILTER_KEY"></portfolio-rows-table-filter>
-                <stock-table :rows="stockRows" :headers="getHeaders(TABLES_NAME.STOCK)" :search="stockSearch" :filter="stockFilter"></stock-table>
+                <stock-table :rows="stockRows" :headers="getHeaders(TABLES_NAME.STOCK)" :search="stockSearch" :filter="stockFilter"
+                             :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes"></stock-table>
             </expanded-panel>
 
             <div style="height: 30px"></div>
@@ -81,7 +82,8 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                     <v-list-tile-title v-if="exportable" @click="exportTable(ExportType.BONDS)">Экспорт в xlsx</v-list-tile-title>
                 </template>
                 <portfolio-rows-table-filter :search.sync="bondSearch" :filter.sync="bondFilter" :store-key="StoreKeys.BONDS_TABLE_FILTER_KEY"></portfolio-rows-table-filter>
-                <bond-table :rows="bondRows" :headers="getHeaders(TABLES_NAME.BOND)" :search="bondSearch" :filter="bondFilter"></bond-table>
+                <bond-table :rows="bondRows" :headers="getHeaders(TABLES_NAME.BOND)" :search="bondSearch" :filter="bondFilter"
+                            :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes"></bond-table>
             </expanded-panel>
 
             <div style="height: 30px"></div>
@@ -175,8 +177,11 @@ export class BasePortfolioPage extends UI {
     @Prop({default: "", type: String, required: false})
     private portfolioName: string;
     /** Идентификатор портфеля */
-    @Prop({default: null, type: Number, required: false})
+    @Prop({default: "", type: String, required: false})
     private portfolioId: string;
+    /** Заметки по бумагам портфеля */
+    @Prop({default: null, type: Object, required: false})
+    private shareNotes: { [key: string]: string };
     /** Данные по графику стоимости портфеля */
     @Prop({required: false})
     private lineChartData: any[];
@@ -186,11 +191,18 @@ export class BasePortfolioPage extends UI {
     /** Признак доступности экспорта таблиц */
     @Prop({type: Boolean, required: false})
     private exportable: boolean;
+    /** Валюта просмотра информации */
     @Prop({required: true, type: String})
     private viewCurrency: string;
     /** Префикс ключа под которым будет хранится состояние */
     @Prop({type: String, required: true})
     private stateKeyPrefix: string;
+    /** Признак публичной зоны */
+    @Prop({type: Boolean, default: false, required: false})
+    private publicZone: boolean;
+    /** Признак открытой боковой панели */
+    @Prop({required: true, type: Boolean, default: true})
+    private sideBarOpened: boolean;
     @Inject
     private tablesService: TablesService;
     @Inject

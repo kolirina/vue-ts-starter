@@ -50,7 +50,7 @@ async function _start(resolve: () => void, reject: () => void): Promise<void> {
         app.$mount("#app");
         resolve();
     } catch (error) {
-        console.log("ERROR WHILE INIT APPLICATION", error);
+        console.error("ERROR WHILE INIT APPLICATION", error);
         reject();
     }
 }

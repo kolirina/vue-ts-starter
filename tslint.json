@@ -72,8 +72,9 @@
     "curly": true,
     /** Включение консоли */
     "no-console": [
-      "log",
       "error"
-    ]
+    ],
+    /** Запрещается изменять аргументы функций */
+    "no-parameter-reassignment": true
   }
 }
