@@ -19,8 +19,8 @@ export class NumberMask extends Vue {
         return (this as any).mask && !(this as any).returnMaskedValue ? _unmaskText(text) : (this as any).unmaskNumber(text);
     }
 
-    private maskNumber(text: string | number): string {
-        text = String(text);
+    private maskNumber(value: string | number): string {
+        const text = String(value);
         if (text == null) {
             return "";
         }

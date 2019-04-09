@@ -353,7 +353,8 @@ export class StockTable extends UI {
         return SortUtils.stockSort(items, index, isDesc);
     }
 
-    private customFilter(items: StockPortfolioRow[], search: string): StockPortfolioRow[] {
+    private customFilter(items: StockPortfolioRow[], searchString: string): StockPortfolioRow[] {
+        let search = searchString;
         if (CommonUtils.isBlank(search)) {
             return items;
         }

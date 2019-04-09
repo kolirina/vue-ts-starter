@@ -382,7 +382,8 @@ export class BondTable extends UI {
         return SortUtils.bondSort(items, index, isDesc);
     }
 
-    private customFilter(items: BondPortfolioRow[], search: string): BondPortfolioRow[] {
+    private customFilter(items: BondPortfolioRow[], searchString: string): BondPortfolioRow[] {
+        let search = searchString;
         if (CommonUtils.isBlank(search)) {
             return items;
         }
