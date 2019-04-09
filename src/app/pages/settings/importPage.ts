@@ -341,10 +341,6 @@ export class ImportPage extends UI {
             this.$snotify.warning("Импорт завершен. В отчете не содержится информации по сделкам.");
         }
     }
-    /** Возвращает путь на картинку */
-    private getLink(nameImg: string): string {
-        return `img/fileimport/${nameImg}.svg`;
-    }
 
     /**
      * Обрабатывает событие выбора провайдера из стороннего компонента
