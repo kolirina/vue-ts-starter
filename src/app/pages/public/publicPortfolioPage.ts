@@ -1,26 +1,37 @@
+/*
+ * STRICTLY CONFIDENTIAL
+ * TRADE SECRET
+ * PROPRIETARY:
+ *       "Intelinvest" Ltd, TIN 1655386205
+ *       420107, REPUBLIC OF TATARSTAN, KAZAN CITY, SPARTAKOVSKAYA STREET, HOUSE 2, ROOM 119
+ * (c) "Intelinvest" Ltd, 2019
+ *
+ * СТРОГО КОНФИДЕНЦИАЛЬНО
+ * КОММЕРЧЕСКАЯ ТАЙНА
+ * СОБСТВЕННИК:
+ *       ООО "Интеллектуальные инвестиции", ИНН 1655386205
+ *       420107, РЕСПУБЛИКА ТАТАРСТАН, ГОРОД КАЗАНЬ, УЛИЦА СПАРТАКОВСКАЯ, ДОМ 2, ПОМЕЩЕНИЕ 119
+ * (c) ООО "Интеллектуальные инвестиции", 2019
+ */
 import {Inject} from "typescript-ioc";
-import {namespace} from "vuex-class/lib/bindings";
-import {Component, UI, Watch} from "../app/ui";
-import {ShowProgress} from "../platform/decorators/showProgress";
-import {ExportService, ExportType} from "../services/exportService";
-import {OverviewService} from "../services/overviewService";
-import {HighStockEventsGroup} from "../types/charts/types";
-import {StoreKeys} from "../types/storeKeys";
-import {Portfolio} from "../types/types";
-import {CommonUtils} from "../utils/commonUtils";
-import {UiStateHelper} from "../utils/uiStateHelper";
-import {StoreType} from "../vuex/storeType";
-import {BasePortfolioPage} from "./basePortfolioPage";
-
-const MainStore = namespace(StoreType.MAIN);
+import {Component, UI, Watch} from "../../app/ui";
+import {ShowProgress} from "../../platform/decorators/showProgress";
+import {ExportService, ExportType} from "../../services/exportService";
+import {OverviewService} from "../../services/overviewService";
+import {HighStockEventsGroup} from "../../types/charts/types";
+import {StoreKeys} from "../../types/storeKeys";
+import {Portfolio} from "../../types/types";
+import {CommonUtils} from "../../utils/commonUtils";
+import {UiStateHelper} from "../../utils/uiStateHelper";
+import {BasePortfolioPage} from "../basePortfolioPage";
 
 @Component({
     // language=Vue
     template: `
         <base-portfolio-page v-if="portfolio" :overview="portfolio.overview" :portfolio-name="portfolio.portfolioParams.name" :portfolio-id="String(portfolio.portfolioParams.id)"
                              :line-chart-data="lineChartData" :line-chart-events="lineChartEvents" :view-currency="portfolio.portfolioParams.viewCurrency"
-                             :state-key-prefix="StoreKeys.PORTFOLIO_CHART" :side-bar-opened="sideBarOpened" :share-notes="portfolio.portfolioParams.shareNotes"
-                             @reloadLineChart="loadPortfolioLineChart" @exportTable="onExportTable" exportable>
+                             :state-key-prefix="StoreKeys.PORTFOLIO_CHART"
+                             @reloadLineChart="loadPortfolioLineChart" @exportTable="onExportTable" exportable public-zone side-bar-opened>
             <template #afterDashboard>
                 <v-alert v-if="isEmptyBlockShowed" :value="true" type="info" outline>
                     Для начала работы заполните свой портфель. Вы можете
@@ -34,12 +45,9 @@ const MainStore = namespace(StoreType.MAIN);
     `,
     components: {BasePortfolioPage}
 })
-export class PortfolioPage extends UI {
+export class PublicPortfolioPage extends UI {
 
-    @MainStore.Getter
-    private portfolio: Portfolio;
-    @MainStore.Getter
-    private sideBarOpened: boolean;
+    private portfolio: Portfolio = null;
     @Inject
     private overviewService: OverviewService;
     @Inject
@@ -53,11 +61,14 @@ export class PortfolioPage extends UI {
      * Инициализация данных страницы
      * @inheritDoc
      */
+    @ShowProgress
     async created(): Promise<void> {
+        const portfolioId = this.$route.params.id;
+        this.portfolio = await this.overviewService.getById(portfolioId, true);
         await this.loadPortfolioLineChart();
     }
 
-    @Watch("portfolio")
+    @Watch("$route.params.id")
     private async onPortfolioChange(): Promise<void> {
         this.lineChartData = null;
         this.lineChartEvents = null;
@@ -67,8 +78,8 @@ export class PortfolioPage extends UI {
     @ShowProgress
     private async loadPortfolioLineChart(): Promise<void> {
         if (UiStateHelper.historyPanel[0] === 1 && !CommonUtils.exists(this.lineChartData) && !CommonUtils.exists(this.lineChartEvents)) {
-            this.lineChartData = await this.overviewService.getCostChart(this.portfolio.id);
-            this.lineChartEvents = await this.overviewService.getEventsChartDataWithDefaults(this.portfolio.id);
+            this.lineChartData = await this.overviewService.getCostChart(this.portfolio.id, true);
+            this.lineChartEvents = await this.overviewService.getEventsChartDataWithDefaults(this.portfolio.id, true);
         }
     }
 

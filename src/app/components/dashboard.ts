@@ -1,24 +1,20 @@
 import Component from "vue-class-component";
 import {Prop, Watch} from "vue-property-decorator";
-import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
 import {Filters} from "../platform/filters/Filters";
 import {BigMoney} from "../types/bigMoney";
-import {DashboardBrick, DashboardData, Portfolio} from "../types/types";
-import {StoreType} from "../vuex/storeType";
-
-const MainStore = namespace(StoreType.MAIN);
+import {DashboardBrick, DashboardData} from "../types/types";
 
 @Component({
     // language=Vue
     template: `
         <v-card dark class="dashboard-card" :class="{ 'dashboard-border': !block.hasNotBorderLeft }">
             <v-card-title primary-title class="pb-2 dashboard-card-string">
-                    <span>{{ block.name }}</span>
-                    <v-tooltip content-class="custom-tooltip-wrap dashboard-tooltip" :max-width="450" bottom right>
-                        <v-icon class="custom-tooltip" slot="activator" small>far fa-question-circle</v-icon>
-                        <span v-html="block.tooltip"></span>
-                    </v-tooltip>
+                <span>{{ block.name }}</span>
+                <v-tooltip content-class="custom-tooltip-wrap dashboard-tooltip" :max-width="450" bottom right>
+                    <v-icon class="custom-tooltip" slot="activator" small>far fa-question-circle</v-icon>
+                    <span v-html="block.tooltip"></span>
+                </v-tooltip>
             </v-card-title>
             <v-container fluid pl-3 pt-0>
                 <v-layout row class="mx-0 py-2 ">
@@ -76,18 +72,25 @@ export class DashboardBrickComponent extends UI {
     components: {DashboardBrickComponent}
 })
 export class Dashboard extends UI {
-    @MainStore.Getter
-    private portfolio: Portfolio;
-    @MainStore.Getter
-    private sideBarOpened: boolean;
 
+    /** Валюта информации в дашборде */
+    @Prop({required: true, type: String})
+    private viewCurrency: string;
+    /** Признак открытой боковой панели */
+    @Prop({required: true, type: Boolean, default: true})
+    private sideBarOpened: boolean;
+    /** Данные по дашборду */
     @Prop({required: true})
     private data: DashboardData;
-
+    /** Блоки для отображения дашборда */
     private blocks: DashboardBrick[] = [];
-
+    /** Признак зафиксированного дашборда */
     private fixedDashboard = false;
 
+    /**
+     * Инициализация данных
+     * @inheritDoc
+     */
     created(): void {
         this.fillBricks(this.data);
     }
@@ -98,7 +101,7 @@ export class Dashboard extends UI {
     }
 
     private fillBricks(newValue: DashboardData): void {
-        const mainCurrency = this.portfolio.portfolioParams.viewCurrency.toLowerCase();
+        const mainCurrency = this.viewCurrency.toLowerCase();
         const secondCurrency = new BigMoney(newValue.currentCostInAlternativeCurrency).currency.toLowerCase();
 
         this.blocks[0] = {

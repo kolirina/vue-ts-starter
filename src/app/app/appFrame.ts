@@ -261,7 +261,7 @@ export class AppFrame extends UI {
             await this.startup();
         }
         // если удалось восстановить state, значит все уже загружено
-        if (this.$store.state[StoreType.MAIN].clientInfo) {
+        if (this.$store.state[StoreType.MAIN].clientInfo || this.$route.meta.public) {
             this.isNotifyAccepted = UiStateHelper.lastUpdateNotification === NotificationUpdateDialog.DATE;
             this.loggedIn = true;
         }

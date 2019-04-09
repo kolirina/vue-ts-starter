@@ -87,7 +87,8 @@ export class UIRegistry {
                 timeout: 5000,
                 showProgressBar: false,
                 closeOnClick: true,
-                pauseOnHover: true
+                pauseOnHover: true,
+                bodyMaxLength: 255
             }
         });
         // Vue.use(VueGtm, {

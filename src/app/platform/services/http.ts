@@ -120,11 +120,12 @@ export class Http {
     /**
      * Подготовить запрос
      * @param method метод запроса
-     * @param url    URL запроса
+     * @param requestUrl    URL запроса
      * @param params объект с параметрами, которые необходимо применить к запросу
      * @return {ParamsInit} объект с данными запроса
      */
-    private prepareRequestParams(method: string, url: string, params: { options: any, body?: any, urlParams?: UrlParams }): ParamsInit {
+    private prepareRequestParams(method: string, requestUrl: string, params: { options: any, body?: any, urlParams?: UrlParams }): ParamsInit {
+        let url = requestUrl;
         const requestParams = this.getDefaultRequestInit();
         requestParams.method = method;
         const token = this.localStorage.get(StoreKeys.TOKEN_KEY, null);
@@ -161,15 +162,16 @@ export class Http {
      */
     private buildQuery(urlParams: UrlParams): string {
         return Object.keys(urlParams).reduce((query: string, key: string, idx: number, keys: string[]) => {
+            let resultQuery = query;
             if (urlParams[key] instanceof Array) {
-                query += this.arrayToQueryString(key, urlParams[key] as string[]);
+                resultQuery += this.arrayToQueryString(key, urlParams[key] as string[]);
             } else {
-                query += encodeURIComponent(key) + "=" + encodeURIComponent(String(urlParams[key]));
+                resultQuery += encodeURIComponent(key) + "=" + encodeURIComponent(String(urlParams[key]));
             }
             if (idx < keys.length - 1) {
-                query += "&";
+                resultQuery += "&";
             }
-            return query;
+            return resultQuery;
         }, "?");
     }
 
@@ -179,10 +181,11 @@ export class Http {
      * @param body        данные для установки
      */
     private setRequestInitBody(requestInit: RequestInit, body: any): void {
-        if (typeof body !== "string" && !(body instanceof FormData)) {
-            body = JSON.stringify(body);
+        let resultBody = body;
+        if (typeof resultBody !== "string" && !(resultBody instanceof FormData)) {
+            resultBody = JSON.stringify(resultBody);
         }
-        requestInit.body = body;
+        requestInit.body = resultBody;
     }
 
     /**
