@@ -345,7 +345,7 @@ export class ImportPage extends UI {
     /**
      * Показать инструкцию после нажатия на кнопку "CSV"
      */
-    private showIntelinvestInctruction() : void {
+    private showIntelinvestInctruction(): void {
         this.importProviderFeatures = null;
         this.selectedProvider = this.providers.INTELINVEST.code;
         this.showInstruction = true;

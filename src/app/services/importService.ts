@@ -1,9 +1,9 @@
 import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
+import {Enum, EnumType, IStaticEnum} from "../platform/enum";
 import {Http} from "../platform/services/http";
 import {Status} from "../types/types";
 import {ImportProviderFeaturesByProvider} from "./importService";
-import {Enum, EnumType, IStaticEnum} from "../platform/enum";
 
 @Service("ImportService")
 @Singleton
