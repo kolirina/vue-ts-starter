@@ -3,6 +3,7 @@ import {Service} from "../platform/decorators/service";
 import {Http} from "../platform/services/http";
 import {Status} from "../types/types";
 import {ImportProviderFeaturesByProvider} from "./importService";
+import {Enum, EnumType, IStaticEnum} from "../platform/enum";
 
 @Service("ImportService")
 @Singleton
@@ -42,83 +43,33 @@ export class ImportService {
 }
 
 /** Форматы поддерживаемых брокеров и отчетов */
-export let DealsImportProvider = [
-    {
-        id: "SBERBANK",
-        name: "Сбербанк"
-    },
-    {
-        id: "BCS",
-        name: "БКС"
-    },
-    {
-        id: "TINKOFF",
-        name: "Тинькофф"
-    },
-    {
-        id: "PSBANK",
-        name: "ПромСвязьБанк"
-    },
-    {
-        id: "VTB24",
-        name: "ВТВ24"
-    },
-    {
-        id: "OTKRYTIE",
-        name: "Открытие"
-    },
-    {
-        id: "QUIK",
-        name: "QUIK"},
-    {
-        id: "FINAM",
-        name: "Финам"
-    },
-    {
-        id: "ALFADIRECT",
-        name: "Альфа-директ"
-    },
-    {
-        id: "URALSIB",
-        name: "Уралсиб"
-    },
-    {
-        id: "KITFINANCE",
-        name: "КИТфинанс"
-    },
-    {
-        id: "INTERACTIVE_BROKERS",
-        name: "Interactive brokers"
-    },
-    {
-        id: "ZERICH",
-        name: "Церих"
-    },
-    {
-        id: "BCS_CYPRUS",
-        name: "BCScyprus"
-    },
-    {
-        id: "FREEDOM_FINANCE",
-        name: "Freedom Finance"
-    },
-    {
-        id: "NETTRADER",
-        name: "Nettrader"
-    },
-    {
-        id: "ITINVEST",
-        name: "ITIcapital"
-    },
-    {
-        id: "ATON",
-        name: "Атон"
-    },
-    {
-        id: "INTELINVEST",
-        name: "Intelinvest"
+@Enum("code")
+export class DealsImportProvider extends (EnumType as IStaticEnum<DealsImportProvider>) {
+
+    static readonly SBERBANK = new DealsImportProvider("SBERBANK", "Сбербанк");
+    static readonly BCS = new DealsImportProvider("BCS", "БКС");
+    static readonly TINKOFF = new DealsImportProvider("TINKOFF", "Тинькофф");
+    static readonly PSBANK = new DealsImportProvider("PSBANK", "ПромСвязьБанк");
+    static readonly VTB24 = new DealsImportProvider("VTB24", "ВТВ24");
+    static readonly OTKRYTIE = new DealsImportProvider("OTKRYTIE", "Открытие");
+    static readonly QUIK = new DealsImportProvider("QUIK", "QUIK");
+    static readonly FINAM = new DealsImportProvider("FINAM", "Финам");
+    static readonly ALFADIRECT = new DealsImportProvider("ALFADIRECT", "Альфа-директ");
+    static readonly URALSIB = new DealsImportProvider("URALSIB", "Уралсиб");
+    static readonly KITFINANCE = new DealsImportProvider("KITFINANCE", "КИТфинанс");
+    static readonly INTERACTIVE_BROKERS = new DealsImportProvider("INTERACTIVE_BROKERS", "Interactive brokers");
+    static readonly ZERICH = new DealsImportProvider("ZERICH", "Церих");
+    static readonly BCS_CYPRUS = new DealsImportProvider("BCS_CYPRUS", "BCScyprus");
+    static readonly FREEDOM_FINANCE = new DealsImportProvider("FREEDOM_FINANCE", "Freedom Finance");
+    static readonly NETTRADER = new DealsImportProvider("NETTRADER", "Nettrader");
+    static readonly ITINVEST = new DealsImportProvider("ITINVEST", "ITIcapital");
+    static readonly ATON = new DealsImportProvider("ATON", "Атон");
+    static readonly INTELINVEST = new DealsImportProvider("INTELINVEST", "Intelinvest");
+
+    private constructor(public code: string, public description: string) {
+        super();
     }
-];
+}
 
 export interface ImportResponse {
     /** Сообщение */

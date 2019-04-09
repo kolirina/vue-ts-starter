@@ -38,12 +38,12 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-card-title>
                 <v-card-text class="import-wrapper-content">
                     <div class="providers">
-                        <div v-for="provider in providers" :key="provider.id" @click="onSelectProvider(provider.id)" v-if="provider.id !== 'INTELINVEST'"
-                            :class="['item' ,selectedProvider === provider.id ? 'active' : '']">
-                            <div :class="['item-img-block', provider.id.toLowerCase()]">
+                        <div v-for="provider in providers.values()" :key="provider.code" @click="onSelectProvider(provider.code)" v-if="provider.code !== 'INTELINVEST'"
+                            :class="['item' ,selectedProvider === provider.code ? 'active' : '']">
+                            <div :class="['item-img-block', provider.code.toLowerCase()]">
                             </div>
                             <div class="item-text">
-                                {{ provider.name }}
+                                {{ provider.description }}
                             </div>
                         </div>
                     </div>
@@ -51,7 +51,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <v-layout justify-space-between wrap class="intelinvest-section">
                         <div class="intelinvest-section__description">
                             Если в списке нет вашего брокера или терминала, вы всегда можете осуществить импорт через универсальный формат
-                            <a @click="selectedProvider = providers.INTELINVEST">CSV</a>
+                            <a @click="showIntelinvestInctruction()">CSV</a>
                             или обратиться к нам через обратную связь, по <a href="mailto:web@intelinvest.ru" target="_blank">почте</a> или
                             в группе <a href="http://vk.com/intelinvest" target="_blank">вконтакте</a>.
                         </div>
@@ -343,6 +343,15 @@ export class ImportPage extends UI {
     }
 
     /**
+     * Показать инструкцию после нажатия на кнопку "CSV"
+     */
+    private showIntelinvestInctruction() : void {
+        this.importProviderFeatures = null;
+        this.selectedProvider = this.providers.INTELINVEST.code;
+        this.showInstruction = true;
+    }
+
+    /**
      * Обрабатывает событие выбора провайдера из стороннего компонента
      * @param provider выбранный провайдер
      */
@@ -350,7 +359,7 @@ export class ImportPage extends UI {
         this.showInstruction = false;
         this.selectedProvider = provider;
         this.importProviderFeatures = {...this.importProviderFeaturesByProvider[provider]};
-        if (this.selectedProvider === "INTELINVEST") {
+        if (this.selectedProvider === DealsImportProvider.INTELINVEST.code) {
             this.importProviderFeatures.createLinkedTrade = false;
         }
         this.clearFiles();
