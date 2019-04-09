@@ -21,11 +21,11 @@
     &__content {
         padding: 0px;
         .error-message {
-            padding-right: 30px !important;
+            padding-left: 90px !important;
         }
         div .v-table__overflow .v-datatable thead tr th {
             &:last-child {
-                padding-left: 50px;
+                padding-left: 90px !important;
             }
         }
     }
@@ -71,10 +71,4 @@
 }
 .amount-deals{
     margin-left: 20px;
-}
-.wrapper-for-scroll-import-dialog {
-    max-height: 844px;
-}
-.import-errors-dialog-scroll {
-    overflow: hidden;
 }

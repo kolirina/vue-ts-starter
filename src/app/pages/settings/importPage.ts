@@ -38,8 +38,14 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-card-title>
                 <v-card-text class="import-wrapper-content">
                     <div class="providers">
-                        <div v-for="provider in providers" :key="provider" @click="onSelectProvider(provider)" v-if="provider !== 'INTELINVEST'"
-                             :class="['item', provider.toLowerCase(), selectedProvider === provider ? 'active' : '']"></div>
+                        <div v-for="provider in providers" :key="provider.id" @click="onSelectProvider(provider.id)" v-if="provider.id !== 'INTELINVEST'"
+                            :class="['item' ,selectedProvider === provider.id ? 'active' : '']">
+                            <div :class="['item-img-block', provider.id.toLowerCase()]">
+                            </div>
+                            <div class="item-text">
+                                {{ provider.name }}
+                            </div>
+                        </div>
                     </div>
 
                     <v-layout justify-space-between wrap class="intelinvest-section">
@@ -224,7 +230,7 @@ export class ImportPage extends UI {
     /** Провайдеры отчетов */
     private providers = DealsImportProvider;
     /** Выбранный провайдер */
-    private selectedProvider: DealsImportProvider = null;
+    private selectedProvider: string = null;
     /** Признак отображения панели с расширенными настройками */
     private showExtendedSettings = false;
     /** Отображение инструкции к провайдеру */
@@ -335,16 +341,20 @@ export class ImportPage extends UI {
             this.$snotify.warning("Импорт завершен. В отчете не содержится информации по сделкам.");
         }
     }
+    /** Возвращает путь на картинку */
+    private getLink(nameImg : string) {
+        return `img/fileimport/${nameImg}.svg`
+    }
 
     /**
      * Обрабатывает событие выбора провайдера из стороннего компонента
      * @param provider выбранный провайдер
      */
-    private onSelectProvider(provider: DealsImportProvider): void {
+    private onSelectProvider(provider: string): void {
         this.showInstruction = false;
         this.selectedProvider = provider;
         this.importProviderFeatures = {...this.importProviderFeaturesByProvider[provider]};
-        if (this.selectedProvider === DealsImportProvider.INTELINVEST) {
+        if (this.selectedProvider === "INTELINVEST") {
             this.importProviderFeatures.createLinkedTrade = false;
         }
         this.clearFiles();

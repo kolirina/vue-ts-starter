@@ -40,7 +40,7 @@ import {CustomDialog} from "../../platform/dialogs/customDialog";
 export class ImportGeneralErrorDialog extends CustomDialog<ImportGeneralErrorDialogData, void> {
 
     private goToBalances(): void {
-        this.data.router.push("trades");
+        this.data.router.push("balances");
         this.close();
     }
 }

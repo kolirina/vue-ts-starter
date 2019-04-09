@@ -42,27 +42,83 @@ export class ImportService {
 }
 
 /** Форматы поддерживаемых брокеров и отчетов */
-export enum DealsImportProvider {
-    SBERBANK = "SBERBANK",
-    BCS = "BCS",
-    TINKOFF = "TINKOFF",
-    PSBANK = "PSBANK",
-    VTB24 = "VTB24",
-    OTKRYTIE = "OTKRYTIE",
-    QUIK = "QUIK",
-    FINAM = "FINAM",
-    ALFADIRECT = "ALFADIRECT",
-    URALSIB = "URALSIB",
-    KITFINANCE = "KITFINANCE",
-    INTERACTIVE_BROKERS = "INTERACTIVE_BROKERS",
-    ZERICH = "ZERICH",
-    BCS_CYPRUS = "BCS_CYPRUS",
-    FREEDOM_FINANCE = "FREEDOM_FINANCE",
-    NETTRADER = "NETTRADER",
-    ITINVEST = "ITINVEST",
-    ATON = "ATON",
-    INTELINVEST = "INTELINVEST"
-}
+export let DealsImportProvider = [
+    {
+        id:"SBERBANK",
+        name:"Сбербанк"
+    },
+    {
+        id:"BCS",
+        name:"БКС"
+    },
+    {
+        id:"TINKOFF",
+        name:"Тинькофф"
+    },
+    {
+        id:"PSBANK",
+        name:"ПромСвязьБанк"
+    },
+    {
+        id:"VTB24",
+        name:"ВТВ24"
+    },
+    {
+        id:"OTKRYTIE",
+        name:"Открытие"
+    },
+    {
+        id:"QUIK",
+        name:"QUIK"},
+    {
+        id:"FINAM",
+        name:"Финам"
+    },
+    {
+        id:"ALFADIRECT",
+        name:"Альфа-директ"
+    },
+    {
+        id:"URALSIB",
+        name:"Уралсиб"
+    },
+    {
+        id:"KITFINANCE",
+        name:"КИТфинанс"
+    },
+    {
+        id:"INTERACTIVE_BROKERS",
+        name:"Interactive brokers"
+    },
+    {
+        id:"ZERICH",
+        name:"Церих"
+    },
+    {
+        id:"BCS_CYPRUS",
+        name:"BCScyprus"
+    },
+    {
+        id:"FREEDOM_FINANCE",
+        name:"Freedom Finance"
+    },
+    {
+        id:"NETTRADER",
+        name:"Nettrader"
+    },
+    {
+        id:"ITINVEST",
+        name:"ITIcapital"
+    },
+    {
+        id:"ATON",
+        name:"Атон"
+    },
+    {
+        id:"INTELINVEST",
+        name:"Intelinvest"
+    }
+]
 
 export interface ImportResponse {
     /** Сообщение */

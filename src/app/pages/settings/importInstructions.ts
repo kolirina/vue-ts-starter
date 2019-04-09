@@ -28,66 +28,66 @@ const MainStore = namespace(StoreType.MAIN);
         <div>
             <div class="import-instructions">
                 <!-- ALFADIRECT -->
-                <div v-if="provider === providers.ALFADIRECT">
+                <div v-if="provider === 'ALFADIRECT'">
                     <AlfadirectInstruction></AlfadirectInstruction>
                 </div>
 
                 <!-- ITINVEST -->
-                <div v-if="provider === providers.ITINVEST">
+                <div v-if="provider === 'ITINVEST'">
                     <ItInvestInstruction></ItInvestInstruction>
                 </div>
 
                 <!-- ОТКРЫТИЕ -->
-                <div v-if="provider === providers.OTKRYTIE">
+                <div v-if="provider === 'OTKRYTIE'">
                     <OtkrytieInstruction></OtkrytieInstruction>
                 </div>
 
                 <!-- ZERICH -->
-                <div v-if="provider === providers.ZERICH">
+                <div v-if="provider === 'ZERICH'">
                     <ZerichInstruction></ZerichInstruction>
                 </div>
 
                 <!-- PSBANK -->
-                <div v-if="provider === providers.PSBANK">
+                <div v-if="provider === 'PSBANK'">
                     <PsbInstruction></PsbInstruction>
                 </div>
 
                 <!-- BCS -->
-                <div v-if="provider === providers.BCS">
+                <div v-if="provider === 'BCS'">
                     <BcsInstruction></BcsInstruction>
                 </div>
 
                 <!-- BCS CYPRUS-->
-                <div v-if="provider === providers.BCS_CYPRUS">
+                <div v-if="provider === 'BCS_CYPRUS'">
                     <BcsCyprusInstruction></BcsCyprusInstruction>
                 </div>
 
                 <!-- FINAM -->
-                <div v-if="provider === providers.FINAM">
+                <div v-if="provider === 'FINAM'">
                     <FinamInstruction></FinamInstruction>
                 </div>
 
                 <!-- FREEDOM_FINANCE -->
-                <div v-if="provider === providers.FREEDOM_FINANCE">
+                <div v-if="provider === 'FREEDOM_FINANCE'">
                     <p class="import-default-text">
                         Для импорта вы можете использовать отчеты, присылаемые брокером вам на электронную почту в формате xls.
                     </p>
                 </div>
 
                 <!-- KITFINANCE -->
-                <div v-if="provider === providers.KITFINANCE">
+                <div v-if="provider === 'KITFINANCE'">
                     <p class="import-default-text">
                         Используйте для импорта отчеты в формате xlsx.
                     </p>
                 </div>
 
                 <!-- URALSIB -->
-                <div v-if="provider === providers.URALSIB">
+                <div v-if="provider === 'URALSIB'">
                     <UralsibInstruction></UralsibInstruction>
                 </div>
 
                 <!-- SBERBANK -->
-                <div v-if="provider === providers.SBERBANK">
+                <div v-if="provider === 'SBERBANK'">
                     <p class="import-default-text">
                         Используйте для импорта отчеты в формате txt, которые брокер присылает вам на почту.
                         Обратите внимание, что загружены будут только сделки, исполненные в отчетном периоде, имеющие статус в отчете
@@ -97,12 +97,12 @@ const MainStore = namespace(StoreType.MAIN);
                 </div>
 
                 <!-- VTB24 -->
-                <div v-if="provider === providers.VTB24">
+                <div v-if="provider === 'VTB24'">
                     <VtbInstruction></VtbInstruction>
                 </div>
 
                 <!-- Interactive brokers -->
-                <div v-if="provider === providers.INTERACTIVE_BROKERS">
+                <div v-if="provider === 'INTERACTIVE_BROKERS'">
                     <p class="import-default-text">
                         Используйте для импорта отчеты в формате cpt, xls, csv. Форматы отчетов указаны в порядке предпочтительности.
                         Если отчет не пройдет импорт, попробуйте пересохранить файл в кодировке UTF-8 или windows-1251
@@ -110,19 +110,19 @@ const MainStore = namespace(StoreType.MAIN);
                 </div>
 
                 <!-- Tinkoff -->
-                <div v-if="provider === providers.TINKOFF">
+                <div v-if="provider === 'TINKOFF'">
                     <TinkoffInstruction></TinkoffInstruction>
                 </div>
 
                 <!-- Nettrader -->
-                <div v-if="provider === providers.NETTRADER">
+                <div v-if="provider === 'NETTRADER'">
                     <p class="import-default-text">
                         Используйте для импорта отчеты в формате csv или txt. Убедитесь что загружаемый файл имеет кодировку UTF-8
                     </p>
                 </div>
 
                 <!-- ATON -->
-                <div v-if="provider === providers.ATON">
+                <div v-if="provider === 'ATON'">
                     <p class="import-default-text">
                         Используйте для импорта отчеты в формате xml. Будут импортированы сделки по бумагам, включая дивиденды, купоны, амортизацию,
                         и движения денежных средств.
@@ -130,19 +130,19 @@ const MainStore = namespace(StoreType.MAIN);
                 </div>
 
                 <!-- Формат intelinvest -->
-                <div v-if="provider === providers.INTELINVEST">
+                <div v-if="provider === 'INTELINVEST'">
                     <IntelinvestInstruction></IntelinvestInstruction>
                 </div>
 
                 <!-- QUIK -->
-                <div v-if="provider === providers.QUIK">
+                <div v-if="provider === 'QUIK'">
                     <QuikInstruction></QuikInstruction>
                 </div>
             </div>
 
             <div v-if="provider" class="import-default-text">
                 <!-- Не отображаем блок про Квик если он уже выбран -->
-                <p v-if="provider !== providers.QUIK" class="import-default-text-margin-t">
+                <p v-if="provider !== 'QUIK'" class="import-default-text-margin-t">
                     Если у вас возникли сложности при загрузке отчетов брокера и вы используете<br>
                     Quik, можете <a @click="selectProvider(providers.QUIK)">импортировать</a>
                     отчеты из терминала.
@@ -164,7 +164,7 @@ export class ImportInstructions extends UI {
     /** Провайдеры отчетов */
     private providers = DealsImportProvider;
     @Prop()
-    private provider: DealsImportProvider;
+    private provider: string;
     @Prop({type: String})
     private lastTradeDate: string;
 
@@ -172,7 +172,7 @@ export class ImportInstructions extends UI {
      * Отправляет событие выбора провайдера
      * @param provider
      */
-    private selectProvider(provider: DealsImportProvider): void {
+    private selectProvider(provider: string): void {
         this.$emit("selectProvider", provider);
     }
 }
