@@ -342,8 +342,8 @@ export class ImportPage extends UI {
         }
     }
     /** Возвращает путь на картинку */
-    private getLink(nameImg : string) {
-        return `img/fileimport/${nameImg}.svg`
+    private getLink(nameImg: string): string {
+        return `img/fileimport/${nameImg}.svg`;
     }
 
     /**

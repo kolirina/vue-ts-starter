@@ -44,81 +44,81 @@ export class ImportService {
 /** Форматы поддерживаемых брокеров и отчетов */
 export let DealsImportProvider = [
     {
-        id:"SBERBANK",
-        name:"Сбербанк"
+        id: "SBERBANK",
+        name: "Сбербанк"
     },
     {
-        id:"BCS",
-        name:"БКС"
+        id: "BCS",
+        name: "БКС"
     },
     {
-        id:"TINKOFF",
-        name:"Тинькофф"
+        id: "TINKOFF",
+        name: "Тинькофф"
     },
     {
-        id:"PSBANK",
-        name:"ПромСвязьБанк"
+        id: "PSBANK",
+        name: "ПромСвязьБанк"
     },
     {
-        id:"VTB24",
-        name:"ВТВ24"
+        id: "VTB24",
+        name: "ВТВ24"
     },
     {
-        id:"OTKRYTIE",
-        name:"Открытие"
+        id: "OTKRYTIE",
+        name: "Открытие"
     },
     {
-        id:"QUIK",
-        name:"QUIK"},
+        id: "QUIK",
+        name: "QUIK"},
     {
-        id:"FINAM",
-        name:"Финам"
+        id: "FINAM",
+        name: "Финам"
     },
     {
-        id:"ALFADIRECT",
-        name:"Альфа-директ"
+        id: "ALFADIRECT",
+        name: "Альфа-директ"
     },
     {
-        id:"URALSIB",
-        name:"Уралсиб"
+        id: "URALSIB",
+        name: "Уралсиб"
     },
     {
-        id:"KITFINANCE",
-        name:"КИТфинанс"
+        id: "KITFINANCE",
+        name: "КИТфинанс"
     },
     {
-        id:"INTERACTIVE_BROKERS",
-        name:"Interactive brokers"
+        id: "INTERACTIVE_BROKERS",
+        name: "Interactive brokers"
     },
     {
-        id:"ZERICH",
-        name:"Церих"
+        id: "ZERICH",
+        name: "Церих"
     },
     {
-        id:"BCS_CYPRUS",
-        name:"BCScyprus"
+        id: "BCS_CYPRUS",
+        name: "BCScyprus"
     },
     {
-        id:"FREEDOM_FINANCE",
-        name:"Freedom Finance"
+        id: "FREEDOM_FINANCE",
+        name: "Freedom Finance"
     },
     {
-        id:"NETTRADER",
-        name:"Nettrader"
+        id: "NETTRADER",
+        name: "Nettrader"
     },
     {
-        id:"ITINVEST",
-        name:"ITIcapital"
+        id: "ITINVEST",
+        name: "ITIcapital"
     },
     {
-        id:"ATON",
-        name:"Атон"
+        id: "ATON",
+        name: "Атон"
     },
     {
-        id:"INTELINVEST",
-        name:"Intelinvest"
+        id: "INTELINVEST",
+        name: "Intelinvest"
     }
-]
+];
 
 export interface ImportResponse {
     /** Сообщение */
