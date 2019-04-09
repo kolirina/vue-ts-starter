@@ -23,7 +23,8 @@ export class EventUtils {
             && (which === undefined || which !== 0) && which !== 8;
     }
 
-    static getClipboardData = (event: ClipboardEvent | DragEvent): string => {
+    static getClipboardData = (clipboardEvent: ClipboardEvent | DragEvent): string => {
+        let event = clipboardEvent;
         if (event.type === "drop") {
             return (event as DragEvent).dataTransfer.getData("text");
         }
