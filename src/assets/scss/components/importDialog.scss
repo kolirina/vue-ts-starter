@@ -20,14 +20,6 @@
     }
     &__content {
         padding: 0px;
-        .error-message {
-            padding-left: 90px !important;
-        }
-        div .v-table__overflow .v-datatable thead tr th {
-            &:last-child {
-                padding-left: 90px !important;
-            }
-        }
     }
     &__actions {
         padding-right: 30px;
