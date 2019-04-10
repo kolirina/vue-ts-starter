@@ -52,7 +52,7 @@ const MainStore = namespace(StoreType.MAIN);
                         <div class="intelinvest-section__description">
                             Если в списке нет вашего брокера или терминала, вы всегда можете осуществить импорт через универсальный формат
                             <a @click="showIntelinvestInctruction()">CSV</a>
-                            или обратиться к нам через обратную связь, по <a href="mailto:web@intelinvest.ru">почте</a> или
+                            или обратиться к нам через обратную связь, по <a href="mailto:web@intelinvest.ru"   >почте</a> или
                             в группе <a href="http://vk.com/intelinvest" target="_blank">вконтакте</a>.
                         </div>
                         <v-btn class="btn" @click="onSelectProvider(providers.INTELINVEST)">
@@ -358,7 +358,7 @@ export class ImportPage extends UI {
         this.showInstruction = false;
         this.selectedProvider = provider;
         this.importProviderFeatures = {...this.importProviderFeaturesByProvider[provider.code]};
-        if (this.selectedProvider === DealsImportProvider.INTELINVEST) {
+        if (this.selectedProvider === this.providers.INTELINVEST) {
             this.importProviderFeatures.createLinkedTrade = false;
         }
         this.clearFiles();
