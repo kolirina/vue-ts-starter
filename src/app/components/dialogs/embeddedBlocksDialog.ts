@@ -7,21 +7,26 @@ import {BtnReturn, CustomDialog} from "../../platform/dialogs/customDialog";
 @Component({
     // language=Vue
     template: `
-        <v-dialog v-model="showed" max-width="650px">
+        <v-dialog v-model="showed" max-width="600px">
             <v-card class="dialog-wrap portfolio-dialog-wrap">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
 
-                <v-card-title class="dialog-header-text paddB0">Настроить встраиваемые блоки</v-card-title>
+                <v-card-title class="dialog-header-text paddB0">
+                    <div class="dialog-header-text-embedded">
+                        Настроить встраиваемые блоки
+                    </div>
+                </v-card-title>
                 <v-card-text class="iframe-dialog-content paddT0 paddB0">
                     <div class="dialog-default-text">
                         Вы можете добавить таблицу с ценными бумагами или диаграмму на свой блог или сайт. Для этого выберите нужный
                         блок из списка ниже и получите код. Данный код представляет собой iframe, который достаточно вставить в html вашего сайта.
                     </div>
+                    <br>
                     <div class="dialog-default-text">
                         У портфеля должен быть выставлен публичный доступ. После этого посетители смогут увидеть информацию по портфелю.
                     </div>
 
-                    <div class="select-section">
+                    <div class="select-section embedded-dialog-select">
                         <v-select :items="embeddedOptions" :return-object="true" item-text="name" v-model="embeddedOption" :hide-details="true"></v-select>
                     </div>
 
@@ -32,9 +37,10 @@ import {BtnReturn, CustomDialog} from "../../platform/dialogs/customDialog";
                         :value="embeddedCode"
                         hide-details
                         readonly
+                        id="linkForCopy"
                     ></v-text-field>
-                    <div>
-                        <v-btn class="btn">
+                    <div class="embedded-copy-btn-section">
+                        <v-btn class="btn" @click="copyLink">
                             Копировать ссылку
                         </v-btn>
                     </div>
@@ -62,6 +68,14 @@ export class EmbeddedBlocksDialog extends CustomDialog<string, BtnReturn> {
     private get embeddedCode(): string {
         return `<iframe src="${window.location.protocol}//${window.location.host}/${this.data}/${this.embeddedOption.value}"
 style="height: 600px; width: 100%; margin: 10px 0; display: block;" frameborder="0"></iframe>`;
+    }
+
+    private copyLink(): void {
+        const target = document.getElementById("linkForCopy");
+        target.focus();
+        (target as HTMLInputElement).select();
+        document.execCommand("copy");
+        target.blur();
     }
 }
 

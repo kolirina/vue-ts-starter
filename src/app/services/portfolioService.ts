@@ -191,6 +191,18 @@ export class PortfolioAccountType extends (EnumType as IStaticEnum<PortfolioAcco
     }
 }
 
+@Enum("code")
+export class TypeDialogOpen extends (EnumType as IStaticEnum<TypeDialogOpen>) {
+
+    static readonly DEFAULT_ACCESS = new TypeDialogOpen("DEFAULT_ACCESS", "Обычная");
+    static readonly BY_LINK = new TypeDialogOpen("BY_LINK", "Со сроком действия");
+    static readonly BY_IDENTIFICATION = new TypeDialogOpen("BY_IDENTIFICATION", "Пользователю");
+
+    private constructor(public code: string, public description: string) {
+        super();
+    }
+}
+
 /** Тип ИИС */
 @Enum("value")
 export class IisType extends (EnumType as IStaticEnum<IisType>) {

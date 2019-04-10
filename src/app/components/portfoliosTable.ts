@@ -7,7 +7,7 @@ import {DisableConcurrentExecution} from "../platform/decorators/disableConcurre
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {BtnReturn} from "../platform/dialogs/customDialog";
 import {ClientInfo} from "../services/clientService";
-import {PortfolioParams, PortfolioService} from "../services/portfolioService";
+import {PortfolioParams, PortfolioService, TypeDialogOpen} from "../services/portfolioService";
 import {EventType} from "../types/eventType";
 import {Portfolio, TableHeader} from "../types/types";
 import {SortUtils} from "../utils/sortUtils";
@@ -62,17 +62,17 @@ const MainStore = namespace(StoreType.MAIN);
                             <v-list dense>
                                 <v-list-tile @click="openDialogForEdit(props.item)">
                                     <v-list-tile-title>
-                                        Редактировать портфель
-                                    </v-list-tile-title>
-                                </v-list-tile>
-                                <v-list-tile @click="deletePortfolio(props.item)">
-                                    <v-list-tile-title>
-                                        Удалить портфель
+                                        Редактировать
                                     </v-list-tile-title>
                                 </v-list-tile>
                                 <v-list-tile @click="clonePortfolio(props.item.id)">
                                     <v-list-tile-title>
-                                        Копировать портфель
+                                        Копировать
+                                    </v-list-tile-title>
+                                </v-list-tile>
+                                <v-list-tile @click="deletePortfolio(props.item)">
+                                    <v-list-tile-title class="delete-btn">
+                                        Удалить
                                     </v-list-tile-title>
                                 </v-list-tile>
                             </v-list>
@@ -107,14 +107,9 @@ const MainStore = namespace(StoreType.MAIN);
                                 </v-tooltip>
                             </v-layout>
                             <v-layout class="setings-btn">
-                                <v-btn class="btn" @click="copyPortfolioLink(props.item.id)">
+                                <input :value="publicLink(props.item.id)" id="portfolioLink" class="hide-copy-input">
+                                <v-btn class="btn" @click="copyPortfolioLink">
                                     Копировать ссылку на портфель
-                                </v-btn>
-                                <v-btn class="btn">
-                                    Настройка доступа
-                                </v-btn>
-                                <v-btn class="btn" @click.stop="openEmbeddedDialog(props.item.id)">
-                                    Встраиваемые блоки
                                 </v-btn>
                                 <v-menu content-class="dialog-setings-menu"
                                         transition="slide-y-transition"
@@ -125,18 +120,21 @@ const MainStore = namespace(StoreType.MAIN);
                                     </v-btn>
                                     <v-list dense>
                                         <v-flex>
-                                            <div @click.stop="openSharePortfolioDialog(props.item, 'DEFAULT_ACCESS')">
+                                            <div @click.stop="openSharePortfolioDialog(props.item, dialogType.DEFAULT_ACCESS)" class="dialog-default-text">
                                                 Обычная
                                             </div>
-                                            <div @click.stop="openSharePortfolioDialog(props.item, 'BY_LINK')">
+                                            <div @click.stop="openSharePortfolioDialog(props.item, dialogType.BY_LINK)" class="dialog-default-text">
                                                 Со сроком действия
                                             </div>
-                                            <div @click.stop="openSharePortfolioDialog(props.item, 'BY_IDENTIFICATION')">
+                                            <div @click.stop="openSharePortfolioDialog(props.item, dialogType.BY_IDENTIFICATION)" class="dialog-default-text">
                                                 Пользователю
                                             </div>
                                         </v-flex>
                                     </v-list>
                                 </v-menu>
+                                <v-btn class="btn" @click.stop="openEmbeddedDialog(props.item.id)">
+                                    Встраиваемые блоки
+                                </v-btn>
                             </v-layout>
 
                             <div class="link-section">
@@ -164,6 +162,7 @@ export class PortfoliosTable extends UI {
     private setCurrentPortfolio: (id: string) => Promise<Portfolio>;
     @Inject
     private portfolioService: PortfolioService;
+    private dialogType = TypeDialogOpen;
 
     private headers: TableHeader[] = [
         {text: "", align: "left", ghost: true, sortable: false, value: "", active: true, width: "1"},
@@ -230,8 +229,8 @@ export class PortfoliosTable extends UI {
         await new EmbeddedBlocksDialog().show(id);
     }
 
-    private async openSharePortfolioDialog(portfolio: PortfolioParams, id: string): Promise<void> {
-        await new SharePortfolioDialog().show({portfolio: portfolio, clientInfo: this.clientInfo, id: id});
+    private async openSharePortfolioDialog(portfolio: PortfolioParams, type: TypeDialogOpen): Promise<void> {
+        await new SharePortfolioDialog().show({portfolio: portfolio, clientInfo: this.clientInfo, type: type});
     }
 
     @ShowProgress
@@ -256,7 +255,11 @@ export class PortfoliosTable extends UI {
         return items;
     }
 
-    private copyPortfolioLink(id: string): void {
-        console.log(this.publicLink(id));
+    private copyPortfolioLink(): void {
+        const target = document.getElementById("portfolioLink");
+        target.focus();
+        (target as HTMLInputElement).select();
+        document.execCommand("copy");
+        target.blur();
     }
 }

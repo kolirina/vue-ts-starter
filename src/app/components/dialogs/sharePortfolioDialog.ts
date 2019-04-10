@@ -6,7 +6,7 @@ import {DisableConcurrentExecution} from "../../platform/decorators/disableConcu
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn, CustomDialog} from "../../platform/dialogs/customDialog";
 import {ClientInfo} from "../../services/clientService";
-import {PortfolioParams, PortfolioService} from "../../services/portfolioService";
+import {PortfolioParams, PortfolioService, TypeDialogOpen} from "../../services/portfolioService";
 import {EventType} from "../../types/eventType";
 import {CommonUtils} from "../../utils/commonUtils";
 import {DateFormat, DateUtils} from "../../utils/dateUtils";
@@ -23,18 +23,6 @@ import {DateFormat, DateUtils} from "../../utils/dateUtils";
 
                 <v-card-title class="dialog-header-text">Настройка доступа к портфелю</v-card-title>
                 <v-card-text class="paddT0 paddB0">
-                <!--<v-container fluid class="pa-0">
-                        <v-layout row wrap>
-                            <v-flex xs12>
-                                <v-btn-toggle v-model="shareOption" style="display: flex" dark mandatory>
-                                    <v-btn v-for="item in shareOptions" :value="item.value" :key="item.value" color="info" small
-                                           style="width: 33.33%;width:calc(100%  /3)">
-                                        {{ item.name }}
-                                    </v-btn>
-                                </v-btn-toggle>
-                            </v-flex>
-                        </v-layout>
-                    </v-container>-->
 
                     <div>
                         <v-layout row wrap>
@@ -134,9 +122,14 @@ import {DateFormat, DateUtils} from "../../utils/dateUtils";
                         </v-layout>
 
                         <v-layout wrap v-if="shareOption !== 'DEFAULT_ACCESS'" style="margin-top: 20px">
-                            <div>
+                            <div v-if="!link">
                                 <v-btn class="btn" slot="activator" @click="generateTokenLink">
                                     Сгенерировать ссылку
+                                </v-btn>
+                            </div>
+                            <div v-if="link">
+                                <v-btn class="btn" slot="activator" @click="copyLink">
+                                    Копировать ссылку
                                 </v-btn>
                             </div>
                             <div v-if="link" style="margin-left:20px;">
@@ -153,11 +146,6 @@ import {DateFormat, DateUtils} from "../../utils/dateUtils";
                                         </v-flex>
                                     </v-list>
                                 </v-menu>
-                            </div>
-                            <div>
-                                <v-btn class="btn" slot="activator" @click="copyLink">
-                                    Копировать ссылку
-                                </v-btn>
                             </div>
                         </v-layout>
                     </div>
@@ -178,14 +166,9 @@ export class SharePortfolioDialog extends CustomDialog<SharePortfolioDialogData,
 
     @Inject
     private portfolioService: PortfolioService;
+    private dialogType = TypeDialogOpen;
 
-    private shareOptions: ShareOption[] = [
-        {name: "Обычный", value: ShareAccessType.DEFAULT_ACCESS},
-        {name: "Со сроком действия", value: ShareAccessType.BY_LINK},
-        {name: "Пользователю", value: ShareAccessType.BY_IDENTIFICATION}
-    ];
-
-    private shareOption: string = null;
+    private shareOption: TypeDialogOpen = null;
 
     private access = true;
     private divAccess = false;
@@ -196,13 +179,13 @@ export class SharePortfolioDialog extends CustomDialog<SharePortfolioDialogData,
     private dateMenuValue = false;
     private userId = "";
     private shareUrlsCache: { [key: string]: string } = {
-        [ShareAccessType.DEFAULT_ACCESS]: null,
-        [ShareAccessType.BY_LINK]: null,
-        [ShareAccessType.BY_IDENTIFICATION]: null
+        [this.dialogType.DEFAULT_ACCESS.code]: null,
+        [this.dialogType.BY_LINK.code]: null,
+        [this.dialogType.BY_IDENTIFICATION.code]: null
     };
 
     mounted(): void {
-        this.shareOption = this.data.id;
+        this.shareOption = this.data.type;
         this.access = this.data.portfolio.access;
         this.divAccess = this.data.portfolio.dividendsAccess;
         this.tradeAccess = this.data.portfolio.tradesAccess;
@@ -216,8 +199,8 @@ export class SharePortfolioDialog extends CustomDialog<SharePortfolioDialogData,
         if (!isValid) {
             return;
         }
-        this.shareUrlsCache[this.shareOption] = await this.portfolioService.getPortfolioShareUrl({
-            id: this.data.portfolio.id, sharePortfolioType: this.shareOption, userName: this.userId, expiredDate: this.expiredDate
+        this.shareUrlsCache[this.shareOption.code] = await this.portfolioService.getPortfolioShareUrl({
+            id: this.data.portfolio.id, sharePortfolioType: this.shareOption.code, userName: this.userId, expiredDate: this.expiredDate
         });
     }
 
@@ -238,10 +221,10 @@ export class SharePortfolioDialog extends CustomDialog<SharePortfolioDialogData,
     }
 
     private get link(): string {
-        if (this.shareOption === ShareAccessType.DEFAULT_ACCESS) {
+        if (this.shareOption === this.dialogType.DEFAULT_ACCESS) {
             return `${window.location.protocol}//${window.location.host}/public-portfolio/${this.data.portfolio.id}/?ref=${this.data.clientInfo.user.id}`;
         }
-        return this.shareUrlsCache[this.shareOption];
+        return this.shareUrlsCache[this.shareOption.code];
     }
 
     private copyLink(): void {
@@ -253,14 +236,14 @@ export class SharePortfolioDialog extends CustomDialog<SharePortfolioDialogData,
     }
 
     private isValid(): boolean {
-        if (this.shareOption === ShareAccessType.DEFAULT_ACCESS) {
+        if (this.shareOption === this.dialogType.DEFAULT_ACCESS) {
             return true;
         }
         if (this.expiredDate === null || dayjs().isAfter(DateUtils.parseDate(this.expiredDate))) {
             this.$snotify.warning("Срок действия токена должна быть больше текущей даты");
             return false;
         }
-        if (this.shareOption === ShareAccessType.BY_IDENTIFICATION && CommonUtils.isBlank(this.userId)) {
+        if (this.shareOption === this.dialogType.BY_IDENTIFICATION && CommonUtils.isBlank(this.userId)) {
             this.$snotify.warning("Идентификатор пользователя должен быть заполнен");
             return false;
         }
@@ -268,19 +251,8 @@ export class SharePortfolioDialog extends CustomDialog<SharePortfolioDialogData,
     }
 }
 
-type ShareOption = {
-    name: string,
-    value: ShareAccessType
-};
-
 export type SharePortfolioDialogData = {
     portfolio: PortfolioParams,
     clientInfo: ClientInfo,
-    id: string
+    type: TypeDialogOpen
 };
-
-enum ShareAccessType {
-    DEFAULT_ACCESS = "DEFAULT_ACCESS",
-    BY_LINK = "BY_LINK",
-    BY_IDENTIFICATION = "BY_IDENTIFICATION"
-}
