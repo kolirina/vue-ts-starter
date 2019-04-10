@@ -1,0 +1,92 @@
+.alfa-line {
+    border-top: 1px solid #CACED5;
+    height: 1px;
+    margin: 32px 0px 22px;
+}
+.import-default-text-margin-t {
+    margin-top: 20px;
+}
+.image {
+    margin: 16px 0px 23px;
+}
+.import-format-requirements-ul {
+    font-size: 13px;
+    line-height: 22px;
+    letter-spacing: -0.3px;
+    color: #040427;
+    ul {
+        margin: 15px 0px;
+    }
+}
+.intel-invest-instruction {
+    &__title {
+        font-size: 13px;
+        line-height: 22px;
+        letter-spacing: -0.3px;
+        color: #040427;
+        margin-bottom: 25.5px;
+        &-values {
+            font-size: 14px;
+            line-height: 26px;
+            color: #000000;
+            margin-bottom: 40px;
+        }
+    }
+    &__format {
+        border-top: 1px solid #E8E9ED;
+        border-bottom: 1px solid #E8E9ED;
+        text-align: center;
+        margin-bottom: 23.5px;
+        &-text {
+            font-weight: 600;
+            font-size: 14px;
+            line-height: 22px;
+            letter-spacing: -0.3px;
+            color: #040427;
+            padding: 10.5px 0px 11.5px;
+        }
+    }
+    &__values {
+        font-size: 14px;
+        line-height: 26px;
+        color: #000000;
+        &-l-section{
+            margin-top: 40px;
+        }
+        &-item {
+            display: flex;
+            &__title {
+                width: 190px;
+                font-weight: bold;
+            }
+        }
+    }
+    &__title-template {
+        font-size: 12px;
+        line-height: 22px;
+        letter-spacing: -0.3px;
+        color: #A1A6B6;
+        margin: 12px 0px;
+    }
+    &__template {
+        div {
+            margin-bottom: 11px;
+            a {
+                text-decoration: none;
+            }
+        }
+    }
+    &__template-requirements {
+        font-size: 14px;
+        line-height: 22px;
+        color: #000000;
+    }
+}
+
+.tinkoff-instruction {
+    &__title {
+        a {
+            text-decoration: none;
+        }
+    }
+}

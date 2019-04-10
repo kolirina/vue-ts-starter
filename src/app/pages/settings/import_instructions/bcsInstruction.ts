@@ -1,22 +1,29 @@
 import Component from "vue-class-component";
 import {UI} from "../../../app/ui";
-import {ImageDialog} from "../../../components/dialogs/imageDialog";
 
 @Component({
     // language=Vue
     template: `
         <div>
-            <p>
-                Зайти в Личный кабинет, нажать на "Отчетность", выбрать "Отчетность (БКС Россия)" если работаем с Московской биржей.
-                <v-img :src="IMAGES[0]" height="120" width="300" class="grey darken-4" @click.stop="openImage(IMAGES[0])"></v-img>
-                В строке с типом отчета можно выбрать ежедневный, ежемесячный и с начала текущего месяца.
-                <v-img :src="IMAGES[1]" height="160" width="320" class="grey darken-4" @click.stop="openImage(IMAGES[1])"></v-img>
-                В ежемесячном типе отчета можно выбрать период по месяцам и годам. С начала текущего месяца отчет нужно запрашивать, нажав на "Запросить".
-                Ниже будут представлены отчеты за выбранный период времени.
-                <v-img :src="IMAGES[2]" height="160" width="320" class="grey darken-4" @click.stop="openImage(IMAGES[2])"></v-img>
-                Выбираем нужный, открываем, и он скачивается в формате xls.
-                <v-img :src="IMAGES[3]" height="160" width="320" class="grey darken-4" @click.stop="openImage(IMAGES[3])"></v-img>
-            </p>
+            <div>
+                <div class="import-default-text">
+                    Зайти в Личный кабинет, нажать на "Отчетность", выбрать "Отчетность (БКС<br>Россия)" если работаем с Московской биржей.
+                </div>
+                <v-img :src="IMAGES[0]" height="287" width="980" class="grey darken-4 image"></v-img>
+                <div class="import-default-text">
+                    В строке с типом отчета можно выбрать ежедневный, ежемесячный и с начала текущего месяца.
+                </div>
+                <v-img :src="IMAGES[1]" height="323" width="980" class="grey darken-4 image"></v-img>
+                <div class="import-default-text">
+                    В ежемесячном типе отчета можно выбрать период по месяцам и годам.<br>С начала текущего месяца отчет нужно запрашивать, нажав на "Запросить".<br>
+                    Ниже будут представлены отчеты за выбранный период времени.
+                </div>
+                <v-img :src="IMAGES[2]" height="416" width="980" class="grey darken-4 image"></v-img>
+                <div class="import-default-text">
+                    Выбираем нужный, открываем, и он скачивается в формате xls.
+                </div>
+                <v-img :src="IMAGES[3]" height="98" width="980" class="grey darken-4 image"></v-img>
+            </div>
         </div>
     `
 })
@@ -29,7 +36,4 @@ export class BcsInstruction extends UI {
         "./img/import_instructions/bcs/4.jpg"
     ];
 
-    private async openImage(url: string): Promise<void> {
-        await new ImageDialog().show(url);
-    }
 }

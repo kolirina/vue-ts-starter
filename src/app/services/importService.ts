@@ -1,5 +1,6 @@
 import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
+import {Enum, EnumType, IStaticEnum} from "../platform/enum";
 import {Http} from "../platform/services/http";
 import {Status} from "../types/types";
 import {ImportProviderFeaturesByProvider} from "./importService";
@@ -42,26 +43,32 @@ export class ImportService {
 }
 
 /** Форматы поддерживаемых брокеров и отчетов */
-export enum DealsImportProvider {
-    ALFADIRECT = "ALFADIRECT",
-    ITINVEST = "ITINVEST",
-    OTKRYTIE = "OTKRYTIE",
-    ZERICH = "ZERICH",
-    PSBANK = "PSBANK",
-    BCS = "BCS",
-    BCS_CYPRUS = "BCS_CYPRUS",
-    FINAM = "FINAM",
-    FREEDOM_FINANCE = "FREEDOM_FINANCE",
-    KITFINANCE = "KITFINANCE",
-    URALSIB = "URALSIB",
-    SBERBANK = "SBERBANK",
-    VTB24 = "VTB24",
-    INTERACTIVE_BROKERS = "INTERACTIVE_BROKERS",
-    TINKOFF = "TINKOFF",
-    NETTRADER = "NETTRADER",
-    INTELINVEST = "INTELINVEST",
-    ATON = "ATON",
-    QUIK = "QUIK"
+@Enum("code")
+export class DealsImportProvider extends (EnumType as IStaticEnum<DealsImportProvider>) {
+
+    static readonly SBERBANK = new DealsImportProvider("SBERBANK", "Сбербанк");
+    static readonly BCS = new DealsImportProvider("BCS", "БКС");
+    static readonly TINKOFF = new DealsImportProvider("TINKOFF", "Тинькофф");
+    static readonly PSBANK = new DealsImportProvider("PSBANK", "ПромСвязьБанк");
+    static readonly VTB24 = new DealsImportProvider("VTB24", "ВТВ24");
+    static readonly OTKRYTIE = new DealsImportProvider("OTKRYTIE", "Открытие");
+    static readonly QUIK = new DealsImportProvider("QUIK", "QUIK");
+    static readonly FINAM = new DealsImportProvider("FINAM", "Финам");
+    static readonly ALFADIRECT = new DealsImportProvider("ALFADIRECT", "Альфа-директ");
+    static readonly URALSIB = new DealsImportProvider("URALSIB", "Уралсиб");
+    static readonly KITFINANCE = new DealsImportProvider("KITFINANCE", "КИТфинанс");
+    static readonly INTERACTIVE_BROKERS = new DealsImportProvider("INTERACTIVE_BROKERS", "Interactive brokers");
+    static readonly ZERICH = new DealsImportProvider("ZERICH", "Церих");
+    static readonly BCS_CYPRUS = new DealsImportProvider("BCS_CYPRUS", "BCScyprus");
+    static readonly FREEDOM_FINANCE = new DealsImportProvider("FREEDOM_FINANCE", "Freedom Finance");
+    static readonly NETTRADER = new DealsImportProvider("NETTRADER", "Nettrader");
+    static readonly ITINVEST = new DealsImportProvider("ITINVEST", "ITIcapital");
+    static readonly ATON = new DealsImportProvider("ATON", "Атон");
+    static readonly INTELINVEST = new DealsImportProvider("INTELINVEST", "Intelinvest");
+
+    private constructor(public code: string, public description: string) {
+        super();
+    }
 }
 
 export interface ImportResponse {
