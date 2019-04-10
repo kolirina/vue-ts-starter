@@ -34,13 +34,15 @@ const MainStore = namespace(StoreType.MAIN);
                             {{ props.item.name }}
                         </span>
                         <span class="section-icon-menu">
-                            <v-menu transition="slide-y-transition" right open-on-hover content-class="menu-icons" bottom nudge-bottom="13">
+                            <v-menu transition="slide-y-transition" right open-on-hover content-class="menu-icons" bottom nudge-bottom="13" v-if="props.item.professionalMode">
                                 <img src="img/portfolio/pro.svg" slot="activator">
                                 <div>
                                     Активирован профессиональный режим
                                 </div>
                             </v-menu>
-                            <v-menu transition="slide-y-transition" right open-on-hover content-class="menu-icons" bottom nudge-bottom="7" class="public-access">
+                            <v-menu transition="slide-y-transition" right open-on-hover
+                            content-class="menu-icons" bottom nudge-bottom="7" class="public-access"
+                            v-if="props.item.access">
                                 <img src="img/portfolio/share.svg" slot="activator">
                                 <div>
                                     Открыт публичный доступ к портфелю
@@ -108,19 +110,35 @@ const MainStore = namespace(StoreType.MAIN);
                                 <v-btn class="btn" @click="copyPortfolioLink(props.item.id)">
                                     Копировать ссылку на портфель
                                 </v-btn>
-                                <v-btn class="btn" @click.stop="openSharePortfolioDialog(props.item)">
+                                <v-btn class="btn">
                                     Настройка доступа
                                 </v-btn>
                                 <v-btn class="btn" @click.stop="openEmbeddedDialog(props.item.id)">
                                     Встраиваемые блоки
                                 </v-btn>
+                                <v-menu content-class="dialog-setings-menu"
+                                        transition="slide-y-transition"
+                                        nudge-bottom="36" right class="setings-menu"
+                                        :close-on-content-click="false">
+                                    <v-btn class="btn" slot="activator"">
+                                        Настройка доступа
+                                    </v-btn>
+                                    <v-list dense>
+                                        <v-flex>
+                                            <div @click.stop="openSharePortfolioDialog(props.item, 'DEFAULT_ACCESS')">
+                                                Обычная
+                                            </div>
+                                            <div @click.stop="openSharePortfolioDialog(props.item, 'BY_LINK')">
+                                                Со сроком действия
+                                            </div>
+                                            <div @click.stop="openSharePortfolioDialog(props.item, 'BY_IDENTIFICATION')">
+                                                Пользователю
+                                            </div>
+                                        </v-flex>
+                                    </v-list>
+                                </v-menu>
                             </v-layout>
 
-                            <!--<div class="extended-info__cell">
-                                <v-btn dark color="primary" small>
-                                    Настройка доступа
-                                </v-btn>
-                            </div>-->
                             <div class="link-section">
                                 <div>
                                     <a class="portfolio-link portfolio-default-text" :href="informerH(props.item.id)" target="_blank">Информер-картинка горизонтальный</a>
@@ -162,10 +180,6 @@ export class PortfoliosTable extends UI {
 
     private async openDialogForEdit(portfolioParams: PortfolioParams): Promise<void> {
         await new PortfolioEditDialog().show({store: this.$store.state[StoreType.MAIN], router: this.$router, portfolioParams});
-    }
-
-    async created(): Promise<void> {
-        console.log(this.portfolios);
     }
 
     private async deletePortfolio(portfolio: PortfolioParams): Promise<void> {
@@ -216,8 +230,8 @@ export class PortfoliosTable extends UI {
         await new EmbeddedBlocksDialog().show(id);
     }
 
-    private async openSharePortfolioDialog(portfolio: PortfolioParams): Promise<void> {
-        await new SharePortfolioDialog().show({portfolio: portfolio, clientInfo: this.clientInfo});
+    private async openSharePortfolioDialog(portfolio: PortfolioParams, id: string): Promise<void> {
+        await new SharePortfolioDialog().show({portfolio: portfolio, clientInfo: this.clientInfo, id: id});
     }
 
     @ShowProgress

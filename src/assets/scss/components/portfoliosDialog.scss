@@ -1,0 +1,89 @@
+.dialog-header-text {
+    font-size: 16px;
+    line-height: 24px;
+    letter-spacing: -0.3px;
+    color: #040427;
+    font-weight: bold;
+}
+.dialog-default-text {
+    font-size: 14px;
+    line-height: 22px;
+    color: #040427;
+}
+.iframe-dialog-content {
+    .v-input__slot {
+        padding: 0px !important;
+    }
+    input {
+        margin-top: 0px !important;
+    }
+}
+.select-section {
+    max-width: fit-content;
+    .v-input__slot {
+        height: 100%;
+    }
+    .v-select__selections {
+        max-width: fit-content;
+    }
+    .v-select__selection {
+        margin: 0px;
+        max-width: 100%;
+    }
+    .v-input__append-inner {
+        margin: 0px !important;
+        padding: 0px !important;
+    }
+    .v-select__selection {
+        font-size: 14px;
+        line-height: 22px;
+        color: #040427;
+    }
+}
+.section-portfolio-name {
+    margin-top: 30px;
+    .v-messages__message {
+        margin-left: 17px;
+    }
+}
+.textarea-section {
+    margin: 30px 0px 18px;
+    .v-text-field__details {
+        flex-direction: row-reverse;
+        .v-messages {
+            margin-left: 8px;
+        }
+        .v-counter {
+            margin-left: 17px;
+        }
+    }
+}
+.select-option-wrap {
+    margin: 27px 0px;
+    .select-section {
+        margin-right: 10px;
+        &:last-child {
+            margin-right: 0px;
+        }
+    }
+}
+.wrap-calendar-section {
+    margin-left: 20px;
+    .v-input__icon {
+        margin-right: 16px;
+    }
+}
+.portfolio-dialog-wrap {
+    padding: 0px 16px 16px 16px !important;
+    .v-card__actions {
+        padding: 0px 16px;
+    }
+}
+.qr-code-section {
+    .v-list {
+        padding: 18px;
+    }
+}
+.default-access-content {
+    margin: 29px 0px 140px;
+}

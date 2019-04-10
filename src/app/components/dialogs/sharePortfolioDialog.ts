@@ -18,12 +18,12 @@ import {DateFormat, DateUtils} from "../../utils/dateUtils";
     // language=Vue
     template: `
         <v-dialog v-model="showed" max-width="550px">
-            <v-card class="dialog-wrap">
+            <v-card class="dialog-wrap portfolio-dialog-wrap">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
 
-                <v-card-title class="headline">Настройка доступа к портфелю</v-card-title>
+                <v-card-title class="dialog-header-text">Настройка доступа к портфелю</v-card-title>
                 <v-card-text class="paddT0 paddB0">
-                    <v-container fluid class="pa-0">
+                <!--<v-container fluid class="pa-0">
                         <v-layout row wrap>
                             <v-flex xs12>
                                 <v-btn-toggle v-model="shareOption" style="display: flex" dark mandatory>
@@ -34,55 +34,31 @@ import {DateFormat, DateUtils} from "../../utils/dateUtils";
                                 </v-btn-toggle>
                             </v-flex>
                         </v-layout>
-                    </v-container>
+                    </v-container>-->
 
-                    <v-container grid-list-md class="paddB0">
+                    <div>
                         <v-layout row wrap>
-                            <v-flex v-if="shareOption === 'DEFAULT_ACCESS'" xs9>
+                            <!--<v-flex v-if="shareOption === 'DEFAULT_ACCESS'" xs9>
                                 Включите публичный доступ, и тогда информацию по вашему портфелю смогут просматривать все, кто обладает этой ссылкой. Ссылка не
                                 изменяется и действительна пока включен доступ, вы можете разместить ее на форуме или блоге. Настройки доступа отдельных блоков
                                 влияют на все типы доступа.
-                            </v-flex>
-                            <v-flex v-if="shareOption === 'BY_LINK'" xs9>
+                            </v-flex>-->
+                            <!--<v-flex v-if="shareOption === 'BY_LINK'" xs9>
                                 По этой ссылке ниже вы можете предоставить временный доступ к просмотру портфеля. По истечению времени ссылка станет неактивна.
                                 Не задавайте слишком большое время жизни ссылки, отменить ее будет невозможно.
-                            </v-flex>
-                            <v-flex v-if="shareOption === 'BY_IDENTIFICATION'" xs9>
+                            </v-flex>-->
+                            <!--<v-flex v-if="shareOption === 'BY_IDENTIFICATION'" xs9>
                                 Вы можете предоставить временный доступ к просмотру портфеля конкретному пользователю Intelinvest. Для просмотра пользователю
                                 будет необходимо авторизоваться в свой аккаунт. По истечению времени ссылка станет неактивна. Не задавайте слишком большое время
                                 жизни ссылки, отменить ее будет невозможно.
-                            </v-flex>
-                            <v-flex xs3>
-                                <qriously v-if="link" :value="link" :size="120"></qriously>
-                            </v-flex>
+                            </v-flex>-->
                         </v-layout>
 
-                        <v-layout row wrap>
-                            <v-flex xs12>
-                                <v-text-field :value="link" placeholder="url для доступа к портфелю" readonly hide-details></v-text-field>
+                        <v-layout column>
+                            <v-flex xs12 v-if="shareOption === 'BY_IDENTIFICATION'">
+                                <v-text-field label="Идентификатор пользователя" v-model="userId"></v-text-field>
                             </v-flex>
-                        </v-layout>
-
-                        <v-layout v-if="shareOption === 'DEFAULT_ACCESS'" row wrap>
-                            <v-flex xs12>
-                                <v-checkbox v-model="access" hide-details class="shrink mr-2" label="Публичный доступ к портфелю"></v-checkbox>
-                            </v-flex>
-                            <v-flex xs12>
-                                <v-checkbox v-model="divAccess" hide-details class="shrink mr-2 mt-0" label="Просмотр дивидендов"></v-checkbox>
-                            </v-flex>
-                            <v-flex xs12>
-                                <v-checkbox v-model="tradeAccess" hide-details class="shrink mr-2 mt-0" label="Просмотр сделок"></v-checkbox>
-                            </v-flex>
-                            <v-flex xs12>
-                                <v-checkbox v-model="lineDataAccess" hide-details class="shrink mr-2 mt-0" label="Просмотр графика"></v-checkbox>
-                            </v-flex>
-                            <v-flex xs12>
-                                <v-checkbox v-model="dashboardAccess" hide-details class="shrink mr-2 mt-0" label="Просмотр дашборда"></v-checkbox>
-                            </v-flex>
-                        </v-layout>
-
-                        <v-layout v-if="shareOption === 'BY_LINK'" row wrap>
-                            <v-flex xs12>
+                            <v-flex xs12 sm5 v-if="shareOption === 'BY_LINK'" style="margin-top: 20px">
                                 <v-menu
                                         ref="dateMenu"
                                         :close-on-content-click="false"
@@ -105,27 +81,90 @@ import {DateFormat, DateUtils} from "../../utils/dateUtils";
                                                    @input="$refs.dateMenu.save(expiredDate)"></v-date-picker>
                                 </v-menu>
                             </v-flex>
-                        </v-layout>
-
-                        <v-layout v-if="shareOption === 'BY_IDENTIFICATION'" row wrap>
-                            <v-flex xs12>
-                                <v-text-field label="Идентификатор пользователя" v-model="userId"></v-text-field>
+                            <v-flex xs12 v-if="link" style="margin-top: 20px">
+                                <v-text-field :value="link" placeholder="url для доступа к портфелю" readonly hide-details id="linkForCopy"></v-text-field>
                             </v-flex>
                         </v-layout>
 
-                        <v-layout row wrap>
-                            <v-flex xs12>
-                                <v-btn v-if="shareOption !== 'DEFAULT_ACCESS'" color="primary" block small @click="generateTokenLink">
+                        <v-layout v-if="shareOption === 'DEFAULT_ACCESS'" column class="default-access-content">
+                            <v-layout wrap justify-space-between>
+                                <div>
+                                    <v-flex xs12>
+                                        <v-checkbox v-model="access"
+                                        hide-details class="shrink mr-2 portfolio-default-text"
+                                        label="Публичный доступ к портфелю" color="#3B6EC9"></v-checkbox>
+                                    </v-flex>
+                                    <v-flex xs12>
+                                        <v-checkbox v-model="divAccess"
+                                        hide-details class="shrink mr-2 mt-0 portfolio-default-text"
+                                        label="Просмотр дивидендов" color="#3B6EC9"></v-checkbox>
+                                    </v-flex>
+                                    <v-flex xs12>
+                                        <v-checkbox v-model="tradeAccess"
+                                        hide-details class="shrink mr-2 mt-0 portfolio-default-text"
+                                        label="Просмотр сделок" color="#3B6EC9"></v-checkbox>
+                                    </v-flex>
+                                    <v-flex xs12>
+                                        <v-checkbox v-model="lineDataAccess"
+                                        hide-details class="shrink mr-2 mt-0 portfolio-default-text"
+                                        label="Просмотр графика" color="#3B6EC9"></v-checkbox>
+                                    </v-flex>
+                                    <v-flex xs12>
+                                        <v-checkbox v-model="dashboardAccess"
+                                        hide-details class="shrink mr-2 mt-0 portfolio-default-text"
+                                        label="Просмотр дашборда" color="#3B6EC9"></v-checkbox>
+                                    </v-flex>
+                                </div>
+                                <div>
+                                    <v-menu content-class="qr-code-section"
+                                            transition="slide-y-transition"
+                                            nudge-bottom="36" left class="setings-menu"
+                                            :close-on-content-click="false">
+                                        <v-btn class="btn" slot="activator">
+                                            QR code
+                                        </v-btn>
+                                        <v-list dense>
+                                            <v-flex>
+                                                <qriously v-if="link" :value="link" :size="120"></qriously>
+                                            </v-flex>
+                                        </v-list>
+                                    </v-menu>
+                                </div>
+                            </v-layout>
+                        </v-layout>
+
+                        <v-layout wrap v-if="shareOption !== 'DEFAULT_ACCESS'" style="margin-top: 20px">
+                            <div>
+                                <v-btn class="btn" slot="activator" @click="generateTokenLink">
                                     Сгенерировать ссылку
                                 </v-btn>
-                            </v-flex>
+                            </div>
+                            <div v-if="link" style="margin-left:20px;">
+                                <v-menu content-class="qr-code-section"
+                                        transition="slide-y-transition"
+                                        nudge-bottom="36" left class="setings-menu"
+                                        :close-on-content-click="false">
+                                    <v-btn class="btn" slot="activator">
+                                        QR code
+                                    </v-btn>
+                                    <v-list dense>
+                                        <v-flex>
+                                            <qriously :value="link" :size="120"></qriously>
+                                        </v-flex>
+                                    </v-list>
+                                </v-menu>
+                            </div>
+                            <div>
+                                <v-btn class="btn" slot="activator" @click="copyLink">
+                                    Копировать ссылку
+                                </v-btn>
+                            </div>
                         </v-layout>
-                    </v-container>
+                    </div>
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn color="primary" light @click.native="savePublicParams">Сохранить</v-btn>
-                    <v-btn color="info lighten-2" flat @click.native="close">Закрыть</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -146,7 +185,7 @@ export class SharePortfolioDialog extends CustomDialog<SharePortfolioDialogData,
         {name: "Пользователю", value: ShareAccessType.BY_IDENTIFICATION}
     ];
 
-    private shareOption = ShareAccessType.DEFAULT_ACCESS;
+    private shareOption: string = null;
 
     private access = true;
     private divAccess = false;
@@ -163,6 +202,7 @@ export class SharePortfolioDialog extends CustomDialog<SharePortfolioDialogData,
     };
 
     mounted(): void {
+        this.shareOption = this.data.id;
         this.access = this.data.portfolio.access;
         this.divAccess = this.data.portfolio.dividendsAccess;
         this.tradeAccess = this.data.portfolio.tradesAccess;
@@ -204,6 +244,14 @@ export class SharePortfolioDialog extends CustomDialog<SharePortfolioDialogData,
         return this.shareUrlsCache[this.shareOption];
     }
 
+    private copyLink(): void {
+        const target = document.getElementById("linkForCopy");
+        target.focus();
+        (target as HTMLInputElement).select();
+        document.execCommand("copy");
+        target.blur();
+    }
+
     private isValid(): boolean {
         if (this.shareOption === ShareAccessType.DEFAULT_ACCESS) {
             return true;
@@ -227,7 +275,8 @@ type ShareOption = {
 
 export type SharePortfolioDialogData = {
     portfolio: PortfolioParams,
-    clientInfo: ClientInfo
+    clientInfo: ClientInfo,
+    id: string
 };
 
 enum ShareAccessType {

@@ -8,20 +8,36 @@ import {BtnReturn, CustomDialog} from "../../platform/dialogs/customDialog";
     // language=Vue
     template: `
         <v-dialog v-model="showed" max-width="650px">
-            <v-card class="dialog-wrap">
+            <v-card class="dialog-wrap portfolio-dialog-wrap">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
 
-                <v-card-title class="headline">Настроить встраиваемые блоки</v-card-title>
-                <v-card-text>
-                    <div>
+                <v-card-title class="dialog-header-text paddB0">Настроить встраиваемые блоки</v-card-title>
+                <v-card-text class="iframe-dialog-content paddT0 paddB0">
+                    <div class="dialog-default-text">
                         Вы можете добавить таблицу с ценными бумагами или диаграмму на свой блог или сайт. Для этого выберите нужный
                         блок из списка ниже и получите код. Данный код представляет собой iframe, который достаточно вставить в html вашего сайта.
-                        После этого ваши посетители смогут увидеть актуальную информацию по портфелю. У портфеля должен быть выставлен публичный доступ.
+                    </div>
+                    <div class="dialog-default-text">
+                        У портфеля должен быть выставлен публичный доступ. После этого посетители смогут увидеть информацию по портфелю.
                     </div>
 
-                    <v-select :items="embeddedOptions" :return-object="true" item-text="name" v-model="embeddedOption" :hide-details="true"></v-select>
+                    <div class="select-section">
+                        <v-select :items="embeddedOptions" :return-object="true" item-text="name" v-model="embeddedOption" :hide-details="true"></v-select>
+                    </div>
 
-                    <v-textarea :readonly="true" :value="embeddedCode" :rows="2" :hide-details="true" style="font-size: 14px"></v-textarea>
+                    <v-text-field
+                        label="Box"
+                        single-line
+                        box
+                        :value="embeddedCode"
+                        hide-details
+                        readonly
+                    ></v-text-field>
+                    <div>
+                        <v-btn class="btn">
+                            Копировать ссылку
+                        </v-btn>
+                    </div>
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
