@@ -21,7 +21,8 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-container v-if="dividendInfo" fluid class="paddT0">
-            <dividend-dashboard-component :data="dividendInfo.dividendDashboard"></dividend-dashboard-component>
+            <dividend-dashboard-component :data="dividendInfo.dividendDashboard" :side-bar-opened="sideBarOpened"
+                                          :view-currency="portfolio.portfolioParams.viewCurrency"></dividend-dashboard-component>
 
             <expanded-panel :value="$uistate.sumYearDivsTablePanel" :withMenu="true" :name="ExportType.DIVIDENDS_BY_YEAR" :state="$uistate.SUM_YEAR_DIVIDENDS">
                 <template #header>Сумма дивидендов по годам</template>
@@ -62,7 +63,8 @@ export class DividendsPage extends UI {
 
     @MainStore.Getter
     private portfolio: Portfolio;
-
+    @MainStore.Getter
+    private sideBarOpened: boolean;
     @Inject
     private dividendService: DividendService;
     @Inject
