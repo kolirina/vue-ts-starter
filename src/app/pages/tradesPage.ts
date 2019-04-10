@@ -28,7 +28,7 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-container v-if="portfolio" fluid class="paddT0">
-            <dashboard :data="portfolio.overview.dashboardData"></dashboard>
+            <dashboard :data="portfolio.overview.dashboardData" :side-bar-opened="sideBarOpened" :view-currency="portfolio.portfolioParams.viewCurrency"></dashboard>
 
             <expanded-panel :disabled="true" :withMenu="true" name="trades" :alwaysOpen="true" :value="[true]">
                 <template #header>Сделки</template>
@@ -70,9 +70,11 @@ export class TradesPage extends UI {
     private portfolio: Portfolio;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
     private reloadPortfolio: (id: string) => Promise<void>;
-
+    @MainStore.Getter
+    private sideBarOpened: boolean;
+    /** Общее количество сделок */
     private totalTrades = 0;
-
+    /** Количество страниц */
     private pages = 0;
     /** Ключи для сохранения информации */
     private StoreKeys = StoreKeys;

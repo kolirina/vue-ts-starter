@@ -5,7 +5,7 @@ import {UI} from "../../../app/ui";
     // language=Vue
     template: `
         <div>
-            <p>
+            <p class="import-default-text">
                 Используйте отчеты в формате xls.
                 Импорт позволит вам загрузить в сервис сделки, указанные в разделе отчета: 3. TRANSACTIONS
             </p>

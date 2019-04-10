@@ -4,49 +4,102 @@ import {UI} from "../../../app/ui";
 @Component({
     // language=Vue
     template: `
-        <div>
-            <p>Вы можете импортировать сделки сами, создав CSV-файл следующей структуры:</p>
-            <p>
-                Файл должен содержать следующие столбцы, в перечисленном порядке:
-                <span style="border: 1px solid #929292; background-color: #e6e6e6; padding: 8px; word-wrap: normal; word-break: keep-all; display: block">
+        <div class="intel-invest-instruction">
+            <div class="intel-invest-instruction__title">Вы можете импортировать сделки сами, создав CSV-файл следующей структуры:</div>
+            <div class="intel-invest-instruction__format">
+                <div class="intel-invest-instruction__format-text">
                     TYPE;DATE;TICKER;QUANTITY;PRICE;FEE;NKD;NOMINAL;CURRENCY;NOTE;LINK_ID;
-                </span>
-            </p>
-            Поле <b>TYPE</b> может принимать значения:
-            <p style="word-wrap: break-word">
-                <b>STOCKBUY / STOCKSELL</b> Покупка/Продажа Акции. Поля: тикер, дата, количество, цена, комиссия, заметка, валюта, [id
-                связанной сделки]<br/>
-                <b>BONDBUY / BONDSELL</b> Покупка/Продажа Облигации. Поля: secid, дата, количество, цена в %, комиссия, НКД, номинал,
-                заметка, валюта, [id связанной сделки]<br/>
-                <b>COUPON</b> Выплата купона. Поля: тикер, дата, количество, сумма выплаты, заметка, валюта, [id связанной сделки]<br/>
-                <b>AMORTIZATION</b> Выплата амортизации. Поля: тикер, дата, количество, сумма выплаты, заметка, валюта, [id связанной
-                сделки]<br/>
-                <b>DIVIDEND</b> Выплата Дивиденда. Поля: тикер, дата, количество, сумма выплаты, заметка, валюта, [id связанной сделки]<br/>
-                <b>MONEYDEPOSIT</b> зачисление денежных средств на счет. Поля: дата, сумма, заметка, валюта, [id связанной сделки]<br/>
-                <b>MONEYWITHDRAW</b> вывод денежных средств со счета. Поля: дата, сумма, заметка, валюта, [id связанной сделки]<br/>
-                <b>INCOME</b> произвольный доход. Поля: дата, сумма, заметка, валюта, [id связанной сделки]<br/>
-                <b>LOSS</b> произвольный расход. Поля: дата, сумма, заметка, валюта, [id связанной сделки]<br/>
-                <br/>
-                Опциональный параметр <b>LINK_ID</b> (id связанной сделки), для создания связанных сделок, должен быть уникальным и
-                совпадать
-                у двух связанных сделок. Например, у сделки по покупке акции указываете 1, и у сделки по деньгам тоже 1.
-            </p>
+                </div>
+            </div>
+            <div class="intel-invest-instruction__title-values">
+                Поле <strong>TYPE</strong> может принимать значения:
+            </div>
+            <div class="intel-invest-instruction__values">
+                <div class="intel-invest-instruction__values-item">
+                    <div class="intel-invest-instruction__values-item__title">STOCKBUY / STOCKSELL</div>
+                    <div class="intel-invest-instruction__values-item__content">
+                        Покупка/Продажа Акции. Поля: тикер, дата, количество, цена, комиссия, заметка, валюта, [id
+                        связанной сделки]
+                    </div>
+                </div>
+                <div class="intel-invest-instruction__values-item">
+                    <div class="intel-invest-instruction__values-item__title">BONDBUY / BONDSELL</div>
+                    <div class="intel-invest-instruction__values-item__content">
+                        Покупка/Продажа Облигации. Поля: secid, дата, количество, цена в %, комиссия, НКД, номинал,
+                        Заметка, валюта, [id связанной сделки]
+                    </div>
+                </div>
+                <div class="intel-invest-instruction__values-item">
+                    <div class="intel-invest-instruction__values-item__title">COUPON</div>
+                    <div class="intel-invest-instruction__values-item__content">
+                        Выплата купона. Поля: тикер, дата, количество, сумма выплаты, заметка, валюта, [id связанной сделки]
+                    </div>
+                </div>
+                <div class="intel-invest-instruction__values-item">
+                    <div class="intel-invest-instruction__values-item__title">AMORTIZATION</div>
+                    <div class="intel-invest-instruction__values-item__content">
+                        Выплата амортизации. Поля: тикер, дата, количество, сумма выплаты, заметка, валюта, [id связанной
+                        сделки]
+                    </div>
+                </div>
+                <div class="intel-invest-instruction__values-item">
+                    <div class="intel-invest-instruction__values-item__title">DIVIDEND</div>
+                    <div class="intel-invest-instruction__values-item__content">
+                        Выплата Дивиденда. Поля: тикер, дата, количество, сумма выплаты, заметка, валюта, [id связанной сделки]
+                    </div>
+                </div>
+                <div class="intel-invest-instruction__values-item">
+                    <div class="intel-invest-instruction__values-item__title">MONEYDEPOSIT</div>
+                    <div class="intel-invest-instruction__values-item__content">
+                        Зачисление денежных средств на счет. Поля: дата, сумма, заметка, валюта, [id связанной сделки]
+                    </div>
+                </div>
+                <div class="intel-invest-instruction__values-item">
+                    <div class="intel-invest-instruction__values-item__title">MONEYWITHDRAW</div>
+                    <div class="intel-invest-instruction__values-item__content">
+                        Вывод денежных средств со счета. Поля: дата, сумма, заметка, валюта, [id связанной сделки]
+                    </div>
+                </div>
+                <div class="intel-invest-instruction__values-item">
+                    <div class="intel-invest-instruction__values-item__title">INCOME</div>
+                    <div class="intel-invest-instruction__values-item__content">
+                        Произвольный доход. Поля: дата, сумма, заметка, валюта, [id связанной сделки]
+                    </div>
+                </div>
+                <div class="intel-invest-instruction__values-item">
+                    <div class="intel-invest-instruction__values-item__title">LOSS</div>
+                    <div class="intel-invest-instruction__values-item__content">
+                        Произвольный расход. Поля: дата, сумма, заметка, валюта, [id связанной сделки]
+                    </div>
+                </div>
+                <div class="intel-invest-instruction__values-l-section">
+                    Опциональный параметр <b>LINK_ID</b> (id связанной сделки), для создания связанных сделок, должен быть уникальным и
+                    совпадать у двух связанных сделок. Например, у сделки по покупке акции указываете 1, и у сделки по деньгам тоже 1.
+                </div>
+            </div>
 
-            <ul>
-                <li>В заметке, по возможности, не используйте спецсимволы</li>
-                <li>Проверьте кодировку файла (csv), она должна быть UTF8</li>
-                <li>НКД в отчете должен указываться на одну бумагу</li>
-                <li>Количество бумаг должно быть указано в штуках (не в лотах)</li>
-            </ul>
+            <div class="import-format-requirements-ul">
+                <ul>
+                    <li>В заметке, по возможности, не используйте спецсимволы</li>
+                    <li>Проверьте кодировку файла (csv), она должна быть UTF8</li>
+                    <li>НКД в отчете должен указываться на одну бумагу</li>
+                    <li>Количество бумаг должно быть указано в штуках (не в лотах)</li>
+                </ul>
+            </div>
 
-            <p><b>Шаблоны отчетов с примерами вы можете скачать по ссылками ниже</b></p>
-            <p>
-                <a href="/static/example.csv">example.csv</a>
-                <br></br>
-                <a href="/static/example.xlsx">example.xlsx</a>
-            </p>
-            Используйте шаблон в формате xlsx для формирования таблицы со своими сделками, и просто сохраните результат
-            как файл в формате csv (разделители запятая) чтобы использовать его при импорте.
+            <div class="intel-invest-instruction__title-template">Скачать шаблоны отчетов с примерами</div>
+            <div class="intel-invest-instruction__template">
+                <div>
+                    <a href="/static/example.csv">example.csv</a>
+                </div>
+                <div>
+                    <a href="/static/example.xlsx">example.xlsx</a>
+                </div>
+            </div>
+            <div class="intel-invest-instruction__template-requirements">
+                Используйте шаблон в формате xlsx для формирования таблицы со своими сделками, и просто сохраните результат
+                как файл в формате csv (разделители запятая) чтобы использовать его при импорте.
+            </div>
         </div>
     `
 })

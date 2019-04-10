@@ -5,7 +5,7 @@ import {UI} from "../../../app/ui";
     // language=Vue
     template: `
         <div>
-            <p>
+            <p class="import-default-text">
                 Перейдите по адресу <a href="https://login.zerich.com/profile.html#/home"
                                        target="_blank">https://login.zerich.com/profile.html#/home</a>
                 Выберите пункт "Брокерское обслуживание" - "Отчеты", выберите свой счет.

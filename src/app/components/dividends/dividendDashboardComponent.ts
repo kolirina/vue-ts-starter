@@ -16,15 +16,10 @@
 
 import Component from "vue-class-component";
 import {Prop, Watch} from "vue-property-decorator";
-import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
 import {Filters} from "../../platform/filters/Filters";
 import {DividendDashboard} from "../../services/dividendService";
 import {DashboardBrick} from "../../types/types";
-import {Portfolio} from "../../types/types";
-import {StoreType} from "../../vuex/storeType";
-
-const MainStore = namespace(StoreType.MAIN);
 
 @Component({
     // language=Vue
@@ -76,16 +71,19 @@ export class DashboardBrickComponent extends UI {
     components: {DashboardBrickComponent}
 })
 export class DividendDashboardComponent extends UI {
-    @MainStore.Getter
-    private portfolio: Portfolio;
-    @MainStore.Getter
-    private sideBarOpened: boolean;
 
+    /** Валюта информации в дашборде */
+    @Prop({required: true, type: String})
+    private viewCurrency: string;
+    /** Признак открытой боковой панели */
+    @Prop({required: true, type: Boolean, default: true})
+    private sideBarOpened: boolean;
+    /** Данные по дашборду */
     @Prop({required: true})
     private data: DividendDashboard;
-
+    /** Блоки для отображения дашборда */
     private blocks: DashboardBrick[] = [];
-
+    /** Признак зафиксированного дашборда */
     private fixedDashboard = false;
 
     created(): void {
@@ -98,7 +96,7 @@ export class DividendDashboardComponent extends UI {
     }
 
     private fillBricks(newValue: DividendDashboard): void {
-        const mainCurrency = this.portfolio.portfolioParams.viewCurrency.toLowerCase();
+        const mainCurrency = this.viewCurrency.toLowerCase();
 
         this.blocks[0] = {
             name: "Всего получено дивидендов",
