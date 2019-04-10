@@ -50,8 +50,8 @@ const MainStore = namespace(StoreType.MAIN);
                     </td>
                     <td class="text-xs-right">{{ props.item.fixFee }}&nbsp;<span class="second-value">%</span></td>
                     <td class="text-xs-center">{{ props.item.viewCurrency }}</td>
-                    <td class="text-xs-center">{{ props.item.accountType.description }}</td>
-                    <td class="text-xs-center">{{ props.item.openDate }}</td>
+                    <td class="text-xs-left">{{ props.item.accountType.description }}</td>
+                    <td class="text-xs-right">{{ props.item.openDate }}</td>
                     <td class="justify-center layout px-0" @click.stop>
                         <v-menu transition="slide-y-transition" bottom left>
                             <v-btn slot="activator" flat icon dark>
@@ -82,13 +82,18 @@ const MainStore = namespace(StoreType.MAIN);
             <template #expand="props">
                 <v-card flat>
                     <v-card-text>
-                        <div class="extended-info one-column">
-                            <div class="extended-info__cell label">Профессиональный режим</div>
-                            <div class="extended-info__cell">
+                        <div class="wrap-info-content">
+                            <v-layout class="">
+                                <div class="portfolio-default-text">
+                                    Портфель "{{ props.item.name }}" <span v-if="props.item.brokerName">Брокер "{{ props.item.brokerName }}"</span>
+                                </div>
+                                <v-spacer></v-spacer>
                                 <v-tooltip content-class="custom-tooltip-wrap" top>
                                     <v-checkbox slot="activator" label="Профессиональный режим"
-                                                @change="onProfessionalModeChange(props.item)"
-                                                v-model="props.item.professionalMode" hide-details></v-checkbox>
+                                        @change="onProfessionalModeChange(props.item)"
+                                        color="#3B6EC9"
+                                        v-model="props.item.professionalMode" hide-details class="portfolio-default-text">
+                                    </v-checkbox>
                                     <span>
                                         Профессиональный режим включает дополнительные возможности, необходимые опытным инвесторам:
                                         <ul>
@@ -98,35 +103,31 @@ const MainStore = namespace(StoreType.MAIN);
                                         </ul>
                                     </span>
                                 </v-tooltip>
-                            </div>
-
-                            <div class="extended-info__cell label">Время с момента открытия</div>
-                            <div class="extended-info__cell">{{ props.item.openDate }}</div>
-
-                            <div v-if="props.item.brokerName" class="extended-info__cell label">Брокер</div>
-                            <div v-if="props.item.brokerName" class="extended-info__cell">{{props.item.brokerName}}</div>
-
-                            <div class="extended-info__cell label">Настройка доступа</div>
-                            <div class="extended-info__cell">
-                                <v-btn dark color="primary" @click.stop="openSharePortfolioDialog(props.item)" small>
+                            </v-layout>
+                            <v-layout class="setings-btn">
+                                <v-btn class="btn" @click="copyPortfolioLink(props.item.id)">
+                                    Копировать ссылку на портфель
+                                </v-btn>
+                                <v-btn class="btn" @click.stop="openSharePortfolioDialog(props.item)">
                                     Настройка доступа
                                 </v-btn>
-                            </div>
-
-                            <div class="extended-info__cell label">Ссылка на публичный портфель</div>
-                            <div class="extended-info__cell"><a :href="publicLink(props.item.id)">{{publicLink(props.item.id)}}</a></div>
-
-                            <div class="extended-info__cell label">Ссылка информер-картинка горизонтальный</div>
-                            <div class="extended-info__cell"><a :href="informerH(props.item.id)">{{informerH(props.item.id)}}</a></div>
-
-                            <div class="extended-info__cell label">Ссылка информер-картинка вертикальный</div>
-                            <div class="extended-info__cell"><a :href="informerV(props.item.id)">{{informerV(props.item.id)}}</a></div>
-
-                            <div class="extended-info__cell label">Встраиваемые блоки</div>
-                            <div class="extended-info__cell">
-                                <v-btn dark color="primary" @click.stop="openEmbeddedDialog(props.item.id)" small>
-                                    Получить код
+                                <v-btn class="btn" @click.stop="openEmbeddedDialog(props.item.id)">
+                                    Встраиваемые блоки
                                 </v-btn>
+                            </v-layout>
+
+                            <!--<div class="extended-info__cell">
+                                <v-btn dark color="primary" small>
+                                    Настройка доступа
+                                </v-btn>
+                            </div>-->
+                            <div class="link-section">
+                                <div>
+                                    <a class="portfolio-link portfolio-default-text" :href="informerH(props.item.id)" target="_blank">Информер-картинка горизонтальный</a>
+                                </div>
+                                <div>
+                                    <a class="portfolio-link portfolio-default-text" :href="informerV(props.item.id)" target="_blank">Информер-картинка вертикальный</a>
+                                </div>
                             </div>
                         </div>
                     </v-card-text>
@@ -151,8 +152,8 @@ export class PortfoliosTable extends UI {
         {text: "Название", align: "left", value: "name"},
         {text: "Фикс. комиссия", align: "right", value: "fixFee", width: "50"},
         {text: "Валюта", align: "center", value: "viewCurrency"},
-        {text: "Тип счета", align: "center", value: "accountType.description"},
-        {text: "Дата открытия", align: "center", value: "openDate"},
+        {text: "Тип счета", align: "left", value: "accountType.description"},
+        {text: "Дата открытия", align: "right", value: "openDate"},
         {text: "", value: "", align: "center", width: "25", sortable: false}
     ];
 
@@ -161,6 +162,10 @@ export class PortfoliosTable extends UI {
 
     private async openDialogForEdit(portfolioParams: PortfolioParams): Promise<void> {
         await new PortfolioEditDialog().show({store: this.$store.state[StoreType.MAIN], router: this.$router, portfolioParams});
+    }
+
+    async created(): Promise<void> {
+        console.log(this.portfolios);
     }
 
     private async deletePortfolio(portfolio: PortfolioParams): Promise<void> {
@@ -235,5 +240,9 @@ export class PortfoliosTable extends UI {
             }
         });
         return items;
+    }
+
+    private copyPortfolioLink(id: string): void {
+        console.log(this.publicLink(id));
     }
 }
