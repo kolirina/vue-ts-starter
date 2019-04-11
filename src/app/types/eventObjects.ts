@@ -1,4 +1,4 @@
-export type CombinedData = {
-    id: string,
-    combined: boolean
-};
+export interface CombinedData {
+    id: number;
+    combined: boolean;
+}

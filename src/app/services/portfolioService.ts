@@ -142,7 +142,7 @@ export class PortfolioService {
      * Удаляет портфель
      * @param portfolioId идентификатор портфеля
      */
-    async deletePortfolio(portfolioId: string): Promise<void> {
+    async deletePortfolio(portfolioId: number): Promise<void> {
         await this.http.delete(`/${this.ENDPOINT_BASE}/${portfolioId}`);
     }
 
@@ -174,7 +174,7 @@ export class PortfolioService {
      * Отправляет запрос на получение текущий остатков денежных средств в портфеле в разрезе по валютам
      * @param portfolioId идентификатор портфеля
      */
-    async getMoneyResiduals(portfolioId: string): Promise<MoneyResiduals> {
+    async getMoneyResiduals(portfolioId: number): Promise<MoneyResiduals> {
         return this.http.get<MoneyResiduals>(`/${this.ENDPOINT_BASE}/money-residuals/${portfolioId}`);
     }
 }
@@ -206,7 +206,7 @@ export class IisType extends (EnumType as IStaticEnum<IisType>) {
 /** Параметры портфеля пользователя */
 export interface BasePortfolioParams {
     /** Идентификатор портфеля */
-    id?: string;
+    id?: number;
     /** Название портфеля */
     name: string;
     /** Публичный доступ к портфелю */
@@ -270,7 +270,7 @@ export interface CreatePortfolioRequest {
 /** Запрос на обновление портфеля */
 export interface UpdatePortfolioRequest {
     /** Идентификатор портфеля */
-    id: string;
+    id: number;
     /** Название портфеля */
     name: string;
     /** Публичный доступ к портфелю */
@@ -324,7 +324,7 @@ export interface PortfolioParams extends BasePortfolioParams {
 /** Запрос на получение url для доступа к портфеля */
 export interface GenerateShareUrlRequest {
     /** Идентификатор портфеля */
-    id: string;
+    id: number;
     /** Срок действия доступа */
     expiredDate: string;
     /** Тип открытия доступа к портфелю */

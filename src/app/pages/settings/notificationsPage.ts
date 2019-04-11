@@ -47,7 +47,6 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-menu>
             </v-card>
 
-
             <v-card v-if="notifications.length !== 0" class="notifications-card" v-for="notification in notifications" :key="notification.id">
                 <div class="notifications-card-header">
                     <div class="notifications-card-header-title">{{notification.share.shortname}}</div>

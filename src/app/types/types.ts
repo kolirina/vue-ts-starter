@@ -209,7 +209,7 @@ export type BondPortfolio = {
 };
 
 export type Portfolio = {
-    id: string,
+    id: number,
     portfolioParams: PortfolioParams,
     overview: Overview
 };
@@ -261,9 +261,9 @@ export type DashboardBrick = {
 /** Описание бэкапа портфеля */
 export interface PortfolioBackup {
     /** Идентификатор бэкапа */
-    id?: string;
+    id?: number;
     /** список идентификаторов портфелей */
-    portfolioIds: string[];
+    portfolioIds: number[];
     /** Список дней для создания бэкапа */
     days: number[];
 }
@@ -439,7 +439,7 @@ export type LoginRequest = {
 };
 
 export type CombinedInfoRequest = {
-    ids: string[],
+    ids: number[],
     viewCurrency: string
 };
 

@@ -24,7 +24,7 @@ export class ShareInfoPage extends UI {
     };
 
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: string) => Promise<void>;
+    private reloadPortfolio: (id: number) => Promise<void>;
     @MainStore.Getter
     private portfolio: Portfolio;
     /** Код ценной бумаги */

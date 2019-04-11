@@ -15,7 +15,7 @@ export class DividendService {
      * @param {string} id идентификатор портфеля
      * @returns {Promise<DividendAggregateInfo>}
      */
-    async getDividendAggregateInfo(id: string): Promise<DividendAggregateInfo> {
+    async getDividendAggregateInfo(id: number): Promise<DividendAggregateInfo> {
         return this.http.get<DividendAggregateInfo>(`/dividends/${id}/`);
     }
 
@@ -105,7 +105,7 @@ export interface DeleteAllDividendsTradeRequest {
     /** Тикер */
     ticker: string;
     /** Идентификатор портфеля */
-    portfolioId: string;
+    portfolioId: number;
     /** Год */
     year: string;
 }

@@ -167,7 +167,7 @@ export class BalancesPage extends UI implements TradeDataHolder {
     @Inject
     private tradeService: TradeService;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: string) => Promise<void>;
+    private reloadPortfolio: (id: number) => Promise<void>;
     @MainStore.Getter
     private portfolio: Portfolio;
 

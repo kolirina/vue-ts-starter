@@ -190,7 +190,7 @@ export class AppFrame extends UI {
     private setCurrentPortfolio: (id: string) => Promise<Portfolio>;
 
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: string) => Promise<void>;
+    private reloadPortfolio: (id: number) => Promise<void>;
 
     @MainStore.Mutation(MutationType.CHANGE_SIDEBAR_STATE)
     private changeSideBarState: (sideBarState: boolean) => void;

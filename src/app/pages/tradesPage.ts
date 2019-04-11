@@ -69,7 +69,7 @@ export class TradesPage extends UI {
     @MainStore.Getter
     private portfolio: Portfolio;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: string) => Promise<void>;
+    private reloadPortfolio: (id: number) => Promise<void>;
     @MainStore.Getter
     private sideBarOpened: boolean;
     /** Общее количество сделок */

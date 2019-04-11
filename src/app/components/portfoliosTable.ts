@@ -128,7 +128,7 @@ export class PortfoliosTable extends UI {
     @MainStore.Action(MutationType.RELOAD_PORTFOLIOS)
     private reloadPortfolios: () => Promise<void>;
     @MainStore.Action(MutationType.SET_CURRENT_PORTFOLIO)
-    private setCurrentPortfolio: (id: string) => Promise<Portfolio>;
+    private setCurrentPortfolio: (id: number) => Promise<Portfolio>;
     @Inject
     private portfolioService: PortfolioService;
 
@@ -161,7 +161,7 @@ export class PortfoliosTable extends UI {
 
     @ShowProgress
     @DisableConcurrentExecution
-    private async deletePortfolioAndShowMessage(id: string): Promise<void> {
+    private async deletePortfolioAndShowMessage(id: number): Promise<void> {
         await this.portfolioService.deletePortfolio(id);
         // запоминаем текущий портфель, иначе ниже они может быть обновлен
         const currentPortfolioId = this.clientInfo.user.currentPortfolioId;

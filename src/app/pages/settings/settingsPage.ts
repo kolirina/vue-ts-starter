@@ -43,7 +43,7 @@ export class SettingsPage extends UI {
     @MainStore.Mutation(MutationType.UPDATE_PORTFOLIO)
     private updatePortfolio: (portfolio: PortfolioParams) => Promise<void>;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: string) => Promise<void>;
+    private reloadPortfolio: (id: number) => Promise<void>;
 
     created(): void {
         UI.on(EventType.PORTFOLIO_CREATED, async () => this.reloadPortfolios());

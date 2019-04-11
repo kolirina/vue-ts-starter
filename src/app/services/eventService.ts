@@ -14,7 +14,7 @@ export class EventService {
      * Возвращает список событий пользователя
      * @param portfolioId идентификатор портфеля
      */
-    async getEvents(portfolioId: string): Promise<EventsResponse> {
+    async getEvents(portfolioId: number): Promise<EventsResponse> {
         return this.http.get<EventsResponse>(`/events/list/${portfolioId}`);
     }
 
@@ -22,7 +22,7 @@ export class EventService {
      * Возвращает список дивидендных новостей
      * @param portfolioId идентификатор портфеля
      */
-    async getDividendNews(portfolioId: string): Promise<DividendNewsItem[]> {
+    async getDividendNews(portfolioId: number): Promise<DividendNewsItem[]> {
         return this.http.get<DividendNewsItem[]>(`/events/news/${portfolioId}`);
     }
 
@@ -31,7 +31,7 @@ export class EventService {
      * @param portfolioId идентификатор портфеля
      * @param withMoney признак исполнения событий с зачислением денег
      */
-    async executeAllEvents(portfolioId: string, withMoney: boolean): Promise<void> {
+    async executeAllEvents(portfolioId: number, withMoney: boolean): Promise<void> {
         await this.http.post(`/events/list/${portfolioId}/execute`, null, {withMoney});
     }
 
@@ -39,7 +39,7 @@ export class EventService {
      * Удаляет все события пользователя
      * @param portfolioId идентификатор портфеля
      */
-    async deleteAllEvents(portfolioId: string): Promise<void> {
+    async deleteAllEvents(portfolioId: number): Promise<void> {
         await this.http.post(`/events/list/${portfolioId}/delete`);
     }
 

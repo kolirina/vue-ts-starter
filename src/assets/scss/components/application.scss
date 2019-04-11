@@ -1,28 +1,28 @@
 .application {
-    font-family: $main--font-family;
+  font-family: $main--font-family;
 }
 
-.wrapper-for-scroll-content{
+.wrapper-for-scroll-content {
   min-width: 800px;
 }
 
 .theme--light.application {
-    background: $main--bg-color;
-    color: $main--font-color;
+  background: $main--bg-color;
+  color: $main--font-color;
 }
 
 .theme--dark.v-btn.v-btn--disabled, .theme--dark.v-btn.v-btn--disabled .v-btn__loading, .theme--dark.v-btn.v-btn--disabled .v-icon {
-  color: rgba(0,0,0,.12)!important;
+  color: rgba(0, 0, 0, .12) !important;
   background-color: #e0e0e0 !important;
 }
 
 .theme--dark.v-btn.v-btn--disabled:not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline) {
-  color: rgba(0,0,0,.12)!important;
+  color: rgba(0, 0, 0, .12) !important;
   background-color: #e0e0e0 !important;
 }
 
-.v-select>.v-input__control>.v-input__slot,
-.v-autocomplete.v-input>.v-input__control>.v-input__slot {
+.v-select > .v-input__control > .v-input__slot,
+.v-autocomplete.v-input > .v-input__control > .v-input__slot {
   cursor: pointer !important;
 
   i {
@@ -35,5 +35,11 @@
     .v-icon {
       margin-right: 5px;
     }
+  }
+}
+
+.v-list {
+  &__group--active:before {
+    background: none !important;
   }
 }

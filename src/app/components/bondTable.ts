@@ -238,7 +238,7 @@ export class BondTable extends UI {
     @Inject
     private portfolioService: PortfolioService;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: string) => Promise<void>;
+    private reloadPortfolio: (id: number) => Promise<void>;
     /** Идентификатор портфеля */
     @Prop({default: null, type: String, required: true})
     private portfolioId: string;
@@ -332,7 +332,7 @@ export class BondTable extends UI {
             assetType: AssetType.BOND
         });
         if (result) {
-            await this.reloadPortfolio(this.portfolioId);
+            await this.reloadPortfolio(Number(this.portfolioId));
         }
     }
 
@@ -354,7 +354,7 @@ export class BondTable extends UI {
     }
 
     private async deleteAllTrades(bondRow: BondPortfolioRow): Promise<void> {
-        const result = await new ConfirmDialog().show(`Вы уверены, что хотите удалить все сделки по ценной бумаге?`);
+        const result = await new ConfirmDialog().show(`Вы уверены, что хотите удалить все сделки по ценной бумаге ${bondRow.bond.ticker}?`);
         if (result === BtnReturn.YES) {
             await this.deleteAllTradesAndReloadData(bondRow);
         }
@@ -365,9 +365,9 @@ export class BondTable extends UI {
         await this.tradeService.deleteAllTrades({
             assetType: AssetType.BOND.enumName,
             ticker: bondRow.bond.ticker,
-            portfolioId: this.portfolioId
+            portfolioId: Number(this.portfolioId)
         });
-        await this.reloadPortfolio(this.portfolioId);
+        await this.reloadPortfolio(Number(this.portfolioId));
     }
 
     private amount(value: string): number {

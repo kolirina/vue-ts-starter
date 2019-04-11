@@ -115,7 +115,7 @@ export interface BaseClient {
     /** Признак подтвержденного email */
     emailConfirmed: string;
     /** Текущий идентификатор портфеля */
-    currentPortfolioId: string;
+    currentPortfolioId: number;
     /** Тип вознаграждения за реферальную программу */
     referralAwardType: string;
     /** Промокод пользователя */

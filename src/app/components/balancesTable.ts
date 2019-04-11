@@ -47,7 +47,7 @@ export class BalancesTable extends UI {
     private portfolio: Portfolio;
 
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: string) => Promise<void>;
+    private reloadPortfolio: (id: number) => Promise<void>;
 
     private balancesTableRow: BalancesTableRow[] = [];
 

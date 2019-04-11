@@ -29,11 +29,8 @@ import {MainStore} from "../../vuex/mainStore";
                             </div>
 
                             <div class="number-field-balance">
-                                <ii-number-field
-                                    v-if="portfolio"
-                                    suffix="RUB" label="Текущий остаток"
-                                    v-model="currentMoneyRemainder" name="currentMoney"
-                                    class="required">
+                                <ii-number-field v-if="portfolio" @keydown.enter="goToNextStep"
+                                                 suffix="RUB" label="Текущий остаток" v-model="currentMoneyRemainder" name="currentMoney" class="required">
                                 </ii-number-field>
                             </div>
                         </span>

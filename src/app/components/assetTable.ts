@@ -88,7 +88,7 @@ const MainStore = namespace(StoreType.MAIN);
 export class AssetTable extends UI {
 
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: string) => Promise<void>;
+    private reloadPortfolio: (id: number) => Promise<void>;
     @MainStore.Getter
     private portfolio: Portfolio;
 
