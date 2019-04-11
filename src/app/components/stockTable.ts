@@ -209,7 +209,7 @@ export class StockTable extends UI {
     @Inject
     private portfolioService: PortfolioService;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: string) => Promise<void>;
+    private reloadPortfolio: (id: number) => Promise<void>;
     /** Идентификатор портфеля */
     @Prop({default: null, type: String, required: true})
     private portfolioId: string;
@@ -320,12 +320,12 @@ export class StockTable extends UI {
             assetType: AssetType.STOCK
         });
         if (result) {
-            await this.reloadPortfolio(this.portfolioId);
+            await this.reloadPortfolio(Number(this.portfolioId));
         }
     }
 
     private async deleteAllTrades(stockRow: StockPortfolioRow): Promise<void> {
-        const result = await new ConfirmDialog().show(`Вы уверены, что хотите удалить все сделки по ценной бумаге?`);
+        const result = await new ConfirmDialog().show(`Вы уверены, что хотите удалить все сделки по ценной бумаге ${stockRow.stock.ticker}?`);
         if (result === BtnReturn.YES) {
             await this.deleteAllTradesAndReloadData(stockRow);
         }
@@ -336,9 +336,9 @@ export class StockTable extends UI {
         await this.tradeService.deleteAllTrades({
             assetType: AssetType.STOCK.enumName,
             ticker: stockRow.stock.ticker,
-            portfolioId: this.portfolioId
+            portfolioId: Number(this.portfolioId)
         });
-        await this.reloadPortfolio(this.portfolioId);
+        await this.reloadPortfolio(Number(this.portfolioId));
     }
 
     private amount(value: string): number {

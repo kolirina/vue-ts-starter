@@ -63,7 +63,7 @@ export class PublicPortfolioPage extends UI {
      */
     @ShowProgress
     async created(): Promise<void> {
-        const portfolioId = this.$route.params.id;
+        const portfolioId = Number(this.$route.params.id);
         this.portfolio = await this.overviewService.getById(portfolioId, true);
         await this.loadPortfolioLineChart();
     }

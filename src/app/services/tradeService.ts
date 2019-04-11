@@ -45,7 +45,7 @@ export class TradeService {
      * @param filter фильтр
      * @returns {Promise<TradeRow[]>}
      */
-    async loadTrades(id: string, offset: number = 0, limit: number = 50, sortColumn: string, descending: boolean = false,
+    async loadTrades(id: number, offset: number = 0, limit: number = 50, sortColumn: string, descending: boolean = false,
                      filter: TradesFilterRequest): Promise<PageableResponse<TradeRow>> {
         const urlParams: UrlParams = {offset, limit, ...filter};
         if (sortColumn) {
@@ -85,7 +85,7 @@ export class TradeService {
      * @param date дата
      * @returns данные с суммной начисления и количеством
      */
-    async getSuggestedInfo(portfolioId: string, asset: string, operation: string, ticker: string, date: string): Promise<SuggestedQuantityResponse> {
+    async getSuggestedInfo(portfolioId: number, asset: string, operation: string, ticker: string, date: string): Promise<SuggestedQuantityResponse> {
         const request: SuggestedQuantityRequest = {
             portfolioId, asset, operation, ticker, date
         };
@@ -113,7 +113,7 @@ export interface DeleteTradeRequest {
     /** Идентификатор сделки */
     tradeId: string;
     /** Идентификатор портфеля */
-    portfolioId: string;
+    portfolioId: number;
 }
 
 /** Поля, содержащие информацию для удаления всех сделок по бумаге */
@@ -123,7 +123,7 @@ export interface DeleteAllTradeRequest {
     /** Тикер */
     ticker: string;
     /** Идентификатор портфеля */
-    portfolioId: string;
+    portfolioId: number;
 }
 
 export type TradeFields = {
@@ -155,7 +155,7 @@ export type TradeFields = {
 
 export type CreateTradeRequest = {
     /** Идентификатор портфеля */
-    portfolioId: string,
+    portfolioId: number,
     /** Признак добавления связанной сделки по деньгам */
     createLinkedTrade: boolean,
     /** Актив сделки */
@@ -186,7 +186,7 @@ export interface EditTradeRequest {
     /** Операция */
     operation: string;
     /** Идентификатор портфеля */
-    portfolioId: string;
+    portfolioId: number;
     /** Добавлять ли связанную сделку по деньгам */
     createLinkedTrade: boolean;
     /** Идентификатор редактируемой сделки по деньгам (связанной) */
@@ -231,7 +231,7 @@ export interface SuggestedQuantityRequest {
     /** Операция над активом */
     operation: string;
     /** Идентификатор портфеля */
-    portfolioId: string;
+    portfolioId: number;
     /** Тикер для акции или isin для облигации. Используется для поиска бумаги */
     ticker: string;
     /** Дата */

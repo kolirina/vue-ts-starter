@@ -55,7 +55,7 @@ const Mutations = {
         state.currentPortfolio = portfolio;
         state.clientInfo.user.currentPortfolioId = portfolio.id;
     },
-    [MutationType.SET_DEFAULT_PORTFOLIO](state: StateHolder, id: string): void {
+    [MutationType.SET_DEFAULT_PORTFOLIO](state: StateHolder, id: number): void {
         state.clientInfo.user.currentPortfolioId = id;
     },
     [MutationType.RELOAD_PORTFOLIO](state: StateHolder, portfolio: Portfolio): void {
@@ -83,7 +83,7 @@ const Actions = {
         localStorage.set(StoreKeys.TOKEN_KEY, clientInfo.token);
         context.commit(MutationType.SET_CLIENT_INFO, clientInfo);
     },
-    [MutationType.SET_CURRENT_PORTFOLIO](context: ActionContext<StateHolder, void>, id: string): Promise<Portfolio> {
+    [MutationType.SET_CURRENT_PORTFOLIO](context: ActionContext<StateHolder, void>, id: number): Promise<Portfolio> {
         return new Promise<Portfolio>((resolve): void => {
             overviewService.getById(id).then((portfolio: Portfolio) => {
                 context.commit(MutationType.SET_CURRENT_PORTFOLIO, portfolio);
@@ -91,7 +91,7 @@ const Actions = {
             });
         });
     },
-    [MutationType.SET_DEFAULT_PORTFOLIO](context: ActionContext<StateHolder, void>, id: string): Promise<void> {
+    [MutationType.SET_DEFAULT_PORTFOLIO](context: ActionContext<StateHolder, void>, id: number): Promise<void> {
         return new Promise<void>((resolve): void => {
             overviewService.setDefaultPortfolio(id).then(() => {
                 context.commit(MutationType.SET_DEFAULT_PORTFOLIO, id);
@@ -107,7 +107,7 @@ const Actions = {
             });
         });
     },
-    [MutationType.RELOAD_PORTFOLIO](context: ActionContext<StateHolder, void>, id: string): Promise<void> {
+    [MutationType.RELOAD_PORTFOLIO](context: ActionContext<StateHolder, void>, id: number): Promise<void> {
         return new Promise<void>((resolve): void => {
             overviewService.reloadPortfolio(id).then((portfolio: Portfolio): void => {
                 context.commit(MutationType.RELOAD_PORTFOLIO, portfolio);

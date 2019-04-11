@@ -21,9 +21,9 @@ export class OverviewService {
     @Inject
     private cacheService: Cache;
 
-    private cache: { [key: string]: Portfolio } = {};
+    private cache: { [key: number]: Portfolio } = {};
 
-    async getById(id: string, publicZone: boolean = false): Promise<Portfolio> {
+    async getById(id: number, publicZone: boolean = false): Promise<Portfolio> {
         let portfolio = this.cache[id];
         if (!portfolio) {
             portfolio = await this.loadPortfolio(id, publicZone);
@@ -37,7 +37,7 @@ export class OverviewService {
      * Перезагружает портфель
      * @param id идентификатор портфеля
      */
-    async reloadPortfolio(id: string): Promise<Portfolio> {
+    async reloadPortfolio(id: number): Promise<Portfolio> {
         const portfolio = await this.loadPortfolio(id);
         this.cache[id] = portfolio;
         return portfolio;
@@ -71,7 +71,7 @@ export class OverviewService {
      * @param {boolean} combined
      * @return {Promise<void>}
      */
-    async setCombinedFlag(id: string, combined: boolean): Promise<void> {
+    async setCombinedFlag(id: number, combined: boolean): Promise<void> {
         await this.http.post(`/portfolios/${id}/combined/${combined}`, {});
     }
 
@@ -80,11 +80,11 @@ export class OverviewService {
      * @param {string} id идентификатор портфеля по умолчанию
      * @return {Promise<void>}
      */
-    async setDefaultPortfolio(id: string): Promise<void> {
+    async setDefaultPortfolio(id: number): Promise<void> {
         await this.http.post(`/portfolios/${id}/default`);
     }
 
-    async getCostChart(id: string, publicZone: boolean = false): Promise<any> {
+    async getCostChart(id: number, publicZone: boolean = false): Promise<any> {
         const data = await this.http.get<LineChartItem[]>(`${publicZone ? "public" : ""}/portfolios/${id}/cost-chart`);
         const result: any[] = [];
         data.forEach(value => {
@@ -93,11 +93,11 @@ export class OverviewService {
         return result;
     }
 
-    async getEventsChartDataWithDefaults(id: string, publicZone: boolean = false): Promise<HighStockEventsGroup[]> {
+    async getEventsChartDataWithDefaults(id: number, publicZone: boolean = false): Promise<HighStockEventsGroup[]> {
         return this.getEventsChartData(id, publicZone);
     }
 
-    async getEventsChartData(id: string, publicZone: boolean = false): Promise<HighStockEventsGroup[]> {
+    async getEventsChartData(id: number, publicZone: boolean = false): Promise<HighStockEventsGroup[]> {
         const data = await this.http.get<EventChartData[]>(`${publicZone ? "public" : ""}/portfolios/${id}/events-chart-data`);
         return ChartUtils.processEventsChartData(data);
     }
@@ -107,11 +107,11 @@ export class OverviewService {
         return ChartUtils.processEventsChartData(data);
     }
 
-    async getCurrentMoney(portfolioId: string): Promise<string> {
+    async getCurrentMoney(portfolioId: number): Promise<string> {
         return await this.http.get<string>(`/portfolios/${portfolioId}/current-money`);
     }
 
-    async saveOrUpdateCurrentMoney(portfolioId: string, currentMoney: string): Promise<void> {
+    async saveOrUpdateCurrentMoney(portfolioId: number, currentMoney: string): Promise<void> {
         await this.http.post(`/portfolios/${portfolioId}/current-money`, {currentMoney});
     }
 
@@ -121,7 +121,7 @@ export class OverviewService {
      * @param publicZone
      * @return {Promise<Portfolio>}
      */
-    private async loadPortfolio(id: string, publicZone: boolean = false): Promise<Portfolio> {
+    private async loadPortfolio(id: number, publicZone: boolean = false): Promise<Portfolio> {
         const portfolioResponse: PortfolioParamsResponse = await this.http.get<PortfolioParamsResponse>(`${publicZone ? "public" : ""}/portfolios/${id}`);
         const portfolio = {
             ...portfolioResponse,

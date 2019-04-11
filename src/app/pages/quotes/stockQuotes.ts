@@ -81,7 +81,7 @@ const MainStore = namespace(StoreType.MAIN);
 export class StockQuotes extends UI {
 
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: string) => Promise<void>;
+    private reloadPortfolio: (id: number) => Promise<void>;
     @MainStore.Getter
     private portfolio: Portfolio;
     /** Текущая операция */

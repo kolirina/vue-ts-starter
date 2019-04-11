@@ -13,7 +13,7 @@ export class ExportService {
      * Скачивает файл со сделками в формате csv
      * @param portfolioId идентификатор портфеля
      */
-    async exportTrades(portfolioId: string): Promise<any> {
+    async exportTrades(portfolioId: number): Promise<any> {
         const response = await this.http.get<Response>(`/export/${portfolioId}`);
         if (!window.navigator.msSaveOrOpenBlob) {
             const blob = await response.blob();
@@ -34,7 +34,7 @@ export class ExportService {
      * @param portfolioId идентификатор портфеля
      * @param exportType тип отчета для экспорта
      */
-    async exportReport(portfolioId: string, exportType: ExportType): Promise<any> {
+    async exportReport(portfolioId: number, exportType: ExportType): Promise<any> {
         const response = await this.http.get<Response>(`/export/${exportType}/${portfolioId}`);
         const fileName = this.getFileName(response.headers, portfolioId, exportType);
         if (!window.navigator.msSaveOrOpenBlob) {
@@ -57,7 +57,7 @@ export class ExportService {
      * @param portfolioId идентификатор портфеля
      * @param exportType тип экспорта
      */
-    private getFileName(headers: Headers, portfolioId: string, exportType: ExportType): string {
+    private getFileName(headers: Headers, portfolioId: number, exportType: ExportType): string {
         try {
             const contentDisposition = (headers as any)["content-disposition"];
             return contentDisposition.substring(contentDisposition.indexOf("=") + 1).trim();

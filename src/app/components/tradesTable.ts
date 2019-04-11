@@ -155,7 +155,7 @@ export class TradesTable extends UI {
     @Inject
     private clientService: ClientService;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: string) => Promise<void>;
+    private reloadPortfolio: (id: number) => Promise<void>;
     @MainStore.Getter
     private portfolio: Portfolio;
     /** Список заголовков таблицы */
