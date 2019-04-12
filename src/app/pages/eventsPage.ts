@@ -137,7 +137,7 @@ const MainStore = namespace(StoreType.MAIN);
 
                 <v-card-text>
                     <v-data-table v-if="dividendNews.length" :headers="dividendNewsHeaders" :items="dividendNews" item-key="id" :custom-sort="customSortNews"
-                                  class="dividend-news-table data-table events-table" hide-actions>
+                                  class="dividend-news-table events-table" hide-actions>
                         <template #items="props">
                             <tr class="selectable">
                                 <td class="text-xs-left pl30">
