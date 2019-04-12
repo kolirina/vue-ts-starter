@@ -31,7 +31,7 @@ import {DateFormat, DateUtils} from "../../utils/dateUtils";
                                 <v-tooltip bottom left content-class="type-dialog-tooltip" max-width="292">
                                     <template #activator="{ on: tooltip }">
                                         <span v-on="{ ...tooltip, ...menu }">
-                                            {{ shareOption.description }}
+                                            {{ shareOption.description.toLowerCase() }}
                                         </span>
                                     </template>
                                     <div class="dialog-default-text">
@@ -137,7 +137,7 @@ import {DateFormat, DateUtils} from "../../utils/dateUtils";
                                     </v-menu>
                                 </div>
                             </v-layout>
-                            <v-flex xs12 v-if="link" :class="[shareOption === dialogTypes.BY_IDENTIFICATION ? 'input-link-section' : '']">
+                            <v-flex xs12 v-if="link" :class="[shareOption !== dialogTypes.DEFAULT_ACCESS ? 'input-link-section' : '']">
                                 <v-text-field :value="link" placeholder="url для доступа к портфелю" readonly hide-details id="linkForCopy"></v-text-field>
                             </v-flex>
                         </v-layout>
