@@ -297,15 +297,7 @@ export class SharePortfolioDialog extends CustomDialog<SharePortfolioDialogData,
 
     private copyLink(): void {
         const target = document.getElementById("linkForCopy");
-        const textArea = document.createElement("textarea");
-        textArea.style.position = "fixed";
-        textArea.value = (target as HTMLInputElement).value;
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        const copy = document.execCommand("copy");
-        if (copy) {
-            document.body.removeChild(textArea);
+        if (this.portfolioService.copyLink((target as HTMLInputElement).value)) {
             this.$snotify.info("Ссылка скопирована");
         }
     }

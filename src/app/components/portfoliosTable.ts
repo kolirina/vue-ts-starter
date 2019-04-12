@@ -255,15 +255,7 @@ export class PortfoliosTable extends UI {
     }
 
     private copyPortfolioLink(id: string): void {
-        const textArea = document.createElement("textarea");
-        textArea.style.position = "fixed";
-        textArea.value = this.publicLink(id);
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        const copy = document.execCommand("copy");
-        if (copy) {
-            document.body.removeChild(textArea);
+        if (this.portfolioService.copyLink(this.publicLink(id))) {
             this.$snotify.info("Ссылка скопирована");
         }
     }

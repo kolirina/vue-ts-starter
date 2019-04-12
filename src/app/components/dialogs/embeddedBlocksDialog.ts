@@ -1,5 +1,7 @@
+import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {BtnReturn, CustomDialog} from "../../platform/dialogs/customDialog";
+import {PortfolioService} from "../../services/portfolioService";
 
 /**
  * Диалог получения кода для встраиваемого блока
@@ -55,6 +57,9 @@ import {BtnReturn, CustomDialog} from "../../platform/dialogs/customDialog";
 })
 export class EmbeddedBlocksDialog extends CustomDialog<string, BtnReturn> {
 
+    @Inject
+    private portfolioService: PortfolioService;
+
     private embeddedOptions: EmbeddedOption[] = [
         {name: "Диаграмма по акциям и ETF", value: "stocks-diagram"},
         {name: "Таблица облигаций", value: "bonds-table"},
@@ -72,15 +77,7 @@ style="height: 600px; width: 100%; margin: 10px 0; display: block;" frameborder=
 
     private copyLink(): void {
         const target = document.getElementById("linkForCopy");
-        const textArea = document.createElement("textarea");
-        textArea.style.position = "fixed";
-        textArea.value = (target as HTMLInputElement).value;
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        const copy = document.execCommand("copy");
-        if (copy) {
-            document.body.removeChild(textArea);
+        if (this.portfolioService.copyLink((target as HTMLInputElement).value)) {
             this.$snotify.info("Ссылка скопирована");
         }
     }

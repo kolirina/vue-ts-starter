@@ -40,6 +40,20 @@ export class PortfolioService {
     }
 
     /**
+     * Копирует ссылки
+     * @param value то что нужно скопировать
+     */
+    copyLink(value: string): boolean {
+        const textArea = document.createElement("textarea");
+        textArea.style.position = "fixed";
+        textArea.value = value;
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        return document.execCommand("copy");
+    }
+
+    /**
      * Отправляет запрос на создание/обновление данных бэкапа портфеля
      * @param userId идентификатор пользователя
      * @param portfolioBackup идентификатор портфеля
