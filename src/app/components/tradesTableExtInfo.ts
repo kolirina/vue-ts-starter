@@ -70,7 +70,7 @@ import {TradeUtils} from "../utils/tradeUtils";
             <tr v-if="tradeRow.asset === 'BOND'">
                 <td>
                     <div class="ext-info__item">
-                        Тикер<span class="ext-info__ticker"><bond-link :ticker="tradeRow.ticker"></bond-link></span><br>
+                        Тикер <span class="ext-info__ticker"><bond-link :ticker="tradeRow.ticker"></bond-link></span><br>
                         Название {{ tradeRow.companyName }}<br>
                         Заметка {{ tradeRow.note }}
                     </div>
@@ -85,8 +85,16 @@ import {TradeUtils} from "../utils/tradeUtils";
                 <td>
                     <div class="ext-info__item">
                         Цена {{ getPrice(tradeRow) }} <span>{{ currencyForPrice(tradeRow) }}</span><br>
-                        Номинал {{ tradeRow.facevalue | amount }} <span>{{ tradeRow.facevalue | currencySymbol }}</span><br>
-                        НКД {{ tradeRow.nkd | amount }} <span>{{ tradeRow.nkd | currencySymbol }}</span>
+                        Номинал
+                        <template v-if="tradeRow.facevalue">
+                            {{ tradeRow.facevalue | amount(false, null, false) }} <span>{{ tradeRow.facevalue | currencySymbol }}</span><br>
+                        </template>
+                        <template v-else>-<br></template>
+                        НКД
+                        <template v-if="tradeRow.nkd">
+                            {{ tradeRow.nkd | amount(false, null, false) }} <span>{{ tradeRow.nkd | currencySymbol }}</span>
+                        </template>
+                        <template v-else>-<br></template>
                     </div>
                 </td>
 
