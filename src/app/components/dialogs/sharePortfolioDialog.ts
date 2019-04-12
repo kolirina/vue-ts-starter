@@ -6,7 +6,7 @@ import {DisableConcurrentExecution} from "../../platform/decorators/disableConcu
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn, CustomDialog} from "../../platform/dialogs/customDialog";
 import {ClientInfo} from "../../services/clientService";
-import {PortfolioParams, PortfolioService, TypeDialogOpen} from "../../services/portfolioService";
+import {PortfolioParams, PortfoliosDialogType, PortfolioService} from "../../services/portfolioService";
 import {EventType} from "../../types/eventType";
 import {CommonUtils} from "../../utils/commonUtils";
 import {DateFormat, DateUtils} from "../../utils/dateUtils";
@@ -17,36 +17,90 @@ import {DateFormat, DateUtils} from "../../utils/dateUtils";
 @Component({
     // language=Vue
     template: `
-        <v-dialog v-model="showed" max-width="550px">
-            <v-card class="dialog-wrap portfolio-dialog-wrap">
+        <v-dialog v-model="showed" max-width="600px">
+            <v-card class="dialog-wrap portfolio-dialog-wrap" v-if="shareOption">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
 
-                <v-card-title class="dialog-header-text">Настройка доступа к портфелю</v-card-title>
+                <v-card-title class="dialog-header-text header-dialog-pad-0">
+                    <span>
+                        Настройка доступа
+                    </span>
+                    <span class="type-dialog-title">
+                        <v-menu bottom content-class="dialog-setings-menu" z-index="210">
+                            <template #activator="{ on: menu }">
+                                <v-tooltip bottom left content-class="type-dialog-tooltip" max-width="292">
+                                    <template #activator="{ on: tooltip }">
+                                        <span v-on="{ ...tooltip, ...menu }">
+                                            {{ shareOption.description }}
+                                        </span>
+                                    </template>
+                                    <div class="dialog-default-text">
+                                        <div v-if="shareOption === dialogTypes.DEFAULT_ACCESS">
+                                            <div>
+                                                Включите публичный доступ, и тогда информацию по вашему портфелю смогут просматривать все, кто обладает этой ссылкой.
+                                            </div>
+                                            <br>
+                                            <div>
+                                                Ссылка действительна пока открыт доступ, можете разместить ее на форуме или блоге.
+                                            </div>
+                                            <br>
+                                            <div>
+                                                Настройки доступа отдельных блоков влияют на все типы доступа.
+                                            </div>
+                                        </div>
+                                        <div v-if="shareOption === dialogTypes.BY_LINK">
+                                            <div>
+                                                Предоставляйте временный доступ к просмотру портфеля, с помощью данной ссылки.
+                                            </div>
+                                            <br>
+                                            <div>
+                                                По истечению времени ссылка станет неактивна.
+                                            </div>
+                                            <br>
+                                            <div>
+                                                Не задавайте слишком большое время жизни ссылки, отменить ее будет невозможно.
+                                            </div>
+                                        </div>
+                                        <div v-if="shareOption === dialogTypes.BY_IDENTIFICATION">
+                                            <div>
+                                                Предоставляйте временный доступ к просмотру портфеля конкретному пользователю Intelinvest.
+                                            </div>
+                                                <br>
+                                            <div>
+                                                Для просмотра пользователю будет необходимо авторизоваться в свой аккаунт. По истечению времени ссылка станет неактивна.
+                                            </div>
+                                                <br>
+                                            <div>
+                                                Не задавайте слишком большое время жизни ссылки, отменить ее будет невозможно.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </v-tooltip>
+                            </template>
+                            <v-list dense class="choose-type-dialog">
+                                <v-flex>
+                                    <div @click="shareOption = dialogTypes.DEFAULT_ACCESS" class="dialog-default-text">
+                                        Обычная
+                                    </div>
+                                    <div @click="shareOption = dialogTypes.BY_LINK" class="dialog-default-text">
+                                        Со сроком действия
+                                    </div>
+                                    <div @click="shareOption = dialogTypes.BY_IDENTIFICATION" class="dialog-default-text">
+                                        Пользователю
+                                    </div>
+                                </v-flex>
+                            </v-list>
+                        </v-menu>
+                    </span>
+                </v-card-title>
                 <v-card-text class="paddT0 paddB0">
 
                     <div>
-                        <v-layout row wrap>
-                            <!--<v-flex v-if="shareOption === 'DEFAULT_ACCESS'" xs9>
-                                Включите публичный доступ, и тогда информацию по вашему портфелю смогут просматривать все, кто обладает этой ссылкой. Ссылка не
-                                изменяется и действительна пока включен доступ, вы можете разместить ее на форуме или блоге. Настройки доступа отдельных блоков
-                                влияют на все типы доступа.
-                            </v-flex>-->
-                            <!--<v-flex v-if="shareOption === 'BY_LINK'" xs9>
-                                По этой ссылке ниже вы можете предоставить временный доступ к просмотру портфеля. По истечению времени ссылка станет неактивна.
-                                Не задавайте слишком большое время жизни ссылки, отменить ее будет невозможно.
-                            </v-flex>-->
-                            <!--<v-flex v-if="shareOption === 'BY_IDENTIFICATION'" xs9>
-                                Вы можете предоставить временный доступ к просмотру портфеля конкретному пользователю Intelinvest. Для просмотра пользователю
-                                будет необходимо авторизоваться в свой аккаунт. По истечению времени ссылка станет неактивна. Не задавайте слишком большое время
-                                жизни ссылки, отменить ее будет невозможно.
-                            </v-flex>-->
-                        </v-layout>
-
-                        <v-layout column>
-                            <v-flex xs12 v-if="shareOption === 'BY_IDENTIFICATION'">
+                        <v-layout column class="section-calendar-label-user">
+                            <v-flex xs12 v-if="shareOption === dialogTypes.BY_IDENTIFICATION">
                                 <v-text-field label="Идентификатор пользователя" v-model="userId"></v-text-field>
                             </v-flex>
-                            <v-flex xs12 sm5 v-if="shareOption === 'BY_LINK'" style="margin-top: 20px">
+                            <v-layout v-if="shareOption === dialogTypes.BY_LINK" align-center>
                                 <v-menu
                                         ref="dateMenu"
                                         :close-on-content-click="false"
@@ -68,13 +122,27 @@ import {DateFormat, DateUtils} from "../../utils/dateUtils";
                                     <v-date-picker v-model="expiredDate" :no-title="true" locale="ru" :first-day-of-week="1"
                                                    @input="$refs.dateMenu.save(expiredDate)"></v-date-picker>
                                 </v-menu>
-                            </v-flex>
-                            <v-flex xs12 v-if="link" style="margin-top: 20px">
+                                <div v-if="link">
+                                    <v-menu transition="slide-y-transition" right bottom :open-on-hover="true" nudge-bottom="12" nudge-right="22">
+                                        <sup slot="activator">
+                                            <div class="repeat-link-btn" @click="generateTokenLink">
+                                                <img src="img/portfolio/link.svg">
+                                            </div>
+                                        </sup>
+                                        <v-list dense>
+                                            <div class="hint-text-for-setings">
+                                                Сгенерировать ссылку повторно
+                                            </div>
+                                        </v-list>
+                                    </v-menu>
+                                </div>
+                            </v-layout>
+                            <v-flex xs12 v-if="link" :class="[shareOption === dialogTypes.BY_IDENTIFICATION ? 'input-link-section' : '']">
                                 <v-text-field :value="link" placeholder="url для доступа к портфелю" readonly hide-details id="linkForCopy"></v-text-field>
                             </v-flex>
                         </v-layout>
 
-                        <v-layout v-if="shareOption === 'DEFAULT_ACCESS'" column class="default-access-content">
+                        <v-layout v-if="shareOption === dialogTypes.DEFAULT_ACCESS" column class="default-access-content">
                             <v-layout wrap justify-space-between>
                                 <div>
                                     <v-flex xs12>
@@ -108,7 +176,7 @@ import {DateFormat, DateUtils} from "../../utils/dateUtils";
                                             transition="slide-y-transition"
                                             nudge-bottom="36" left class="setings-menu"
                                             :close-on-content-click="false">
-                                        <v-btn class="btn" slot="activator">
+                                        <v-btn class="btn qr-code-btn" slot="activator">
                                             QR code
                                         </v-btn>
                                         <v-list dense>
@@ -121,7 +189,7 @@ import {DateFormat, DateUtils} from "../../utils/dateUtils";
                             </v-layout>
                         </v-layout>
 
-                        <v-layout wrap v-if="shareOption !== 'DEFAULT_ACCESS'" style="margin-top: 20px">
+                        <v-layout wrap v-if="shareOption !== dialogTypes.DEFAULT_ACCESS" class="action-btn-section">
                             <div v-if="!link">
                                 <v-btn class="btn" slot="activator" @click="generateTokenLink">
                                     Сгенерировать ссылку
@@ -132,12 +200,12 @@ import {DateFormat, DateUtils} from "../../utils/dateUtils";
                                     Копировать ссылку
                                 </v-btn>
                             </div>
-                            <div v-if="link" style="margin-left:20px;">
+                            <div v-if="link">
                                 <v-menu content-class="qr-code-section"
                                         transition="slide-y-transition"
                                         nudge-bottom="36" left class="setings-menu"
                                         :close-on-content-click="false">
-                                    <v-btn class="btn" slot="activator">
+                                    <v-btn class="btn qr-code-btn" slot="activator">
                                         QR code
                                     </v-btn>
                                     <v-list dense>
@@ -150,7 +218,7 @@ import {DateFormat, DateUtils} from "../../utils/dateUtils";
                         </v-layout>
                     </div>
                 </v-card-text>
-                <v-card-actions>
+                <v-card-actions class="save-btn-section">
                     <v-spacer></v-spacer>
                     <v-btn color="primary" light @click.native="savePublicParams">Сохранить</v-btn>
                 </v-card-actions>
@@ -166,9 +234,9 @@ export class SharePortfolioDialog extends CustomDialog<SharePortfolioDialogData,
 
     @Inject
     private portfolioService: PortfolioService;
-    private dialogType = TypeDialogOpen;
+    private dialogTypes = PortfoliosDialogType;
 
-    private shareOption: TypeDialogOpen = null;
+    private shareOption: PortfoliosDialogType = null;
 
     private access = true;
     private divAccess = false;
@@ -179,9 +247,9 @@ export class SharePortfolioDialog extends CustomDialog<SharePortfolioDialogData,
     private dateMenuValue = false;
     private userId = "";
     private shareUrlsCache: { [key: string]: string } = {
-        [this.dialogType.DEFAULT_ACCESS.code]: null,
-        [this.dialogType.BY_LINK.code]: null,
-        [this.dialogType.BY_IDENTIFICATION.code]: null
+        [this.dialogTypes.DEFAULT_ACCESS.code]: null,
+        [this.dialogTypes.BY_LINK.code]: null,
+        [this.dialogTypes.BY_IDENTIFICATION.code]: null
     };
 
     mounted(): void {
@@ -221,7 +289,7 @@ export class SharePortfolioDialog extends CustomDialog<SharePortfolioDialogData,
     }
 
     private get link(): string {
-        if (this.shareOption === this.dialogType.DEFAULT_ACCESS) {
+        if (this.shareOption === this.dialogTypes.DEFAULT_ACCESS) {
             return `${window.location.protocol}//${window.location.host}/public-portfolio/${this.data.portfolio.id}/?ref=${this.data.clientInfo.user.id}`;
         }
         return this.shareUrlsCache[this.shareOption.code];
@@ -229,21 +297,28 @@ export class SharePortfolioDialog extends CustomDialog<SharePortfolioDialogData,
 
     private copyLink(): void {
         const target = document.getElementById("linkForCopy");
-        target.focus();
-        (target as HTMLInputElement).select();
-        document.execCommand("copy");
-        target.blur();
+        const textArea = document.createElement("textarea");
+        textArea.style.position = "fixed";
+        textArea.value = (target as HTMLInputElement).value;
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        const copy = document.execCommand("copy");
+        if (copy) {
+            document.body.removeChild(textArea);
+            this.$snotify.info("Ссылка скопирована");
+        }
     }
 
     private isValid(): boolean {
-        if (this.shareOption === this.dialogType.DEFAULT_ACCESS) {
+        if (this.shareOption === this.dialogTypes.DEFAULT_ACCESS) {
             return true;
         }
         if (this.expiredDate === null || dayjs().isAfter(DateUtils.parseDate(this.expiredDate))) {
             this.$snotify.warning("Срок действия токена должна быть больше текущей даты");
             return false;
         }
-        if (this.shareOption === this.dialogType.BY_IDENTIFICATION && CommonUtils.isBlank(this.userId)) {
+        if (this.shareOption === this.dialogTypes.BY_IDENTIFICATION && CommonUtils.isBlank(this.userId)) {
             this.$snotify.warning("Идентификатор пользователя должен быть заполнен");
             return false;
         }
@@ -254,5 +329,5 @@ export class SharePortfolioDialog extends CustomDialog<SharePortfolioDialogData,
 export type SharePortfolioDialogData = {
     portfolio: PortfolioParams,
     clientInfo: ClientInfo,
-    type: TypeDialogOpen
+    type: PortfoliosDialogType
 };

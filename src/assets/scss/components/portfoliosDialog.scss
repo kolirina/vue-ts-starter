@@ -84,6 +84,9 @@
     .v-card__actions {
         padding: 0px 16px;
     }
+    .save-btn-section {
+        margin-top: 140px;
+    }
 }
 .qr-code-section {
     .v-list {
@@ -91,11 +94,61 @@
     }
 }
 .default-access-content {
-    margin: 29px 0px 140px;
+    margin: 29px 0px 0px;
 }
 .embedded-copy-btn-section {
     margin: 30px 0px 50px;
 }
 .delete-btn {
     color: #ff4a79;
+}
+.type-dialog-title {
+    color: #3b6ec8;
+    margin-left: 5px;
+    cursor: pointer;
+}
+.choose-type-dialog {
+    .dialog-default-text {
+        &:hover {
+            color: #B0B4C2;
+        }
+    }
+}
+.type-dialog-tooltip {
+    background: #FFFFFF;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    color: #040427;
+    font-size: 13px;
+    line-height: 20px;
+    padding: 17px 7px 19px 16px;
+    opacity: 1 !important;
+}
+.action-btn-section {
+    margin-top: 30px;
+    .qr-code-btn {
+        padding: 0px 38px 0px 20px;
+        background: url("../img/portfolio/qrbtn.svg") no-repeat;
+        background-position: 86% center;
+        margin-left: 12px !important;
+    }
+}
+.repeat-link-btn {
+    margin-left: 22px;
+    cursor: pointer;
+    img {
+        filter: grayscale(1);
+        &:hover {
+            filter: none;
+        }
+    }
+}
+.input-link-section {
+    margin-top: 31px;
+}
+.header-dialog-pad-0 {
+    padding-bottom: 0px;
+}
+.section-calendar-label-user {
+    margin-top: 24px;
 }

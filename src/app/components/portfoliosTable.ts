@@ -7,7 +7,7 @@ import {DisableConcurrentExecution} from "../platform/decorators/disableConcurre
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {BtnReturn} from "../platform/dialogs/customDialog";
 import {ClientInfo} from "../services/clientService";
-import {PortfolioParams, PortfolioService, TypeDialogOpen} from "../services/portfolioService";
+import {PortfolioParams, PortfoliosDialogType, PortfolioService} from "../services/portfolioService";
 import {EventType} from "../types/eventType";
 import {Portfolio, TableHeader} from "../types/types";
 import {SortUtils} from "../utils/sortUtils";
@@ -23,13 +23,13 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-data-table :headers="headers" :items="portfolios" item-key="id" :custom-sort="customSort" hide-actions>
+        <v-data-table :headers="headers" :items="portfolios" item-key="id" :custom-sort="customSort" hide-actions class="portfolios-content-table">
             <template #items="props">
                 <tr class="selectable" @dblclick="props.expanded = !props.expanded">
                     <td>
                         <span @click="props.expanded = !props.expanded" class="data-table-cell" :class="{'data-table-cell-open': props.expanded, 'path': true}"></span>
                     </td>
-                    <td>
+                    <td class="left-pad-zero">
                         <span>
                             {{ props.item.name }}
                         </span>
@@ -41,7 +41,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 </div>
                             </v-menu>
                             <v-menu transition="slide-y-transition" right open-on-hover
-                            content-class="menu-icons" bottom nudge-bottom="7" class="public-access"
+                            content-class="menu-icons" bottom nudge-bottom="7" :class="[props.item.professionalMode && props.item.access ? 'public-access' : '']"
                             v-if="props.item.access">
                                 <img src="img/portfolio/share.svg" slot="activator">
                                 <div>
@@ -55,7 +55,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <td class="text-xs-left">{{ props.item.accountType.description }}</td>
                     <td class="text-xs-right">{{ props.item.openDate }}</td>
                     <td class="justify-center layout px-0" @click.stop>
-                        <v-menu transition="slide-y-transition" bottom left>
+                        <v-menu transition="slide-y-transition" bottom left min-width="173">
                             <v-btn slot="activator" flat icon dark>
                                 <span class="menuDots"></span>
                             </v-btn>
@@ -83,7 +83,7 @@ const MainStore = namespace(StoreType.MAIN);
 
             <template #expand="props">
                 <v-card flat>
-                    <v-card-text>
+                    <v-card-text class="action-btn-table-row">
                         <div class="wrap-info-content">
                             <v-layout class="">
                                 <div class="portfolio-default-text">
@@ -107,8 +107,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 </v-tooltip>
                             </v-layout>
                             <v-layout class="setings-btn">
-                                <input :value="publicLink(props.item.id)" id="portfolioLink" class="hide-copy-input">
-                                <v-btn class="btn" @click="copyPortfolioLink">
+                                <v-btn class="btn" @click="copyPortfolioLink(props.item.id)">
                                     Копировать ссылку на портфель
                                 </v-btn>
                                 <v-menu content-class="dialog-setings-menu"
@@ -118,15 +117,15 @@ const MainStore = namespace(StoreType.MAIN);
                                     <v-btn class="btn" slot="activator"">
                                         Настройка доступа
                                     </v-btn>
-                                    <v-list dense>
+                                    <v-list dense class="choose-type-dialog">
                                         <v-flex>
-                                            <div @click.stop="openSharePortfolioDialog(props.item, dialogType.DEFAULT_ACCESS)" class="dialog-default-text">
+                                            <div @click.stop="openSharePortfolioDialog(props.item, dialogTypes.DEFAULT_ACCESS)" class="dialog-default-text">
                                                 Обычная
                                             </div>
-                                            <div @click.stop="openSharePortfolioDialog(props.item, dialogType.BY_LINK)" class="dialog-default-text">
+                                            <div @click.stop="openSharePortfolioDialog(props.item, dialogTypes.BY_LINK)" class="dialog-default-text">
                                                 Со сроком действия
                                             </div>
-                                            <div @click.stop="openSharePortfolioDialog(props.item, dialogType.BY_IDENTIFICATION)" class="dialog-default-text">
+                                            <div @click.stop="openSharePortfolioDialog(props.item, dialogTypes.BY_IDENTIFICATION)" class="dialog-default-text">
                                                 Пользователю
                                             </div>
                                         </v-flex>
@@ -162,10 +161,10 @@ export class PortfoliosTable extends UI {
     private setCurrentPortfolio: (id: string) => Promise<Portfolio>;
     @Inject
     private portfolioService: PortfolioService;
-    private dialogType = TypeDialogOpen;
+    private dialogTypes = PortfoliosDialogType;
 
     private headers: TableHeader[] = [
-        {text: "", align: "left", ghost: true, sortable: false, value: "", active: true, width: "1"},
+        {text: "", align: "left", ghost: true, sortable: false, value: "", active: true, width: "44"},
         {text: "Название", align: "left", value: "name"},
         {text: "Фикс. комиссия", align: "right", value: "fixFee", width: "50"},
         {text: "Валюта", align: "center", value: "viewCurrency"},
@@ -229,7 +228,7 @@ export class PortfoliosTable extends UI {
         await new EmbeddedBlocksDialog().show(id);
     }
 
-    private async openSharePortfolioDialog(portfolio: PortfolioParams, type: TypeDialogOpen): Promise<void> {
+    private async openSharePortfolioDialog(portfolio: PortfolioParams, type: PortfoliosDialogType): Promise<void> {
         await new SharePortfolioDialog().show({portfolio: portfolio, clientInfo: this.clientInfo, type: type});
     }
 
@@ -255,11 +254,17 @@ export class PortfoliosTable extends UI {
         return items;
     }
 
-    private copyPortfolioLink(): void {
-        const target = document.getElementById("portfolioLink");
-        target.focus();
-        (target as HTMLInputElement).select();
-        document.execCommand("copy");
-        target.blur();
+    private copyPortfolioLink(id: string): void {
+        const textArea = document.createElement("textarea");
+        textArea.style.position = "fixed";
+        textArea.value = this.publicLink(id);
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        const copy = document.execCommand("copy");
+        if (copy) {
+            document.body.removeChild(textArea);
+            this.$snotify.info("Ссылка скопирована");
+        }
     }
 }

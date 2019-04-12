@@ -191,12 +191,13 @@ export class PortfolioAccountType extends (EnumType as IStaticEnum<PortfolioAcco
     }
 }
 
+/** Тип диалога для начального открытия */
 @Enum("code")
-export class TypeDialogOpen extends (EnumType as IStaticEnum<TypeDialogOpen>) {
+export class PortfoliosDialogType extends (EnumType as IStaticEnum<PortfoliosDialogType>) {
 
-    static readonly DEFAULT_ACCESS = new TypeDialogOpen("DEFAULT_ACCESS", "Обычная");
-    static readonly BY_LINK = new TypeDialogOpen("BY_LINK", "Со сроком действия");
-    static readonly BY_IDENTIFICATION = new TypeDialogOpen("BY_IDENTIFICATION", "Пользователю");
+    static readonly DEFAULT_ACCESS = new PortfoliosDialogType("DEFAULT_ACCESS", "Обычная");
+    static readonly BY_LINK = new PortfoliosDialogType("BY_LINK", "Со сроком действия");
+    static readonly BY_IDENTIFICATION = new PortfoliosDialogType("BY_IDENTIFICATION", "Пользователю");
 
     private constructor(public code: string, public description: string) {
         super();

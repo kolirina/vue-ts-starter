@@ -1,3 +1,19 @@
+.portfolios-content-table{
+    table {
+        thead {
+            tr {
+                th {
+                    &:nth-child(2) {
+                        padding-left: 0px;
+                    }
+                }
+            }
+        }
+    }
+}
+.left-pad-zero {
+    padding-left: 0px !important;
+}
 .menu-icons {
     background: #ffffff;
     padding: 11px 10px 19px 10px;
@@ -10,4 +26,7 @@
     .public-access {
         margin-left: 5px;
     }
+}
+.action-btn-table-row {
+    padding-left: 26px;
 }

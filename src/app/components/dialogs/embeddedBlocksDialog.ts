@@ -72,10 +72,17 @@ style="height: 600px; width: 100%; margin: 10px 0; display: block;" frameborder=
 
     private copyLink(): void {
         const target = document.getElementById("linkForCopy");
-        target.focus();
-        (target as HTMLInputElement).select();
-        document.execCommand("copy");
-        target.blur();
+        const textArea = document.createElement("textarea");
+        textArea.style.position = "fixed";
+        textArea.value = (target as HTMLInputElement).value;
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        const copy = document.execCommand("copy");
+        if (copy) {
+            document.body.removeChild(textArea);
+            this.$snotify.info("Ссылка скопирована");
+        }
     }
 }
 
