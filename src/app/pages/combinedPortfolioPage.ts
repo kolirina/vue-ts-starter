@@ -2,6 +2,7 @@ import {Container, Inject} from "typescript-ioc";
 import {ContentLoader} from "vue-content-loader";
 import {Route} from "vue-router";
 import {namespace} from "vuex-class/lib/bindings";
+import {CompositePortfolioManagement} from "../components/dialogs/compositePortfolioManagement";
 import {Resolver} from "../../../typings/vue";
 import {Component, UI} from "../app/ui";
 import {CombinedPortfoliosTable} from "../components/combinedPortfoliosTable";
@@ -29,9 +30,22 @@ const MainStore = namespace(StoreType.MAIN);
                     <base-portfolio-page :overview="overview" :line-chart-data="lineChartData" :line-chart-events="lineChartEvents"
                                          :view-currency="viewCurrency" :state-key-prefix="StoreKeys.PORTFOLIO_COMBINED_CHART" :side-bar-opened="sideBarOpened"
                                          @reloadLineChart="loadPortfolioLineChart">
-                        <template #afterDashboard>
+                                         <template #afterDashboard>
+                                            <v-layout>
+                                                <div>
+                                                    Управление составным портфелем
+                                                </div>
+                                                <v-spacer></v-spacer>
+                                                <div>
+                                                <v-btn class="btn" color="#3B6EC9" @click.stop="showDialog">
+                                                    Сформировать
+                                                </v-btn>
+                                                </div>
+                                            </v-layout>
+                                        </template>
+                        <!--<template #afterDashboard>
                             <expanded-panel :value="$uistate.combinedPanel" :state="$uistate.COMBINED_CONTROL_PANEL">
-                                <template #header>Управление составным портфелем</template>
+                                <template #header></template>
 
                                 <v-card-text>
                                     <combined-portfolios-table :portfolios="clientInfo.user.portfolios" @change="onSetCombined"></combined-portfolios-table>
@@ -49,7 +63,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     </v-layout>
                                 </v-container>
                             </expanded-panel>
-                        </template>
+                        </template>-->
                     </base-portfolio-page>
                 </template>
                 <template v-else>
@@ -110,6 +124,10 @@ export class CombinedPortfolioPage extends UI {
             return;
         }
         next();
+    }
+
+    private async showDialog(): Promise<void> {
+        await new CompositePortfolioManagement().show();
     }
 
     private async doCombinedPortfolio(): Promise<void> {
