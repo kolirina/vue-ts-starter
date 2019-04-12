@@ -66,8 +66,10 @@ import {StoreType} from "../../vuex/storeType";
                                     <span v-if="share.sector.parent" class="info-share-page__name-stock-block__subtitle">
                                         родительский сектор: {{ share.sector.parent.name }}
                                     </span>
-                                    <v-rating color="#A1A6B6" size="10" v-model="share.rating" dense readonly full-icon="fiber_manual_record"
-                                              empty-icon="panorama_fish_eye" title=""></v-rating>
+                                    <span class="rating-section">
+                                        <v-rating color="#A1A6B6" size="10" v-model="share.rating" dense readonly full-icon="fiber_manual_record"
+                                        empty-icon="panorama_fish_eye" title=""></v-rating>
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -271,7 +273,7 @@ import {StoreType} from "../../vuex/storeType";
                         <div class="info-about-stock__chart">
                             <v-card v-if="share" class="chart-overflow" flat>
                                 <div>
-                                    <micro-line-chart :data="microChartData" :height="150" :width="440"></micro-line-chart>
+                                    <micro-line-chart :data="microChartData" :height="150" :width="410"></micro-line-chart>
                                 </div>
                             </v-card>
                         </div>
