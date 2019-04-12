@@ -30,11 +30,13 @@ export class TradeUtils {
     }
 
     static percentPrice(trade: TradeRow): boolean {
-        return trade.asset === AssetType.BOND.enumName && trade.operation !== Operation.COUPON.enumName && trade.operation !== Operation.AMORTIZATION.enumName;
+        const tradeOperation = Operation.valueByName(trade.operation);
+        return trade.asset === AssetType.BOND.enumName && tradeOperation !== Operation.COUPON && tradeOperation !== Operation.AMORTIZATION;
     }
 
     static moneyPrice(trade: TradeRow): boolean {
-        return trade.asset === AssetType.STOCK.enumName || (trade.operation === Operation.COUPON.enumName && trade.operation === Operation.AMORTIZATION.enumName);
+        const tradeOperation = Operation.valueByName(trade.operation);
+        return trade.asset === AssetType.STOCK.enumName || tradeOperation === Operation.COUPON || tradeOperation === Operation.AMORTIZATION;
     }
 
     static tradeTable(assetType: AssetType, operation: Operation): string {

@@ -137,11 +137,11 @@ const MainStore = namespace(StoreType.MAIN);
                     <vue-scroll :ops="horizontalScrollConfig">
                         <div class="wrapper-for-scroll-content">
                             <v-container fluid class="paddT0">
-                                <v-fade-transition mode="out-in">
+                                <v-slide-y-transition mode="out-in">
                                     <!--<keep-alive :include="cachedPages">-->
                                     <router-view></router-view>
                                     <!--</keep-alive>-->
-                                </v-fade-transition>
+                                </v-slide-y-transition>
                             </v-container>
                             <v-footer color="#f7f9fb" class="footer-app">
                                 <v-layout class="footer-app-wrap-content" wrap align-center justify-space-between>

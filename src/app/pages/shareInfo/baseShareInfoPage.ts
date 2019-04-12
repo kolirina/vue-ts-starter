@@ -28,6 +28,7 @@ import {BaseChartDot, Dot, HighStockEventsGroup} from "../../types/charts/types"
 import {Operation} from "../../types/operation";
 import {Share, Stock, StockDynamic} from "../../types/types";
 import {ChartUtils} from "../../utils/chartUtils";
+import {TradeUtils} from "../../utils/tradeUtils";
 import {StoreType} from "../../vuex/storeType";
 
 @Component({
@@ -116,15 +117,16 @@ import {StoreType} from "../../vuex/storeType";
                                         <span class="info-about-stock__content-value">
                                             {{ share.price | amount }}
                                         </span>
-                                        <span class="info-about-stock__content-legend">RUB</span>
+                                        <span class="info-about-stock__content-legend">{{ currencySymbol }}</span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class="info-about-stock__content-title">Кол-во акций в обращении</td>
                                     <td>
                                         <span class="info-about-stock__content-value">
-                                            {{ share.issueSize | number }}
+                                            {{ share.issueSize | integer }}
                                         </span>
+                                        <span class="info-about-stock__content-legend">шт.</span>
                                     </td>
                                 </tr>
                                 <tr v-if="share.issueCapitalization">
@@ -133,7 +135,7 @@ import {StoreType} from "../../vuex/storeType";
                                         <span class="info-about-stock__content-value">
                                             {{ share.issueCapitalization | number }}
                                         </span>
-                                        <span class="info-about-stock__content-legend">RUB</span>
+                                        <span class="info-about-stock__content-legend">{{ currencySymbol }}</span>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -206,7 +208,7 @@ import {StoreType} from "../../vuex/storeType";
                                             <span class="info-about-stock__content-value">
                                                 {{ stockDynamic.minYearPrice | amount }}
                                             </span>
-                                            <span class="info-about-stock__content-legend">RUB</span>
+                                            <span class="info-about-stock__content-legend">{{ currencySymbol }}</span>
                                         </td>
                                     </tr>
                                     <tr>
@@ -215,7 +217,7 @@ import {StoreType} from "../../vuex/storeType";
                                             <span class="info-about-stock__content-value">
                                                 {{ stockDynamic.maxYearPrice | amount }}
                                             </span>
-                                            <span class="info-about-stock__content-legend">RUB</span>
+                                            <span class="info-about-stock__content-legend">{{ currencySymbol }}</span>
                                         </td>
                                     </tr>
                                     </tbody>
@@ -412,11 +414,6 @@ export class BaseShareInfoPage extends UI {
         this.$refs.chartComponent.chart.exportChart({type: ChartUtils.EXPORT_TYPES[type]});
     }
 
-    // private get portfolioAvgPrice(): number {
-    //     const row = this.portfolio.overview.stockPortfolio.rows.find(r => r.stock.ticker === this.share.ticker);
-    //     return row ? new BigMoney(row.avgBuy).amount.toNumber() : null;
-    // }
-
     private get totalVoices(): number {
         try {
             const stock: Stock = this.share as Stock;
@@ -424,5 +421,9 @@ export class BaseShareInfoPage extends UI {
         } catch (e) {
             return 50;
         }
+    }
+
+    get currencySymbol(): string {
+        return TradeUtils.getCurrencySymbol(this.share.currency);
     }
 }
