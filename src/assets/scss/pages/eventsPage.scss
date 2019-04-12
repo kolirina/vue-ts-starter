@@ -103,10 +103,20 @@
 
   &__card {
     min-width: 1000px;
+    &-title {
+      font-size: 16px;
+      line-height: 24px;
+      letter-spacing: -0.3px;
+      color: #040427;
+      padding-left: 30px;
+    }
   }
 
-  .pr3 {
-    padding-right: 3px !important;
+  .pl30 {
+    padding-left: 30px !important;
+  }
+  .pr30 {
+    padding-right: 16px !important;
   }
 
   .v-card__text {
@@ -131,10 +141,22 @@
       padding: 20px;
       font-size: 14px;
     }
+    table {
+      thead {
+        tr {
+          th {
+            &:first-child {
+              padding-left: 30px;
+            }
+          }
+        }
+      }
+    }
   }
 
     .amount__currency {
       color: $font-color--lite;
       font-family: $main--font-family;
+      font-size: 12px;
     }
 }
