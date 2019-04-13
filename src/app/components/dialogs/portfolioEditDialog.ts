@@ -162,8 +162,7 @@ export class PortfolioEditDialog extends CustomDialog<PortfolioDialogData, boole
                 access: false,
                 viewCurrency: "RUB",
                 openDate: DateUtils.formatDate(dayjs(), DateFormat.DATE2),
-                accountType: PortfolioAccountType.BROKERAGE,
-                iisType: IisType.TYPE_A
+                accountType: PortfolioAccountType.BROKERAGE
             };
         }
         if (!this.portfolioParams.iisType) {

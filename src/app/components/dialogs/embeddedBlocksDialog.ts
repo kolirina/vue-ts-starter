@@ -14,7 +14,7 @@ import {PortfolioService} from "../../services/portfolioService";
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
 
                 <v-card-title class="dialog-header-text paddB0">
-                    <div class="dialog-header-text mb-4">
+                    <div class="mb-4">
                         Настроить встраиваемые блоки
                     </div>
                 </v-card-title>
