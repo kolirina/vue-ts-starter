@@ -55,6 +55,9 @@
   .dialog-default-text {
     cursor: pointer;
     margin-bottom: 5px;
+    &:last-child {
+      margin-bottom: 0px;
+    }
   }
 }
 .hide-copy-input{

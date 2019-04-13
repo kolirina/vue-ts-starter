@@ -29,8 +29,8 @@ import {MainStore} from "../../vuex/mainStore";
                             <v-text-field label="Введите название портфеля" v-model.trim="portfolioParams.name" required autofocus
                                 v-validate="'required|max:40|min:3'"
                                 :error-messages="errors.collect('name')"
-                                messages="Обязательное поле"
-                                data-vv-name="name" @keyup.enter="savePortfolio">
+                                data-vv-name="name" @keyup.enter="savePortfolio"
+                                class="required">
                             </v-text-field>
                         </v-flex>
 
@@ -101,7 +101,7 @@ import {MainStore} from "../../vuex/mainStore";
                         <v-flex xs12>
                             <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" top>
                                 <v-checkbox slot="activator" label="Профессиональный режим"
-                                v-model="portfolioParams.professionalMode" class="portfolio-default-text" color="#3B6EC9"></v-checkbox>
+                                v-model="portfolioParams.professionalMode" class="portfolio-default-text"></v-checkbox>
                                 <span>
                                     Профессиональный режим включает дополнительные возможности, необходимые опытным инвесторам:
                                     <ul>
@@ -162,8 +162,12 @@ export class PortfolioEditDialog extends CustomDialog<PortfolioDialogData, boole
                 access: false,
                 viewCurrency: "RUB",
                 openDate: DateUtils.formatDate(dayjs(), DateFormat.DATE2),
-                accountType: PortfolioAccountType.BROKERAGE
+                accountType: PortfolioAccountType.BROKERAGE,
+                iisType: IisType.TYPE_A
             };
+        }
+        if (!this.portfolioParams.iisType) {
+            this.portfolioParams.iisType = IisType.TYPE_A;
         }
     }
 

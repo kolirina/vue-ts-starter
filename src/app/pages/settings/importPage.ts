@@ -72,7 +72,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 Расширенные настройки импорта
                             </div>
                             <v-flex>
-                                <v-checkbox v-model="importProviderFeatures.createLinkedTrade" hide-details color="#3B6EC9" class="checkbox-setings">
+                                <v-checkbox v-model="importProviderFeatures.createLinkedTrade" hide-details class="checkbox-setings">
                                     <template #label>
                                         <span>Добавлять сделки по списанию/зачислению денежных средств
                                             <v-menu transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12">
@@ -88,7 +88,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         </span>
                                     </template>
                                 </v-checkbox>
-                                <v-checkbox v-model="importProviderFeatures.autoCommission" hide-details color="#3B6EC9" class="checkbox-setings">
+                                <v-checkbox v-model="importProviderFeatures.autoCommission" hide-details class="checkbox-setings">
                                     <template #label>
                                         <span>
                                             Автоматически рассчитывать комиссию для сделок
@@ -107,7 +107,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         </span>
                                     </template>
                                 </v-checkbox>
-                                <v-checkbox v-model="importProviderFeatures.autoEvents" hide-details color="#3B6EC9" class="checkbox-setings">
+                                <v-checkbox v-model="importProviderFeatures.autoEvents" hide-details class="checkbox-setings">
                                     <template #label>
                                         <span>
                                             Автоматически исполнять события по бумагам
@@ -126,7 +126,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         </span>
                                     </template>
                                 </v-checkbox>
-                                <v-checkbox v-model="importProviderFeatures.confirmMoneyBalance" hide-details color="#3B6EC9" class="checkbox-setings">
+                                <v-checkbox v-model="importProviderFeatures.confirmMoneyBalance" hide-details class="checkbox-setings">
                                     <template #label>
                                         <span>
                                             Спрашивать текущий остаток ДС
@@ -144,7 +144,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         </span>
                                     </template>
                                 </v-checkbox>
-                                <v-checkbox v-model="importProviderFeatures.importMoneyTrades" hide-details color="#3B6EC9" class="checkbox-setings">
+                                <v-checkbox v-model="importProviderFeatures.importMoneyTrades" hide-details class="checkbox-setings">
                                     <template #label>
                                         <span>
                                             Импорт сделок по денежным средствам

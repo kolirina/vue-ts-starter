@@ -11,22 +11,22 @@
         }
     }
 }
-.left-pad-zero {
-    padding-left: 0px !important;
-}
 .menu-icons {
     background: #ffffff;
-    padding: 11px 10px 19px 10px;
     font-size: 12px;
     line-height: 18px;
     color: #040427;
-}
-.section-icon-menu {
-    margin-left: 16px;
-    .public-access {
-        margin-left: 5px;
-    }
+    opacity: 1 !important;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    padding: 0px;
 }
 .action-btn-table-row {
     padding-left: 26px;
+}
+.hint-for-icon-name-section {
+    display: inline-flex;
+    span {
+        display: inline-flex;
+    }
 }

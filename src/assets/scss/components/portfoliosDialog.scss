@@ -1,12 +1,20 @@
+.qr-code-btn {
+    padding: 0px 38px 0px 20px;
+    background: url("../img/portfolio/qrbtn.svg") no-repeat;
+    background-position: 86% center;
+    margin-left: 12px !important;
+}
+.tooltip-text {
+    font-size: 13px;
+    line-height: 20px;
+    color: #040427;
+}
 .dialog-header-text {
     font-size: 16px;
     line-height: 24px;
     letter-spacing: -0.3px;
     color: #040427;
     font-weight: bold;
-    &-embedded {
-        margin-bottom: 24px;
-    }
 }
 .dialog-default-text {
     font-size: 14px;
@@ -48,9 +56,6 @@
 }
 .section-portfolio-name {
     margin-top: 30px;
-    .v-messages__message {
-        margin-left: 17px;
-    }
 }
 .textarea-section {
     margin: 30px 0px 18px;
@@ -126,12 +131,6 @@
 }
 .action-btn-section {
     margin-top: 30px;
-    .qr-code-btn {
-        padding: 0px 38px 0px 20px;
-        background: url("../img/portfolio/qrbtn.svg") no-repeat;
-        background-position: 86% center;
-        margin-left: 12px !important;
-    }
 }
 .repeat-link-btn {
     margin-left: 22px;
@@ -145,10 +144,4 @@
 }
 .input-link-section {
     margin-top: 31px;
-}
-.header-dialog-pad-0 {
-    padding-bottom: 0px;
-}
-.section-calendar-label-user {
-    margin-top: 24px;
 }
