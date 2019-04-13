@@ -45,7 +45,7 @@ import {MainStore} from "../../vuex/mainStore";
                                             :persistent-hint="true" dense hide-details
                                             hint="Валюта, в которой происходит расчет всех показателей. Активы, приобретенные в другой валюте
                                             будут конвертированы по курсу на дату совершения сделки.">
-                                </v-select class="select-section">
+                                </v-select>
                             </v-flex>
 
                             <v-flex class="select-section">

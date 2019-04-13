@@ -26,22 +26,16 @@ import {DateFormat, DateUtils} from "../../utils/dateUtils";
                         Настройка доступа
                     </span>
                     <span class="type-dialog-title">
-                        <v-menu bottom content-class="dialog-setings-menu" nudge-bottom="20" bottom right>
+                        <v-menu bottom content-class="dialog-type-menu" nudge-bottom="20" bottom right>
                             <span slot="activator">
                                 <span>
                                     {{ shareOption.description.toLowerCase() }}
                                 </span>
                             </span>
-                            <v-list dense class="choose-type-dialog">
+                            <v-list dense>
                                 <v-flex>
-                                    <div @click="shareOption = dialogTypes.DEFAULT_ACCESS" class="dialog-default-text">
-                                        {{ dialogTypes.DEFAULT_ACCESS.description }}
-                                    </div>
-                                    <div @click="shareOption = dialogTypes.BY_LINK" class="dialog-default-text">
-                                        {{ dialogTypes.BY_LINK.description }}
-                                    </div>
-                                    <div @click="shareOption = dialogTypes.BY_IDENTIFICATION" class="dialog-default-text">
-                                        {{ dialogTypes.BY_IDENTIFICATION.description }}
+                                    <div class="menu-text" v-for="type in dialogTypes.values()" :key="type.code" @click="selectDialogType(type)">
+                                        {{ type.description }}
                                     </div>
                                 </v-flex>
                             </v-list>
@@ -126,7 +120,7 @@ import {DateFormat, DateUtils} from "../../utils/dateUtils";
                                                    @input="$refs.dateMenu.save(expiredDate)"></v-date-picker>
                                 </v-menu>
                                 <div v-if="link">
-                                    <v-tooltip close-delay="300000" transition="slide-y-transition"
+                                    <v-tooltip transition="slide-y-transition"
                                     open-on-hover content-class="menu-icons" bottom max-width="292"
                                     nudge-right="140">
                                         <sup slot="activator">
@@ -148,22 +142,22 @@ import {DateFormat, DateUtils} from "../../utils/dateUtils";
                         <v-layout v-if="shareOption === dialogTypes.DEFAULT_ACCESS" column class="default-access-content">
                             <v-layout wrap justify-space-between>
                                 <div>
-                                    <v-flex xs12>
+                                    <v-flex xs12 class="mb-2">
                                         <v-checkbox v-model="access"
                                         hide-details class="shrink mr-2 portfolio-default-text"
                                         label="Публичный доступ к портфелю"></v-checkbox>
                                     </v-flex>
-                                    <v-flex xs12>
+                                    <v-flex xs12 class="mb-2">
                                         <v-checkbox v-model="divAccess"
                                         hide-details class="shrink mr-2 mt-0 portfolio-default-text"
                                         label="Просмотр дивидендов"></v-checkbox>
                                     </v-flex>
-                                    <v-flex xs12>
+                                    <v-flex xs12 class="mb-2">
                                         <v-checkbox v-model="tradeAccess"
                                         hide-details class="shrink mr-2 mt-0 portfolio-default-text"
                                         label="Просмотр сделок"></v-checkbox>
                                     </v-flex>
-                                    <v-flex xs12>
+                                    <v-flex xs12 class="mb-2">
                                         <v-checkbox v-model="lineDataAccess"
                                         hide-details class="shrink mr-2 mt-0 portfolio-default-text"
                                         label="Просмотр графика"></v-checkbox>
@@ -250,9 +244,9 @@ export class SharePortfolioDialog extends CustomDialog<SharePortfolioDialogData,
     private dateMenuValue = false;
     private userId = "";
     private shareUrlsCache: { [key: string]: string } = {
-        [this.dialogTypes.DEFAULT_ACCESS.code]: null,
-        [this.dialogTypes.BY_LINK.code]: null,
-        [this.dialogTypes.BY_IDENTIFICATION.code]: null
+        [PortfoliosDialogType.DEFAULT_ACCESS.code]: null,
+        [PortfoliosDialogType.BY_LINK.code]: null,
+        [PortfoliosDialogType.BY_IDENTIFICATION.code]: null
     };
 
     mounted(): void {
@@ -292,7 +286,7 @@ export class SharePortfolioDialog extends CustomDialog<SharePortfolioDialogData,
     }
 
     private get link(): string {
-        if (this.shareOption === this.dialogTypes.DEFAULT_ACCESS) {
+        if (this.shareOption === PortfoliosDialogType.DEFAULT_ACCESS) {
             return `${window.location.protocol}//${window.location.host}/public-portfolio/${this.data.portfolio.id}/?ref=${this.data.clientInfo.user.id}`;
         }
         return this.shareUrlsCache[this.shareOption.code];
@@ -302,15 +296,19 @@ export class SharePortfolioDialog extends CustomDialog<SharePortfolioDialogData,
         this.$snotify.info("Ссылка скопирована");
     }
 
+    private selectDialogType(type: PortfoliosDialogType): void {
+        this.shareOption = type;
+    }
+
     private isValid(): boolean {
-        if (this.shareOption === this.dialogTypes.DEFAULT_ACCESS) {
+        if (this.shareOption === PortfoliosDialogType.DEFAULT_ACCESS) {
             return true;
         }
         if (this.expiredDate === null || dayjs().isAfter(DateUtils.parseDate(this.expiredDate))) {
             this.$snotify.warning("Срок действия токена должна быть больше текущей даты");
             return false;
         }
-        if (this.shareOption === this.dialogTypes.BY_IDENTIFICATION && CommonUtils.isBlank(this.userId)) {
+        if (this.shareOption === PortfoliosDialogType.BY_IDENTIFICATION && CommonUtils.isBlank(this.userId)) {
             this.$snotify.warning("Идентификатор пользователя должен быть заполнен");
             return false;
         }

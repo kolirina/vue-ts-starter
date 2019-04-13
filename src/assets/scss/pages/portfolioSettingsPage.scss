@@ -51,12 +51,17 @@
 .setings-menu {
   margin-right: 12px;
 }
-.dialog-setings-menu {
-  .dialog-default-text {
-    cursor: pointer;
-    margin-bottom: 5px;
-    &:last-child {
-      margin-bottom: 0px;
+.dialog-type-menu {
+  .v-list {
+    padding: 14px 17px 10px 20px;
+    opacity: 1;
+    .menu-text {
+      cursor: pointer;
+      font-size: 13px;
+      line-height: 28px;
+      &:hover {
+        color: #B0B4C2;
+      }
     }
   }
 }

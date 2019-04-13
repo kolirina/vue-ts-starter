@@ -35,16 +35,17 @@ const MainStore = namespace(StoreType.MAIN);
                                 {{ props.item.name }}
                             </span>
                             <v-tooltip transition="slide-y-transition" open-on-hover
-                            content-class="menu-icons" right bottom v-if="props.item.professionalMode"
-                            nudge-right="122" nudge-top="10" class="hint-for-icon-name-section pl-3">
+                                       content-class="menu-icons" right bottom v-if="props.item.professionalMode"
+                                       nudge-right="122" nudge-top="10" class="hint-for-icon-name-section pl-3">
                                 <img src="img/portfolio/pro.svg" slot="activator">
                                 <div class="pa-3">
                                     Активирован профессиональный режим
                                 </div>
                             </v-tooltip>
                             <v-tooltip transition="slide-y-transition" open-on-hover
-                            content-class="menu-icons" left bottom v-if="props.item.access"
-                            nudge-right="122" nudge-top="10" :class="['hint-for-icon-name-section', props.item.access && !props.item.professionalMode ? 'pl-3' : 'pl-2']">
+                                       content-class="menu-icons" left bottom v-if="props.item.access"
+                                       nudge-right="122" nudge-top="10"
+                                       :class="['hint-for-icon-name-section', props.item.access && !props.item.professionalMode ? 'pl-3' : 'pl-2']">
                                 <img src="img/portfolio/share.svg" slot="activator">
                                 <div class="pa-3">
                                     Открыт публичный доступ к портфелю
@@ -111,23 +112,17 @@ const MainStore = namespace(StoreType.MAIN);
                                 <v-btn class="btn" v-clipboard="() => publicLink(props.item.id)" @click="copyPortfolioLink">
                                     Копировать ссылку на портфель
                                 </v-btn>
-                                <v-menu content-class="dialog-setings-menu"
+                                <v-menu content-class="dialog-type-menu"
                                         transition="slide-y-transition"
                                         nudge-bottom="36" right class="setings-menu"
                                         :close-on-content-click="false">
                                     <v-btn class="btn" slot="activator">
                                         Настройка доступа
                                     </v-btn>
-                                    <v-list dense class="choose-type-dialog">
+                                    <v-list dense>
                                         <v-flex>
-                                            <div @click.stop="openSharePortfolioDialog(props.item, dialogTypes.DEFAULT_ACCESS)" class="dialog-default-text">
-                                                {{ dialogTypes.DEFAULT_ACCESS.description }}
-                                            </div>
-                                            <div @click.stop="openSharePortfolioDialog(props.item, dialogTypes.BY_LINK)" class="dialog-default-text">
-                                                {{ dialogTypes.BY_LINK.description }}
-                                            </div>
-                                            <div @click.stop="openSharePortfolioDialog(props.item, dialogTypes.BY_IDENTIFICATION)" class="dialog-default-text">
-                                                {{ dialogTypes.BY_IDENTIFICATION.description }}
+                                            <div @click.stop="openSharePortfolioDialog(props.item, type)" class="menu-text" v-for="type in dialogTypes.values()" :key="type.code">
+                                                {{ type.description }}
                                             </div>
                                         </v-flex>
                                     </v-list>

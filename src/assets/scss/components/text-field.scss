@@ -146,9 +146,16 @@
 .v-input--checkbox {
   margin-top: 0;
   padding-top: 0;
-  .v-input--selection-controls__ripple, .v-icon {
-    color: #3B6EC9 !important;
-    caret-color: #3B6EC9 !important;
+  .v-label {
+    font-size: 14px;
+    line-height: 20px !important;
+  }
+  .v-icon {
+    color: #caced5 !important;
+  }
+  .accent--text {
+    border-color: $sidebar-blue-color;
+    color: $sidebar-blue-color !important;
   }
 }
 
