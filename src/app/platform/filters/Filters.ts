@@ -9,6 +9,8 @@ const DF_NO_SCALE = new Intl.NumberFormat("ru", {maximumFractionDigits: MAX_SCAL
 
 export class Filters {
 
+    private static readonly UNITS = ["Б", "Кб", "Мб", "Гб", "Тб", "Пб", "Эб", "Зб", "Йб"];
+
     static assetDesc(type: string): string {
         switch (type) {
             case "STOCK":
@@ -74,6 +76,28 @@ export class Filters {
         }
         return DF.format(new Decimal(value).toDP(DEFAULT_SCALE, Decimal.ROUND_HALF_UP).toNumber());
 
+    }
+
+    /**
+     * Используется для форматирования размера файла
+     * @param value размер в байтах
+     */
+    static formatBytes(value: string): string {
+        if (typeof value !== "number" || isNaN(value)) {
+            return value;
+        }
+        const num = Number(value);
+        if (num === 0) {
+            return "0 Байт";
+        }
+        if (isNaN(parseFloat(value)) && !isFinite(value)) {
+            return value;
+        }
+        const k = 1024;
+        const dm = 2;
+        const i = Math.floor(Math.log(num) / Math.log(k));
+
+        return parseFloat((num / Math.pow(k, i)).toFixed(dm)) + " " + Filters.UNITS[i];
     }
 
     /**

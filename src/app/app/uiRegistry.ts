@@ -126,6 +126,7 @@ export class UIRegistry {
         UI.filter("declension", Filters.declension);
         UI.filter("currency", Filters.currency);
         UI.filter("currencySymbol", Filters.currencySymbol);
+        UI.filter("bytes", Filters.formatBytes);
 
         // директивы
         UI.directive(StateDirective.NAME, new StateDirective());
