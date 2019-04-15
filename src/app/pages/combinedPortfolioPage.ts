@@ -29,15 +29,26 @@ const MainStore = namespace(StoreType.MAIN);
                                          :view-currency="viewCurrency" :state-key-prefix="StoreKeys.PORTFOLIO_COMBINED_CHART" :side-bar-opened="sideBarOpened"
                                          @reloadLineChart="loadPortfolioLineChart">
                         <template #afterDashboard>
-                            <v-layout>
-                                <div>
+                            <v-layout align-center>
+                                <div :class="['control-porfolios-title', !isEmpty ? 'pl-3' : '']">
                                     Управление составным портфелем
                                 </div>
                                 <v-spacer></v-spacer>
-                                <div>
-                                <v-btn class="btn" color="#3B6EC9" @click.stop="showDialog">
-                                    Сформировать
-                                </v-btn>
+                                <div v-if="isEmpty">
+                                    <v-btn class="btn" color="primary" @click.stop="showDialogCompositePortfolio">
+                                        Сформировать
+                                    </v-btn>
+                                </div>
+                            </v-layout>
+                            <v-layout v-if="!isEmpty" column class="empty-station px-4 py-4 mt-3">
+                                <div class="empty-station__description">
+                                    Здесь вы можете объединить для просмотра несколько портфелей в один, и проанализировать
+                                    состав и доли каждой акции, если, например, она входит в состав нескольких портфелей.
+                                </div>
+                                <div class="mt-4">
+                                    <v-btn class="btn" color="primary" @click.stop="showDialogCompositePortfolio">
+                                        Сформировать
+                                    </v-btn>
                                 </div>
                             </v-layout>
                         </template>
@@ -75,6 +86,8 @@ export class CombinedPortfolioPage extends UI {
     private lineChartEvents: HighStockEventsGroup[] = null;
     /** Ключи для сохранения информации */
     private StoreKeys = StoreKeys;
+    /** Конфиг отображения пустого состояния */
+    private isEmpty: boolean = true;
 
     /**
      * Инициализация данных компонента
@@ -103,7 +116,7 @@ export class CombinedPortfolioPage extends UI {
         next();
     }
 
-    private async showDialog(): Promise<void> {
+    private async showDialogCompositePortfolio(): Promise<void> {
         const result = await new CompositePortfolioManagement().show({portfolio: this.clientInfo.user.portfolios, viewCurrency: this.viewCurrency});
         if (result) {
             this.viewCurrency = result;
@@ -111,12 +124,18 @@ export class CombinedPortfolioPage extends UI {
         }
     }
 
-    @ShowProgress
     private async doCombinedPortfolio(): Promise<void> {
         this.overview = null;
         const ids = this.clientInfo.user.portfolios.filter(value => value.combined).map(value => value.id);
         this.overview = await this.overviewService.getPortfolioOverviewCombined({ids: ids, viewCurrency: this.viewCurrency});
-        await this.loadPortfolioLineChart();
+        if (ids.length) {
+            await this.loadPortfolioLineChart();
+        }
+        this.checkForEmpty();
+    }
+
+    private checkForEmpty(): void {
+        this.overview.bondPortfolio.rows.length === 0 && this.overview.stockPortfolio.rows.length === 0 ? this.isEmpty = false : this.isEmpty = true;
     }
 
     private async onPortfolioLineChartPanelStateChanges(): Promise<void> {

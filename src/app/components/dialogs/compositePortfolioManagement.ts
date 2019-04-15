@@ -10,18 +10,25 @@ import {CombinedPortfoliosTable} from "../combinedPortfoliosTable";
     // language=Vue
     template: `
         <v-dialog v-model="showed" max-width="600px">
-            <v-card class="dialog-wrap">
+            <v-card class="dialog-wrap composite-dialog">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
+                <v-card-title class="pb-3">
+                    <span class="dialog-header-text pl-3">Формирование составного портфеля</span>
+                </v-card-title>
                 <div>
-                    Формирование составного портфеля
-                </div>
-                <div class="">
                     <combined-portfolios-table :portfolios="data.portfolio" @change="onSetCombined"></combined-portfolios-table>
                 </div>
-                <v-select :items="['RUB', 'USD', 'EUR']" v-model="viewCurrency" label="Валюта представления"single-line></v-select>
-                <v-layout>
+                <div class="choose-currency">
+                    <div class="choose-currency__description mb-1">
+                        Выберите валюту просмотра
+                    </div>
+                    <v-flex class="select-section">
+                        <v-select :items="['RUB', 'USD', 'EUR']" v-model="viewCurrency" label="Валюта представления"single-line></v-select>
+                    </v-flex>
+                </div>
+                <v-layout class="action-btn">
                     <v-spacer></v-spacer>
-                    <v-btn @click="save" color="primary" class="btn">
+                    <v-btn @click="applyConfig" color="primary" class="btn">
                         Сформировать
                     </v-btn>
                 </v-layout>
@@ -41,7 +48,7 @@ export class CompositePortfolioManagement extends CustomDialog<compositePortfoli
         this.viewCurrency = this.data.viewCurrency;
     }
 
-    private save(): void {
+    private applyConfig(): void {
         this.close(this.viewCurrency);
     }
 
