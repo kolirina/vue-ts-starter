@@ -36,7 +36,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
 @Component({
     // language=Vue
     template: `
-        <v-container v-if="overview" fluid class="paddT0">
+        <v-container v-if="overview" fluid class="paddT0 portfolio-scroll-table">
             <dashboard :data="overview.dashboardData" :view-currency="viewCurrency" :side-bar-opened="sideBarOpened"></dashboard>
 
             <slot name="afterDashboard"></slot>
