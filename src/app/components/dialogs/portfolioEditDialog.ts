@@ -16,42 +16,60 @@ import {MainStore} from "../../vuex/mainStore";
     // language=Vue
     template: `
         <v-dialog v-model="showed" ref="dialog" persistent max-width="600px">
-            <v-card v-if="portfolioParams" class="dialog-wrap">
+            <v-card v-if="portfolioParams" class="dialog-wrap portfolio-dialog-wrap">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
 
                 <v-card-title class="paddB0">
-                    <span class="headline">{{ (editMode ? 'Редактирование' : 'Добавление') + ' портфеля' }}</span>
+                    <span class="dialog-header-text">{{ (editMode ? 'Редактирование' : 'Добавление') + ' портфеля' }}</span>
                 </v-card-title>
 
                 <v-card-text class="paddT0 paddB0">
-                    <v-container grid-list-md class="paddT0 paddB0">
-                        <v-layout wrap>
-                            <v-flex xs12>
-                                <v-text-field label="Название" v-model.trim="portfolioParams.name" required autofocus :counter="40"
-                                              class="required" v-validate="'required|max:40|min:3'"
-                                              :error-messages="errors.collect('name')"
-                                              data-vv-name="name" @keyup.enter="savePortfolio"></v-text-field>
-                            </v-flex>
+                    <v-layout wrap>
+                        <v-flex xs12 class="section-portfolio-name">
+                            <v-text-field label="Введите название портфеля" v-model.trim="portfolioParams.name" required autofocus
+                                v-validate="'required|max:40|min:3'"
+                                :error-messages="errors.collect('name')"
+                                data-vv-name="name" @keyup.enter="savePortfolio"
+                                class="required">
+                            </v-text-field>
+                        </v-flex>
 
-                            <v-flex xs12 sm4>
+                        <v-layout class="select-option-wrap">
+                            <v-flex class="select-section">
                                 <v-select :items="accessTypes" v-model="portfolioParams.access" menu-props="returnValue" item-text="label" label="Доступ"
-                                          dense hide-details></v-select>
+                                            dense hide-details></v-select>
                             </v-flex>
 
-                            <v-flex xs12 sm4>
+                            <v-flex class="select-section">
                                 <v-select :items="currencyList" v-model="portfolioParams.viewCurrency" label="Валюта портфеля"
-                                          :persistent-hint="true" dense hide-details
-                                          hint="Валюта, в которой происходит расчет всех показателей. Активы, приобретенные в другой валюте
-                                          будут конвертированы по курсу на дату совершения сделки.">
+                                            :persistent-hint="true" dense hide-details
+                                            hint="Валюта, в которой происходит расчет всех показателей. Активы, приобретенные в другой валюте
+                                            будут конвертированы по курсу на дату совершения сделки.">
                                 </v-select>
                             </v-flex>
 
-                            <v-flex xs12 sm4>
+                            <v-flex class="select-section">
+                                <v-select :items="accountTypes" v-model="portfolioParams.accountType" :return-object="true" item-text="description" dense hide-details
+                                            label="Тип счета"></v-select>
+                            </v-flex>
+                            <v-flex class="select-section" v-if="portfolioParams.accountType === accountType.IIS" >
+                                <v-select :items="iisTypes" dense hide-details
+                                            v-model="portfolioParams.iisType" :return-object="true" item-text="description" label="Тип вычета"></v-select>
+                            </v-flex>
+                        </v-layout>
+
+                        <v-layout>
+                            <v-flex xs12 sm5>
+                                <ii-number-field label="Фиксированная комиссия" v-model="portfolioParams.fixFee"
+                                                    hint="Для автоматического рассчета комиссии при внесении сделок." :decimals="5" @keyup.enter="savePortfolio">
+                                </ii-number-field>
+                            </v-flex>
+
+                            <v-flex xs12 sm5 class="wrap-calendar-section">
                                 <v-menu
                                         ref="dateMenu"
                                         :close-on-content-click="false"
                                         v-model="dateMenuValue"
-                                        :nudge-right="40"
                                         :return-value.sync="portfolioParams.openDate"
                                         lazy
                                         transition="scale-transition"
@@ -68,47 +86,33 @@ import {MainStore} from "../../vuex/mainStore";
                                             append-icon="event"
                                             readonly></v-text-field>
                                     <v-date-picker v-model="portfolioParams.openDate" :no-title="true" locale="ru" :first-day-of-week="1"
-                                                   @input="onDateSelected"></v-date-picker>
+                                                    @input="onDateSelected"></v-date-picker>
                                 </v-menu>
                             </v-flex>
+                        </v-layout>
 
-                            <v-flex xs12 :class="portfolioParams.accountType === accountType.IIS ? 'sm6' : ''">
-                                <v-select :items="accountTypes" v-model="portfolioParams.accountType" :return-object="true" item-text="description" dense hide-details
-                                          label="Тип счета"></v-select>
-                            </v-flex>
-
-                            <v-flex xs12 sm6>
-                                <v-select v-if="portfolioParams.accountType === accountType.IIS" :items="iisTypes" dense hide-details
-                                          v-model="portfolioParams.iisType" :return-object="true" item-text="description" label="Тип вычета"></v-select>
-                            </v-flex>
-
-                            <v-flex xs12>
-                                <ii-number-field label="Фиксированная комиссия" v-model="portfolioParams.fixFee"
-                                                 hint="Для автоматического рассчета комиссии при внесении сделок." :decimals="5" @keyup.enter="savePortfolio">
-                                </ii-number-field>
-                            </v-flex>
-
-                            <v-flex xs12>
-                                <v-textarea label="Заметка" v-model="portfolioParams.note" :rows="3" :counter="500"
-                                            v-validate="'max:500'" :error-messages="errors.collect('note')" data-vv-name="note"></v-textarea>
-                            </v-flex>
-
-                            <v-flex xs12>
-                                <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" top>
-                                    <v-checkbox slot="activator" label="Профессиональный режим" v-model="portfolioParams.professionalMode" class="margT0"></v-checkbox>
-                                    <span>
-                                        Профессиональный режим включает дополнительные возможности, необходимые опытным инвесторам:
-                                        <ul>
-                                            <li>возможность уходить в минус по деньгам (маржинальное кредитование)</li>
-                                            <li>возможность открытия коротких позиций</li>
-                                            <li>возможность учета времени заключения сделки</li>
-                                        </ul>
-                                    </span>
-                                </v-tooltip>
+                        <v-layout>
+                            <v-flex xs12 class="textarea-section">
+                                <v-textarea label="Заметка" v-model="portfolioParams.note" :rows="2" :counter="500"
+                                v-validate="'max:500'" :error-messages="errors.collect('note')" data-vv-name="note"></v-textarea>
                             </v-flex>
                         </v-layout>
-                    </v-container>
-                    <small>* обозначает обязательные поля</small>
+
+                        <v-flex xs12>
+                            <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" top>
+                                <v-checkbox slot="activator" label="Профессиональный режим"
+                                v-model="portfolioParams.professionalMode" class="portfolio-default-text"></v-checkbox>
+                                <span>
+                                    Профессиональный режим включает дополнительные возможности, необходимые опытным инвесторам:
+                                    <ul>
+                                        <li>возможность уходить в минус по деньгам (маржинальное кредитование)</li>
+                                        <li>возможность открытия коротких позиций</li>
+                                        <li>возможность учета времени заключения сделки</li>
+                                    </ul>
+                                </span>
+                            </v-tooltip>
+                        </v-flex>
+                    </v-layout>
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
@@ -118,7 +122,6 @@ import {MainStore} from "../../vuex/mainStore";
                         <v-icon color="blue">fas fa-spinner fa-spin</v-icon>
                       </span>
                     </v-btn>
-                    <v-btn color="info lighten-2" flat @click.native="cancel">Отмена</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -161,6 +164,9 @@ export class PortfolioEditDialog extends CustomDialog<PortfolioDialogData, boole
                 openDate: DateUtils.formatDate(dayjs(), DateFormat.DATE2),
                 accountType: PortfolioAccountType.BROKERAGE
             };
+        }
+        if (!this.portfolioParams.iisType) {
+            this.portfolioParams.iisType = IisType.TYPE_A;
         }
     }
 
