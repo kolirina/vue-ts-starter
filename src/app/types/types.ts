@@ -298,6 +298,8 @@ export type Share = {
     ticker: string;
     /** Тип актива бумаги */
     shareType: ShareType;
+    /** Дата последнего изменения по бумаге */
+    lastUpdateTime?: string;
 };
 
 /**
