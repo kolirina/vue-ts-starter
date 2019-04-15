@@ -2,16 +2,14 @@ import {Container, Inject} from "typescript-ioc";
 import {ContentLoader} from "vue-content-loader";
 import {Route} from "vue-router";
 import {namespace} from "vuex-class/lib/bindings";
-import {CompositePortfolioManagement} from "../components/dialogs/compositePortfolioManagement";
 import {Resolver} from "../../../typings/vue";
 import {Component, UI} from "../app/ui";
-import {CombinedPortfoliosTable} from "../components/combinedPortfoliosTable";
 import {BlockByTariffDialog} from "../components/dialogs/blockByTariffDialog";
+import {CompositePortfolioManagement} from "../components/dialogs/compositePortfolioManagement";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {ClientInfo, ClientService} from "../services/clientService";
 import {OverviewService} from "../services/overviewService";
 import {HighStockEventsGroup} from "../types/charts/types";
-import {CombinedData} from "../types/eventObjects";
 import {Permission} from "../types/permission";
 import {StoreKeys} from "../types/storeKeys";
 import {ForbiddenCode, Overview} from "../types/types";
@@ -30,40 +28,19 @@ const MainStore = namespace(StoreType.MAIN);
                     <base-portfolio-page :overview="overview" :line-chart-data="lineChartData" :line-chart-events="lineChartEvents"
                                          :view-currency="viewCurrency" :state-key-prefix="StoreKeys.PORTFOLIO_COMBINED_CHART" :side-bar-opened="sideBarOpened"
                                          @reloadLineChart="loadPortfolioLineChart">
-                                         <template #afterDashboard>
-                                            <v-layout>
-                                                <div>
-                                                    Управление составным портфелем
-                                                </div>
-                                                <v-spacer></v-spacer>
-                                                <div>
-                                                <v-btn class="btn" color="#3B6EC9" @click.stop="showDialog">
-                                                    Сформировать
-                                                </v-btn>
-                                                </div>
-                                            </v-layout>
-                                        </template>
-                        <!--<template #afterDashboard>
-                            <expanded-panel :value="$uistate.combinedPanel" :state="$uistate.COMBINED_CONTROL_PANEL">
-                                <template #header></template>
-
-                                <v-card-text>
-                                    <combined-portfolios-table :portfolios="clientInfo.user.portfolios" @change="onSetCombined"></combined-portfolios-table>
-                                </v-card-text>
-
-                                <v-container slot="underCard" grid-list-md text-xs-center>
-                                    <v-layout row wrap>
-                                        <v-flex xs6>
-                                            <v-btn color="info" @click.stop="doCombinedPortfolio">Сформировать</v-btn>
-                                        </v-flex>
-                                        <v-flex xs6>
-                                            <v-select :items="['RUB', 'USD', 'EUR']" v-model="viewCurrency" label="Валюта представления" @change="doCombinedPortfolio"
-                                                      single-line></v-select>
-                                        </v-flex>
-                                    </v-layout>
-                                </v-container>
-                            </expanded-panel>
-                        </template>-->
+                        <template #afterDashboard>
+                            <v-layout>
+                                <div>
+                                    Управление составным портфелем
+                                </div>
+                                <v-spacer></v-spacer>
+                                <div>
+                                <v-btn class="btn" color="#3B6EC9" @click.stop="showDialog">
+                                    Сформировать
+                                </v-btn>
+                                </div>
+                            </v-layout>
+                        </template>
                     </base-portfolio-page>
                 </template>
                 <template v-else>
@@ -78,7 +55,7 @@ const MainStore = namespace(StoreType.MAIN);
             </v-slide-x-reverse-transition>
         </div>
     `,
-    components: {BasePortfolioPage, CombinedPortfoliosTable, ContentLoader}
+    components: {BasePortfolioPage, ContentLoader}
 })
 export class CombinedPortfolioPage extends UI {
 
@@ -91,7 +68,7 @@ export class CombinedPortfolioPage extends UI {
     /** Данные комбинированного портфеля */
     private overview: Overview = null;
     /** Валюта просмотра портфеля */
-    private viewCurrency = "RUB";
+    private viewCurrency: string = "RUB";
     /** Данные графика стоимости портфеля */
     private lineChartData: any[] = null;
     /** Данные по событиям для графика стоимости */
@@ -127,19 +104,19 @@ export class CombinedPortfolioPage extends UI {
     }
 
     private async showDialog(): Promise<void> {
-        await new CompositePortfolioManagement().show();
+        const result = await new CompositePortfolioManagement().show({portfolio: this.clientInfo.user.portfolios, viewCurrency: this.viewCurrency});
+        if (result) {
+            this.viewCurrency = result;
+            this.doCombinedPortfolio();
+        }
     }
 
+    @ShowProgress
     private async doCombinedPortfolio(): Promise<void> {
         this.overview = null;
         const ids = this.clientInfo.user.portfolios.filter(value => value.combined).map(value => value.id);
         this.overview = await this.overviewService.getPortfolioOverviewCombined({ids: ids, viewCurrency: this.viewCurrency});
         await this.loadPortfolioLineChart();
-    }
-
-    @ShowProgress
-    private async onSetCombined(data: CombinedData): Promise<void> {
-        await this.overviewService.setCombinedFlag(data.id, data.combined);
     }
 
     private async onPortfolioLineChartPanelStateChanges(): Promise<void> {
