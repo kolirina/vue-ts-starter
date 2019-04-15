@@ -79,6 +79,9 @@ gulp.task("assets", () => {
     gulp.src("./src/assets/static/**/*.*")
         .pipe(gulp.dest(TARGET_DIR + "/static"));
 
+    gulp.src("./src/version.json")
+        .pipe(gulp.dest(TARGET_DIR));
+
     return gulp.src("./index.html")
         .pipe(gulp.dest(TARGET_DIR))
         .pipe(reload({stream: true}));

@@ -15,8 +15,8 @@ import {TableHeader} from "../types/types";
                     </td>
                     <td class="text-xs-left">{{ props.item.name }}</td>
                     <td class="text-xs-center">{{ props.item.viewCurrency }}</td>
-                    <td class="text-xs-center">{{ props.item.type }}</td>
-                    <td class="text-xs-center">{{ props.item.openDate }}</td>
+                    <td class="text-xs-left">{{ props.item.type }}</td>
+                    <td class="text-xs-right">{{ props.item.openDate }}</td>
                 </tr>
             </template>
         </v-data-table>
@@ -25,11 +25,11 @@ import {TableHeader} from "../types/types";
 export class CombinedPortfoliosTable extends UI {
 
     private headers: TableHeader[] = [
-        {text: "Выбран", align: "center", value: "combined", width: "50", sortable: false},
+        {text: "", align: "center", value: "combined", width: "50", sortable: false},
         {text: "Название", align: "left", value: "name"},
         {text: "Валюта", align: "center", value: "viewCurrency", width: "80"},
-        {text: "Тип счета", align: "center", value: "type", width: "100"},
-        {text: "Дата открытия", align: "center", value: "openDate", width: "100"}
+        {text: "Тип счета", align: "left", value: "type", width: "100"},
+        {text: "Дата открытия", align: "right", value: "openDate", width: "100"}
     ];
 
     @Prop({default: [], required: true})

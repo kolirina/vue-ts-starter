@@ -12,20 +12,19 @@ import {CombinedPortfoliosTable} from "../combinedPortfoliosTable";
         <v-dialog v-model="showed" max-width="600px">
             <v-card class="dialog-wrap">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
-
                 <div>
                     Формирование составного портфеля
                 </div>
-
                 <div class="">
                     <combined-portfolios-table :portfolios="data.portfolio" @change="onSetCombined"></combined-portfolios-table>
                 </div>
                 <v-select :items="['RUB', 'USD', 'EUR']" v-model="viewCurrency" label="Валюта представления"single-line></v-select>
-                <div>
-                    <v-btn @click="save" color="primary">
-                        Test
+                <v-layout>
+                    <v-spacer></v-spacer>
+                    <v-btn @click="save" color="primary" class="btn">
+                        Сформировать
                     </v-btn>
-                </div>
+                </v-layout>
             </v-card>
         </v-dialog>
     `,
