@@ -37,7 +37,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
     // language=Vue
     template: `
         <v-container v-if="overview" fluid class="paddT0">
-            <dashboard :data="overview.dashboardData" :view-currency="viewCurrency" :side-bar-opened="sideBarOpened" class="test"></dashboard>
+            <dashboard :data="overview.dashboardData" :view-currency="viewCurrency" :side-bar-opened="sideBarOpened"></dashboard>
 
             <slot name="afterDashboard"></slot>
 
