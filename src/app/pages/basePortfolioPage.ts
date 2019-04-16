@@ -280,7 +280,7 @@ export class BasePortfolioPage extends UI {
     private setClassForScroll(data: boolean): void {
         data ? this.isScroll = true : this.isScroll = false;
     }
-    
+
     private onStockTablePanelClick(): void {
         this.stockTablePanelClosed = UiStateHelper.stocksTablePanel[0] === 0;
     }
