@@ -92,7 +92,7 @@ const MainStore = namespace(StoreType.MAIN);
                                   class="events-table" hide-actions>
                         <template #items="props">
                             <tr class="selectable">
-                                <td class="text-xs-left pl30">{{ props.item.label }}</td>
+                                <td class="text-xs-left pl-30">{{ props.item.label }}</td>
                                 <td class="text-xs-left">{{ props.item.share.shortname }}</td>
                                 <td class="text-xs-left">
                                     <stock-link v-if="props.item.type === 'DIVIDEND'" :ticker="props.item.share.ticker"></stock-link>
@@ -105,7 +105,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     {{ props.item.cleanAmount | amount(true) }}
                                     <span class="amount__currency">{{ props.item.cleanAmount | currencySymbol }}</span>
                                 </td>
-                                <td class="justify-end layout pr30" @click.stop>
+                                <td class="justify-end layout pr-3" @click.stop>
                                     <v-menu transition="slide-y-transition" bottom left>
                                         <v-btn slot="activator" flat icon dark>
                                             <span class="menuDots"></span>
@@ -140,7 +140,7 @@ const MainStore = namespace(StoreType.MAIN);
                                   class="dividend-news-table events-table" hide-actions>
                         <template #items="props">
                             <tr class="selectable">
-                                <td class="text-xs-left pl30">
+                                <td class="text-xs-left pl-30">
                                     <stock-link :ticker="props.item.ticker"></stock-link>
                                 </td>
                                 <td class="text-xs-left">{{ props.item.shortname }}</td>
@@ -150,7 +150,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     {{ props.item.recCommonValue | number }}
                                     <span class="amount__currency">{{ props.item.currency }}</span>
                                 </td>
-                                <td class="text-xs-center pr30">{{ props.item.source }}</td>
+                                <td class="text-xs-center pr-3">{{ props.item.source }}</td>
                             </tr>
                         </template>
                     </v-data-table>
