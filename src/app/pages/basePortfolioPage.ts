@@ -37,7 +37,9 @@ import {UiStateHelper} from "../utils/uiStateHelper";
     // language=Vue
     template: `
         <v-container v-if="overview" fluid class="paddT0">
-            <dashboard :data="overview.dashboardData" :view-currency="viewCurrency" :side-bar-opened="sideBarOpened"></dashboard>
+            <dashboard :data="overview.dashboardData" :view-currency="viewCurrency" :side-bar-opened="sideBarOpened" @scroll="setClassForScroll"></dashboard>
+
+            <div class="scroll-block" v-if="isScroll"></div>
 
             <slot name="afterDashboard"></slot>
 
@@ -223,6 +225,8 @@ export class BasePortfolioPage extends UI {
     private bondFilter: PortfolioRowFilter = {};
     /** Конфиг отображения пустого состояния */
     private isEmpty: boolean = true;
+    /** Конфиг добавления класса для фикса бага со скроллом */
+    private isScroll: boolean = false;
 
     /**
      * Инициализация данных компонента
@@ -273,6 +277,9 @@ export class BasePortfolioPage extends UI {
         return this.tablesService.getFilterHeaders(name);
     }
 
+    private setClassForScroll(data: boolean): void {
+        data ? this.isScroll = true : this.isScroll = false;
+    }
     private onStockTablePanelClick(): void {
         this.stockTablePanelClosed = UiStateHelper.stocksTablePanel[0] === 0;
     }

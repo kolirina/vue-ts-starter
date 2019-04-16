@@ -159,6 +159,7 @@ export class Dashboard extends UI {
     }
 
     private setDashboardPosition(e: any): void {
-        this.fixedDashboard = e.target.scrollingElement.scrollTop > 24;
+        this.fixedDashboard = e.target.scrollingElement.scrollHeight - e.target.scrollingElement.clientHeight > 70 && e.target.scrollingElement.scrollTop > 24;
+        this.$emit("scroll", this.fixedDashboard);
     }
 }
