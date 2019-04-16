@@ -169,7 +169,6 @@ const MainStore = namespace(StoreType.MAIN);
                                     <span>{{ props.item.bond.currency }}</span></template>
                                 <br>
                                 <template v-if="props.item.bond.isRepaid">Статус Погашена</template>
-                                <br>
                             </div>
                         </td>
                         <td>
