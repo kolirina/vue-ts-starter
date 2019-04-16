@@ -23,9 +23,26 @@
     }
     &__actions {
         padding-right: 30px;
+        padding-bottom: 30px;
         .v-btn {
             padding: 0px 20px;
         }
+    }
+    &__error-table {
+        thead {
+            tr {
+                th {
+                    opacity: 0.48;
+                    letter-spacing: 0.2px;
+                    color: #4F5D75;
+                    line-height: 16px;
+                    font-size: 12px;
+                }
+            }
+        }
+    }
+    .min-height-wrapper {
+        min-height: 720px;
     }
 }
 .import-general-error-wrapper {

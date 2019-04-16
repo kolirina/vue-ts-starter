@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
@@ -53,7 +54,9 @@ const MainStore = namespace(StoreType.MAIN);
                             Если в списке нет вашего брокера или терминала, вы всегда можете осуществить импорт через универсальный формат
                             <a @click="showIntelinvestInctruction()">CSV</a>
                             или обратиться к нам через обратную связь, по <a href="mailto:web@intelinvest.ru">почте</a> или
-                            в группе <a href="http://vk.com/intelinvest" target="_blank">вконтакте</a>.
+                            в группе <a href="http://vk.com/intelinvest" target="_blank">вконтакте</a>.<br>
+                            <strong>Последняя зарегистрированная сделка в портфеле от {{ lastTradeDate }}.
+                            Во избежание задвоений загружайте отчет со сделками позже этой даты.</strong>
                         </div>
                         <v-btn class="btn" @click="onSelectProvider(providers.INTELINVEST)">
                             Формат Intelinvest
@@ -194,10 +197,12 @@ const MainStore = namespace(StoreType.MAIN);
 
                     <v-layout align-center class="section-upload-file">
                         <v-btn v-if="importProviderFeatures && files.length" color="primary" class="big_btn" @click="uploadFile">Загрузить</v-btn>
+                        <file-link  @select="onFileAdd" :accept="allowedExtensions"
+                                    v-if="importProviderFeatures && files.length" class="reselect-file-btn ml-3">Выбрать другой файл</file-link>
                         <file-link @select="onFileAdd" :accept="allowedExtensions" v-if="importProviderFeatures && !files.length">Выбрать файл</file-link>
                         <v-spacer></v-spacer>
                         <div @click="showInstruction = !showInstruction" class="btn-show-instruction" v-if="importProviderFeatures">
-                            Как сформировать отчет брокера?
+                            Как сформировать отчет брокера {{ selectedProvider.description }}?
                         </div>
                     </v-layout>
 
@@ -239,6 +244,8 @@ export class ImportPage extends UI {
     private showInstruction: boolean = false;
     /** Допустимые MIME типы */
     private allowedExtensions = FileUtils.ALLOWED_MIME_TYPES;
+    /** Дата последней сделки */
+    private lastTradeDate: string = null;
 
     /**
      * Инициализирует необходимые для работы данные
@@ -247,6 +254,7 @@ export class ImportPage extends UI {
     @ShowProgress
     async created(): Promise<void> {
         this.importProviderFeaturesByProvider = await this.importService.getImportProviderFeatures();
+        this.getDateLastTrade();
     }
 
     /**
@@ -280,6 +288,11 @@ export class ImportPage extends UI {
         if (index !== -1) {
             this.files.splice(index, 1);
         }
+    }
+
+    /** Получаем дату последней сделки */
+    private getDateLastTrade(): void {
+        this.lastTradeDate = dayjs(this.portfolio.overview.lastTradeDate).format("DD.MM.YYYY");
     }
 
     /**
@@ -322,6 +335,7 @@ export class ImportPage extends UI {
             // отображаем диалог с ошибками, но информацию по портфелю надо перезагрузить если были успешно импортированы сделки
             if (response.validatedTradesCount) {
                 await this.reloadPortfolio(this.portfolio.id);
+                this.getDateLastTrade();
             }
             return;
         }
@@ -339,6 +353,7 @@ export class ImportPage extends UI {
                 }) === BtnReturn.YES;
             }
             await this.reloadPortfolio(this.portfolio.id);
+            this.getDateLastTrade();
             this.$snotify.info(`Импорт прошел успешно. ${firstWord} ${response.validatedTradesCount} ${secondWord}.`);
             if (navigateToPortfolioPage) {
                 this.$router.push("portfolio");
