@@ -13,37 +13,39 @@ import {TableHeader} from "../../types/types";
 
         <v-dialog v-model="showed" max-width="600px" content-class="import-errors-dialog-scroll">
             <v-card class="dialog-wrap import-dialog-wrapper">
-                <div class="wrapper-for-scroll-import-dialog">
-                    <v-icon class="closeDialog" @click.native="close">close</v-icon>
-                    <v-card-title class="import-dialog-wrapper__title">
-                        <span class="import-dialog-wrapper__title-text">Результаты импорта</span>
-                    </v-card-title>
-                    <v-card-text class="import-dialog-wrapper__description">
-                        <div class="import-dialog-wrapper__description-text import-default-text">
-                            При импортировании отчета возникли ошибки, портфель не был импортирован полностью. Чтобы завершить формирование пожалуйста внесите остатки вручную.
-                        </div>
-                        <div class="import-dialog-wrapper__description-text import-default-text">
-                            Успешно {{ data.validatedTradesCount | declension("добавлена", "добавлено", "добавлено") }}
-                            {{ data.validatedTradesCount | declension("сделка", "сделки", "сделок") }}<span class="amount-deals">{{ data.validatedTradesCount }}</span></div>
-                    </v-card-text>
-                    <v-card-text class="import-dialog-wrapper__content">
-                        <v-data-table :headers="headers" :items="data.errors" hide-actions>
-                            <template #items="props">
-                                <tr class="selectable">
-                                    <td class="text-xs-center"><span v-if="props.item.dealDate">{{ props.item.dealDate | date }}</span></td>
-                                    <td class="text-xs-left">{{ props.item.dealTicker }}</td>
-                                    <td class="text-xs-left error-message">{{ props.item.message }}</td>
-                                </tr>
-                            </template>
-                        </v-data-table>
-                    </v-card-text>
+                <v-layout column justify-space-between class="min-height-wrapper">
+                    <div>
+                        <v-icon class="closeDialog" @click.native="close">close</v-icon>
+                        <v-card-title class="import-dialog-wrapper__title">
+                            <span class="import-dialog-wrapper__title-text">Результаты импорта</span>
+                        </v-card-title>
+                        <v-card-text class="import-dialog-wrapper__description">
+                            <div class="import-dialog-wrapper__description-text import-default-text">
+                                При импортировании отчета возникли ошибки, портфель не был импортирован полностью. Чтобы завершить формирование пожалуйста внесите остатки вручную.
+                            </div>
+                            <div class="import-dialog-wrapper__description-text import-default-text">
+                                Успешно {{ data.validatedTradesCount | declension("добавлена", "добавлено", "добавлено") }}
+                                {{ data.validatedTradesCount | declension("сделка", "сделки", "сделок") }}<span class="amount-deals">{{ data.validatedTradesCount }}</span></div>
+                        </v-card-text>
+                        <v-card-text class="import-dialog-wrapper__content import-dialog-wrapper__error-table">
+                            <v-data-table :headers="headers" :items="data.errors" hide-actions>
+                                <template #items="props">
+                                    <tr class="selectable">
+                                        <td class="text-xs-center"><span v-if="props.item.dealDate">{{ props.item.dealDate | date }}</span></td>
+                                        <td class="text-xs-left">{{ props.item.dealTicker }}</td>
+                                        <td class="text-xs-left error-message">{{ props.item.message }}</td>
+                                    </tr>
+                                </template>
+                            </v-data-table>
+                        </v-card-text>
+                    </div>
                     <v-card-actions class="import-dialog-wrapper__actions">
                         <v-spacer></v-spacer>
                         <v-btn color="primary" @click.native="goToBalances" dark>
                             Указать текущие остатки
                         </v-btn>
                     </v-card-actions>
-                </div>
+                </v-layout>
             </v-card>
         </v-dialog>
 
