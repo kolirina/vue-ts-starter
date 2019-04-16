@@ -14,39 +14,57 @@
  * (c) ООО "Интеллектуальные инвестиции", 2019
  */
 
-.portfolio-settings {
-  padding: 28px;
+.portfolio-default-text {
   font-size: 14px;
-  max-width: 1020px;
-
-  &-card {
-    padding: 24px 24px 30px;
-    box-sizing: border-box;
-    position: relative;
-    margin-bottom: 25px;
-    box-shadow: none !important;
-    font-family: $main--font-family;
-
-    &-main {
-
-      > div:not(.v-menu) {
-        margin-bottom: 18px;
-
-        &:last-of-type {
-          margin-bottom: 28px
-        }
-      }
-
-      &.portfolio-settings-card-full {
-        padding: 0;
-        background: none;
-        text-align: right;
-        margin-top: -28px;
-
-        > div:not(.v-menu) {
-          display: none
-        }
+  line-height: 18px;
+  color: #040427;
+  label {
+    font-size: 14px;
+    line-height: 18px;
+    color: #3D4656 !important;
+  }
+}
+.portfolio-link {
+  color: #3B6EC9;
+  text-decoration: none;
+}
+.wrap-info-content {
+  margin: 6.5px 10px 0px 0px;
+  .setings-btn {
+    margin: 25px 0px 33px 0px;
+    button {
+      margin-right: 12px !important;
+      padding: 0px 19px;
+      &:last-child {
+        margin-right: 0px !important;
       }
     }
   }
+  .link-section{
+    div {
+      &:first-child {
+        margin-bottom: 15px;
+      }
+    }
+  }
+}
+.setings-menu {
+  margin-right: 12px;
+}
+.dialog-type-menu {
+  .v-list {
+    padding: 14px 17px 10px 20px;
+    opacity: 1;
+    .menu-text {
+      cursor: pointer;
+      font-size: 13px;
+      line-height: 28px;
+      &:hover {
+        color: #B0B4C2;
+      }
+    }
+  }
+}
+.hide-copy-input{
+  display: none;
 }

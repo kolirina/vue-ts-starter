@@ -39,7 +39,7 @@ const MainStore = namespace(StoreType.MAIN);
                 <v-card-text class="import-wrapper-content">
                     <div class="providers">
                         <div v-for="provider in providers.values()" :key="provider.code" @click="onSelectProvider(provider)" v-if="provider !== providers.INTELINVEST"
-                            :class="['item' ,selectedProvider === provider ? 'active' : '']">
+                             :class="['item' ,selectedProvider === provider ? 'active' : '']">
                             <div :class="['item-img-block', provider.code.toLowerCase()]">
                             </div>
                             <div class="item-text">
@@ -52,7 +52,7 @@ const MainStore = namespace(StoreType.MAIN);
                         <div class="intelinvest-section__description">
                             Если в списке нет вашего брокера или терминала, вы всегда можете осуществить импорт через универсальный формат
                             <a @click="showIntelinvestInctruction()">CSV</a>
-                            или обратиться к нам через обратную связь, по <a href="mailto:web@intelinvest.ru"   >почте</a> или
+                            или обратиться к нам через обратную связь, по <a href="mailto:web@intelinvest.ru">почте</a> или
                             в группе <a href="http://vk.com/intelinvest" target="_blank">вконтакте</a>.
                         </div>
                         <v-btn class="btn" @click="onSelectProvider(providers.INTELINVEST)">
@@ -72,7 +72,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 Расширенные настройки импорта
                             </div>
                             <v-flex>
-                                <v-checkbox v-model="importProviderFeatures.createLinkedTrade" hide-details color="#3B6EC9" class="checkbox-setings">
+                                <v-checkbox v-model="importProviderFeatures.createLinkedTrade" hide-details class="checkbox-setings">
                                     <template #label>
                                         <span>Добавлять сделки по списанию/зачислению денежных средств
                                             <v-menu transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12">
@@ -88,7 +88,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         </span>
                                     </template>
                                 </v-checkbox>
-                                <v-checkbox v-model="importProviderFeatures.autoCommission" hide-details color="#3B6EC9" class="checkbox-setings">
+                                <v-checkbox v-model="importProviderFeatures.autoCommission" hide-details class="checkbox-setings">
                                     <template #label>
                                         <span>
                                             Автоматически рассчитывать комиссию для сделок
@@ -107,7 +107,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         </span>
                                     </template>
                                 </v-checkbox>
-                                <v-checkbox v-model="importProviderFeatures.autoEvents" hide-details color="#3B6EC9" class="checkbox-setings">
+                                <v-checkbox v-model="importProviderFeatures.autoEvents" hide-details class="checkbox-setings">
                                     <template #label>
                                         <span>
                                             Автоматически исполнять события по бумагам
@@ -126,7 +126,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         </span>
                                     </template>
                                 </v-checkbox>
-                                <v-checkbox v-model="importProviderFeatures.confirmMoneyBalance" hide-details color="#3B6EC9" class="checkbox-setings">
+                                <v-checkbox v-model="importProviderFeatures.confirmMoneyBalance" hide-details class="checkbox-setings">
                                     <template #label>
                                         <span>
                                             Спрашивать текущий остаток ДС
@@ -144,7 +144,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         </span>
                                     </template>
                                 </v-checkbox>
-                                <v-checkbox v-model="importProviderFeatures.importMoneyTrades" hide-details color="#3B6EC9" class="checkbox-setings">
+                                <v-checkbox v-model="importProviderFeatures.importMoneyTrades" hide-details class="checkbox-setings">
                                     <template #label>
                                         <span>
                                             Импорт сделок по денежным средствам
@@ -181,7 +181,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         {{ file.name }}
                                     </v-list-tile-title>
                                     <div class="item-files__size">
-                                        {{ file.size }} KB
+                                        {{ file.size | bytes }}
                                     </div>
                                 </div>
                                 <v-spacer></v-spacer>
@@ -211,6 +211,8 @@ const MainStore = namespace(StoreType.MAIN);
 })
 export class ImportPage extends UI {
 
+    /** Максимальный размер загружаемого файла 10 Мб */
+    readonly MAX_SIZE = 1024 * 1024 * 10;
     @MainStore.Getter
     private clientInfo: ClientInfo;
     @MainStore.Getter
@@ -260,6 +262,10 @@ export class ImportPage extends UI {
         const isValid = FileUtils.checkExtension(filtered[0]);
         if (!isValid) {
             this.$snotify.warning(`Формат файла не соответствует разрешенным: ${FileUtils.ALLOWED_EXTENSION}.`);
+            return;
+        }
+        if (filtered.map(file => file.size).reduce((previousValue: number, currentValue: number): number => previousValue + currentValue, 0) > this.MAX_SIZE) {
+            this.$snotify.warning(`Максимальный размер загружаемого файла 10 Мб.`);
             return;
         }
         this.files = filtered;

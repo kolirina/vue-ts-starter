@@ -146,6 +146,17 @@
 .v-input--checkbox {
   margin-top: 0;
   padding-top: 0;
+  .v-label {
+    font-size: 14px;
+    line-height: 20px !important;
+  }
+  .v-icon {
+    color: #caced5 !important;
+  }
+  .accent--text {
+    border-color: $sidebar-blue-color;
+    color: $sidebar-blue-color !important;
+  }
 }
 
 .v-menu__content {

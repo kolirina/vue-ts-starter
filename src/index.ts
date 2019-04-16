@@ -20,7 +20,8 @@ async function _start(resolve: () => void, reject: () => void): Promise<void> {
     try {
         const client = new BrowserClient({
             dsn: "https://0a69d1634cf74275959234ed4e0bd8f0@sentry.io/1407959",
-            integrations: Vue.config.productionTip ? [] : [new Sentry.Integrations.Vue({
+            release: `${versionConfig.version} build ${versionConfig.build}`,
+            integrations: [new Sentry.Integrations.Vue({
                 Vue,
                 attachProps: true
             })]
@@ -35,7 +36,10 @@ async function _start(resolve: () => void, reject: () => void): Promise<void> {
 
         const errorHandler = (error: Error | string): void => {
             UI.emit(EventType.HANDLE_ERROR, error);
-            sentryHub.captureException(error);
+            // логгируем ошибки только в prod-сборке
+            if (!Vue.config.productionTip) {
+                sentryHub.captureException(error);
+            }
         };
         // Устанавливаем обработчик ошибок по умолчанию
         configureErrorHandling(errorHandler);
