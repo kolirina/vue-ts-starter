@@ -23,46 +23,44 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <div>
-            <v-slide-x-reverse-transition>
-                <template v-if="overview">
-                    <base-portfolio-page :overview="overview" :line-chart-data="lineChartData" :line-chart-events="lineChartEvents"
-                                         :view-currency="viewCurrency" :state-key-prefix="StoreKeys.PORTFOLIO_COMBINED_CHART" :side-bar-opened="sideBarOpened"
-                                         @reloadLineChart="loadPortfolioLineChart">
-                        <template #afterDashboard>
-                            <expanded-panel :value="$uistate.combinedPanel" :state="$uistate.COMBINED_CONTROL_PANEL">
-                                <template #header>Управление составным портфелем</template>
+        <v-slide-x-reverse-transition>
+            <template v-if="overview">
+                <base-portfolio-page :overview="overview" :line-chart-data="lineChartData" :line-chart-events="lineChartEvents"
+                                        :view-currency="viewCurrency" :state-key-prefix="StoreKeys.PORTFOLIO_COMBINED_CHART" :side-bar-opened="sideBarOpened"
+                                        @reloadLineChart="loadPortfolioLineChart">
+                    <template #afterDashboard>
+                        <expanded-panel :value="$uistate.combinedPanel" :state="$uistate.COMBINED_CONTROL_PANEL">
+                            <template #header>Управление составным портфелем</template>
 
-                                <v-card-text>
-                                    <combined-portfolios-table :portfolios="clientInfo.user.portfolios" @change="onSetCombined"></combined-portfolios-table>
-                                </v-card-text>
+                            <v-card-text>
+                                <combined-portfolios-table :portfolios="clientInfo.user.portfolios" @change="onSetCombined"></combined-portfolios-table>
+                            </v-card-text>
 
-                                <v-container slot="underCard" grid-list-md text-xs-center>
-                                    <v-layout row wrap>
-                                        <v-flex xs6>
-                                            <v-btn color="info" @click.stop="doCombinedPortfolio">Сформировать</v-btn>
-                                        </v-flex>
-                                        <v-flex xs6>
-                                            <v-select :items="['RUB', 'USD', 'EUR']" v-model="viewCurrency" label="Валюта представления" @change="doCombinedPortfolio"
-                                                      single-line></v-select>
-                                        </v-flex>
-                                    </v-layout>
-                                </v-container>
-                            </expanded-panel>
-                        </template>
-                    </base-portfolio-page>
-                </template>
-                <template v-else>
-                    <content-loader :height="800" :width="800" :speed="1" primaryColor="#f3f3f3" secondaryColor="#ecebeb">
-                        <rect x="0" y="20" rx="5" ry="5" width="801.11" height="80"/>
-                        <rect x="0" y="120" rx="5" ry="5" width="801.11" height="30"/>
-                        <rect x="0" y="170" rx="5" ry="5" width="801.11" height="180"/>
-                        <rect x="0" y="370" rx="5" ry="5" width="801.11" height="180"/>
-                        <rect x="0" y="570" rx="5" ry="5" width="801.11" height="180"/>
-                    </content-loader>
-                </template>
-            </v-slide-x-reverse-transition>
-        </div>
+                            <v-container slot="underCard" grid-list-md text-xs-center>
+                                <v-layout row wrap>
+                                    <v-flex xs6>
+                                        <v-btn color="info" @click.stop="doCombinedPortfolio">Сформировать</v-btn>
+                                    </v-flex>
+                                    <v-flex xs6>
+                                        <v-select :items="['RUB', 'USD', 'EUR']" v-model="viewCurrency" label="Валюта представления" @change="doCombinedPortfolio"
+                                                    single-line></v-select>
+                                    </v-flex>
+                                </v-layout>
+                            </v-container>
+                        </expanded-panel>
+                    </template>
+                </base-portfolio-page>
+            </template>
+            <template v-else>
+                <content-loader :height="800" :width="800" :speed="1" primaryColor="#f3f3f3" secondaryColor="#ecebeb">
+                    <rect x="0" y="20" rx="5" ry="5" width="801.11" height="80"/>
+                    <rect x="0" y="120" rx="5" ry="5" width="801.11" height="30"/>
+                    <rect x="0" y="170" rx="5" ry="5" width="801.11" height="180"/>
+                    <rect x="0" y="370" rx="5" ry="5" width="801.11" height="180"/>
+                    <rect x="0" y="570" rx="5" ry="5" width="801.11" height="180"/>
+                </content-loader>
+            </template>
+        </v-slide-x-reverse-transition>
     `,
     components: {BasePortfolioPage, CombinedPortfoliosTable, ContentLoader}
 })
