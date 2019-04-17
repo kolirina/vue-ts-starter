@@ -33,7 +33,7 @@ const MainStore = namespace(StoreType.MAIN);
             </v-card>
 
             <v-card class="events__card" flat>
-                <v-card-title class="headline">
+                <v-card-title class="events__card-title">
                     Новые события
                     <v-spacer></v-spacer>
                     <v-menu v-if="events.length" transition="slide-y-transition" bottom left>
@@ -89,10 +89,10 @@ const MainStore = namespace(StoreType.MAIN);
                     </div>
 
                     <v-data-table v-if="events.length" :headers="eventsHeaders" :items="events" item-key="id" :custom-sort="customSortEvents"
-                                  class="events-table data-table" hide-actions>
+                                  class="events-table" hide-actions>
                         <template #items="props">
                             <tr class="selectable">
-                                <td class="text-xs-left">{{ props.item.label }}</td>
+                                <td class="text-xs-left pl-30">{{ props.item.label }}</td>
                                 <td class="text-xs-left">{{ props.item.share.shortname }}</td>
                                 <td class="text-xs-left">
                                     <stock-link v-if="props.item.type === 'DIVIDEND'" :ticker="props.item.share.ticker"></stock-link>
@@ -105,7 +105,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     {{ props.item.cleanAmount | amount(true) }}
                                     <span class="amount__currency">{{ props.item.cleanAmount | currencySymbol }}</span>
                                 </td>
-                                <td class="justify-end layout pr3" @click.stop>
+                                <td class="justify-end layout pr-3" @click.stop>
                                     <v-menu transition="slide-y-transition" bottom left>
                                         <v-btn slot="activator" flat icon dark>
                                             <span class="menuDots"></span>
@@ -133,14 +133,14 @@ const MainStore = namespace(StoreType.MAIN);
             </v-card>
 
             <v-card style="margin-top: 30px" flat>
-                <v-card-title class="headline" style="padding-left: 35px;">Дивидендные новости</v-card-title>
+                <v-card-title class="events__card-title">Дивидендные новости</v-card-title>
 
                 <v-card-text>
                     <v-data-table v-if="dividendNews.length" :headers="dividendNewsHeaders" :items="dividendNews" item-key="id" :custom-sort="customSortNews"
-                                  class="dividend-news-table data-table" hide-actions>
+                                  class="dividend-news-table events-table" hide-actions>
                         <template #items="props">
                             <tr class="selectable">
-                                <td class="text-xs-left">
+                                <td class="text-xs-left pl-30">
                                     <stock-link :ticker="props.item.ticker"></stock-link>
                                 </td>
                                 <td class="text-xs-left">{{ props.item.shortname }}</td>
@@ -150,7 +150,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     {{ props.item.recCommonValue | number }}
                                     <span class="amount__currency">{{ props.item.currency }}</span>
                                 </td>
-                                <td class="text-xs-center">{{ props.item.source }}</td>
+                                <td class="text-xs-center pr-3">{{ props.item.source }}</td>
                             </tr>
                         </template>
                     </v-data-table>
