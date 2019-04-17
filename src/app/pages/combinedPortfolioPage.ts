@@ -6,7 +6,6 @@ import {Resolver} from "../../../typings/vue";
 import {Component, UI} from "../app/ui";
 import {BlockByTariffDialog} from "../components/dialogs/blockByTariffDialog";
 import {CompositePortfolioManagement} from "../components/dialogs/compositePortfolioManagement";
-import {ShowProgress} from "../platform/decorators/showProgress";
 import {ClientInfo, ClientService} from "../services/clientService";
 import {OverviewService} from "../services/overviewService";
 import {HighStockEventsGroup} from "../types/charts/types";
@@ -29,7 +28,7 @@ const MainStore = namespace(StoreType.MAIN);
                                          @reloadLineChart="loadPortfolioLineChart">
                         <template #afterDashboard>
                             <v-layout align-center>
-                                <div :class="['control-porfolios-title', checkForEmpty() ? 'pl-3' : '']">
+                                <div :class="['control-porfolios-title', !checkForEmpty() ? 'pl-3' : '']">
                                     Управление составным портфелем
                                 </div>
                                 <v-spacer></v-spacer>
@@ -116,7 +115,7 @@ export class CombinedPortfolioPage extends UI {
         const result = await new CompositePortfolioManagement().show({portfolio: this.clientInfo.user.portfolios, viewCurrency: this.viewCurrency});
         if (result) {
             this.viewCurrency = result;
-            this.doCombinedPortfolio();
+            await this.doCombinedPortfolio();
         }
     }
 
@@ -124,17 +123,11 @@ export class CombinedPortfolioPage extends UI {
         this.overview = null;
         const ids = this.clientInfo.user.portfolios.filter(value => value.combined).map(value => value.id);
         this.overview = await this.overviewService.getPortfolioOverviewCombined({ids: ids, viewCurrency: this.viewCurrency});
-        if (ids.length) {
-            await this.loadPortfolioLineChart();
-        }
+        await this.loadPortfolioLineChart();
     }
 
     private checkForEmpty(): boolean {
-        if (this.overview.bondPortfolio.rows.length !== 0 && this.overview.stockPortfolio.rows.length !== 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return this.overview.bondPortfolio.rows.length !== 0 || this.overview.stockPortfolio.rows.length !== 0;
     }
 
     private async onPortfolioLineChartPanelStateChanges(): Promise<void> {

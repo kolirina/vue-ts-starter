@@ -13,7 +13,7 @@ import {TableHeader} from "../types/types";
                     <td>
                         <v-checkbox v-model="props.item.combined" @change="onSetCombined(props.item)" hide-details></v-checkbox>
                     </td>
-                    <td class="text-xs-left">{{ props.item.name }}</td>
+                    <td class="text-xs-left table-text-word-break">{{ props.item.name }}</td>
                     <td class="text-xs-center">{{ props.item.viewCurrency }}</td>
                     <td class="text-xs-left">{{ props.item.type }}</td>
                     <td class="text-xs-right">{{ props.item.openDate }}</td>
