@@ -143,7 +143,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     <!--</keep-alive>-->
                                 </v-slide-y-transition>
                             </v-container>
-                            <v-footer color="#f7f9fb" class="footer-app">
+                            <v-footer v-if="isNotifyAccepted" color="#f7f9fb" class="footer-app">
                                 <v-layout class="footer-app-wrap-content" wrap align-center justify-space-between>
                                     <div class="footer-app-wrap-content__text"><i class="far fa-copyright"></i> {{ copyrightInfo }}</div>
 
@@ -165,6 +165,16 @@ const MainStore = namespace(StoreType.MAIN);
                                     </div>
                                 </v-layout>
                             </v-footer>
+                            <v-bottom-nav :value="!isNotifyAccepted"
+                                          fixed
+                                          :class="['wrap-update-section', sideBarOpened ? '' : 'open-menu-bottom-nav-indent']">
+                                <v-layout align-center class="wrap-update-section-content" @click.stop="openNotificationUpdateDialog()">
+                                    <v-spacer></v-spacer>
+                                    <div class="wrap-update-section-content__description-test">
+                                        Мы улучшили сервис для Вас, ознакомьтесь с обновлениями
+                                    </div>
+                                </v-layout>
+                            </v-bottom-nav>
                         </div>
                     </vue-scroll>
                 </v-content>
@@ -182,6 +192,8 @@ export class AppFrame extends UI {
     private clientInfo: ClientInfo;
     @MainStore.Getter
     private portfolio: Portfolio;
+    @MainStore.Getter
+    private sideBarOpened: boolean;
 
     @MainStore.Action(MutationType.SET_CLIENT_INFO)
     private loadUser: (clientInfo: ClientInfo) => Promise<void>;

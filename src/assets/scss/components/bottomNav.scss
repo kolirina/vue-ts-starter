@@ -1,0 +1,26 @@
+.v-bottom-nav {
+    z-index: 7 !important;
+}
+.wrap-update-section {
+    box-shadow: none !important;
+    background: none !important;
+    left: 80px !important;
+    width: calc(100% - 80px) !important;
+    &-content {
+        padding-right: 16px;
+        border-radius: 4px;
+        border-bottom: 3px solid #3B6EC9;
+        background: #FFFFFF;
+        text-align: right;
+        max-width: 1022px;
+        &__description-test {
+            font-size: 14px;
+            line-height: 16px;
+            color: #040427;
+        }
+    }
+}
+.open-menu-bottom-nav-indent {
+    left: 300px !important;
+    width: calc(100% - 300px) !important;
+}
