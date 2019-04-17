@@ -15,7 +15,6 @@
  */
 
 import {DataPoint} from "highcharts";
-import {namespace} from "vuex-class/lib/bindings";
 import {Inject} from "typescript-ioc";
 import {Component, Prop, UI, Watch} from "../app/ui";
 import {AssetTable} from "../components/assetTable";
@@ -32,10 +31,7 @@ import {HighStockEventsGroup, SectorChartData} from "../types/charts/types";
 import {StoreKeys} from "../types/storeKeys";
 import {BondPortfolioRow, Overview, StockPortfolioRow, TableHeader} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
-import {StoreType} from "../vuex/storeType";
 import {UiStateHelper} from "../utils/uiStateHelper";
-
-const MainStore = namespace(StoreType.MAIN);
 
 @Component({
     // language=Vue
@@ -46,9 +42,9 @@ const MainStore = namespace(StoreType.MAIN);
 
                 <slot name="afterDashboard"></slot>
 
-                <asset-table :assets="overview.assetRows" v-if="checkForEmpty(isEmpty.default)" class="mt-3"></asset-table>
+                <asset-table :assets="overview.assetRows" v-if="checkForEmpty(emptyBlockType.default)" class="mt-3"></asset-table>
 
-                <expanded-panel v-if="checkForEmpty(isEmpty.stockPortfolio)" :value="$uistate.stocksTablePanel"
+                <expanded-panel v-if="checkForEmpty(emptyBlockType.stockPortfolio)" :value="$uistate.stocksTablePanel"
                                 :withMenu="true" name="stock" :state="$uistate.STOCKS" @click="onStockTablePanelClick" class="mt-3">
                     <template #header>
                         <span>Акции</span>
@@ -67,7 +63,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes"></stock-table>
                 </expanded-panel>
 
-                <expanded-panel v-if="checkForEmpty(isEmpty.bondPortfolio)" :value="$uistate.bondsTablePanel"
+                <expanded-panel v-if="checkForEmpty(emptyBlockType.bondPortfolio)" :value="$uistate.bondsTablePanel"
                                 :withMenu="true" name="bond" :state="$uistate.BONDS" @click="onBondTablePanelClick" class="mt-3">
                     <template #header>
                         <span>Облигации</span>
@@ -87,7 +83,8 @@ const MainStore = namespace(StoreType.MAIN);
                                 :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes"></bond-table>
                 </expanded-panel>
 
-                <expanded-panel v-if="checkForEmpty(isEmpty.default)" :value="$uistate.historyPanel" :state="$uistate.HISTORY_PANEL" @click="onPortfolioLineChartPanelStateChanges" customMenu class="mt-3">
+                <expanded-panel v-if="checkForEmpty(emptyBlockType.default)" :value="$uistate.historyPanel"
+                                :state="$uistate.HISTORY_PANEL" @click="onPortfolioLineChartPanelStateChanges" customMenu class="mt-3">
                     <template #header>Стоимость портфеля</template>
                     <template #customMenu>
                         <chart-export-menu v-if="lineChartData && lineChartEvents" @print="print('portfolioLineChart')" @exportTo="exportTo('portfolioLineChart', $event)"
@@ -107,7 +104,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-card-text>
                 </expanded-panel>
 
-                <expanded-panel v-if="checkForEmpty(isEmpty.default)" :value="$uistate.assetGraph" :state="$uistate.ASSET_CHART_PANEL" customMenu class="mt-3">
+                <expanded-panel v-if="checkForEmpty(emptyBlockType.default)" :value="$uistate.assetGraph" :state="$uistate.ASSET_CHART_PANEL" customMenu class="mt-3">
                     <template #header>Состав портфеля по активам</template>
                     <template #customMenu>
                         <chart-export-menu @print="print('assetsPieChart')" @exportTo="exportTo('assetsPieChart', $event)" class="exp-panel-menu"></chart-export-menu>
@@ -118,7 +115,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-card-text>
                 </expanded-panel>
 
-                <expanded-panel v-if="checkForEmpty(isEmpty.stockPortfolio)" :value="$uistate.stockGraph" :state="$uistate.STOCK_CHART_PANEL" customMenu class="mt-3">
+                <expanded-panel v-if="checkForEmpty(emptyBlockType.stockPortfolio)" :value="$uistate.stockGraph" :state="$uistate.STOCK_CHART_PANEL" customMenu class="mt-3">
                     <template #header>Состав портфеля акций</template>
                     <template #customMenu>
                         <chart-export-menu @print="print('stockPieChart')" @exportTo="exportTo('stockPieChart', $event)" class="exp-panel-menu"></chart-export-menu>
@@ -128,7 +125,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-card-text>
                 </expanded-panel>
 
-                <expanded-panel v-if="checkForEmpty(isEmpty.bondPortfolio)" :value="$uistate.bondGraph" :state="$uistate.BOND_CHART_PANEL" customMenu class="mt-3">
+                <expanded-panel v-if="checkForEmpty(emptyBlockType.bondPortfolio)" :value="$uistate.bondGraph" :state="$uistate.BOND_CHART_PANEL" customMenu class="mt-3">
                     <template #header>Состав портфеля облигаций</template>
                     <template #customMenu>
                         <chart-export-menu @print="print('bondPieChart')" @exportTo="exportTo('bondPieChart', $event)" class="exp-panel-menu"></chart-export-menu>
@@ -138,7 +135,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-card-text>
                 </expanded-panel>
 
-                <expanded-panel v-if="checkForEmpty(isEmpty.default)" :value="$uistate.sectorsGraph" :state="$uistate.SECTORS_PANEL" customMenu class="mt-3">
+                <expanded-panel v-if="checkForEmpty(emptyBlockType.default)" :value="$uistate.sectorsGraph" :state="$uistate.SECTORS_PANEL" customMenu class="mt-3">
                     <template #header>Состав портфеля по секторам</template>
                     <template #customMenu>
                         <chart-export-menu @print="print('sectorsChart')" @exportTo="exportTo('sectorsChart', $event)" class="exp-panel-menu"></chart-export-menu>
@@ -227,8 +224,8 @@ export class BasePortfolioPage extends UI {
     private bondSearch = "";
     /** Фильтр таблицы Облигации */
     private bondFilter: PortfolioRowFilter = {};
-    /** Конфиг отображения пустого состояния */
-    private isEmpty = EmptyBlockType;
+    /** Типы возможных пустых блоков */
+    private emptyBlockType = EmptyBlockType;
 
     /**
      * Инициализация данных компонента
