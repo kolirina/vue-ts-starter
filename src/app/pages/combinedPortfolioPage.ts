@@ -29,17 +29,17 @@ const MainStore = namespace(StoreType.MAIN);
                                          @reloadLineChart="loadPortfolioLineChart">
                         <template #afterDashboard>
                             <v-layout align-center>
-                                <div :class="['control-porfolios-title', !isEmpty ? 'pl-3' : '']">
+                                <div :class="['control-porfolios-title', checkForEmpty() ? 'pl-3' : '']">
                                     Управление составным портфелем
                                 </div>
                                 <v-spacer></v-spacer>
-                                <div v-if="isEmpty">
+                                <div v-if="checkForEmpty()">
                                     <v-btn class="btn" color="primary" @click.stop="showDialogCompositePortfolio">
                                         Сформировать
                                     </v-btn>
                                 </div>
                             </v-layout>
-                            <v-layout v-if="!isEmpty" column class="empty-station px-4 py-4 mt-3">
+                            <v-layout v-if="!checkForEmpty()" column class="empty-station px-4 py-4 mt-3">
                                 <div class="empty-station__description">
                                     Здесь вы можете объединить для просмотра несколько портфелей в один, и проанализировать
                                     состав и доли каждой акции, если, например, она входит в состав нескольких портфелей.
@@ -84,8 +84,6 @@ export class CombinedPortfolioPage extends UI {
     private lineChartEvents: HighStockEventsGroup[] = null;
     /** Ключи для сохранения информации */
     private StoreKeys = StoreKeys;
-    /** Конфиг отображения пустого состояния */
-    private isEmpty: boolean = true;
 
     /**
      * Инициализация данных компонента
@@ -129,11 +127,14 @@ export class CombinedPortfolioPage extends UI {
         if (ids.length) {
             await this.loadPortfolioLineChart();
         }
-        this.checkForEmpty();
     }
 
-    private checkForEmpty(): void {
-        this.overview.bondPortfolio.rows.length === 0 && this.overview.stockPortfolio.rows.length === 0 ? this.isEmpty = false : this.isEmpty = true;
+    private checkForEmpty(): boolean {
+        if (this.overview.bondPortfolio.rows.length !== 0 && this.overview.stockPortfolio.rows.length !== 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private async onPortfolioLineChartPanelStateChanges(): Promise<void> {
