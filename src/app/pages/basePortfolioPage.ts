@@ -42,9 +42,9 @@ import {UiStateHelper} from "../utils/uiStateHelper";
 
                 <slot name="afterDashboard"></slot>
 
-                <asset-table :assets="overview.assetRows" v-if="checkForEmpty(emptyBlockType.DEFAULT)" class="mt-3"></asset-table>
+                <asset-table :assets="overview.assetRows" v-if="blockNotEmpty(emptyBlockType.DEFAULT)" class="mt-3"></asset-table>
 
-                <expanded-panel v-if="checkForEmpty(emptyBlockType.STOCKPORTFOLIO)" :value="$uistate.stocksTablePanel"
+                <expanded-panel v-if="blockNotEmpty(emptyBlockType.STOCK_PORTFOLIO)" :value="$uistate.stocksTablePanel"
                                 :withMenu="true" name="stock" :state="$uistate.STOCKS" @click="onStockTablePanelClick" class="mt-3">
                     <template #header>
                         <span>Акции</span>
@@ -63,7 +63,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                                 :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes"></stock-table>
                 </expanded-panel>
 
-                <expanded-panel v-if="checkForEmpty(emptyBlockType.BONDPORTFOLIO)" :value="$uistate.bondsTablePanel"
+                <expanded-panel v-if="blockNotEmpty(emptyBlockType.BOND_PORTFOLIO)" :value="$uistate.bondsTablePanel"
                                 :withMenu="true" name="bond" :state="$uistate.BONDS" @click="onBondTablePanelClick" class="mt-3">
                     <template #header>
                         <span>Облигации</span>
@@ -83,7 +83,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                                 :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes"></bond-table>
                 </expanded-panel>
 
-                <expanded-panel v-if="checkForEmpty(emptyBlockType.DEFAULT)" :value="$uistate.historyPanel"
+                <expanded-panel v-if="blockNotEmpty(emptyBlockType.DEFAULT)" :value="$uistate.historyPanel"
                                 :state="$uistate.HISTORY_PANEL" @click="onPortfolioLineChartPanelStateChanges" customMenu class="mt-3">
                     <template #header>Стоимость портфеля</template>
                     <template #customMenu>
@@ -104,7 +104,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                     </v-card-text>
                 </expanded-panel>
 
-                <expanded-panel v-if="checkForEmpty(emptyBlockType.DEFAULT)" :value="$uistate.assetGraph" :state="$uistate.ASSET_CHART_PANEL" customMenu class="mt-3">
+                <expanded-panel v-if="blockNotEmpty(emptyBlockType.DEFAULT)" :value="$uistate.assetGraph" :state="$uistate.ASSET_CHART_PANEL" customMenu class="mt-3">
                     <template #header>Состав портфеля по активам</template>
                     <template #customMenu>
                         <chart-export-menu @print="print('assetsPieChart')" @exportTo="exportTo('assetsPieChart', $event)" class="exp-panel-menu"></chart-export-menu>
@@ -115,7 +115,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                     </v-card-text>
                 </expanded-panel>
 
-                <expanded-panel v-if="checkForEmpty(emptyBlockType.STOCKPORTFOLIO)" :value="$uistate.stockGraph" :state="$uistate.STOCK_CHART_PANEL" customMenu class="mt-3">
+                <expanded-panel v-if="blockNotEmpty(emptyBlockType.STOCK_PORTFOLIO)" :value="$uistate.stockGraph" :state="$uistate.STOCK_CHART_PANEL" customMenu class="mt-3">
                     <template #header>Состав портфеля акций</template>
                     <template #customMenu>
                         <chart-export-menu @print="print('stockPieChart')" @exportTo="exportTo('stockPieChart', $event)" class="exp-panel-menu"></chart-export-menu>
@@ -125,7 +125,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                     </v-card-text>
                 </expanded-panel>
 
-                <expanded-panel v-if="checkForEmpty(emptyBlockType.BONDPORTFOLIO)" :value="$uistate.bondGraph" :state="$uistate.BOND_CHART_PANEL" customMenu class="mt-3">
+                <expanded-panel v-if="blockNotEmpty(emptyBlockType.BOND_PORTFOLIO)" :value="$uistate.bondGraph" :state="$uistate.BOND_CHART_PANEL" customMenu class="mt-3">
                     <template #header>Состав портфеля облигаций</template>
                     <template #customMenu>
                         <chart-export-menu @print="print('bondPieChart')" @exportTo="exportTo('bondPieChart', $event)" class="exp-panel-menu"></chart-export-menu>
@@ -135,7 +135,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                     </v-card-text>
                 </expanded-panel>
 
-                <expanded-panel v-if="checkForEmpty(emptyBlockType.DEFAULT)" :value="$uistate.sectorsGraph" :state="$uistate.SECTORS_PANEL" customMenu class="mt-3">
+                <expanded-panel v-if="blockNotEmpty(emptyBlockType.DEFAULT)" :value="$uistate.sectorsGraph" :state="$uistate.SECTORS_PANEL" customMenu class="mt-3">
                     <template #header>Состав портфеля по секторам</template>
                     <template #customMenu>
                         <chart-export-menu @print="print('sectorsChart')" @exportTo="exportTo('sectorsChart', $event)" class="exp-panel-menu"></chart-export-menu>
@@ -250,13 +250,13 @@ export class BasePortfolioPage extends UI {
         this.sectorsChartData = this.doSectorsChartData();
     }
 
-    private checkForEmpty(type: EmptyBlockType): boolean {
+    private blockNotEmpty(type: EmptyBlockType): boolean {
         switch (type) {
             case EmptyBlockType.DEFAULT:
                 return this.overview.bondPortfolio.rows.length !== 0 || this.overview.stockPortfolio.rows.length !== 0;
-            case EmptyBlockType.BONDPORTFOLIO:
+            case EmptyBlockType.BOND_PORTFOLIO:
                 return this.overview.bondPortfolio.rows.length > 0;
-            case EmptyBlockType.STOCKPORTFOLIO:
+            case EmptyBlockType.STOCK_PORTFOLIO:
                 return this.overview.stockPortfolio.rows.length > 0;
         }
     }
@@ -329,6 +329,6 @@ export enum EventType {
 
 export enum EmptyBlockType {
     DEFAULT = "default",
-    STOCKPORTFOLIO = "stockPortfolio",
-    BONDPORTFOLIO = "bondPortfolio"
+    STOCK_PORTFOLIO = "stockPortfolio",
+    BOND_PORTFOLIO = "bondPortfolio"
 }
