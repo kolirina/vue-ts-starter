@@ -36,19 +36,16 @@ import {UiStateHelper} from "../utils/uiStateHelper";
 @Component({
     // language=Vue
     template: `
-        <v-container v-if="overview" fluid class="paddT0 portfolio-scroll-table">
+        <v-container v-if="overview" fluid class="paddT0">
             <v-layout column>
                 <dashboard :data="overview.dashboardData" :view-currency="viewCurrency" :side-bar-opened="sideBarOpened"></dashboard>
 
                 <slot name="afterDashboard"></slot>
 
-                <div style="height: 30px"></div>
+                <asset-table :assets="overview.assetRows" v-if="blockNotEmpty(emptyBlockType.DEFAULT)" class="mt-3"></asset-table>
 
-                <asset-table :assets="overview.assetRows"></asset-table>
-
-                <div style="height: 30px"></div>
-
-                <expanded-panel :value="$uistate.stocksTablePanel" :withMenu="true" name="stock" :state="$uistate.STOCKS" @click="onStockTablePanelClick">
+                <expanded-panel v-if="blockNotEmpty(emptyBlockType.STOCK_PORTFOLIO)" :value="$uistate.stocksTablePanel"
+                                :withMenu="true" name="stock" :state="$uistate.STOCKS" @click="onStockTablePanelClick" class="mt-3">
                     <template #header>
                         <span>Акции</span>
                         <v-fade-transition mode="out-in">
@@ -66,9 +63,8 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                                 :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes"></stock-table>
                 </expanded-panel>
 
-                <div style="height: 30px"></div>
-
-                <expanded-panel :value="$uistate.bondsTablePanel" :withMenu="true" name="bond" :state="$uistate.BONDS" @click="onBondTablePanelClick">
+                <expanded-panel v-if="blockNotEmpty(emptyBlockType.BOND_PORTFOLIO)" :value="$uistate.bondsTablePanel"
+                                :withMenu="true" name="bond" :state="$uistate.BONDS" @click="onBondTablePanelClick" class="mt-3">
                     <template #header>
                         <span>Облигации</span>
                         <v-fade-transition mode="out-in">
@@ -87,9 +83,8 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                                 :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes"></bond-table>
                 </expanded-panel>
 
-                <div style="height: 30px"></div>
-
-                <expanded-panel :value="$uistate.historyPanel" :state="$uistate.HISTORY_PANEL" @click="onPortfolioLineChartPanelStateChanges" customMenu>
+                <expanded-panel v-if="blockNotEmpty(emptyBlockType.DEFAULT)" :value="$uistate.historyPanel"
+                                :state="$uistate.HISTORY_PANEL" @click="onPortfolioLineChartPanelStateChanges" customMenu class="mt-3">
                     <template #header>Стоимость портфеля</template>
                     <template #customMenu>
                         <chart-export-menu v-if="lineChartData && lineChartEvents" @print="print('portfolioLineChart')" @exportTo="exportTo('portfolioLineChart', $event)"
@@ -109,9 +104,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                     </v-card-text>
                 </expanded-panel>
 
-                <div style="height: 30px"></div>
-
-                <expanded-panel :value="$uistate.assetGraph" :state="$uistate.ASSET_CHART_PANEL" customMenu>
+                <expanded-panel v-if="blockNotEmpty(emptyBlockType.DEFAULT)" :value="$uistate.assetGraph" :state="$uistate.ASSET_CHART_PANEL" customMenu class="mt-3">
                     <template #header>Состав портфеля по активам</template>
                     <template #customMenu>
                         <chart-export-menu @print="print('assetsPieChart')" @exportTo="exportTo('assetsPieChart', $event)" class="exp-panel-menu"></chart-export-menu>
@@ -122,9 +115,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                     </v-card-text>
                 </expanded-panel>
 
-                <div style="height: 30px"></div>
-
-                <expanded-panel :value="$uistate.stockGraph" :state="$uistate.STOCK_CHART_PANEL" customMenu>
+                <expanded-panel v-if="blockNotEmpty(emptyBlockType.STOCK_PORTFOLIO)" :value="$uistate.stockGraph" :state="$uistate.STOCK_CHART_PANEL" customMenu class="mt-3">
                     <template #header>Состав портфеля акций</template>
                     <template #customMenu>
                         <chart-export-menu @print="print('stockPieChart')" @exportTo="exportTo('stockPieChart', $event)" class="exp-panel-menu"></chart-export-menu>
@@ -134,9 +125,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                     </v-card-text>
                 </expanded-panel>
 
-                <div style="height: 30px" v-if="overview.bondPortfolio.rows.length > 0"></div>
-
-                <expanded-panel v-if="overview.bondPortfolio.rows.length > 0" :value="$uistate.bondGraph" :state="$uistate.BOND_CHART_PANEL" customMenu>
+                <expanded-panel v-if="blockNotEmpty(emptyBlockType.BOND_PORTFOLIO)" :value="$uistate.bondGraph" :state="$uistate.BOND_CHART_PANEL" customMenu class="mt-3">
                     <template #header>Состав портфеля облигаций</template>
                     <template #customMenu>
                         <chart-export-menu @print="print('bondPieChart')" @exportTo="exportTo('bondPieChart', $event)" class="exp-panel-menu"></chart-export-menu>
@@ -146,9 +135,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                     </v-card-text>
                 </expanded-panel>
 
-                <div style="height: 30px"></div>
-
-                <expanded-panel :value="$uistate.sectorsGraph" :state="$uistate.SECTORS_PANEL" customMenu>
+                <expanded-panel v-if="blockNotEmpty(emptyBlockType.DEFAULT)" :value="$uistate.sectorsGraph" :state="$uistate.SECTORS_PANEL" customMenu class="mt-3">
                     <template #header>Состав портфеля по секторам</template>
                     <template #customMenu>
                         <chart-export-menu @print="print('sectorsChart')" @exportTo="exportTo('sectorsChart', $event)" class="exp-panel-menu"></chart-export-menu>
@@ -237,6 +224,8 @@ export class BasePortfolioPage extends UI {
     private bondSearch = "";
     /** Фильтр таблицы Облигации */
     private bondFilter: PortfolioRowFilter = {};
+    /** Типы возможных пустых блоков */
+    private emptyBlockType = EmptyBlockType;
 
     /**
      * Инициализация данных компонента
@@ -259,6 +248,17 @@ export class BasePortfolioPage extends UI {
         this.stockPieChartData = this.doStockPieChartData();
         this.bondPieChartData = this.doBondPieChartData();
         this.sectorsChartData = this.doSectorsChartData();
+    }
+
+    private blockNotEmpty(type: EmptyBlockType): boolean {
+        switch (type) {
+            case EmptyBlockType.DEFAULT:
+                return this.overview.bondPortfolio.rows.length !== 0 || this.overview.stockPortfolio.rows.length !== 0;
+            case EmptyBlockType.BOND_PORTFOLIO:
+                return this.overview.bondPortfolio.rows.length > 0;
+            case EmptyBlockType.STOCK_PORTFOLIO:
+                return this.overview.stockPortfolio.rows.length > 0;
+        }
     }
 
     private doStockPieChartData(): DataPoint[] {
@@ -319,9 +319,16 @@ export class BasePortfolioPage extends UI {
     private get bondRows(): BondPortfolioRow[] {
         return [...this.overview.bondPortfolio.rows, this.overview.bondPortfolio.sumRow as BondPortfolioRow];
     }
+
 }
 
 export enum EventType {
     reloadLineChart = "reloadLineChart",
     exportTable = "exportTable",
+}
+
+export enum EmptyBlockType {
+    DEFAULT = "default",
+    STOCK_PORTFOLIO = "stockPortfolio",
+    BOND_PORTFOLIO = "bondPortfolio"
 }

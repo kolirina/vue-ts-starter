@@ -1,0 +1,40 @@
+.control-porfolios-title {
+    font-weight: bold;
+    font-size: 18px;
+    line-height: 24px;
+    letter-spacing: -0.3px;
+    color: #040427;
+}
+.composite-dialog {
+    .action-btn {
+        padding: 80px 30px 30px 0px;
+    }
+    .choose-currency {
+        padding: 30px 0px 0px 21px;
+        &__description {
+            font-size: 12px;
+            color: #A1A6B6;
+            line-height: 16px;
+        }
+    }
+    .v-label {
+        color: #3D4656 !important;
+    }
+    .speaker-settings-content {
+        padding: 16px 20px;
+    }
+}
+.empty-station {
+    background: #FFFFFF;
+    &__description {
+        font-size: 14px;
+        line-height: 22px;
+        letter-spacing: -0.3px;
+        color: #040427;
+        max-width: 640px;
+    }
+}
+/** Стили для фикса бага со скроллом */
+.scroll-block {
+    height: 55px;
+}
