@@ -22,7 +22,6 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <div>
             <v-slide-x-reverse-transition>
                 <template v-if="overview">
                     <base-portfolio-page :overview="overview" :line-chart-data="lineChartData" :line-chart-events="lineChartEvents"
@@ -64,7 +63,6 @@ const MainStore = namespace(StoreType.MAIN);
                     </content-loader>
                 </template>
             </v-slide-x-reverse-transition>
-        </div>
     `,
     components: {BasePortfolioPage, ContentLoader}
 })

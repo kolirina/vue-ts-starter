@@ -1,6 +1,7 @@
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {CustomDialog} from "../../platform/dialogs/customDialog";
+import {ShowProgress} from "../../platform/decorators/showProgress";
 import {OverviewService} from "../../services/overviewService";
 import {PortfolioParams} from "../../services/portfolioService";
 import {CombinedData} from "../../types/eventObjects";
@@ -37,7 +38,7 @@ import {CombinedPortfoliosTable} from "../combinedPortfoliosTable";
     `,
     components: {CombinedPortfoliosTable}
 })
-export class CompositePortfolioManagement extends CustomDialog<compositePortfolioManagement, string> {
+export class CompositePortfolioManagement extends CustomDialog<PortfolioManagementParams, string> {
     /** Валюта просмотра портфеля */
     private viewCurrency: string = "RUB";
 
@@ -52,12 +53,13 @@ export class CompositePortfolioManagement extends CustomDialog<compositePortfoli
         this.close(this.viewCurrency);
     }
 
+    @ShowProgress
     private async onSetCombined(data: CombinedData): Promise<void> {
         await this.overviewService.setCombinedFlag(data.id, data.combined);
     }
 }
 
-type compositePortfolioManagement = {
+type PortfolioManagementParams = {
     portfolio: PortfolioParams[],
     viewCurrency: string
 };

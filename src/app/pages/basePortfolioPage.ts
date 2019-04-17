@@ -15,6 +15,7 @@
  */
 
 import {DataPoint} from "highcharts";
+import {namespace} from "vuex-class/lib/bindings";
 import {Inject} from "typescript-ioc";
 import {Component, Prop, UI, Watch} from "../app/ui";
 import {AssetTable} from "../components/assetTable";
@@ -31,119 +32,122 @@ import {HighStockEventsGroup, SectorChartData} from "../types/charts/types";
 import {StoreKeys} from "../types/storeKeys";
 import {BondPortfolioRow, Overview, StockPortfolioRow, TableHeader} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
+import {StoreType} from "../vuex/storeType";
 import {UiStateHelper} from "../utils/uiStateHelper";
+
+const MainStore = namespace(StoreType.MAIN);
 
 @Component({
     // language=Vue
     template: `
         <v-container v-if="overview" fluid class="paddT0">
-            <dashboard :data="overview.dashboardData" :view-currency="viewCurrency" :side-bar-opened="sideBarOpened" @scroll="setClassForScroll"></dashboard>
+            <v-layout column>
+                <dashboard :data="overview.dashboardData" :view-currency="viewCurrency" :side-bar-opened="sideBarOpened"></dashboard>
 
-            <div class="scroll-block" v-if="isScroll"></div>
+                <slot name="afterDashboard"></slot>
 
-            <slot name="afterDashboard"></slot>
+                <asset-table :assets="overview.assetRows" v-if="checkForEmpty(isEmpty.default)" class="mt-3"></asset-table>
 
-            <asset-table :assets="overview.assetRows" v-if="isEmpty" class="mt-4"></asset-table>
+                <expanded-panel v-if="checkForEmpty(isEmpty.stockPortfolio)" :value="$uistate.stocksTablePanel"
+                                :withMenu="true" name="stock" :state="$uistate.STOCKS" @click="onStockTablePanelClick" class="mt-3">
+                    <template #header>
+                        <span>Акции</span>
+                        <v-fade-transition mode="out-in">
+                            <span v-if="stockTablePanelClosed" class="v-expansion-panel__header-info">
+                                {{ overview.stockPortfolio.rows.length }} {{ overview.stockPortfolio.rows.length | declension("акция", "акции", "акций") }}
+                            </span>
+                        </v-fade-transition>
+                    </template>
+                    <template #list>
+                        <v-list-tile-title @click="openTableHeadersDialog(TABLES_NAME.STOCK)">Настроить колонки</v-list-tile-title>
+                        <v-list-tile-title v-if="exportable" @click="exportTable(ExportType.STOCKS)">Экспорт в xlsx</v-list-tile-title>
+                    </template>
+                    <portfolio-rows-table-filter :search.sync="stockSearch" :filter.sync="stockFilter" :store-key="StoreKeys.STOCKS_TABLE_FILTER_KEY"></portfolio-rows-table-filter>
+                    <stock-table :rows="stockRows" :headers="getHeaders(TABLES_NAME.STOCK)" :search="stockSearch" :filter="stockFilter"
+                                :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes"></stock-table>
+                </expanded-panel>
 
-            <expanded-panel v-if="isEmpty && overview.stockPortfolio.rows.length > 0" :value="$uistate.stocksTablePanel"
-                            :withMenu="true" name="stock" :state="$uistate.STOCKS" @click="onStockTablePanelClick" class="mt-4">
-                <template #header>
-                    <span>Акции</span>
-                    <v-fade-transition mode="out-in">
-                        <span v-if="stockTablePanelClosed" class="v-expansion-panel__header-info">
-                            {{ overview.stockPortfolio.rows.length }} {{ overview.stockPortfolio.rows.length | declension("акция", "акции", "акций") }}
-                        </span>
-                    </v-fade-transition>
-                </template>
-                <template #list>
-                    <v-list-tile-title @click="openTableHeadersDialog(TABLES_NAME.STOCK)">Настроить колонки</v-list-tile-title>
-                    <v-list-tile-title v-if="exportable" @click="exportTable(ExportType.STOCKS)">Экспорт в xlsx</v-list-tile-title>
-                </template>
-                <portfolio-rows-table-filter :search.sync="stockSearch" :filter.sync="stockFilter" :store-key="StoreKeys.STOCKS_TABLE_FILTER_KEY"></portfolio-rows-table-filter>
-                <stock-table :rows="stockRows" :headers="getHeaders(TABLES_NAME.STOCK)" :search="stockSearch" :filter="stockFilter"
-                             :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes"></stock-table>
-            </expanded-panel>
+                <expanded-panel v-if="checkForEmpty(isEmpty.bondPortfolio)" :value="$uistate.bondsTablePanel"
+                                :withMenu="true" name="bond" :state="$uistate.BONDS" @click="onBondTablePanelClick" class="mt-3">
+                    <template #header>
+                        <span>Облигации</span>
+                        <v-fade-transition mode="out-in">
+                            <span v-if="bondTablePanelClosed" class="v-expansion-panel__header-info">
+                                {{ overview.bondPortfolio.rows.length }}
+                                {{ overview.bondPortfolio.rows.length | declension("облигация", "облигации", "облигаций") }}
+                            </span>
+                        </v-fade-transition>
+                    </template>
+                    <template #list>
+                        <v-list-tile-title @click="openTableHeadersDialog('bondTable')">Настроить колонки</v-list-tile-title>
+                        <v-list-tile-title v-if="exportable" @click="exportTable(ExportType.BONDS)">Экспорт в xlsx</v-list-tile-title>
+                    </template>
+                    <portfolio-rows-table-filter :search.sync="bondSearch" :filter.sync="bondFilter" :store-key="StoreKeys.BONDS_TABLE_FILTER_KEY"></portfolio-rows-table-filter>
+                    <bond-table :rows="bondRows" :headers="getHeaders(TABLES_NAME.BOND)" :search="bondSearch" :filter="bondFilter"
+                                :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes"></bond-table>
+                </expanded-panel>
 
-            <expanded-panel v-if="isEmpty && overview.bondPortfolio.rows.length > 0" :value="$uistate.bondsTablePanel"
-                            :withMenu="true" name="bond" :state="$uistate.BONDS" @click="onBondTablePanelClick" class="mt-4">
-                <template #header>
-                    <span>Облигации</span>
-                    <v-fade-transition mode="out-in">
-                        <span v-if="bondTablePanelClosed" class="v-expansion-panel__header-info">
-                            {{ overview.bondPortfolio.rows.length }}
-                            {{ overview.bondPortfolio.rows.length | declension("облигация", "облигации", "облигаций") }}
-                        </span>
-                    </v-fade-transition>
-                </template>
-                <template #list>
-                    <v-list-tile-title @click="openTableHeadersDialog('bondTable')">Настроить колонки</v-list-tile-title>
-                    <v-list-tile-title v-if="exportable" @click="exportTable(ExportType.BONDS)">Экспорт в xlsx</v-list-tile-title>
-                </template>
-                <portfolio-rows-table-filter :search.sync="bondSearch" :filter.sync="bondFilter" :store-key="StoreKeys.BONDS_TABLE_FILTER_KEY"></portfolio-rows-table-filter>
-                <bond-table :rows="bondRows" :headers="getHeaders(TABLES_NAME.BOND)" :search="bondSearch" :filter="bondFilter"
-                            :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes"></bond-table>
-            </expanded-panel>
+                <expanded-panel v-if="checkForEmpty(isEmpty.default)" :value="$uistate.historyPanel" :state="$uistate.HISTORY_PANEL" @click="onPortfolioLineChartPanelStateChanges" customMenu class="mt-3">
+                    <template #header>Стоимость портфеля</template>
+                    <template #customMenu>
+                        <chart-export-menu v-if="lineChartData && lineChartEvents" @print="print('portfolioLineChart')" @exportTo="exportTo('portfolioLineChart', $event)"
+                                        class="exp-panel-menu"></chart-export-menu>
+                    </template>
+                    <v-card-text>
+                        <portfolio-line-chart v-if="lineChartData && lineChartEvents" ref="portfolioLineChart" :data="lineChartData"
+                                            :state-key-prefix="stateKeyPrefix"
+                                            :events-chart-data="lineChartEvents" :balloon-title="portfolioName"></portfolio-line-chart>
+                        <v-container v-else grid-list-md text-xs-center>
+                            <v-layout row wrap>
+                                <v-flex xs12>
+                                    <v-progress-circular :size="70" :width="7" indeterminate color="indigo"></v-progress-circular>
+                                </v-flex>
+                            </v-layout>
+                        </v-container>
+                    </v-card-text>
+                </expanded-panel>
 
-            <expanded-panel v-if="isEmpty" :value="$uistate.historyPanel" :state="$uistate.HISTORY_PANEL" @click="onPortfolioLineChartPanelStateChanges" customMenu class="mt-4">
-                <template #header>Стоимость портфеля</template>
-                <template #customMenu>
-                    <chart-export-menu v-if="lineChartData && lineChartEvents" @print="print('portfolioLineChart')" @exportTo="exportTo('portfolioLineChart', $event)"
-                                       class="exp-panel-menu"></chart-export-menu>
-                </template>
-                <v-card-text>
-                    <portfolio-line-chart v-if="lineChartData && lineChartEvents" ref="portfolioLineChart" :data="lineChartData"
-                                          :state-key-prefix="stateKeyPrefix"
-                                          :events-chart-data="lineChartEvents" :balloon-title="portfolioName"></portfolio-line-chart>
-                    <v-container v-else grid-list-md text-xs-center>
-                        <v-layout row wrap>
-                            <v-flex xs12>
-                                <v-progress-circular :size="70" :width="7" indeterminate color="indigo"></v-progress-circular>
-                            </v-flex>
-                        </v-layout>
-                    </v-container>
-                </v-card-text>
-            </expanded-panel>
+                <expanded-panel v-if="checkForEmpty(isEmpty.default)" :value="$uistate.assetGraph" :state="$uistate.ASSET_CHART_PANEL" customMenu class="mt-3">
+                    <template #header>Состав портфеля по активам</template>
+                    <template #customMenu>
+                        <chart-export-menu @print="print('assetsPieChart')" @exportTo="exportTo('assetsPieChart', $event)" class="exp-panel-menu"></chart-export-menu>
+                    </template>
+                    <v-card-text>
+                        <!-- Валюта тут не нужна так как валюта будет браться из каждого актива в отдельности -->
+                        <pie-chart ref="assetsPieChart" :data="assetsPieChartData" :balloon-title="portfolioName" tooltip-format="ASSETS"></pie-chart>
+                    </v-card-text>
+                </expanded-panel>
 
-            <expanded-panel v-if="isEmpty" :value="$uistate.assetGraph" :state="$uistate.ASSET_CHART_PANEL" customMenu class="mt-4">
-                <template #header>Состав портфеля по активам</template>
-                <template #customMenu>
-                    <chart-export-menu @print="print('assetsPieChart')" @exportTo="exportTo('assetsPieChart', $event)" class="exp-panel-menu"></chart-export-menu>
-                </template>
-                <v-card-text>
-                    <!-- Валюта тут не нужна так как валюта будет браться из каждого актива в отдельности -->
-                    <pie-chart ref="assetsPieChart" :data="assetsPieChartData" :balloon-title="portfolioName" tooltip-format="ASSETS"></pie-chart>
-                </v-card-text>
-            </expanded-panel>
+                <expanded-panel v-if="checkForEmpty(isEmpty.stockPortfolio)" :value="$uistate.stockGraph" :state="$uistate.STOCK_CHART_PANEL" customMenu class="mt-3">
+                    <template #header>Состав портфеля акций</template>
+                    <template #customMenu>
+                        <chart-export-menu @print="print('stockPieChart')" @exportTo="exportTo('stockPieChart', $event)" class="exp-panel-menu"></chart-export-menu>
+                    </template>
+                    <v-card-text>
+                        <pie-chart ref="stockPieChart" :data="stockPieChartData" :view-currency="viewCurrency"></pie-chart>
+                    </v-card-text>
+                </expanded-panel>
 
-            <expanded-panel v-if="isEmpty && overview.stockPortfolio.rows.length > 0" :value="$uistate.stockGraph" :state="$uistate.STOCK_CHART_PANEL" customMenu class="mt-4">
-                <template #header>Состав портфеля акций</template>
-                <template #customMenu>
-                    <chart-export-menu @print="print('stockPieChart')" @exportTo="exportTo('stockPieChart', $event)" class="exp-panel-menu"></chart-export-menu>
-                </template>
-                <v-card-text>
-                    <pie-chart ref="stockPieChart" :data="stockPieChartData" :view-currency="viewCurrency"></pie-chart>
-                </v-card-text>
-            </expanded-panel>
+                <expanded-panel v-if="checkForEmpty(isEmpty.bondPortfolio)" :value="$uistate.bondGraph" :state="$uistate.BOND_CHART_PANEL" customMenu class="mt-3">
+                    <template #header>Состав портфеля облигаций</template>
+                    <template #customMenu>
+                        <chart-export-menu @print="print('bondPieChart')" @exportTo="exportTo('bondPieChart', $event)" class="exp-panel-menu"></chart-export-menu>
+                    </template>
+                    <v-card-text>
+                        <pie-chart ref="bondPieChart" :data="bondPieChartData" :view-currency="viewCurrency"></pie-chart>
+                    </v-card-text>
+                </expanded-panel>
 
-            <expanded-panel v-if="isEmpty  && overview.bondPortfolio.rows.length > 0" :value="$uistate.bondGraph" :state="$uistate.BOND_CHART_PANEL" customMenu class="mt-4">
-                <template #header>Состав портфеля облигаций</template>
-                <template #customMenu>
-                    <chart-export-menu @print="print('bondPieChart')" @exportTo="exportTo('bondPieChart', $event)" class="exp-panel-menu"></chart-export-menu>
-                </template>
-                <v-card-text>
-                    <pie-chart ref="bondPieChart" :data="bondPieChartData" :view-currency="viewCurrency"></pie-chart>
-                </v-card-text>
-            </expanded-panel>
-
-            <expanded-panel v-if="isEmpty" :value="$uistate.sectorsGraph" :state="$uistate.SECTORS_PANEL" customMenu class="mt-4">
-                <template #header>Состав портфеля по секторам</template>
-                <template #customMenu>
-                    <chart-export-menu @print="print('sectorsChart')" @exportTo="exportTo('sectorsChart', $event)" class="exp-panel-menu"></chart-export-menu>
-                </template>
-                <v-card-text>
-                    <pie-chart ref="sectorsChart" :data="sectorsChartData.data" :balloon-title="portfolioName" :view-currency="viewCurrency"></pie-chart>
-                </v-card-text>
-            </expanded-panel>
+                <expanded-panel v-if="checkForEmpty(isEmpty.default)" :value="$uistate.sectorsGraph" :state="$uistate.SECTORS_PANEL" customMenu class="mt-3">
+                    <template #header>Состав портфеля по секторам</template>
+                    <template #customMenu>
+                        <chart-export-menu @print="print('sectorsChart')" @exportTo="exportTo('sectorsChart', $event)" class="exp-panel-menu"></chart-export-menu>
+                    </template>
+                    <v-card-text>
+                        <pie-chart ref="sectorsChart" :data="sectorsChartData.data" :balloon-title="portfolioName" :view-currency="viewCurrency"></pie-chart>
+                    </v-card-text>
+                </expanded-panel>
+            </v-layout>
         </v-container>
     `,
     components: {AssetTable, StockTable, BondTable, PortfolioLineChart, PortfolioRowsTableFilter}
@@ -224,9 +228,7 @@ export class BasePortfolioPage extends UI {
     /** Фильтр таблицы Облигации */
     private bondFilter: PortfolioRowFilter = {};
     /** Конфиг отображения пустого состояния */
-    private isEmpty: boolean = true;
-    /** Конфиг добавления класса для фикса бага со скроллом */
-    private isScroll: boolean = false;
+    private isEmpty = EmptyBlockType;
 
     /**
      * Инициализация данных компонента
@@ -241,7 +243,6 @@ export class BasePortfolioPage extends UI {
         this.sectorsChartData = this.doSectorsChartData();
         this.stockFilter = this.storageService.get(StoreKeys.STOCKS_TABLE_FILTER_KEY, {});
         this.bondFilter = this.storageService.get(StoreKeys.BONDS_TABLE_FILTER_KEY, {});
-        this.checkForEmpty();
     }
 
     @Watch("overview")
@@ -250,11 +251,18 @@ export class BasePortfolioPage extends UI {
         this.stockPieChartData = this.doStockPieChartData();
         this.bondPieChartData = this.doBondPieChartData();
         this.sectorsChartData = this.doSectorsChartData();
-        this.checkForEmpty();
     }
 
-    private checkForEmpty(): void {
-        this.overview.bondPortfolio.rows.length === 0 && this.overview.stockPortfolio.rows.length === 0 ? this.isEmpty = false : this.isEmpty = true;
+    private checkForEmpty(type: EmptyBlockType): boolean {
+        if (type === EmptyBlockType.default && this.overview.bondPortfolio.rows.length !== 0 && this.overview.stockPortfolio.rows.length !== 0) {
+            return true;
+        } else if (type === EmptyBlockType.stockPortfolio && this.overview.stockPortfolio.rows.length > 0) {
+            return true;
+        } else if (type === EmptyBlockType.bondPortfolio && this.overview.bondPortfolio.rows.length > 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private doStockPieChartData(): DataPoint[] {
@@ -275,10 +283,6 @@ export class BasePortfolioPage extends UI {
 
     private getHeaders(name: string): TableHeader[] {
         return this.tablesService.getFilterHeaders(name);
-    }
-
-    private setClassForScroll(data: boolean): void {
-        data ? this.isScroll = true : this.isScroll = false;
     }
 
     private onStockTablePanelClick(): void {
@@ -325,4 +329,10 @@ export class BasePortfolioPage extends UI {
 export enum EventType {
     reloadLineChart = "reloadLineChart",
     exportTable = "exportTable",
+}
+
+export enum EmptyBlockType {
+    default = "default",
+    stockPortfolio = "stockPortfolio",
+    bondPortfolio = "bondPortfolio"
 }
