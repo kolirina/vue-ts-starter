@@ -46,6 +46,9 @@
 
 .__view {
   width: auto !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .__rail-is-horizontal {
