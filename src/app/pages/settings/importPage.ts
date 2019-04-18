@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
@@ -194,10 +195,12 @@ const MainStore = namespace(StoreType.MAIN);
 
                     <v-layout align-center class="section-upload-file">
                         <v-btn v-if="importProviderFeatures && files.length" color="primary" class="big_btn" @click="uploadFile">Загрузить</v-btn>
+                        <file-link  @select="onFileAdd" :accept="allowedExtensions"
+                                    v-if="importProviderFeatures && files.length" class="reselect-file-btn ml-3">Выбрать другой файл</file-link>
                         <file-link @select="onFileAdd" :accept="allowedExtensions" v-if="importProviderFeatures && !files.length">Выбрать файл</file-link>
                         <v-spacer></v-spacer>
                         <div @click="showInstruction = !showInstruction" class="btn-show-instruction" v-if="importProviderFeatures">
-                            Как сформировать отчет брокера?
+                            {{ "Как сформировать отчет" + (selectedProvider === providers.INTELINVEST ? "" : (" брокера " + selectedProvider.description)) }}?
                         </div>
                     </v-layout>
 
