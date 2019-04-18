@@ -4,55 +4,56 @@ import {BtnReturn, CustomDialog} from "../../platform/dialogs/customDialog";
 @Component({
     // language=Vue
     template: `
-        <v-dialog v-model="showed" max-width="650px">
-            <v-card class="dialog-wrap">
+        <v-dialog v-model="showed" max-width="600px">
+            <v-card class="dialog-wrap update-service-dialog">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
 
-                <v-card-title class="paddB0">
-                    <span class="headline">Обновления сервиса</span>
-                    <v-spacer></v-spacer>
+                <v-card-title class="pb-0">
+                    <span class="dialog-header-text pl-3">Обновления сервиса</span>
                 </v-card-title>
 
                 <v-card-text>
-                    <v-container class="selectable">
-                        Сервисом стало удобно пользоваться не только в web-версии, а также и с мобильных устройств. Мы поддерживаем как ios, так и android.
-                        Скачать приложения вы можете по указанным ссылкам.
-                        <div style="margin-top: 15px;">
+                    <div class="pl-3 py-0 update-service-dialog__content">
+                        <div>
+                            Исправили ошибки с расчетом графика стоимости и поработали
+                            над замечаниями от вас из саппорта.
+                            <br>
+                            <br>
+                            Сервисом удобно пользоваться не только в web-версии, также
+                            и с мобильных устройств. Мы поддерживаем как ios, так и android. Скачать приложения вы можете по указанным ссылкам.
+                        </div>
+                        <div class="mt-3 mb-4">
                             <a href="https://itunes.apple.com/ru/app/intelinvest-%D1%83%D1%87%D0%B5%D1%82-%D0%B8%D0%BD%D0%B2%D0%B5%D1%81%D1%82%D0%B8%D1%86%D0%B8%D0%B9
-                                                                /id1422478197?mt=8" title="Загрузите приложение в App Store" target="_blank">
-                                <img src="./img/help/app-store-badge.svg" alt="pic" style="height: 52px;margin-right: 10px; margin-left: 10px" class="pic">
+                               /id1422478197?mt=8" title="Загрузите приложение в App Store" target="_blank" class="mr-1">
+                                <img src="./img/help/app-store-badge2.svg" alt="pic">
                             </a>
-                            <a href="https://play.google.com/store/apps/details?id=ru.intelinvest.portfolio" title="Загрузите приложение в Google Play" target="_blank">
-                                <img src="./img/help/google-play-badge.svg" alt="pic" style="height: 52px;margin-right: 10px; margin-left: 10px">
+                            <a href="https://play.google.com/store/apps/details?id=ru.intelinvest.portfolio" title="Загрузите приложение в Google Play"
+                               target="_blank" class="ml-2">
+                                <img src="./img/help/google-play-badge2.svg" alt="pic">
                             </a>
                         </div>
-                        <p>
-                            Добавили более 1800 ETF, торгующихся на американском рынке.
-                        </p>
-                        <p>
-                            Исправили добавление событий
-                        </p>
-                        Желаем вам доходных инвестиций, команда Intelinvest
-                        <div style="margin-bottom: 15px; margin-top: 10px;">
+                        <div>
+                            Желаем вам доходных инвестиций, команда Intelinvest.
                             Все вопросы и предложения, как всегда, через форму
-                            <a href="#" @click="openFeedBackDialog" style="cursor: pointer;">
-                                обратной связи
+                            <a @click="openFeedBackDialog">
+                               обратной связи.
                             </a>
-                            . Почитать о всех обновлениях сервиса более подробно вы можете в нашем блоге
-                            <a href="http://blog.intelinvest.ru/" target="_blank">blog.intelinvest.ru</a>
-                            Оперативно получить поддержку можно в группе
-                            <a href="https://vk.com/intelinvest" target="_blank">VK</a>
-                            или
-                            <a href="https://www.facebook.com/intelinvest.ru/" target="_blank">facebook</a>
+                            <br>
+                            <br>
+                            Почитать о всех обновлениях сервиса более подробно вы можете в нашем блоге
+                            <a href="http://blog.intelinvest.ru/" target="_blank" class="decorationNone">blog.intelinvest.ru</a>
+                            Оперативно получить поддержку можно в группе <a href="https://vk.com/intelinvest" target="_blank" class="decorationNone">VK</a>
+                            или <a href="https://www.facebook.com/intelinvest.ru/" target="_blank" class="decorationNone">facebook</a>
                         </div>
-                    </v-container>
+                    </div>
                 </v-card-text>
-                <v-card-actions>
+                <v-card-actions class="pr-3 pb-3">
                     <v-spacer></v-spacer>
-                    <v-btn color="primary" @click.native="acceptAndClose" dark>
-                        Понятно. Закрыть
-                    </v-btn>
-                    <v-btn color="info lighten-2" flat @click.native="close">Отмена</v-btn>
+                    <div class="pr-3 pb-3">
+                        <v-btn color="primary" @click.native="acceptAndClose" dark>
+                            Спасибо. Закрыть
+                        </v-btn>
+                    </div>
                 </v-card-actions>
             </v-card>
         </v-dialog>

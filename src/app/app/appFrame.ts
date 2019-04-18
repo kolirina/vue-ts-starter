@@ -1,5 +1,6 @@
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
+import {SnotifyToast} from "vue-snotify";
 import {namespace} from "vuex-class/lib/bindings";
 import * as versionConfig from "../../version.json";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
@@ -150,15 +151,15 @@ const MainStore = namespace(StoreType.MAIN);
                                     <div>
                                         <v-tooltip content-class="custom-tooltip-wrap" top>
                                             <a slot="activator"
-                                                class="footer-app-wrap-content__text email-btn"
-                                                @click.stop="openFeedBackDialog"><span>Обратная связь</span> <i class="fas fa-envelope"></i>
+                                               class="footer-app-wrap-content__text email-btn"
+                                               @click.stop="openFeedBackDialog"><span>Обратная связь</span> <i class="fas fa-envelope"></i>
                                             </a>
                                             <span class="footer-app-wrap-content__text">Напишите нам</span>
                                         </v-tooltip>
 
                                         <v-tooltip content-class="custom-tooltip-wrap" top>
                                             <a slot="activator" class="footer-app-wrap-content__text decorationNone" href="https://telegram.me/intelinvestSupportBot">
-                                            <span>Telegram</span> <i class="fab fa-telegram"></i>
+                                                <span>Telegram</span> <i class="fab fa-telegram"></i>
                                             </a>
                                             <span class="footer-app-wrap-content__text">Оперативная связь с нами</span>
                                         </v-tooltip>
@@ -264,6 +265,19 @@ export class AppFrame extends UI {
         if (this.$store.state[StoreType.MAIN].clientInfo || this.$route.meta.public) {
             this.isNotifyAccepted = UiStateHelper.lastUpdateNotification === NotificationUpdateDialog.DATE;
             this.loggedIn = true;
+            if (!this.isNotifyAccepted) {
+                this.$snotify.info("Мы улучшили сервис для Вас, ознакомьтесь с обновлениями", {
+                    closeOnClick: false,
+                    timeout: 0,
+                    buttons: [{
+                        text: "Подробнее", action: async (toast: SnotifyToast): Promise<void> => {
+                            this.$snotify.remove(toast.id);
+                            await this.openNotificationUpdateDialog();
+                        }
+                    }]
+                });
+
+            }
         }
     }
 
