@@ -12,10 +12,8 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-list-tile class="text-xs-center portfolios sidebar-list-item">
-            <v-list-tile-action class="sidebar-item-action">
-                <img src="img/sidebar/case.svg">
-            </v-list-tile-action>
+        <v-list-tile class="text-xs-center sidebar-list-item">
+            <img src="img/sidebar/case.svg">
             <v-list-tile-content class="portfolio-content">
                 <v-menu offset-y transition="slide-y-transition" class="portfolios-drop portfolios-menu">
                     <div slot="activator" class="portfolios-inner-wrap">
