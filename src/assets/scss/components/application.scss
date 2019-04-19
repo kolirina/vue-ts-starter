@@ -46,4 +46,11 @@
 
 .__view {
   width: auto !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.__rail-is-horizontal {
+  z-index: 15 !important;
 }
