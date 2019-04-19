@@ -66,8 +66,8 @@ const MainStore = namespace(StoreType.MAIN);
                                 <span>
                                     Это связанная сделка, отредактируйте основную сделку для изменения.
                                 </span>
-                            </v-layout>
-                        </v-tooltip>
+                            </v-tooltip>
+                        </v-layout>
                     </td>
                     <td class="px-0" @click.stop>
                         <v-layout align-center justify-center>
@@ -81,6 +81,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             Редактировать
                                         </v-list-tile-title>
                                     </v-list-tile>
+                                    <v-divider v-if="!isMoneyTrade(props.item)"></v-divider>
                                     <v-list-tile v-if="!isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.BUY)">
                                         <v-list-tile-title>
                                             Купить

@@ -78,9 +78,9 @@ const MainStore = namespace(StoreType.MAIN);
                     <td class="px-0">
                         <v-layout align-center justify-center>
                             <v-menu transition="slide-y-transition" bottom right>
-                                <v-layout align-center slot="activator">
+                                <v-btn slot="activator" flat icon dark>
                                     <span class="menuDots"></span>
-                                </v-layout>
+                                </v-btn>
                                 <v-list dense>
                                     <v-list-tile @click.stop="openEditTradeDialog(props.item)">
                                         <v-list-tile-title>

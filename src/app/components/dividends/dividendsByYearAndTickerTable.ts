@@ -68,10 +68,21 @@ const MainStore = namespace(StoreType.MAIN);
                     </td>
                     <td class="text-xs-right ii-number-cell">{{ props.item.yield }}&nbsp;<span class="second-value">%</span></td>
 
-                    <td class="justify-center layout px-0">
-                        <v-btn slot="activator" @click="deleteAllTrades(props.item)" color="primary" flat icon dark>
-                            <v-icon color="primary" small>fas fa-trash-alt</v-icon>
-                        </v-btn>
+                    <td class="px-0">
+                        <v-layout align-center justify-center>
+                            <v-menu transition="slide-y-transition" bottom left>
+                                <v-btn slot="activator" flat icon dark>
+                                    <span class="menuDots"></span>
+                                </v-btn>
+                                <v-list dense>
+                                    <v-list-tile @click="deleteAllTrades(props.item)">
+                                        <v-list-tile-title>
+                                            Удалить
+                                        </v-list-tile-title>
+                                    </v-list-tile>
+                                </v-list>
+                            </v-menu>
+                        </v-layout>
                     </td>
                 </tr>
             </template>
