@@ -74,11 +74,11 @@ const MainStore = namespace(StoreType.MAIN);
                     <div class="wrapper-list-reference__item-content-wrapper">
                         <a @click.stop="$vuetify.goTo('#settings_public')">Публичный доступ</a>
                     </div>
-                </div>
-                <div class="wrapper-list-reference__item">
                     <div class="wrapper-list-reference__item-content-wrapper">
                         <a @click.stop="$vuetify.goTo('#tariffs_public')">Тарифы</a>
                     </div>
+                </div>
+                <div class="wrapper-list-reference__item">
                     <div class="wrapper-list-reference__item-content-wrapper">
                         <a @click.stop="$vuetify.goTo('#settings_promo_codes')">Промокоды</a>
                     </div>
