@@ -95,7 +95,7 @@ export class DividendsByYearAndTickerTable extends UI {
         {text: "На одну акцию", align: "right", value: "perOne", width: "65"},
         {text: "Сумма", align: "right", value: "amount", width: "65"},
         {text: "Доходность, %", align: "right", value: "yield", width: "80", tooltip: "Дивидендная доходность посчитанная по отношению к исторической цене акции на конец года."},
-        {text: "Действия", align: "center", value: "actions", sortable: false, width: "25"}
+        {text: "", align: "center", value: "actions", sortable: false, width: "25"}
     ];
 
     @Prop({default: [], required: true})

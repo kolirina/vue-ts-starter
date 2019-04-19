@@ -75,15 +75,26 @@ const MainStore = namespace(StoreType.MAIN);
                     </td>
                     <td class="text-xs-right ii-number-cell">{{ props.item.yield }}&nbsp;<span class="second-value">%</span></td>
                     <td class="text-xs-left">{{ props.item.note }}</td>
-                    <td class="justify-center px-0" @click.stop="openEditTradeDialog(props.item)">
-                        <a>
-                            <v-icon color="primary" small>fas fa-pencil-alt</v-icon>
-                        </a>
-                    </td>
-                    <td class="justify-center" @click.stop="deleteDividendTrade(props.item)">
-                        <a>
-                            <v-icon color="primary" small>fas fa-trash-alt</v-icon>
-                        </a>
+                    <td class="px-0">
+                        <v-layout align-center justify-center>
+                            <v-menu transition="slide-y-transition" bottom right>
+                                <v-layout align-center slot="activator">
+                                    <span class="menuDots"></span>
+                                </v-layout>
+                                <v-list dense>
+                                    <v-list-tile @click.stop="openEditTradeDialog(props.item)">
+                                        <v-list-tile-title>
+                                            Редактировать
+                                        </v-list-tile-title>
+                                    </v-list-tile>
+                                    <v-list-tile @click.stop="deleteDividendTrade(props.item)">
+                                        <v-list-tile-title>
+                                            Удалить
+                                        </v-list-tile-title>
+                                    </v-list-tile>
+                                </v-list>
+                            </v-menu>
+                        </v-layout>
                     </td>
                 </tr>
             </template>
@@ -111,8 +122,7 @@ export class DividendTradesTable extends UI {
             tooltip: "Дивидендная доходность посчитанная по отношению к исторической цене акции на дату выплаты."
         },
         {text: "Заметка", align: "center", value: "note", width: "150"},
-        {text: "", align: "center", value: "edit", sortable: false, width: "25"},
-        {text: "", align: "center", value: "delete", sortable: false, width: "25"}
+        {text: "", align: "center", value: "action", sortable: false, width: "50"}
     ];
 
     @Prop({default: [], required: true})
