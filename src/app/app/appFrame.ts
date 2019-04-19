@@ -57,11 +57,11 @@ const MainStore = namespace(StoreType.MAIN);
             </template>
 
             <template v-if="!loading && (loggedIn || externalAuth)">
-                <v-navigation-drawer disable-resize-watcher stateless app class="sidebar" v-model="drawer" :mini-variant="mini" width="320">
+                <v-navigation-drawer disable-resize-watcher fixed stateless app class="sidebar" v-model="drawer" :mini-variant="mini" width="320">
                     <div>
                         <v-layout class="pt-3" align-center>
-                            <v-layout @click="mini = !mini" class="mini-menu-width" justify-center>
-                                <img src="img/sidebar/logo.svg" alt="">
+                            <v-layout @click="togglePanel" class="mini-menu-width sidebar-item-action" justify-center>
+                                <img src="img/sidebar/hamb.svg" class="hamburger" alt="">
                             </v-layout>
                             <portfolio-switcher></portfolio-switcher>
                         </v-layout>
@@ -76,16 +76,16 @@ const MainStore = namespace(StoreType.MAIN);
                             <v-layout column class="wrap-list-menu">
                                 <div v-for="item in mainSection">
                                     <template v-if="item.subMenu">
-                                        <v-menu transition="slide-y-transition" bottom left class="menu-item-list" nudge-bottom="48">
+                                        <v-menu transition="slide-y-transition" bottom left class="submenu-item-list" content-class="submenu-v-menu" nudge-bottom="47">
                                             <v-list-tile slot="activator">
                                                 <v-list-tile-title>{{ item.title }}</v-list-tile-title>
                                             </v-list-tile>
                                             <v-list-tile active-class="active-link" v-for="subItem in item.subMenu" :key="subItem.action"
-                                                    :to="{name: subItem.action, params: item.params}">
-                                            <v-list-tile-content>
-                                                <v-list-tile-title>{{ subItem.title }}</v-list-tile-title>
-                                            </v-list-tile-content>
-                                        </v-list-tile>
+                                                         :to="{name: subItem.action, params: item.params}">
+                                                <v-list-tile-content>
+                                                    <v-list-tile-title>{{ subItem.title }}</v-list-tile-title>
+                                                </v-list-tile-content>
+                                            </v-list-tile>
                                         </v-menu>
                                     </template>
                                     <v-list-tile active-class="active-link" class="sidebar-list-item" v-else :key="item.action"
@@ -101,10 +101,14 @@ const MainStore = namespace(StoreType.MAIN);
                     <v-layout>
                         <v-layout class="mini-menu-width" align-center justify-end column>
                             <div>
-                                <img src="img/sidebar/settings.svg" alt="">
+                                <v-list-tile :to="{name: 'portfolio-settings'}">
+                                    <img src="img/sidebar/settings.svg" alt="">
+                                </v-list-tile>
                             </div>
-                            <div class="mt-4 mb-3">
-                                <img src="img/sidebar/account.svg" alt="">
+                            <div class="mt-1 mb-3">
+                                <v-list-tile :to="{name: 'profile'}">
+                                    <img src="img/sidebar/account.svg" alt="">
+                                </v-list-tile>
                             </div>
                         </v-layout>
                     </v-layout>
