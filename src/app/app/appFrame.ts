@@ -119,29 +119,22 @@ const MainStore = namespace(StoreType.MAIN);
                                     <!--</keep-alive>-->
                                 </v-slide-y-transition>
                             </v-container>
-                            <v-footer color="#f7f9fb" class="footer-app">
-                                <v-layout class="footer-app-wrap-content" wrap align-center justify-space-between>
-                                    <div class="footer-app-wrap-content__text"><i class="far fa-copyright"></i> {{ copyrightInfo }}</div>
-
-                                    <div>
-                                        <v-tooltip content-class="custom-tooltip-wrap" top>
-                                            <a slot="activator"
-                                               class="footer-app-wrap-content__text email-btn"
-                                               @click.stop="openFeedBackDialog"><span>Обратная связь</span> <i class="fas fa-envelope"></i>
-                                            </a>
-                                            <span class="footer-app-wrap-content__text">Напишите нам</span>
-                                        </v-tooltip>
-
-                                        <v-tooltip content-class="custom-tooltip-wrap" top>
-                                            <a slot="activator" class="footer-app-wrap-content__text decorationNone" href="https://telegram.me/intelinvestSupportBot">
-                                                <span>Telegram</span> <i class="fab fa-telegram"></i>
-                                            </a>
-                                            <span class="footer-app-wrap-content__text">Оперативная связь с нами</span>
-                                        </v-tooltip>
-                                    </div>
-                                </v-layout>
-                            </v-footer>
                         </div>
+                        <v-footer color="#f7f9fb" class="footer-app">
+                            <v-layout class="footer-app-wrap-content" wrap align-center justify-space-between>
+                                <div class="footer-app-wrap-content__text"><i class="far fa-copyright"></i> {{ copyrightInfo }}</div>
+
+                                <div>
+                                    <a class="footer-app-wrap-content__text email-btn"
+                                        @click.stop="openFeedBackDialog"><span>Напишите нам</span> <i class="fas fa-envelope"></i>
+                                    </a>
+
+                                    <a class="footer-app-wrap-content__text decorationNone" href="https://telegram.me/intelinvestSupportBot">
+                                        <span>Telegram</span> <i class="fab fa-telegram"></i>
+                                    </a>
+                                </div>
+                            </v-layout>
+                        </v-footer>
                     </vue-scroll>
                 </v-content>
             </template>

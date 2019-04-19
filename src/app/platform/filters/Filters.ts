@@ -36,10 +36,10 @@ export class Filters {
         const amount = new BigMoney(value);
         if (needRound) {
             const am = amount.amount.toDP(DEFAULT_SCALE, Decimal.ROUND_HALF_UP).toNumber();
-            return DF.format(am);
+            return Filters.replaceCommaToDot(DF.format(am));
         } else {
-            return needFormat ? DF_NO_SCALE.format(scale ? amount.amount.toDP(scale, Decimal.ROUND_HALF_UP).toNumber() : amount.amount.toNumber()) :
-                String(amount.amount.toNumber());
+            return Filters.replaceCommaToDot(needFormat ? DF_NO_SCALE.format(scale ? amount.amount.toDP(scale, Decimal.ROUND_HALF_UP).toNumber() :
+                amount.amount.toNumber()) : String(amount.amount.toNumber()));
         }
     }
 
@@ -74,7 +74,7 @@ export class Filters {
         if (!value) {
             return returnZeros ? "0.00" : "";
         }
-        return DF.format(new Decimal(value).toDP(DEFAULT_SCALE, Decimal.ROUND_HALF_UP).toNumber());
+        return Filters.replaceCommaToDot(DF.format(new Decimal(value).toDP(DEFAULT_SCALE, Decimal.ROUND_HALF_UP).toNumber()));
 
     }
 
@@ -108,7 +108,7 @@ export class Filters {
         if (!value) {
             return "0";
         }
-        return DF_NO_SCALE.format(new Decimal(value).toDP(0, Decimal.ROUND_HALF_UP).toNumber());
+        return Filters.replaceCommaToDot(DF_NO_SCALE.format(new Decimal(value).toDP(0, Decimal.ROUND_HALF_UP).toNumber()));
 
     }
 
@@ -132,5 +132,13 @@ export class Filters {
      */
     static declension(n: number, onePiece: string, twoPieces: string, fivePieces: string): string {
         return arguments[n % 10 === 1 && n % 100 !== 11 ? 1 : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 2 : 3];
+    }
+
+    private static replaceCommaToDot(value: string): string {
+        try {
+            return value.replace(",", ".");
+        } catch (e) {
+            return value;
+        }
     }
 }
