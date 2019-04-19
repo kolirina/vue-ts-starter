@@ -57,11 +57,8 @@ const MainStore = namespace(StoreType.MAIN);
                                     <div v-if="clientInfo.user.referralAwardType === 'PAYMENT'">
                                         Вы будете получать 30% от суммы всех оплат<br>
                                         каждого приглашенного Вами пользователя навсегда.<br>
-                                        Вывод от 3000 <span class="rewards-currency rub"></span>
-                                        <div>
-                                            Для вывода средств обращайтесь в службу поддержки<br>
-                                            по адресу <a href="mailto:web@intelinvest.ru" target="_blank">web@intelinvest.ru</a>
-                                        </div>
+                                        Вывод от 3000 <span class="rewards-currency rub"></span>, через службу поддержки
+                                        <a href="mailto:web@intelinvest.ru" target="_blank" class="decorationNone">web@intelinvest.ru</a>.
                                     </div>
                                 </div>
                             </div>
