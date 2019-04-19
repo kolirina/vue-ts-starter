@@ -255,7 +255,8 @@ export type DashboardBrick = {
     },
     mainCurrency: string,
     secondCurrency: string,
-    tooltip?: string
+    tooltip?: string,
+    secondTooltip?: string
 };
 
 /** Описание бэкапа портфеля */
