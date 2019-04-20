@@ -58,7 +58,7 @@ const MainStore = namespace(StoreType.MAIN);
                         {{ props.item.totalWithoutFee | amount }}&nbsp;<span class="second-value">{{ props.item.totalWithoutFee | currencySymbol }}</span>
                     </td>
                     <td class="px-0" style="text-align: center" @click.stop>
-                        <v-layout align-center justify-center>
+                        <v-layout align-center justify-center v-if="props.item.parentTradeId">
                             <v-tooltip transition="slide-y-transition"
                                        content-class="menu-icons" bottom
                                        class="hint-for-icon-name-section"
