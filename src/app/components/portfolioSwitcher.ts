@@ -21,13 +21,12 @@ const MainStore = namespace(StoreType.MAIN);
                             <span class="portfolios-name ellipsis">{{ selected.name }}</span>
                             <div class="portfolios-list-icons">
                                 <i :class="selected.viewCurrency.toLowerCase()" title="Валюта"></i>
-                                <i v-if="selected.access" class="fas fa-share-alt" title="Публичный"></i>
-                                <i v-else class="far fa-eye-slash" title="Приватный"></i>
-                                <i v-if="selected.professionalMode" class="fas fa-rocket" title="Профессиональный режим"></i>
+                                <img src="img/portfolio/share.svg" v-if="selected.access" title="Публичный">
+                                <img src="img/portfolio/pro.svg" v-if="selected.professionalMode" title="Профессиональный режим">
                             </div>
                         </div>
                         <div class="portfolios-arrow">
-                            <v-icon>arrow_drop_down</v-icon>
+                            <v-icon>keyboard_arrow_down</v-icon>
                         </div>
                     </div>
 
@@ -36,10 +35,9 @@ const MainStore = namespace(StoreType.MAIN);
                                      @click="onSelect(portfolio)">
                             <v-list-tile-title class="ellipsis">{{ portfolio.name }}</v-list-tile-title>
                             <div class="portfolios-list-icons">
-                                <i :class="portfolio.viewCurrency.toLowerCase()" title="Валюта"></i>
-                                <i v-if="portfolio.access" class="fas fa-share-alt" title="Публичный"></i>
-                                <i v-else class="far fa-eye-slash" title="Приватный"></i>
-                                <i v-if="portfolio.professionalMode" class="fas fa-rocket" title="Профессиональный режим"></i>
+                                <i :class="selected.viewCurrency.toLowerCase()" title="Валюта"></i>
+                                <img src="img/portfolio/share.svg" v-if="selected.access" title="Публичный">
+                                <img src="img/portfolio/pro.svg" v-if="selected.professionalMode" title="Профессиональный режим">
                             </div>
                         </v-list-tile>
                     </v-list>

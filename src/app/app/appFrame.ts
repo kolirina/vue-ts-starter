@@ -59,13 +59,13 @@ const MainStore = namespace(StoreType.MAIN);
             <template v-if="!loading && (loggedIn || externalAuth)">
                 <v-navigation-drawer disable-resize-watcher fixed stateless app class="sidebar" v-model="drawer" :mini-variant="mini" width="320">
                     <div>
-                        <v-layout class="pt-3" align-center>
-                            <v-layout @click="togglePanel" class="mini-menu-width sidebar-item-action" justify-center>
-                                <img src="img/sidebar/hamb.svg" class="hamburger" alt="">
+                        <v-layout class="pt-3 hidden-content" align-center>
+                            <v-layout class="mini-menu-width sidebar-item-action" justify-center>
+                                <img src="img/sidebar/logo.svg" alt="">
                             </v-layout>
                             <portfolio-switcher></portfolio-switcher>
                         </v-layout>
-                        <v-layout>
+                        <v-layout class="hidden-content">
                             <v-layout column justify-space-between align-center class="mini-menu-width">
                                 <div>
                                     <v-btn @click.stop="openDialog" fab dark small color="indigo" depressed class="add-btn-menu">
@@ -98,7 +98,13 @@ const MainStore = namespace(StoreType.MAIN);
                             </v-layout>
                         </v-layout>
                     </div>
-                    <v-layout>
+                    <v-layout column>
+                        <div class="wrap-toogle-menu-btn">
+                            <v-btn fab dark small color="primary" class="toogle-menu-btn" @click="togglePanel">
+                                <v-icon dark v-if="!mini">keyboard_arrow_left</v-icon>
+                                <v-icon dark v-else>keyboard_arrow_right</v-icon>
+                            </v-btn>
+                        </div>
                         <v-layout class="mini-menu-width" align-center justify-end column>
                             <div>
                                 <v-list-tile :to="{name: 'portfolio-settings'}">
@@ -176,7 +182,7 @@ export class AppFrame extends UI {
      * Переменная используется только для удобства локальной разработки при тестировании с отдельным приложением лэндинга
      * Ддля PRODUCTION режима используется внешняя аутентификация с лэндинга
      */
-    private externalAuth = false;
+    private externalAuth = true;
     private loggedIn = false;
 
     /* Пользователь уведомлен об обновлениях */
