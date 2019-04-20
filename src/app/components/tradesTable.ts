@@ -58,14 +58,15 @@ const MainStore = namespace(StoreType.MAIN);
                         {{ props.item.totalWithoutFee | amount }}&nbsp;<span class="second-value">{{ props.item.totalWithoutFee | currencySymbol }}</span>
                     </td>
                     <td class="px-0" style="text-align: center" @click.stop>
-                        <v-layout align-center justify-center v-if="props.item.parentTradeId">
-                            <v-tooltip content-class="custom-tooltip-wrap" :max-width="250" top>
-                                <v-layout align-center slot="activator">
-                                    <img src="img/trades/related_deal.svg">
-                                </v-layout>
-                                <span>
+                        <v-layout align-center justify-center>
+                            <v-tooltip transition="slide-y-transition"
+                                       content-class="menu-icons" bottom
+                                       class="hint-for-icon-name-section"
+                                       :max-width="300">
+                                <img src="img/trades/related_deal.svg" slot="activator">
+                                <div class="pa-3">
                                     Это связанная сделка, отредактируйте основную сделку для изменения.
-                                </span>
+                                </div>
                             </v-tooltip>
                         </v-layout>
                     </td>
@@ -76,12 +77,12 @@ const MainStore = namespace(StoreType.MAIN);
                                     <span class="menuDots"></span>
                                 </v-btn>
                                 <v-list dense>
-                                    <v-list-tile v-if="!isMoneyTrade(props.item)" @click.stop="openEditTradeDialog(props.item)">
+                                    <v-list-tile v-if="!props.item.parentTradeId" @click.stop="openEditTradeDialog(props.item)">
                                         <v-list-tile-title>
                                             Редактировать
                                         </v-list-tile-title>
                                     </v-list-tile>
-                                    <v-divider v-if="!isMoneyTrade(props.item)"></v-divider>
+                                    <v-divider v-if="!props.item.parentTradeId"></v-divider>
                                     <v-list-tile v-if="!isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.BUY)">
                                         <v-list-tile-title>
                                             Купить
