@@ -14,8 +14,10 @@
  * (c) ООО "Интеллектуальные инвестиции", 2019
  */
 import {Inject} from "typescript-ioc";
+import {NewBackendVersionDialog} from "../components/dialogs/newBackendVersionDialog";
 import {Storage} from "../platform/services/storage";
 import {StoreKeys} from "../types/storeKeys";
+import {ApplicationService} from "./applicationService";
 import {LogoutService} from "./logoutService";
 
 /**
@@ -31,6 +33,9 @@ export class InactivityMonitor {
     /** Сервис выхода из приложения */
     @Inject
     private logoutService: LogoutService;
+    /** Сервис приложения */
+    @Inject
+    private applicationService: ApplicationService;
     /** Лимит времени простоя в минутах */
     private timeoutInterval: number;
 
@@ -50,11 +55,16 @@ export class InactivityMonitor {
 
     /** Инициализация сервиса */
     start(): void {
-        this.timeoutInterval = 30;
-        this.updateActionTime();
-        this.checkInactivity();
-        window.addEventListener("keypress", () => this.updateActionTime());
-        window.addEventListener("click", () => this.updateActionTime());
+        const rememberMe = !!this.storage.get(StoreKeys.REMEMBER_ME_KEY, null);
+        // если опция "Запомнить меня" не включена, значит запускаем монитор
+        if (!rememberMe) {
+            this.timeoutInterval = 30;
+            this.updateActionTime();
+            this.checkInactivity();
+            window.addEventListener("keypress", () => this.updateActionTime());
+            window.addEventListener("click", () => this.updateActionTime());
+        }
+        this.checkBackendVersion();
     }
 
     /**
@@ -77,5 +87,18 @@ export class InactivityMonitor {
                 this.checkInactivity();
             }
         }, 10000);
+    }
+
+    /**
+     * Проверить версию приложения бэкэнда
+     */
+    private checkBackendVersion(): void {
+        setTimeout(async () => {
+            const version = await this.applicationService.getBackendVersion();
+            const versionFromLocalStorage = this.storage.get(StoreKeys.BACKEND_VERSION_KEY, null);
+            if (version !== versionFromLocalStorage) {
+                await new NewBackendVersionDialog().show();
+            }
+        }, 1000 * 60 * 30);
     }
 }

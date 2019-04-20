@@ -1,12 +1,16 @@
 import * as Sentry from "@sentry/browser";
 import {BrowserClient, Hub} from "@sentry/browser";
+import {Container} from "typescript-ioc";
 import Vue from "vue";
 import {AppFrame} from "./app/app/appFrame";
 import {UI} from "./app/app/ui";
 import {UIRegistry} from "./app/app/uiRegistry";
+import {Storage} from "./app/platform/services/storage";
 import {RouterConfiguration} from "./app/router/routerConfiguration";
+import {ApplicationService} from "./app/services/applicationService";
 import {InactivityMonitor} from "./app/services/inactivityMonitor";
 import {EventType} from "./app/types/eventType";
+import {StoreKeys} from "./app/types/storeKeys";
 import {VuexConfiguration} from "./app/vuex/vuexConfiguration";
 import * as versionConfig from "./version.json";
 
@@ -50,6 +54,7 @@ async function _start(resolve: () => void, reject: () => void): Promise<void> {
         router.onError(errorHandler);
         const store = VuexConfiguration.getStore();
         InactivityMonitor.getInstance().start();
+        await storeBackendVersion();
         const app = new AppFrame({router, store});
         app.$mount("#app");
         resolve();
@@ -73,6 +78,19 @@ function configureErrorHandling(errorHandler: (error: Error | string) => void): 
     Vue.config.errorHandler = errorHandler;
     // Обработчик прочих _асинхронных_ исключений (например в lifecycle-хуках роутера и в watcher'ах)
     (window as any).onunhandledrejection = (event: any): void => errorHandler(event.reason.message);
+}
+
+/**
+ * Сохраняет версию бэкенда при инициализации
+ */
+async function storeBackendVersion(): Promise<void> {
+    const appService: ApplicationService = Container.get(ApplicationService);
+    const version = await appService.getBackendVersion();
+    // если версии еще нет, сохраняем, иначе она сбросится в мониторе как только появится новая версия бэкэнда
+    if (!!version) {
+        const storage: Storage = Container.get(Storage);
+        storage.set(StoreKeys.BACKEND_VERSION_KEY, version);
+    }
 }
 
 start();
