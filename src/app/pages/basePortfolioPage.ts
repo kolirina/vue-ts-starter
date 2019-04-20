@@ -135,7 +135,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                     </v-card-text>
                 </expanded-panel>
 
-                <expanded-panel v-if="blockNotEmpty(emptyBlockType.DEFAULT)" :value="$uistate.sectorsGraph" :state="$uistate.SECTORS_PANEL" customMenu class="mt-3">
+                <expanded-panel v-if="blockNotEmpty(emptyBlockType.STOCK_PORTFOLIO)" :value="$uistate.sectorsGraph" :state="$uistate.SECTORS_PANEL" customMenu class="mt-3">
                     <template #header>Состав портфеля по секторам</template>
                     <template #customMenu>
                         <chart-export-menu @print="print('sectorsChart')" @exportTo="exportTo('sectorsChart', $event)" class="exp-panel-menu"></chart-export-menu>
