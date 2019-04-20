@@ -28,7 +28,7 @@ import {DashboardBrick, DashboardData} from "../types/types";
                                     <v-icon>{{ block.isSummaryIncome.isUpward ? 'arrow_upward' : 'arrow_downward' }}</v-icon>
                                 </div>
                                 <div class="dashboard-summary-income-text dashboard-currency" :class="block.secondCurrency">
-                                    {{ block.secondValue }}
+                                    <span>{{ block.secondValue }}</span>
                                 </div>
                             </div>
                         </template>
@@ -36,6 +36,12 @@ import {DashboardBrick, DashboardData} from "../types/types";
                         <template v-else>
                             <span class="dashboard-currency" :class="block.secondCurrency">{{ block.secondValue }} </span>
                             <span class="dashboard-second-value-desc">{{ block.secondValueDesc }} </span>
+                            <v-tooltip v-if="block.secondTooltip" content-class="custom-tooltip-wrap dashboard-tooltip" :max-width="450" bottom right>
+                                <sup  slot="activator">
+                                    <v-icon  slot="activator" style="font-size: 12px">far fa-question-circle</v-icon>
+                                </sup>
+                                <span>{{ block.secondTooltip }}</span>
+                            </v-tooltip>
                         </template>
                     </div>
                 </v-layout>
@@ -135,14 +141,14 @@ export class Dashboard extends UI {
         this.blocks[2] = {
             name: "Среднегодовая доходность",
             mainValue: newValue.yearYield,
-            secondValueDesc: "без дивидендов и купонов",
             secondValue: newValue.yearYieldWithoutDividendsAndCoupons,
             mainCurrency: "percent",
             secondCurrency: "percent",
             tooltip: "Доходность в процентах годовых. Рассчитывается исходя из прибыли портфеля с даты первой сделки по текущий момент.<br/>" +
                 "                                Например, если портфель за полгода существования принес 8%, то его годовая доходность будет 16%." +
                 "                                Показатель полезен для сравнения доходности портфеля с банковскими депозитами и другими активами.<br/>" +
-                "                                Расчет ведется на основе средневзвешенной стоимости портфеля с учетом денежных средств."
+                "                                Расчет ведется на основе средневзвешенной стоимости портфеля с учетом денежных средств.",
+            secondTooltip: "Доходность без учета дивидендов и выплат по облигациям"
         };
         this.blocks[3] = {
             name: "Изменение за день",
@@ -159,6 +165,12 @@ export class Dashboard extends UI {
     }
 
     private setDashboardPosition(e: any): void {
-        this.fixedDashboard = e.target.scrollingElement.scrollHeight - e.target.scrollingElement.clientHeight > 250 && e.target.scrollingElement.scrollTop > 24;
+        const fixed = e.target.scrollingElement.scrollHeight - e.target.scrollingElement.clientHeight > 155 && e.target.scrollingElement.scrollTop > 50;
+        if (fixed && !this.fixedDashboard) {
+            this.fixedDashboard = true;
+        }
+        if (e.target.scrollingElement.scrollTop === 0) {
+            this.fixedDashboard = false;
+        }
     }
 }
