@@ -120,6 +120,12 @@ export class DividendDashboardComponent extends UI {
     }
 
     private setDashboardPosition(e: any): void {
-        this.fixedDashboard = e.target.scrollingElement.scrollTop > 24;
+        const fixed = e.target.scrollingElement.scrollHeight - e.target.scrollingElement.clientHeight > 155 && e.target.scrollingElement.scrollTop > 50;
+        if (fixed && !this.fixedDashboard) {
+            this.fixedDashboard = true;
+        }
+        if (e.target.scrollingElement.scrollTop === 0) {
+            this.fixedDashboard = false;
+        }
     }
 }
