@@ -148,7 +148,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 <td class="text-xs-right">{{ props.item.cutDate }}</td>
                                 <td class="text-xs-right ii-number-cell">
                                     {{ props.item.recCommonValue | number }}
-                                    <span class="amount__currency">{{ props.item.currency }}</span>
+                                    <span class="amount__currency">{{ getCurrencySymbol(props.item.currency) }}</span>
                                 </td>
                                 <td class="text-xs-center pr-3">{{ props.item.source }}</td>
                             </tr>
@@ -297,6 +297,10 @@ export class EventsPage extends UI {
     private get emptyTableText(): string {
         return this.portfolio.overview.totalTradesCount !== 0 ? "Новых событий по вашим бумагам еще не появилось" :
             "Добавьте свою первую сделку чтобы мы могли предложить вам события";
+    }
+
+    private getCurrencySymbol(currency: string): string {
+        return TradeUtils.getCurrencySymbol(currency);
     }
 
     private customSortEvents(items: ShareEvent[], index: string, isDesc: boolean): ShareEvent[] {
