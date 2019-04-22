@@ -55,6 +55,13 @@ export class ClientService {
     }
 
     /**
+     * Переключает на старую версию сервиса
+     */
+    async switchToOldVersion(): Promise<string> {
+        return this.http.get<string>(`/user/switch-to-old`);
+    }
+
+    /**
      * Сбрасывает кэш информации о пользователе
      */
     resetClientInfo(): void {
