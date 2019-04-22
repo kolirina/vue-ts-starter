@@ -339,7 +339,7 @@ export class AppFrame extends UI {
         try {
             const result = await this.clientService.switchToOldVersion();
             if (!result) {
-                window.location.replace(`${window.location.protocol}//${window.location.host}/portfolio`);
+                window.location.replace(`https://intelinvest.ru/portfolio`);
             }
         } catch (e) {
             throw e;
