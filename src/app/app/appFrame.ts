@@ -65,6 +65,12 @@ const MainStore = namespace(StoreType.MAIN);
                             </v-layout>
                             <portfolio-switcher></portfolio-switcher>
                         </v-layout>
+                        <div class="wrap-toogle-menu-btn">
+                            <v-btn @click="togglePanel" fab dark small depressed color="#4C9AFF" class="toogle-menu-btn">
+                                <v-icon v-if="mini" dark>list</v-icon>
+                                <v-icon v-else dark>keyboard_arrow_left</v-icon>
+                            </v-btn>
+                        </div>
                         <v-layout class="hidden-content">
                             <v-layout column justify-space-between align-center class="mini-menu-width">
                                 <div>
@@ -88,7 +94,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             </v-list-tile>
                                         </v-menu>
                                     </template>
-                                    <v-list-tile active-class="active-link" class="sidebar-list-item" v-else :key="item.action"
+                                    <v-list-tile v-else :key="item.action" active-class="active-link" class="sidebar-list-item"
                                                  :to="{path: item.path, name: item.action, params: item.params}">
                                         <v-list-tile-content>
                                             <v-list-tile-title>{{ item.title }}</v-list-tile-title>
@@ -99,12 +105,6 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-layout>
                     </div>
                     <v-layout column>
-                        <div class="wrap-toogle-menu-btn">
-                            <v-btn fab dark small color="primary" class="toogle-menu-btn" @click="togglePanel">
-                                <v-icon dark v-if="!mini">keyboard_arrow_left</v-icon>
-                                <v-icon dark v-else>keyboard_arrow_right</v-icon>
-                            </v-btn>
-                        </div>
                         <v-layout class="mini-menu-width" align-center justify-end column>
                             <div>
                                 <v-list-tile :to="{name: 'portfolio-settings'}">
