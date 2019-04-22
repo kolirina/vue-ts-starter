@@ -35,9 +35,9 @@ const MainStore = namespace(StoreType.MAIN);
                                      @click="onSelect(portfolio)">
                             <v-list-tile-title class="ellipsis">{{ portfolio.name }}</v-list-tile-title>
                             <v-layout align-center class="portfolios-list-icons">
-                                <i :class="selected.viewCurrency.toLowerCase()" title="Валюта"></i>
-                                <i v-if="selected.access" class="public-portfolio-icon" title="Публичный"></i>
-                                <i v-if="selected.professionalMode" class="professional-mode-icon" title="Профессиональный режим"></i>
+                                <i :class="portfolio.viewCurrency.toLowerCase()" title="Валюта"></i>
+                                <i v-if="portfolio.access" class="public-portfolio-icon" title="Публичный"></i>
+                                <i v-if="portfolio.professionalMode" class="professional-mode-icon" title="Профессиональный режим"></i>
                             </v-layout>
                         </v-list-tile>
                     </v-list>

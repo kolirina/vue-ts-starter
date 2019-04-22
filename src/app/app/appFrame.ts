@@ -61,11 +61,15 @@ const MainStore = namespace(StoreType.MAIN);
                     <div>
                         <v-layout class="pt-3 overflow-hidden" align-center>
                             <v-layout class="mini-menu-width sidebar-item-action" justify-center>
-                                <img src="img/sidebar/logo.svg" alt="">
+                                <img src="img/sidebar/logo.svg" alt="" class="sidebar-logo">
+                                <v-btn @click="togglePanel" fab dark small depressed color="#4C9AFF" class="toogle-menu-btn small-screen-toogle-menu-btn">
+                                    <v-icon v-if="mini" dark>list</v-icon>
+                                    <v-icon v-else dark>keyboard_arrow_left</v-icon>
+                                </v-btn>
                             </v-layout>
                             <portfolio-switcher></portfolio-switcher>
                         </v-layout>
-                        <div class="wrap-toogle-menu-btn">
+                        <div :class="['wrap-toogle-menu-btn', mini ? 'show-toogle-menu-btn' : 'hide-toogle-menu-btn']">
                             <v-btn @click="togglePanel" fab dark small depressed color="#4C9AFF" class="toogle-menu-btn">
                                 <v-icon v-if="mini" dark>list</v-icon>
                                 <v-icon v-else dark>keyboard_arrow_left</v-icon>
@@ -83,7 +87,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 <div v-for="item in mainSection">
                                     <template v-if="item.subMenu">
                                         <v-menu transition="slide-y-transition" bottom left class="submenu-item-list" content-class="submenu-v-menu" nudge-bottom="47">
-                                            <v-list-tile slot="activator">
+                                            <v-list-tile slot="activator" active-class="active-link">
                                                 <v-list-tile-title>{{ item.title }}</v-list-tile-title>
                                             </v-list-tile>
                                             <v-list-tile active-class="active-link" v-for="subItem in item.subMenu" :key="subItem.action"
@@ -107,14 +111,14 @@ const MainStore = namespace(StoreType.MAIN);
                     <v-layout column>
                         <v-layout class="mini-menu-width" align-center justify-end column>
                             <div>
-                                <v-list-tile :to="{name: 'portfolio-settings'}">
-                                    <img src="img/sidebar/settings.svg" alt="" title="Управление портфелями">
-                                </v-list-tile>
+                                <v-btn flat round icon dark :to="{name: 'portfolio-settings'}" title="Управление портфелями" active-class="active-btn-link" class="link-icon-btn">
+                                    <img src="img/sidebar/settings.svg" alt="">
+                                </v-btn>
                             </div>
                             <div class="mt-1 mb-3">
-                                <v-list-tile :to="{name: 'profile'}">
-                                    <img src="img/sidebar/account.svg" alt="" title="Профиль">
-                                </v-list-tile>
+                                <v-btn flat icon dark :to="{name: 'profile'}" title="Профиль" active-class="active-btn-link" class="link-icon-btn">
+                                    <img src="img/sidebar/account.svg" alt="">
+                                </v-btn>
                             </div>
                         </v-layout>
                     </v-layout>

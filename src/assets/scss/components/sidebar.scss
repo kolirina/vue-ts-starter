@@ -3,6 +3,12 @@
   flex-direction: column;
   justify-content: space-between;
   overflow: initial;
+  z-index: 100;
+  &:hover {
+    .wrap-toogle-menu-btn {
+      display: flex;
+    }
+  }
 }
 .sub-menu {
   display: none;
@@ -20,7 +26,7 @@
   padding-right: 8px;
   .v-list__tile {
     padding: 13px 12px 13px 16px;
-    border-radius: 0px 4px 4px 0px;
+    border-radius: 4px;
     cursor: pointer;
     color: #96A5BE;
     display: flex;
@@ -75,8 +81,15 @@
   }
 }
 .wrap-toogle-menu-btn {
-  display: flex;
   justify-content: flex-end;
+  height: 0px;
+  display: flex;
+  @media screen and (max-width: 1024px) {
+    display: flex !important;
+  }
+  @media screen and (max-width: 800px) {
+    display: none !important;
+  }
   .toogle-menu-btn {
     z-index: 100;
     margin-right: -20px;
@@ -85,4 +98,27 @@
 }
 .overflow-hidden {
   overflow: hidden;
+}
+.hide-toogle-menu-btn {
+  display: none;
+}
+.show-toogle-menu-btn {
+  display: flex;
+}
+.small-screen-toogle-menu-btn {
+  display: none;
+  @media screen and (max-width: 800px) {
+    display: flex;
+  }
+}
+.sidebar-logo {
+  @media screen and (max-width: 800px) {
+    display: none;
+  }
+}
+.link-icon-btn {
+  filter: grayscale(1);
+}
+.active-btn-link {
+  filter: none;
 }
