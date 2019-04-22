@@ -58,7 +58,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <td class="text-xs-left">{{ props.item.accountType.description }}</td>
                     <td class="text-xs-right">{{ props.item.openDate }}</td>
                     <td class="justify-center layout px-0" @click.stop>
-                        <v-menu transition="slide-y-transition" bottom left min-width="173">
+                        <v-menu transition="slide-y-transition" bottom left min-width="173" nudge-bottom="30">
                             <v-btn slot="activator" flat icon dark>
                                 <span class="menuDots"></span>
                             </v-btn>

@@ -37,23 +37,23 @@ import {MainStore} from "../../vuex/mainStore";
                         <v-layout class="select-option-wrap">
                             <v-flex class="select-section">
                                 <v-select :items="accessTypes" v-model="portfolioParams.access" menu-props="returnValue" item-text="label" label="Доступ"
-                                            dense hide-details></v-select>
+                                            dense hide-details :menu-props="{nudgeBottom:'22'}"></v-select>
                             </v-flex>
 
                             <v-flex class="select-section">
                                 <v-select :items="currencyList" v-model="portfolioParams.viewCurrency" label="Валюта портфеля"
                                             :persistent-hint="true" dense hide-details
                                             hint="Валюта, в которой происходит расчет всех показателей. Активы, приобретенные в другой валюте
-                                            будут конвертированы по курсу на дату совершения сделки.">
+                                            будут конвертированы по курсу на дату совершения сделки." :menu-props="{nudgeBottom:'22'}">
                                 </v-select>
                             </v-flex>
 
                             <v-flex class="select-section">
                                 <v-select :items="accountTypes" v-model="portfolioParams.accountType" :return-object="true" item-text="description" dense hide-details
-                                            label="Тип счета"></v-select>
+                                            label="Тип счета" :menu-props="{nudgeBottom:'22'}"></v-select>
                             </v-flex>
                             <v-flex class="select-section" v-if="portfolioParams.accountType === accountType.IIS" >
-                                <v-select :items="iisTypes" dense hide-details
+                                <v-select :items="iisTypes" dense hide-details :menu-props="{nudgeBottom:'22'}"
                                             v-model="portfolioParams.iisType" :return-object="true" item-text="description" label="Тип вычета"></v-select>
                             </v-flex>
                         </v-layout>
