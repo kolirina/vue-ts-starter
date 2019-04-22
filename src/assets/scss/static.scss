@@ -261,6 +261,22 @@ input[type="search"] {
   cursor: pointer;
   background: url('../img/common/dots_more.svg') no-repeat center;
 }
+.public-portfolio-icon {
+  width: 16px;
+  height: 7px;
+  display: inline-block;
+  cursor: pointer;
+  background: url('../img/portfolio/share.svg')
+  no-repeat center;
+}
+.professional-mode-icon {
+  width: 27px;
+  height: 13px;
+  display: inline-block;
+  cursor: pointer;
+  background: url('../img/portfolio/pro.svg')
+  no-repeat center;
+}
 // ===============================
 
 // Троеточие в конце неумещающегося текста (слова не переносятся)

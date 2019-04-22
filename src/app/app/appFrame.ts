@@ -59,7 +59,7 @@ const MainStore = namespace(StoreType.MAIN);
             <template v-if="!loading && (loggedIn || externalAuth)">
                 <v-navigation-drawer disable-resize-watcher fixed stateless app class="sidebar" v-model="drawer" :mini-variant="mini" width="320">
                     <div>
-                        <v-layout class="pt-3 hidden-content" align-center>
+                        <v-layout class="pt-3 overflow-hidden" align-center>
                             <v-layout class="mini-menu-width sidebar-item-action" justify-center>
                                 <img src="img/sidebar/logo.svg" alt="">
                             </v-layout>
@@ -71,7 +71,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 <v-icon v-else dark>keyboard_arrow_left</v-icon>
                             </v-btn>
                         </div>
-                        <v-layout class="hidden-content">
+                        <v-layout class="overflow-hidden">
                             <v-layout column justify-space-between align-center class="mini-menu-width">
                                 <div>
                                     <v-btn @click.stop="openDialog" fab dark small color="indigo" depressed class="add-btn-menu">
@@ -108,12 +108,12 @@ const MainStore = namespace(StoreType.MAIN);
                         <v-layout class="mini-menu-width" align-center justify-end column>
                             <div>
                                 <v-list-tile :to="{name: 'portfolio-settings'}">
-                                    <img src="img/sidebar/settings.svg" alt="">
+                                    <img src="img/sidebar/settings.svg" alt="" title="Управление портфелями">
                                 </v-list-tile>
                             </div>
                             <div class="mt-1 mb-3">
                                 <v-list-tile :to="{name: 'profile'}">
-                                    <img src="img/sidebar/account.svg" alt="">
+                                    <img src="img/sidebar/account.svg" alt="" title="Профиль">
                                 </v-list-tile>
                             </div>
                         </v-layout>
@@ -225,7 +225,6 @@ export class AppFrame extends UI {
                 {title: "Уведомления", action: "notifications", icon: "fas fa-bell"}
             ]
         },
-        {title: "Профиль", action: "profile", icon: "fas fa-user"},
         {title: "Справка", action: "help", icon: "far fa-question-circle"},
         {title: "Выход", action: "logout", icon: "exit_to_app"}
     ];

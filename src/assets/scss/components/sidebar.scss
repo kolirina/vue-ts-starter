@@ -33,11 +33,7 @@
       color: inherit;
     }
     &:hover {
-      background: #F7F9FB;
-      color: #3B6EC9 !important;
-      .sub-menu {
-        display: inline-block;
-      }
+      @extend .active-link;
     }
   }
   .submenu-item-list {
@@ -55,7 +51,8 @@
   max-width: 140px;
 }
 .active-link {
-  border-left: 2px solid #3b6ec9 !important;
+  background: #F7F9FB;
+  color: #3B6EC9 !important;
 }
 .sidebar-item-action {
   width: 48px;
@@ -86,6 +83,6 @@
     margin-top: -44px;
   }
 }
-.hidden-content {
+.overflow-hidden {
   overflow: hidden;
 }
