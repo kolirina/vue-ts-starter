@@ -124,7 +124,7 @@ export class UIRegistry {
         UI.filter("integer", Filters.formatInteger);
         UI.filter("date", Filters.formatDate);
         UI.filter("declension", Filters.declension);
-        UI.filter("currency", Filters.currency);
+        UI.filter("currencySymbolByCurrency", Filters.currencySymbolByCurrency);
         UI.filter("currencySymbol", Filters.currencySymbol);
         UI.filter("bytes", Filters.formatBytes);
 

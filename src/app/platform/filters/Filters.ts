@@ -1,6 +1,7 @@
 import {Decimal} from "decimal.js";
 import {BigMoney} from "../../types/bigMoney";
 import {DateFormat, DateUtils} from "../../utils/dateUtils";
+import {TradeUtils} from "../../utils/tradeUtils";
 
 const DEFAULT_SCALE = 2;
 const MAX_SCALE = 3;
@@ -43,15 +44,11 @@ export class Filters {
         }
     }
 
-    static currency(value: string): string {
+    static currencySymbolByCurrency(value: string): string {
         if (!value) {
             return "";
         }
-        try {
-            return new BigMoney(value).currency;
-        } catch (e) {
-            return "";
-        }
+        return TradeUtils.getCurrencySymbol(value);
     }
 
     static currencySymbol(value: string): string {
