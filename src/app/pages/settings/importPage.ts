@@ -31,12 +31,14 @@ const MainStore = namespace(StoreType.MAIN);
                     <div class="section-title header-first-card__title-text">Импорт сделок</div>
                 </v-card-title>
             </v-card>
-            <v-card flat class="import-wrapper">
+            <v-card flat class="import-wrapper pb-0">
                 <v-card-title class="import-wrapper-header">
                     <div class="import-wrapper-header__title">
                         Выберите своего брокера
                     </div>
                 </v-card-title>
+            </v-card>
+            <v-card flat class="px-0 py-0">
                 <v-card-text class="import-wrapper-content">
                     <div class="providers">
                         <div v-for="provider in providers.values()" :key="provider.code" @click="onSelectProvider(provider)" v-if="provider !== providers.INTELINVEST"
@@ -48,7 +50,10 @@ const MainStore = namespace(StoreType.MAIN);
                             </div>
                         </div>
                     </div>
-
+                </v-card-text>
+            </v-card>
+            <v-card flat class="import-wrapper">
+                <v-card-text class="import-wrapper-content">
                     <v-layout justify-space-between wrap class="intelinvest-section">
                         <div class="intelinvest-section__description">
                             Если в списке нет вашего брокера или терминала, вы всегда можете осуществить импорт через универсальный формат
