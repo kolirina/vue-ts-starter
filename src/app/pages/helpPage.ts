@@ -303,7 +303,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             меню вашего брокера или терминала, вам будет показана
                                             подробная инструкция по получению отчета. Чтобы
                                             воспользоваться импортом, перейдите в меню Настройки -&gt;
-                                            <a href="#/import">Импорт сделок</a>
+                                            <a href="#/settings/import">Импорт сделок</a>
                                         </p>
                                         <div class="gif-block-item  border-block-in-paired-section">
                                             <div>
@@ -388,7 +388,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         <p>
                                             Чтобы воспользоваться экспортом, перейдите в меню
                                             Настройки -&gt;
-                                            <a href="#/export">Экспорт сделок</a>
+                                            <a href="#/settings/export">Экспорт сделок</a>
                                         </p>
                                         <p>
                                             В разделе можно настроить резервную копию своих портфелей.
@@ -720,7 +720,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             <a id="settings_portfolio" class="non-cursor-click">Управление портфелями</a>
                                         </div>
                                         <p>
-                                            На этой <a href="#/portfolio-settings">вкладке</a> можно
+                                            На этой <a href="#/settings/portfolio-management">вкладке</a> можно
                                             управлять своими портфелями, добавить новый, удалить
                                             существующий. Для существующих портфелей доступно
                                             редактирование имени, можно задать размер фиксированной
@@ -770,7 +770,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             <a id="tariffs_public" class="non-cursor-click">Тарифы</a>
                                         </div>
                                         <p>
-                                            <a href="#/tariffs">В данном разделе</a> вы можете посмотреть свой текущий
+                                            <a href="#/settings/tariffs">В данном разделе</a> вы можете посмотреть свой текущий
                                             тарифный план , подключить или продлить подписку на
                                             сервис, применить подарочные промокоды. Не все тарифные
                                             планы могут быть доступны для выбора. Например, если у вас
@@ -809,7 +809,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             <a id="settings_promo_codes" class="non-cursor-click">Промокоды</a>
                                         </div>
                                         <p>
-                                            <a href="#/promo-codes">В данном</a> разделе будет
+                                            <a href="#/settings/promo-codes">В данном</a> разделе будет
                                             представлен личный промокод, которым вы сможете делиться
                                             со своими знакомыми. Воспользовавшись им, они получают
                                             скидку 20% на первую покупку любого тарифного плана, а вы
@@ -822,7 +822,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             <a id="settings_notifications" class="non-cursor-click">Уведомления</a>
                                         </div>
                                         <p>
-                                            <a href="#/notifications">Здесь</a> можно настроить
+                                            <a href="#/settings/notifications">Здесь</a> можно настроить
                                             уведомления о достижении целевых цен на акции/облигации и
                                             подписаться на новости интересующих эмитентов. В первом
                                             случае вы формируете список бумаг для оповещений, и
