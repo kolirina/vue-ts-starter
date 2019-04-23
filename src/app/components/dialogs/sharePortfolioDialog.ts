@@ -260,6 +260,9 @@ export class SharePortfolioDialog extends CustomDialog<SharePortfolioDialogData,
 
     @ShowProgress
     private async generateTokenLink(): Promise<void> {
+        if (this.shareOption === PortfoliosDialogType.BY_IDENTIFICATION) {
+            this.expiredDate = DateUtils.formatDate(dayjs().add(7, "day"), DateFormat.DATE2);
+        }
         const isValid = this.isValid();
         if (!isValid) {
             return;
