@@ -12,24 +12,21 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-list-tile class="text-xs-center portfolios sidebar-list-item">
-            <v-list-tile-action class="sidebar-item-action">
-                <img src="img/sidebar/case.svg">
-            </v-list-tile-action>
+        <v-list-tile class="text-xs-center sidebar-list-item">
+            <span class="portfolio-switcher-icon"></span>
             <v-list-tile-content class="portfolio-content">
                 <v-menu offset-y transition="slide-y-transition" class="portfolios-drop portfolios-menu">
                     <div slot="activator" class="portfolios-inner-wrap">
                         <div class="portfolios-inner-content">
                             <span class="portfolios-name ellipsis">{{ selected.name }}</span>
-                            <div class="portfolios-list-icons">
+                            <v-layout align-center class="portfolios-list-icons">
                                 <i :class="selected.viewCurrency.toLowerCase()" title="Валюта"></i>
-                                <i v-if="selected.access" class="fas fa-share-alt" title="Публичный"></i>
-                                <i v-else class="far fa-eye-slash" title="Приватный"></i>
-                                <i v-if="selected.professionalMode" class="fas fa-rocket" title="Профессиональный режим"></i>
-                            </div>
+                                <i v-if="selected.access" class="public-portfolio-icon" title="Публичный"></i>
+                                <i v-if="selected.professionalMode" class="professional-mode-icon" title="Профессиональный режим"></i>
+                            </v-layout>
                         </div>
                         <div class="portfolios-arrow">
-                            <v-icon>arrow_drop_down</v-icon>
+                            <v-icon>keyboard_arrow_down</v-icon>
                         </div>
                     </div>
 
@@ -37,12 +34,11 @@ const MainStore = namespace(StoreType.MAIN);
                         <v-list-tile v-for="(portfolio, index) in clientInfo.user.portfolios" class="portfolios-list-tile" :key="index"
                                      @click="onSelect(portfolio)">
                             <v-list-tile-title class="ellipsis">{{ portfolio.name }}</v-list-tile-title>
-                            <div class="portfolios-list-icons">
+                            <v-layout align-center class="portfolios-list-icons">
                                 <i :class="portfolio.viewCurrency.toLowerCase()" title="Валюта"></i>
-                                <i v-if="portfolio.access" class="fas fa-share-alt" title="Публичный"></i>
-                                <i v-else class="far fa-eye-slash" title="Приватный"></i>
-                                <i v-if="portfolio.professionalMode" class="fas fa-rocket" title="Профессиональный режим"></i>
-                            </div>
+                                <i v-if="portfolio.access" class="public-portfolio-icon" title="Публичный"></i>
+                                <i v-if="portfolio.professionalMode" class="professional-mode-icon" title="Профессиональный режим"></i>
+                            </v-layout>
                         </v-list-tile>
                     </v-list>
                 </v-menu>
