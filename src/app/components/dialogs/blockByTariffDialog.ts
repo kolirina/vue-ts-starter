@@ -52,7 +52,7 @@ import {ForbiddenCode} from "../../types/types";
 export class BlockByTariffDialog extends CustomDialog<ForbiddenCode, BtnReturn> {
 
     private tariffs(): void {
-        window.location.replace("/#/tariffs");
+        window.location.replace("/#/settings/tariffs");
         this.close();
     }
 }

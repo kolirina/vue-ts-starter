@@ -18,6 +18,7 @@ import {QuotesPage} from "../pages/quotes/quotesPage";
 import {ExportPage} from "../pages/settings/exportPage";
 import {ImportPage} from "../pages/settings/importPage";
 import {NotificationsPage} from "../pages/settings/notificationsPage";
+import {PortfoliosManagementPage} from "../pages/settings/portfoliosManagementPage";
 import {ProfilePage} from "../pages/settings/profilePage";
 import {PromoCodesPage} from "../pages/settings/promoCodesPage";
 import {SettingsPage} from "../pages/settings/settingsPage";
@@ -175,38 +176,72 @@ export class RouterConfiguration {
                 component: BondInfoPage
             },
             {
-                name: "portfolio-settings",
-                path: "/portfolio-settings",
-                meta: {
-                    tariffAllowed: true,
-                    title: "Управление портфелями"
-                },
-                component: SettingsPage
-            },
-            {
-                name: "help",
-                path: "/help",
-                meta: {
-                    tariffAllowed: true,
-                    title: "Справка"
-                },
-                component: HelpPage
-            },
-            {
-                name: "export",
-                path: "/export",
-                component: ExportPage,
-                meta: {
-                    title: "Экспорт сделок"
-                }
-            },
-            {
-                name: "import",
-                path: "/import",
-                component: ImportPage,
-                meta: {
-                    title: "Импорт сделок"
-                }
+                name: "settings",
+                path: "/settings",
+                component: SettingsPage,
+                redirect: "/settings/portfolio-management",
+                children: [
+                    {
+                        name: "portfolio-management",
+                        path: "/settings/portfolio-management",
+                        meta: {
+                            tariffAllowed: true,
+                            title: "Управление портфелями"
+                        },
+                        component: PortfoliosManagementPage
+                    },
+                    {
+                        name: "export",
+                        path: "export",
+                        component: ExportPage,
+                        meta: {
+                            title: "Экспорт сделок"
+                        }
+                    },
+                    {
+                        name: "import",
+                        path: "import",
+                        component: ImportPage,
+                        meta: {
+                            title: "Импорт сделок"
+                        }
+                    },
+                    {
+                        name: "tariffs",
+                        path: "tariffs/",
+                        meta: {
+                            tariffAllowed: true,
+                            title: "Тарифы"
+                        },
+                        component: TariffsPage
+                    },
+                    {
+                        name: "tariffs_status",
+                        path: "tariffs/:status",
+                        meta: {
+                            tariffAllowed: true,
+                            title: "Тарифы"
+                        },
+                        component: TariffsPage
+                    },
+                    {
+                        name: "promo-codes",
+                        path: "promo-codes",
+                        meta: {
+                            tariffAllowed: true,
+                            title: "Промокоды"
+                        },
+                        component: PromoCodesPage
+                    },
+                    {
+                        name: "notifications",
+                        path: "notifications",
+                        component: NotificationsPage,
+                        meta: {
+                            title: "Уведомления"
+                        }
+                    },
+                ]
             },
             {
                 name: "profile",
@@ -218,39 +253,13 @@ export class RouterConfiguration {
                 component: ProfilePage
             },
             {
-                name: "tariffs",
-                path: "/tariffs/",
+                name: "help",
+                path: "/help",
                 meta: {
                     tariffAllowed: true,
-                    title: "Тарифы"
+                    title: "Справка"
                 },
-                component: TariffsPage
-            },
-            {
-                name: "tariffs_status",
-                path: "/tariffs/:status",
-                meta: {
-                    tariffAllowed: true,
-                    title: "Тарифы"
-                },
-                component: TariffsPage
-            },
-            {
-                name: "promo-codes",
-                path: "/promo-codes",
-                meta: {
-                    tariffAllowed: true,
-                    title: "Промокоды"
-                },
-                component: PromoCodesPage
-            },
-            {
-                name: "notifications",
-                path: "/notifications",
-                component: NotificationsPage,
-                meta: {
-                    title: "Уведомления"
-                }
+                component: HelpPage
             },
             {
                 name: "balances",
