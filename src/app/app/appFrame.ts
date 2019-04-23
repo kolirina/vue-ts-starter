@@ -105,6 +105,11 @@ const MainStore = namespace(StoreType.MAIN);
                                         </v-list-tile-content>
                                     </v-list-tile>
                                 </div>
+                                <v-list-tile active-class="sidebar-list-item-active" class="sidebar-list-item" @click="goToOldVersion">
+                                    <v-list-tile-content>
+                                        <v-list-tile-title>Старая версия сервиса</v-list-tile-title>
+                                    </v-list-tile-content>
+                                </v-list-tile>
                             </v-layout>
                         </v-layout>
                     </div>
@@ -140,7 +145,7 @@ const MainStore = namespace(StoreType.MAIN);
 
                                 <div>
                                     <a class="footer-app-wrap-content__text email-btn"
-                                        @click.stop="openFeedBackDialog"><span>Напишите нам</span> <i class="fas fa-envelope"></i>
+                                       @click.stop="openFeedBackDialog"><span>Напишите нам</span> <i class="fas fa-envelope"></i>
                                     </a>
 
                                     <a class="footer-app-wrap-content__text decorationNone" href="https://telegram.me/intelinvestSupportBot">
@@ -309,6 +314,20 @@ export class AppFrame extends UI {
         await new FeedbackDialog().show(this.clientInfo);
     }
 
+    /**
+     * Переключает на старую версию приложения
+     */
+    private async goToOldVersion(): Promise<void> {
+        try {
+            const result = await this.clientService.switchToOldVersion();
+            if (!result) {
+                window.location.replace(`https://intelinvest.ru/portfolio`);
+            }
+        } catch (e) {
+            throw e;
+        }
+    }
+
     private togglePanel(): void {
         this.mini = !this.mini;
         this.changeSideBarState(this.mini);
@@ -328,7 +347,7 @@ export type NavBarItem = {
     /** routing, для корневых элементов может не заполнен */
     action?: string,
     path?: string,
-    icon: string,
+    icon?: string,
     active?: boolean,
     subMenu?: NavBarItem[],
     params?: { [key: string]: string }

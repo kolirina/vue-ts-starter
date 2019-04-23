@@ -12,7 +12,7 @@ import {FeedbackService, FeedbackType} from "../../services/feedbackService";
 @Component({
     // language=Vue
     template: `
-        <v-dialog v-model="showed" ref="dialog" persistent max-width="600px">
+        <v-dialog v-model="showed" max-width="600px">
             <v-card class="dialog-wrap">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
 

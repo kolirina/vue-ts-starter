@@ -13,7 +13,7 @@ import {CommonUtils} from "../../utils/commonUtils";
 @Component({
     // language=Vue
     template: `
-        <v-dialog v-model="showed" ref="dialog" persistent max-width="600px">
+        <v-dialog v-model="showed" max-width="600px">
             <v-card v-if="notification" class="add-notification dialog-wrap">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
                 <v-card-title class="headline add-notification-title">

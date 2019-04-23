@@ -276,16 +276,15 @@ export class TariffsPage extends UI {
     private portfolio: Portfolio;
     @MainStore.Action(MutationType.RELOAD_CLIENT_INFO)
     private reloadUser: () => Promise<void>;
-
+    /** Тарифы */
     private Tariff = Tariff;
-
     /** Признак оплаты за месяц. */
-    private monthly = true;
-
+    private monthly = false;
+    /** Состояния оплат тарифов */
     private busyState: { [key: string]: boolean } = {
         FREE: false, STANDARD: false, PRO: false
     };
-
+    /** Состояние прогресса оплаты */
     private isProgress = false;
 
     /**

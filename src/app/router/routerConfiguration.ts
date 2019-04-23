@@ -4,6 +4,7 @@ import Vue from "vue";
 import VueRouter, {Route} from "vue-router";
 import {RouteConfig} from "vue-router/types/router";
 import {Resolver} from "../../../typings/vue";
+import {AuthComponent} from "../app/authComponent";
 import {TariffExpiredDialog} from "../components/dialogs/tariffExpiredDialog";
 import {BalancesPage} from "../pages/balancesPage";
 import {BondInfoPage} from "../pages/bondInfoPage";
@@ -89,6 +90,11 @@ export class RouterConfiguration {
             {
                 path: "*",
                 redirect: "/portfolio"
+            },
+            {
+                name: "auth",
+                path: "/auth/:token",
+                component: AuthComponent
             },
             {
                 name: "portfolio",
