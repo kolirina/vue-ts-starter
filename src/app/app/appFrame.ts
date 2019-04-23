@@ -106,7 +106,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     </v-list-tile>
                                 </div>
                                 <v-list-tile active-class="sidebar-list-item-active" class="sidebar-list-item" @click="goToOldVersion">
-                                    <v-list-tile-content class="pl-3">
+                                    <v-list-tile-content>
                                         <v-list-tile-title>Старая версия сервиса</v-list-tile-title>
                                     </v-list-tile-content>
                                 </v-list-tile>

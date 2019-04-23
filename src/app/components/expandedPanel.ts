@@ -7,7 +7,7 @@ import {UI} from "../app/ui";
     template: `
         <div class="exp-panel" @click="$emit('click')">
             <slot v-if="customMenu" name="customMenu"></slot>
-            <v-menu v-if="withMenu && !customMenu" :attach="'#exp-panel-attach' + name" class="exp-panel-menu" @click.stop>
+            <v-menu v-if="withMenu && !customMenu" transition="slide-y-transition" :attach="'#exp-panel-attach' + name" class="exp-panel-menu" @click.stop>
                 <v-btn slot="activator" icon>
                     <v-icon>more_horiz</v-icon>
                 </v-btn>

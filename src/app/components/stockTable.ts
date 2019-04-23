@@ -44,7 +44,7 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-data-table class="data-table" :headers="headers" :items="filteredRows" item-key="stock.id"
-                      :search="search" :custom-sort="customSort" :custom-filter="customFilter" :pagination.sync="pagination" hide-actions>
+                      :search="search" :custom-sort="customSort" :custom-filter="customFilter" :pagination.sync="pagination" expand hide-actions>
             <v-progress-linear slot="progress" color="blue" indeterminate></v-progress-linear>
             <template #headerCell="props">
                 <v-tooltip v-if="props.header.tooltip" content-class="custom-tooltip-wrap" bottom>

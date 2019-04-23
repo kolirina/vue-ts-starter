@@ -28,7 +28,7 @@ import {MainStore} from "../../vuex/mainStore";
 @Component({
     // language=Vue
     template: `
-        <v-dialog v-model="showed" ref="dialog" persistent max-width="700px">
+        <v-dialog v-model="showed" max-width="700px">
             <v-card class="dialog-wrap">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
 
