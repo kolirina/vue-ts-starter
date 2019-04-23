@@ -1,2 +1,11 @@
 @import "fonts/gilroy";
 @import "fonts/opensans";
+
+@font-face {
+  font-family: 'intel';
+  src: url('../fonts/intel.ttf?53yclg') format('truetype'),
+  url('../fonts/intel.woff?53yclg') format('woff'),
+  url('../fonts/intel.svg?53yclg#intel') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}

@@ -61,7 +61,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <div>
                         <v-layout class="pt-3 overflow-hidden" align-center>
                             <v-layout class="mini-menu-width sidebar-item-action" justify-center>
-                                <img src="img/sidebar/logo.svg" alt="" class="sidebar-logo">
+                                <span class="sidebar-icon sidebar-logo"></span>
                                 <v-btn @click="togglePanel" fab dark small depressed color="#4C9AFF" class="toogle-menu-btn small-screen-toogle-menu-btn">
                                     <v-icon v-if="mini" dark>list</v-icon>
                                     <v-icon v-else dark>keyboard_arrow_left</v-icon>
@@ -112,12 +112,12 @@ const MainStore = namespace(StoreType.MAIN);
                         <v-layout class="mini-menu-width" align-center justify-end column>
                             <div>
                                 <v-btn flat round icon dark :to="{name: 'portfolio-settings'}" title="Управление портфелями" active-class="active-btn-link" class="link-icon-btn">
-                                    <img src="img/sidebar/settings.svg" alt="">
+                                    <span class="settings-icon"></span>
                                 </v-btn>
                             </div>
                             <div class="mt-1 mb-3">
                                 <v-btn flat icon dark :to="{name: 'profile'}" title="Профиль" active-class="active-btn-link" class="link-icon-btn">
-                                    <img src="img/sidebar/account.svg" alt="">
+                                    <span class="profile-icon"></span>
                                 </v-btn>
                             </div>
                         </v-layout>

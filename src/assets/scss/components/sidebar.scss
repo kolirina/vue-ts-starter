@@ -113,7 +113,7 @@
 }
 .sidebar-logo {
   @media screen and (max-width: 800px) {
-    display: none;
+    display: none !important;
   }
 }
 .link-icon-btn {

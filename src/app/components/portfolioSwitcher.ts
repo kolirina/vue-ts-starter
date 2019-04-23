@@ -13,7 +13,7 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-list-tile class="text-xs-center sidebar-list-item">
-            <img src="img/sidebar/case.svg">
+            <span class="portfolio-switcher-icon"></span>
             <v-list-tile-content class="portfolio-content">
                 <v-menu offset-y transition="slide-y-transition" class="portfolios-drop portfolios-menu">
                     <div slot="activator" class="portfolios-inner-wrap">
