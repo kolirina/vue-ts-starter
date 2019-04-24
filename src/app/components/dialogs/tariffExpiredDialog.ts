@@ -84,7 +84,7 @@ export class TariffExpiredDialog extends CustomDialog<VueRouter, BtnReturn> {
     }
 
     private tariffs(): void {
-        this.data.push("tariffs");
+        this.data.push({path: "/settings/tariffs"});
         this.close();
     }
 }
