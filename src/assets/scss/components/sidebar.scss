@@ -20,6 +20,10 @@
 .sidebar-list-item {
   .v-list__tile {
     padding-right: 0px !important;
+    padding-left: 0px !important;
+  }
+  .portfolio-content {
+    opacity: 1 !important;
   }
 }
 .wrap-list-menu {
@@ -53,9 +57,6 @@
   background: #F0F3F8 !important;
   color: #96A5BE !important;
 }
-.portfolios-name {
-  max-width: 140px;
-}
 .active-link {
   background: #F7F9FB;
   color: #3B6EC9 !important;
@@ -84,41 +85,32 @@
   justify-content: flex-end;
   height: 0px;
   display: flex;
-  @media screen and (max-width: 1024px) {
-    display: flex !important;
-  }
-  @media screen and (max-width: 800px) {
-    display: none !important;
-  }
   .toogle-menu-btn {
     z-index: 100;
     margin-right: -20px;
     margin-top: -44px;
+    .v-icon {
+      color: #96A5BE;
+    }
   }
 }
 .overflow-hidden {
   overflow: hidden;
-}
-.hide-toogle-menu-btn {
-  display: none;
-}
-.show-toogle-menu-btn {
-  display: flex;
-}
-.small-screen-toogle-menu-btn {
-  display: none;
-  @media screen and (max-width: 800px) {
-    display: flex;
-  }
-}
-.sidebar-logo {
-  @media screen and (max-width: 800px) {
-    display: none !important;
-  }
 }
 .link-icon-btn {
   filter: grayscale(1);
 }
 .active-btn-link {
   filter: none;
+}
+.small-screen-hide-toogle-menu-btn {
+  @media screen and (max-width: 1024px) {
+    display: none !important;
+  }
+}
+.small-screen-show-toogle-menu-btn {
+  display: none;
+  @media screen and (max-width: 1024px) {
+    display: inline-flex;
+  }
 }

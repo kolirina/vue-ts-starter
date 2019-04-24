@@ -59,20 +59,21 @@ const MainStore = namespace(StoreType.MAIN);
             <template v-if="!loading && (loggedIn || externalAuth)">
                 <v-navigation-drawer disable-resize-watcher fixed stateless app class="sidebar" v-model="drawer" :mini-variant="mini" width="320">
                     <div>
-                        <v-layout class="pt-3 overflow-hidden" align-center>
+                        <v-layout :class="['pt-3', 'overflow-hidden', mini ? 'column' : '']" align-center>
                             <v-layout class="mini-menu-width sidebar-item-action" justify-center>
-                                <span class="sidebar-icon sidebar-logo"></span>
-                                <v-btn @click="togglePanel" fab dark small depressed color="#4C9AFF" class="toogle-menu-btn small-screen-toogle-menu-btn">
-                                    <v-icon v-if="mini" dark>list</v-icon>
-                                    <v-icon v-else dark>keyboard_arrow_left</v-icon>
+                                <v-btn @click="togglePanel" v-if="mini" flat icon dark class="small-screen-hide-toogle-menu-btn">
+                                    <span class="hamburger-icon"></span>
+                                </v-btn>
+                                <span v-else class="sidebar-icon sidebar-logo small-screen-hide-toogle-menu-btn"></span>
+                                <v-btn @click="togglePanel" flat icon dark class="small-screen-show-toogle-menu-btn">
+                                    <span class="hamburger-icon"></span>
                                 </v-btn>
                             </v-layout>
-                            <portfolio-switcher></portfolio-switcher>
+                            <portfolio-switcher :mini="mini"></portfolio-switcher>
                         </v-layout>
-                        <div :class="['wrap-toogle-menu-btn', mini ? 'show-toogle-menu-btn' : 'hide-toogle-menu-btn']">
-                            <v-btn @click="togglePanel" fab dark small depressed color="#4C9AFF" class="toogle-menu-btn">
-                                <v-icon v-if="mini" dark>list</v-icon>
-                                <v-icon v-else dark>keyboard_arrow_left</v-icon>
+                        <div v-if="!mini" :class="['wrap-toogle-menu-btn', 'small-screen-hide-toogle-menu-btn']">
+                            <v-btn @click="togglePanel" fab dark small depressed color="#F0F3F8" class="toogle-menu-btn">
+                                <v-icon dark>keyboard_arrow_left</v-icon>
                             </v-btn>
                         </div>
                         <v-layout class="overflow-hidden">
@@ -83,7 +84,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     </v-btn>
                                 </div>
                             </v-layout>
-                            <v-layout column class="wrap-list-menu">
+                            <v-layout v-if="!mini" column class="wrap-list-menu">
                                 <div v-for="item in mainSection">
                                     <template v-if="item.subMenu">
                                         <v-menu transition="slide-y-transition" bottom left class="submenu-item-list" content-class="submenu-v-menu" nudge-bottom="47">
@@ -98,14 +99,14 @@ const MainStore = namespace(StoreType.MAIN);
                                             </v-list-tile>
                                         </v-menu>
                                     </template>
-                                    <v-list-tile v-else :key="item.action" active-class="active-link" class="sidebar-list-item"
+                                    <v-list-tile v-else :key="item.action" active-class="active-link"
                                                  :to="{path: item.path, name: item.action, params: item.params}">
                                         <v-list-tile-content>
                                             <v-list-tile-title>{{ item.title }}</v-list-tile-title>
                                         </v-list-tile-content>
                                     </v-list-tile>
                                 </div>
-                                <v-list-tile active-class="sidebar-list-item-active" class="sidebar-list-item" @click="goToOldVersion">
+                                <v-list-tile active-class="sidebar-list-item-active" @click="goToOldVersion">
                                     <v-list-tile-content>
                                         <v-list-tile-title>Старая версия сервиса</v-list-tile-title>
                                     </v-list-tile-content>
