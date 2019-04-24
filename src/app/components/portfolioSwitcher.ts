@@ -1,3 +1,4 @@
+import {Prop} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {Component, UI, Watch} from "../app/ui";
 import {ShowProgress} from "../platform/decorators/showProgress";
@@ -13,22 +14,22 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-list-tile class="text-xs-center sidebar-list-item">
-            <span class="portfolio-switcher-icon"></span>
             <v-list-tile-content class="portfolio-content">
                 <v-menu offset-y transition="slide-y-transition" class="portfolios-drop portfolios-menu">
-                    <div slot="activator" class="portfolios-inner-wrap">
-                        <div class="portfolios-inner-content">
-                            <span class="portfolios-name ellipsis">{{ selected.name }}</span>
+                    <v-layout slot="activator" class="pa-0 w100pc" justify-center align-center row>
+                        <span :class="['portfolio-switcher-icon', mini ? '' : 'mx-3']"></span>
+                        <div v-if="!mini" class="portfolios-inner-content">
+                            <span class="w140 fs13 ellipsis">{{ selected.name }}</span>
                             <v-layout align-center class="portfolios-list-icons">
                                 <i :class="selected.viewCurrency.toLowerCase()" title="Валюта"></i>
                                 <i v-if="selected.access" class="public-portfolio-icon" title="Публичный"></i>
                                 <i v-if="selected.professionalMode" class="professional-mode-icon" title="Профессиональный режим"></i>
                             </v-layout>
                         </div>
-                        <div class="portfolios-arrow">
+                        <div v-if="!mini" class="portfolios-arrow">
                             <v-icon>keyboard_arrow_down</v-icon>
                         </div>
-                    </div>
+                    </v-layout>
 
                     <v-list class="portfolios-list">
                         <v-list-tile v-for="(portfolio, index) in clientInfo.user.portfolios" class="portfolios-list-tile" :key="index"
@@ -59,6 +60,9 @@ export class PortfolioSwitcher extends UI {
 
     @MainStore.Action(MutationType.SET_DEFAULT_PORTFOLIO)
     private setDefaultPortfolio: (id: number) => Promise<void>;
+
+    @Prop({required: true})
+    private mini: boolean;
 
     private selected: PortfolioParams = null;
 

@@ -85,6 +85,14 @@
   background: url('../img/common/dots_more.svg') no-repeat center;
 }
 
+.hamburger-icon {
+  width: 20px;
+  height: 16px;
+  display: inline-block;
+  cursor: pointer;
+  background: url('../img/sidebar/hamb.svg') no-repeat center;
+}
+
 .public-portfolio-icon {
   width: 16px;
   height: 7px;
@@ -121,6 +129,7 @@
 .sidebar-icon {
   @extend .icon;
   background: url('../img/sidebar/logo.svg') no-repeat center;
+  cursor: initial !important;
 }
 
 .portfolio-switcher-icon {
