@@ -58,8 +58,8 @@ export class TariffLimitExceedInfo extends UI {
                             Выберите подходящий вам тарифный план
                             <div>
                                 <v-radio-group v-model="monthly" class="radio-horizontal">
-                                    <v-radio label="На месяц" :value="true"></v-radio>
                                     <v-radio label="На год" :value="false"></v-radio>
+                                    <v-radio label="На месяц" :value="true"></v-radio>
                                     <b>&nbsp;{{isDiscountApplied() ? '' : '-20%'}}</b>
                                 </v-radio-group>
                             </div>

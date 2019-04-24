@@ -35,7 +35,7 @@ import {BasePortfolioPage} from "../basePortfolioPage";
             <template #afterDashboard>
                 <v-alert v-if="isEmptyBlockShowed" :value="true" type="info" outline>
                     Для начала работы заполните свой портфель. Вы можете
-                    <router-link to="/import">загрузить отчет</router-link>
+                    <router-link to="/settings/import">загрузить отчет</router-link>
                     со сделками вашего брокера или просто
                     <router-link to="/balances">указать остатки</router-link>
                     портфеля, если знаете цену или стоимость покупки бумаг
