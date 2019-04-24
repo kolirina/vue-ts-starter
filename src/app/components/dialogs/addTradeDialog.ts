@@ -104,9 +104,9 @@ import {MainStore} from "../../vuex/mainStore";
                             </v-flex>
 
                             <!-- НКД -->
-                            <v-flex v-if="bondTrade" xs12 sm9>
+                            <v-flex xs12 sm9>
                                 <v-layout wrap>
-                                    <v-flex xs12 lg6>
+                                    <v-flex v-if="bondTrade" xs12 lg6>
                                         <ii-number-field label="НКД" v-model="nkd" @keyup="calculateFee" :decimals="2" name="nkd"
                                                          v-validate="nkdValidationString" :error-messages="errors.collect('nkd')" class="required">
                                         </ii-number-field>
@@ -560,7 +560,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private get calculationAssetType(): boolean {
-        return this.operation === Operation.DIVIDEND;
+        return [Operation.DIVIDEND, Operation.COUPON, Operation.AMORTIZATION].includes(this.operation);
     }
 
     private get total(): string {
