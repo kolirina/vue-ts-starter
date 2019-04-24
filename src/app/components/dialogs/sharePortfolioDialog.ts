@@ -94,35 +94,37 @@ import {DateFormat, DateUtils} from "../../utils/dateUtils";
 
                     <div>
                         <v-layout column class="mt-4">
-                            <v-flex xs12 v-if="shareOption === dialogTypes.BY_IDENTIFICATION">
-                                <v-text-field label="Идентификатор пользователя" v-model="userId"></v-text-field>
-                            </v-flex>
-                            <v-layout v-if="shareOption === dialogTypes.BY_LINK" align-center>
-                                <v-menu
-                                        ref="dateMenu"
-                                        :close-on-content-click="false"
-                                        v-model="dateMenuValue"
-                                        :nudge-right="40"
-                                        :return-value.sync="expiredDate"
-                                        lazy
-                                        transition="scale-transition"
-                                        offset-y
-                                        full-width
-                                        min-width="290px">
-                                    <v-text-field
-                                            slot="activator"
-                                            v-model="expiredDate"
-                                            label="Срок действия токена до"
-                                            required
-                                            append-icon="event"
-                                            readonly></v-text-field>
-                                    <v-date-picker v-model="expiredDate" :no-title="true" locale="ru" :first-day-of-week="1"
-                                                   @input="$refs.dateMenu.save(expiredDate)"></v-date-picker>
-                                </v-menu>
-                                <div v-if="link">
+                            <v-layout align-center class="px-0 py-0" wrap>
+                                <v-flex xs12 sm5 v-if="shareOption === dialogTypes.BY_IDENTIFICATION">
+                                    <v-text-field label="Идентификатор пользователя" v-model="userId"></v-text-field>
+                                </v-flex>
+                                <v-flex v-if="shareOption === dialogTypes.BY_LINK || shareOption === dialogTypes.BY_IDENTIFICATION" align-center
+                                        :class="['xs11', 'sm5', shareOption === dialogTypes.BY_IDENTIFICATION ? 'margL16' : '']">
+                                    <v-menu
+                                            ref="dateMenu"
+                                            :close-on-content-click="false"
+                                            v-model="dateMenuValue"
+                                            :return-value.sync="expiredDate"
+                                            lazy
+                                            transition="scale-transition"
+                                            offset-y
+                                            full-width
+                                            min-width="290px">
+                                        <v-text-field
+                                                slot="activator"
+                                                v-model="expiredDate"
+                                                label="Срок действия токена до"
+                                                required
+                                                append-icon="event"
+                                                readonly></v-text-field>
+                                        <v-date-picker v-model="expiredDate" :no-title="true" locale="ru" :first-day-of-week="1"
+                                                    @input="$refs.dateMenu.save(expiredDate)"></v-date-picker>
+                                    </v-menu>
+                                </v-flex>
+                                <v-flex v-if="link && (shareOption === dialogTypes.BY_LINK || shareOption === dialogTypes.BY_IDENTIFICATION)" sm1 xs1 class="mt-1">
                                     <v-tooltip transition="slide-y-transition"
                                     open-on-hover content-class="menu-icons" bottom max-width="292"
-                                    nudge-right="140">
+                                    nudge-right="120">
                                         <sup slot="activator">
                                             <div class="repeat-link-btn" @click="generateTokenLink">
                                                 <img src="img/portfolio/link.svg">
@@ -132,7 +134,7 @@ import {DateFormat, DateUtils} from "../../utils/dateUtils";
                                             Сгенерировать ссылку повторно
                                         </div>
                                     </v-tooltip>
-                                </div>
+                                </v-flex>
                             </v-layout>
                             <v-flex xs12 v-if="link" :class="[shareOption !== dialogTypes.DEFAULT_ACCESS ? 'input-link-section' : '']">
                                 <v-text-field :value="link" placeholder="url для доступа к портфелю" readonly hide-details></v-text-field>
@@ -260,9 +262,6 @@ export class SharePortfolioDialog extends CustomDialog<SharePortfolioDialogData,
 
     @ShowProgress
     private async generateTokenLink(): Promise<void> {
-        if (this.shareOption === PortfoliosDialogType.BY_IDENTIFICATION) {
-            this.expiredDate = DateUtils.formatDate(dayjs().add(7, "day"), DateFormat.DATE2);
-        }
         const isValid = this.isValid();
         if (!isValid) {
             return;
