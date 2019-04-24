@@ -98,7 +98,7 @@ import {DateFormat, DateUtils} from "../../utils/dateUtils";
                                 <v-flex xs12 sm5 v-if="shareOption === dialogTypes.BY_IDENTIFICATION">
                                     <v-text-field label="Идентификатор пользователя" v-model="userId"></v-text-field>
                                 </v-flex>
-                                <v-flex v-if="checkTypeForShowCalendar()" align-center
+                                <v-flex v-if="showCalendar" align-center
                                         :class="['xs11', 'sm5', shareOption === dialogTypes.BY_IDENTIFICATION ? 'margL16' : '']">
                                     <v-menu
                                             ref="dateMenu"
@@ -121,7 +121,7 @@ import {DateFormat, DateUtils} from "../../utils/dateUtils";
                                                     @input="$refs.dateMenu.save(expiredDate)"></v-date-picker>
                                     </v-menu>
                                 </v-flex>
-                                <v-flex v-if="link && checkTypeForShowCalendar()" sm1 xs1 class="mt-1">
+                                <v-flex v-if="link && showCalendar" sm1 xs1 class="mt-1">
                                     <v-tooltip transition="slide-y-transition"
                                     open-on-hover content-class="menu-icons" bottom max-width="292"
                                     nudge-right="120">
@@ -299,8 +299,8 @@ export class SharePortfolioDialog extends CustomDialog<SharePortfolioDialogData,
     }
 
     /** Условие для отображения календаря */
-    private checkTypeForShowCalendar(): boolean {
-        return this.shareOption === PortfoliosDialogType.BY_LINK || this.shareOption === PortfoliosDialogType.BY_IDENTIFICATION;
+    private get showCalendar(): boolean {
+        return [PortfoliosDialogType.BY_LINK, PortfoliosDialogType.BY_IDENTIFICATION].includes(this.shareOption);
     }
 
     private selectDialogType(type: PortfoliosDialogType): void {
