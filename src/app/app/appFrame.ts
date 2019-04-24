@@ -59,7 +59,7 @@ const MainStore = namespace(StoreType.MAIN);
             <template v-if="!loading && (loggedIn || externalAuth)">
                 <v-navigation-drawer disable-resize-watcher fixed stateless app class="sidebar" v-model="drawer" :mini-variant="mini" width="320">
                     <div>
-                        <v-layout class="pt-3 overflow-hidden" align-center>
+                        <v-layout :class="['pt-3', 'overflow-hidden', mini ? 'column' : '']" align-center>
                             <v-layout class="mini-menu-width sidebar-item-action" justify-center>
                                 <v-btn @click="togglePanel" v-if="mini" flat icon dark class="small-screen-hide-toogle-menu-btn">
                                     <span class="hamburger-icon"></span>
@@ -69,9 +69,8 @@ const MainStore = namespace(StoreType.MAIN);
                                     <span class="hamburger-icon"></span>
                                 </v-btn>
                             </v-layout>
-                            <portfolio-switcher :mini="false"></portfolio-switcher>
+                            <portfolio-switcher :mini="mini"></portfolio-switcher>
                         </v-layout>
-                        <portfolio-switcher v-if="mini" :mini="true"></portfolio-switcher>
                         <div v-if="!mini" :class="['wrap-toogle-menu-btn', 'small-screen-hide-toogle-menu-btn']">
                             <v-btn @click="togglePanel" fab dark small depressed color="#F0F3F8" class="toogle-menu-btn">
                                 <v-icon dark>keyboard_arrow_left</v-icon>

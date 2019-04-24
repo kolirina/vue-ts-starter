@@ -61,7 +61,7 @@ export class PortfolioSwitcher extends UI {
     @MainStore.Action(MutationType.SET_DEFAULT_PORTFOLIO)
     private setDefaultPortfolio: (id: number) => Promise<void>;
 
-    @Prop({required: true})
+    @Prop({default: false, required: false})
     private mini: boolean;
 
     private selected: PortfolioParams = null;
