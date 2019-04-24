@@ -54,7 +54,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         <v-icon>fas fa-info-circle</v-icon>
                                     </sup>
                                     <span>Экспорт сделок в csv-формат недоступен на TRIAL-плане.
-                                Пожалуйства <a href="/#/tariffs">обновите</a>
+                                Пожалуйства <a href="/#/settings/tariffs">обновите</a>
                                 подписку чтобы иметь возможность экспортировать сделки в csv формат.
                                 Или воспользуйтесь экспортом в xlsx.</span>
                                 </v-tooltip><br>
@@ -119,7 +119,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     Вам необходимо подтвердить адрес электронной почты чтобы воспользоваться данным функционалом.
                                 </span>
                                 <span v-if="isDownloadNotAllowed()">Экспорт сделок в csv-формат недоступен на TRIAL-плане.
-                                    Пожалуйства <a href="/#/tariffs">обновите</a>
+                                    Пожалуйства <a href="/#/settings/tariffs">обновите</a>
                                     подписку чтобы иметь возможность экспортировать сделки в csv формат.
                                     Или воспользуйтесь экспортом в xlsx.
                                 </span>

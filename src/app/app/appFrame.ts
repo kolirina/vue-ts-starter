@@ -87,7 +87,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 <div v-for="item in mainSection">
                                     <template v-if="item.subMenu">
                                         <v-menu transition="slide-y-transition" bottom left class="submenu-item-list" content-class="submenu-v-menu" nudge-bottom="47">
-                                            <v-list-tile slot="activator" active-class="active-link">
+                                            <v-list-tile slot="activator" :class="{'active-link': settingsSelected}">
                                                 <v-list-tile-title>{{ item.title }}</v-list-tile-title>
                                             </v-list-tile>
                                             <v-list-tile active-class="active-link" v-for="subItem in item.subMenu" :key="subItem.action"
@@ -116,7 +116,8 @@ const MainStore = namespace(StoreType.MAIN);
                     <v-layout column>
                         <v-layout class="mini-menu-width" align-center justify-end column>
                             <div>
-                                <v-btn flat round icon dark :to="{name: 'portfolio-settings'}" title="Управление портфелями" active-class="active-btn-link" class="link-icon-btn">
+                                <v-btn flat round icon dark :to="{name: 'portfolio-management'}" title="Управление портфелями"
+                                       active-class="active-btn-link" class="link-icon-btn">
                                     <span class="settings-icon"></span>
                                 </v-btn>
                             </div>
@@ -225,8 +226,9 @@ export class AppFrame extends UI {
         // Закомментировано для первого релиза
         // {title: "Котировки", action: "quotes", icon: "fas fa-chart-area"},
         {title: "Информация", path: "/share-info", icon: "fas fa-info"},
-        {title: "Настройки", icon: "fas fa-cog", subMenu: [
-                {title: "Управление портфелями", action: "portfolio-settings", icon: "fas fa-suitcase"},
+        {
+            title: "Настройки", icon: "fas fa-cog", action: "settings", subMenu: [
+                {title: "Управление портфелями", action: "portfolio-management", icon: "fas fa-suitcase"},
                 {title: "Импорт сделок", action: "import", icon: "fas fa-download"},
                 {title: "Экспорт сделок", action: "export", icon: "fas fa-upload"},
                 {title: "Тарифы", action: "tariffs", icon: "fas fa-credit-card"},
@@ -339,6 +341,10 @@ export class AppFrame extends UI {
 
     private get copyrightInfo(): string {
         return `Intelligent Investments 2012-${this.actualYear} версия ${versionConfig.version} сборка ${versionConfig.build} от ${versionConfig.date}`;
+    }
+
+    private get settingsSelected(): boolean {
+        return this.$route.path.indexOf("settings") !== -1;
     }
 }
 
