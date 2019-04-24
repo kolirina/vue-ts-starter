@@ -84,7 +84,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     </v-btn>
                                 </div>
                             </v-layout>
-                            <v-layout column class="wrap-list-menu">
+                            <v-layout v-if="!mini" column class="wrap-list-menu">
                                 <div v-for="item in mainSection">
                                     <template v-if="item.subMenu">
                                         <v-menu transition="slide-y-transition" bottom left class="submenu-item-list" content-class="submenu-v-menu" nudge-bottom="47">
