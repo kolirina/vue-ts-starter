@@ -62,7 +62,7 @@ export class InplaceInput extends UI {
         }
         if (this.editableValue !== this.value) {
             this.$emit("input", this.editableValue);
-                this.closeInput();
+            this.closeInput();
         }
     }
 
