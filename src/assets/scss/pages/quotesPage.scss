@@ -16,13 +16,15 @@
         }
         &:not([aria-sort=ascending]) {
           .v-icon {
-            display: none !important;
+            margin-left: -16px;
           }
         }
-        &:hover {
-          .v-icon {
-            display: inline-block !important;
-          }
+        &:not(.active) {
+          font-size: 12px;
+          line-height: 16px;
+          letter-spacing: 0.2px;
+          color: #4F5D75;
+          opacity: 0.48;
         }
       }
     }
