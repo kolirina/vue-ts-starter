@@ -1,5 +1,5 @@
 import Component from "vue-class-component";
-import {Prop} from "vue-property-decorator";
+import {Prop, Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class";
 import {UI} from "../app/ui";
 import {AssetType} from "../types/assetType";
@@ -7,6 +7,7 @@ import {BigMoney} from "../types/bigMoney";
 import {Operation} from "../types/operation";
 import {PortfolioAssetType} from "../types/portfolioAssetType";
 import {AssetRow, Pagination, Portfolio, TableHeader} from "../types/types";
+import {CommonUtils} from "../utils/commonUtils";
 import {SortUtils} from "../utils/sortUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
@@ -117,6 +118,13 @@ export class AssetTable extends UI {
     private assets: AssetRow[];
 
     private operation = Operation;
+
+    @Watch("pagination", {deep: true})
+    async onPaginationChange(): Promise<void> {
+        if (!CommonUtils.exists(this.pagination.sortBy)) {
+            this.pagination.sortBy = "percCurrShare";
+        }
+    }
 
     private async openTradeDialog(assetRow: AssetRow, operation: Operation): Promise<void> {
         const assetType = PortfolioAssetType.valueByName(assetRow.type);

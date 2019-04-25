@@ -18,6 +18,7 @@ import {AssetType} from "../types/assetType";
 import {StoreKeys} from "../types/storeKeys";
 import {Tariff} from "../types/tariff";
 import {Pagination, Portfolio, TableHeader, TablePagination, TradeRow} from "../types/types";
+import {CommonUtils} from "../utils/commonUtils";
 import {DateUtils} from "../utils/dateUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
@@ -134,6 +135,9 @@ export class TradesPage extends UI {
 
     @Watch("tradePagination.pagination", {deep: true})
     private async onTradePaginationChange(): Promise<void> {
+        if (!CommonUtils.exists(this.tradePagination.pagination.sortBy)) {
+            this.tradePagination.pagination.sortBy = "date";
+        }
         await this.loadTrades();
     }
 

@@ -195,17 +195,17 @@ export class TradesTable extends UI {
         this.portfolioProModeEnabled = TradeUtils.isPortfolioProModeEnabled(this.portfolio, clientInfo);
     }
 
+    setHeadersState(): void {
+        this.tableHeadersState = this.tablesService.getHeadersState(this.headers);
+    }
+
     @Watch("headers")
     onHeadersChange(): void {
         this.setHeadersState();
     }
 
-    setHeadersState(): void {
-        this.tableHeadersState = this.tablesService.getHeadersState(this.headers);
-    }
-
     @Watch("trades")
-    private onTradesUpdate(trades: TradeRow[]): void {
+    onTradesUpdate(trades: TradeRow[]): void {
         this.trades = trades;
     }
 

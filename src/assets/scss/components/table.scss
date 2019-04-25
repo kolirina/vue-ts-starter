@@ -34,7 +34,7 @@
 .data-table {
 
   tr {
-    +.bold-row {
+    + .bold-row {
       // background-color: #0404271f !important;
     }
   }
@@ -89,7 +89,9 @@
   tr {
     border: none !important;
 
-    &:hover {background: none !important;}
+    &:hover {
+      background: none !important;
+    }
 
     &:nth-child(n+2) td,
     &:nth-child(n+2) td:first-child {
@@ -118,7 +120,9 @@
     column-gap: 16px;
     margin-left: 16px;
 
-    span:not(.ext-info__ticker) {color: $font-color--lite}
+    span:not(.ext-info__ticker) {
+      color: $font-color--lite
+    }
   }
 
   &__item {
@@ -126,10 +130,14 @@
     padding: 16px;
     text-align: left;
 
-    > span:not(.ext-info__ticker) {color: $font-color--lite}
+    > span:not(.ext-info__ticker) {
+      color: $font-color--lite
+    }
   }
 
-  &__ticker {color: $sidebar-blue-color}
+  &__ticker {
+    color: $sidebar-blue-color
+  }
 }
 
 /** Стили разворачивающегося блока для таблицы Портфели. Удалить после стилизации */
@@ -178,4 +186,9 @@
 
 .table-text-word-break {
   word-break: break-word !important;
+}
+
+table.v-table tbody td:first-child, table.v-table tbody td:not(:nth-child(1)), table.v-table tbody th:first-child, table.v-table tbody th:not(:nth-child(1)),
+table.v-table thead td:first-child, table.v-table thead td:not(:nth-child(1)), table.v-table thead th:first-child, table.v-table thead th:not(:nth-child(1)) {
+  padding: 0 10px 0 10px !important;
 }

@@ -26,7 +26,7 @@ import {TradeService} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
 import {Operation} from "../types/operation";
-import {Pagination, Portfolio, StockPortfolioRow, TableHeader} from "../types/types";
+import {Pagination, StockPortfolioRow, TableHeader} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
 import {SortUtils} from "../utils/sortUtils";
 import {TradeUtils} from "../utils/tradeUtils";
@@ -275,6 +275,13 @@ export class StockTable extends UI {
     @Watch("filter", {deep: true})
     async onFilterChange(): Promise<void> {
         this.setFilteredRows();
+    }
+
+    @Watch("pagination", {deep: true})
+    async onPaginationChange(): Promise<void> {
+        if (!CommonUtils.exists(this.pagination.sortBy)) {
+            this.pagination.sortBy = "percCurrShare";
+        }
     }
 
     setFilteredRows(): void {
