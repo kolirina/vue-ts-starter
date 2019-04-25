@@ -14,32 +14,34 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-container fluid>
-            <div class="section-title">Профиль</div>
-            <v-card class="profile">
+            <v-card flat class="header-first-card">
+                <v-card-title class="header-first-card__wrapper-title">
+                    <div class="section-title header-first-card__title-text">Профиль</div>
+                    <v-spacer></v-spacer>
+                    <v-btn @click.stop="changePassword" class="primary">
+                        Сменить пароль
+                    </v-btn>
+                </v-card-title>
+            </v-card>
+            <v-card flat class="profile">
+                <div class="fs16 mb-2">
+                    Детали профиля
+                </div>
                 <div class="profile__subtitle margT0">Email</div>
-                <inplace-input name="email" @update:editMode="onModeChange('email', $event)" :editMode="editMode.email" :value="email" @input="onEmailChange">
+                <inplace-input name="email" :value="email" @input="onEmailChange">
                     <v-tooltip content-class="custom-tooltip-wrap" max-width="250px" slot="afterText" top>
                         <v-icon slot="activator" v-if="!clientInfo.user.emailConfirmed" class="profile-not-confirmed-email">fas fa-exclamation-triangle</v-icon>
                         <span>Адрес не подтвержден. Пожалуйста подтвердите Ваш адрес эл.почты что воспользоваться всеми функциями сервиса.</span>
                     </v-tooltip>
                 </inplace-input>
                 <div class="profile__subtitle">Имя пользователя</div>
-                <inplace-input name="username"
-                               @update:editMode="onModeChange('username', $event)"
-                               :editMode="editMode.username" :value="username" @input="onUserNameChange"></inplace-input>
-                <v-btn @click.stop="changePassword" class="big_btn">
-                    Сменить пароль
-                </v-btn>
+                <inplace-input name="username" :value="username" @input="onUserNameChange">
+                </inplace-input>
             </v-card>
         </v-container>
     `
 })
 export class ProfilePage extends UI {
-
-    private editMode: { [key: string]: boolean } = {
-        email: false,
-        username: false,
-    };
 
     @MainStore.Getter
     private clientInfo: ClientInfo;
@@ -58,15 +60,6 @@ export class ProfilePage extends UI {
     async mounted(): Promise<void> {
         this.username = this.clientInfo.user.username;
         this.email = this.clientInfo.user.email;
-    }
-
-    private onModeChange(field: string, newVal: boolean): void {
-        if (this.editMode[field] !== undefined) {
-            Object.keys(this.editMode).forEach(key => {
-                this.editMode[key] = false;
-            });
-            this.editMode[field] = newVal;
-        }
     }
 
     /**
