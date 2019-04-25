@@ -193,7 +193,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private portfolioService: PortfolioService;
     @Inject
     private marketHistoryService: MarketHistoryService;
-
+    /** Операции начислений */
+    private readonly CALCULATION_OPERATIONS = [Operation.COUPON, Operation.DIVIDEND, Operation.AMORTIZATION];
     private portfolio: Portfolio = null;
 
     private assetTypes = AssetType.values();
@@ -290,22 +291,28 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private async onTickerOrDateChange(): Promise<void> {
+        await this.fillFields();
+    }
+
+    private async onOperationChange(): Promise<void> {
+        await this.fillFields();
+    }
+
+    private async fillFields(): Promise<void> {
         if (!this.date || !this.share) {
             return;
         }
-        const calculationOperation = [Operation.COUPON, Operation.DIVIDEND, Operation.AMORTIZATION].includes(this.operation);
         const date = DateUtils.parseDate(this.date);
-        if (calculationOperation) {
-            await this.fillFromSuggestedInfo();
-            return;
-        }
+        // если дата текущая заполняем поля диалога из бумаги
+        // иначе пробуем получить данных за прошлые даты
         if (DateUtils.isCurrentDate(date)) {
-            if (this.assetType === AssetType.STOCK) {
-                this.fillFieldsFromStock(this.share as Stock);
-            } else if (this.assetType === AssetType.BOND) {
-                this.fillFieldsFromBond(this.share as Bond);
-            }
+            this.fillFieldsFromShare();
         } else if (DateUtils.isBefore(date)) {
+            const calculationOperation = this.CALCULATION_OPERATIONS.includes(this.operation);
+            if (calculationOperation) {
+                await this.fillFromSuggestedInfo();
+                return;
+            }
             if (this.assetType === AssetType.STOCK) {
                 const stock = (await this.marketHistoryService.getStockHistory(this.share.ticker, dayjs(this.date).format("DD.MM.YYYY")));
                 this.fillFieldsFromStock(stock);
@@ -313,17 +320,6 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
                 const bond = (await this.marketHistoryService.getBondHistory(this.share.ticker, dayjs(this.date).format("DD.MM.YYYY")));
                 this.fillFieldsFromBond(bond);
             }
-        }
-    }
-
-    private async onOperationChange(): Promise<void> {
-        if (!this.date || !this.share) {
-            return;
-        }
-        const calculationOperation = [Operation.COUPON, Operation.DIVIDEND, Operation.AMORTIZATION].includes(this.operation);
-        const date = DateUtils.parseDate(this.date);
-        if (calculationOperation) {
-            await this.fillFromSuggestedInfo();
         }
     }
 
@@ -455,13 +451,32 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private fillFieldsFromStock(stock: Stock): void {
-        this.price = new BigMoney(stock.price).amount.toString();
+        this.price = this.CALCULATION_OPERATIONS.includes(this.operation) ? "" : TradeUtils.decimal(stock.price);
     }
 
+    /**
+     * Заполняет поля диалога из облигации.
+     * @param bond выбранная облигация
+     */
     private fillFieldsFromBond(bond: Bond): void {
-        this.price = bond.prevprice;
-        this.facevalue = new BigMoney(bond.facevalue).amount.toString();
-        this.nkd = new BigMoney(bond.accruedint).amount.toString();
+        const nkd = TradeUtils.decimal(bond.accruedint);
+        const facevalue = TradeUtils.decimal(bond.facevalue);
+        switch (this.operation) {
+            case Operation.COUPON:
+                this.price = nkd;
+                this.facevalue = "";
+                this.nkd = "";
+                break;
+            case Operation.AMORTIZATION:
+                this.price = facevalue;
+                this.facevalue = "";
+                this.nkd = "";
+                break;
+            default:
+                this.price = bond.prevprice;
+                this.facevalue = facevalue;
+                this.nkd = nkd;
+        }
     }
 
     private clearFields(): void {
