@@ -351,7 +351,7 @@ export class TariffsPage extends UI {
         } else {
             price = new Decimal(tariff.monthlyPrice).mul(new Decimal(12));
         }
-        return `${price.toFixed(2)}`;
+        return `${price.toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toString()}`;
     }
 
     /**
@@ -417,6 +417,6 @@ export class TariffsPage extends UI {
         const isDiscountApplied = this.isDiscountApplied();
         const price = this.monthly ? tariff.monthlyPrice : isDiscountApplied ? tariff.yearFullPrice : tariff.yearPrice;
         const nextPurchaseDiscount = isDiscountApplied ? this.clientInfo.user.nextPurchaseDiscount : 0;
-        return new Decimal(price).mul(new Decimal(100 - nextPurchaseDiscount)).div(new Decimal("100")).toFixed(0);
+        return new Decimal(price).mul(new Decimal(100 - nextPurchaseDiscount)).mul(new Decimal("0.01")).toDecimalPlaces(0, Decimal.ROUND_UP).toString();
     }
 }

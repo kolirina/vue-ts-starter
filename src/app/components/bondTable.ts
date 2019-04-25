@@ -6,12 +6,12 @@ import {UI} from "../app/ui";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {BtnReturn} from "../platform/dialogs/customDialog";
 import {PortfolioService} from "../services/portfolioService";
-import {TABLE_HEADERS, TableHeadersState, TABLES_NAME, TablesService} from "../services/tablesService";
+import {TableHeadersState, TABLES_NAME, TablesService} from "../services/tablesService";
 import {TradeService} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
 import {Operation} from "../types/operation";
-import {BondPortfolioRow, Pagination, Portfolio, TableHeader} from "../types/types";
+import {BondPortfolioRow, Pagination, TableHeader} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
 import {SortUtils} from "../utils/sortUtils";
 import {TradeUtils} from "../utils/tradeUtils";
@@ -155,7 +155,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 </span><br>
                                 В портфеле {{ props.item.ownedDays }} {{ props.item.ownedDays | declension("день", "дня", "дней")}}, c {{ props.item.firstBuy | date }}<br>
                                 Дата погашения {{ props.item.bond.matdate }}<br>
-                                Количество {{ props.item.quantity | number  }} <span>{{ props.item.quantity | declension("облигация", "облигации", "облигации") }}</span>
+                                Количество {{ props.item.quantity | number }} <span>{{ props.item.quantity | declension("облигация", "облигации", "облигации") }}</span>
                             </div>
                         </td>
                         <td>
@@ -303,6 +303,13 @@ export class BondTable extends UI {
     @Watch("filter", {deep: true})
     onFilterChange(): void {
         this.setFilteredRows();
+    }
+
+    @Watch("pagination", {deep: true})
+    async onPaginationChange(): Promise<void> {
+        if (!CommonUtils.exists(this.pagination.sortBy)) {
+            this.pagination.sortBy = "percCurrShare";
+        }
     }
 
     setFilteredRows(): void {
