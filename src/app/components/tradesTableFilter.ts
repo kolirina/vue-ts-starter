@@ -40,7 +40,7 @@ import {TableFilterBase} from "./tableFilterBase";
 
                 <div class="trades-filter__label">Тип операции сделок</div>
                 <div class="trades-filter__operations">
-                    <v-switch v-for="op in operations" @change="onOperationChange($event, op)" :disabled="!operationEnabled(op)" :label="op.description"
+                    <v-switch v-for="op in operations" @change="onOperationChange($event, op)" :disabled="!operationEnabled(op)" :label="operationLabel(op)"
                               v-model="filter.operation.includes(op)" :key="op.enumName">
                     </v-switch>
                 </div>
@@ -136,6 +136,18 @@ export class TradesTableFilter extends UI {
 
     private operationEnabled(operation: Operation): boolean {
         return this.getDefaultOperations().includes(operation);
+    }
+
+    private operationLabel(operation: Operation): string {
+        if (this.filter.listType === TradeListType.MONEY && [Operation.BUY, Operation.SELL].includes(operation)) {
+            switch (operation) {
+                case Operation.BUY:
+                    return "Внесение";
+                case Operation.SELL:
+                    return "Списание";
+            }
+        }
+        return operation.description;
     }
 
     private emitFilterChange(): void {
