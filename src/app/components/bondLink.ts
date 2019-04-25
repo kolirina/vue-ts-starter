@@ -8,7 +8,7 @@ import {UI} from "../app/ui";
 @Component({
     // language=Vue
     template: `
-        <router-link :to="{name: 'bond-info', params: {isin: ticker}}">{{ ticker }}</router-link>
+        <router-link :to="{name: 'bond-info', params: {isin: ticker}}" class="decorationNone">{{ ticker }}</router-link>
     `
 })
 export class BondLink extends UI {

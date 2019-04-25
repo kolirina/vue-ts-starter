@@ -1,26 +1,70 @@
 .currency {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-
-  .currency-card {
-    max-width: 400px;
-    min-width: 200px;
-    margin: 10px;
-
-    .currency-code {
-      font-size: 54px;
-      color: lightgray;
-      float: left;
-      padding: 0 10px 5px 10px;
-      display: inline;
+  &-card {
+    background: #F7F9FB !important;
+    background-color: #F7F9FB !important;
+    border-radius: 4px;
+    padding: 17px 12px;
+    text-align: center;
+  }
+}
+.quotes-table {
+  thead {
+    tr {
+      th {
+        &:first-child {
+          padding-left: 31px !important;
+        }
+        &:not([aria-sort=ascending]) {
+          .v-icon {
+            display: none !important;
+          }
+        }
+        &:hover {
+          .v-icon {
+            display: inline-block !important;
+          }
+        }
+      }
     }
-
-    .currency-value {
-      display: inline;
-      position: relative;
-      top: 32px;
-      right: 15px;
+  }
+  tbody {
+    tr {
+      td {
+        &:first-child {
+          padding-left: 31px !important;
+        }
+      }
+    }
+  }
+  .accent--text {
+    color: #A1A6B6 !important;
+    caret-color: #A1A6B6 !important;
+  }
+  .v-datatable {
+    .v-datatable__actions {
+      .v-datatable__actions__select {
+        margin-right: 0px !important;
+        .v-input {
+          margin: 0px 0px 0px 18px !important;
+          .v-input__append-inner {
+            margin: 0px !important;
+            padding: 0px !important;
+          }
+        }
+      }
+      .v-datatable__actions__range-controls {
+        margin-right: 10px;
+        .v-datatable__actions__pagination {
+          margin-left: 12px !important;
+          margin-right: 0px !important;
+        }
+        .v-btn {
+          margin: 0px !important;
+          &:not(.v-btn--disabled) {
+            color: #3B6EC9 !important;
+          }
+        }
+      }
     }
   }
 }

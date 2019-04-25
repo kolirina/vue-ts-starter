@@ -13,39 +13,24 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-container v-if="portfolio" fluid>
-            <v-tabs slot="extension" v-model="currentTab" color="indigo" grow dark>
-                <v-tab>
-                    Акции
-                </v-tab>
-                <v-tab>
-                    Облигации
-                </v-tab>
-                <v-tab>
-                    Валюты
-                </v-tab>
-
-                <v-tab-item lazy>
-                    <v-card flat>
-                        <v-card-text>
-                            <stock-quotes></stock-quotes>
-                        </v-card-text>
-                    </v-card>
-                </v-tab-item>
-                <v-tab-item lazy>
-                    <v-card flat>
-                        <v-card-text>
-                            <bond-quotes></bond-quotes>
-                        </v-card-text>
-                    </v-card>
-                </v-tab-item>
-                <v-tab-item lazy>
-                    <v-card flat>
-                        <v-card-text>
-                            <currency-quotes></currency-quotes>
-                        </v-card-text>
-                    </v-card>
-                </v-tab-item>
-            </v-tabs>
+            <v-card flat class="header-first-card">
+                <v-card-title class="header-first-card__wrapper-title">
+                    <div class="section-title header-first-card__title-text">Котировки</div>
+                </v-card-title>
+            </v-card>
+            <v-card flat class="pa-0">
+                <v-radio-group v-model="currentTab" row class="mt-0 pt-4 pl-4 margB35" hide-details>
+                    <v-radio
+                        v-for="item in quotesType"
+                        :key="item"
+                        :label="item"
+                        :value="item"
+                    ></v-radio>
+                </v-radio-group>
+                <stock-quotes v-if="showStockQuotes"></stock-quotes>
+                <bond-quotes v-if="showBondQuotes"></bond-quotes>
+                <currency-quotes v-if="showCurrencyQuotes"></currency-quotes>
+            </v-card>
         </v-container>
     `,
     components: {StockQuotes, BondQuotes, CurrencyQuotes}
@@ -55,5 +40,22 @@ export class QuotesPage extends UI {
     @MainStore.Getter
     private portfolio: Portfolio;
 
-    private currentTab: any = null;
+    private quotesType = QuotesType;
+    private currentTab: QuotesType = QuotesType.STOCK;
+
+    private get showStockQuotes(): boolean {
+        return [QuotesType.STOCK].includes(this.currentTab);
+    }
+    private get showBondQuotes(): boolean {
+        return [QuotesType.BOND].includes(this.currentTab);
+    }
+    private get showCurrencyQuotes(): boolean {
+        return [QuotesType.CURRENCY].includes(this.currentTab);
+    }
+}
+
+export enum QuotesType {
+    STOCK = "Акции",
+    BOND = "Облигации",
+    CURRENCY = "Валюты"
 }
