@@ -55,11 +55,12 @@ import {ClientInfo, ClientService} from "../../services/clientService";
                                     browser-autocomplete="off"
                                     hint="Пароль может содержать строчные и прописные латинские буквы, цифры, спецсимволы. Минимум 6 символов"
                                     @click:append="showNewPassword = !showNewPassword">
+                                    placeholder="Введите пароль"
                             </v-text-field>
                         </v-form>
                     </div>
-                    <v-card-actions class="margT20">
-                        <v-btn :disabled="!valid" @click.native="validateAndChangePassword" light>Применить</v-btn>
+                    <v-card-actions class="margT30 px-0 py-0">
+                        <v-btn :disabled="!valid" @click.native="validateAndChangePassword" color="primary">Применить</v-btn>
                     </v-card-actions>
                 </div>
             </v-card>
