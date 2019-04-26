@@ -17,36 +17,37 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-container v-if="portfolio" fluid>
+        <v-container v-if="portfolio" fluid class="pa-0">
             <v-data-table :headers="headers" :items="stocks" item-key="id" :pagination.sync="pagination"
                           :rows-per-page-items="[25, 50, 100, 200]"
-                          :total-items="totalItems">
+                          :total-items="totalItems" class="quotes-table">
                 <template #items="props">
                     <tr class="selectable">
                         <td class="text-xs-left">
                             <stock-link :ticker="props.item.ticker"></stock-link>
                         </td>
                         <td class="text-xs-left">{{ props.item.shortname }}</td>
-                        <td class="text-xs-right ii-number-cell">{{ props.item.price | amount(true) }}</td>
-                        <td :class="[( Number(props.item.change) >= 0 ) ? 'ii--green-markup' : 'ii--red-markup', 'ii-number-cell', 'text-xs-right']">
+                        <td class="text-xs-center ii-number-cell">{{ props.item.price | amount(true) }}</td>
+                        <td :class="[( Number(props.item.change) >= 0 ) ? 'ii--green-markup' : 'ii--red-markup', 'ii-number-cell', 'text-xs-center']">
                             {{ props.item.change }}&nbsp;%
                         </td>
-                        <td class="text-xs-right ii-number-cell">{{ props.item.lotsize }}</td>
-                        <td class="text-xs-right" style="min-width: 200px">
-                            <v-rating v-model="props.item.rating" dense readonly></v-rating>
+                        <td class="text-xs-center ii-number-cell">{{ props.item.lotsize }}</td>
+                        <td class="text-xs-center">
+                            <v-rating v-model="props.item.rating" color="#A1A6B6" size="10" dense readonly full-icon="fiber_manual_record"
+                                      empty-icon="panorama_fish_eye" title=""></v-rating>
                         </td>
                         <td class="text-xs-center">
-                            <a v-if="props.item.currency === 'RUB'" :href="'http://moex.com/ru/issue.aspx?code=' + props.item.ticker" target="_blank"
-                               :title="'Профиль эмитента ' + props.item.name + ' на сайте биржи'">
-                                <i class="fas fa-external-link-alt"></i>
-                            </a>
-                            <a v-if="props.item.currency !== 'RUB'" :href="'https://finance.yahoo.com/quote/' + props.item.ticker" target="_blank"
-                               :title="'Профиль эмитента ' + props.item.name + ' на сайте Yahoo Finance'">
-                                <i class="fab fa-yahoo" aria-hidden="true"></i>
-                            </a>
+                            <v-btn v-if="props.item.currency === 'RUB'" :href="'http://moex.com/ru/issue.aspx?code=' + props.item.ticker" target="_blank"
+                               :title="'Профиль эмитента ' + props.item.name + ' на сайте биржи'" icon>
+                                <i class="quotes-share"></i>
+                            </v-btn>
+                            <v-btn v-if="props.item.currency !== 'RUB'" :href="'https://finance.yahoo.com/quote/' + props.item.ticker" target="_blank"
+                               :title="'Профиль эмитента ' + props.item.name + ' на сайте Yahoo Finance'" icon>
+                                <i class="quotes-share"></i>
+                            </v-btn>
                         </td>
-                        <td class="justify-center layout px-0" @click.stop>
-                            <v-menu transition="slide-y-transition" bottom left>
+                        <td class="justify-end layout px-0" @click.stop>
+                            <v-menu transition="slide-y-transition" bottom left nudge-bottom="25">
                                 <v-btn slot="activator" flat icon dark>
                                     <span class="menuDots"></span>
                                 </v-btn>
@@ -90,14 +91,14 @@ export class StockQuotes extends UI {
     private marketservice: MarketService;
 
     private headers: TableHeader[] = [
-        {text: "Тикер", align: "left", value: "ticker", width: "50"},
+        {text: "Тикер", align: "left", value: "ticker"},
         {text: "Компания", align: "left", value: "shortname"},
-        {text: "Цена", align: "right", value: "price", width: "60"},
-        {text: "Изменение", align: "right", value: "change", width: "70"},
-        {text: "Размер лота", align: "right", value: "lotsize", width: "45", sortable: false},
-        {text: "Рейтинг", align: "center", value: "rating", width: "200"},
-        {text: "Профиль эмитента", align: "center", value: "profile", width: "60", sortable: false},
-        {text: "Меню", value: "", align: "center", width: "30", sortable: false}
+        {text: "Цена", align: "center", value: "price"},
+        {text: "Изменение", align: "center", value: "change" },
+        {text: "Размер лота", align: "center", value: "lotsize", sortable: false},
+        {text: "Рейтинг", align: "center", value: "rating" },
+        {text: "Профиль эмитента", align: "center", value: "profile",  sortable: false},
+        {text: "", value: "", align: "center",  sortable: false}
     ];
 
     private totalItems = 0;

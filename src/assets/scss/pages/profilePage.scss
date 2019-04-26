@@ -1,5 +1,5 @@
 .profile {
-  padding: 20px 16px;
+  padding: 30px 0px 30px 37px;
   box-sizing: border-box;
   font-size: 14px;
 
@@ -104,10 +104,18 @@
   .inplace-out {
     width: 232px;
     flex: none;
+    .v-input__icon {
+      margin-right: 12px;
+    }
   }
 
   &-not-confirmed-email {
     color: red !important;
     font-size: 12px !important;
+  }
+}
+.focus-content-input {
+  .v-input__append-inner {
+    display: none !important;
   }
 }
