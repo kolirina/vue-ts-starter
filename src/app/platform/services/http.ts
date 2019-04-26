@@ -258,17 +258,10 @@ export class Http {
             window.location.replace("/");
             throw new Error("Доступ запрещен");
         }
-        if (response.status === 403) {
-            // при запрете доступа отображаем соответствующий диалог
-            const reason = await this.makeForbiddenError(response);
-            if (reason) {
-                reason === ForbiddenCode.DEMO_MODE ? await new ForbiddenDialog().show() : await new BlockByTariffDialog().show(reason);
-            }
-            throw new Error("Доступ запрещен");
-        }
+        let responseError = null;
         let error: any = new Error("Внутренняя ошибка сервера");
         try {
-            const responseError = await response.json();
+            responseError = await response.json();
             // кастомный тип с описанием ошибок и полями
             const errorInfo = this.makeErrorInfo(responseError);
             if (errorInfo) {
@@ -282,6 +275,13 @@ export class Http {
             }
         } catch (e) {
             // пришел ответ, отличный от json
+        }
+        if (response.status === 403) {
+            // при запрете доступа отображаем соответствующий диалог
+            const reason = await this.makeForbiddenError(responseError);
+            if (reason) {
+                reason === ForbiddenCode.DEMO_MODE ? await new ForbiddenDialog().show() : await new BlockByTariffDialog().show(reason);
+            }
         }
         error.response = {
             status: response.status,
@@ -310,11 +310,10 @@ export class Http {
         return null;
     }
 
-    private async makeForbiddenError(response: Response): Promise<ForbiddenCode> {
+    private async makeForbiddenError(response: any): Promise<ForbiddenCode> {
         try {
-            const responseError = await response.json();
-            if (responseError.message) {
-                return ForbiddenCode.valueByName(responseError.message);
+            if (response.message) {
+                return ForbiddenCode.valueByName(response.message);
             }
         } catch (e) {
             // пришел ответ, отличный от json
