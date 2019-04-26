@@ -193,7 +193,7 @@ export class AppFrame extends UI {
      * Переменная используется только для удобства локальной разработки при тестировании с отдельным приложением лэндинга
      * Ддля PRODUCTION режима используется внешняя аутентификация с лэндинга
      */
-    private externalAuth = false;
+    private externalAuth = true;
     private loggedIn = false;
 
     /* Пользователь уведомлен об обновлениях */

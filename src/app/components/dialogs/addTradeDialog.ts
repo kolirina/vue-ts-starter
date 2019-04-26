@@ -1,7 +1,6 @@
 import dayjs from "dayjs";
 import Decimal from "decimal.js";
 import {Inject} from "typescript-ioc";
-import {Container} from "typescript-ioc";
 import Component from "vue-class-component";
 import {Watch} from "vue-property-decorator";
 import {VueRouter} from "vue-router/types/router";
@@ -35,8 +34,8 @@ import {MainStore} from "../../vuex/mainStore";
 
                 <v-card-title class="paddB0">
                     <span class="headline">{{ tradeId ? "Редактирование" : "Добавление" }} сделки</span>
-                    <span class="items-dialog-title fs16 bold">
-                        <v-menu v-if="portfolios && portfolio" bottom content-class="dialog-type-menu" nudge-bottom="20" bottom right>
+                    <span v-if="portfolios && portfolio" class="items-dialog-title fs16 bold">
+                        <v-menu bottom content-class="dialog-type-menu" nudge-bottom="20" bottom right>
                             <span slot="activator">
                                 <span>
                                     {{ portfolio.portfolioParams.name }}
