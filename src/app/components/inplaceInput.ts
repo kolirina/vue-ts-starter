@@ -51,7 +51,7 @@ export class InplaceInput extends UI {
      * @inheritDoc
      */
     created(): void {
-        this.getСurrentData();
+        this.updateEditableValue();
     }
     /**
      * Инициирует событие, в котором передает измененное значение
@@ -66,19 +66,19 @@ export class InplaceInput extends UI {
         }
     }
 
-    private getСurrentData(): void {
+    private updateEditableValue(): void {
         this.$nextTick(() => {
             this.editableValue = this.value;
         });
     }
 
     private setEditMode(type: boolean): void {
-        this.getСurrentData();
+        this.updateEditableValue();
         this.isEditMode = type;
     }
 
     private closeInput(): void {
-        this.getСurrentData();
+        this.updateEditableValue();
         this.$refs.inplaceInput.blur();
     }
 
