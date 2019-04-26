@@ -58,9 +58,9 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                         <v-list-tile-title @click="openTableHeadersDialog(TABLES_NAME.STOCK)">Настроить колонки</v-list-tile-title>
                         <v-list-tile-title v-if="exportable" @click="exportTable(ExportType.STOCKS)">Экспорт в xlsx</v-list-tile-title>
                     </template>
-                    <portfolio-rows-table-filter :search.sync="stockSearch" :filter.sync="stockFilter" :store-key="StoreKeys.STOCKS_TABLE_FILTER_KEY"></portfolio-rows-table-filter>
-                    <stock-table :rows="stockRows" :headers="getHeaders(TABLES_NAME.STOCK)" :search="stockSearch" :filter="stockFilter"
-                                :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes"></stock-table>
+                    <portfolio-rows-table-filter :filter.sync="stockFilter" :store-key="StoreKeys.STOCKS_TABLE_FILTER_KEY"></portfolio-rows-table-filter>
+                    <stock-table :rows="stockRows" :headers="getHeaders(TABLES_NAME.STOCK)" :search="stockFilter.search" :filter="stockFilter"
+                                 :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes"></stock-table>
                 </expanded-panel>
 
                 <expanded-panel v-if="blockNotEmpty(emptyBlockType.BOND_PORTFOLIO)" :value="$uistate.bondsTablePanel"
@@ -78,8 +78,8 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                         <v-list-tile-title @click="openTableHeadersDialog('bondTable')">Настроить колонки</v-list-tile-title>
                         <v-list-tile-title v-if="exportable" @click="exportTable(ExportType.BONDS)">Экспорт в xlsx</v-list-tile-title>
                     </template>
-                    <portfolio-rows-table-filter :search.sync="bondSearch" :filter.sync="bondFilter" :store-key="StoreKeys.BONDS_TABLE_FILTER_KEY"></portfolio-rows-table-filter>
-                    <bond-table :rows="bondRows" :headers="getHeaders(TABLES_NAME.BOND)" :search="bondSearch" :filter="bondFilter"
+                    <portfolio-rows-table-filter :filter.sync="bondFilter" :store-key="StoreKeys.BONDS_TABLE_FILTER_KEY"></portfolio-rows-table-filter>
+                    <bond-table :rows="bondRows" :headers="getHeaders(TABLES_NAME.BOND)" :search="bondFilter.search" :filter="bondFilter"
                                 :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes"></bond-table>
                 </expanded-panel>
 
@@ -88,12 +88,12 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                     <template #header>Стоимость портфеля</template>
                     <template #customMenu>
                         <chart-export-menu v-if="lineChartData && lineChartEvents" @print="print('portfolioLineChart')" @exportTo="exportTo('portfolioLineChart', $event)"
-                                        class="exp-panel-menu"></chart-export-menu>
+                                           class="exp-panel-menu"></chart-export-menu>
                     </template>
                     <v-card-text>
                         <portfolio-line-chart v-if="lineChartData && lineChartEvents" ref="portfolioLineChart" :data="lineChartData"
-                                            :state-key-prefix="stateKeyPrefix"
-                                            :events-chart-data="lineChartEvents" :balloon-title="portfolioName"></portfolio-line-chart>
+                                              :state-key-prefix="stateKeyPrefix"
+                                              :events-chart-data="lineChartEvents" :balloon-title="portfolioName"></portfolio-line-chart>
                         <v-container v-else grid-list-md text-xs-center>
                             <v-layout row wrap>
                                 <v-flex xs12>
@@ -216,12 +216,8 @@ export class BasePortfolioPage extends UI {
     private bondPieChartData: DataPoint[] = [];
     /** Данные для графика секторов */
     private sectorsChartData: SectorChartData = null;
-    /** Поисковый запрос по табилце Акции */
-    private stockSearch = "";
     /** Фильтр таблицы Акции */
     private stockFilter: PortfolioRowFilter = {};
-    /** Поисковый запрос по табилце Облигации */
-    private bondSearch = "";
     /** Фильтр таблицы Облигации */
     private bondFilter: PortfolioRowFilter = {};
     /** Типы возможных пустых блоков */

@@ -40,7 +40,7 @@ import {Bond, Share} from "../types/types";
             </v-menu>
             <v-icon @click.native="toggleSearch">search</v-icon>
             <v-slide-x-transition>
-                <v-text-field v-if="showSearch" v-model="searchQuery" @click:clear="onClear" @blur="hideInput" :label="searchLabel"
+                <v-text-field v-if="showSearch" :value="searchQueryMutated" @input="onSearch" @click:clear="onClear" @blur="hideInput" :label="searchLabel"
                               single-line hide-details autofocus></v-text-field>
             </v-slide-x-transition>
         </div>
@@ -48,27 +48,52 @@ import {Bond, Share} from "../types/types";
 })
 export class TableFilterBase extends UI {
 
+    /** Подсказка поисковой строки */
     @Prop({required: false, type: String, default: "Поиск"})
     private searchLabel: string;
+    /** Минимальная длина поиска */
     @Prop({required: false, type: Number, default: 0})
     private minLength: number;
     /** Признак дефолтного фильтра */
     @Prop({default: false, type: Boolean})
     private isDefault: boolean;
-    private searchQuery: string = null;
+    /** Поисковая строка */
+    @Prop({default: "", type: String})
+    private searchQuery: string;
+    /** Строка для работы внутри компонента */
+    private searchQueryMutated: string = "";
     private menu = false;
     private showSearch = false;
+    /** Текущий объект таймера */
+    private currentTimer: number = null;
 
-    @Watch("searchQuery")
-    private async onSearch(): Promise<void> {
-        if (!this.searchQuery || this.searchQuery.length <= this.minLength) {
-            this.$emit("search", "");
+    created(): void {
+        this.searchQueryMutated = this.searchQuery;
+        this.showSearch = !!this.searchQueryMutated;
+    }
+
+    private onSearch(value: string): void {
+        this.searchQueryMutated = value;
+        // поле было очищено
+        if ((!this.searchQueryMutated || this.searchQueryMutated.length <= this.minLength)) {
+            this.emitClear();
             return;
         }
-        this.$emit("search", this.searchQuery);
+        clearTimeout(this.currentTimer);
+        this.currentTimer = setTimeout((): void => {
+            this.emitSearch();
+        }, 1000);
     }
 
     private onClear(): void {
+        this.emitClear();
+    }
+
+    private emitSearch(): void {
+        this.$emit("search", this.searchQueryMutated);
+    }
+
+    private emitClear(): void {
         this.$emit("search", "");
     }
 

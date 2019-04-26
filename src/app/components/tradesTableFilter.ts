@@ -25,7 +25,7 @@ import {TableFilterBase} from "./tableFilterBase";
 @Component({
     // language=Vue
     template: `
-        <table-filter-base @search="onSearch" :search-label="searchLabel" :min-length="2" :is-default="isDefault">
+        <table-filter-base @search="onSearch" :search-query="filter.search" :search-label="searchLabel" :min-length="2" :is-default="isDefault">
             <v-switch v-model="filter.showLinkedMoneyTrades" @change="onChange" class="margT0">
                 <template #label>
                     <span>Связанные сделки</span>
@@ -53,11 +53,6 @@ export class TradesTableFilter extends UI {
 
     /** Операции загружаемые по умполчанию */
     static readonly DEFAULT_OPERATIONS = [Operation.BUY, Operation.DIVIDEND, Operation.SELL, Operation.INCOME, Operation.COUPON, Operation.LOSS, Operation.AMORTIZATION];
-    @Inject
-    private storageService: Storage;
-    /** Ключ для хранения состояния */
-    @Prop({required: true, type: String})
-    private storeKey: string;
     /** Фильтр */
     @Prop({required: true, type: Object})
     private filter: TradesFilter;
@@ -66,44 +61,18 @@ export class TradesTableFilter extends UI {
     private isDefault: boolean;
     /** Плэйсхолдер строки поиска */
     private searchLabel = "Поиск по названию бумаги, по тикеру бумаги, по заметке к сделке";
-    /** Текущий объект таймера */
-    private currentTimer: number = null;
     /** Список типов */
     private listTypes = [TradeListType.FULL, TradeListType.STOCK, TradeListType.BOND, TradeListType.MONEY];
     /** Список операций */
     private operations: Operation[] = TradesTableFilter.DEFAULT_OPERATIONS;
 
     private onChange(): void {
-        this.$emit("filter", this.filter);
-        this.storageService.set(this.storeKey, this.filter);
+        this.emitFilterChange();
     }
 
     private async onSearch(searchQuery: string): Promise<void> {
         this.filter.search = searchQuery;
-        // поле было очищено
-        if (!this.filter.search) {
-            this.filter.search = "";
-            this.emitFilterChange();
-            return;
-        }
-        if (this.filter.search.length <= 2) {
-            this.emitFilterChange();
-            return;
-        }
-        const delay = new Promise((resolve, reject): void => {
-            this.currentTimer = setTimeout(async (): Promise<void> => {
-                this.emitFilterChange();
-            }, 1000);
-        });
-
-        try {
-            delay.then(() => {
-                clearTimeout(this.currentTimer);
-            });
-        } catch (error) {
-            clearTimeout(this.currentTimer);
-            throw error;
-        }
+        this.emitFilterChange();
     }
 
     private onListTypeChange(): void {
