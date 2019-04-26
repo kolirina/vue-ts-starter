@@ -17,10 +17,10 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-container v-if="portfolio" fluid>
+        <v-container v-if="portfolio" fluid class="pa-0">
             <v-data-table :headers="headers" :items="bonds" item-key="id" :pagination.sync="pagination"
                           :rows-per-page-items="[25, 50, 100, 200]"
-                          :total-items="totalItems">
+                          :total-items="totalItems" class="quotes-table">
                 <template #items="props">
                     <tr class="selectable">
                         <td class="text-xs-left">
@@ -28,25 +28,25 @@ const MainStore = namespace(StoreType.MAIN);
                         </td>
                         <td class="text-xs-left">{{ props.item.shortname }}</td>
                         <td class="text-xs-right">{{ props.item.prevprice }}%</td>
-                        <td class="text-xs-right">{{ props.item.change }}%</td>
-                        <td class="text-xs-right">{{ props.item.yield }}%</td>
-                        <td class="text-xs-right">{{ props.item.accruedint | amount(true) }}</td>
+                        <td class="text-xs-center">{{ props.item.change }}%</td>
+                        <td class="text-xs-center">{{ props.item.yield }}%</td>
+                        <td class="text-xs-center">{{ props.item.accruedint | amount(true) }}</td>
                         <td class="text-xs-right">{{ props.item.couponvalue | amount(true) }}</td>
-                        <td class="text-xs-right">{{ props.item.nextcoupon }}</td>
-                        <td class="text-xs-right">{{ props.item.facevalue | amount(true) }}</td>
-                        <td class="text-xs-right">{{ props.item.duration }}</td>
+                        <td class="text-xs-center">{{ props.item.nextcoupon }}</td>
+                        <td class="text-xs-center">{{ props.item.facevalue | amount(true) }}</td>
+                        <td class="text-xs-center">{{ props.item.duration }}</td>
                         <td class="text-xs-center">
-                            <a v-if="props.item.currency === 'RUB'" :href="'http://moex.com/ru/issue.aspx?code=' + props.item.ticker" target="_blank"
-                               :title="'Профиль эмитента ' + props.item.name + ' на сайте биржи'">
-                                <i class="fas fa-external-link-alt"></i>
-                            </a>
-                            <a v-if="props.item.currency !== 'RUB'" :href="'https://finance.yahoo.com/quote/' + props.item.ticker" target="_blank"
-                               :title="'Профиль эмитента ' + props.item.name + ' на сайте Yahoo Finance'">
-                                <i class="fab fa-yahoo" aria-hidden="true"></i>
-                            </a>
+                            <v-btn v-if="props.item.currency === 'RUB'" :href="'http://moex.com/ru/issue.aspx?code=' + props.item.ticker" target="_blank"
+                               :title="'Профиль эмитента ' + props.item.name + ' на сайте биржи'" icon>
+                                <img src="img/quotes/share.svg">
+                            </v-btn>
+                            <v-btn v-if="props.item.currency !== 'RUB'" :href="'https://finance.yahoo.com/quote/' + props.item.ticker" target="_blank"
+                               :title="'Профиль эмитента ' + props.item.name + ' на сайте Yahoo Finance'" icon>
+                                <img src="img/quotes/share.svg">
+                            </v-btn>
                         </td>
                         <td class="justify-center layout px-0" @click.stop>
-                            <v-menu transition="slide-y-transition" bottom left>
+                            <v-menu transition="slide-y-transition" bottom left nudge-bottom="25">
                                 <v-btn slot="activator" flat icon dark>
                                     <span class="menuDots"></span>
                                 </v-btn>
@@ -102,18 +102,18 @@ export class BondQuotes extends UI {
     private marketservice: MarketService;
 
     private headers: TableHeader[] = [
-        {text: "ISIN", align: "left", value: "isin", width: "50"},
+        {text: "ISIN", align: "left", value: "isin"},
         {text: "Компания", align: "left", value: "shortname"},
-        {text: "Цена", align: "right", value: "prevprice", width: "60"},
-        {text: "Изменение", align: "right", value: "change", width: "60"},
-        {text: "Доходность", align: "right", value: "yield", width: "60"},
-        {text: "НКД", align: "right", value: "accruedint", width: "45"},
-        {text: "Купон", align: "right", value: "couponvalue", width: "45"},
-        {text: "След. купон", align: "center", value: "nextcoupon", width: "60"},
-        {text: "Номинал", align: "right", value: "facevalue", width: "60"},
-        {text: "Дюрация", align: "right", value: "duration", width: "60"},
-        {text: "Профиль эмитента", align: "center", value: "profile", width: "60", sortable: false},
-        {text: "Меню", value: "", align: "center", width: "30", sortable: false}
+        {text: "Цена", align: "right", value: "prevprice"},
+        {text: "Изменение", align: "center", value: "change"},
+        {text: "Доходность", align: "center", value: "yield"},
+        {text: "НКД", align: "center", value: "accruedint"},
+        {text: "Купон", align: "right", value: "couponvalue"},
+        {text: "След. купон", align: "center", value: "nextcoupon"},
+        {text: "Номинал", align: "center", value: "facevalue"},
+        {text: "Дюрация", align: "center", value: "duration"},
+        {text: "Профиль эмитента", align: "center", value: "profile", sortable: false},
+        {text: "Меню", value: "", align: "center", sortable: false}
     ];
 
     private totalItems = 0;

@@ -216,12 +216,17 @@ input[type="search"] {
   font-size: 16px;
   line-height: 24px;
   letter-spacing: -0.3px;
-  color: $theme-color-dark-blue;
 }
 
 .fs14 {
   font-size: 14px;
-  line-height: 16px;
+  line-height: 24px;
+  color: $theme-color-dark-blue;
+}
+
+.fs13 {
+  font-size: 13px;
+  line-height: 18px;
   color: $theme-color-dark-blue;
 }
 

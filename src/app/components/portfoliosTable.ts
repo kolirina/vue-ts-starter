@@ -38,7 +38,7 @@ const MainStore = namespace(StoreType.MAIN);
                             <v-tooltip transition="slide-y-transition" open-on-hover
                                        content-class="menu-icons" right bottom v-if="props.item.professionalMode"
                                        nudge-right="122" nudge-top="10" class="hint-for-icon-name-section pl-3">
-                                <img src="img/portfolio/pro.svg" slot="activator">
+                                <i class="professional-mode-icon" slot="activator"></i>
                                 <div class="pa-3">
                                     Активирован профессиональный режим
                                 </div>
@@ -47,7 +47,7 @@ const MainStore = namespace(StoreType.MAIN);
                                        content-class="menu-icons" left bottom v-if="props.item.access"
                                        nudge-right="122" nudge-top="10"
                                        :class="['hint-for-icon-name-section', props.item.access && !props.item.professionalMode ? 'pl-3' : 'pl-2']">
-                                <img src="img/portfolio/share.svg" slot="activator">
+                                <i class="public-portfolio-icon" slot="activator"></i>
                                 <div class="pa-3">
                                     Открыт публичный доступ к портфелю
                                 </div>
