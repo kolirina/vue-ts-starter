@@ -199,8 +199,6 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         timeMenu: any,
     };
 
-    /** Сервис работы с портфелем */
-    private overviewService: OverviewService = Container.get(OverviewService);
     @Inject
     private clientService: ClientService;
     @Inject
@@ -211,6 +209,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private portfolioService: PortfolioService;
     @Inject
     private marketHistoryService: MarketHistoryService;
+    @Inject
+    private overviewService: OverviewService;
     /** Операции начислений */
     private readonly CALCULATION_OPERATIONS = [Operation.COUPON, Operation.DIVIDEND, Operation.AMORTIZATION];
     private portfolio: Portfolio = null;
@@ -318,7 +318,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private async setPortfolio(portfolio: Portfolio): Promise<void> {
         await this.overviewService.getById(portfolio.id).then((newPortfolio: Portfolio) => {
             this.portfolio = newPortfolio;
-            this.setDialogParams(portfolio);
+            this.setDialogParams(newPortfolio);
         });
     }
 
