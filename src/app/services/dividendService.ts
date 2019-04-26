@@ -13,10 +13,11 @@ export class DividendService {
     /**
      * Загружает и возвращает агрегированную информацию по дивидендам в портфеле
      * @param {string} id идентификатор портфеля
+     * @param publicZone признак публичного ресурса
      * @returns {Promise<DividendAggregateInfo>}
      */
-    async getDividendAggregateInfo(id: number): Promise<DividendAggregateInfo> {
-        return this.http.get<DividendAggregateInfo>(`/dividends/${id}/`);
+    async getDividendAggregateInfo(id: number, publicZone: boolean = false): Promise<DividendAggregateInfo> {
+        return this.http.get<DividendAggregateInfo>(`${publicZone ? "/public" : ""}/dividends/${id}/`);
     }
 
     /**

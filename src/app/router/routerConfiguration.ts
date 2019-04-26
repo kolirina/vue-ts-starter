@@ -13,6 +13,7 @@ import {DividendsPage} from "../pages/dividendsPage";
 import {EventsPage} from "../pages/eventsPage";
 import {HelpPage} from "../pages/helpPage";
 import {PortfolioPage} from "../pages/portfolioPage";
+import {PublicDividendsPage} from "../pages/public/publicDividendsPage";
 import {PublicPortfolioPage} from "../pages/public/publicPortfolioPage";
 import {QuotesPage} from "../pages/quotes/quotesPage";
 import {ExportPage} from "../pages/settings/exportPage";
@@ -276,6 +277,15 @@ export class RouterConfiguration {
                 component: PublicPortfolioPage,
                 meta: {
                     title: "Портфель",
+                    public: true
+                }
+            },
+            {
+                name: "public-dividends",
+                path: "/public/dividends/:id",
+                component: PublicDividendsPage,
+                meta: {
+                    title: "Дивиденды",
                     public: true
                 }
             }
