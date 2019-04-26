@@ -8,7 +8,7 @@ import {UI} from "../app/ui";
 @Component({
     // language=Vue
     template: `
-        <router-link :to="{name: 'share', params: {ticker: ticker}}">{{ ticker }}</router-link>
+        <router-link :to="{name: 'share', params: {ticker: ticker}}" class="decorationNone">{{ ticker }}</router-link>
     `
 })
 export class StockLink extends UI {
