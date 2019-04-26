@@ -69,7 +69,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     <span class="hamburger-icon"></span>
                                 </v-btn>
                             </v-layout>
-                            <portfolio-switcher :mini="mini"></portfolio-switcher>
+                            <portfolio-switcher v-if="!publicZone" :mini="mini"></portfolio-switcher>
                         </v-layout>
                         <div v-if="!mini" :class="['wrap-toogle-menu-btn', 'small-screen-hide-toogle-menu-btn']">
                             <v-btn @click="togglePanel" fab dark small depressed color="#F0F3F8" class="toogle-menu-btn">
@@ -114,7 +114,7 @@ const MainStore = namespace(StoreType.MAIN);
                             </v-layout>
                         </v-layout>
                     </div>
-                    <v-layout column>
+                    <v-layout v-if="!publicZone" column>
                         <v-layout class="mini-menu-width" align-center justify-end column>
                             <div>
                                 <v-btn flat round icon dark :to="{name: 'portfolio-management'}" title="Управление портфелями"
@@ -217,6 +217,7 @@ export class AppFrame extends UI {
 
     private mini = true;
     private loading = false;
+    private publicZone = false;
 
     private mainSection: NavBarItem[] = [
         {title: "Портфель", action: "portfolio", icon: "fas fa-briefcase"},
@@ -243,26 +244,15 @@ export class AppFrame extends UI {
 
     @ShowProgress
     async created(): Promise<void> {
+        this.publicZone = this.$route.meta.public;
         if (this.localStorage.get(StoreKeys.TOKEN_KEY, null)) {
             await this.startup();
         }
         // если удалось восстановить state, значит все уже загружено
-        if (this.$store.state[StoreType.MAIN].clientInfo || this.$route.meta.public) {
+        if (this.$store.state[StoreType.MAIN].clientInfo || this.publicZone) {
             this.isNotifyAccepted = UiStateHelper.lastUpdateNotification === NotificationUpdateDialog.DATE;
             this.loggedIn = true;
-            if (!this.isNotifyAccepted) {
-                this.$snotify.info("Мы улучшили сервис для Вас, ознакомьтесь с обновлениями", {
-                    closeOnClick: false,
-                    timeout: 0,
-                    buttons: [{
-                        text: "Подробнее", action: async (toast: SnotifyToast): Promise<void> => {
-                            this.$snotify.remove(toast.id);
-                            await this.openNotificationUpdateDialog();
-                        }
-                    }]
-                });
-
-            }
+            this.showUpdatesMessage();
         }
     }
 
@@ -300,6 +290,25 @@ export class AppFrame extends UI {
         const result = await new AddTradeDialog().show({store: this.$store.state[StoreType.MAIN], router: this.$router});
         if (result) {
             await this.reloadPortfolio(this.portfolio.id);
+        }
+    }
+
+    /**
+     * Отображает уведомление об обновлениях
+     * Только для приватной зоны
+     */
+    private showUpdatesMessage(): void {
+        if (!this.isNotifyAccepted && !this.publicZone) {
+            this.$snotify.info("Мы улучшили сервис для Вас, ознакомьтесь с обновлениями", {
+                closeOnClick: false,
+                timeout: 0,
+                buttons: [{
+                    text: "Подробнее", action: async (toast: SnotifyToast): Promise<void> => {
+                        this.$snotify.remove(toast.id);
+                        await this.openNotificationUpdateDialog();
+                    }
+                }]
+            });
         }
     }
 

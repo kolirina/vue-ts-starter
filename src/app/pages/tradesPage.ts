@@ -135,9 +135,6 @@ export class TradesPage extends UI {
 
     @Watch("tradePagination.pagination", {deep: true})
     private async onTradePaginationChange(): Promise<void> {
-        if (!CommonUtils.exists(this.tradePagination.pagination.sortBy)) {
-            this.tradePagination.pagination.sortBy = "date";
-        }
         await this.loadTrades();
     }
 
