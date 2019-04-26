@@ -27,9 +27,9 @@ const MainStore = namespace(StoreType.MAIN);
                         :value="item"
                     ></v-radio>
                 </v-radio-group>
-                <stock-quotes v-if="showStockQuotes"></stock-quotes>
-                <bond-quotes v-if="showBondQuotes"></bond-quotes>
-                <currency-quotes v-if="showCurrencyQuotes"></currency-quotes>
+                <stock-quotes v-if="currentTab === quotesType.STOCK"></stock-quotes>
+                <bond-quotes v-if="currentTab === quotesType.BOND"></bond-quotes>
+                <currency-quotes v-if="currentTab === quotesType.CURRENCY"></currency-quotes>
             </v-card>
         </v-container>
     `,
@@ -43,15 +43,6 @@ export class QuotesPage extends UI {
     private quotesType = QuotesType;
     private currentTab: QuotesType = QuotesType.STOCK;
 
-    private get showStockQuotes(): boolean {
-        return [QuotesType.STOCK].includes(this.currentTab);
-    }
-    private get showBondQuotes(): boolean {
-        return [QuotesType.BOND].includes(this.currentTab);
-    }
-    private get showCurrencyQuotes(): boolean {
-        return [QuotesType.CURRENCY].includes(this.currentTab);
-    }
 }
 
 export enum QuotesType {
