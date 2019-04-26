@@ -35,8 +35,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-tooltip>
                 </inplace-input>
                 <div class="profile__subtitle">Имя пользователя</div>
-                <inplace-input name="username" :value="username" @input="onUserNameChange">
-                </inplace-input>
+                <inplace-input name="username" :value="username" @input="onUserNameChange"></inplace-input>
             </v-card>
         </v-container>
     `

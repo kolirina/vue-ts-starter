@@ -11,12 +11,12 @@ import {UI} from "../app/ui";
         <div class="inplace-input">
             <v-layout>
                 <v-text-field
-                    v-model.trim="editableValue"
-                    @keyup.enter="emitCompleteEvent"
-                    @click:append="emitCompleteEvent"
-                    @keyup.esc="closeInput"
-                    @focus="setEditMode(true)"
-                    @blur="setEditMode(false)"
+                        v-model.trim="editableValue"
+                        @keyup.enter="emitCompleteEvent"
+                        @click:append="emitCompleteEvent"
+                        @keyup.esc="closeInput"
+                        @focus="setEditMode(true)"
+                        @blur="setEditMode(false)"
                         append-icon="done"
                         type="text"
                         ref="inplaceInput"
@@ -53,12 +53,13 @@ export class InplaceInput extends UI {
     created(): void {
         this.updateEditableValue();
     }
+
     /**
      * Инициирует событие, в котором передает измененное значение
      */
     private emitCompleteEvent(): void {
         if (this.editableValue.length > this.maxLength) {
-            // throw new Error("Размер вводимого значения не должен превышать " + this.maxLength);
+            throw new Error("Размер вводимого значения не должен превышать " + this.maxLength);
         }
         if (this.editableValue !== this.value) {
             this.$emit("input", this.editableValue);
@@ -72,9 +73,9 @@ export class InplaceInput extends UI {
         });
     }
 
-    private setEditMode(type: boolean): void {
+    private setEditMode(editMode: boolean): void {
         this.updateEditableValue();
-        this.isEditMode = type;
+        this.isEditMode = editMode;
     }
 
     private closeInput(): void {
