@@ -9,6 +9,8 @@ export enum StoreKeys {
     LAST_ACTION_TIME = "LAST_ACTION_TIME",
     /** Префикс ключа под которым хранится выбранный период на графике портфеля */
     PORTFOLIO_CHART = "PORTFOLIO_CHART",
+    /** Префикс ключа под которым хранится выбранный период на графике портфеля */
+    PUBLIC_PORTFOLIO_CHART = "PUBLIC_PORTFOLIO_CHART",
     /** Префикс ключа под которым хранится выбранный период на графике комбинированного портфеля */
     PORTFOLIO_COMBINED_CHART = "PORTFOLIO_COMBINED_CHART",
     /** Ключ с настройками фильтра таблицы сделки */

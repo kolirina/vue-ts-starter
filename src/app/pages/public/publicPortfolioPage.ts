@@ -32,7 +32,7 @@ import {BasePortfolioPage} from "../basePortfolioPage";
             <base-portfolio-page v-if="portfolio" :overview="portfolio.overview" :portfolio-name="portfolio.portfolioParams.name"
                                  :portfolio-id="String(portfolio.portfolioParams.id)"
                                  :line-chart-data="lineChartData" :line-chart-events="lineChartEvents" :view-currency="portfolio.portfolioParams.viewCurrency"
-                                 :state-key-prefix="StoreKeys.PORTFOLIO_CHART"
+                                 :state-key-prefix="StoreKeys.PUBLIC_PORTFOLIO_CHART"
                                  @reloadLineChart="loadPortfolioLineChart" @exportTable="onExportTable" exportable public-zone side-bar-opened>
                 <template #afterDashboard>
                     <v-alert v-if="isEmptyBlockShowed" :value="true" type="info" outline>
