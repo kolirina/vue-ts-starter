@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import Decimal from "decimal.js";
 import {Inject} from "typescript-ioc";
+import {Container} from "typescript-ioc";
 import Component from "vue-class-component";
 import {Watch} from "vue-property-decorator";
 import {VueRouter} from "vue-router/types/router";
@@ -11,10 +12,10 @@ import {ClientService} from "../../services/clientService";
 import {EventFields} from "../../services/eventService";
 import {MarketHistoryService} from "../../services/marketHistoryService";
 import {MarketService} from "../../services/marketService";
+import {OverviewService} from "../../services/overviewService";
 import {MoneyResiduals, PortfolioService} from "../../services/portfolioService";
 import {TradeFields, TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
-import {BigMoney} from "../../types/bigMoney";
 import {Operation} from "../../types/operation";
 import {TradeDataHolder} from "../../types/trade/tradeDataHolder";
 import {TradeMap} from "../../types/trade/tradeMap";
@@ -34,7 +35,22 @@ import {MainStore} from "../../vuex/mainStore";
 
                 <v-card-title class="paddB0">
                     <span class="headline">{{ tradeId ? "Редактирование" : "Добавление" }} сделки</span>
-                    <v-spacer></v-spacer>
+                    <span class="items-dialog-title fs16 bold">
+                        <v-menu v-if="portfolios && portfolio" bottom content-class="dialog-type-menu" nudge-bottom="20" bottom right>
+                            <span slot="activator">
+                                <span>
+                                    {{ portfolio.portfolioParams.name }}
+                                </span>
+                            </span>
+                            <v-list dense>
+                                <v-flex>
+                                    <div class="menu-text" v-for="portfolio in portfolios" :key="portfolio.id" @click="setPortfolio(portfolio)">
+                                        {{ portfolio.name }}
+                                    </div>
+                                </v-flex>
+                            </v-list>
+                        </v-menu>
+                    </span>
                 </v-card-title>
 
                 <v-card-text class="paddT0 paddB0">
@@ -183,6 +199,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         timeMenu: any,
     };
 
+    /** Сервис работы с портфелем */
+    private overviewService: OverviewService = Container.get(OverviewService);
     @Inject
     private clientService: ClientService;
     @Inject
@@ -246,6 +264,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private keepMoneyValue = true;
     private perOne = true;
 
+    private portfolios: any = [];
+
     private currency = "RUB";
     private processState = false;
 
@@ -254,12 +274,24 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private portfolioProModeEnabled = false;
 
     async mounted(): Promise<void> {
+        this.portfolios = this.data.portfolios;
+        this.portfolio = (this.data.store as any).currentPortfolio;
+        this.setDialogParams(this.portfolio);
+    }
+
+    @Watch("assetType")
+    private onAssetTypeChange(newValue: AssetType): void {
+        if (this.data.operation === undefined) {
+            this.operation = this.assetType.operations[0];
+        } else {
+            this.operation = this.data.operation;
+        }
+        this.clearFields();
+    }
+
+    private async setDialogParams(portfolio: Portfolio): Promise<void> {
         this.assetType = this.data.assetType || AssetType.STOCK;
         this.moneyCurrency = this.data.moneyCurrency || "RUB";
-        this.portfolio = (this.data.store as any).currentPortfolio;
-        const clientInfo = await this.clientService.getClientInfo();
-        this.portfolioProModeEnabled = TradeUtils.isPortfolioProModeEnabled(this.portfolio, clientInfo);
-        this.moneyResiduals = await this.portfolioService.getMoneyResiduals(this.portfolio.id);
         this.share = this.data.share || null;
         this.operation = this.data.operation || Operation.BUY;
         if (this.data.quantity) {
@@ -278,16 +310,16 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             this.fillFieldsFromShare();
             this.filteredShares = this.share ? [this.share] : [];
         }
+        const clientInfo = await this.clientService.getClientInfo();
+        this.portfolioProModeEnabled = TradeUtils.isPortfolioProModeEnabled(portfolio, clientInfo);
+        this.moneyResiduals = await this.portfolioService.getMoneyResiduals(portfolio.id);
     }
 
-    @Watch("assetType")
-    private onAssetTypeChange(newValue: AssetType): void {
-        if (this.data.operation === undefined) {
-            this.operation = this.assetType.operations[0];
-        } else {
-            this.operation = this.data.operation;
-        }
-        this.clearFields();
+    private async setPortfolio(portfolio: Portfolio): Promise<void> {
+        await this.overviewService.getById(portfolio.id).then((newPortfolio: Portfolio) => {
+            this.portfolio = newPortfolio;
+            this.setDialogParams(portfolio);
+        });
     }
 
     private async onTickerOrDateChange(): Promise<void> {
@@ -709,5 +741,6 @@ export type TradeDialogData = {
     eventFields?: EventFields,
     operation?: Operation,
     assetType?: AssetType,
-    moneyCurrency?: string
+    moneyCurrency?: string,
+    portfolios?: any
 };
