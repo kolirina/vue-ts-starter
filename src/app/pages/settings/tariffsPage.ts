@@ -294,6 +294,7 @@ export class TariffsPage extends UI {
         this.clientService.resetClientInfo();
         await this.reloadUser();
         if (this.$route.params.status) {
+            await this.tariffService.getOrderState();
             await this.afterSuccessPayment();
         }
     }
