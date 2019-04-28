@@ -63,6 +63,7 @@ import {StoreType} from "../../vuex/storeType";
                                     <span class="info-share-page__name-stock-block__subtitle">
                                         Сектор - {{ share.sector.name }}
                                     </span>
+                                    ,&nbsp;
                                     <span v-if="share.sector.parent" class="info-share-page__name-stock-block__subtitle">
                                         родительский сектор: {{ share.sector.parent.name }}
                                     </span>
