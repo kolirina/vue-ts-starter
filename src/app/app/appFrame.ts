@@ -69,7 +69,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     <span class="hamburger-icon"></span>
                                 </v-btn>
                             </v-layout>
-                            <portfolio-switcher v-if="!publicZone" :mini="mini"></portfolio-switcher>
+                            <portfolio-switcher v-if="clientInfo && portfolio" :mini="mini"></portfolio-switcher>
                         </v-layout>
                         <div v-if="!mini" :class="['wrap-toogle-menu-btn', 'small-screen-hide-toogle-menu-btn']">
                             <v-btn @click="togglePanel" fab dark small depressed color="#F0F3F8" class="toogle-menu-btn">
