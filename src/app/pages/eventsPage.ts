@@ -144,8 +144,8 @@ const MainStore = namespace(StoreType.MAIN);
                                     <stock-link :ticker="props.item.ticker"></stock-link>
                                 </td>
                                 <td class="text-xs-left">{{ props.item.shortname }}</td>
-                                <td class="text-xs-right">{{ props.item.meetDate }}</td>
-                                <td class="text-xs-right">{{ props.item.cutDate }}</td>
+                                <td class="text-xs-right">{{ props.item.meetDate | date }}</td>
+                                <td class="text-xs-right">{{ props.item.cutDate | date }}</td>
                                 <td class="text-xs-right ii-number-cell">
                                     {{ props.item.recCommonValue | number }}
                                     <span class="amount__currency">{{ props.item.currency | currencySymbolByCurrency }}</span>
