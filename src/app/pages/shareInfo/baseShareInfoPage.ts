@@ -63,13 +63,12 @@ import {StoreType} from "../../vuex/storeType";
                                     <span class="info-share-page__name-stock-block__subtitle">
                                         Сектор - {{ share.sector.name }}
                                     </span>
-                                    ,&nbsp;
                                     <span v-if="share.sector.parent" class="info-share-page__name-stock-block__subtitle">
-                                        родительский сектор: {{ share.sector.parent.name }}
+                                        ,&nbsp;родительский сектор: {{ share.sector.parent.name }}
                                     </span>
                                     <span class="rating-section">
                                         <v-rating color="#A1A6B6" size="10" v-model="share.rating" dense readonly full-icon="fiber_manual_record"
-                                        empty-icon="panorama_fish_eye" title=""></v-rating>
+                                                  empty-icon="panorama_fish_eye" title=""></v-rating>
                                     </span>
                                 </div>
                             </div>

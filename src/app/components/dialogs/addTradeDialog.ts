@@ -8,6 +8,7 @@ import {DisableConcurrentExecution} from "../../platform/decorators/disableConcu
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {CustomDialog} from "../../platform/dialogs/customDialog";
 import {ClientService} from "../../services/clientService";
+import {DateTimeService} from "../../services/dateTimeService";
 import {EventFields} from "../../services/eventService";
 import {MarketHistoryService} from "../../services/marketHistoryService";
 import {MarketService} from "../../services/marketService";
@@ -193,6 +194,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private portfolioService: PortfolioService;
     @Inject
     private marketHistoryService: MarketHistoryService;
+    @Inject
+    private dateTimeService: DateTimeService;
     /** Операции начислений */
     private readonly CALCULATION_OPERATIONS = [Operation.COUPON, Operation.DIVIDEND, Operation.AMORTIZATION];
     private portfolio: Portfolio = null;
@@ -650,7 +653,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     getDate(): string {
-        const time = DateUtils.isCurrentDate(DateUtils.parseDate(this.date)) ? DateUtils.currentTime() : "12:00";
+        const time = DateUtils.isCurrentDate(DateUtils.parseDate(this.date)) ? this.dateTimeService.getCurrentTime() : "12:00";
         return this.portfolioProModeEnabled ? `${this.date} ${this.time}` : `${this.date} ${time}`;
     }
 
