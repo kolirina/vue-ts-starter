@@ -7,7 +7,7 @@ import {BtnReturn} from "../platform/dialogs/customDialog";
 import {TradeService} from "../services/tradeService";
 import {BigMoney} from "../types/bigMoney";
 import {Operation} from "../types/operation";
-import {AssetRow, Portfolio, StockPortfolioRow, TableHeader} from "../types/types";
+import {AssetRow, Pagination, Portfolio, StockPortfolioRow, TableHeader} from "../types/types";
 import {SortUtils} from "../utils/sortUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
@@ -18,7 +18,7 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-data-table class="data-table" :headers="headers" :items="rows" item-key="id" :custom-sort="customSort" hide-actions>
+        <v-data-table class="data-table" :headers="headers" :items="rows" item-key="id" :custom-sort="customSort" :pagination.sync="pagination" hide-actions must-sort>
             <v-progress-linear slot="progress" color="blue" indeterminate></v-progress-linear>
             <template #items="props">
                 <tr class="selectable">
@@ -31,7 +31,18 @@ const MainStore = namespace(StoreType.MAIN);
                     <td class="text-xs-right"><span v-if="props.item.type === 'STOCK'">{{ props.item.avgBuy | amount }}</span></td>
                     <td class="text-xs-right">{{ props.item.currCost | amount(true)}}</td>
                     <td class="justify-center layout px-0" @click.stop>
-                        <v-icon v-if="props.item.type === 'STOCK'" color="primary" small @click="deleteAllTrades(props.item)">fas fa-trash-alt</v-icon>
+                        <v-menu transition="slide-y-transition" bottom left min-width="173" nudge-bottom="30">
+                            <v-btn slot="activator" flat icon dark>
+                                <span class="menuDots"></span>
+                            </v-btn>
+                            <v-list dense>
+                                <v-list-tile @click="deleteAllTrades(props.item)">
+                                    <v-list-tile-title class="delete-btn">
+                                        Удалить
+                                    </v-list-tile-title>
+                                </v-list-tile>
+                            </v-list>
+                        </v-menu>
                     </td>
                 </tr>
             </template>
@@ -54,12 +65,12 @@ export class BalancesTable extends UI {
     private operation = Operation;
 
     private headers: TableHeader[] = [
-        {text: "Актив", align: "left", sortable: false, value: "company", width: "80"},
+        {text: "Актив", align: "left", value: "company", width: "80"},
         {text: "Тикер", align: "left", value: "ticker", width: "45"},
         {text: "Количество", align: "right", value: "quantity", width: "60"},
         {text: "Ср. цена", align: "right", value: "avgBuy", width: "60"},
         {text: "Тек. стоимость", align: "right", value: "currCost", width: "65"},
-        {text: "Действия", align: "center", value: "actions", sortable: false, width: "25"}
+        {text: "", align: "right", value: "actions", sortable: false, width: "25"}
     ];
 
     @Prop({default: [], required: true})
@@ -67,6 +78,13 @@ export class BalancesTable extends UI {
 
     @Prop({default: [], required: true})
     private assets: AssetRow[];
+
+    /** Паджинация для задания дефолтной сортировки */
+    private pagination: Pagination = {
+        descending: false,
+        sortBy: "currCost",
+        rowsPerPage: -1
+    };
 
     created(): void {
         this.prepareRows();

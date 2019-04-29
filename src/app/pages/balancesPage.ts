@@ -28,7 +28,7 @@ const MainStore = namespace(StoreType.MAIN);
         <v-container fluid class="selectable">
             <v-layout column wrap>
                 <v-flex xs12>
-                    <v-card>
+                    <v-card flat>
                         <v-card-title>
                             <span class="headline">Задать текущие остатки портфеля</span>
                         </v-card-title>
@@ -136,13 +136,13 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-flex>
             </v-layout>
 
-            <v-card>
+            <v-card flat>
                 <v-card-text class="text-xs-center title">
                     Текущая стоимость портфеля:
                     <router-link to="portfolio" style="text-decoration: none">
-                    <span :class="portfolio.portfolioParams.viewCurrency.toLowerCase()">
-                        {{ this.portfolio.overview.dashboardData.currentCost | amount(true) }}
-                    </span>
+                        <span :class="portfolio.portfolioParams.viewCurrency.toLowerCase()">
+                            {{ this.portfolio.overview.dashboardData.currentCost | amount(true) }}
+                        </span>
                     </router-link>
                 </v-card-text>
             </v-card>
