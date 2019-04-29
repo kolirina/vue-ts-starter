@@ -18,7 +18,7 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-data-table :headers="headers" :items="assets" :custom-sort="customSort" :pagination.sync="pagination" hide-actions>
+        <v-data-table :headers="headers" :items="assets" :custom-sort="customSort" :pagination.sync="pagination" hide-actions must-sort>
             <template #headerCell="props">
                 <v-tooltip v-if="props.header.tooltip" content-class="custom-tooltip-wrap" bottom>
                     <template #activator="{ on }">
@@ -118,13 +118,6 @@ export class AssetTable extends UI {
     private assets: AssetRow[];
 
     private operation = Operation;
-
-    @Watch("pagination", {deep: true})
-    async onPaginationChange(): Promise<void> {
-        if (!CommonUtils.exists(this.pagination.sortBy)) {
-            this.pagination.sortBy = "percCurrShare";
-        }
-    }
 
     private async openTradeDialog(assetRow: AssetRow, operation: Operation): Promise<void> {
         const assetType = PortfolioAssetType.valueByName(assetRow.type);

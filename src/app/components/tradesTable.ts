@@ -24,7 +24,7 @@ const MainStore = namespace(StoreType.MAIN);
     template: `
         <v-data-table class="data-table" :headers="headers" :items="trades" item-key="id" :pagination.sync="tradePagination.pagination"
                       :total-items="tradePagination.totalItems" :custom-sort="customSort"
-                      :no-data-text="tradePagination.totalItems ? 'Ничего не найдено' : 'Добавьте свою первую сделку и она отобразится здесь'" expand hide-actions>
+                      :no-data-text="tradePagination.totalItems ? 'Ничего не найдено' : 'Добавьте свою первую сделку и она отобразится здесь'" expand hide-actions must-sort>
             <template #items="props">
                 <tr class="selectable" @dblclick="props.expanded = !props.expanded">
                     <td>

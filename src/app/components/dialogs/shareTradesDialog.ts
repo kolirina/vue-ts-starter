@@ -20,7 +20,7 @@ import {TradeUtils} from "../../utils/tradeUtils";
                 </v-card-title>
                 <v-card-text>
                     <v-data-table :headers="headers" :items="data.trades" item-key="id"
-                                  :custom-sort="customSort" :pagination.sync="pagination" hide-actions>
+                                  :custom-sort="customSort" :pagination.sync="pagination" hide-actions must-sort>
                         <template #items="props">
                             <tr class="selectable" @click="props.expanded = !props.expanded">
                                 <td>{{ props.item.operationLabel }}</td>
