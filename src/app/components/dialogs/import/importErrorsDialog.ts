@@ -35,7 +35,7 @@ import {TableHeader} from "../../../types/types";
                         <v-card-title class="import-dialog-wrapper__title">
                             <span class="import-dialog-wrapper__title-text">Результаты импорта</span>
                         </v-card-title>
-                        <v-card-text class="import-dialog-wrapper__description">
+                        <v-card-text class="import-dialog-wrapper__description selectable">
                             <div class="import-dialog-wrapper__description-text import-default-text">
                                 При импортировании отчета возникли ошибки, портфель не был импортирован полностью. Чтобы завершить формирование пожалуйста внесите остатки вручную.
                             </div>
@@ -43,7 +43,7 @@ import {TableHeader} from "../../../types/types";
                                 Успешно {{ data.validatedTradesCount | declension("добавлена", "добавлено", "добавлено") }}
                                 {{ data.validatedTradesCount | declension("сделка", "сделки", "сделок") }}<span class="amount-deals">{{ data.validatedTradesCount }}</span></div>
                         </v-card-text>
-                        <v-card-text class="import-dialog-wrapper__content import-dialog-wrapper__error-table">
+                        <v-card-text class="import-dialog-wrapper__content import-dialog-wrapper__error-table selectable">
                             <v-data-table :headers="headers" :items="data.errors" hide-actions must-sort>
                                 <template #items="props">
                                     <tr class="selectable">

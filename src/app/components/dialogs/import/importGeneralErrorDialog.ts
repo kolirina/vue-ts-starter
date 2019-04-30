@@ -34,7 +34,7 @@ import {CustomDialog} from "../../../platform/dialogs/customDialog";
                     </v-card-title>
                     <v-card-text>
                         <div>
-                            <p class="import-dialog-wrapper__description-text import-default-text">
+                            <p class="import-dialog-wrapper__description-text import-default-text selectable">
                                 Произошла ошибка импорта: {{ data.generalError }}
                             </p>
 
