@@ -21,6 +21,7 @@ input[type="search"] {
 
 .margT24 {margin-top: 24px !important}
 .margT40 {margin-top: 40px}
+.margT30 {margin-top: 30px}
 
 .margL8 {margin-left: 8px  !important}
 .margL16 {margin-left: 16px  !important}
@@ -211,12 +212,30 @@ input[type="search"] {
 
 .fs24 {font-size: 24px}
 
+.fs16 {
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: -0.3px;
+}
+
+.fs14 {
+  font-size: 14px;
+  line-height: 24px;
+  color: $theme-color-dark-blue;
+}
+
 .fs13 {
   font-size: 13px;
   line-height: 18px;
   color: $theme-color-dark-blue;
 }
 
+.fs12 {
+  font-size: 12px;
+  line-height: 12px;
+  color: #3d4656;
+  opacity: .54;
+}
 
 // Другое ==============================================================================================================
 

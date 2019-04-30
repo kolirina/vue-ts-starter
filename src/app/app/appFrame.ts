@@ -69,7 +69,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     <span class="hamburger-icon"></span>
                                 </v-btn>
                             </v-layout>
-                            <portfolio-switcher v-if="!publicZone" :mini="mini"></portfolio-switcher>
+                            <portfolio-switcher v-if="clientInfo && portfolio" :mini="mini"></portfolio-switcher>
                         </v-layout>
                         <div v-if="!mini" :class="['wrap-toogle-menu-btn', 'small-screen-hide-toogle-menu-btn']">
                             <v-btn @click="togglePanel" fab dark small depressed color="#F0F3F8" class="toogle-menu-btn">
@@ -226,7 +226,7 @@ export class AppFrame extends UI {
         {title: "Дивиденды", action: "dividends", icon: "far fa-calendar-plus"},
         {title: "Составной портфель", action: "combined-portfolio", icon: "fas fa-object-group"},
         // Закомментировано для первого релиза
-        // {title: "Котировки", action: "quotes", icon: "fas fa-chart-area"},
+        {title: "Котировки", action: "quotes", icon: "fas fa-chart-area"},
         {title: "Информация", path: "/share-info", icon: "fas fa-info"},
         {
             title: "Настройки", icon: "fas fa-cog", action: "settings", subMenu: [
@@ -330,14 +330,7 @@ export class AppFrame extends UI {
      * Переключает на старую версию приложения
      */
     private async goToOldVersion(): Promise<void> {
-        try {
-            const result = await this.clientService.switchToOldVersion();
-            if (!result) {
-                window.location.replace(`https://intelinvest.ru/portfolio`);
-            }
-        } catch (e) {
-            throw e;
-        }
+        window.location.assign(`https://intelinvest.ru/portfolio`);
     }
 
     private togglePanel(): void {

@@ -91,7 +91,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </div>
 
                     <v-data-table v-if="events.length" :headers="eventsHeaders" :items="events" item-key="id" :custom-sort="customSortEvents"
-                                  class="events-table" hide-actions>
+                                  class="events-table" hide-actions must-sort>
                         <template #items="props">
                             <tr class="selectable">
                                 <td class="text-xs-left pl-30">{{ props.item.label }}</td>
@@ -139,15 +139,15 @@ const MainStore = namespace(StoreType.MAIN);
 
                 <v-card-text>
                     <v-data-table v-if="dividendNews.length" :headers="dividendNewsHeaders" :items="dividendNews" item-key="id" :custom-sort="customSortNews"
-                                  class="dividend-news-table events-table" hide-actions>
+                                  class="dividend-news-table events-table" hide-actions must-sort>
                         <template #items="props">
                             <tr class="selectable">
                                 <td class="text-xs-left pl-30">
                                     <stock-link :ticker="props.item.ticker"></stock-link>
                                 </td>
                                 <td class="text-xs-left">{{ props.item.shortname }}</td>
-                                <td class="text-xs-right">{{ props.item.meetDate }}</td>
-                                <td class="text-xs-right">{{ props.item.cutDate }}</td>
+                                <td class="text-xs-right">{{ props.item.meetDate | date }}</td>
+                                <td class="text-xs-right">{{ props.item.cutDate | date }}</td>
                                 <td class="text-xs-right ii-number-cell">
                                     {{ props.item.recCommonValue | number }}
                                     <span class="amount__currency">{{ props.item.currency | currencySymbolByCurrency }}</span>

@@ -11,6 +11,7 @@ import {PortfolioParams, PortfoliosDialogType, PortfolioService} from "../servic
 import {EventType} from "../types/eventType";
 import {Portfolio, TableHeader} from "../types/types";
 import {SortUtils} from "../utils/sortUtils";
+import {TradeUtils} from "../utils/tradeUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {ConfirmDialog} from "./dialogs/confirmDialog";
@@ -23,7 +24,7 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-data-table :headers="headers" :items="portfolios" item-key="id" :custom-sort="customSort" hide-actions class="portfolios-content-table">
+        <v-data-table :headers="headers" :items="portfolios" item-key="id" :custom-sort="customSort" hide-actions class="portfolios-content-table" must-sort>
             <template #items="props">
                 <tr class="selectable" @dblclick="props.expanded = !props.expanded">
                     <td>
@@ -37,7 +38,7 @@ const MainStore = namespace(StoreType.MAIN);
                             <v-tooltip transition="slide-y-transition" open-on-hover
                                        content-class="menu-icons" right bottom v-if="props.item.professionalMode"
                                        nudge-right="122" nudge-top="10" class="hint-for-icon-name-section pl-3">
-                                <img src="img/portfolio/pro.svg" slot="activator">
+                                <i class="professional-mode-icon" slot="activator"></i>
                                 <div class="pa-3">
                                     Активирован профессиональный режим
                                 </div>
@@ -46,7 +47,7 @@ const MainStore = namespace(StoreType.MAIN);
                                        content-class="menu-icons" left bottom v-if="props.item.access"
                                        nudge-right="122" nudge-top="10"
                                        :class="['hint-for-icon-name-section', props.item.access && !props.item.professionalMode ? 'pl-3' : 'pl-2']">
-                                <img src="img/portfolio/share.svg" slot="activator">
+                                <i class="public-portfolio-icon" slot="activator"></i>
                                 <div class="pa-3">
                                     Открыт публичный доступ к портфелю
                                 </div>
@@ -54,7 +55,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-layout>
                     </td>
                     <td class="text-xs-right">{{ props.item.fixFee }}&nbsp;<span class="second-value">%</span></td>
-                    <td class="text-xs-center">{{ props.item.viewCurrency }}</td>
+                    <td class="text-xs-center">{{ getCurrencySymbol(props.item.viewCurrency) }}</td>
                     <td class="text-xs-left">{{ props.item.accountType.description }}</td>
                     <td class="text-xs-right">{{ props.item.openDate }}</td>
                     <td class="justify-center layout px-0" @click.stop>
@@ -233,6 +234,10 @@ export class PortfoliosTable extends UI {
         const result = await this.portfolioService.updatePortfolio(portfolio);
         this.$snotify.info(`Профессиональный режим для портфеля ${result.professionalMode ? "включен" : "выключен"}`);
         UI.emit(EventType.PORTFOLIO_UPDATED, result);
+    }
+
+    private getCurrencySymbol(currency: string): string {
+        return TradeUtils.getCurrencySymbol(currency);
     }
 
     private customSort(items: PortfolioParams[], index: string, isDesc: boolean): PortfolioParams[] {

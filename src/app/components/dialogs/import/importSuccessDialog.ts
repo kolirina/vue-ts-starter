@@ -1,13 +1,29 @@
+/*
+ * STRICTLY CONFIDENTIAL
+ * TRADE SECRET
+ * PROPRIETARY:
+ *       "Intelinvest" Ltd, TIN 1655386205
+ *       420107, REPUBLIC OF TATARSTAN, KAZAN CITY, SPARTAKOVSKAYA STREET, HOUSE 2, ROOM 119
+ * (c) "Intelinvest" Ltd, 2019
+ *
+ * СТРОГО КОНФИДЕНЦИАЛЬНО
+ * КОММЕРЧЕСКАЯ ТАЙНА
+ * СОБСТВЕННИК:
+ *       ООО "Интеллектуальные инвестиции", ИНН 1655386205
+ *       420107, РЕСПУБЛИКА ТАТАРСТАН, ГОРОД КАЗАНЬ, УЛИЦА СПАРТАКОВСКАЯ, ДОМ 2, ПОМЕЩЕНИЕ 119
+ * (c) ООО "Интеллектуальные инвестиции", 2019
+ */
+
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {VueRouter} from "vue-router/types/router";
-import {ShowProgress} from "../../platform/decorators/showProgress";
-import {BtnReturn, CustomDialog} from "../../platform/dialogs/customDialog";
-import {ImportResponse} from "../../services/importService";
-import {OverviewService} from "../../services/overviewService";
-import {Portfolio} from "../../types/types";
-import {CommonUtils} from "../../utils/commonUtils";
-import {MainStore} from "../../vuex/mainStore";
+import {ShowProgress} from "../../../platform/decorators/showProgress";
+import {BtnReturn, CustomDialog} from "../../../platform/dialogs/customDialog";
+import {ImportResponse} from "../../../services/importService";
+import {OverviewService} from "../../../services/overviewService";
+import {Portfolio} from "../../../types/types";
+import {CommonUtils} from "../../../utils/commonUtils";
+import {MainStore} from "../../../vuex/mainStore";
 
 /**
  * Диалог ввода остатка денежных средств

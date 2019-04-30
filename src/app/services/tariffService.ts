@@ -27,6 +27,13 @@ export class TariffService {
     async applyPromoCode(promoCode: string): Promise<void> {
         await this.http.post(`/tariff/apply-promo-code/${promoCode}`);
     }
+
+    /**
+     * Проверяет оплату заказа
+     */
+    async getOrderState(): Promise<void> {
+        await this.http.get("/tariff/order-state");
+    }
 }
 
 /** Запрос на оплату тарифа */
