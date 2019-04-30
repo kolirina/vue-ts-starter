@@ -1,3 +1,5 @@
+import dayjs from "dayjs";
+import "dayjs/locale/ru";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {Watch} from "vue-property-decorator";
@@ -158,6 +160,96 @@ const MainStore = namespace(StoreType.MAIN);
                     <div v-else class="dividend-news-table__empty">Дивидендных новостей по вашим бумагам нет</div>
                 </v-card-text>
             </v-card>
+            <v-card class="events__card" flat style="margin-top: 30px">
+                <v-card-title class="events__card-title">
+                    <v-layout class="px-0 py-0">
+                        Календарь событий
+                        <v-spacer></v-spacer>
+                        <div class="import-wrapper-content pr-1">
+                            <v-menu content-class="dialog-setings-menu"
+                                    transition="slide-y-transition"
+                                    nudge-bottom="36" left bottom class="setings-menu my-0 mx-0"
+                                    :close-on-content-click="false" min-width="255">
+                                <v-btn class="btn" slot="activator">
+                                    Настройки
+                                </v-btn>
+                                <v-list dense>
+                                    <div class="title-setings">
+                                        Тип события
+                                    </div>
+                                    <v-flex>
+                                        <v-checkbox v-for="item in calendarEventsTypes" :input-value="getValue(item)" @change="changeFilterParams(item)"
+                                                    :key="item" hide-details class="checkbox-setings">
+                                            <template #label>
+                                                <span>
+                                                    {{ getTypeEvent(item) }}
+                                                </span>
+                                            </template>
+                                        </v-checkbox>
+                                    </v-flex>
+                                </v-list>
+                            </v-menu>
+                        </div>
+                    </v-layout>
+                </v-card-title>
+                <v-card-text class="events-calendar-wrap">
+                    <v-layout class="pl-3">
+                        <div class="pl-3">
+                            <v-menu
+                                v-model="miniCalendarMenu"
+                                :close-on-content-click="false"
+                                full-width
+                                bottom right
+                                nudge-bottom="23"
+                                nudge-right="6"
+                                max-width="290"
+                            >
+                                <template v-slot:activator="{ on }">
+                                    <v-flex :class="['select-date-input', miniCalendarMenu ? 'rotate-icons' : '']">
+                                        <v-input
+                                            append-icon="keyboard_arrow_down"
+                                            v-on="on"
+                                            hide-details
+                                        >
+                                            {{ formattedDate }}
+                                        </v-input>
+                                    </v-flex>
+                                </template>
+                                <v-date-picker
+                                    v-model="calendarStartDate"
+                                    type="month"
+                                    locale="ru"
+                                    @change="changeMonth()"
+                                ></v-date-picker>
+                            </v-menu>
+                        </div>
+                    </v-layout>
+                    <v-sheet v-if="calendarEvents">
+                        <v-calendar :now="today" color="primary" locale="ru">
+                            <template v-slot:day="{ date }">
+                                <vue-scroll>
+                                    <div class="wrap-list-events">
+                                        <div>
+                                            <div v-for="event in calendarEvents[date]" :key="event.title">
+                                                <v-menu max-width="267" right nudge-right="150" content-class="fs13 info-about-event">
+                                                    <template v-slot:activator="{ on }">
+                                                        <div v-ripple v-on="on" :class="[event.styleClass, 'fs13', 'calendar-events-title', 'pl-2']">
+                                                            {{ getTypeEvent(event.styleClass) }}
+                                                        </div>
+                                                    </template>
+                                                    <v-card flat>
+                                                        {{ event.description }}
+                                                    </v-card>
+                                                </v-menu>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </vue-scroll>
+                            </template>
+                        </v-calendar>
+                    </v-sheet>
+                </v-card-text>
+            </v-card>
         </v-container>
     `
 })
@@ -193,7 +285,23 @@ export class EventsPage extends UI {
         {text: "Размер возможных дивидендов", align: "right", value: "recCommonValue", width: "60"},
         {text: "Источник", align: "center", value: "source", sortable: false, width: "70"}
     ];
-
+    /** Параметры дат для отправки в апи */
+    private calendarParams: any = {
+        start: "2019-04-01",
+        end: "2019-04-30"
+    };
+    /** Устанавливаем сегодняшнюю дату */
+    private today: string = new Date().toISOString().substr(0, 10);
+    /** При загрузке отображать в календаре текущий месяц */
+    private calendarStartDate: string = new Date().toISOString().substr(0, 10);
+    /** Массив с ивентами для отображения на странице */
+    private calendarEvents: any[] = [];
+    /** Конфиг отображения мини календаря для пика месяца */
+    private miniCalendarMenu: boolean = false;
+    /** Типы ивентов которые отображаються на странице */
+    private typeCalendarEvents: string[] = this.eventService.calendarEvents;
+    /** Типы ивентов для использования в шаблоне */
+    private calendarEventsTypes = CalendarEventsTypes;
     /**
      * Инициализация данных
      * @inheritDoc
@@ -202,6 +310,7 @@ export class EventsPage extends UI {
     async created(): Promise<void> {
         await this.loadEvents();
         await this.loadDividendNews();
+        this.getCalendarEvents();
     }
 
     @Watch("portfolio")
@@ -209,6 +318,68 @@ export class EventsPage extends UI {
     private async onPortfolioChange(): Promise<void> {
         await this.loadEvents();
         await this.loadDividendNews();
+    }
+
+    /** Получаем уже отфильтрованные данные для календаря */
+    @ShowProgress
+    private async getCalendarEvents(): Promise<void> {
+        this.calendarEvents = await this.eventService.getCalendarEvents(this.calendarParams, this.typeCalendarEvents);
+    }
+
+    /** Устанавливаем чекбоксы в состояние согласно фильтру */
+    private getValue(typeEvents: CalendarEventsTypes): boolean {
+        return this.typeCalendarEvents.includes(typeEvents);
+    }
+
+    /** Форматирование даты для отображение на странице согласно макету */
+    private get formattedDate(): string {
+        return dayjs(this.calendarStartDate).locale("ru").format("MMMM YYYY");
+    }
+
+    /** Получаем тип ивентов на рус. языке */
+    private getTypeEvent(typeEvents: CalendarEventsTypes): string {
+        switch (typeEvents) {
+            case CalendarEventsTypes.COUPON:
+                return "Купон";
+            case CalendarEventsTypes.AMORTIZATION:
+                return "Амортизация";
+            case CalendarEventsTypes.DIVIDEND:
+                return "Дивиденды";
+            case CalendarEventsTypes.REPAYMENT:
+                return "Погашение";
+            case CalendarEventsTypes.CUSTOM:
+                return "Пользоватeль";
+        }
+    }
+
+    /** Применение фильтра */
+    private async changeFilterParams(typeEvents: CalendarEventsTypes): Promise<void> {
+        let i: number = null;
+        this.typeCalendarEvents.forEach((currentValue, index) => {
+            if (currentValue === typeEvents) {
+                i = index;
+            }
+        });
+        if (i || i === 0) {
+            this.typeCalendarEvents.splice(i, 1);
+        } else {
+            this.typeCalendarEvents.push(typeEvents);
+        }
+        await this.eventService.setCaneldarEvents(this.typeCalendarEvents);
+        this.getCalendarEvents();
+    }
+
+    /** Получаем дату начала месяца и дату конца месяца для отправки в апи */
+    private getMonthDay(year: number, month: number): void {
+        this.calendarParams.start = dayjs(`${year}` + "-" + `${month + 1}` + "-" + "01").format("YYYY-MM-DD");
+        this.calendarParams.end = dayjs(`${year}` + "-" + `${month + 1}` + "-" + `${new Date(year, month + 1, 0).getDate()}`).format("YYYY-MM-DD");
+        this.getCalendarEvents();
+    }
+
+    /** Изменение месяца отображаемого в календаре */
+    private changeMonth(): void {
+        this.getMonthDay(dayjs(this.calendarStartDate).year(), dayjs(this.calendarStartDate).month());
+        this.miniCalendarMenu = false;
     }
 
     private async loadEvents(): Promise<void> {
@@ -310,4 +481,11 @@ export class EventsPage extends UI {
     private get currency(): string {
         return this.portfolio.portfolioParams.viewCurrency.toLowerCase();
     }
+}
+export enum CalendarEventsTypes {
+    COUPON = "coupon",
+    AMORTIZATION = "amortization",
+    DIVIDEND = "dividend",
+    REPAYMENT = "repayment",
+    CUSTOM = "custom"
 }

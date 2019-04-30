@@ -1,14 +1,34 @@
 import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {Http} from "../platform/services/http";
+import {Storage} from "../platform/services/storage";
 import {Share} from "../types/types";
 
 @Service("EventService")
 @Singleton
 export class EventService {
 
+    /** Стандартный набор типов для фильтрации если в локалсторедж ничего нету */
+    readonly CALENDAR_EVENTS: string[] = [
+        "coupon",
+        "amortization",
+        "dividend",
+        "repayment",
+        "custom"
+    ];
+
+    /** Массив типов для фильтрации */
+    calendarEvents: string[] = null;
+
     @Inject
     private http: Http;
+    @Inject
+    private localStorage: Storage;
+
+    constructor() {
+        const eventsFromStorage = this.localStorage.get<string[]>("calendarEventsParams", null);
+        this.calendarEvents = eventsFromStorage ? [...eventsFromStorage] : [...this.CALENDAR_EVENTS];
+    }
 
     /**
      * Возвращает список событий пользователя
@@ -16,6 +36,30 @@ export class EventService {
      */
     async getEvents(portfolioId: number): Promise<EventsResponse> {
         return this.http.get<EventsResponse>(`/events/list/${portfolioId}`);
+    }
+
+    /**
+     * Возвращает список событий пользователя
+     * @param dateParams даты начала и конца месяца
+     * @param filterEvents типы ивентов для начальной фильтрации
+     */
+    async getCalendarEvents(dateParams: any, filterEvents: string[]): Promise<any> {
+        const result: any[] = await this.http.post(`/events/calendar`, dateParams);
+        const map = {};
+        result.forEach((e) => {
+            if (filterEvents.includes(e.styleClass)) {
+                ((map as any)[e.startDate] = (map as any)[e.startDate] || []).push(e);
+            }
+        });
+        return map;
+    }
+
+    /**
+     * Возвращает список событий пользователя
+     * @param filterEvents типы ивентов для фильтрации
+     */
+    async setCaneldarEvents(filterEvents: string[]): Promise<void> {
+        this.localStorage.set<string[]>("calendarEventsParams", filterEvents);
     }
 
     /**

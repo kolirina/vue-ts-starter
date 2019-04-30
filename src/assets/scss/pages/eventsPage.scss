@@ -14,29 +14,111 @@
  * (c) ООО "Интеллектуальные инвестиции", 2018
  */
 
-.coupon {
-  background: #03A9F4 !important;
+.info-about-event {
+  padding: 17px 16px 28px !important;
+  background: #ffffff;
 }
 
-.amortization {
-  background: #9C27B0 !important;
+.events-calendar-wrap {
+  .v-calendar-weekly__head {
+    border-bottom: 1px solid #E8E9ED;
+    .v-outside {
+      background-color: #ffffff !important;
+    }
+    .v-calendar-weekly__head-weekday {
+      height: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+  .v-calendar-weekly__week {
+    .v-outside {
+      div {
+        display: none;
+      }
+    }
+    .v-calendar-weekly__day {
+      padding-left: 11px;
+      max-height: 159px;
+      .v-calendar-weekly__day-month {
+        text-transform: capitalize;
+      }
+      .primary--text {
+        cursor: text;
+        text-decoration: none;
+        background: #3B6EC9;
+        border-radius: 4px;
+        color: #FFFFFF !important;
+        margin-left: 10px;
+      }
+    }
+  }
+  .coupon {
+    border-left: 3px solid #03A9F4;
+  }
+  .calendar-events-title {
+    border-radius: 4px;
+    background: #F7F9FB !important;
+    max-width: 150px;
+    margin-top: 5px;
+    cursor: pointer;
+  }
+  .amortization {
+    border-left: 3px solid #9C27B0;
+  }
+  
+  .repayment {
+    border-left: 3px solid #4CAF50;
+  }
+  
+  .custom {
+    border-left: 3px solid #FF9DB7;
+  }
+  
+  .dividend_news {
+    border-left: 3px solid #95EEDA;
+  }
+  
+  .dividend {
+    border-left: 3px solid #F44336;
+  }
+  .v-input__slot {
+    padding-left: 6px !important;
+    .v-text-field__slot {
+      input {
+        text-transform: capitalize;
+        font-size: 16px;
+        padding: 0px !important;
+        height: 48px !important;
+      }
+    }
+  }
+  .v-input__append-inner {
+    margin-top: 0px !important;
+    padding: 0px !important;
+  }
+  .wrap-list-events {
+    display: flex;
+    flex-direction: column;
+    height: -webkit-fill-available;
+  }
+  .select-date-input {
+    .v-input {
+      align-items: center;
+      cursor: pointer;
+      text-transform: capitalize;
+    }
+  }
+  .rotate-icons {
+    .v-input {
+      .v-icon {
+        transform: rotate(180deg);
+      }
+    }
+  }
 }
 
-.repayment {
-  background: #4CAF50 !important;
-}
-
-.custom {
-  background: #FF9DB7 !important;
-}
-
-.dividend_news {
-  background: #95EEDA !important;
-}
-
-.dividend {
-  background-color: #F44336 !important;
-}
 
 .eventLegend {
   width: 20px;
