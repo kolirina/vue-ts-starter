@@ -2,6 +2,7 @@
 
   &-wrap {
     background-color: $dashboard--bg-color;
+    box-shadow: 0 4px 7px rgba(4, 4, 39, 0.14);
   }
 
   &-card {
@@ -99,29 +100,31 @@
 
 // Fixed dashboard
 .fixed-dashboard {
-  height: 100px;
+  @media screen and (min-width: 1024px) {
+    height: 100px;
 
-  .dashboard-wrap {
-    position: fixed;
-    top: 0;
-    left: 80px;
-    width: 100%;
-    z-index: 98;
-    margin: 0 !important;
+    .dashboard-wrap {
+      position: fixed;
+      top: 0;
+      left: 80px;
+      width: 100%;
+      z-index: 98;
+      margin: 0 !important;
 
-    &.menu-open {
-      left: 320px;
-      width: calc(100% - 320px);
+      &.menu-open {
+        left: 320px;
+        width: calc(100% - 320px);
+      }
+
+      .dashboard-card-small-nums {display: none}
+
+      .dashboard-card-big-nums {
+        font-size: 16px;
+      }
+
+      .v-card__title--primary {padding-top: 16px}
+
+      .container {padding: 0}
     }
-
-    .dashboard-card-small-nums {display: none}
-
-    .dashboard-card-big-nums {
-      font-size: 16px;
-    }
-
-    .v-card__title--primary {padding-top: 16px}
-
-    .container {padding: 0}
   }
 }

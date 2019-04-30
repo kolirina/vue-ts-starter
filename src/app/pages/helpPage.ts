@@ -66,6 +66,9 @@ const MainStore = namespace(StoreType.MAIN);
                         <a @click.stop="$vuetify.goTo('#dividends')">Дивиденды</a>
                     </div>
                     <div class="wrapper-list-reference__item-content-wrapper">
+                        <a @click.stop="$vuetify.goTo('#quotes')">Котировки</a>
+                    </div>
+                    <div class="wrapper-list-reference__item-content-wrapper">
                         <a @click.stop="$vuetify.goTo('#settings')">Настройки</a>
                     </div>
                     <div class="wrapper-list-reference__item-content-wrapper">
@@ -74,11 +77,11 @@ const MainStore = namespace(StoreType.MAIN);
                     <div class="wrapper-list-reference__item-content-wrapper">
                         <a @click.stop="$vuetify.goTo('#settings_public')">Публичный доступ</a>
                     </div>
+                </div>
+                <div class="wrapper-list-reference__item">
                     <div class="wrapper-list-reference__item-content-wrapper">
                         <a @click.stop="$vuetify.goTo('#tariffs_public')">Тарифы</a>
                     </div>
-                </div>
-                <div class="wrapper-list-reference__item">
                     <div class="wrapper-list-reference__item-content-wrapper">
                         <a @click.stop="$vuetify.goTo('#settings_promo_codes')">Промокоды</a>
                     </div>
@@ -699,6 +702,29 @@ const MainStore = namespace(StoreType.MAIN);
                                         <p>
                                             Позволяет оценить тенденцию дивидендной доходности
                                             портфеля.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </v-card>
+                    </v-expansion-panel-content>
+                    <v-expansion-panel-content>
+                        <template v-slot:actions>
+                            <i class="custom-action-icon"></i>
+                        </template>
+                        <template v-slot:header>
+                            <div id="quotes">Страница Котировки</div>
+                        </template>
+                        <v-card>
+                            <div class="wrapper-content-panel">
+                                <div class="wrapper-content-panel__paired-section">
+                                    <div class="wrapper-content-panel__paired-section-item">
+                                        <p>
+                                            <a href="#/quotes">Здесь</a> вы можете посмотреть сводную
+                                            информацию по всем бумагам и валютам, которые есть в сервисе.
+                                        </p>
+                                        <p>
+                                            В разделе представлено три таблицы: Акции, Облигации и Валюты
                                         </p>
                                     </div>
                                 </div>

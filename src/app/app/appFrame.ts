@@ -69,7 +69,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     <span class="hamburger-icon"></span>
                                 </v-btn>
                             </v-layout>
-                            <portfolio-switcher v-if="!publicZone" :mini="mini"></portfolio-switcher>
+                            <portfolio-switcher v-if="clientInfo && portfolio" :mini="mini"></portfolio-switcher>
                         </v-layout>
                         <div v-if="!mini" :class="['wrap-toogle-menu-btn', 'small-screen-hide-toogle-menu-btn']">
                             <v-btn @click="togglePanel" fab dark small depressed color="#F0F3F8" class="toogle-menu-btn">
@@ -90,6 +90,9 @@ const MainStore = namespace(StoreType.MAIN);
                                         <v-menu transition="slide-y-transition" bottom left class="submenu-item-list" content-class="submenu-v-menu" nudge-bottom="47">
                                             <v-list-tile slot="activator" :class="{'active-link': settingsSelected}">
                                                 <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+                                                <v-list-tile-action>
+                                                    <v-icon color="grey lighten-1">keyboard_arrow_down</v-icon>
+                                                </v-list-tile-action>
                                             </v-list-tile>
                                             <v-list-tile active-class="active-link" v-for="subItem in item.subMenu" :key="subItem.action"
                                                          :to="{name: subItem.action, params: item.params}">
@@ -330,14 +333,7 @@ export class AppFrame extends UI {
      * Переключает на старую версию приложения
      */
     private async goToOldVersion(): Promise<void> {
-        try {
-            const result = await this.clientService.switchToOldVersion();
-            if (!result) {
-                window.location.replace(`https://intelinvest.ru/portfolio`);
-            }
-        } catch (e) {
-            throw e;
-        }
+        window.location.assign(`https://intelinvest.ru/portfolio`);
     }
 
     private togglePanel(): void {

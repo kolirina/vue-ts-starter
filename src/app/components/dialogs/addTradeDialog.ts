@@ -8,11 +8,12 @@ import {DisableConcurrentExecution} from "../../platform/decorators/disableConcu
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {CustomDialog} from "../../platform/dialogs/customDialog";
 import {ClientService} from "../../services/clientService";
+import {DateTimeService} from "../../services/dateTimeService";
 import {EventFields} from "../../services/eventService";
 import {MarketHistoryService} from "../../services/marketHistoryService";
 import {MarketService} from "../../services/marketService";
 import {OverviewService} from "../../services/overviewService";
-import {MoneyResiduals, PortfolioService} from "../../services/portfolioService";
+import {MoneyResiduals, PortfolioParams, PortfolioService} from "../../services/portfolioService";
 import {TradeFields, TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
 import {Operation} from "../../types/operation";
@@ -210,6 +211,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private marketHistoryService: MarketHistoryService;
     @Inject
     private overviewService: OverviewService;
+    @Inject
+    private dateTimeService: DateTimeService;
     /** Операции начислений */
     private readonly CALCULATION_OPERATIONS = [Operation.COUPON, Operation.DIVIDEND, Operation.AMORTIZATION];
     private portfolio: Portfolio = null;
@@ -681,7 +684,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     getDate(): string {
-        const time = DateUtils.isCurrentDate(DateUtils.parseDate(this.date)) ? DateUtils.currentTime() : "12:00";
+        const time = DateUtils.isCurrentDate(DateUtils.parseDate(this.date)) ? this.dateTimeService.getCurrentTime() : "12:00";
         return this.portfolioProModeEnabled ? `${this.date} ${this.time}` : `${this.date} ${time}`;
     }
 
@@ -741,5 +744,5 @@ export type TradeDialogData = {
     operation?: Operation,
     assetType?: AssetType,
     moneyCurrency?: string,
-    portfolios?: any
+    portfolios?: PortfolioParams[]
 };

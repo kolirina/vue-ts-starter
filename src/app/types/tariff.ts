@@ -7,7 +7,7 @@ export class Tariff extends (EnumType as IStaticEnum<Tariff>) {
 
     static readonly FREE = new Tariff("FREE", "Бесплатный", 7, 1, new Decimal("0"), new Decimal("0"),
         new Decimal("0"), 0);
-    static readonly STANDARD = new Tariff("STANDARD", "Стандарт", 1, 2, new Decimal("99"), new Decimal("990"),
+    static readonly STANDARD = new Tariff("STANDARD", "Стандарт", 0x7fffffff, 2, new Decimal("99"), new Decimal("990"),
         new Decimal("1188"), Permission.COMBINED_PORTFOLIO | Permission.INVESTMENTS);
     static readonly PRO = new Tariff("PRO", "Профессионал", 0x7fffffff, 0x7fffffff, new Decimal("199"),
         new Decimal("1990"), new Decimal("2388"), Permission.FOREIGN_SHARES | Permission.COMBINED_PORTFOLIO | Permission.INVESTMENTS | Permission.PROFF_MODE);

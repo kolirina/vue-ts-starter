@@ -7,7 +7,7 @@ import {TableHeader} from "../types/types";
 @Component({
     // language=Vue
     template: `
-        <v-data-table class="data-table" :headers="headers" :items="portfolios" item-key="id" hide-actions @click.stop>
+        <v-data-table class="data-table" :headers="headers" :items="portfolios" item-key="id" hide-actions @click.stop must-sort>
             <template #items="props">
                 <tr class="selectable">
                     <td>

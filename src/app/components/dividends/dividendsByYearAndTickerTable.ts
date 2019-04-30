@@ -34,7 +34,7 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-data-table class="data-table" :headers="headers" :items="rows" item-key="year" :custom-sort="customSort" hide-actions>
+        <v-data-table class="data-table" :headers="headers" :items="rows" item-key="year" :custom-sort="customSort" hide-actions must-sort>
             <v-progress-linear slot="progress" color="blue" indeterminate></v-progress-linear>
             <template #headerCell="props">
                 <v-tooltip v-if="props.header.tooltip" content-class="custom-tooltip-wrap" bottom>

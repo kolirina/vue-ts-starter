@@ -30,10 +30,10 @@ import {UI} from "../../../app/ui";
 export class BcsInstruction extends UI {
 
     private IMAGES: string[] = [
-        "./img/import_instructions/bcs/1.jpg",
-        "./img/import_instructions/bcs/2.jpg",
-        "./img/import_instructions/bcs/3.jpg",
-        "./img/import_instructions/bcs/4.jpg"
+        "./img/import_instructions/bcs/1.png",
+        "./img/import_instructions/bcs/2.png",
+        "./img/import_instructions/bcs/3.png",
+        "./img/import_instructions/bcs/4.png"
     ];
 
 }

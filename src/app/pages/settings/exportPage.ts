@@ -74,7 +74,7 @@ const MainStore = namespace(StoreType.MAIN);
                                           v-model="selectedPortfolios"
                                           item-key="id"
                                           select-all
-                                          class="elevation-1">
+                                          class="elevation-1" must-sort>
                                 <template #headerCell="props">
                                     <v-tooltip content-class="custom-tooltip-wrap" bottom>
                                         <span slot="activator">

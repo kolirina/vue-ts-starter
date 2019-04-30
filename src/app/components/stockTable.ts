@@ -44,7 +44,7 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-data-table class="data-table" :headers="headers" :items="filteredRows" item-key="stock.id"
-                      :search="search" :custom-sort="customSort" :custom-filter="customFilter" :pagination.sync="pagination" expand hide-actions>
+                      :search="search" :custom-sort="customSort" :custom-filter="customFilter" :pagination.sync="pagination" expand hide-actions must-sort>
             <v-progress-linear slot="progress" color="blue" indeterminate></v-progress-linear>
             <template #headerCell="props">
                 <v-tooltip v-if="props.header.tooltip" content-class="custom-tooltip-wrap" bottom>
@@ -275,13 +275,6 @@ export class StockTable extends UI {
     @Watch("filter", {deep: true})
     async onFilterChange(): Promise<void> {
         this.setFilteredRows();
-    }
-
-    @Watch("pagination", {deep: true})
-    async onPaginationChange(): Promise<void> {
-        if (!CommonUtils.exists(this.pagination.sortBy)) {
-            this.pagination.sortBy = "percCurrShare";
-        }
     }
 
     setFilteredRows(): void {

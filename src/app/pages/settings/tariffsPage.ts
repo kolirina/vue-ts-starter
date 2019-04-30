@@ -5,6 +5,7 @@ import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
 import {Prop, UI} from "../../app/ui";
 import {ApplyPromoCodeDialog} from "../../components/dialogs/applyPromoCodeDialog";
+import {ConfirmDialog} from "../../components/dialogs/confirmDialog";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {ClientInfo, ClientService} from "../../services/clientService";
@@ -59,8 +60,8 @@ export class TariffLimitExceedInfo extends UI {
                             <div>
                                 <v-radio-group v-model="monthly" class="radio-horizontal">
                                     <v-radio label="На год" :value="false"></v-radio>
-                                    <v-radio label="На месяц" :value="true"></v-radio>
                                     <b>&nbsp;{{isDiscountApplied() ? '' : '-20%'}}</b>
+                                    <v-radio label="На месяц" :value="true"></v-radio>
                                 </v-radio-group>
                             </div>
                         </div>
@@ -106,7 +107,7 @@ export class TariffLimitExceedInfo extends UI {
                                         <div class="tariff__plan_price">{{ getPriceLabel(Tariff.FREE) }} <span>RUB</span></div>
                                     </div>
                                     <v-tooltip v-if="!isAvailable(Tariff.FREE)" content-class="custom-tooltip-wrap" bottom>
-                                        <v-btn slot="activator" @click="makePayment(Tariff.FREE)" :class="{'big_btn': true, 'selected': isSelected(Tariff.FREE)}"
+                                        <v-btn slot="activator" @click.stop="makePayment(Tariff.FREE)" :class="{'big_btn': true, 'selected': isSelected(Tariff.FREE)}"
                                                :disabled="!isAvailable(Tariff.FREE) || isSelected(Tariff.FREE) || isProgress">
                                             <span v-if="!busyState[Tariff.FREE.name]">{{ getButtonLabel(Tariff.FREE) }}</span>
                                             <v-progress-circular v-if="busyState[Tariff.FREE.name]" indeterminate color="primary" :size="20"></v-progress-circular>
@@ -115,7 +116,7 @@ export class TariffLimitExceedInfo extends UI {
                                                                   :shares-count="clientInfo.user.sharesCount" :foreign-shares="clientInfo.user.foreignShares">
                                         </tariff-limit-exceed-info>
                                     </v-tooltip>
-                                    <v-btn v-else @click="makePayment(Tariff.FREE)" :class="{'big_btn': true, 'selected': isSelected(Tariff.FREE)}"
+                                    <v-btn v-else @click.stop="makePayment(Tariff.FREE)" :class="{'big_btn': true, 'selected': isSelected(Tariff.FREE)}"
                                            :disabled="!isAvailable(Tariff.FREE) || isSelected(Tariff.FREE) || isProgress">
                                         <span v-if="!busyState[Tariff.FREE.name]">{{ getButtonLabel(Tariff.FREE) }}</span>
                                         <v-progress-circular v-if="busyState[Tariff.FREE.name]" indeterminate color="primary" :size="20"></v-progress-circular>
@@ -294,7 +295,12 @@ export class TariffsPage extends UI {
         this.clientService.resetClientInfo();
         await this.reloadUser();
         if (this.$route.params.status) {
-            await this.afterSuccessPayment();
+            try {
+                await this.tariffService.getOrderState();
+                await this.afterSuccessPayment();
+            } finally {
+                this.$router.push({name: "tariffs"});
+            }
         }
     }
 
@@ -313,13 +319,28 @@ export class TariffsPage extends UI {
      * Сделать платеж
      * @param tariff выбранный тариф
      */
-    @ShowProgress
     private async makePayment(tariff: Tariff): Promise<void> {
         if (this.isProgress) {
             return;
         }
         this.isProgress = true;
         this.busyState[tariff.name] = true;
+        const result = tariff === Tariff.FREE ? await new ConfirmDialog().show("Вы собираетесь перейти на Бесплатный план. " +
+            "Оплата за неиспользованные дни вашего текущего тарифного плана будет при этом утеряна.") : BtnReturn.YES;
+        if (result === BtnReturn.YES) {
+            await this.makePaymentConfirmed(tariff);
+        } else {
+            this.busyState[tariff.name] = false;
+            this.isProgress = false;
+        }
+    }
+
+    /**
+     * Сделать платеж
+     * @param tariff выбранный тариф
+     */
+    @ShowProgress
+    private async makePaymentConfirmed(tariff: Tariff): Promise<void> {
         try {
             const orderData = await this.tariffService.makePayment(tariff, this.monthly);
             // если оплата не завершена, открываем фрэйм для оплаты

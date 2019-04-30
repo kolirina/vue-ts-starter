@@ -5,8 +5,10 @@ import {TradeUtils} from "../../utils/tradeUtils";
 
 const DEFAULT_SCALE = 2;
 const MAX_SCALE = 3;
+const NO_SCALE = 9;
 const DF = new Intl.NumberFormat("ru", {minimumFractionDigits: DEFAULT_SCALE, maximumFractionDigits: DEFAULT_SCALE});
-const DF_NO_SCALE = new Intl.NumberFormat("ru", {maximumFractionDigits: MAX_SCALE});
+const DF_MAX_SCALE = new Intl.NumberFormat("ru", {maximumFractionDigits: MAX_SCALE});
+const DF_NO_SCALE = new Intl.NumberFormat("ru", {minimumFractionDigits: DEFAULT_SCALE, maximumFractionDigits: NO_SCALE});
 
 export class Filters {
 
@@ -36,10 +38,10 @@ export class Filters {
         }
         const amount = new BigMoney(value);
         if (needRound) {
-            const am = amount.amount.toDP(DEFAULT_SCALE, Decimal.ROUND_HALF_UP).toNumber();
+            const am = amount.amount.toDecimalPlaces(DEFAULT_SCALE, Decimal.ROUND_HALF_UP).toNumber();
             return Filters.replaceCommaToDot(DF.format(am));
         } else {
-            return Filters.replaceCommaToDot(needFormat ? DF_NO_SCALE.format(scale ? amount.amount.toDP(scale, Decimal.ROUND_HALF_UP).toNumber() :
+            return Filters.replaceCommaToDot(needFormat ? DF_MAX_SCALE.format(scale ? amount.amount.toDecimalPlaces(scale, Decimal.ROUND_HALF_UP).toNumber() :
                 amount.amount.toNumber()) : String(amount.amount.toNumber()));
         }
     }
@@ -66,12 +68,16 @@ export class Filters {
      * Используется для форматирования чисел
      * @param value строка
      * @param returnZeros признак возврата нулевого значения вместо пустого
+     * @param scale
+     * @param needFormat
      */
-    static formatNumber(value: string, returnZeros: boolean = true): string {
+    static formatNumber(value: string, returnZeros: boolean = true, scale?: number, needFormat: boolean = true): string {
         if (!value) {
             return returnZeros ? "0.00" : "";
         }
-        return Filters.replaceCommaToDot(DF.format(new Decimal(value).toDP(DEFAULT_SCALE, Decimal.ROUND_HALF_UP).toNumber()));
+        const amount = new Decimal(value);
+        return Filters.replaceCommaToDot(needFormat ? DF_NO_SCALE.format(scale ? amount.toDecimalPlaces(scale, Decimal.ROUND_HALF_UP).toNumber() :
+            amount.toNumber()) : String(amount.toNumber()));
 
     }
 
@@ -105,7 +111,7 @@ export class Filters {
         if (!value) {
             return "0";
         }
-        return Filters.replaceCommaToDot(DF_NO_SCALE.format(new Decimal(value).toDP(0, Decimal.ROUND_HALF_UP).toNumber()));
+        return Filters.replaceCommaToDot(DF_MAX_SCALE.format(new Decimal(value).toDP(0, Decimal.ROUND_HALF_UP).toNumber()));
 
     }
 
@@ -116,7 +122,8 @@ export class Filters {
      * @returns {string} отформатированая дата
      */
     static formatDate(date: string, format: string = DateFormat.DATE): string {
-        return DateUtils.parseDate(date).format(format);
+        const parsed = DateUtils.parseDate(date);
+        return parsed.isValid() ? parsed.format(format) : date;
     }
 
     /**

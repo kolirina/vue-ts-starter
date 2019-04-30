@@ -8,6 +8,7 @@ import {UIRegistry} from "./app/app/uiRegistry";
 import {Storage} from "./app/platform/services/storage";
 import {RouterConfiguration} from "./app/router/routerConfiguration";
 import {ApplicationService} from "./app/services/applicationService";
+import {DateTimeService} from "./app/services/dateTimeService";
 import {InactivityMonitor} from "./app/services/inactivityMonitor";
 import {EventType} from "./app/types/eventType";
 import {StoreKeys} from "./app/types/storeKeys";
@@ -49,12 +50,17 @@ async function _start(resolve: () => void, reject: () => void): Promise<void> {
         configureErrorHandling(errorHandler);
         // инициализируем компоненты
         UIRegistry.init();
+        /** Инициализируем мониторинг бездействия */
+        InactivityMonitor.getInstance().start();
+        /** Фиксируем версию бэкэнда */
+        await storeBackendVersion();
+        /** Запрашиваем серверное время и сохраняем его локально */
+        await Container.get(DateTimeService).initServerTimeDiff();
+        /** Запуск приложения */
         const router = RouterConfiguration.getRouter();
         // Обработчик _синхронных_ ошибок в lifecycle-хуках роутера
         router.onError(errorHandler);
         const store = VuexConfiguration.getStore();
-        InactivityMonitor.getInstance().start();
-        await storeBackendVersion();
         const app = new AppFrame({router, store});
         app.$mount("#app");
         resolve();
