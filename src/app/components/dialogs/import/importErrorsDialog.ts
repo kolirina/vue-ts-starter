@@ -1,8 +1,24 @@
+/*
+ * STRICTLY CONFIDENTIAL
+ * TRADE SECRET
+ * PROPRIETARY:
+ *       "Intelinvest" Ltd, TIN 1655386205
+ *       420107, REPUBLIC OF TATARSTAN, KAZAN CITY, SPARTAKOVSKAYA STREET, HOUSE 2, ROOM 119
+ * (c) "Intelinvest" Ltd, 2019
+ *
+ * СТРОГО КОНФИДЕНЦИАЛЬНО
+ * КОММЕРЧЕСКАЯ ТАЙНА
+ * СОБСТВЕННИК:
+ *       ООО "Интеллектуальные инвестиции", ИНН 1655386205
+ *       420107, РЕСПУБЛИКА ТАТАРСТАН, ГОРОД КАЗАНЬ, УЛИЦА СПАРТАКОВСКАЯ, ДОМ 2, ПОМЕЩЕНИЕ 119
+ * (c) ООО "Интеллектуальные инвестиции", 2019
+ */
+
 import Component from "vue-class-component";
 import {VueRouter} from "vue-router/types/router";
-import {CustomDialog} from "../../platform/dialogs/customDialog";
-import {DealImportError} from "../../services/importService";
-import {TableHeader} from "../../types/types";
+import {CustomDialog} from "../../../platform/dialogs/customDialog";
+import {DealImportError} from "../../../services/importService";
+import {TableHeader} from "../../../types/types";
 
 /**
  * Диалог получения кода для встраиваемого блока
@@ -19,7 +35,7 @@ import {TableHeader} from "../../types/types";
                         <v-card-title class="import-dialog-wrapper__title">
                             <span class="import-dialog-wrapper__title-text">Результаты импорта</span>
                         </v-card-title>
-                        <v-card-text class="import-dialog-wrapper__description">
+                        <v-card-text class="import-dialog-wrapper__description selectable">
                             <div class="import-dialog-wrapper__description-text import-default-text">
                                 При импортировании отчета возникли ошибки, портфель не был импортирован полностью. Чтобы завершить формирование пожалуйста внесите остатки вручную.
                             </div>
@@ -27,7 +43,7 @@ import {TableHeader} from "../../types/types";
                                 Успешно {{ data.validatedTradesCount | declension("добавлена", "добавлено", "добавлено") }}
                                 {{ data.validatedTradesCount | declension("сделка", "сделки", "сделок") }}<span class="amount-deals">{{ data.validatedTradesCount }}</span></div>
                         </v-card-text>
-                        <v-card-text class="import-dialog-wrapper__content import-dialog-wrapper__error-table">
+                        <v-card-text class="import-dialog-wrapper__content import-dialog-wrapper__error-table selectable">
                             <v-data-table :headers="headers" :items="data.errors" hide-actions must-sort>
                                 <template #items="props">
                                     <tr class="selectable">
@@ -51,7 +67,7 @@ import {TableHeader} from "../../types/types";
 
     `
 })
-export class ImportErrorsDialog extends CustomDialog<importErrorsDialogData, void> {
+export class ImportErrorsDialog extends CustomDialog<ImportErrorsDialogData, void> {
 
     private headers: TableHeader[] = [
         {text: "Дата", align: "center", value: "dealDate", sortable: false},
@@ -60,13 +76,13 @@ export class ImportErrorsDialog extends CustomDialog<importErrorsDialogData, voi
     ];
 
     private goToBalances(): void {
-        this.data.router.push("balances");
+        this.data.router.push({name: "balances"});
         this.close();
     }
 
 }
 
-export type importErrorsDialogData = {
+export type ImportErrorsDialogData = {
     errors: DealImportError[],
     validatedTradesCount: number,
     router: VueRouter
