@@ -1,6 +1,22 @@
+/*
+ * STRICTLY CONFIDENTIAL
+ * TRADE SECRET
+ * PROPRIETARY:
+ *       "Intelinvest" Ltd, TIN 1655386205
+ *       420107, REPUBLIC OF TATARSTAN, KAZAN CITY, SPARTAKOVSKAYA STREET, HOUSE 2, ROOM 119
+ * (c) "Intelinvest" Ltd, 2019
+ *
+ * СТРОГО КОНФИДЕНЦИАЛЬНО
+ * КОММЕРЧЕСКАЯ ТАЙНА
+ * СОБСТВЕННИК:
+ *       ООО "Интеллектуальные инвестиции", ИНН 1655386205
+ *       420107, РЕСПУБЛИКА ТАТАРСТАН, ГОРОД КАЗАНЬ, УЛИЦА СПАРТАКОВСКАЯ, ДОМ 2, ПОМЕЩЕНИЕ 119
+ * (c) ООО "Интеллектуальные инвестиции", 2019
+ */
+
 import Component from "vue-class-component";
 import {VueRouter} from "vue-router/types/router";
-import {CustomDialog} from "../../platform/dialogs/customDialog";
+import {CustomDialog} from "../../../platform/dialogs/customDialog";
 
 /**
  * Диалог получения кода для встраиваемого блока
@@ -40,7 +56,7 @@ import {CustomDialog} from "../../platform/dialogs/customDialog";
 export class ImportGeneralErrorDialog extends CustomDialog<ImportGeneralErrorDialogData, void> {
 
     private goToBalances(): void {
-        this.data.router.push("balances");
+        this.data.router.push({name: "balances"});
         this.close();
     }
 }

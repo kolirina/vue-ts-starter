@@ -1,8 +1,24 @@
+/*
+ * STRICTLY CONFIDENTIAL
+ * TRADE SECRET
+ * PROPRIETARY:
+ *       "Intelinvest" Ltd, TIN 1655386205
+ *       420107, REPUBLIC OF TATARSTAN, KAZAN CITY, SPARTAKOVSKAYA STREET, HOUSE 2, ROOM 119
+ * (c) "Intelinvest" Ltd, 2019
+ *
+ * СТРОГО КОНФИДЕНЦИАЛЬНО
+ * КОММЕРЧЕСКАЯ ТАЙНА
+ * СОБСТВЕННИК:
+ *       ООО "Интеллектуальные инвестиции", ИНН 1655386205
+ *       420107, РЕСПУБЛИКА ТАТАРСТАН, ГОРОД КАЗАНЬ, УЛИЦА СПАРТАКОВСКАЯ, ДОМ 2, ПОМЕЩЕНИЕ 119
+ * (c) ООО "Интеллектуальные инвестиции", 2019
+ */
+
 import Component from "vue-class-component";
 import {VueRouter} from "vue-router/types/router";
-import {CustomDialog} from "../../platform/dialogs/customDialog";
-import {DealImportError} from "../../services/importService";
-import {TableHeader} from "../../types/types";
+import {CustomDialog} from "../../../platform/dialogs/customDialog";
+import {DealImportError} from "../../../services/importService";
+import {TableHeader} from "../../../types/types";
 
 /**
  * Диалог получения кода для встраиваемого блока
@@ -51,7 +67,7 @@ import {TableHeader} from "../../types/types";
 
     `
 })
-export class ImportErrorsDialog extends CustomDialog<importErrorsDialogData, void> {
+export class ImportErrorsDialog extends CustomDialog<ImportErrorsDialogData, void> {
 
     private headers: TableHeader[] = [
         {text: "Дата", align: "center", value: "dealDate", sortable: false},
@@ -60,13 +76,13 @@ export class ImportErrorsDialog extends CustomDialog<importErrorsDialogData, voi
     ];
 
     private goToBalances(): void {
-        this.data.router.push("balances");
+        this.data.router.push({name: "balances"});
         this.close();
     }
 
 }
 
-export type importErrorsDialogData = {
+export type ImportErrorsDialogData = {
     errors: DealImportError[],
     validatedTradesCount: number,
     router: VueRouter
