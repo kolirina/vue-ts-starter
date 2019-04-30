@@ -7,7 +7,7 @@ import {VueRouter} from "vue-router/types/router";
 import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {CustomDialog} from "../../platform/dialogs/customDialog";
-import {ClientService} from "../../services/clientService";
+import {Client, ClientService} from "../../services/clientService";
 import {DateTimeService} from "../../services/dateTimeService";
 import {EventFields} from "../../services/eventService";
 import {MarketHistoryService} from "../../services/marketHistoryService";
@@ -15,8 +15,8 @@ import {MarketService} from "../../services/marketService";
 import {MoneyResiduals, PortfolioService} from "../../services/portfolioService";
 import {TradeFields, TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
-import {BigMoney} from "../../types/bigMoney";
 import {Operation} from "../../types/operation";
+import {Tariff} from "../../types/tariff";
 import {TradeDataHolder} from "../../types/trade/tradeDataHolder";
 import {TradeMap} from "../../types/trade/tradeMap";
 import {TradeValue} from "../../types/trade/tradeValue";
@@ -25,6 +25,7 @@ import {CommonUtils} from "../../utils/commonUtils";
 import {DateUtils} from "../../utils/dateUtils";
 import {TradeUtils} from "../../utils/tradeUtils";
 import {MainStore} from "../../vuex/mainStore";
+import {TariffExpiredDialog} from "./tariffExpiredDialog";
 
 @Component({
     // language=Vue
@@ -196,6 +197,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private marketHistoryService: MarketHistoryService;
     @Inject
     private dateTimeService: DateTimeService;
+    /** Информация о клиенте */
+    private clientInfo: Client;
     /** Операции начислений */
     private readonly CALCULATION_OPERATIONS = [Operation.COUPON, Operation.DIVIDEND, Operation.AMORTIZATION];
     private portfolio: Portfolio = null;
@@ -257,11 +260,12 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private portfolioProModeEnabled = false;
 
     async mounted(): Promise<void> {
+        this.clientInfo = await this.clientService.getClientInfo();
+        await this.checkAllowedAddTrade();
         this.assetType = this.data.assetType || AssetType.STOCK;
         this.moneyCurrency = this.data.moneyCurrency || "RUB";
         this.portfolio = (this.data.store as any).currentPortfolio;
-        const clientInfo = await this.clientService.getClientInfo();
-        this.portfolioProModeEnabled = TradeUtils.isPortfolioProModeEnabled(this.portfolio, clientInfo);
+        this.portfolioProModeEnabled = TradeUtils.isPortfolioProModeEnabled(this.portfolio, this.clientInfo);
         this.moneyResiduals = await this.portfolioService.getMoneyResiduals(this.portfolio.id);
         this.share = this.data.share || null;
         this.operation = this.data.operation || Operation.BUY;
@@ -645,6 +649,17 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     private get nkdValidationString(): string {
         return [Operation.BUY, Operation.SELL].includes(this.operation) ? "required" : "";
+    }
+
+    /**
+     * Проверяет тариф на активность
+     */
+    private async checkAllowedAddTrade(): Promise<void> {
+        const tariffExpired = this.clientInfo.tariff !== Tariff.FREE && DateUtils.parseDate(this.clientInfo.paidTill).isBefore(dayjs());
+        if (tariffExpired) {
+            this.close();
+            await new TariffExpiredDialog().show(this.data.router);
+        }
     }
 
     // tslint:disable
