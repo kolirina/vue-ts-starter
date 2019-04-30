@@ -40,7 +40,7 @@ export class EventService {
     }
 
     /**
-     * Возвращает список событий пользователя
+     * Получаем данные и фильтруем их
      * @param dateParams даты начала и конца месяца
      * @param filterEvents типы ивентов для начальной фильтрации
      */
@@ -56,7 +56,7 @@ export class EventService {
     }
 
     /**
-     * Возвращает список событий пользователя
+     * Запоминаем параметры фильтрации
      * @param filterEvents типы ивентов для фильтрации
      */
     async setCaneldarEvents(filterEvents: string[]): Promise<void> {
