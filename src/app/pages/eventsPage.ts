@@ -178,7 +178,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         Тип события
                                     </div>
                                     <v-flex>
-                                        <v-checkbox v-for="item in calendarEventsTypes" :input-value="getValue(item)" @change="changeFilterParams(item)"
+                                        <v-checkbox v-for="item in calendarEventsTypes" :input-value="getFilterParams(item)" @change="changeFilterParams(item)"
                                                     :key="item" hide-details class="checkbox-setings">
                                             <template #label>
                                                 <span>
@@ -287,8 +287,8 @@ export class EventsPage extends UI {
     ];
     /** Параметры дат для отправки в апи */
     private calendarParams: any = {
-        start: "2019-04-01",
-        end: "2019-04-30"
+        start: "",
+        end: ""
     };
     /** Устанавливаем сегодняшнюю дату */
     private today: string = new Date().toISOString().substr(0, 10);
@@ -310,7 +310,7 @@ export class EventsPage extends UI {
     async created(): Promise<void> {
         await this.loadEvents();
         await this.loadDividendNews();
-        this.getCalendarEvents();
+        this.getMonthDay(dayjs(this.calendarStartDate).year(), dayjs(this.calendarStartDate).month());
     }
 
     @Watch("portfolio")
@@ -327,11 +327,11 @@ export class EventsPage extends UI {
     }
 
     /** Устанавливаем чекбоксы в состояние согласно фильтру */
-    private getValue(typeEvents: CalendarEventsTypes): boolean {
+    private getFilterParams(typeEvents: CalendarEventsTypes): boolean {
         return this.typeCalendarEvents.includes(typeEvents);
     }
 
-    /** Форматирование даты для отображение на странице согласно макету */
+    /** Форматирование даты для отображения на странице согласно макету */
     private get formattedDate(): string {
         return dayjs(this.calendarStartDate).locale("ru").format("MMMM YYYY");
     }
@@ -352,7 +352,7 @@ export class EventsPage extends UI {
         }
     }
 
-    /** Применение фильтра */
+    /** Изменение параметров фильтрации */
     private async changeFilterParams(typeEvents: CalendarEventsTypes): Promise<void> {
         let i: number = null;
         this.typeCalendarEvents.forEach((currentValue, index) => {

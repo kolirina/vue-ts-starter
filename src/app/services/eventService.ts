@@ -25,6 +25,7 @@ export class EventService {
     @Inject
     private localStorage: Storage;
 
+    /** Получаем из локалсторедж данные, если нету то ставим стандартный набор */
     constructor() {
         const eventsFromStorage = this.localStorage.get<string[]>("calendarEventsParams", null);
         this.calendarEvents = eventsFromStorage ? [...eventsFromStorage] : [...this.CALENDAR_EVENTS];
