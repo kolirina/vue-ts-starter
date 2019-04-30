@@ -318,9 +318,9 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private async setPortfolio(portfolio: Portfolio): Promise<void> {
-        await this.overviewService.getById(portfolio.id).then((newPortfolio: Portfolio) => {
-            this.portfolio = newPortfolio;
-            this.setDialogParams(newPortfolio);
+        await this.overviewService.getById(portfolio.id).then((formattedPortfolio: Portfolio) => {
+            this.portfolio = formattedPortfolio;
+            this.setDialogParams(formattedPortfolio);
         });
     }
 
