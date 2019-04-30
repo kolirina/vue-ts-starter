@@ -90,6 +90,9 @@ const MainStore = namespace(StoreType.MAIN);
                                         <v-menu transition="slide-y-transition" bottom left class="submenu-item-list" content-class="submenu-v-menu" nudge-bottom="47">
                                             <v-list-tile slot="activator" :class="{'active-link': settingsSelected}">
                                                 <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+                                                <v-list-tile-action>
+                                                    <v-icon color="grey lighten-1">keyboard_arrow_down</v-icon>
+                                                </v-list-tile-action>
                                             </v-list-tile>
                                             <v-list-tile active-class="active-link" v-for="subItem in item.subMenu" :key="subItem.action"
                                                          :to="{name: subItem.action, params: item.params}">
