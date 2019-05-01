@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import "dayjs/locale/ru";
 
 /**
  * Утилитный клас для работы с датами
@@ -80,6 +81,53 @@ export class DateUtils {
     static currentTime(): string {
         return DateUtils.formatDate(dayjs(), DateFormat.TIME);
     }
+
+    /**
+     * Возвращает дату начала месяца
+     * @param {year} год
+     * @param {month} месяц
+     * @return {string} дата начала месяца в виде строки
+     */
+    static startMonthDate(year: number, month: number): string {
+        return dayjs(`${year}` + "-" + `${month + 1}` + "-" + "01").format(DateFormat.DATE2);
+    }
+
+    /**
+     * Возвращает дату конца месяца
+     * @param {year} год
+     * @param {month} месяц
+     * @return {string} дата конца месяца в виде строки
+     */
+    static endMonthDate(year: number, month: number): string {
+        return dayjs(`${year}` + "-" + `${month + 1}` + "-" + `${new Date(year, month + 1, 0).getDate()}`).format(DateFormat.DATE2);
+    }
+
+    /**
+     * Форматирование даты для отображения на странице
+     * @param {date} дата для форматирования
+     * @return {string} дата для отображения на странице
+     */
+    static formatMonthYear(date: string): string {
+        return dayjs(date).locale("ru").format("MMMM YYYY");
+    }
+
+    /**
+     * Возвращает год даты
+     * @param {date} дата
+     * @return {number} год даты в формате числа
+     */
+    static getYearDate(date: string): number {
+        return dayjs(date).year();
+    }
+
+    /**
+     * Возвращает месяц даты
+     * @param {date} дата
+     * @return {number} месяц даты в формате числа
+     */
+    static getMonthDate(date: string): number {
+        return dayjs(date).month();
+    }
 }
 
 /**
@@ -88,6 +136,7 @@ export class DateUtils {
 export enum DateFormat {
     DATE = "DD.MM.YYYY",
     DATE2 = "YYYY-MM-DD",
+    DATE3 = "MMMM YYYY",
     TIME = "HH:mm",
     CURRENT_YEAR_FORMAT = "DD MMMM",
     ANOTHER_YEAR_FORMAT = "DD MMMM YYYY"

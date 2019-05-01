@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import "dayjs/locale/ru";
+import {DateUtils} from "../utils/dateUtils";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {Watch} from "vue-property-decorator";
@@ -9,7 +9,7 @@ import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
 import {ConfirmDialog} from "../components/dialogs/confirmDialog";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {BtnReturn} from "../platform/dialogs/customDialog";
-import {DividendNewsItem, EventsAggregateInfo, EventService, ShareEvent} from "../services/eventService";
+import {DividendNewsItem, EventsAggregateInfo, EventService, CalendarDateParams, ShareEvent} from "../services/eventService";
 import {AssetType} from "../types/assetType";
 import {Operation} from "../types/operation";
 import {Portfolio, TableHeader} from "../types/types";
@@ -225,7 +225,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </div>
                     </v-layout>
                     <v-sheet v-if="calendarEvents">
-                        <v-calendar :now="today" color="primary" locale="ru">
+                        <v-calendar :now="today" :value="calendarParams.start" color="primary" locale="ru">
                             <template v-slot:day="{ date }">
                                 <vue-scroll>
                                     <div class="wrap-list-events">
@@ -286,16 +286,16 @@ export class EventsPage extends UI {
         {text: "Источник", align: "center", value: "source", sortable: false, width: "70"}
     ];
     /** Параметры дат для отправки в апи */
-    private calendarParams: any = {
+    private calendarParams: CalendarDateParams = {
         start: "",
         end: ""
     };
     /** Устанавливаем сегодняшнюю дату */
-    private today: string = new Date().toISOString().substr(0, 10);
+    private today: string = DateUtils.currentDate();
     /** При загрузке отображать в календаре текущий месяц */
-    private calendarStartDate: string = new Date().toISOString().substr(0, 10);
+    private calendarStartDate: string = DateUtils.currentDate();
     /** Массив с ивентами для отображения на странице */
-    private calendarEvents: any[] = [];
+    private calendarEvents: string[] = [];
     /** Конфиг отображения мини календаря для пика месяца */
     private miniCalendarMenu: boolean = false;
     /** Типы ивентов которые отображаються на странице */
@@ -310,7 +310,7 @@ export class EventsPage extends UI {
     async created(): Promise<void> {
         await this.loadEvents();
         await this.loadDividendNews();
-        this.getMonthDay(dayjs(this.calendarStartDate).year(), dayjs(this.calendarStartDate).month());
+        this.getMonthDay(DateUtils.getYearDate(this.calendarStartDate), DateUtils.getMonthDate(this.calendarStartDate));
     }
 
     @Watch("portfolio")
@@ -333,7 +333,7 @@ export class EventsPage extends UI {
 
     /** Форматирование даты для отображения на странице согласно макету */
     private get formattedDate(): string {
-        return dayjs(this.calendarStartDate).locale("ru").format("MMMM YYYY");
+        return DateUtils.formatMonthYear(this.calendarStartDate);
     }
 
     /** Получаем тип ивентов на рус. языке */
@@ -371,15 +371,15 @@ export class EventsPage extends UI {
 
     /** Получаем дату начала месяца и дату конца месяца для отправки в апи */
     private getMonthDay(year: number, month: number): void {
-        this.calendarParams.start = dayjs(`${year}` + "-" + `${month + 1}` + "-" + "01").format("YYYY-MM-DD");
-        this.calendarParams.end = dayjs(`${year}` + "-" + `${month + 1}` + "-" + `${new Date(year, month + 1, 0).getDate()}`).format("YYYY-MM-DD");
+        this.calendarParams.start = DateUtils.startMonthDate(year, month);
+        this.calendarParams.end = DateUtils.endMonthDate(year, month);
         this.getCalendarEvents();
     }
 
     /** Изменение месяца отображаемого в календаре */
     private changeMonth(): void {
-        this.getMonthDay(dayjs(this.calendarStartDate).year(), dayjs(this.calendarStartDate).month());
         this.miniCalendarMenu = false;
+        this.getMonthDay(dayjs(this.calendarStartDate).year(), dayjs(this.calendarStartDate).month());
     }
 
     private async loadEvents(): Promise<void> {

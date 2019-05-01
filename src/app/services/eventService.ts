@@ -97,6 +97,12 @@ export class EventService {
     }
 }
 
+/** Параметры даты для отправки в апи календаря */
+export interface CalendarDateParams {
+    start: string,
+    end: string
+}
+
 /** Информация о событии по ценной бумаге */
 export interface ShareEvent {
     /** Бумага события */

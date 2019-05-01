@@ -45,12 +45,17 @@
         text-transform: capitalize;
       }
       .primary--text {
-        cursor: text;
-        text-decoration: none;
-        background: #3B6EC9;
-        border-radius: 4px;
-        color: #FFFFFF !important;
-        margin-left: 10px;
+        &:not(.v-calendar-weekly__day-month) {
+          cursor: text;
+          text-decoration: none;
+          background: #3B6EC9;
+          border-radius: 4px;
+          color: #FFFFFF !important;
+          margin-left: 10px;
+        }
+        &:not(.v-calendar-weekly__day-label) {
+          margin-left: 10px;
+        }
       }
     }
   }
