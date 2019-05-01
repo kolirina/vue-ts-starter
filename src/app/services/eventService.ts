@@ -44,12 +44,12 @@ export class EventService {
      * @param dateParams даты начала и конца месяца
      * @param filterEvents типы ивентов для начальной фильтрации
      */
-    async getCalendarEvents(dateParams: any, filterEvents: string[]): Promise<any> {
-        const result: any[] = await this.http.post(`/events/calendar`, dateParams);
-        const map = {};
-        result.forEach((e) => {
+    async getCalendarEvents(dateParams: CalendarDateParams, filterEvents: string[]): Promise<CalendarParams> {
+        const result: CalendarEventParams[] = await this.http.post(`/events/calendar`, dateParams);
+        const map: CalendarParams = {};
+        result.forEach((e: CalendarEventParams) => {
             if (filterEvents.includes(e.styleClass)) {
-                ((map as any)[e.startDate] = (map as any)[e.startDate] || []).push(e);
+                (map[e.startDate] = map[e.startDate] || []).push(e);
             }
         });
         return map;
@@ -99,8 +99,27 @@ export class EventService {
 
 /** Параметры даты для отправки в апи календаря */
 export interface CalendarDateParams {
-    start: string,
-    end: string
+    start: string;
+    end: string;
+}
+
+/** Отфильтрованный массив ивентов календаря для вывода на страницу */
+export interface CalendarParams {
+    [key: string]: CalendarEventParams[];
+}
+
+/** Поля которые приходят для ивентов календаря */
+export interface CalendarEventParams {
+    allDay: boolean;
+    data: string;
+    description: string;
+    editable: boolean;
+    endDate: string;
+    id: string;
+    startDate: string;
+    styleClass: string;
+    title: string;
+    url: string;
 }
 
 /** Информация о событии по ценной бумаге */

@@ -1,5 +1,3 @@
-import dayjs from "dayjs";
-import {DateUtils} from "../utils/dateUtils";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {Watch} from "vue-property-decorator";
@@ -9,10 +7,11 @@ import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
 import {ConfirmDialog} from "../components/dialogs/confirmDialog";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {BtnReturn} from "../platform/dialogs/customDialog";
-import {DividendNewsItem, EventsAggregateInfo, EventService, CalendarDateParams, ShareEvent} from "../services/eventService";
+import {CalendarDateParams, CalendarParams, DividendNewsItem, EventsAggregateInfo, EventService, ShareEvent} from "../services/eventService";
 import {AssetType} from "../types/assetType";
 import {Operation} from "../types/operation";
 import {Portfolio, TableHeader} from "../types/types";
+import {DateUtils} from "../utils/dateUtils";
 import {SortUtils} from "../utils/sortUtils";
 import {TradeUtils} from "../utils/tradeUtils";
 import {MutationType} from "../vuex/mutationType";
@@ -162,7 +161,7 @@ const MainStore = namespace(StoreType.MAIN);
             </v-card>
             <v-card class="events__card" flat style="margin-top: 30px">
                 <v-card-title class="events__card-title">
-                    <v-layout class="px-0 py-0">
+                    <v-layout class="px-0 py-0" align-center>
                         Календарь событий
                         <v-spacer></v-spacer>
                         <div class="import-wrapper-content pr-1">
@@ -192,7 +191,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </div>
                     </v-layout>
                 </v-card-title>
-                <v-card-text class="events-calendar-wrap">
+                <v-card-text v-if="calendarEvents" class="events-calendar-wrap">
                     <v-layout class="pl-3">
                         <div class="pl-3">
                             <v-menu
@@ -224,7 +223,7 @@ const MainStore = namespace(StoreType.MAIN);
                             </v-menu>
                         </div>
                     </v-layout>
-                    <v-sheet v-if="calendarEvents">
+                    <v-sheet>
                         <v-calendar :now="today" :value="calendarParams.start" color="primary" locale="ru">
                             <template v-slot:day="{ date }">
                                 <vue-scroll>
@@ -295,7 +294,7 @@ export class EventsPage extends UI {
     /** При загрузке отображать в календаре текущий месяц */
     private calendarStartDate: string = DateUtils.currentDate();
     /** Массив с ивентами для отображения на странице */
-    private calendarEvents: string[] = [];
+    private calendarEvents: CalendarParams = null;
     /** Конфиг отображения мини календаря для пика месяца */
     private miniCalendarMenu: boolean = false;
     /** Типы ивентов которые отображаються на странице */
@@ -379,7 +378,7 @@ export class EventsPage extends UI {
     /** Изменение месяца отображаемого в календаре */
     private changeMonth(): void {
         this.miniCalendarMenu = false;
-        this.getMonthDay(dayjs(this.calendarStartDate).year(), dayjs(this.calendarStartDate).month());
+        this.getMonthDay(DateUtils.getYearDate(this.calendarStartDate), DateUtils.getMonthDate(this.calendarStartDate));
     }
 
     private async loadEvents(): Promise<void> {
