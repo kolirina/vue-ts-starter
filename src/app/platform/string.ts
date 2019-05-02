@@ -7,11 +7,11 @@ if (!String.prototype.startsWith) {
     /**
      * Определяет, начинается ли строка с символов другой строки
      * @param {string} searchString символы, искомые в начале данной строки
-     * @param {number} position позиция в строке, с которой начинать поиск строки searchString, по умолчанию 0
+     * @param {number} stringPosition позиция в строке, с которой начинать поиск строки searchString, по умолчанию 0
      * @return {boolean} начинается ли строка с символов другой строки
      */
-    String.prototype.startsWith = function(searchString: string, position?: number): boolean {
-        position = position || 0;
+    String.prototype.startsWith = function(searchString: string, stringPosition?: number): boolean {
+        const position = stringPosition || 0;
         return this.indexOf(searchString, position) === position;
     };
 }
@@ -21,11 +21,12 @@ if (!String.prototype.endsWith) {
     /**
      * Определяет, заканчивается ли строка с символов другой строки
      * @param {string} searchString символы, искомые в конце данной строки
-     * @param {number} length устанавливает длину строки, в которой производится поиск
+     * @param {number} stringLength устанавливает длину строки, в которой производится поиск
      * @return {boolean} заканчивается ли строка с символов другой строки
      */
-    String.prototype.endsWith = function(searchString: string, length?: number): boolean {
+    String.prototype.endsWith = function(searchString: string, stringLength?: number): boolean {
         const subjectString = this.toString();
+        let length = stringLength;
         if (length === undefined || length > subjectString.length) {
             length = subjectString.length;
         }
@@ -94,7 +95,7 @@ String.prototype.replaceAll = function(regExp: string, replace: string): string 
  * @returns {string} результирующая строка
  */
 String.prototype.deleteWhiteSpaces = function(): string {
- return this.replaceAll(" ", "");
+    return this.replaceAll(" ", "");
 };
 
 /**

@@ -44,7 +44,7 @@ export class CommonUtils {
     /**
      * Генерирует уникальный идентификатор
      */
-    static uuid() {
+    static uuid(): string {
         let uuid = "";
         let i;
         let random;

@@ -1,57 +1,76 @@
+import dayjs from "dayjs";
+import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {VueRouter} from "vue-router/types/router";
-import {PortfolioParams} from "../../types/types";
+import {UI} from "../../app/ui";
+import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
+import {ShowProgress} from "../../platform/decorators/showProgress";
+import {CustomDialog} from "../../platform/dialogs/customDialog";
+import {IisType, PortfolioAccountType, PortfolioParams, PortfolioService} from "../../services/portfolioService";
+import {EventType} from "../../types/eventType";
+import {CommonUtils} from "../../utils/commonUtils";
+import {DateFormat, DateUtils} from "../../utils/dateUtils";
 import {MainStore} from "../../vuex/mainStore";
-import {CustomDialog} from "./customDialog";
 
 @Component({
     // language=Vue
     template: `
-        <v-dialog v-model="showed" persistent max-width="700px">
-            <v-card>
-                <v-card-title>
-                    <span class="headline">{{ (editMode ? 'Редактирование' : 'Добавление') + ' портфеля' }}</span>
+        <v-dialog v-model="showed" max-width="600px">
+            <v-card v-if="portfolioParams" class="dialog-wrap portfolio-dialog-wrap">
+                <v-icon class="closeDialog" @click.native="close">close</v-icon>
+
+                <v-card-title class="paddB0">
+                    <span class="dialog-header-text">{{ (editMode ? 'Редактирование' : 'Добавление') + ' портфеля' }}</span>
                 </v-card-title>
-                <v-card-text>
-                    <v-container grid-list-md>
-                        <v-layout wrap>
-                            <v-flex xs12>
-                                <v-text-field label="Название" v-model="name" required :counter="40"></v-text-field>
+
+                <v-card-text class="paddT0 paddB0">
+                    <v-layout wrap>
+                        <v-flex xs12 class="section-portfolio-name">
+                            <v-text-field label="Введите название портфеля" v-model.trim="portfolioParams.name" required autofocus
+                                v-validate="'required|max:40|min:3'"
+                                :error-messages="errors.collect('name')"
+                                data-vv-name="name" @keyup.enter="savePortfolio"
+                                class="required">
+                            </v-text-field>
+                        </v-flex>
+
+                        <v-layout class="select-option-wrap">
+                            <v-flex class="select-section">
+                                <v-select :items="accessTypes" v-model="portfolioParams.access" menu-props="returnValue" item-text="label" label="Доступ"
+                                            dense hide-details :menu-props="{nudgeBottom:'22'}"></v-select>
                             </v-flex>
 
-                            <v-flex xs12>
-                                <v-select :items="accessTypes" v-model="access" :return-value="true" item-text="label" label="Доступ"></v-select>
-                            </v-flex>
-
-                            <v-flex xs12>
-                                <v-tooltip top>
-                                    <v-checkbox slot="activator" label="Профессиональный режим" v-model="professionalMode"></v-checkbox>
-                                    <span>
-                                        Профессиональный режим включает дополнительные возможности, необходимые опытным инвесторам:
-                                        <ul>
-                                            <li>возможность уходить в минус по деньгам (маржинальное кредитование)</li>
-                                            <li>возможность открытия коротких позиций</li>
-                                            <li>возможность учета времени заключения сделки</li>
-                                        </ul>
-                                    </span>
-                                </v-tooltip>
-                            </v-flex>
-
-                            <v-flex xs12>
-                                <v-select :items="currencyList" v-model="viewCurrency" label="Валюта портфеля"
-                                          :persistent-hint="true"
-                                          hint="Валюта, в которой происходит расчет всех показателей. Активы, приобретенные в другой валюте
-                                          будут конвертированы по курсу на дату совершения сделки.">
+                            <v-flex class="select-section">
+                                <v-select :items="currencyList" v-model="portfolioParams.viewCurrency" label="Валюта портфеля"
+                                            :persistent-hint="true" dense hide-details
+                                            hint="Валюта, в которой происходит расчет всех показателей. Активы, приобретенные в другой валюте
+                                            будут конвертированы по курсу на дату совершения сделки." :menu-props="{nudgeBottom:'22'}">
                                 </v-select>
                             </v-flex>
 
-                            <v-flex xs12>
+                            <v-flex class="select-section">
+                                <v-select :items="accountTypes" v-model="portfolioParams.accountType" :return-object="true" item-text="description" dense hide-details
+                                            label="Тип счета" :menu-props="{nudgeBottom:'22'}"></v-select>
+                            </v-flex>
+                            <v-flex class="select-section" v-if="portfolioParams.accountType === accountType.IIS" >
+                                <v-select :items="iisTypes" dense hide-details :menu-props="{nudgeBottom:'22'}"
+                                            v-model="portfolioParams.iisType" :return-object="true" item-text="description" label="Тип вычета"></v-select>
+                            </v-flex>
+                        </v-layout>
+
+                        <v-layout>
+                            <v-flex xs12 sm5>
+                                <ii-number-field label="Фиксированная комиссия" v-model="portfolioParams.fixFee"
+                                                    hint="Для автоматического рассчета комиссии при внесении сделок." :decimals="5" @keyup.enter="savePortfolio">
+                                </ii-number-field>
+                            </v-flex>
+
+                            <v-flex xs12 sm5 class="wrap-calendar-section">
                                 <v-menu
                                         ref="dateMenu"
                                         :close-on-content-click="false"
                                         v-model="dateMenuValue"
-                                        :nudge-right="40"
-                                        :return-value.sync="openDate"
+                                        :return-value.sync="portfolioParams.openDate"
                                         lazy
                                         transition="scale-transition"
                                         offset-y
@@ -59,41 +78,45 @@ import {CustomDialog} from "./customDialog";
                                         min-width="290px">
                                     <v-text-field
                                             slot="activator"
-                                            v-model="openDate"
+                                            v-model="portfolioParams.openDate"
+                                            :error-messages="errors.collect('openDate')"
+                                            name="openDate"
                                             label="Дата открытия"
                                             required
                                             append-icon="event"
                                             readonly></v-text-field>
-                                    <v-date-picker v-model="openDate" :no-title="true" locale="ru" :first-day-of-week="1"
-                                                   @input="$refs.dateMenu.save(openDate)"></v-date-picker>
+                                    <v-date-picker v-model="portfolioParams.openDate" :no-title="true" locale="ru" :first-day-of-week="1"
+                                                    @input="onDateSelected"></v-date-picker>
                                 </v-menu>
                             </v-flex>
+                        </v-layout>
 
-                            <v-flex xs12>
-                                <v-select :items="accountTypes" v-model="accountType" label="Тип счета"></v-select>
-                            </v-flex>
-
-                            <v-flex xs12>
-                                <v-select v-if="accountType === 'ИИС'" :items="iisTypes" v-model="iisType" label="Тип вычета"></v-select>
-                            </v-flex>
-
-                            <v-flex xs12>
-                                <v-text-field label="Фиксированная комиссия" v-model="fixFee"
-                                              hint="Для автоматического рассчета комиссии при внесении сделок.">
-                                </v-text-field>
-                            </v-flex>
-
-                            <v-flex xs12>
-                                <v-textarea label="Заметка" v-model="note" :counter="500"></v-textarea>
+                        <v-layout>
+                            <v-flex xs12 class="textarea-section">
+                                <v-textarea label="Заметка" v-model="portfolioParams.note" :rows="2" :counter="500"
+                                v-validate="'max:500'" :error-messages="errors.collect('note')" data-vv-name="note"></v-textarea>
                             </v-flex>
                         </v-layout>
-                    </v-container>
-                    <small>* обозначает обязательные поля</small>
+
+                        <v-flex xs12>
+                            <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" top>
+                                <v-checkbox slot="activator" label="Профессиональный режим"
+                                v-model="portfolioParams.professionalMode" class="portfolio-default-text"></v-checkbox>
+                                <span>
+                                    Профессиональный режим включает дополнительные возможности, необходимые опытным инвесторам:
+                                    <ul>
+                                        <li>возможность уходить в минус по деньгам (маржинальное кредитование)</li>
+                                        <li>возможность открытия коротких позиций</li>
+                                        <li>возможность учета времени заключения сделки</li>
+                                    </ul>
+                                </span>
+                            </v-tooltip>
+                        </v-flex>
+                    </v-layout>
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="info lighten-2" flat @click.native="cancel">Отмена</v-btn>
-                    <v-btn :loading="processState" :disabled="processState" color="primary" light @click.native="savePortfolio">
+                    <v-btn :loading="processState" :disabled="!isValid || processState" color="primary" light @click.stop.native="savePortfolio">
                         {{ editMode ? 'Сохранить' : 'Добавить'}}
                         <span slot="loader" class="custom-loader">
                         <v-icon color="blue">fas fa-spinner fa-spin</v-icon>
@@ -111,57 +134,87 @@ export class PortfolioEditDialog extends CustomDialog<PortfolioDialogData, boole
         dateMenu: any
     };
 
-    private id = "";
-    private name = "";
-    private viewCurrency = "RUB";
-    private access = false;
-    private fixFee = "";
-    private openDate = "";
-    private accountType = "Брокерский";
-    private professionalMode = false;
-    private iisType = "С вычетом на взносы";
-    private broker = "";
-    private note = "";
-    private combined = false;
+    @Inject
+    private portfolioService: PortfolioService;
+
+    private portfolioParams: PortfolioParams = null;
 
     private dateMenuValue = false;
-    private currencyList = ["RUB", "USD"];
+    private currencyList = ["RUB", "USD", "EUR"];
     private accessTypes = [AccessTypes.PRIVATE, AccessTypes.PUBLIC];
-    private iisTypes = ["С вычетом на взносы", "С вычетом на доходы"];
-    private accountTypes = ["Брокерский", "ИИС"];
+    private iisTypes = IisType.values();
+    private accountType = PortfolioAccountType;
+    private accountTypes = PortfolioAccountType.values();
     private processState = false;
     private editMode = false;
 
+    /**
+     * Инициализация данных диалога
+     * @inheritDoc
+     */
     mounted(): void {
         if (this.data.portfolioParams) {
-            Object.assign(this, this.data.portfolioParams);
+            this.portfolioParams = {...this.data.portfolioParams};
             this.editMode = true;
+        } else {
+            this.portfolioParams = {
+                name: "",
+                access: false,
+                viewCurrency: "RUB",
+                openDate: DateUtils.formatDate(dayjs(), DateFormat.DATE2),
+                accountType: PortfolioAccountType.BROKERAGE
+            };
         }
-        console.log(this.id, this.name);
+        if (!this.portfolioParams.iisType) {
+            this.portfolioParams.iisType = IisType.TYPE_A;
+        }
+    }
+
+    @ShowProgress
+    @DisableConcurrentExecution
+    private async savePortfolio(): Promise<void> {
+        if (!this.isValid) {
+            this.$snotify.warning("Поля заполнены некорректно");
+            return;
+        }
+        this.processState = true;
+        await this.portfolioService.createOrUpdatePortfolio(this.portfolioParams);
+        this.$snotify.info(`Портфель успешно ${this.portfolioParams.id ? "изменен" : "создан"}`);
+        this.processState = false;
+        if (this.portfolioParams.id) {
+            // если валюта была изменена, необходимо обновить данные по портфелю, иначе просто обновляем сам портфель
+            if (this.portfolioParams.viewCurrency !== this.data.portfolioParams.viewCurrency) {
+                UI.emit(EventType.PORTFOLIO_RELOAD, this.portfolioParams);
+            } else {
+                UI.emit(EventType.PORTFOLIO_UPDATED, this.portfolioParams);
+            }
+        } else {
+            UI.emit(EventType.PORTFOLIO_CREATED);
+        }
+        this.close(true);
+    }
+
+    /**
+     * Кастомная валидация изза какого-то бага с форматирование дат в либе v-validate
+     * @param date
+     */
+    private async onDateSelected(date: string): Promise<void> {
+        this.$refs.dateMenu.save(date);
+        if (dayjs().isBefore(DateUtils.parseDate(this.portfolioParams.openDate))) {
+            this.$validator.errors.add({field: "openDate", msg: "Дата открытия портфеля не может быть в будущем"});
+        } else {
+            this.$validator.errors.remove("openDate");
+        }
+    }
+
+    private get isValid(): boolean {
+        return this.portfolioParams.name.length >= 3 && this.portfolioParams.name.length <= 40 &&
+            (dayjs().isAfter(DateUtils.parseDate(this.portfolioParams.openDate)) || DateUtils.currentDate() === this.portfolioParams.openDate) &&
+            (CommonUtils.isBlank(this.portfolioParams.note) || this.portfolioParams.note.length <= 500);
     }
 
     private cancel(): void {
         this.close();
-    }
-
-    private async savePortfolio(): Promise<void> {
-        this.processState = true;
-        const portfolio: PortfolioParams = {
-            id: this.id,
-            name: this.name,
-            access: this.access,
-            fixFee: this.fixFee,
-            viewCurrency: this.viewCurrency,
-            accountType: this.accountType,
-            professionalMode: this.professionalMode,
-            openDate: this.openDate,
-            combined: this.combined
-        };
-        console.log(portfolio);
-        setTimeout(() => {
-            this.processState = false;
-            this.close(true);
-        }, 5000);
     }
 }
 

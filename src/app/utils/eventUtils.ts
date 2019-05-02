@@ -4,11 +4,11 @@ export class EventUtils {
     }
 
     // Ctrl либо Cmd для macOS
-    static isControlKey(event: KeyboardEvent) {
+    static isControlKey(event: KeyboardEvent): boolean {
         return event.ctrlKey || event.metaKey || event.key === "Control";
     }
 
-    static isDeletion(event: KeyboardEvent) {
+    static isDeletion(event: KeyboardEvent): boolean {
         return event.keyCode === 8 || event.keyCode === 46;
     }
 
@@ -17,13 +17,14 @@ export class EventUtils {
      * @param event
      * @returns {boolean} true - если введен символ
      */
-    static isCharInput(event: KeyboardEvent) {
+    static isCharInput(event: KeyboardEvent): boolean {
         const which = event.which;
         return !EventUtils.isControlKey(event)
             && (which === undefined || which !== 0) && which !== 8;
     }
 
-    static getClipboardData = (event: ClipboardEvent | DragEvent) => {
+    static getClipboardData = (clipboardEvent: ClipboardEvent | DragEvent): string => {
+        let event = clipboardEvent;
         if (event.type === "drop") {
             return (event as DragEvent).dataTransfer.getData("text");
         }
@@ -40,8 +41,8 @@ export class EventUtils {
      * @param {EventListenerOrEventListenerObject} callback обработчик событий
      * @param {boolean | AddEventListenerOptions} options   дополнительные опции к событию
      */
-    static addEventListener(element: HTMLElement, events: string,
+    static addEventListener(element: Element, events: string,
                             callback: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void {
-        events.split(" ").forEach((event: string) => element.addEventListener(event, callback));
+        events.split(" ").forEach((event: string): void => element.addEventListener(event, callback));
     }
 }

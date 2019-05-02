@@ -1,194 +1,144 @@
-import {Decimal} from "decimal.js";
-import {DataPoint} from "highcharts";
-import {Inject} from "typescript-ioc";
-import Component from "vue-class-component";
+import {Container, Inject} from "typescript-ioc";
+import {ContentLoader} from "vue-content-loader";
+import {Route} from "vue-router";
 import {namespace} from "vuex-class/lib/bindings";
-import {UI} from "../app/ui";
-import {AssetTable} from "../components/assetTable";
-import {BondTable} from "../components/bondTable";
-import {BarChart} from "../components/charts/barChart";
-import {BondPieChart} from "../components/charts/bondPieChart";
-import {PortfolioLineChart} from "../components/charts/portfolioLineChart";
-import {SectorsChart} from "../components/charts/sectorsChart";
-import {StockPieChart} from "../components/charts/stockPieChart";
-import {CombinedPortfoliosTable} from "../components/combinedPortfoliosTable";
-import {StockTable} from "../components/stockTable";
-import {PortfolioService} from "../services/portfolioService";
-import {BigMoney} from "../types/bigMoney";
-import {HighStockEventsGroup, SectorChartData} from "../types/charts/types";
-import {CombinedData} from "../types/eventObjects";
-import {ClientInfo, Overview} from "../types/types";
-import {ChartUtils} from "../utils/chartUtils";
+import {Resolver} from "../../../typings/vue";
+import {Component, UI} from "../app/ui";
+import {BlockByTariffDialog} from "../components/dialogs/blockByTariffDialog";
+import {CompositePortfolioManagement} from "../components/dialogs/compositePortfolioManagement";
+import {ClientInfo, ClientService} from "../services/clientService";
+import {OverviewService} from "../services/overviewService";
+import {HighStockEventsGroup} from "../types/charts/types";
+import {Permission} from "../types/permission";
+import {StoreKeys} from "../types/storeKeys";
+import {ForbiddenCode, Overview} from "../types/types";
+import {UiStateHelper} from "../utils/uiStateHelper";
 import {StoreType} from "../vuex/storeType";
+import {BasePortfolioPage} from "./basePortfolioPage";
 
 const MainStore = namespace(StoreType.MAIN);
 
 @Component({
     // language=Vue
     template: `
-        <v-container fluid>
-            <dashboard v-if="overview" :data="overview.dashboardData"></dashboard>
-            <div style="height: 20px"></div>
-
-            <v-expansion-panel expand :value="$uistate.combinedPanel">
-                <v-expansion-panel-content :lazy="true" v-state="$uistate.COMBINED_CONTROL_PANEL">
-                    <div slot="header">Управление комбинированным портфелем</div>
-                    <v-card>
-                        <v-card-text>
-                            <combined-portfolios-table :portfolios="clientInfo.user.portfolios" @change="onSetCombined"></combined-portfolios-table>
-                        </v-card-text>
-                    </v-card>
-                    <v-container grid-list-md text-xs-center>
-                        <v-layout row wrap>
-                            <v-flex xs6>
-                                <v-btn color="info" @click.stop="doCombinedPortfolio">Сформировать</v-btn>
-                            </v-flex>
-                            <v-flex xs6>
-                                <v-select :items="['RUB', 'USD']" v-model="viewCurrency" label="Валюта представления" @change="doCombinedPortfolio"
-                                          single-line></v-select>
-                            </v-flex>
-                        </v-layout>
-                    </v-container>
-                </v-expansion-panel-content>
-            </v-expansion-panel>
-
-            <div style="height: 20px"></div>
-
-            <template v-if="overview">
-                <asset-table :assets="overview.assetRows"></asset-table>
-
-                <div style="height: 50px"></div>
-
-                <v-expansion-panel focusable expand :value="$uistate.stocksTablePanel">
-                    <v-expansion-panel-content :lazy="true" v-state="$uistate.STOCKS">
-                        <div slot="header">Акции</div>
-                        <v-card>
-                            <stock-table :rows="overview.stockPortfolio.rows"></stock-table>
-                        </v-card>
-                    </v-expansion-panel-content>
-                </v-expansion-panel>
-
-                <div style="height: 50px"></div>
-
-                <v-expansion-panel focusable expand :value="$uistate.bondsTablePanel">
-                    <v-expansion-panel-content :lazy="true" v-state="$uistate.BONDS">
-                        <div slot="header">Облигации</div>
-                        <v-card>
-                            <bond-table :rows="overview.bondPortfolio.rows"></bond-table>
-                        </v-card>
-                    </v-expansion-panel-content>
-                </v-expansion-panel>
-
-                <div style="height: 50px"></div>
-
-                <v-expansion-panel expand :value="$uistate.historyPanel">
-                    <v-expansion-panel-content :lazy="true" v-state="$uistate.HISTORY_PANEL">
-                        <div slot="header">Стоимость портфеля</div>
-                        <v-card style="overflow: auto;">
-                            <v-card-text>
-                                <line-chart :data="lineChartData" :events-chart-data="eventsChartData" balloon-title="Портфель"></line-chart>
-                            </v-card-text>
-                        </v-card>
-                    </v-expansion-panel-content>
-                </v-expansion-panel>
-
-                <div style="height: 50px"></div>
-
-                <v-expansion-panel expand :value="$uistate.stockGraph">
-                    <v-expansion-panel-content :lazy="true" v-state="$uistate.STOCK_CHART_PANEL">
-                        <div slot="header">Состав портфеля акций</div>
-                        <v-card style="overflow: auto;">
-                            <v-card-text>
-                                <pie-chart :data="stockPieChartData"></pie-chart>
-                            </v-card-text>
-                        </v-card>
-                    </v-expansion-panel-content>
-                </v-expansion-panel>
-
-                <div style="height: 50px" v-if="overview.bondPortfolio.rows.length > 0"></div>
-
-                <v-expansion-panel v-if="overview.bondPortfolio.rows.length > 0" expand :value="$uistate.bondGraph">
-                    <v-expansion-panel-content :lazy="true" v-state="$uistate.BOND_CHART_PANEL">
-                        <div slot="header">Состав портфеля облигаций</div>
-                        <v-card style="overflow: auto;">
-                            <v-card-text>
-                                <pie-chart :data="bondPieChartData"></pie-chart>
-                            </v-card-text>
-                        </v-card>
-                    </v-expansion-panel-content>
-                </v-expansion-panel>
-
-                <div style="height: 50px"></div>
-
-                <v-expansion-panel v-if="sectorsChartData" expand :value="$uistate.sectorsGraph">
-                    <v-expansion-panel-content :lazy="true" v-state="$uistate.SECTORS_PANEL">
-                        <div slot="header">Отрасли</div>
-                        <v-card style="overflow: auto;">
-                            <v-card-text>
-                                <bar-chart :data="sectorsChartData.data" :category-names="sectorsChartData.category" series-name="Отрасли"></bar-chart>
-                            </v-card-text>
-                        </v-card>
-                    </v-expansion-panel-content>
-                </v-expansion-panel>
-            </template>
-        </v-container>
+            <v-slide-x-reverse-transition>
+                <template v-if="overview">
+                    <base-portfolio-page :overview="overview" :line-chart-data="lineChartData" :line-chart-events="lineChartEvents"
+                                         :view-currency="viewCurrency" :state-key-prefix="StoreKeys.PORTFOLIO_COMBINED_CHART" :side-bar-opened="sideBarOpened"
+                                         @reloadLineChart="loadPortfolioLineChart">
+                        <template #afterDashboard>
+                            <v-layout align-center>
+                                <div :class="['control-porfolios-title', blockNotEmpty() ? '' : 'pl-3']">
+                                    Управление составным портфелем
+                                </div>
+                                <v-spacer></v-spacer>
+                                <div v-if="blockNotEmpty()">
+                                    <v-btn class="btn" color="primary" @click.stop="showDialogCompositePortfolio">
+                                        Сформировать
+                                    </v-btn>
+                                </div>
+                            </v-layout>
+                            <v-layout v-if="!blockNotEmpty()" column class="empty-station px-4 py-4 mt-3">
+                                <div class="empty-station__description">
+                                    Здесь вы можете объединить для просмотра несколько портфелей в один, и проанализировать
+                                    состав и доли каждой акции, если, например, она входит в состав нескольких портфелей.
+                                </div>
+                                <div class="mt-4">
+                                    <v-btn class="btn" color="primary" @click.stop="showDialogCompositePortfolio">
+                                        Сформировать
+                                    </v-btn>
+                                </div>
+                            </v-layout>
+                        </template>
+                    </base-portfolio-page>
+                </template>
+                <template v-else>
+                    <content-loader :height="800" :width="800" :speed="1" primaryColor="#f3f3f3" secondaryColor="#ecebeb">
+                        <rect x="0" y="20" rx="5" ry="5" width="801.11" height="80"/>
+                        <rect x="0" y="120" rx="5" ry="5" width="801.11" height="30"/>
+                        <rect x="0" y="170" rx="5" ry="5" width="801.11" height="180"/>
+                        <rect x="0" y="370" rx="5" ry="5" width="801.11" height="180"/>
+                        <rect x="0" y="570" rx="5" ry="5" width="801.11" height="180"/>
+                    </content-loader>
+                </template>
+            </v-slide-x-reverse-transition>
     `,
-    components: {AssetTable, StockTable, BondTable, BarChart, StockPieChart, BondPieChart, PortfolioLineChart, SectorsChart, CombinedPortfoliosTable}
+    components: {BasePortfolioPage, ContentLoader}
 })
 export class CombinedPortfolioPage extends UI {
 
     @MainStore.Getter
     private clientInfo: ClientInfo;
-
+    @MainStore.Getter
+    private sideBarOpened: boolean;
     @Inject
-    private portfolioService: PortfolioService;
-
+    private overviewService: OverviewService;
+    /** Данные комбинированного портфеля */
     private overview: Overview = null;
-    private viewCurrency = "RUB";
+    /** Валюта просмотра портфеля */
+    private viewCurrency: string = "RUB";
+    /** Данные графика стоимости портфеля */
+    private lineChartData: any[] = null;
+    /** Данные по событиям для графика стоимости */
+    private lineChartEvents: HighStockEventsGroup[] = null;
+    /** Ключи для сохранения информации */
+    private StoreKeys = StoreKeys;
 
-    private lineChartData: any[] = [];
-    private eventsChartData: HighStockEventsGroup[] = [];
-    private stockPieChartData: DataPoint[] = [];
-    private bondPieChartData: DataPoint[] = [];
-    private sectorsChartData: SectorChartData = null;
-
+    /**
+     * Инициализация данных компонента
+     * @inheritDoc
+     */
     async created(): Promise<void> {
         await this.doCombinedPortfolio();
     }
 
+    /**
+     * Осуществляет проверку доступа к разделу
+     * @param {Route} to      целевой объект Route, к которому осуществляется переход.
+     * @param {Route} from    текущий путь, с которого осуществляется переход к новому.
+     * @param {Resolver} next функция, вызов которой разрешает хук.
+     * @inheritDoc
+     * @returns {Promise<void>}
+     */
+    async beforeRouteEnter(to: Route, from: Route, next: Resolver): Promise<void> {
+        const clientService: ClientService = Container.get(ClientService);
+        const clientInfo = await clientService.getClientInfo();
+        if (!clientInfo.tariff.hasPermission(Permission.COMBINED_PORTFOLIO)) {
+            await new BlockByTariffDialog().show(ForbiddenCode.PERMISSION_DENIED);
+            next(false);
+            return;
+        }
+        next();
+    }
+
+    private async showDialogCompositePortfolio(): Promise<void> {
+        const result = await new CompositePortfolioManagement().show({portfolio: this.clientInfo.user.portfolios, viewCurrency: this.viewCurrency});
+        if (result) {
+            this.viewCurrency = result;
+            await this.doCombinedPortfolio();
+        }
+    }
+
     private async doCombinedPortfolio(): Promise<void> {
+        this.overview = null;
         const ids = this.clientInfo.user.portfolios.filter(value => value.combined).map(value => value.id);
-        this.overview = await this.portfolioService.getPortfolioOverviewCombined({ids: ids, viewCurrency: this.viewCurrency});
-        this.lineChartData = await this.portfolioService.getCostChartCombined({ids: ids, viewCurrency: this.viewCurrency});
-        this.eventsChartData = await this.portfolioService.getEventsChartDataCombined({ids: ids, viewCurrency: this.viewCurrency});
-        this.stockPieChartData = this.doStockPieChartData();
-        this.bondPieChartData = this.doBondPieChartData();
-        this.sectorsChartData = ChartUtils.doSectorsChartData(this.overview);
+        this.overview = await this.overviewService.getPortfolioOverviewCombined({ids: ids, viewCurrency: this.viewCurrency});
+        await this.loadPortfolioLineChart();
     }
 
-    private async onSetCombined(data: CombinedData): Promise<void> {
-        await this.portfolioService.setCombinedFlag(data.id, data.combined);
+    private blockNotEmpty(): boolean {
+        return this.overview.bondPortfolio.rows.length !== 0 || this.overview.stockPortfolio.rows.length !== 0;
     }
 
-    private doStockPieChartData(): DataPoint[] {
-        const data: DataPoint[] = [];
-        this.overview.stockPortfolio.rows.filter(value => value.currCost != "0").forEach(row => {
-            data.push({
-                name: row.stock.shortname,
-                y: new Decimal(new BigMoney(row.currCost).amount.abs().toString()).toDP(2, Decimal.ROUND_HALF_UP).toNumber()
-            });
-        });
-        return data;
+    private async onPortfolioLineChartPanelStateChanges(): Promise<void> {
+        await this.loadPortfolioLineChart();
     }
 
-    private doBondPieChartData(): DataPoint[] {
-        const data: DataPoint[] = [];
-        this.overview.bondPortfolio.rows.filter(value => value.currCost != "0").forEach(row => {
-            data.push({
-                name: row.bond.shortname,
-                y: new Decimal(new BigMoney(row.currCost).amount.abs().toString()).toDP(2, Decimal.ROUND_HALF_UP).toNumber()
-            });
-        });
-        return data;
+    private async loadPortfolioLineChart(): Promise<void> {
+        const ids = this.clientInfo.user.portfolios.filter(value => value.combined).map(value => value.id);
+        if (UiStateHelper.historyPanel[0] === 1) {
+            this.lineChartData = await this.overviewService.getCostChartCombined({ids: ids, viewCurrency: this.viewCurrency});
+            this.lineChartEvents = await this.overviewService.getEventsChartDataCombined({ids: ids, viewCurrency: this.viewCurrency});
+        }
     }
 }

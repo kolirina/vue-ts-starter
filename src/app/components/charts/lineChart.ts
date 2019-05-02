@@ -1,18 +1,15 @@
-import Highcharts, {ChartObject, Gradient} from "highcharts";
+import {ChartObject} from "highcharts";
 import Highstock from "highcharts/highstock";
 import Component from "vue-class-component";
 import {Prop, Watch} from "vue-property-decorator";
-import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
 import {HighStockEventsGroup} from "../../types/charts/types";
-import {StoreType} from "../../vuex/storeType";
-
-const MainStore = namespace(StoreType.MAIN);
+import {ChartUtils} from "../../utils/chartUtils";
 
 @Component({
     // language=Vue
     template: `
-        <div>
+        <div @click.stop>
             <v-container grid-list-md text-xs-center v-if="!chart">
                 <v-layout row wrap>
                     <v-flex xs12>
@@ -31,25 +28,38 @@ export class LineChart extends UI {
         container: HTMLElement
     };
 
+    /** Заголовок графика */
     @Prop({default: "", type: String})
     private title: string;
-
+    /** Заголовок в тултипе */
     @Prop({default: "", type: String})
     private balloonTitle: string;
-
+    /** Заголовк оси y */
     @Prop({default: "", type: String})
     private yAxisTitle: string;
-
+    /** Данные для графика */
     @Prop({required: true})
     private data: any[];
-
+    /** Данные по событиям */
     @Prop({required: false})
     private eventsChartData: HighStockEventsGroup[];
-
+    /** Значение для линии средней цены в портфеле */
+    @Prop({required: false})
+    private avgLineValue: number;
+    /** Объект графика */
     private chart: ChartObject = null;
+    /** Набор доступных для выбора диапазонов дат */
+    private ranges: Highstock.RangeSelectorButton[] = [];
+    /** Количество знаков для округления на графике */
+    private decimals = 2;
 
+    /**
+     * Инициализация данных
+     * @inheritDoc
+     */
     async mounted(): Promise<void> {
-        console.log(this.eventsChartData);
+        this.decimals = this.defineDecimals();
+        this.ranges = [...ChartUtils.getChartRanges()];
         await this.draw();
     }
 
@@ -63,72 +73,23 @@ export class LineChart extends UI {
         await this.draw();
     }
 
+    /**
+     * Отрисовывает график
+     */
     private async draw(): Promise<void> {
-        this.chart = Highstock.stockChart(this.$refs.container, {
-            chart: {
-                zoomType: "x",
-                backgroundColor: null
-            },
-            title: {
-                text: this.title
-            },
-            subtitle: {
-                text: "Выделите участок для увеличения"
-            },
-            xAxis: {
-                type: "datetime",
-                gridLineWidth: 1,
-                labels: {
-                    style: {
-                        fontSize: "12px"
-                    }
-                }
-            },
-            yAxis: {
-                title: {
-                    text: this.yAxisTitle
-                }
-            },
-            legend: {
-                enabled: false
-            },
-            plotOptions: {
-                area: {
-                    fillColor: {
-                        linearGradient: {
-                            x1: 0,
-                            y1: 0,
-                            x2: 0,
-                            y2: 1
-                        },
-                        stops: [
-                            [0, Highcharts.getOptions().colors[0]],
-                            [1, (Highcharts.Color(Highcharts.getOptions().colors[0]) as Gradient).setOpacity(0).get("rgba")]
-                        ]
-                    },
-                    marker: {
-                        radius: 2
-                    },
-                    lineWidth: 1,
-                    states: {
-                        hover: {
-                            lineWidth: 1
-                        }
-                    },
-                    threshold: null
-                }
-            },
+        this.chart = ChartUtils.drawLineChart(this.$refs.container, this.data, this.eventsChartData, this.ranges,
+            this.ranges.length - 1, this.decimals, this.balloonTitle, this.title, this.yAxisTitle, null, this.avgLineValue);
+    }
 
-            series: [{
-                type: "area",
-                name: this.balloonTitle,
-                data: this.data,
-                id: "dataseries"
-            },
-                ...this.eventsChartData || []],
-            exporting: {
-                enabled: true
-            }
-        });
+    private defineDecimals(): number {
+        if (this.data.length === 0) {
+            return 2;
+        }
+        try {
+            const value = this.data[0][1].toString();
+            return value.substring(value.indexOf(".") + 1).length;
+        } catch (ignored) {
+            return 2;
+        }
     }
 }

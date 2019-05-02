@@ -1,116 +1,83 @@
-import Component from "vue-class-component";
+import {Inject} from "typescript-ioc";
 import {namespace} from "vuex-class/lib/bindings";
-import {UI} from "../app/ui";
-import {AssetTable} from "../components/assetTable";
-import {BondTable} from "../components/bondTable";
-import {BarChart} from "../components/charts/barChart";
-import {BondPieChart} from "../components/charts/bondPieChart";
-import {PortfolioLineChart} from "../components/charts/portfolioLineChart";
-import {SectorsChart} from "../components/charts/sectorsChart";
-import {StockPieChart} from "../components/charts/stockPieChart";
-import {StockTable} from "../components/stockTable";
+import {Component, UI, Watch} from "../app/ui";
+import {ShowProgress} from "../platform/decorators/showProgress";
+import {ExportService, ExportType} from "../services/exportService";
+import {OverviewService} from "../services/overviewService";
+import {HighStockEventsGroup} from "../types/charts/types";
+import {StoreKeys} from "../types/storeKeys";
 import {Portfolio} from "../types/types";
+import {CommonUtils} from "../utils/commonUtils";
 import {UiStateHelper} from "../utils/uiStateHelper";
 import {StoreType} from "../vuex/storeType";
+import {BasePortfolioPage} from "./basePortfolioPage";
 
 const MainStore = namespace(StoreType.MAIN);
 
 @Component({
     // language=Vue
     template: `
-        <v-container v-if="portfolio" fluid>
-            <dashboard :data="portfolio.overview.dashboardData"></dashboard>
-            <asset-table :assets="portfolio.overview.assetRows"></asset-table>
-
-            <div style="height: 50px"></div>
-
-            <v-expansion-panel focusable expand :value="$uistate.stocksTablePanel">
-                <v-expansion-panel-content :lazy="true" v-state="$uistate.STOCKS">
-                    <div slot="header">Акции</div>
-                    <v-card>
-                        <stock-table :rows="portfolio.overview.stockPortfolio.rows" :loading="loading"></stock-table>
-                    </v-card>
-                </v-expansion-panel-content>
-            </v-expansion-panel>
-
-            <div style="height: 50px"></div>
-
-            <v-expansion-panel focusable expand :value="$uistate.bondsTablePanel">
-                <v-expansion-panel-content :lazy="true" v-state="$uistate.BONDS">
-                    <div slot="header">Облигации</div>
-                    <v-card>
-                        <bond-table :rows="portfolio.overview.bondPortfolio.rows"></bond-table>
-                    </v-card>
-                </v-expansion-panel-content>
-            </v-expansion-panel>
-
-            <div style="height: 50px"></div>
-
-            <v-expansion-panel focusable expand :value="$uistate.historyPanel">
-                <v-expansion-panel-content :lazy="true" v-state="$uistate.HISTORY_PANEL">
-                    <div slot="header">Стоимость портфеля</div>
-                    <v-card style="overflow: auto;">
-                        <v-card-text>
-                            <portfolio-line-chart></portfolio-line-chart>
-                        </v-card-text>
-                    </v-card>
-                </v-expansion-panel-content>
-            </v-expansion-panel>
-
-            <div style="height: 50px"></div>
-
-            <v-expansion-panel focusable expand :value="$uistate.stockGraph">
-                <v-expansion-panel-content :lazy="true" v-state="$uistate.STOCK_CHART_PANEL">
-                    <div slot="header">Состав портфеля акций</div>
-                    <v-card style="overflow: auto;">
-                        <v-card-text>
-                            <stock-pie-chart></stock-pie-chart>
-                        </v-card-text>
-                    </v-card>
-                </v-expansion-panel-content>
-            </v-expansion-panel>
-
-            <div style="height: 50px" v-if="portfolio.overview.bondPortfolio.rows.length > 0"></div>
-
-            <v-expansion-panel v-if="portfolio.overview.bondPortfolio.rows.length > 0" focusable expand :value="$uistate.bondGraph">
-                <v-expansion-panel-content :lazy="true" v-state="$uistate.BOND_CHART_PANEL">
-                    <div slot="header">Состав портфеля облигаций</div>
-                    <v-card style="overflow: auto;">
-                        <v-card-text>
-                            <bond-pie-chart></bond-pie-chart>
-                        </v-card-text>
-                    </v-card>
-                </v-expansion-panel-content>
-            </v-expansion-panel>
-
-            <div style="height: 50px"></div>
-
-            <v-expansion-panel focusable expand :value="$uistate.sectorsGraph">
-                <v-expansion-panel-content :lazy="true" v-state="$uistate.SECTORS_PANEL">
-                    <div slot="header">Отрасли</div>
-                    <v-card style="overflow: auto;">
-                        <v-card-text>
-                            <sectors-chart></sectors-chart>
-                        </v-card-text>
-                    </v-card>
-                </v-expansion-panel-content>
-            </v-expansion-panel>
-        </v-container>
+        <base-portfolio-page v-if="portfolio" :overview="portfolio.overview" :portfolio-name="portfolio.portfolioParams.name" :portfolio-id="String(portfolio.portfolioParams.id)"
+                             :line-chart-data="lineChartData" :line-chart-events="lineChartEvents" :view-currency="portfolio.portfolioParams.viewCurrency"
+                             :state-key-prefix="StoreKeys.PORTFOLIO_CHART" :side-bar-opened="sideBarOpened" :share-notes="portfolio.portfolioParams.shareNotes"
+                             @reloadLineChart="loadPortfolioLineChart" @exportTable="onExportTable" exportable>
+            <template #afterDashboard>
+                <v-alert v-if="isEmptyBlockShowed" :value="true" type="info" outline>
+                    Для начала работы заполните свой портфель. Вы можете
+                    <router-link to="/settings/import">загрузить отчет</router-link>
+                    со сделками вашего брокера или просто
+                    <router-link to="/balances">указать остатки</router-link>
+                    портфеля, если знаете цену или стоимость покупки бумаг
+                </v-alert>
+            </template>
+        </base-portfolio-page>
     `,
-    components: {AssetTable, StockTable, BondTable, BarChart, StockPieChart, BondPieChart, PortfolioLineChart, SectorsChart}
+    components: {BasePortfolioPage}
 })
 export class PortfolioPage extends UI {
 
     @MainStore.Getter
     private portfolio: Portfolio;
+    @MainStore.Getter
+    private sideBarOpened: boolean;
+    @Inject
+    private overviewService: OverviewService;
+    @Inject
+    private exportService: ExportService;
+    private lineChartData: any[] = null;
+    private lineChartEvents: HighStockEventsGroup[] = null;
+    /** Ключи для сохранения информации */
+    private StoreKeys = StoreKeys;
 
-    private loading = false;
+    /**
+     * Инициализация данных страницы
+     * @inheritDoc
+     */
+    async created(): Promise<void> {
+        await this.loadPortfolioLineChart();
+    }
 
-    mounted(): void {
-        this.loading = true;
+    @Watch("portfolio")
+    private async onPortfolioChange(): Promise<void> {
+        this.lineChartData = null;
+        this.lineChartEvents = null;
+        await this.loadPortfolioLineChart();
+    }
 
-        setTimeout(() => {
-            this.loading = false;
-        }, 4000);
+    @ShowProgress
+    private async loadPortfolioLineChart(): Promise<void> {
+        if (UiStateHelper.historyPanel[0] === 1 && !CommonUtils.exists(this.lineChartData) && !CommonUtils.exists(this.lineChartEvents)) {
+            this.lineChartData = await this.overviewService.getCostChart(this.portfolio.id);
+            this.lineChartEvents = await this.overviewService.getEventsChartDataWithDefaults(this.portfolio.id);
+        }
+    }
+
+    @ShowProgress
+    private async onExportTable(exportType: ExportType): Promise<void> {
+        await this.exportService.exportReport(this.portfolio.id, exportType);
+    }
+
+    private get isEmptyBlockShowed(): boolean {
+        return this.portfolio && this.portfolio.overview.stockPortfolio.rows.length === 0 && this.portfolio.overview.bondPortfolio.rows.length === 0;
     }
 }

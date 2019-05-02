@@ -1,0 +1,130 @@
+.dashboard {
+
+  &-wrap {
+    background-color: $dashboard--bg-color;
+    box-shadow: 0 4px 7px rgba(4, 4, 39, 0.14);
+  }
+
+  &-card {
+    background-color: inherit !important;
+    box-shadow: none !important;
+    height: 100%;
+  }
+
+  &-card-big-nums {
+    font-family: $dashbord--big-num--font-family !important;
+    font-weight: $dashbord--big-num--font-weight !important;
+    font-size: $dashbord--big-num--font-size;
+    color: $dashbord--big-num--font-color !important;
+  }
+
+  &-card-string {
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    color: #fff;
+
+    .v-tooltip {
+      > span {
+        font-size: 0;
+
+        i {
+          font-size: 13px !important;
+          margin-left: 8px;
+        }
+      }
+    }
+  }
+
+  &-card-small-nums {
+    font-family: $dashbord--num--font-family !important;
+    font-size: $dashbord--num--font-size !important;
+    font-weight: $dashbord--num--font-weight !important;
+    color: $dashbord--num--font-color !important;
+  }
+
+  &-second-value-desc {
+    font-family: $table--title--font-family !important;
+    font-size: 12px !important;
+    color: $dashbord--num--font-color !important;
+  }
+
+  &-summary-income {
+    display: flex;
+    align-items: center;
+
+    &-icon {
+      background-color: $dashbord--icon-circle--color;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      i {
+        font-size: 20px;
+        font-weight: bold;
+      }
+
+    }
+    &.arrow-up &-icon i {
+      color: $dashboard--green-color !important;
+    }
+    &.arrow-down &-icon i {
+      color: $dashboard--red-color !important;
+    }
+
+    &-text {
+      margin-left: 12px;
+      font-size: 16px;
+      font-family: 'Gilroy Semibold';
+    }
+
+    &.arrow-up &-text {
+      color: $dashboard--green-color !important;
+    }
+    &.arrow-down &-text {
+      color: $dashboard--red-color !important;
+    }
+  }
+
+  &-border {
+    border-left: 1px solid #fff;
+
+    @media(max-width: $md-breakpoint) {
+      border-left: none;
+    }
+  }
+}
+
+// Fixed dashboard
+.fixed-dashboard {
+  @media screen and (min-width: 1024px) {
+    height: 100px;
+
+    .dashboard-wrap {
+      position: fixed;
+      top: 0;
+      left: 80px;
+      width: 100%;
+      z-index: 98;
+      margin: 0 !important;
+
+      &.menu-open {
+        left: 320px;
+        width: calc(100% - 320px);
+      }
+
+      .dashboard-card-small-nums {display: none}
+
+      .dashboard-card-big-nums {
+        font-size: 16px;
+      }
+
+      .v-card__title--primary {padding-top: 16px}
+
+      .container {padding: 0}
+    }
+  }
+}

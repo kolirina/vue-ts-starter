@@ -1,85 +1,159 @@
 import Component from "vue-class-component";
-import {Prop} from "vue-property-decorator";
+import {Prop, Watch} from "vue-property-decorator";
+import {namespace} from "vuex-class";
 import {UI} from "../app/ui";
 import {AssetType} from "../types/assetType";
+import {BigMoney} from "../types/bigMoney";
 import {Operation} from "../types/operation";
-import {AssetRow, TableHeader} from "../types/types";
+import {PortfolioAssetType} from "../types/portfolioAssetType";
+import {AssetRow, Pagination, Portfolio, TableHeader} from "../types/types";
+import {CommonUtils} from "../utils/commonUtils";
+import {SortUtils} from "../utils/sortUtils";
+import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {AddTradeDialog} from "./dialogs/addTradeDialog";
+
+const MainStore = namespace(StoreType.MAIN);
 
 @Component({
     // language=Vue
     template: `
-        <v-data-table :headers="headers" :items="assets" hide-actions class="elevation-1">
-            <template slot="items" slot-scope="props">
-                <td>{{ assetDesc(props.item.type) }}</td>
-                <td class="text-xs-right">{{ props.item.currCost | amount(true) }}</td>
-                <td class="text-xs-right">{{ props.item.profit | amount(true) }}</td>
-                <td class="text-xs-right">{{ props.item.percCurrShare | number }}</td>
-                <td class="justify-center layout px-0" @click.stop>
-                    <v-menu transition="slide-y-transition" bottom left>
-                        <v-btn slot="activator" color="primary" flat icon dark>
-                            <v-icon color="primary" small>fas fa-bars</v-icon>
-                        </v-btn>
-                        <v-list dense>
-                            <v-list-tile @click.stop="openTradeDialog(props.item, operation.BUY)">
-                                <v-list-tile-title>
-                                    <v-icon color="primary" small>fas fa-plus</v-icon>
-                                    Купить
-                                </v-list-tile-title>
-                            </v-list-tile>
-                            <v-list-tile @click.stop="openTradeDialog(props.item, operation.SELL)">
-                                <v-list-tile-title>
-                                    <v-icon color="primary" small>fas fa-minus</v-icon>
-                                    Продать
-                                </v-list-tile-title>
-                            </v-list-tile>
-                        </v-list>
-                    </v-menu>
-                </td>
+        <v-data-table :headers="headers" :items="assets" :custom-sort="customSort" :pagination.sync="pagination" hide-actions must-sort>
+            <template #headerCell="props">
+                <v-tooltip v-if="props.header.tooltip" content-class="custom-tooltip-wrap" bottom>
+                    <template #activator="{ on }">
+                        <span class="data-table__header-with-tooltip" v-on="on">
+                            {{ props.header.text }}
+                        </span>
+                    </template>
+                    <span>
+                      {{ props.header.tooltip }}
+                    </span>
+                </v-tooltip>
+                <span v-else>
+                    {{ props.header.text }}
+                </span>
+            </template>
+            <template #items="props">
+                <tr class="selectable">
+                    <td class="text-xs-left">{{ props.item.type | assetDesc }}</td>
+                    <td class="text-xs-right ii-number-cell">{{ props.item.currCost | amount(true) }}</td>
+                    <td :class="[( amount(props.item.profit) >= 0 ) ? 'ii--green-markup' : 'ii--red-markup', 'ii-number-cell', 'text-xs-right']">
+                        {{ props.item.profit | amount(true) }}
+                    </td>
+                    <td class="text-xs-right ii-number-cell">{{ props.item.percCurrShare | number }}</td>
+                    <td class="justify-center layout px-0" @click.stop>
+                        <v-menu transition="slide-y-transition" bottom left>
+                            <v-btn slot="activator" flat icon dark>
+                                <span class="menuDots"></span>
+                            </v-btn>
+                            <v-list dense>
+                                <v-list-tile v-if="!isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.BUY)">
+                                    <v-list-tile-title>
+                                        Купить
+                                    </v-list-tile-title>
+                                </v-list-tile>
+                                <v-list-tile v-if="!isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.SELL)">
+                                    <v-list-tile-title>
+                                        Продать
+                                    </v-list-tile-title>
+                                </v-list-tile>
+                                <v-list-tile v-if="isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.DEPOSIT)">
+                                    <v-list-tile-title>
+                                        Внести
+                                    </v-list-tile-title>
+                                </v-list-tile>
+                                <v-list-tile v-if="isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.WITHDRAW)">
+                                    <v-list-tile-title>
+                                        Вывести
+                                    </v-list-tile-title>
+                                </v-list-tile>
+                                <v-list-tile v-if="isStockTrade(props.item)" @click="openTradeDialog(props.item, operation.DIVIDEND)">
+                                    <v-list-tile-title>
+                                        Дивиденд
+                                    </v-list-tile-title>
+                                </v-list-tile>
+                                <v-list-tile v-if="isBondTrade(props.item)" @click="openTradeDialog(props.item, operation.COUPON)">
+                                    <v-list-tile-title>
+                                        Купон
+                                    </v-list-tile-title>
+                                </v-list-tile>
+                            </v-list>
+                        </v-menu>
+                    </td>
+                </tr>
             </template>
         </v-data-table>
     `
 })
 export class AssetTable extends UI {
 
+    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
+    private reloadPortfolio: (id: number) => Promise<void>;
+    @MainStore.Getter
+    private portfolio: Portfolio;
+
     private headers: TableHeader[] = [
-        {text: "Актив", sortable: false, value: "name"},
-        {text: "Текущая стоимость", align: "center", value: "currCost"},
-        {text: "Прибыль", align: "center", value: "profit"},
-        {text: "Текущая доля", align: "center", value: "percCurrShare"},
-        {text: "Действия", align: "center", value: "name", sortable: false, width: "25"}
+        {text: "Актив", sortable: false, align: "left", value: "name"},
+        {text: "Текущая стоимость", align: "right", value: "currCost"},
+        {
+            text: "Прибыль",
+            align: "right",
+            value: "profit",
+            tooltip: "Прибыль, образованная активами данного типа за все время. Она включает в себя: прибыль от совершенных " +
+                "                        ранее сделок (бумага куплена дешевле и продана дороже), выплаченные дивиденды и купоны, " +
+                "                        курсовую прибыль (бумага куплена дешевле и подорожала, но еще не продана)."
+        },
+        {text: "Текущая доля", align: "right", value: "percCurrShare"},
+        {text: "", align: "center", value: "actions", sortable: false, width: "25"}
     ];
+    /** Паджинация для задания дефолтной сортировки */
+    private pagination: Pagination = {
+        descending: false,
+        sortBy: "percCurrShare",
+        rowsPerPage: -1
+    };
 
     @Prop({default: [], required: true})
     private assets: AssetRow[];
 
     private operation = Operation;
 
-    private assetDesc(type: string): string {
-        switch (type) {
-            case "STOCK":
-                return "Акции";
-            case "BOND":
-                return "Облигации";
-            case "RUBLES":
-                return "Рубли";
-            case "DOLLARS":
-                return "Доллары";
-            case "EURO":
-                return "Евро";
-            case "ETF":
-                return "ETF";
-        }
-        throw new Error("Неизвестный тип актива: " + type);
-    }
-
     private async openTradeDialog(assetRow: AssetRow, operation: Operation): Promise<void> {
-        await new AddTradeDialog().show({
+        const assetType = PortfolioAssetType.valueByName(assetRow.type);
+        const result = await new AddTradeDialog().show({
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
             operation,
-            assetType: assetRow.type === "STOCK" ? AssetType.STOCK : AssetType.BOND
+            moneyCurrency: assetType.currency ? assetType.currency.code : null,
+            assetType: assetType.assetType
         });
+        if (result) {
+            await this.reloadPortfolio(this.portfolio.id);
+        }
+    }
+
+    private amount(value: string): number {
+        if (!value) {
+            return 0.00;
+        }
+        const amount = new BigMoney(value);
+        return amount.amount.toNumber();
+    }
+
+    private isBondTrade(item: AssetRow): boolean {
+        return PortfolioAssetType.valueByName(item.type).assetType === AssetType.BOND;
+    }
+
+    private isStockTrade(item: AssetRow): boolean {
+        return PortfolioAssetType.valueByName(item.type).assetType === AssetType.STOCK;
+    }
+
+    private isMoneyTrade(item: AssetRow): boolean {
+        return PortfolioAssetType.valueByName(item.type).assetType === AssetType.MONEY;
+    }
+
+    private customSort(items: AssetRow[], index: string, isDesc: boolean): AssetRow[] {
+        return SortUtils.simpleSort(items, index, isDesc);
     }
 }

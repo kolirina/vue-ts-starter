@@ -10,7 +10,7 @@ import {FileUtils} from "../../utils/fileUtils";
 @Component({
     // language=Vue
     template: `
-        <div class="file-link">
+        <div class="file-link" @click.stop>
             <input :id="inputId" ref="input" style="display: none;" type="file" name="files" :multiple="multiple" :accept="accept" @change="onChange"/>
             <label :for="inputId" class="file-link__text">
                 <slot></slot>
@@ -42,7 +42,10 @@ export class FileLink extends UI {
      * Обрабатывает изменение выбранных файлов
      */
     private onChange(): void {
-        this.$emit(FileLink.SELECT, FileUtils.fileListToFileArray(this.$refs.input.files));
+        // обработка события onChange в IE11, при сбрасывании значения повторно вызывается событие onChange с очищенным значением input.
+        if (this.$refs.input.files.length) {
+            this.$emit(FileLink.SELECT, FileUtils.fileListToFileArray(this.$refs.input.files));
+        }
         // необходимо сбрасывать значение, чтобы событие change отрабатывало на этом же файле (если он был удален после загрузки)
         this.$refs.input.value = null;
     }

@@ -1,15 +1,20 @@
+import dayjs from "dayjs";
 import Decimal from "decimal.js";
-import moment from "moment";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
-import {UI} from "../../app/ui";
+import {Prop, UI} from "../../app/ui";
+import {ApplyPromoCodeDialog} from "../../components/dialogs/applyPromoCodeDialog";
+import {ConfirmDialog} from "../../components/dialogs/confirmDialog";
+import {ShowProgress} from "../../platform/decorators/showProgress";
+import {BtnReturn} from "../../platform/dialogs/customDialog";
+import {ClientInfo, ClientService} from "../../services/clientService";
 import {TariffService} from "../../services/tariffService";
 import {Permission} from "../../types/permission";
 import {Tariff} from "../../types/tariff";
-import {ClientInfo} from "../../types/types";
-import {CommonUtils} from "../../utils/commonUtils";
+import {Portfolio} from "../../types/types";
 import {DateUtils} from "../../utils/dateUtils";
+import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -17,248 +22,297 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
+        <span>
+            Превышены лимиты
+            <p>
+                Создано портфелей: <b>{{ portfoliosCount }}</b>, добавлено ценных бумаг: <b>{{ sharesCount }}</b>
+            </p>
+            <p v-if="foreignShares">
+                В ваших портфелях имеются сделки с валютой или по иностранным ценным бумагам
+            </p>
+        </span>
+    `
+})
+export class TariffLimitExceedInfo extends UI {
+
+    @Prop({required: true, type: Number})
+    private portfoliosCount: number;
+    @Prop({required: true, type: Number})
+    private sharesCount: number;
+    @Prop({default: false, type: Boolean})
+    private foreignShares: boolean;
+}
+
+@Component({
+    // language=Vue
+    template: `
         <v-container fluid>
-            <v-card>
-                <v-card-text>
-                    <h4 class="display-1">Тарифы</h4>
-                    <div class="tariff">
-                        <h2 class="title">
+            <v-card flat class="header-first-card">
+                <v-card-title class="header-first-card__wrapper-title">
+                    <div class="section-title header-first-card__title-text">Тарифы</div>
+                </v-card-title>
+            </v-card>
+            <v-card class="overflowXA" flat>
+                <div class="tariff">
+                    <div class="tariff__header">
+                        <div>
                             Выберите подходящий вам тарифный план
-                        </h2>
-
-                        <div class="subtitle">
-                            <p>
-                                У вас подключен план {{ clientInfo.user.tariff }} до
-                                <b>
-                                    <span>{{ clientInfo.user.paidTill | date }}</span>
-                                    <span v-if="isSubscriptionExpired()">(срок подписки истек)</span>
-                                </b>
-
-                                <span id="payment-loader" style="display: none">
-                                    <span id="check_payment"/>
-                                </span>
-                            </p>
-                            <p>
-                                Создано портфелей: <b>{{ clientInfo.user.portfoliosCount }}</b>, добавлено ценных бумаг: <b>{{ clientInfo.user.sharesCount }}</b>
-                            </p>
-                            <p v-if="clientInfo.user.foreignShares">
-                                В ваших портфелях имеются сделки с валютой или по иностранным ценным бумагам
-                            </p>
-                            <p>
-                                <v-text-field v-model="promoCode" maxlength="10" size="10" @keypress.enter="applyPromoCode"
-                                              label="Введите сюда ваш промо-код" clearable outline
-                                              append-outer-icon="check" @click:append-outer="applyPromoCode"></v-text-field>
-                            </p>
-
-                            <p style="font-size: 12px; padding-top: 15px;">
-                                Не хотите платить? Порекомендуйте сервис, поделитесь промо-кодом на скидку 20% - и получите бесплатный месяц подписки.
-                                <a @click="$router.push({name: 'promo-codes'})">Подробнее</a>
-                            </p>
+                            <div>
+                                <v-radio-group v-model="monthly" class="radio-horizontal">
+                                    <v-radio label="На год" :value="false"></v-radio>
+                                    <b>&nbsp;{{isDiscountApplied() ? '' : '-20%'}}</b>
+                                    <v-radio label="На месяц" :value="true"></v-radio>
+                                </v-radio-group>
+                            </div>
                         </div>
-
-                        <p v-if="isDiscountApplied()" class="promotion" style="color: black">
-                            Совершите покупку с вашей персональной скидкой <b>{{ clientInfo.user.nextPurchaseDiscount }}%</b>! (срок действия скидки до {{
-                            clientInfo.user.nextPurchaseDiscountExpired | date }})
-                        </p>
-
-                        <div class="tab" id="planTabs">
-                            <div class="tab-ctrl">
-                                <v-btn :color="monthly ? 'primary' : ''" @click="monthly = true" :class="{'tab-btn': true, 'active': monthly}" light>На месяц</v-btn>
-
-                                <v-btn :color="!monthly ? 'primary' : ''" @click="monthly = false" :class="{'tab-btn': true, 'active': !monthly}" light>
-                                    На год{{ isDiscountApplied() ? '' : ' (дешевле на 20%)'}}
-                                </v-btn>
-                            </div>
-
-                            <div class="tab-items active">
-                                <div :class="{'tab-item': true, 'selected': isSelected(Tariff.FREE)}">
-                                    <div class="tab-item__icon">
-                                        <span/>
-                                        <img src="/img/tariff/1.svg"></img>
-                                    </div>
-
-                                    <p class="tab-item__heading">
-                                        Бесплатный
-                                    </p>
-
-                                    <ul class="tab-item__list" :style="isDiscountApplied() ? 'margin-bottom: 29px' : ''">
-                                        <li>
-                                            7 ценных бумаг<br/>
-                                            1 портфель
-                                        </li>
-                                        <li>
-                                            Базовый функционал сервиса без ограничений
-                                        </li>
-                                    </ul>
-                                    <p class="tab-item__price">
-                                        {{ getPriceLabel(Tariff.FREE) }}
-                                    </p>
-
-                                    <p v-if="isSelected(Tariff.FREE)" class="tab-item__expires">
-                                        {{ getExpirationDescription() }}
-                                    </p>
-
-                                    <v-tooltip bottom>
-                                        <a slot="activator" color="primary" @click="makePayment(Tariff.FREE)"
-                                           class="tab-item__link" :style="isSelected(Tariff.FREE) ? 'margin-top: 10px' : ''"
-                                           :disabled="!isAvailable(Tariff.FREE) || isSelected(Tariff.FREE) || isProgress">
-                                            <span v-if="!busyState[Tariff.FREE.name]">{{ getButtonLabel(Tariff.FREE) }}</span>
-                                            <v-progress-circular v-if="busyState[Tariff.FREE.name]" indeterminate color="primary" :size="20"></v-progress-circular>
-                                        </a>
-                                        <span>
-                                            Переход на Бесплатный тарифный план <br/> возможен только если не превышены лимиты.
-                                        </span>
-                                    </v-tooltip>
+                        <div class="promo-code-component">
+                            <v-tooltip v-if="isDiscountApplied()" content-class="custom-tooltip-wrap" :max-width="250" bottom>
+                                <template #activator="{ on }">
+                                    <span @click.stop="applyPromoCode" v-on="on">Применить промокод</span>
+                                    <div v-on="on" class="promo-code-component__icon"></div>
+                                </template>
+                                <div>
+                                    <div>Активирован промокод</div>
+                                    <div>Скидка составляет {{ clientInfo.user.nextPurchaseDiscount }}%</div>
+                                    <div v-if="clientInfo.user.nextPurchaseDiscountExpired">Срок действия до {{ clientInfo.user.nextPurchaseDiscountExpired | date }}</div>
                                 </div>
-
-
-                                <div :class="{'tab-item': true, 'selected': isSelected(Tariff.STANDARD)}">
-                                    <div class="tab-item__icon">
-                                        <span></span>
-                                        <img src="/img/tariff/2.svg"></img>
-                                    </div>
-
-                                    <p class="tab-item__heading">
-                                        Стандарт
-                                    </p>
-
-                                    <ul class="tab-item__list">
-                                        <li>
-                                            Неограниченное кол-во ценных бумаг<br/>
-                                            2 портфеля
-                                        </li>
-                                        <li>
-                                            «Бесплатный»
-                                        </li>
-                                        <li>
-                                            Доступ к разделу “Инвестиции”
-                                        </li>
-
-                                        <li>
-                                            Составной портфель
-                                        </li>
-
-                                        <li>
-                                            <b>Мобильное приложение</b>
-                                        </li>
-                                    </ul>
-
-                                    <p v-if="isDiscountApplied()" class="tab-item__old_price">
-                                        {{ getNoDiscountPriceLabel(Tariff.STANDARD) }}
-                                    </p>
-
-                                    <p class="tab-item__price">
-                                        {{ getPriceLabel(Tariff.STANDARD) }}
-                                    </p>
-
-                                    <p v-if="isSelected(Tariff.STANDARD)" class="tab-item__expires">
-                                        {{ getExpirationDescription() }}
-                                    </p>
-
-                                    <v-tooltip bottom>
-                                        <a slot="activator" color="primary" @click="makePayment(Tariff.STANDARD)"
-                                           class="tab-item__link" :style="isSelected(Tariff.STANDARD) ? 'margin-top: 10px' : ''"
-                                           :disabled="!isAvailable(Tariff.STANDARD) || isProgress">
-                                            <span v-if="!busyState[Tariff.STANDARD.name]">{{ getButtonLabel(Tariff.STANDARD) }}</span>
-                                            <v-progress-circular v-if="busyState[Tariff.STANDARD.name]" indeterminate color="primary" :size="20"></v-progress-circular>
-                                        </a>
-                                        <span>
-                                            Переход на Стандарт тарифный план <br/> возможен только если не превышены лимиты.
-                                        </span>
-                                    </v-tooltip>
-                                </div>
-
-
-                                <div :class="{'tab-item': true, 'selected': isSelected(Tariff.PRO)}">
-                                    <div class="tab-item__icon">
-                                        <span/>
-                                        <img src="/img/tariff/3.svg"></img>
-                                    </div>
-
-                                    <p class="tab-item__heading">
-                                        Профессионал
-                                    </p>
-
-                                    <ul class="tab-item__list">
-                                        <li>
-                                            Неограниченное кол-во портфелей и ценных бумаг
-                                        </li>
-                                        <li>
-                                            «Стандарт»
-                                        </li>
-                                        <li>
-                                            Учет зарубежных акций
-                                        </li>
-                                        <li>
-                                            Учет коротких позиций
-                                        </li>
-                                        <li>
-                                            Ранний доступ к новому функционалу
-                                        </li>
-                                        <li>
-                                            <b>Мобильное приложение</b>
-                                        </li>
-                                    </ul>
-
-                                    <p v-if="isDiscountApplied()" class="tab-item__old_price">
-                                        {{ getNoDiscountPriceLabel(Tariff.PRO) }}
-                                    </p>
-
-                                    <p class="tab-item__price">
-                                        {{ getPriceLabel(Tariff.PRO) }}
-                                    </p>
-
-                                    <p v-if="isSelected(Tariff.PRO)" class="tab-item__expires">
-                                        {{ getExpirationDescription() }}
-                                    </p>
-
-                                    <a @click="makePayment(Tariff.PRO)" class="tab-item__link" :style="isSelected(Tariff.PRO) ? 'margin-top: 10px' : ''"
-                                       :disabled="!isAvailable(Tariff.PRO) || isProgress">
-                                        <span v-if="!busyState[Tariff.PRO.name]">{{ getButtonLabel(Tariff.PRO) }}</span>
-                                        <v-progress-circular v-if="busyState[Tariff.PRO.name]" indeterminate color="primary" :size="20"></v-progress-circular>
-                                    </a>
-                                </div>
-                            </div>
+                            </v-tooltip>
+                            <span v-else @click.stop="applyPromoCode">Применить промокод</span>
                         </div>
                     </div>
-                </v-card-text>
+
+                    <div class="tariff__info">
+
+                    </div>
+
+                    <p v-if="isDiscountApplied()" class="promotion">
+                        Совершите покупку с вашей персональной скидкой <b>{{ clientInfo.user.nextPurchaseDiscount }}%</b>!
+                        <template v-if="clientInfo.user.nextPurchaseDiscountExpired">(срок действия скидки до {{ clientInfo.user.nextPurchaseDiscountExpired | date }})</template>
+                    </p>
+
+                    <div class="tariff__plans">
+                        <table>
+                            <tr>
+                                <td class="no-borders"></td>
+                                <td colspan="3">
+                                    Получите бесплатный месяц подписки.
+                                    <a @click="$router.push({name: 'promo-codes'})">Подробнее</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>
+                                    <div class="tariff__plan_name">Бесплатный</div>
+                                    <div class="tariff__plan_price-block">
+                                        <div class="tariff__plan_price">{{ getPriceLabel(Tariff.FREE) }} <span>RUB</span></div>
+                                    </div>
+                                    <v-tooltip v-if="!isAvailable(Tariff.FREE)" content-class="custom-tooltip-wrap" bottom>
+                                        <v-btn slot="activator" @click.stop="makePayment(Tariff.FREE)" :class="{'big_btn': true, 'selected': isSelected(Tariff.FREE)}"
+                                               :disabled="!isAvailable(Tariff.FREE) || isSelected(Tariff.FREE) || isProgress">
+                                            <span v-if="!busyState[Tariff.FREE.name]">{{ getButtonLabel(Tariff.FREE) }}</span>
+                                            <v-progress-circular v-if="busyState[Tariff.FREE.name]" indeterminate color="primary" :size="20"></v-progress-circular>
+                                        </v-btn>
+                                        <tariff-limit-exceed-info v-if="!isAvailable(Tariff.FREE)" :portfolios-count="clientInfo.user.portfoliosCount"
+                                                                  :shares-count="clientInfo.user.sharesCount" :foreign-shares="clientInfo.user.foreignShares">
+                                        </tariff-limit-exceed-info>
+                                    </v-tooltip>
+                                    <v-btn v-else @click.stop="makePayment(Tariff.FREE)" :class="{'big_btn': true, 'selected': isSelected(Tariff.FREE)}"
+                                           :disabled="!isAvailable(Tariff.FREE) || isSelected(Tariff.FREE) || isProgress">
+                                        <span v-if="!busyState[Tariff.FREE.name]">{{ getButtonLabel(Tariff.FREE) }}</span>
+                                        <v-progress-circular v-if="busyState[Tariff.FREE.name]" indeterminate color="primary" :size="20"></v-progress-circular>
+                                    </v-btn>
+                                    <div class="tariff__plan_expires" v-if="isSelected(Tariff.FREE)">
+                                        {{ getExpirationDescription() }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="tariff__plan_name">Стандарт</div>
+                                    <div class="tariff__plan_price-block">
+                                        <span v-if="isDiscountApplied()" class="tariff__plan_old-price">{{ getNoDiscountPriceLabel(Tariff.STANDARD) }}</span>
+                                        <span class="tariff__plan_price">{{ getPriceLabel(Tariff.STANDARD) }} <span>RUB</span></span>
+                                    </div>
+                                    <v-tooltip v-if="!isAvailable(Tariff.STANDARD)" content-class="custom-tooltip-wrap" bottom>
+                                        <v-btn slot="activator" @click="makePayment(Tariff.STANDARD)"
+                                               :class="{'big_btn': true, 'selected': isSelected(Tariff.STANDARD)}"
+                                               :disabled="!isAvailable(Tariff.STANDARD) || isProgress">
+                                            <span v-if="!busyState[Tariff.STANDARD.name]">{{ getButtonLabel(Tariff.STANDARD) }}</span>
+                                            <v-progress-circular v-if="busyState[Tariff.STANDARD.name]" indeterminate color="primary" :size="20"></v-progress-circular>
+                                        </v-btn>
+                                        <tariff-limit-exceed-info v-if="!isAvailable(Tariff.STANDARD)" :portfolios-count="clientInfo.user.portfoliosCount"
+                                                                  :shares-count="clientInfo.user.sharesCount" :foreign-shares="clientInfo.user.foreignShares">
+                                        </tariff-limit-exceed-info>
+                                    </v-tooltip>
+                                    <v-btn v-else @click="makePayment(Tariff.STANDARD)"
+                                           :class="{'big_btn': true, 'selected': isSelected(Tariff.STANDARD)}"
+                                           :disabled="!isAvailable(Tariff.STANDARD) || isProgress">
+                                        <span v-if="!busyState[Tariff.STANDARD.name]">{{ getButtonLabel(Tariff.STANDARD) }}</span>
+                                        <v-progress-circular v-if="busyState[Tariff.STANDARD.name]" indeterminate color="primary" :size="20"></v-progress-circular>
+                                    </v-btn>
+                                    <div v-if="isSelected(Tariff.STANDARD)" class="tariff__plan_expires">
+                                        {{ getExpirationDescription() }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="tariff__plan_name">Профессионал</div>
+                                    <div class="tariff__plan_price-block">
+                                        <span v-if="isDiscountApplied()" class="tariff__plan_old-price">{{ getNoDiscountPriceLabel(Tariff.PRO) }}</span>
+                                        <span class="tariff__plan_price">{{ getPriceLabel(Tariff.PRO) }} <span>RUB</span></span>
+                                    </div>
+                                    <v-btn @click="makePayment(Tariff.PRO)"
+                                           :class="{'big_btn': true, 'selected': isSelected(Tariff.PRO)}"
+                                           :disabled="!isAvailable(Tariff.PRO) || isProgress">
+                                        <span v-if="!busyState[Tariff.PRO.name]">{{ getButtonLabel(Tariff.PRO) }}</span>
+                                        <v-progress-circular v-if="busyState[Tariff.PRO.name]" indeterminate color="primary" :size="20"></v-progress-circular>
+                                    </v-btn>
+                                    <div v-if="isSelected(Tariff.PRO)" class="tariff__plan_expires">
+                                        {{ getExpirationDescription() }}
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="no-borders">
+                                <td>Объем портфеля</td>
+                                <td class="fs13">
+                                    <span>7 ценных бумаг<br>1 портфель</span>
+                                </td>
+                                <td class="fs13">
+                                    <span>Неограниченное кол-во бумаг<br/>2 портфеля</span>
+                                </td>
+                                <td class="fs13">
+                                    <span>Неограниченное кол-во бумаг и портфелей</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Базовый функционал</td>
+                                <td>
+                                    <div class="tariff__plans_check"></div>
+                                </td>
+                                <td>
+                                    <div class="tariff__plans_check"></div>
+                                </td>
+                                <td>
+                                    <div class="tariff__plans_check"></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Доступ к разделу "Инвестиции"</td>
+                                <td></td>
+                                <td>
+                                    <div class="tariff__plans_check"></div>
+                                </td>
+                                <td>
+                                    <div class="tariff__plans_check"></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Составной портфель</td>
+                                <td></td>
+                                <td>
+                                    <div class="tariff__plans_check"></div>
+                                </td>
+                                <td>
+                                    <div class="tariff__plans_check"></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Доступ к функционалу "Стандарт"</td>
+                                <td></td>
+                                <td>
+                                    <div class="tariff__plans_check"></div>
+                                </td>
+                                <td>
+                                    <div class="tariff__plans_check"></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Мобильное приложение</td>
+                                <td></td>
+                                <td>
+                                    <div class="tariff__plans_check"></div>
+                                </td>
+                                <td>
+                                    <div class="tariff__plans_check"></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Учет зарубежных акций</td>
+                                <td></td>
+                                <td></td>
+                                <td>
+                                    <div class="tariff__plans_check"></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Учет коротких позиций</td>
+                                <td></td>
+                                <td></td>
+                                <td>
+                                    <div class="tariff__plans_check"></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Ранний доступ<br>к новому функционалу</td>
+                                <td></td>
+                                <td></td>
+                                <td>
+                                    <div class="tariff__plans_check"></div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
             </v-card>
-        </v-container>`
+        </v-container>
+    `,
+    components: {TariffLimitExceedInfo}
 })
 export class TariffsPage extends UI {
 
-    @MainStore.Getter
-    private clientInfo: ClientInfo;
+    @Inject
+    private clientService: ClientService;
     @Inject
     private tariffService: TariffService;
-
-    private promoCode = "";
-
+    @MainStore.Getter
+    private clientInfo: ClientInfo;
+    @MainStore.Getter
+    private portfolio: Portfolio;
+    @MainStore.Action(MutationType.RELOAD_CLIENT_INFO)
+    private reloadUser: () => Promise<void>;
+    /** Тарифы */
     private Tariff = Tariff;
-
     /** Признак оплаты за месяц. */
-    private monthly = true;
-
+    private monthly = false;
+    /** Состояния оплат тарифов */
     private busyState: { [key: string]: boolean } = {
         FREE: false, STANDARD: false, PRO: false
     };
-
+    /** Состояние прогресса оплаты */
     private isProgress = false;
 
-    async mounted(): Promise<void> {
-
+    /**
+     * Проверка успешно завершенной оплаты
+     */
+    async created(): Promise<void> {
+        this.clientService.resetClientInfo();
+        await this.reloadUser();
+        if (this.$route.params.status) {
+            try {
+                await this.tariffService.getOrderState();
+                await this.afterSuccessPayment();
+            } finally {
+                this.$router.push({name: "tariffs"});
+            }
+        }
     }
 
     /**
-     * Применяет введенный промо-код пользователя
+     * Открывает диалог для ввода промокода пользователя
      */
     private async applyPromoCode(): Promise<void> {
-        if (CommonUtils.isBlank(this.promoCode)) {
-            this.$snotify.warning("Введите пожалуйста промо-код");
-            return;
+        const result = await new ApplyPromoCodeDialog().show();
+        if (result === BtnReturn.YES) {
+            this.clientService.resetClientInfo();
+            await this.reloadUser();
         }
-        await this.tariffService.applyPromoCode(this.promoCode);
-        this.$snotify.info("Промо-код успешно применен");
     }
 
     /**
@@ -269,16 +323,31 @@ export class TariffsPage extends UI {
         if (this.isProgress) {
             return;
         }
-        console.log(this.busyState);
         this.isProgress = true;
         this.busyState[tariff.name] = true;
+        const result = tariff === Tariff.FREE ? await new ConfirmDialog().show("Вы собираетесь перейти на Бесплатный план. " +
+            "Оплата за неиспользованные дни вашего текущего тарифного плана будет при этом утеряна.") : BtnReturn.YES;
+        if (result === BtnReturn.YES) {
+            await this.makePaymentConfirmed(tariff);
+        } else {
+            this.busyState[tariff.name] = false;
+            this.isProgress = false;
+        }
+    }
+
+    /**
+     * Сделать платеж
+     * @param tariff выбранный тариф
+     */
+    @ShowProgress
+    private async makePaymentConfirmed(tariff: Tariff): Promise<void> {
         try {
             const orderData = await this.tariffService.makePayment(tariff, this.monthly);
             // если оплата не завершена, открываем фрэйм для оплаты
-            if (!orderData.paymentOrder.done) {
-                await this.tariffService.openPaymentFrame(orderData, this.clientInfo);
-            } else {
-                this.$snotify.info("Оплата заказа успешно завершена");
+            if (orderData.status === "NEW") {
+                window.location.assign(orderData.paymentURL);
+            } else if (orderData.status === "CONFIRMED") {
+                await this.afterSuccessPayment();
             }
         } finally {
             this.busyState[tariff.name] = false;
@@ -286,8 +355,14 @@ export class TariffsPage extends UI {
         }
     }
 
+    private async afterSuccessPayment(): Promise<void> {
+        this.clientService.resetClientInfo();
+        await this.reloadUser();
+        this.$snotify.info("Оплата заказа успешно завершена");
+    }
+
     private getPriceLabel(tariff: Tariff): string {
-        return `${this.getPrice(tariff)} ${this.monthly ? " / месяц" : " / год"}`;
+        return `${this.getPrice(tariff)}`;
     }
 
     private getNoDiscountPriceLabel(tariff: Tariff): string {
@@ -297,14 +372,14 @@ export class TariffsPage extends UI {
         } else {
             price = new Decimal(tariff.monthlyPrice).mul(new Decimal(12));
         }
-        return `${price.toFixed(2)} ${this.monthly ? " / месяц" : " / год"}`;
+        return `${price.toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toString()}`;
     }
 
     /**
      * Возвращает признак истекшей подписки
      */
     private isSubscriptionExpired(): boolean {
-        return moment().isAfter(DateUtils.parseDate(this.clientInfo.user.paidTill));
+        return dayjs().isAfter(DateUtils.parseDate(this.clientInfo.user.paidTill));
     }
 
     /**
@@ -317,11 +392,12 @@ export class TariffsPage extends UI {
      */
     private isDiscountApplied(): boolean {
         const nextPurchaseDiscountExpired = DateUtils.parseDate(this.clientInfo.user.nextPurchaseDiscountExpired);
-        return (nextPurchaseDiscountExpired == null || moment().isBefore(nextPurchaseDiscountExpired)) && this.clientInfo.user.nextPurchaseDiscount > 0;
+        return (this.clientInfo.user.nextPurchaseDiscountExpired == null || dayjs().isBefore(nextPurchaseDiscountExpired)) &&
+            this.clientInfo.user.nextPurchaseDiscount > 0;
     }
 
     private isSelected(tariff: Tariff): boolean {
-        let userTariff = Tariff.valueByName(this.clientInfo.user.tariff);
+        let userTariff = this.clientInfo.user.tariff;
         if (userTariff === Tariff.TRIAL) {
             userTariff = Tariff.PRO;
         }
@@ -346,7 +422,7 @@ export class TariffsPage extends UI {
 
     private getExpirationDescription(): string {
         const paidTill = DateUtils.parseDate(this.clientInfo.user.paidTill);
-        return (paidTill.isAfter(moment()) ? "Действует до " : "Истек ") + this.getExpirationDate();
+        return (paidTill.isAfter(dayjs()) ? "Действует до " : "Истек ") + this.getExpirationDate();
     }
 
     private getExpirationDate(): string {
@@ -362,6 +438,6 @@ export class TariffsPage extends UI {
         const isDiscountApplied = this.isDiscountApplied();
         const price = this.monthly ? tariff.monthlyPrice : isDiscountApplied ? tariff.yearFullPrice : tariff.yearPrice;
         const nextPurchaseDiscount = isDiscountApplied ? this.clientInfo.user.nextPurchaseDiscount : 0;
-        return new Decimal(price).mul(new Decimal(100 - nextPurchaseDiscount)).div(new Decimal("100")).toFixed(0);
+        return new Decimal(price).mul(new Decimal(100 - nextPurchaseDiscount)).mul(new Decimal("0.01")).toDecimalPlaces(0, Decimal.ROUND_UP).toString();
     }
 }

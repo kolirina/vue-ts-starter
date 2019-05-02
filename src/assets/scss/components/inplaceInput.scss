@@ -1,7 +1,9 @@
 .inplace-input {
-  width: 100%;
   line-height: 1;
   position: relative;
+  display: inline-block;
+  width: 100%;
+  font-family: $main--font-family;
 
   .inplace-out {
     vertical-align: middle;
@@ -19,5 +21,18 @@
       border-color: $main-color-2;
       box-shadow: none;
     }
+  }
+
+  input {
+    font-size: 13px;
+  }
+
+  &-field {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+  }
+
+  .v-messages {
+    min-height: 0 !important;
   }
 }

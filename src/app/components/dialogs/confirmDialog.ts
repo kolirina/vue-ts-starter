@@ -1,5 +1,5 @@
 import Component from "vue-class-component";
-import {BtnReturn, CustomDialog} from "./customDialog";
+import {BtnReturn, CustomDialog} from "../../platform/dialogs/customDialog";
 
 /**
  * Диалог подтверждения
@@ -7,18 +7,20 @@ import {BtnReturn, CustomDialog} from "./customDialog";
 @Component({
     // language=Vue
     template: `
-        <v-dialog v-model="showed" persistent max-width="500px">
-            <v-card>
-                <v-card-title class="headline">Требуется подтверждение</v-card-title>
-                <v-card-text>
-                    <div>{{ data }}</div>
-                    <span>Продолжить?</span>
-                </v-card-text>
-                <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn color="primary" @click.native="close('YES')">Да</v-btn>
-                    <v-btn @click.native="close('NO')">Нет</v-btn>
-                </v-card-actions>
+        <v-dialog v-model="showed" max-width="600px">
+            <v-card class="dialog-wrap">
+                <v-icon class="closeDialog" @click.native="close">close</v-icon>
+                <div class="import-general-error-wrapper__element-centering">
+                    <v-card-title class="dialog-header-text">Требуется подтверждение</v-card-title>
+                    <v-card-text>
+                        <div class="import-default-text">{{ data }}</div>
+                        <div class="import-default-text-margin-t import-default-text">Продолжить?</div>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-btn color="primary" @click.native="close('YES')">Да</v-btn>
+                        <v-btn @click.native="close('NO')">Нет</v-btn>
+                    </v-card-actions>
+                </div>
             </v-card>
         </v-dialog>
     `

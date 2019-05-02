@@ -1,0 +1,164 @@
+/*!
+ * STRICTLY CONFIDENTIAL
+ * TRADE SECRET
+ * PROPRIETARY:
+ *       "Intelinvest" Ltd, TIN 1655386205
+ *       420107, REPUBLIC OF TATARSTAN, KAZAN CITY, SPARTAKOVSKAYA STREET, HOUSE 2, ROOM 119
+ * (c) "Intelinvest" Ltd, 2019
+ *
+ * СТРОГО КОНФИДЕНЦИАЛЬНО
+ * КОММЕРЧЕСКАЯ ТАЙНА
+ * СОБСТВЕННИК:
+ *       ООО "Интеллектуальные инвестиции", ИНН 1655386205
+ *       420107, РЕСПУБЛИКА ТАТАРСТАН, ГОРОД КАЗАНЬ, УЛИЦА СПАРТАКОВСКАЯ, ДОМ 2, ПОМЕЩЕНИЕ 119
+ * (c) ООО "Интеллектуальные инвестиции", 2019
+ */
+.portfolio-rows-filter {
+  display: flex;
+  align-items: center;
+  padding: 16px 20px 24px;
+
+  .custom-filter {
+    position: absolute;
+    top: 20px;
+    left: 133px;
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+    background: #ff3e70;
+    border: 2px solid #fff;
+    z-index: 7;
+  }
+
+  &__button {
+    width: 122px;
+    height: 36px;
+    border: 1px solid #caced5 !important;
+    border-radius: 30px !important;
+    background-color: #fff !important;
+    box-shadow: none !important;
+
+    &:hover {
+      background: #ebeff7 !important;
+    }
+
+    &__icon {
+      width: 16px;
+      height: 16px;
+      display: block;
+      margin-left: 10px;
+      background: url('../img/common/filters.svg') no-repeat center;
+    }
+
+    .v-btn {
+      &__content {
+        text-transform: none;
+      }
+    }
+  }
+
+  .v-icon {
+    margin-left: 20px;
+    align-items: center!important;
+    height: 38px;
+    line-height: 38px;
+    cursor: pointer;
+  }
+
+  .v-text-field {
+
+    .v-input {
+
+      &__slot {
+        height: auto;
+        background: none;
+        align-items: center;
+
+        &:before,
+        &:after {content: none !important}
+
+        .v-label {
+          font-size: 14px;
+          left: 8px !important;
+        }
+      }
+
+      &__prepend-outer {margin: 0 !important;}
+    }
+
+    input {
+      padding: 0 8px !important;
+      height: auto;
+    }
+  }
+
+  &__menu {
+    padding: 0 25px;
+    background: #ffffff;
+    border-radius: 4px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
+
+    .v-card {
+      box-shadow: none !important;
+    }
+  }
+}
+
+
+.portfolio-rows-filter__settings {
+  padding: 24px 20px;
+  background: #ffffff;
+  border-radius: 4px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
+
+  .v-input--selection-controls {
+    padding-top: 0;
+
+    .v-input__slot {margin-bottom: 0}
+  }
+
+  .trades-filter {
+    margin-bottom: 0;
+
+    &__label {
+      color: $font-color--lite;
+      font-size: 12px;
+      line-height: 16px;
+      letter-spacing: 0.2px;
+      margin: 24px 0 20px;
+    }
+
+    &__list-types {
+      margin-top: 15px !important;
+    }
+
+    &__operations {
+      display: flex;
+      flex-wrap: wrap;
+      width: 360px;
+
+      > .v-input {
+        width: 50%;
+
+        &:nth-child(n + 3) {margin-top: 15px !important;}
+      }
+    }
+
+    .v-input--selection-controls {
+      margin-top: 0 !important;
+      padding-top: 0 !important;
+    }
+  }
+
+  .v-label {
+    font-size: 14px !important;
+    color: #3d4656 !important;
+  }
+
+  .theme--light.v-label {
+    font-size: 14px !important;
+    color: #3d4656 !important;
+  }
+
+  .v-messages {min-height: 0}
+}

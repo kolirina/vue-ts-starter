@@ -1,0 +1,194 @@
+.theme--light.v-data-iterator .v-data-iterator__actions,
+.theme--light.v-expansion-panel .v-expansion-panel__container .v-expansion-panel__header .v-expansion-panel__header__icon .v-icon,
+.theme--light.v-table thead th {
+  color: $table--header--font-color;
+}
+
+.theme--light.v-btn-toggle .v-btn,
+.theme--light.v-datatable thead th.column.sortable.active,
+.theme--light.v-datatable thead th.column.sortable.active .v-icon,
+.theme--light.v-datatable thead th.column.sortable:hover,
+.theme--light.v-small-dialog a {
+  color: $theme-color-dark-blue;
+}
+
+.theme--light.v-table {
+  background-color: #fff;
+  color: $theme-color-dark-blue;
+}
+
+.ii--red-markup {
+  font-family: "OpenSans Semibold";
+  color: $table--num--red-color;
+}
+
+.ii--green-markup {
+  font-family: "OpenSans Semibold";
+  color: $table--num--green-color;
+}
+
+.ii-number-cell {
+  font-family: "OpenSans Semibold";
+}
+
+.data-table {
+
+  tr {
+    + .bold-row {
+      // background-color: #0404271f !important;
+    }
+  }
+
+  &-cell {
+    transition: .3s ease-in-out;
+  }
+
+  &-cell-open {
+    transform: rotate(90deg);
+  }
+
+  &__header-with-tooltip {
+    border-bottom: 1px #c0c4cd dashed;
+    cursor: help;
+  }
+
+  td:nth-child(1) {
+    padding: 0 5px 0 20px !important;
+    text-align: center;
+  }
+
+  td:nth-child(2) {
+    padding-left: 0 !important;
+  }
+
+  th {
+    color: $non-active-table-th-color !important;
+
+    &:nth-child(1) {
+      padding: 0 5px 0 20px !important;
+      text-align: center;
+    }
+
+    &:nth-child(2) {
+      padding-left: 0 !important;
+    }
+
+    &.active {
+      color: $theme-color-dark-blue !important;
+    }
+  }
+}
+
+/** Стили разворачивающегося блока */
+.ext-info {
+  margin: 16px 20px 20px 55px;
+  font-size: 12px;
+  line-height: 26px;
+  border-collapse: collapse;
+
+  tr {
+    border: none !important;
+
+    &:hover {
+      background: none !important;
+    }
+
+    &:nth-child(n+2) td,
+    &:nth-child(n+2) td:first-child {
+      padding-top: 20px !important;
+    }
+
+    td {
+      vertical-align: top;
+      padding: 0 !important;
+      text-align: left !important;
+      max-width: 300px;
+
+      &:first-child {
+        padding: 0 !important;
+      }
+
+      &:nth-child(n+2) {
+        padding-left: 60px !important;
+      }
+    }
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: minmax(auto, max-content) minmax(auto, max-content);
+    column-gap: 16px;
+    margin-left: 16px;
+
+    span:not(.ext-info__ticker) {
+      color: $font-color--lite
+    }
+  }
+
+  &__item {
+    display: inline-block;
+    padding: 16px;
+    text-align: left;
+
+    > span:not(.ext-info__ticker) {
+      color: $font-color--lite
+    }
+  }
+
+  &__ticker {
+    color: $sidebar-blue-color
+  }
+}
+
+/** Стили разворачивающегося блока для таблицы Портфели. Удалить после стилизации */
+.extended-info {
+  display: grid;
+  margin-left: 20px;
+
+  &.one-column {
+    grid-template-columns: 20% 30%;
+  }
+
+  &.two-column {
+    grid-template-columns: repeat(4, 20%);
+  }
+
+  &__cell {
+    margin: 5px 0 5px 0;
+
+    &.label {
+      font-weight: 900;
+    }
+
+    &__second {
+      color: rgba(0, 0, 0, 0.57) !important;
+    }
+  }
+}
+
+// ======================= перекрываем кастомные стили
+/** Убираем нижнюю границу у заголовка таблиц */
+.theme--light.v-table thead tr:first-child {
+  border-bottom: none !important;
+}
+
+/** Убираем перекрытие иконки тултипа с подсказкой у столбца */
+.v-datatable thead th.column.sortable .v-icon.fa-info-circle,
+.v-datatable thead th.column.sortable .v-icon.fa-info-circle {
+  opacity: 0 !important;
+}
+
+.portfolio-scroll-table {
+  .data-table {
+    max-width: 1727px;
+  }
+}
+
+.table-text-word-break {
+  word-break: break-word !important;
+}
+
+table.v-table tbody td:first-child, table.v-table tbody td:not(:nth-child(1)), table.v-table tbody th:first-child, table.v-table tbody th:not(:nth-child(1)),
+table.v-table thead td:first-child, table.v-table thead td:not(:nth-child(1)), table.v-table thead th:first-child, table.v-table thead th:not(:nth-child(1)) {
+  padding: 0 10px 0 10px !important;
+}

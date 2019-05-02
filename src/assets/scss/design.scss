@@ -1,0 +1,48 @@
+/*!
+ * STRICTLY CONFIDENTIAL
+ * TRADE SECRET
+ * PROPRIETARY:
+ *       "Intelinvest" Ltd, TIN 1655386205
+ *       420107, REPUBLIC OF TATARSTAN, KAZAN CITY, SPARTAKOVSKAYA STREET, HOUSE 2, ROOM 119
+ * (c) "Intelinvest" Ltd, 2019
+ *
+ * СТРОГО КОНФИДЕНЦИАЛЬНО
+ * КОММЕРЧЕСКАЯ ТАЙНА
+ * СОБСТВЕННИК:
+ *       ООО "Интеллектуальные инвестиции", ИНН 1655386205
+ *       420107, РЕСПУБЛИКА ТАТАРСТАН, ГОРОД КАЗАНЬ, УЛИЦА СПАРТАКОВСКАЯ, ДОМ 2, ПОМЕЩЕНИЕ 119
+ * (c) ООО "Интеллектуальные инвестиции", 2019
+ */
+
+.custom-tooltip {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-left: 4px;
+  background: url("../img/notification/info.svg") no-repeat center;
+  background-size: contain;
+  cursor: pointer;
+
+  i {display: none}
+
+  &-wrap {
+    background-color: #fff;
+    z-index: 99 !important;
+    color: #000;
+    box-sizing: border-box;
+    padding: 15px;
+    max-width: 400px;
+    font-size: 13px;
+
+    &.menuable__content__active {
+      opacity: 1 !important;
+    }
+
+    &.dashboard-tooltip {z-index: 100 !important;}
+    &.modal-tooltip {z-index: 205 !important;}
+  }
+}
+
+.second-value {
+  color: $font-color--lite;
+}

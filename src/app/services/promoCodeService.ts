@@ -1,31 +1,34 @@
-import {Singleton} from "typescript-ioc";
+import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
-import {HTTP} from "../platform/services/http";
+import {Http} from "../platform/services/http";
 
 @Service("PromoCodeService")
 @Singleton
 export class PromoCodeService {
 
+    @Inject
+    private http: Http;
+
     /**
-     * Отправляет запрос на смену типа вознаграждения промо-кода
+     * Отправляет запрос на смену типа вознаграждения промокода
      * @param {string} type
      * @returns {Promise<void>}
      */
     async changeReferralAwardType(type: string): Promise<void> {
-        await HTTP.INSTANCE.post(`/user/promo-code`, type);
+        await this.http.post(`/promo-code`, type);
     }
 
     /**
-     * Отправляет запрос на смену типа вознаграждения промо-кода
+     * Отправляет запрос на смену типа вознаграждения промокода
      * @param {string} userId
      * @returns {Promise<void>}
      */
     async getPromoCodeStatistics(userId: string): Promise<PromoCodeStatistics> {
-        return await (await HTTP.INSTANCE.get(`/promo-code/statistics/${userId}`)).data as PromoCodeStatistics;
+        return this.http.get<PromoCodeStatistics>(`/promo-code/statistics/${userId}`);
     }
 }
 
-/** Статистика по промо-коду пользователя */
+/** Статистика по промокоду пользователя */
 export interface PromoCodeStatistics {
     /** Всего оплачено пользователями от партнера */
     referralPaymentTotalAmount: string;

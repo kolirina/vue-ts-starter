@@ -1,0 +1,47 @@
+.closeDialog {
+  position: fixed;
+  right: 0;
+  top: 0;
+  cursor: pointer;
+  font-size: 24px !important;
+  color: #ffffff96!important;
+  padding: 24px;
+
+  &:hover {
+    background: #0000005c;
+    color: #fff !important;
+  }
+}
+
+.dialog-wrap {
+  position: relative;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.v-dialog {
+  border-radius: 8px !important;
+  z-index: auto;
+}
+
+/** Исправляет анимацию фона диалога. Вешать на v-overlay нельзя */
+.v-overlay--active:before {
+  opacity: 0.8 !important;
+  background-color: #040427;
+}
+
+.update-service-dialog {
+  &__content {
+    max-width: 422px;
+    font-size: 13px;
+    line-height: 22px;
+    letter-spacing: -0.3px;
+    color: #040427;
+    a {
+      color: #3b6ec9;
+    }
+  }
+}

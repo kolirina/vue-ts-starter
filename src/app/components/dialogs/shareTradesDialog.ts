@@ -1,7 +1,8 @@
 import Component from "vue-class-component";
-import {TableHeader, TradeRow} from "../../types/types";
+import {CustomDialog} from "../../platform/dialogs/customDialog";
+import {Pagination, TableHeader, TradeRow} from "../../types/types";
+import {SortUtils} from "../../utils/sortUtils";
 import {TradeUtils} from "../../utils/tradeUtils";
-import {CustomDialog} from "./customDialog";
 
 /**
  * Диалог получения кода для встраиваемого блока
@@ -10,36 +11,39 @@ import {CustomDialog} from "./customDialog";
     // language=Vue
     template: `
         <v-dialog v-model="showed" max-width="750px">
-            <v-card>
-                <v-toolbar dark color="primary">
-                    <v-toolbar-title>Сделки по бумаге <b>{{ data.ticker }}</b></v-toolbar-title>
+            <v-card class="dialog-wrap">
+                <v-icon class="closeDialog" @click.native="close">close</v-icon>
+
+                <v-card-title class="paddB0">
+                    <span class="headline">Сделки по бумаге <b>{{ data.ticker }}</b></span>
                     <v-spacer></v-spacer>
-                    <v-toolbar-items>
-                        <v-btn icon dark @click.native="close">
-                            <v-icon>close</v-icon>
-                        </v-btn>
-                    </v-toolbar-items>
-                </v-toolbar>
+                </v-card-title>
                 <v-card-text>
-                    <v-data-table :headers="headers" :items="data.trades" item-key="id" hide-actions>
-                        <template slot="items" slot-scope="props">
-                            <tr @click="props.expanded = !props.expanded">
+                    <v-data-table :headers="headers" :items="data.trades" item-key="id"
+                                  :custom-sort="customSort" :pagination.sync="pagination" hide-actions must-sort>
+                        <template #items="props">
+                            <tr class="selectable" @click="props.expanded = !props.expanded">
                                 <td>{{ props.item.operationLabel }}</td>
                                 <td class="text-xs-center">{{ props.item.date | date }}</td>
                                 <td class="text-xs-right">{{ props.item.quantity }}</td>
                                 <td class="text-xs-right">{{ getPrice(props.item) }}</td>
-                                <td class="text-xs-right">{{ getFee(props.item) }}</td>
+                                <td class="text-xs-right">{{ props.item.fee | amount(true) }}</td>
                                 <td class="text-xs-right">{{ props.item.signedTotal | amount(true) }}</td>
                             </tr>
                         </template>
 
-                        <template slot="expand" slot-scope="props">
+                        <template #expand="props">
                             <v-card flat>
                                 <v-card-text>{{ props.item.comment }}</v-card-text>
                             </v-card>
                         </template>
                     </v-data-table>
                 </v-card-text>
+
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="primary" dark @click.native="close">OK</v-btn>
+                </v-card-actions>
             </v-card>
         </v-dialog>
     `
@@ -55,12 +59,14 @@ export class ShareTradesDialog extends CustomDialog<ShareTradesDialogData, void>
         {text: "Итого", align: "right", value: "signedTotal"}
     ];
 
+    private pagination: Pagination = {
+        descending: false,
+        sortBy: "date",
+        rowsPerPage: -1
+    };
+
     private getPrice(trade: TradeRow): string {
         return TradeUtils.getPrice(trade);
-    }
-
-    private getFee(trade: TradeRow): string {
-        return TradeUtils.getFee(trade);
     }
 
     private percentPrice(trade: TradeRow): boolean {
@@ -70,10 +76,13 @@ export class ShareTradesDialog extends CustomDialog<ShareTradesDialogData, void>
     private moneyPrice(trade: TradeRow): boolean {
         return TradeUtils.moneyPrice(trade);
     }
+
+    private customSort(items: TradeRow[], index: string, isDesc: boolean): TradeRow[] {
+        return SortUtils.simpleSort<TradeRow>(items, index, isDesc);
+    }
 }
 
 export type ShareTradesDialogData = {
     trades: TradeRow[],
     ticker: string
-}
-
+};

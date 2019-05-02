@@ -1,21 +1,30 @@
-import axios from "axios";
-import {Singleton} from "typescript-ioc";
+import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
-import {HTTP} from "../platform/services/http";
-import {ClientInfo, LoginRequest} from "../types/types";
+import {Http} from "../platform/services/http";
+import {Tariff} from "../types/tariff";
+import {LoginRequest} from "../types/types";
+import {IisType, PortfolioAccountType, PortfolioParams, PortfolioParamsResponse} from "./portfolioService";
 
 @Service("ClientService")
 @Singleton
 export class ClientService {
 
-    clientInfo: ClientInfo = null;
+    @Inject
+    private http: Http;
 
-    async getClientInfo(request: LoginRequest): Promise<ClientInfo> {
-        if (!this.clientInfo) {
-            const result = await axios.post("/api/user/login", request);
-            this.clientInfo = await result.data as ClientInfo;
+    private clientInfoCache: Client = null;
+
+    async login(request: LoginRequest): Promise<ClientInfo> {
+        const clientInfo = await this.http.post<ClientInfoResponse>("/user/login", request);
+        return this.mapClientInfoResponse(clientInfo);
+    }
+
+    async getClientInfo(): Promise<Client> {
+        if (!this.clientInfoCache) {
+            const clientInfo = await this.http.get<ClientResponse>("/user/info");
+            this.clientInfoCache = await this.mapClientResponse(clientInfo);
         }
-        return this.clientInfo;
+        return this.clientInfoCache;
     }
 
     /**
@@ -24,7 +33,7 @@ export class ClientService {
      * @returns {Promise<void>}
      */
     async changePassword(request: ChangePasswordRequest): Promise<void> {
-        await HTTP.INSTANCE.post(`/user/change-password`, request);
+        await this.http.post(`/user/change-password`, request);
     }
 
     /**
@@ -33,7 +42,7 @@ export class ClientService {
      * @returns {Promise<void>}
      */
     async changeUsername(request: ChangeUsernameRequest): Promise<void> {
-        await HTTP.INSTANCE.post(`/user/change-username`, request);
+        await this.http.post(`/user/change-username`, request);
     }
 
     /**
@@ -42,8 +51,116 @@ export class ClientService {
      * @returns {Promise<void>}
      */
     async changeEmail(request: ChangeEmailRequest): Promise<void> {
-        await HTTP.INSTANCE.post(`/user/change-email`, request);
+        await this.http.post(`/user/change-email`, request);
     }
+
+    /**
+     * Переключает на старую версию сервиса
+     */
+    async switchToOldVersion(): Promise<string> {
+        return this.http.get<string>(`/user/switch-to-old`);
+    }
+
+    /**
+     * Сбрасывает кэш информации о пользователе
+     */
+    resetClientInfo(): void {
+        this.clientInfoCache = null;
+    }
+
+    private mapClientInfoResponse(clientInfoResponse: ClientInfoResponse): ClientInfo {
+        return {
+            token: clientInfoResponse.token,
+            user: {
+                ...clientInfoResponse.user,
+                tariff: Tariff.valueByName(clientInfoResponse.user.tariff),
+                portfolios: clientInfoResponse.user.portfolios.map(item => {
+                    return {
+                        ...item,
+                        accountType: item.accountType ? PortfolioAccountType.valueByName(item.accountType) : null,
+                        iisType: item.iisType ? IisType.valueByName(item.iisType) : null
+                    } as PortfolioParams;
+                })
+            }
+        } as ClientInfo;
+    }
+
+    private mapClientResponse(clientResponse: ClientResponse): Client {
+        return {
+            ...clientResponse,
+            tariff: Tariff.valueByName(clientResponse.tariff),
+            portfolios: clientResponse.portfolios.map(item => {
+                return {
+                    ...item,
+                    accountType: item.accountType ? PortfolioAccountType.valueByName(item.accountType) : null,
+                    iisType: item.iisType ? IisType.valueByName(item.iisType) : null
+                } as PortfolioParams;
+            })
+        } as Client;
+    }
+}
+
+export interface ClientInfo {
+    token: string;
+    user: Client;
+}
+
+export interface ClientInfoResponse {
+    token: string;
+    user: ClientResponse;
+}
+
+export interface BaseClient {
+    /** Идентификатор пользователя */
+    id: string;
+    /** Логин пользователя */
+    username: string;
+    /** email пользователя */
+    email: string;
+    /** Дата; до которой оплачен тариф */
+    paidTill: string;
+    /** Признак подтвержденного email */
+    emailConfirmed: string;
+    /** Текущий идентификатор портфеля */
+    currentPortfolioId: number;
+    /** Тип вознаграждения за реферальную программу */
+    referralAwardType: string;
+    /** Промокод пользователя */
+    promoCode: PromoCode;
+    /** Признак блокировки аккаунта */
+    blocked: boolean;
+    /** Алиас для реферальной ссылки */
+    referralAlias: string;
+    /** Сумма подлежащая выплате по реферальной программе */
+    earnedTotalAmount: string;
+    /** Срок действия скидки */
+    nextPurchaseDiscountExpired: string;
+    /** Индивидуальная скидка на следующую покупку в системе */
+    nextPurchaseDiscount: number;
+    /** Количество портфелей в профиле пользователя */
+    portfoliosCount: number;
+    /** Общее количество ценнных бумаг в составе всех портфелей */
+    sharesCount: number;
+    /** Присутствуют ли во всех портфелях пользователя сделки по иностранным акциям */
+    foreignShares: boolean;
+    /** Сумма выплаченного вознаграждения реферреру за партнерскую программу */
+    referrerRepaidTotalAmount: string;
+    /** Сумма причитаемого вознаграждения реферреру за партнерскую программу */
+    referrerEarnedTotalAmount: string;
+}
+
+export interface ClientResponse extends BaseClient {
+    /** Список портфелей */
+    portfolios: PortfolioParamsResponse[];
+    /** Тариф */
+    tariff: string;
+}
+
+export interface Client extends BaseClient {
+    /** Список портфелей */
+    portfolios: PortfolioParams[];
+    /** Тариф */
+    tariff: Tariff;
 }
 
 /** Запрос на смену пароля пользователя */
@@ -72,4 +189,34 @@ export interface ChangeEmailRequest {
     id: string;
     /** E-mail пользователя */
     email: string;
+}
+
+/** Сущность промокода */
+export interface PromoCode {
+    /** Идентификатор промокода */
+    id: number;
+    /** Значение промокода */
+    val: string;
+    /** Источник */
+    source: string;
+    /** Количество месяцев которое прибавляет промокод */
+    months?: number;
+    /** Скидка промокода */
+    discount?: number;
+    /** Идентификатор владельца */
+    ownerId: number;
+    /** Признак одноразовости промокода */
+    oneTime: boolean;
+    /** Признак Приветственного промокода */
+    welcoming: boolean;
+    /** Признак реферального промокода. Проставляет владельца в качестве реферала */
+    referral: boolean;
+    /** Срок действия промокода */
+    expired?: string;
+    /** Идентификатор пользователя использовавшего промокод */
+    usedUserId: string;
+    /** Признак выплаты вознаграждения рефереру если промокод реферальный */
+    payToReferrer: boolean;
+    /** Тариф устанавливаемый пользователю */
+    tariff: string;
 }

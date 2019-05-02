@@ -1,29 +1,32 @@
 import Component from "vue-class-component";
 import {UI} from "../../../app/ui";
-import {ImageDialog} from "../../../components/dialogs/imageDialog";
 
 @Component({
     // language=Vue
     template: `
         <div>
-            <p>
-                Перейдите в личный кабинет брокера. Перейдите на вкладку просмотра <b>Единой денежной позиции</b>
-                далее вкладка <b>Справка по счету</b>.
-                <br/>
-                <v-img :src="IMAGES[0]" height="210" width="330" class="grey darken-4" @click="openImage(IMAGES[0])"></v-img>
-                <br/>
-                Настройте параметры отчета:
-            <ul>
-                <li>Укажите период</li>
-                <li>Укажите формат отчета <b><i>xml</i></b></li>
-                <li>Нажмите кнопку <b><i>Сформировать</i></b></li>
-            </ul>
-            <br/>
-            <v-img :src="IMAGES[1]" height="210" width="330" class="grey darken-4" @click="openImage(IMAGES[1])"></v-img>
-            <br/>
-            После успешного формирования отчета появится запрос на скачивание отчета.
-            Полученный файл используйте для импорта.
-            </p>
+            <div>
+                <div class="import-default-text">
+                    Перейдите в личный кабинет брокера. Перейдите на вкладку просмотра <strong>Единой<br>
+                    денежной позиции</strong> далее вкладка <strong>Справка по счету.</strong>
+                </div>
+                    <v-img :src="IMAGES[0]" height="350" width="980" class="grey darken-4 image"></v-img>
+                <div class="import-default-text">
+                    Настройте параметры отчета:
+                </div>
+                <div class="import-format-requirements-ul">
+                    <ul>
+                        <li>Укажите период</li>
+                        <li>Укажите формат отчета <b><i>xml</i></b></li>
+                        <li>Нажмите кнопку <b><i>Сформировать</i></b></li>
+                    </ul>
+                </div>
+                <v-img :src="IMAGES[1]" height="384" width="980" class="grey darken-4 image"></v-img>
+                <div class="import-default-text">
+                    После успешного формирования отчета появится запрос на скачивание отчета.<br>
+                    Полученный файл используйте для импорта.
+                </div>
+            </div>
         </div>
     `
 })
@@ -34,7 +37,4 @@ export class FinamInstruction extends UI {
         "./img/import_instructions/finam/2.png"
     ];
 
-    private async openImage(url: string): Promise<void> {
-        await new ImageDialog().show(url);
-    }
 }

@@ -1,41 +1,38 @@
-import {Singleton} from "typescript-ioc";
-import * as tinkoff from "../../assets/js/tinkoff";
+import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
-import {HTTP} from "../platform/services/http";
+import {Http} from "../platform/services/http";
 import {Tariff} from "../types/tariff";
-import {ClientInfo} from "../types/types";
+import {ClientInfo} from "./clientService";
 
 @Service("TariffService")
 @Singleton
 export class TariffService {
+
+    @Inject
+    private http: Http;
 
     /**
      * Отправляет запрос на создание заказа для оплаты тарифа
      * @param tariff выбранный тариф
      * @param monthly признак оплаты за месяц
      */
-    async makePayment(tariff: Tariff, monthly: boolean): Promise<PayTariffResponse> {
-        return (await HTTP.INSTANCE.post("/tariff/payment", {tariff: tariff.name, monthly})).data as PayTariffResponse;
+    async makePayment(tariff: Tariff, monthly: boolean): Promise<TinkoffPaymentOrderResponse> {
+        return this.http.post<TinkoffPaymentOrderResponse>("/tariff/payment", {tariff: tariff.name, monthly});
     }
 
     /**
-     * Применяет промо-код
-     * @param promoCode промо-код
+     * Применяет промокод
+     * @param promoCode промокод
      */
     async applyPromoCode(promoCode: string): Promise<void> {
-        await HTTP.INSTANCE.post(`/tariff/apply-promo-code/${promoCode}`);
+        await this.http.post(`/tariff/apply-promo-code/${promoCode}`);
     }
 
-    openPaymentFrame(order: PayTariffResponse, clientInfo: ClientInfo): void {
-        const params: PaymentParams = {
-            TerminalKey: order.terminalKey,
-            Amount: order.paymentOrder.amount,
-            OrderId: order.paymentOrder.orderId,
-            Description: `Оплата тарифного плана ${order.paymentOrder.tariff.name}`,
-            DATA: `Email=${clientInfo.user.email}|Name=${clientInfo.user.username}`,
-            Frame: true
-        };
-        tinkoff.doPay(params);
+    /**
+     * Проверяет оплату заказа
+     */
+    async getOrderState(): Promise<void> {
+        await this.http.get("/tariff/order-state");
     }
 }
 
@@ -53,6 +50,32 @@ export interface PayTariffResponse {
     paymentOrder: PaymentOrder;
     /** Ключ терминала для оплаты */
     terminalKey: string;
+}
+
+/**
+ * Сущность ответа от платежного шлюза Тинькоф
+ */
+export interface TinkoffPaymentOrderResponse {
+    /** Идентификатор терминала, выдается Продавцу Банком */
+    terminalKey: string;
+    /** Сумма в копейках */
+    amount: number;
+    /** Номер заказа в системе Продавца */
+    orderId: string;
+    /** Успешность операции */
+    success: boolean;
+    /** Статус транзакции */
+    status: string;
+    /** Уникальный идентификатор транзакции в системе Банка */
+    paymentId: string;
+    /** Код ошибки, «0» - если успешно */
+    errorCode: string;
+    /** Ссылка на страницу оплаты. По умолчанию ссылка доступна в течении 24 часов. */
+    paymentURL?: string;
+    /** Краткое описание ошибки */
+    message?: string;
+    /** Подробное описание ошибки */
+    details?: string;
 }
 
 /** Информация об оплате тарифа */

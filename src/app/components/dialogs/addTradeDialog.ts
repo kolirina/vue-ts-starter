@@ -1,120 +1,120 @@
+import dayjs from "dayjs";
 import Decimal from "decimal.js";
-import {MaskOptions} from "imask";
-import {Moment} from "moment";
-import * as moment from "moment";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {Watch} from "vue-property-decorator";
 import {VueRouter} from "vue-router/types/router";
+import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
+import {ShowProgress} from "../../platform/decorators/showProgress";
+import {CustomDialog} from "../../platform/dialogs/customDialog";
+import {Client, ClientService} from "../../services/clientService";
+import {DateTimeService} from "../../services/dateTimeService";
+import {EventFields} from "../../services/eventService";
+import {MarketHistoryService} from "../../services/marketHistoryService";
 import {MarketService} from "../../services/marketService";
-import {TradeService} from "../../services/tradeService";
+import {MoneyResiduals, PortfolioService} from "../../services/portfolioService";
+import {TradeFields, TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
-import {BigMoney} from "../../types/bigMoney";
 import {Operation} from "../../types/operation";
+import {Tariff} from "../../types/tariff";
 import {TradeDataHolder} from "../../types/trade/tradeDataHolder";
 import {TradeMap} from "../../types/trade/tradeMap";
 import {TradeValue} from "../../types/trade/tradeValue";
-import {Bond, Portfolio, Share, TradeData} from "../../types/types";
-import {DateFormat} from "../../utils/dateUtils";
+import {Bond, CurrencyUnit, ErrorInfo, Portfolio, Share, Stock} from "../../types/types";
+import {CommonUtils} from "../../utils/commonUtils";
+import {DateUtils} from "../../utils/dateUtils";
+import {TradeUtils} from "../../utils/tradeUtils";
 import {MainStore} from "../../vuex/mainStore";
-import {CustomDialog} from "./customDialog";
+import {TariffExpiredDialog} from "./tariffExpiredDialog";
 
 @Component({
     // language=Vue
     template: `
-        <v-dialog v-model="showed" persistent max-width="700px">
-            <v-card>
-                <v-card-title>
-                    <span class="headline">Добавление сделки</span>
+        <v-dialog v-model="showed" ref="dialog" persistent max-width="700px">
+            <v-card class="dialog-wrap">
+                <v-icon class="closeDialog" @click.native="close">close</v-icon>
+
+                <v-card-title class="paddB0">
+                    <span class="headline">{{ tradeId ? "Редактирование" : "Добавление" }} сделки</span>
+                    <v-spacer></v-spacer>
                 </v-card-title>
-                <v-card-text>
-                    <v-container grid-list-md>
+
+                <v-card-text class="paddT0 paddB0">
+                    <v-container grid-list-md class="paddT0 paddB0">
                         <v-layout wrap>
+                            <!-- Тип актива -->
                             <v-flex xs12 sm6>
-                                <v-select :items="assetTypes" v-model="assetType" :return-object="true" label="Тип актива" item-text="description"></v-select>
+                                <v-select :items="assetTypes" v-model="assetType" :return-object="true" label="Тип актива" item-text="description" dense
+                                          hide-details></v-select>
                             </v-flex>
 
+                            <!-- Операция -->
                             <v-flex xs12 sm6>
-                                <v-select :items="assetType.operations" v-model="operation" :return-object="true" label="Операция"
-                                          item-text="description"></v-select>
+                                <v-select :items="assetType.operations" v-model="operation" :return-object="true" label="Операция" dense hide-details
+                                          item-text="description" @change="onOperationChange"></v-select>
                             </v-flex>
 
-                            <v-flex v-if="shareAssetType" xs12>
-                                <v-autocomplete :items="filteredShares"
-                                                v-model="share"
-                                                label="Тикер / Название компании"
-                                                :loading="shareSearch"
-                                                :no-data-text="notFoundLabel"
-                                                clearable
-                                                cache-items
-                                                required
-                                                name="share"
-                                                :error-messages="errors.collect('share')"
-                                                dense
-                                                :hide-no-data="true"
-                                                :no-filter="true"
-                                                append-icon="fas fa-building"
-                                                :search-input.sync="searchQuery">
-                                    <template slot="selection" slot-scope="data">
-                                        {{ shareLabelSelected(data.item) }}
-                                    </template>
-                                    <template slot="item" slot-scope="data">
-                                        {{ shareLabelListItem(data.item) }}
-                                    </template>
-                                </v-autocomplete>
+                            <!-- Тикер бумаги -->
+                            <v-flex v-if="shareAssetType" xs12 :class="portfolioProModeEnabled ? 'sm6' : 'sm9'">
+                                <share-search :asset-type="assetType" :filtered-shares="filteredShares"
+                                              placeholder="Тикер или название компании" class="required"
+                                              @change="onShareSelect" @clear="onShareClear" autofocus></share-search>
                             </v-flex>
 
-                            <v-flex xs12>
-                                <v-menu
-                                        ref="dateMenu"
-                                        :close-on-content-click="false"
-                                        v-model="dateMenuValue"
-                                        :nudge-right="40"
-                                        :return-value.sync="date"
-                                        lazy
-                                        transition="scale-transition"
-                                        offset-y
-                                        full-width
-                                        min-width="290px">
-                                    <v-text-field
-                                            slot="activator"
-                                            v-model="date"
-                                            label="Дата"
-                                            required
-                                            append-icon="event"
-                                            readonly></v-text-field>
-                                    <v-date-picker v-model="date" :no-title="true" locale="ru" :first-day-of-week="1"
-                                                   @input="$refs.dateMenu.save(date)"></v-date-picker>
+                            <!-- Дата сделки -->
+                            <v-flex xs12 :class="moneyTrade ? portfolioProModeEnabled ? 'sm6' : '' : 'sm3'">
+                                <v-menu ref="dateMenu" :close-on-content-click="false" v-model="dateMenuValue" :nudge-right="40" :return-value.sync="date"
+                                        lazy transition="scale-transition" offset-y full-width min-width="290px">
+                                    <v-text-field name="date" slot="activator" v-model="date" label="Дата" v-validate="'required'"
+                                                  :error-messages="errors.collect('date')" readonly class="required"></v-text-field>
+                                    <v-date-picker v-model="date" :no-title="true" locale="ru" :first-day-of-week="1" @input="onDateSelected"></v-date-picker>
                                 </v-menu>
                             </v-flex>
 
-                            <v-flex v-if="shareAssetType" xs12>
-                                <v-text-field :label="priceLabel" v-model="price" v-mask="priceMask"
-                                              name="price"
-                                              v-validate="'required'"
-                                              :error-messages="errors.collect('price')"
-                                              @keyup="calculateFee"
-                                              append-icon="fas fa-money-bill-alt"></v-text-field>
+                            <!-- Время сделки -->
+                            <v-flex v-if="portfolioProModeEnabled" xs12 :class="moneyTrade ? 'sm6' : 'sm3'">
+                                <v-dialog ref="timeMenu" v-model="timeMenuValue" :return-value.sync="time" persistent lazy full-width width="290px">
+                                    <v-text-field slot="activator" v-model="time" label="Время" readonly></v-text-field>
+                                    <v-time-picker v-if="timeMenuValue" v-model="time" format="24hr" full-width>
+                                        <v-spacer></v-spacer>
+                                        <v-btn flat color="primary" @click="timeMenuValue = false">Отмена</v-btn>
+                                        <v-btn flat color="primary" @click="$refs.timeMenu.save(time)">OK</v-btn>
+                                    </v-time-picker>
+                                </v-dialog>
                             </v-flex>
 
-                            <v-flex v-if="bondTrade" xs12>
-                                <v-text-field label="Номинал" v-model="facevalue"
-                                              @keyup="calculateFee"
-                                              append-icon="fas fa-money-bill"></v-text-field>
+                            <!-- Цена -->
+                            <v-flex v-if="shareAssetType" xs12 sm6>
+                                <ii-number-field :label="priceLabel" v-model="price" class="required" name="price" v-validate="'required|min_value:0.000001'"
+                                                 :error-messages="errors.collect('price')" @keyup="calculateFee">
+                                </ii-number-field>
                             </v-flex>
-                            <v-flex v-if="bondTrade" xs12>
+
+                            <!-- Количество -->
+                            <v-flex v-if="shareAssetType" xs12 sm6>
+                                <ii-number-field label="Количество" v-model="quantity" @keyup="calculateFee" :hint="lotSizeHint"
+                                                 persistent-hint name="quantity" :decimals="0"
+                                                 v-validate="'required|min_value:1'" :error-messages="errors.collect('quantity')" class="required">
+                                </ii-number-field>
+                            </v-flex>
+
+                            <!-- Номинал -->
+                            <v-flex v-if="bondTrade" xs12 sm3>
+                                <ii-number-field label="Номинал" v-model="facevalue" @keyup="calculateFee" :decimals="2" name="facevalue"
+                                                 v-validate="'required|min_value:0.01'" :error-messages="errors.collect('facevalue')" class="required">
+                                </ii-number-field>
+                            </v-flex>
+
+                            <!-- НКД -->
+                            <v-flex xs12 sm9>
                                 <v-layout wrap>
-                                    <v-flex xs12 lg6>
-                                        <v-text-field label="НКД" v-model="nkd"
-                                                      @keyup="calculateFee"
-                                                      append-icon="fas fa-money-bill-alt"></v-text-field>
+                                    <v-flex v-if="bondTrade" xs12 lg6>
+                                        <ii-number-field label="НКД" v-model="nkd" @keyup="calculateFee" :decimals="2" name="nkd"
+                                                         v-validate="nkdValidationString" :error-messages="errors.collect('nkd')" class="required">
+                                        </ii-number-field>
                                     </v-flex>
-                                </v-layout>
-                            </v-flex>
-                            <v-flex v-if="calculationAssetType || bondTrade" xs12>
-                                <v-layout wrap>
-                                    <v-flex xs12 lg6>
-                                        <v-tooltip top>
+                                    <v-flex v-if="calculationAssetType || bondTrade" xs12 lg6>
+                                        <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" top>
                                             <v-checkbox slot="activator" label="Начисление на одну бумагу" v-model="perOne"></v-checkbox>
                                             <span>Отключите если вносите сумму начисления</span>
                                         </v-tooltip>
@@ -122,30 +122,19 @@ import {CustomDialog} from "./customDialog";
                                 </v-layout>
                             </v-flex>
 
-                            <v-flex xs12>
-                                <v-text-field v-if="shareAssetType"
-                                              label="Количество" v-model="quantity"
-                                              @keyup="calculateFee"
-                                              :hint="lotSizeHint" persistent-hint
-                                              name="quantity"
-                                              v-validate="'required'"
-                                              :error-messages="errors.collect('quantity')"
-                                              append-icon="fas fa-plus">
-                                </v-text-field>
-                            </v-flex>
-                            <v-flex xs12>
-                                <v-text-field v-if="shareAssetType && !calculationAssetType"
-                                              label="Комиссия" v-model="fee"
-                                              append-icon="fas fa-coins"
-                                              hint="Для автоматического рассчета комиссии задайте значение в Настройках или введите значение суммарной комиссии">
-                                </v-text-field>
+                            <!-- Комиссия -->
+                            <v-flex v-if="shareAssetType && !calculationAssetType" xs12>
+                                <ii-number-field label="Комиссия" v-model="fee" :decimals="2"
+                                                 hint="Для автоматического рассчета комиссии задайте значение в Настройках или введите значение суммарной комиссии">
+                                </ii-number-field>
                             </v-flex>
 
+                            <!-- Сумма денег (для денежной сделки) -->
                             <v-flex v-if="moneyTrade" xs12>
                                 <v-layout wrap>
                                     <v-flex xs12 lg8>
-                                        <v-text-field label="Сумма" v-model="moneyAmount"
-                                                      append-icon="fas fa-money-bill-alt"></v-text-field>
+                                        <ii-number-field label="Сумма" v-model="moneyAmount" :decimals="2" name="money_amount" v-validate="'required|min_value:0.01'"
+                                                         :error-messages="errors.collect('money_amount')" class="required"></ii-number-field>
                                     </v-flex>
                                     <v-flex xs12 lg4>
                                         <v-select :items="currencyList" v-model="moneyCurrency" label="Валюта сделки"></v-select>
@@ -153,27 +142,32 @@ import {CustomDialog} from "./customDialog";
                                 </v-layout>
                             </v-flex>
 
+                            <!-- Заметка -->
                             <v-flex xs12>
-                                <v-text-field label="Заметка" v-model="note" :counter="160" append-icon="fas fa-sticky-note"></v-text-field>
+                                <v-text-field label="Заметка" v-model="note" :counter="160"
+                                              v-validate="'max:160'" :error-messages="errors.collect('note')" name="note"></v-text-field>
                             </v-flex>
                         </v-layout>
 
+                        <!-- Итоговая сумма сделки -->
                         <v-layout wrap>
                             <v-flex xs12 lg6>
-                                <span class="body-2">Сумма сделки: </span><span v-if="total"><b class="title">{{ total }} {{ currency }}</b></span>
+                                <span class="body-2">Сумма сделки: </span><span v-if="total"><b class="title">{{ total | number }} {{ getCurrency() }}</b></span>
                             </v-flex>
                             <v-flex xs12 lg6>
-                                <v-checkbox :label="keepMoneyLabel" v-model="keepMoney"></v-checkbox>
+                                <span class="body-2">Доступно: </span><span v-if="moneyResiduals"><b
+                                    class="title">{{ moneyResidual | amount }} {{ getCurrency() }}</b></span>
+                                <v-checkbox :disabled="keepMoneyDisabled" :label="keepMoneyLabel" v-model="keepMoney" hide-details></v-checkbox>
                             </v-flex>
                         </v-layout>
                     </v-container>
                     <small>* обозначает обязательные поля</small>
                 </v-card-text>
+
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="info lighten-2" flat @click.native="cancel">Отмена</v-btn>
-                    <v-btn :loading="processState" :disabled="processState" color="primary" dark @click.native="addTrade">
-                        Добавить
+                    <v-btn :loading="processState" :disabled="!isValid || processState" color="primary" dark @click.native="addTrade">
+                        {{ tradeId ? "Сохранить" : "Добавить" }}
                         <span slot="loader" class="custom-loader">
                         <v-icon light>fas fa-spinner fa-spin</v-icon>
                       </span>
@@ -187,25 +181,36 @@ import {CustomDialog} from "./customDialog";
 export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> implements TradeDataHolder {
 
     $refs: {
-        dateMenu: any
+        dateMenu: any,
+        timeMenu: any,
     };
 
+    @Inject
+    private clientService: ClientService;
     @Inject
     private marketService: MarketService;
     @Inject
     private tradeService: TradeService;
-
+    @Inject
+    private portfolioService: PortfolioService;
+    @Inject
+    private marketHistoryService: MarketHistoryService;
+    @Inject
+    private dateTimeService: DateTimeService;
+    /** Информация о клиенте */
+    private clientInfo: Client;
+    /** Операции начислений */
+    private readonly CALCULATION_OPERATIONS = [Operation.COUPON, Operation.DIVIDEND, Operation.AMORTIZATION];
     private portfolio: Portfolio = null;
 
-    private notFoundLabel = "Ничего не найдено";
-
     private assetTypes = AssetType.values();
+    private Operation = Operation;
 
     private assetType = AssetType.STOCK;
 
     private operation = Operation.BUY;
 
-    private currencyList = ["RUB", "USD"];
+    private currencyList = CurrencyUnit.values().map(c => c.code);
 
     private moneyCurrency = "RUB";
 
@@ -213,7 +218,13 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     private filteredShares: Share[] = [];
 
-    private date = ""; // moment().format('DD.MM.YYYY HH:mm:SS');
+    private tradeId: string = null;
+
+    private editedMoneyTradeId: string = null;
+
+    private date = DateUtils.currentDate();
+
+    private time = DateUtils.currentTime();
 
     private price: string = null;
 
@@ -226,131 +237,106 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private fee: string = null;
 
     private note: string = null;
+    /** Период события */
+    private eventPeriod: string = null;
+    /** Дата события */
+    private eventDate: string = null;
+    /** Признак исполнения события */
+    private processShareEvent: boolean = false;
 
     private dateMenuValue = false;
-
-    private shareSearch = false;
+    private timeMenuValue = false;
 
     private moneyAmount: string = null;
 
-    private keepMoney = true;
+    private keepMoneyValue = true;
     private perOne = true;
 
     private currency = "RUB";
-
-    private priceMask: MaskOptions = {
-        mask: Number,
-        min: -10000,
-        max: 10000,
-        scale: 2,
-        thousandsSeparator: " "
-    };
-
-    private searchQuery: string = null;
-    /** Текущий объект таймера */
-    private currentTimer: number = null;
     private processState = false;
 
-    mounted(): void {
-        this.portfolio = (this.data.store as any).currentPortfolio;
-        this.share = this.data.share || null;
+    private moneyResiduals: MoneyResiduals = null;
+    /** Признак доступности профессионального режима */
+    private portfolioProModeEnabled = false;
+
+    async mounted(): Promise<void> {
+        this.clientInfo = await this.clientService.getClientInfo();
+        await this.checkAllowedAddTrade();
         this.assetType = this.data.assetType || AssetType.STOCK;
+        this.moneyCurrency = this.data.moneyCurrency || "RUB";
+        this.portfolio = (this.data.store as any).currentPortfolio;
+        this.portfolioProModeEnabled = TradeUtils.isPortfolioProModeEnabled(this.portfolio, this.clientInfo);
+        this.moneyResiduals = await this.portfolioService.getMoneyResiduals(this.portfolio.id);
+        this.share = this.data.share || null;
         this.operation = this.data.operation || Operation.BUY;
-        console.log("ADD TRADE DIALOG2", this.data);
+        if (this.data.quantity) {
+            this.quantity = this.data.quantity;
+        }
+        if (this.data.ticker) {
+            await this.setShareFromTicker(this.data.ticker);
+            this.filteredShares = [this.share];
+        } else if (this.data.tradeFields) {
+            await this.setTradeFields();
+        } else if (this.data.eventFields) {
+            this.filteredShares = this.share ? [this.share] : [];
+            this.fillFieldsFromShare();
+            await this.setEventFields();
+        } else {
+            this.fillFieldsFromShare();
+            this.filteredShares = this.share ? [this.share] : [];
+        }
     }
 
     @Watch("assetType")
     private onAssetTypeChange(newValue: AssetType): void {
-        this.operation = this.assetType.operations[0];
+        if (this.data.operation === undefined) {
+            this.operation = this.assetType.operations[0];
+        } else {
+            this.operation = this.data.operation;
+        }
+        this.clearFields();
     }
 
-    @Watch("searchQuery")
-    private async onSearch(): Promise<void> {
-        console.log("SEARCH", this.searchQuery);
-        if (!this.searchQuery || this.searchQuery.length <= 2) {
+    private async onTickerOrDateChange(): Promise<void> {
+        await this.fillFields();
+    }
+
+    private async onOperationChange(): Promise<void> {
+        await this.fillFields();
+    }
+
+    private async fillFields(): Promise<void> {
+        if (!this.date || !this.share) {
             return;
         }
-        clearTimeout(this.currentTimer);
-        this.shareSearch = true;
-        const delay = new Promise((resolve, reject) => {
-            this.currentTimer = setTimeout(async () => {
-                try {
-                    if (this.assetType === AssetType.STOCK) {
-                        this.filteredShares = await this.marketService.searchStocks(this.searchQuery);
-                    } else if (this.assetType === AssetType.BOND) {
-                        this.filteredShares = await this.marketService.searchBonds(this.searchQuery);
-                        console.log("filtered bonds", this.filteredShares);
-                    }
-                    this.shareSearch = false;
-                } catch (error) {
-                    reject(error);
-                }
-            }, 1000);
-        });
-
-        try {
-            delay.then(() => {
-                clearTimeout(this.currentTimer);
-                this.shareSearch = false;
-            });
-        } catch (error) {
-            clearTimeout(this.currentTimer);
-            this.shareSearch = false;
-            throw error;
+        const date = DateUtils.parseDate(this.date);
+        // если дата текущая заполняем поля диалога из бумаги
+        // иначе пробуем получить данных за прошлые даты
+        if (DateUtils.isCurrentDate(date)) {
+            this.fillFieldsFromShare();
+        } else if (DateUtils.isBefore(date)) {
+            const calculationOperation = this.CALCULATION_OPERATIONS.includes(this.operation);
+            if (calculationOperation) {
+                await this.fillFromSuggestedInfo();
+                return;
+            }
+            if (this.assetType === AssetType.STOCK) {
+                const stock = (await this.marketHistoryService.getStockHistory(this.share.ticker, dayjs(this.date).format("DD.MM.YYYY")));
+                this.fillFieldsFromStock(stock);
+            } else if (this.assetType === AssetType.BOND) {
+                const bond = (await this.marketHistoryService.getBondHistory(this.share.ticker, dayjs(this.date).format("DD.MM.YYYY")));
+                this.fillFieldsFromBond(bond);
+            }
         }
     }
 
-    private get total(): string {
-        if (!this.isValid()) {
-            return null;
+    private async fillFromSuggestedInfo(): Promise<void> {
+        const suggestedInfo = await this.tradeService.getSuggestedInfo(this.portfolio.id, this.assetType.enumName,
+            this.operation.enumName, this.share.ticker, this.date);
+        if (suggestedInfo) {
+            this.quantity = suggestedInfo.quantity;
+            this.price = suggestedInfo.amount;
         }
-        const total = TradeMap.TRADE_CLASSES[this.assetType.enumName][this.operation.enumName][TradeValue.TOTAL](this);
-        return total;
-    }
-
-    private get totalWithoutFee(): string {
-        if (!this.isValid()) {
-            return null;
-        }
-        const total = TradeMap.TRADE_CLASSES[this.assetType.enumName][this.operation.enumName][TradeValue.TOTAL_WF](this);
-        return total;
-    }
-
-    private isValid(): boolean {
-        return !((this.assetType !== AssetType.MONEY && (!this.price || !this.quantity)) || (this.assetType === AssetType.MONEY && !this.moneyAmount));
-    }
-
-    private get keepMoneyLabel(): string {
-        const toPort = "Зачислить деньги";
-        const fromPort = "Списать деньги";
-        return Operation.BUY === this.operation || Operation.WITHDRAW === this.operation || Operation.LOSS === this.operation ? fromPort : toPort;
-    }
-
-    private get lotSizeHint(): string {
-        return "указывается в штуках." + (this.share ? " 1 лот = " + this.share.lotsize + " шт." : "");
-    }
-
-    private get priceLabel(): string {
-        return [Operation.AMORTIZATION, Operation.COUPON, Operation.DIVIDEND].includes(this.operation) ? "Начисление" : "Цена";
-    }
-
-    @Watch("share")
-    private shareSelect(): void {
-        console.log("SELECT SHARE", this.share);
-        // при очистке поля автокомплита
-        if (!this.share) {
-            this.price = "";
-            return;
-        }
-        if (this.assetType === AssetType.STOCK) {
-            this.price = new BigMoney(this.share.price).amount.toString();
-        } else if (this.assetType === AssetType.BOND) {
-            const bond = (this.share as Bond);
-            this.price = bond.prevprice;
-            this.facevalue = new BigMoney(bond.facevalue).amount.toString();
-            this.nkd = new BigMoney(bond.accruedint).amount.toString();
-        }
-        this.currency = this.share.currency;
     }
 
     private calculateFee(): void {
@@ -363,35 +349,39 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         }
     }
 
-    private cancel(): void {
-        this.close();
+    private async onDateSelected(date: string): Promise<void> {
+        this.$refs.dateMenu.save(date);
+        await this.onTickerOrDateChange();
     }
 
-    private shareLabelSelected(share: Share): string {
-        return `${share.ticker} (${share.shortname})`;
+    private async onShareSelect(share: Share): Promise<void> {
+        this.share = share;
+        this.fillFieldsFromShare();
+        await this.onTickerOrDateChange();
     }
 
-    private shareLabelListItem(share: Share): string {
-        if ((share as any) === this.notFoundLabel) {
-            return this.notFoundLabel;
+    private fillFieldsFromShare(): void {
+        // при очистке поля автокомплита
+        if (!this.share) {
+            return;
         }
+        this.currency = this.share.currency;
         if (this.assetType === AssetType.STOCK) {
-            const price = new BigMoney(share.price);
-            return `${share.ticker} (${share.shortname}), ${price.amount.toString()} ${price.currency}`;
+            this.fillFieldsFromStock(this.share as Stock);
         } else if (this.assetType === AssetType.BOND) {
-            return `${share.ticker} (${share.shortname}), ${(share as Bond).prevprice}%`;
+            this.fillFieldsFromBond(this.share as Bond);
         }
-        return `${share.ticker} (${share.shortname})`;
     }
 
+    @ShowProgress
+    @DisableConcurrentExecution
     private async addTrade(): Promise<void> {
-        // const result = await this.$validator.validateAll();
-        // this.$validator.errors.add({field: 'price', msg: 'Errsdsadsadasdasor'});
-        // console.log(result, this.$validator.errors);
-        // if (!result) {
-        //     return;
-        // }
-        const trade: TradeData = {
+        this.$validator.errors.clear();
+        const result = await this.$validator.validateAll();
+        if (!result) {
+            return;
+        }
+        const tradeFields: TradeFields = {
             ticker: this.shareTicker,
             date: this.getDate(),
             quantity: this.getQuantity(),
@@ -403,42 +393,170 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             note: this.getNote(),
             keepMoney: this.isKeepMoney(),
             moneyAmount: this.total,
-            currency: this.currency
+            currency: this.getCurrency()
         };
         this.processState = true;
         try {
-            const errors = await this.tradeService.saveTrade({
-                portfolioId: this.portfolio.id,
-                asset: this.assetType.enumName,
-                operation: this.operation.enumName,
-                createLinkedTrade: this.keepMoney,
-                fields: trade
-            });
-            if (!errors) {
-                this.close(true);
-                // this.$notify({
-                //     title: 'Выполнено',
-                //     message: 'Сделка успешно добавлена',
-                //     type: 'success'
-                // });
-                return;
+            if (this.tradeId) {
+                await this.editTrade(tradeFields);
+            } else {
+                await this.saveTrade(tradeFields);
             }
-            // иначе обрабатываем ошибки валидации с сервера и отображаем
-            for (const errorInfo of errors.fields) {
-                console.log("M", errorInfo);
-                this.$validator.errors.add({field: errorInfo.name, msg: errorInfo.errorMessage});
-            }
+
+            this.$snotify.info(`Сделка успешно ${this.tradeId ? "отредактирована" : "добавлена"}`);
+            this.close(true);
         } catch (e) {
-            console.log("e", e);
-            // this.$notify({
-            //     title: 'Ошибка',
-            //     message: 'Ошибка при добавлении сделки',
-            //     type: 'error'
-            // });
-            return;
+            this.handleError(e);
         } finally {
             this.processState = false;
         }
+    }
+
+    private async saveTrade(tradeFields: TradeFields): Promise<void> {
+        return this.tradeService.saveTrade({
+            portfolioId: this.portfolio.id,
+            asset: this.assetType.enumName,
+            operation: this.operation.enumName,
+            createLinkedTrade: this.isKeepMoney(),
+            eventDate: this.eventDate,
+            eventPeriod: this.eventPeriod,
+            processShareEvent: this.processShareEvent,
+            fields: tradeFields
+        });
+    }
+
+    private async editTrade(tradeFields: TradeFields): Promise<void> {
+        return this.tradeService.editTrade({
+            tradeId: this.tradeId,
+            tableName: TradeUtils.tradeTable(this.assetType, this.operation),
+            asset: this.assetType.enumName,
+            operation: this.operation.enumName,
+            portfolioId: this.portfolio.id,
+            createLinkedTrade: this.isKeepMoney(),
+            editedMoneyTradeId: this.editedMoneyTradeId,
+            fields: tradeFields
+        });
+    }
+
+    private handleError(error: ErrorInfo): void {
+        if (!CommonUtils.exists(error.fields)) {
+            if (error.message !== "Доступ запрещен") {
+                throw error;
+            }
+            return;
+        }
+        const validatorFields = this.$validator.fields.items.map((f: any) => f.name);
+        for (const errorInfo of error.fields) {
+            if (validatorFields.includes(errorInfo.name)) {
+                this.$validator.errors.add({field: errorInfo.name, msg: errorInfo.errorMessage});
+            }
+        }
+        if (this.$validator.errors.count() === 0) {
+            const globalMessage = TradeUtils.getGlobalMessage(error);
+            this.$snotify.error(globalMessage);
+        }
+    }
+
+    private fillFieldsFromStock(stock: Stock): void {
+        this.price = this.CALCULATION_OPERATIONS.includes(this.operation) ? "" : TradeUtils.decimal(stock.price);
+    }
+
+    /**
+     * Заполняет поля диалога из облигации.
+     * @param bond выбранная облигация
+     */
+    private fillFieldsFromBond(bond: Bond): void {
+        const nkd = TradeUtils.decimal(bond.accruedint);
+        const facevalue = TradeUtils.decimal(bond.facevalue);
+        switch (this.operation) {
+            case Operation.COUPON:
+                this.price = nkd;
+                this.facevalue = "";
+                this.nkd = "";
+                break;
+            case Operation.AMORTIZATION:
+                this.price = facevalue;
+                this.facevalue = "";
+                this.nkd = "";
+                break;
+            default:
+                this.price = bond.prevprice;
+                this.facevalue = facevalue;
+                this.nkd = nkd;
+        }
+    }
+
+    private clearFields(): void {
+        this.share = null;
+        this.filteredShares = [];
+        this.date = DateUtils.currentDate();
+        this.time = DateUtils.currentTime();
+        this.quantity = null;
+        this.price = null;
+        this.fee = null;
+        this.note = "";
+        this.share = null;
+        this.nkd = null;
+        this.facevalue = null;
+        this.moneyAmount = null;
+        this.eventDate = null;
+        this.eventPeriod = null;
+        this.processShareEvent = false;
+    }
+
+    private onShareClear(): void {
+        this.price = "";
+        this.nkd = "";
+        this.facevalue = "";
+        this.filteredShares = [];
+    }
+
+    private async setTradeFields(): Promise<void> {
+        await this.setShareFromTicker(this.data.tradeFields.ticker);
+        this.filteredShares = [this.share];
+
+        this.tradeId = this.data.tradeId;
+        this.editedMoneyTradeId = this.data.editedMoneyTradeId;
+        this.date = TradeUtils.getDateString(this.data.tradeFields.date);
+        this.time = TradeUtils.getTimeString(this.data.tradeFields.date);
+        this.quantity = this.data.tradeFields.quantity;
+        this.price = this.data.tradeFields.price;
+        this.facevalue = TradeUtils.decimal(this.data.tradeFields.facevalue);
+        this.nkd = TradeUtils.decimal(this.data.tradeFields.nkd);
+        this.perOne = true;
+        this.fee = TradeUtils.decimal(this.data.tradeFields.fee);
+        this.note = this.data.tradeFields.note;
+        this.keepMoney = this.data.tradeFields.keepMoney;
+        this.moneyAmount = TradeUtils.decimal(this.data.tradeFields.moneyAmount, true);
+        this.currency = this.data.tradeFields.currency;
+    }
+
+    private async setShareFromTicker(ticker: string): Promise<void> {
+        if (this.assetType === AssetType.STOCK) {
+            this.share = (await this.marketService.getStockInfo(ticker)).stock;
+        } else if (this.assetType === AssetType.BOND) {
+            this.share = (await this.marketService.getBondInfo(ticker)).bond;
+        }
+    }
+
+    private async setEventFields(): Promise<void> {
+        // при погашении нет НКД и комиссий, цена всегда 100%
+        if (this.operation === Operation.REPAYMENT) {
+            this.price = "100.00";
+            this.facevalue = TradeUtils.decimal(this.data.eventFields.amount);
+            this.nkd = "";
+            this.fee = "";
+        } else {
+            this.price = TradeUtils.decimal(this.data.eventFields.amount);
+        }
+        this.currency = this.share.currency;
+        this.quantity = this.data.eventFields.quantity;
+        this.note = this.data.eventFields.note;
+        this.perOne = this.data.eventFields.perOne;
+        this.eventDate = this.data.eventFields.eventDate;
+        this.date = TradeUtils.getDateString(this.data.eventFields.eventDate);
+        this.eventPeriod = this.data.eventFields.eventPeriod;
+        this.processShareEvent = true;
     }
 
     private get shareTicker(): string {
@@ -464,7 +582,84 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private get calculationAssetType(): boolean {
-        return this.operation === Operation.DIVIDEND;
+        return [Operation.DIVIDEND, Operation.COUPON, Operation.AMORTIZATION].includes(this.operation);
+    }
+
+    private get total(): string {
+        if (!this.isValid) {
+            return null;
+        }
+        const total = TradeMap.TRADE_CLASSES[this.assetType.enumName][this.operation.enumName][TradeValue.TOTAL](this);
+        return total;
+    }
+
+    private get totalWithoutFee(): string {
+        if (!this.isValid) {
+            return null;
+        }
+        const total = TradeMap.TRADE_CLASSES[this.assetType.enumName][this.operation.enumName][TradeValue.TOTAL_WF](this);
+        return total;
+    }
+
+    private get isValid(): boolean {
+        const noteValid = CommonUtils.isBlank(this.getNote()) || this.note.length <= 160;
+        if (!noteValid) {
+            return false;
+        }
+        switch (this.assetType) {
+            case AssetType.STOCK:
+                return this.share && this.date && this.price && this.quantity > 0;
+            case AssetType.BOND:
+                return this.share && this.date && this.price && (!!this.facevalue || [Operation.COUPON, Operation.AMORTIZATION].includes(this.operation)) && this.quantity > 0;
+            case AssetType.MONEY:
+                return !!this.date && !!this.moneyAmount;
+        }
+        return false;
+    }
+
+    private get keepMoneyLabel(): string {
+        const toPort = "Зачислить деньги";
+        const fromPort = "Списать деньги";
+        return Operation.BUY === this.operation || Operation.WITHDRAW === this.operation || Operation.LOSS === this.operation ? fromPort : toPort;
+    }
+
+    private get lotSizeHint(): string {
+        return "указывается в штуках." + (this.share && this.assetType === AssetType.STOCK ? " 1 лот = " + this.share.lotsize + " шт." : "");
+    }
+
+    private get priceLabel(): string {
+        return [Operation.AMORTIZATION, Operation.COUPON, Operation.DIVIDEND].includes(this.operation) ? "Начисление" : "Цена";
+    }
+
+    private get moneyResidual(): string {
+        return (this.moneyResiduals as any)[this.getCurrency()];
+    }
+
+    private get keepMoneyDisabled(): boolean {
+        return this.assetType === AssetType.MONEY && [Operation.DEPOSIT, Operation.WITHDRAW].includes(this.operation);
+    }
+
+    private get keepMoney(): boolean {
+        return this.keepMoneyValue || this.keepMoneyDisabled;
+    }
+
+    private set keepMoney(newValue: boolean) {
+        this.keepMoneyValue = newValue;
+    }
+
+    private get nkdValidationString(): string {
+        return [Operation.BUY, Operation.SELL].includes(this.operation) ? "required" : "";
+    }
+
+    /**
+     * Проверяет тариф на активность
+     */
+    private async checkAllowedAddTrade(): Promise<void> {
+        const tariffExpired = this.clientInfo.tariff !== Tariff.FREE && DateUtils.parseDate(this.clientInfo.paidTill).isBefore(dayjs());
+        if (tariffExpired) {
+            this.close();
+            await new TariffExpiredDialog().show(this.data.router);
+        }
     }
 
     // tslint:disable
@@ -473,7 +668,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     getDate(): string {
-        return this.date;
+        const time = DateUtils.isCurrentDate(DateUtils.parseDate(this.date)) ? this.dateTimeService.getCurrentTime() : "12:00";
+        return this.portfolioProModeEnabled ? `${this.date} ${this.time}` : `${this.date} ${time}`;
     }
 
     getQuantity(): number {
@@ -513,7 +709,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     getCurrency(): string {
-        return this.currency;
+        return this.assetType === AssetType.MONEY ? this.moneyCurrency : this.currency;
     }
 
     // tslint:enable
@@ -522,8 +718,14 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 export type TradeDialogData = {
     store: MainStore,
     router: VueRouter,
-    tradeData?: TradeData,
+    tradeId?: string,
+    editedMoneyTradeId?: string,
+    tradeFields?: TradeFields,
     share?: Share,
+    ticker?: string,
+    quantity?: number,
+    eventFields?: EventFields,
     operation?: Operation,
-    assetType?: AssetType
+    assetType?: AssetType,
+    moneyCurrency?: string
 };

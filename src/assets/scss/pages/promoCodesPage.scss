@@ -1,26 +1,153 @@
+.section-content {
+  padding: 24px 40px 24px 24px;
+  min-width: 900px;
+}
+
+.light-text,
+.rewards-currency {color: #A1A6B6}
+
 .promo-codes {
   margin: 0 0 20px 0;
+  padding-bottom: 48px;
+  border-bottom: 1px solid $sidebar-hr-color;
 
-  .display-1 {
-    margin-bottom: 15px;
+  .promo-code {
+    color: $sidebar-blue-color;
+    margin-right: 20px;
+    font-weight: bold;
+
+    &__wrapper {
+      display: flex;
+      align-items: center;
+    }
   }
 
-  .promo-code-type {
-    margin: 10px 0 10px 0;
+  &__steps {
+    display: flex;
+    background: $sidebar-blue-color;
+    min-width: 900px;
+    counter-reset: step;
+    font-size: 14px;
+  }
+
+  &__step {
+    width: 33%;
+    padding: 24px;
+    color: #fff;
+    line-height: 22px;
+    text-align: center;
+    counter-increment: step;
+    position: relative;
+
+    &:before {
+      content: counter(step);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background-color: #fff;
+      color: $sidebar-blue-color;
+      margin-bottom: 16px;
+      font-size: 24px;
+    }
+
+    + .promo-codes__step:after {
+      content: '';
+      height: calc(100% - 25px);
+      width: 1px;
+      background-color: #fff;
+      opacity: 0.15;
+      position: absolute;
+      left: 0;
+      top: 15px;
+    }
+  }
+
+  &__subtitle {
+    font-size: 12px;
+    color: #A1A6B6;
+  }
+
+  .rewards {
+    border-top: 1px solid $sidebar-hr-color;
+    margin-top: 30px;
+    padding-top: 24px;
+    font-size: 14px;
+    color: $main--font-color;
+  }
+
+  &__statistics {
+    font-size: 13px;
+
+    .v-expansion-panel__header {
+      padding: 0;
+      font-family: "OpenSans", sans-serif;
+      font-size: 14px;
+
+      > div:first-child {
+        flex: none;
+        font-weight: normal;
+      }
+
+      .v-expansion-panel__header__icon {
+        background: url("../img/common/icon-dropdown.svg") no-repeat center;
+        width: 10px;
+        height: 10px;
+        margin-left: 16px;
+        transform: rotate(180deg);
+        transition: transform 0.2s ease;
+
+        i {display: none}
+      }
+    }
+
+    .v-expansion-panel__container--active .v-expansion-panel__header__icon {transform: rotate(0deg)}
   }
 }
 
 .statistics {
-  margin: 10px 0 10px 25px;
-  flex: auto;
+  margin-top: 16px;
+  color: $main--font-color;
 
-  &__value {
+  div {
+    margin: 0 0 24px 20px;
+
+    span:first-child {
+      display: inline-block;
+      width: 228px;
+      margin-right: 24px;
+    }
+  }
+}
+
+.enterPromoCode-dialog {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-height: 520px;
+  min-height: 280px;
+  height: 80vh;
+  padding: 24px;
+
+  &__title {
+    font-weight: bold;
     font-size: 16px;
-    font-weight: 500;
-    color: #5f5f5f;
+    margin-bottom: 24px;
   }
 
-  &__label {
-    margin: 12px 0 4px;
+  &__content {
+    width: 232px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .v-input {width: 100%}
+  }
+
+  .v-card__actions {
+    padding: 0;
+    margin-top: 24px;
   }
 }

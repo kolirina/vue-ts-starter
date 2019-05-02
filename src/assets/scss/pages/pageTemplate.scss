@@ -1,0 +1,14 @@
+.header-first-card{
+    background-color: #f7f9fb !important;
+    &__wrapper-title{
+      padding: 2px 0px 24px 17px;
+      margin-bottom: 0px !important;
+      .v-btn {
+        padding: 0px 19.2px;
+      }
+    }
+    &__title-text{
+      margin-bottom: 0px;
+      color: #040427;
+    }
+}

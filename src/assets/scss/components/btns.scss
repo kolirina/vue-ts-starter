@@ -1,0 +1,103 @@
+.btn {
+  &-dialog {
+    font-family: "Open Sans Bold";
+    font-size: 13px;
+    padding: 10px 25px;
+    height: auto;
+    margin: 0;
+    background-color: #fff !important;
+    border: 1px solid #96a5be;
+    box-shadow: none !important;
+    text-transform: initial !important;
+
+    &:hover {
+      color: #fff;
+      background-color: $main-color-2 !important;
+    }
+  }
+
+  &-cancel {
+    padding: 11px;
+    height: auto;
+    background-color: #fff !important;
+    box-shadow: none !important;
+    cursor: pointer;
+    text-transform: initial !important;
+
+    &:before {
+      background-color: #fff!important;
+    }
+  }
+
+  &-group-right {
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 0;
+  }
+
+  &-hover-black {
+    border-color: #000;
+    &:hover {
+      background-color: #000 !important;
+    }
+  }
+}
+
+// Перекрытие кнопок vuetify
+
+.btns {
+  display: flex;
+}
+
+.v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro) {
+  border-radius: $form-element--border-radius;
+  box-shadow: none !important;
+  margin: 0;
+  text-transform: none;
+  color: #3D4656;
+  height: 36px;
+
+  &:hover,
+  &:focus {
+    border-color: rgba($sidebar-blue-color, 0.12) !important;
+
+    &:before {
+      background-color: $sidebar-blue-color;
+    }
+  }
+
+  &.theme--dark,
+  &.primary {color: #fff}
+
+  &.v-btn--disabled {
+    border-color: #EBEFF7 !important;
+    background-color: #EBEFF7 !important;
+  }
+
+  &.big_btn {
+    height: 44px;
+    min-width: 124px;
+  }
+
+  &.theme--light {
+    background-color: #fff;
+    border: 1px solid #CACED5;
+  }
+
+  &.selected,
+  &.primary {
+    background-color: $sidebar-blue-color !important;
+    border-color: $sidebar-blue-color;
+    color: #fff !important;
+  }
+
+  .btns & + & {margin-left: 12px}
+}
+
+.v-btn__content {line-height: 1}
+
+.v-card__actions {
+  .v-btn + .v-btn {
+    margin-left: 10px !important;
+  }
+}

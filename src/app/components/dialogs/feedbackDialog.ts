@@ -1,8 +1,10 @@
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
+import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
+import {ShowProgress} from "../../platform/decorators/showProgress";
+import {CustomDialog} from "../../platform/dialogs/customDialog";
+import {ClientInfo} from "../../services/clientService";
 import {FeedbackService, FeedbackType} from "../../services/feedbackService";
-import {ClientInfo} from "../../types/types";
-import {CustomDialog} from "./customDialog";
 
 /**
  * Диалог обратной связи
@@ -10,26 +12,22 @@ import {CustomDialog} from "./customDialog";
 @Component({
     // language=Vue
     template: `
-        <v-dialog v-model="showed" max-width="550px">
-            <v-card>
-                <v-toolbar dark color="primary">
-                    <v-toolbar-title><b>Обратная связь</b></v-toolbar-title>
-                    <v-spacer></v-spacer>
-                    <v-toolbar-items>
-                        <v-btn icon dark @click.native="close">
-                            <v-icon>close</v-icon>
-                        </v-btn>
-                    </v-toolbar-items>
-                </v-toolbar>
+        <v-dialog v-model="showed" max-width="600px">
+            <v-card class="dialog-wrap">
+                <v-icon class="closeDialog" @click.native="close">close</v-icon>
+
+                <v-card-title>
+                    <span class="headline">Обратная связь</span>
+                </v-card-title>
                 <v-card-text>
                     <v-container grid-list-md>
                         <v-layout wrap>
                             <v-flex xs12 sm12>
-                                <v-text-field label="От кого" v-model.trim="data.user.username" :readonly="isDemoUser()" append-icon="fas fa-user"></v-text-field>
+                                <v-text-field label="От кого" v-model.trim="data.user.username" :readonly="isDemoUser()"></v-text-field>
                             </v-flex>
 
                             <v-flex xs12 sm12>
-                                <v-text-field label="Email" v-model.trim="data.user.email" :readonly="isDemoUser()" append-icon="fas fa-at"></v-text-field>
+                                <v-text-field label="Email" v-model.trim="data.user.email" :readonly="isDemoUser()"></v-text-field>
                             </v-flex>
 
                             <v-flex xs12 sm12>
@@ -47,7 +45,7 @@ import {CustomDialog} from "./customDialog";
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="primary" @click.native="sendFeedback" dark small>
+                    <v-btn color="primary" @click.native="sendFeedback" dark>
                         Отправить
                     </v-btn>
                 </v-card-actions>
@@ -85,8 +83,9 @@ export class FeedbackDialog extends CustomDialog<ClientInfo, void> {
     /**
      * Валидирует данные и отправляет запрос с сообщением
      */
+    @ShowProgress
+    @DisableConcurrentExecution
     private async sendFeedback(): Promise<void> {
-        console.log({reason: this.feedbackType, email: this.email, username: this.username, message: this.message});
         if (this.username.length === 0 || this.email.length === 0 || this.message.length === 0) {
             this.$snotify.warning("Пожалуйста заполните все поля для отправки");
             return;

@@ -2,7 +2,10 @@ export type BaseChartDot = {
     date: string,
     amount: string
 };
-
+export type BasePriceDot = {
+    date: string,
+    price: string
+};
 export type Dot = [number, number];
 
 export type LineChartItem = BaseChartDot & {
@@ -30,6 +33,7 @@ export type HighStockEventsGroup = {
     data: HighStockEventData[]
     onSeries: string,
     shape: string,
+    name?: string,
     color: string,
     fillColor: string,
     stackDistance: number,
@@ -44,10 +48,17 @@ export type SectorChartData = {
 /** Данные для столбчатого графика */
 export type ColumnDataSeries = {
     name: string,
-    data: number[]
+    data: number[],
+    color?: string,
+    yAxis?: number,
 };
 
 export type ColumnChartData = {
     categoryNames: string[],
     series: ColumnDataSeries[]
 };
+
+export enum PieChartTooltipFormat {
+    COMMON = "COMMON",
+    ASSETS = "ASSETS"
+}

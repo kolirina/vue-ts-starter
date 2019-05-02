@@ -1,5 +1,6 @@
-import {BaseChartDot, ColumnChartData, Dot, HighStockEventsGroup} from "./charts/types";
-import {Tariff} from "./tariff";
+import {Enum, EnumType, IStaticEnum} from "../platform/enum";
+import {PortfolioParams} from "../services/portfolioService";
+import {BaseChartDot, BasePriceDot, ColumnChartData, Dot, HighStockEventsGroup} from "./charts/types";
 
 export type _portfolioRow = {
     /** Прибыль */
@@ -17,21 +18,44 @@ export type AssetRow = _portfolioRow & {
 };
 
 export type TradeRow = {
+    /** Идентификатор сделки */
     id: string,
+    /** Дата */
     date: string,
+    /** Тип актива */
     asset: string,
+    /** Операция */
     operation: string,
+    /** Описание операции */
     operationLabel: string,
+    /** Валюта */
     currency: string,
-    signedTotal: string
+    /** Итоговая сумма сделки */
+    signedTotal: string,
+    /** Итоговая сумма сделки без учета комиссии */
+    totalWithoutFee: string,
+    /** Тикер */
     ticker?: string,
+    /** Название компании */
     companyName?: string,
-    quantity: string,
-    price: string,
+    /** Количество */
+    quantity: number,
+    /** Номинал */
+    facevalue: string,
+    /** НКД */
+    nkd: string,
+    /** Комиссия по сделке */
     fee: string,
+    /** Заметка */
     note?: string,
+    /** Цена, выраженная в деньгах. Для акций, начислений, дивидендов */
     moneyPrice?: string,
+    /** Цена, выраженная в процентах. Для облигаций */
     bondPrice?: string
+    /** Идентификатор связанной сделки по списанию/зачислению денежных средств. Может быть null, если у сделки нет связи */
+    moneyTradeId?: string;
+    /** Идентификатор связанной родительской сделки. Может быть null, если у сделки нет связи */
+    parentTradeId?: string;
 };
 
 export type _shareRow = _portfolioRow & {
@@ -111,7 +135,7 @@ export type StockPortfolioRow = StockPortfolioSumRow & {
     // private StockTarget stockTarget = new StockTarget();
     id: string,
     stock: Stock,
-    quantity: string,
+    quantity: number,
     /** Средняя цена покупки */
     avgBuy: string,
 
@@ -132,7 +156,7 @@ export type BondPortfolioRow = BondPortfolioSumRow & {
     /** Облигация */
     bond: Bond,
     /** Количество */
-    quantity: string,
+    quantity: number,
     /** Средняя цена покупки */
     avgBuy: string,
     /** Средняя без комиссий */
@@ -185,7 +209,7 @@ export type BondPortfolio = {
 };
 
 export type Portfolio = {
-    id: string,
+    id: number,
     portfolioParams: PortfolioParams,
     overview: Overview
 };
@@ -194,9 +218,17 @@ export type TableHeader = {
     text: string,
     align?: string,
     sortable?: boolean,
-    value: string
-    class?: string[] | string;
-    width?: string;
+    value: string,
+    class?: string[] | string,
+    width?: string,
+    /** Определяет показ элемента в таблице */
+    active?: boolean,
+    /** Определяет показ элемента в диалоге переключения калонок. */
+    ghost?: boolean,
+    /** Текст подсказки к столбцу */
+    tooltip?: string,
+    /** Признак что столбец отображает значение с валютой, чтобы подставить знак валюты */
+    currency?: boolean
 };
 
 export type DashboardData = {
@@ -217,87 +249,37 @@ export type DashboardBrick = {
     mainValue: string,
     secondValue: string,
     secondValueDesc?: string,
-    color: string,
-    icon: string
-};
-
-export type PortfolioParams = {
-    id: string,
-    name: string,
-    access: boolean,
-    fixFee: string,
-    viewCurrency: string,
-    accountType: string,
-    professionalMode: boolean,
-    openDate: string,
-    combined: boolean
+    hasNotBorderLeft?: boolean,
+    isSummaryIncome?: {
+        isUpward: boolean
+    },
+    mainCurrency: string,
+    secondCurrency: string,
+    tooltip?: string,
+    secondTooltip?: string
 };
 
 /** Описание бэкапа портфеля */
 export interface PortfolioBackup {
     /** Идентификатор бэкапа */
-    id?: string;
+    id?: number;
     /** список идентификаторов портфелей */
-    portfolioIds: string[];
+    portfolioIds: number[];
     /** Список дней для создания бэкапа */
     days: number[];
 }
 
-export class ClientInfo {
-
-    token: string;
-    user: Client;
+export enum ShareType {
+    STOCK = "STOCK",
+    BOND = "BOND"
 }
-
-export type Client = {
-    /** Идентификатор пользователя */
-    id: string,
-    /** Логин пользователя */
-    username: string,
-    /** email пользователя */
-    email: string,
-    /** Тариф */
-    tariff: string,
-    /** Дата, до которой оплачен тариф */
-    paidTill: string,
-    /** Признак подтвержденного email */
-    emailConfirmed: string,
-    /** Текущий идентификатор портфеля */
-    currentPortfolioId: string,
-    /** Список портфелей */
-    portfolios: PortfolioParams[],
-    /** Тип вознаграждения за реферальную программу */
-    referralAwardType: string,
-    /** Промо-код пользователя */
-    promoCode: string,
-    /** Признак блокировки аккаунта */
-    blocked: boolean;
-    /** Алиас для реферальной ссылки */
-    referralAlias: string;
-    /** Сумма подлежащая выплате по реферальной программе */
-    earnedTotalAmount: string;
-    /** Срок действия скидки */
-    nextPurchaseDiscountExpired: string;
-    /** Индивидуальная скидка на следующую покупку в системе */
-    nextPurchaseDiscount: number;
-    /** Количество портфелей в профиле пользователя */
-    portfoliosCount: number;
-    /** Общее количество ценнных бумаг в составе всех портфелей */
-    sharesCount: number;
-    /** Присутствуют ли во всех портфелях пользователя сделки по иностранным акциям */
-    foreignShares: boolean;
-    /** Сумма выплаченного вознаграждения реферреру за партнерскую программу */
-    referrerRepaidTotalAmount: string;
-    /** Сумма причитаемого вознаграждения реферреру за партнерскую программу */
-    referrerEarnedTotalAmount: string;
-};
 
 export type Share = {
     /** Идентификатору бумаги в системе */
-    id: string;
-
+    id: number;
+    /** Текущая цена бумаги */
     price: string,
-
+    /** Размер лота */
     lotsize: string,
     /** Количество значащих разрядов */
     decimals: string;
@@ -315,6 +297,10 @@ export type Share = {
     name: string;
     /** Тикер */
     ticker: string;
+    /** Тип актива бумаги */
+    shareType: ShareType;
+    /** Дата последнего изменения по бумаге */
+    lastUpdateTime?: string;
 };
 
 /**
@@ -328,9 +314,9 @@ export type Stock = Share & {
     /** Размер лота */
     lotsize: number;
     /** Рейтинг */
-    rating: string;
+    rating: number;
     /** Максимальный рейтинг по акции */
-    maxRating: string;
+    maxRating: number;
     /** Последний рейтинг по акции */
     lastRating: string;
     /** Интервал */
@@ -355,6 +341,31 @@ export type Stock = Share & {
     issueCapitalization: string;
     /** Идентификатор эмитента на сайте биржи */
     moexId: string;
+};
+
+/** Информация по динамике ценной бумаги */
+export type StockDynamic = {
+    /** Минимальная за год */
+    minYearPrice: string;
+    /** Максимальная за год */
+    maxYearPrice: string;
+    /** Динамика за 1 месяц */
+    yieldMonth1: string;
+    /** Динамика за 6 месяцев */
+    yieldMonth6: string;
+    /** Динамика за 12 месяцев */
+    yieldMonth12: string;
+    /** График цены за год */
+    yearHistory: BasePriceDot[];
+    /** Текущая цена */
+    current: string;
+    /** Сдвиг для линейного графика */
+    shift: string;
+};
+
+export type StockHistoryResponse = {
+    stock: Stock;
+    date: string;
 };
 
 export type Sector = {
@@ -394,6 +405,11 @@ export type Bond = Share & {
     absolutePrice: string;
 };
 
+export type BondHistoryResponse = {
+    bond: Bond;
+    date: string;
+};
+
 /** Информация по акции */
 export type StockInfo = {
     /** Акция */
@@ -402,6 +418,8 @@ export type StockInfo = {
     history: Dot[];
     /** Дивиденды */
     dividends: BaseChartDot[];
+    /** Динамика */
+    stockDynamic: StockDynamic;
     /** События. В данном случае дивиденды */
     events: HighStockEventsGroup;
 };
@@ -424,55 +442,15 @@ export type LoginRequest = {
 };
 
 export type CombinedInfoRequest = {
-    ids: string[],
+    ids: number[],
     viewCurrency: string
 };
 
-export type TradeData = {
-    /** Тикер */
-    ticker: string,
-    /** Дата */
-    date: string,
-    /** Количество */
-    quantity: number,
-    /** Цена */
-    price: string,
-    /** Номинал */
-    facevalue: string,
-    /** НКД */
-    nkd: string,
-    /** Признак начисления на одну бумагу */
-    perOne: boolean,
-    /** Комиссия */
-    fee: string,
-    /** Заметка */
-    note: string,
-    /** Признак списания/зачисления денег */
-    keepMoney: boolean,
-    /** Сумма денег для списания/зачисления */
-    moneyAmount: string,
-    /** Валюта сделки */
-    currency: string
-};
-
-export type TradeDataRequest = {
-    /** Идентификатор портфеля */
-    portfolioId: string,
-    /** Признак добавления связанной сделки по деньгам */
-    createLinkedTrade: boolean,
-    /** Актив сделки */
-    asset: string,
-    /** Операция */
-    operation: string,
-    /** Поля, содержащию все необходимую информацию по сделке данного типа */
-    fields: TradeData
-};
-
-export type ErrorInfo = {
-    errorCode: string,
-    errorMessage: string,
-    fields: ErrorFieldInfo[]
-};
+export interface ErrorInfo {
+    errorCode: string;
+    message: string;
+    fields: ErrorFieldInfo[];
+}
 
 export type ErrorFieldInfo = {
     name: string,
@@ -487,17 +465,17 @@ export enum Status {
 }
 
 export type Pagination = {
-    descending: boolean,
-    page: number,
-    rowsPerPage: number,
-    sortBy: string,
-    totalItems: number
+    descending?: boolean,
+    page?: number,
+    rowsPerPage?: number,
+    sortBy?: string,
+    totalItems?: number
 };
 
 export type TablePagination = {
-    pagination: Pagination,
-    totalItems: number,
-    loading: boolean
+    pagination?: Pagination,
+    totalItems?: number,
+    loading?: boolean
 };
 
 /** Сущность постраничного ответа */
@@ -532,4 +510,41 @@ export interface Currency {
     name: string;
     /** Курс валюты */
     value: string;
+}
+
+/** Перечислению доступных валют */
+@Enum("code")
+export class CurrencyUnit extends (EnumType as IStaticEnum<CurrencyUnit>) {
+
+    static readonly RUB = new CurrencyUnit("RUB", "Рубль");
+    static readonly USD = new CurrencyUnit("USD", "Доллар");
+    static readonly EUR = new CurrencyUnit("EUR", "Евро");
+
+    private constructor(public code: string, public description: string) {
+        super();
+    }
+}
+
+export interface MapType {
+    [key: string]: string;
+}
+
+/** Перечислению кодов для 403 ответов */
+@Enum("code")
+export class ForbiddenCode extends (EnumType as IStaticEnum<ForbiddenCode>) {
+
+    static readonly LIMIT_EXCEEDED = new ForbiddenCode("LIMIT_EXCEEDED", "К сожалению, Ваш тарифный план не позволяет выполнить это действие из-за лимита " +
+        "на количество ценных бумаг или портфелей. Пожалуйста, обновите Ваш план и получите доступ к новым возможностям.");
+    static readonly PERMISSION_DENIED = new ForbiddenCode("PERMISSION_DENIED", "Сожалеем, но на Вашем тарифном плане этот функционал недоступен. " +
+        "Пожалуйста, обновите Ваш план и получите доступ к новым возможностям.");
+    static readonly CURRENCY_PERMISSION_DENIED = new ForbiddenCode("CURRENCY_PERMISSION_DENIED", "Сожалеем, но на Вашем тарифном плане нет возможности работы с валютами. " +
+        "Пожалуйста, обновите Ваш план и получите доступ к новым возможностям.");
+    static readonly SUBSCRIPTION_EXPIRED = new ForbiddenCode("SUBSCRIPTION_EXPIRED", "Сожалеем, но подписка во Вашему тарифу истекла. " +
+        "Для выполнения действия, пожалуйста, продлите подписку и получите доступ к новым возможностям.");
+    static readonly DEMO_MODE = new ForbiddenCode("DEMO_MODE", "Вы находитесь в демо-режиме. Чтобы воспользоваться всеми возможностями сервиса, " +
+        "Вам нужно всего лишь зарегистрироваться - это займет не больше пары минут");
+
+    private constructor(public code: string, public description: string) {
+        super();
+    }
 }

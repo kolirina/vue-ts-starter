@@ -1,17 +1,24 @@
+import dayjs from "dayjs";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
-import {ImportErrorsDialog} from "../../components/dialogs/importErrorsDialog";
-import {ImportGeneralErrorDialog} from "../../components/dialogs/importGeneralErrorDialog";
+import {ImportErrorsDialog} from "../../components/dialogs/import/importErrorsDialog";
+import {ImportGeneralErrorDialog} from "../../components/dialogs/import/importGeneralErrorDialog";
+import {ImportSuccessDialog} from "../../components/dialogs/import/importSuccessDialog";
+import {ExpandedPanel} from "../../components/expandedPanel";
+import {ShowProgress} from "../../platform/decorators/showProgress";
+import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {Filters} from "../../platform/filters/Filters";
-import {ImportResponse, ImportService} from "../../services/importService";
-import {ClientInfo, Portfolio, Status} from "../../types/types";
+import {ClientInfo} from "../../services/clientService";
+import {DealsImportProvider, ImportProviderFeatures, ImportProviderFeaturesByProvider, ImportResponse, ImportService} from "../../services/importService";
+import {OverviewService} from "../../services/overviewService";
+import {Portfolio, Status} from "../../types/types";
+import {CommonUtils} from "../../utils/commonUtils";
+import {FileUtils} from "../../utils/fileUtils";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 import {ImportInstructions} from "./importInstructions";
-import {ImportSuccessDialog} from "../../components/dialogs/importSuccessDialog";
-import {PortfolioService} from "../../services/portfolioService";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -19,174 +26,257 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-container fluid>
-            <v-card>
-                <v-card-text>
-                    <div class="import-wrapper">
-                        <h4 class="display-1">Импорт сделок</h4>
-                        <p>
-                            Здесь вы можете быстро перенести все ваши сделки в автоматическом режиме. Для этого выберите вашего брокера или торговый терминал и
-                            ознакомьтесь с инструкцией
-                            по созданию файла для импорта.
-                        </p>
-                        <p>
-                            Если в списке нет вашего брокера или терминала, вы всегда можете осуществить импорт через универсальный формат
-                            <a @click="selectedProvider = providers.INTELINVEST">CSV</a>
-                            или обратиться к нам через обратную связь, по <a href="mailto:web@intelinvest.ru" target="_blank">почте</a> или
-                            в группе <a href="http://vk.com/intelinvest" target="_blank">вконтакте</a>.
-                        </p>
+            <v-card flat class="header-first-card">
+                <v-card-title class="header-first-card__wrapper-title">
+                    <div class="section-title header-first-card__title-text">Импорт сделок</div>
+                </v-card-title>
+            </v-card>
+            <v-card flat class="import-wrapper pb-0">
+                <v-card-title class="import-wrapper-header">
+                    <div class="import-wrapper-header__title">
+                        Выберите своего брокера
                     </div>
+                </v-card-title>
+            </v-card>
+            <v-card flat class="px-0 py-0">
+                <v-card-text class="import-wrapper-content">
                     <div class="providers">
-                        <div v-for="provider in providers" :key="provider" @click="selectedProvider = provider"
-                             :class="['item', provider.toLowerCase(), selectedProvider === provider ? 'active' : '']"></div>
+                        <div v-for="provider in providers.values()" :key="provider.code" @click="onSelectProvider(provider)" v-if="provider !== providers.INTELINVEST"
+                             :class="['item' ,selectedProvider === provider ? 'active' : '']">
+                            <div :class="['item-img-block', provider.code.toLowerCase()]">
+                            </div>
+                            <div class="item-text">
+                                {{ provider.description }}
+                            </div>
+                        </div>
                     </div>
+                </v-card-text>
+            </v-card>
+            <v-card flat class="import-wrapper">
+                <v-card-text class="import-wrapper-content">
+                    <v-layout justify-space-between wrap class="intelinvest-section">
+                        <div class="intelinvest-section__description">
+                            Если в списке нет вашего брокера или терминала, вы всегда можете осуществить импорт через универсальный формат
+                            <a @click="showIntelinvestInctruction()">CSV</a>
+                            или обратиться к нам через обратную связь, по <a href="mailto:web@intelinvest.ru">почте</a> или
+                            в группе <a href="http://vk.com/intelinvest" target="_blank">вконтакте</a>.
+                        </div>
+                        <v-btn class="btn" @click="onSelectProvider(providers.INTELINVEST)">
+                            Формат Intelinvest
+                        </v-btn>
+                    </v-layout>
 
-                    <import-instructions :provider="selectedProvider" @selectProvider="onSelectProvider"></import-instructions>
+                    <v-menu content-class="dialog-setings-menu"
+                            transition="slide-y-transition"
+                            nudge-bottom="36" right class="setings-menu"
+                            v-if="importProviderFeatures" min-width="514" :close-on-content-click="false">
+                        <v-btn class="btn" slot="activator">
+                            Настройки
+                        </v-btn>
+                        <v-list dense>
+                            <div class="title-setings">
+                                Расширенные настройки импорта
+                            </div>
+                            <v-flex>
+                                <v-checkbox v-model="importProviderFeatures.createLinkedTrade" hide-details class="checkbox-setings">
+                                    <template #label>
+                                        <span>Добавлять сделки по списанию/зачислению денежных средств
+                                            <v-menu transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12">
+                                                <sup class="custom-tooltip" slot="activator">
+                                                    <v-icon>fas fa-info-circle</v-icon>
+                                                </sup>
+                                                <v-list dense>
+                                                    <div class="hint-text-for-setings">
+                                                        Если включено, будут добавлены связанные сделки по зачислению/списанию денежных средств
+                                                    </div>
+                                                </v-list>
+                                            </v-menu>
+                                        </span>
+                                    </template>
+                                </v-checkbox>
+                                <v-checkbox v-model="importProviderFeatures.autoCommission" hide-details class="checkbox-setings">
+                                    <template #label>
+                                        <span>
+                                            Автоматически рассчитывать комиссию для сделок
+                                            <v-menu transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12" max-width="520">
+                                                <sup class="custom-tooltip" slot="activator">
+                                                    <v-icon>fas fa-info-circle</v-icon>
+                                                </sup>
+                                                <v-list dense>
+                                                    <div class="hint-text-for-setings">
+                                                        Если включено, комиссия для каждой сделки по ценной бумаге будет рассчитана в соответствии
+                                                        со значением фиксированной комиссии, заданной для портфеля. Если комиссия для бумаги есть в отчете
+                                                        она не будет перезаписана.
+                                                    </div>
+                                                </v-list>
+                                            </v-menu>
+                                        </span>
+                                    </template>
+                                </v-checkbox>
+                                <v-checkbox v-model="importProviderFeatures.autoEvents" hide-details class="checkbox-setings">
+                                    <template #label>
+                                        <span>
+                                            Автоматически исполнять события по бумагам
+                                            <v-menu transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12" max-width="520">
+                                                <sup class="custom-tooltip" slot="activator">
+                                                    <v-icon>fas fa-info-circle</v-icon>
+                                                </sup>
+                                                <v-list dense>
+                                                    <div class="hint-text-for-setings">
+                                                        Если включено, события (дивиденды, купоны, амортизация, погашение) по сделкам,
+                                                        полученным из отчета (на даты первой и последней сделки),
+                                                        будут автоматически исполнены после импорта.
+                                                    </div>
+                                                </v-list>
+                                            </v-menu>
+                                        </span>
+                                    </template>
+                                </v-checkbox>
+                                <v-checkbox v-model="importProviderFeatures.confirmMoneyBalance" hide-details class="checkbox-setings">
+                                    <template #label>
+                                        <span>
+                                            Спрашивать текущий остаток ДС
+                                            <v-menu transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12" max-width="520">
+                                                <sup class="custom-tooltip" slot="activator">
+                                                    <v-icon>fas fa-info-circle</v-icon>
+                                                </sup>
+                                                <v-list dense>
+                                                    <div class="hint-text-for-setings">
+                                                        Если включено, то после успешного импорта будет предложено ввести текущий остаток денежных
+                                                        средств на счете. Отключите, если Вы хотите сами задать вводы и выводы денег.
+                                                    </div>
+                                                </v-list>
+                                            </v-menu>
+                                        </span>
+                                    </template>
+                                </v-checkbox>
+                                <v-checkbox v-model="importProviderFeatures.importMoneyTrades" hide-details class="checkbox-setings">
+                                    <template #label>
+                                        <span>
+                                            Импорт сделок по денежным средствам
+                                            <v-menu transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12" max-width="520">
+                                                <sup class="custom-tooltip" slot="activator">
+                                                    <v-icon>fas fa-info-circle</v-icon>
+                                                </sup>
+                                                <v-list dense>
+                                                    <div class="hint-text-for-setings">
+                                                        Если включено, то из отчета будут импортированы сделки по денежным средствам.
+                                                        Отключите, если Вы не хотите загружать сделки по движению денежных средств.
+                                                    </div>
+                                                </v-list>
+                                            </v-menu>
+                                        </span>
+                                    </template>
+                                </v-checkbox>
+                            </v-flex>
+                        </v-list>
+                    </v-menu>
 
-                    <div class="attachments">
+                    <div class="attachments" v-if="importProviderFeatures">
                         <file-drop-area @drop="onFileAdd" class="attachments-file-drop">
                             <div class="attachments-file-drop__content">
-                                Перетащите<br>
-                                или
-                                <file-link @select="onFileAdd" multiple>загрузите</file-link>
-                                файл
+                                Перетащите файл
                             </div>
                         </file-drop-area>
                     </div>
-                    <div v-if="files.length">
-                        <ul>
-                            <li v-for="(file, index) in files" :key="index">
-                                <span>
-                                    {{ file.name }}
-                                    <v-icon small @click="deleteFile(file)">fas fa-times</v-icon>
-                                </span>
-                            </li>
-                        </ul>
+                    <div v-if="files.length && importProviderFeatures">
+                        <div v-for="(file, index) in files" :key="index">
+                            <v-layout align-center class="item-files">
+                                <div>
+                                    <v-list-tile-title class="item-files__name">
+                                        {{ file.name }}
+                                    </v-list-tile-title>
+                                    <div class="item-files__size">
+                                        {{ file.size | bytes }}
+                                    </div>
+                                </div>
+                                <v-spacer></v-spacer>
+                                <div>
+                                    <v-icon color="#B0B4C2" small @click="deleteFile(file)">close</v-icon>
+                                </div>
+                            </v-layout>
+                        </div>
                     </div>
 
-                    <v-expansion-panel>
-                        <v-expansion-panel-content>
-                            <div slot="header">
-                                <v-tooltip top>
-                                    <span slot="activator" style="cursor: pointer">Расширенные настройки импорта</span>
-                                    <span>Настройте дополнительные параметры импорта отчетов.</span>
-                                </v-tooltip>
-                            </div>
-                            <v-card>
-                                <v-card-text>
-                                    <v-layout row wrap>
-                                        <v-flex xs12 lg6>
-                                            <v-checkbox v-model="linkTrades" class="d-inline-block">
-                                                <template slot="label">
-                                                    <span>Добавлять сделки по списанию/зачислению денежных средств
-                                                        <v-tooltip :max-width="250" top>
-                                                            <i slot="activator" class="far fa-question-circle"></i>
-                                                            <span>
-                                                                Если включено, будут добавлены связанные сделки по зачислению/списанию денжных средств
-                                                            </span>
-                                                        </v-tooltip>
-                                                    </span>
-                                                </template>
-                                            </v-checkbox>
-                                        </v-flex>
-                                        <v-flex xs12 lg6>
-                                            <v-checkbox v-model="autoCommission">
-                                                <template slot="label">
-                                                    <span>
-                                                        Автоматически рассчитывать комисию для сделок
-                                                        <v-tooltip :max-width="250" top>
-                                                            <i slot="activator" class="far fa-question-circle"></i>
-                                                            <span>
-                                                                Если включено, комиссия для каждой сделки по ценной бумаге будет рассчитана в соответствии
-                                                                со значением фиксированной комиссии, заданной для портфеля. Если комиссия для бумаги есть в отчете
-                                                                она не будет перезаписана.
-                                                            </span>
-                                                        </v-tooltip>
-                                                    </span>
-                                                </template>
-                                            </v-checkbox>
-                                        </v-flex>
-                                        <v-flex xs12 lg6>
-                                            <v-checkbox v-model="autoEvents">
-                                                <template slot="label">
-                                                    <span>
-                                                        Автоматически исполнять события по бумагам
-                                                        <v-tooltip :max-width="250" top>
-                                                            <i slot="activator" class="far fa-question-circle"></i>
-                                                            <span>
-                                                                Если включено, события (дивиденды, купоны, амортизация, погашение) по сделкам,
-                                                                полученным из отчета (на даты первой и последней сделки),
-                                                                будут автоматически исполнены после импорта.
-                                                            </span>
-                                                        </v-tooltip>
-                                                    </span>
-                                                </template>
-                                            </v-checkbox>
-                                        </v-flex>
-                                        <v-flex xs12 lg6>
-                                            <v-checkbox v-model="confirmMoneyBalance">
-                                                <template slot="label">
-                                                    <span>
-                                                        Спрашивать текущий остаток ДС
-                                                        <v-tooltip :max-width="250" top>
-                                                            <i slot="activator" class="far fa-question-circle"></i>
-                                                            <span>
-                                                                Если включено, то после успешного импорта будет предложено ввести текущий остаток денежных
-                                                                средств на счете. Отключите, если Вы хотите сами задать вводы и выводы денег.
-                                                            </span>
-                                                        </v-tooltip>
-                                                    </span>
-                                                </template>
-                                            </v-checkbox>
-                                        </v-flex>
-                                    </v-layout>
-                                </v-card-text>
-                            </v-card>
-                        </v-expansion-panel-content>
-                    </v-expansion-panel>
+                    <v-layout align-center class="section-upload-file">
+                        <v-btn v-if="importProviderFeatures && files.length" color="primary" class="big_btn" @click="uploadFile">Загрузить</v-btn>
+                        <file-link  @select="onFileAdd" :accept="allowedExtensions"
+                                    v-if="importProviderFeatures && files.length" class="reselect-file-btn ml-3">Выбрать другой файл</file-link>
+                        <file-link @select="onFileAdd" :accept="allowedExtensions" v-if="importProviderFeatures && !files.length">Выбрать файл</file-link>
+                        <v-spacer></v-spacer>
+                        <div @click="showInstruction = !showInstruction" class="btn-show-instruction" v-if="importProviderFeatures">
+                            {{ "Как сформировать отчет" + (selectedProvider === providers.INTELINVEST ? "" : (" брокера " + selectedProvider.description)) }}?
+                        </div>
+                    </v-layout>
 
-                    <v-btn color="primary" @click="uploadFile" :disabled="!selectedProvider || files.length === 0">Загрузить</v-btn>
+                    <import-instructions v-if="showInstruction" :provider="selectedProvider" @selectProvider="onSelectProvider"></import-instructions>
+
                 </v-card-text>
             </v-card>
         </v-container>
     `,
-    components: {ImportInstructions}
+    components: {ImportInstructions, ExpandedPanel}
 })
 export class ImportPage extends UI {
 
+    /** Максимальный размер загружаемого файла 10 Мб */
+    readonly MAX_SIZE = 1024 * 1024 * 10;
     @MainStore.Getter
     private clientInfo: ClientInfo;
     @MainStore.Getter
     private portfolio: Portfolio;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: string) => Promise<void>;
+    private reloadPortfolio: (id: number) => Promise<void>;
     @Inject
     private importService: ImportService;
     @Inject
-    private portfolioService: PortfolioService;
+    private overviewService: OverviewService;
+    /** Все провайдеры импорта */
+    private importProviderFeaturesByProvider: ImportProviderFeaturesByProvider = null;
+    /** Настройки импорта для выбранного провайдера */
+    private importProviderFeatures: ImportProviderFeatures = null;
     /** Файлы для импорта */
     private files: File[] = [];
     /** Провайдеры отчетов */
     private providers = DealsImportProvider;
     /** Выбранный провайдер */
     private selectedProvider: DealsImportProvider = null;
-    /** Признак создания связанных сделок */
-    private linkTrades = false;
-    /** Признак автоматического рассчета комиссии по сделкам */
-    private autoCommission = false;
-    /** Призак автоисполнения Событий по сделкам из отчета */
-    private autoEvents = true;
-    /** Признак отображения диалога для ввода баланса портфеля после импорта */
-    private confirmMoneyBalance = true;
     /** Признак отображения панели с расширенными настройками */
     private showExtendedSettings = false;
+    /** Отображение инструкции к провайдеру */
+    private showInstruction: boolean = false;
+    /** Допустимые MIME типы */
+    private allowedExtensions = FileUtils.ALLOWED_MIME_TYPES;
+
+    /**
+     * Инициализирует необходимые для работы данные
+     * @inheritDoc
+     */
+    @ShowProgress
+    async created(): Promise<void> {
+        this.importProviderFeaturesByProvider = await this.importService.getImportProviderFeatures();
+    }
 
     /**
      * Событие при добавлении вложений
      * @param {FileList} fileList список файлов
      */
     private onFileAdd(fileList: File[]): void {
-        this.files = fileList;
-        console.log(this.files[0].name);
+        let filtered = fileList;
+        if (fileList.length > 1) {
+            this.$snotify.warning("Пожалуйста загружайте по одному файлу для более точных результатов импорта.");
+            filtered = [fileList[0]];
+        }
+        const isValid = FileUtils.checkExtension(filtered[0]);
+        if (!isValid) {
+            this.$snotify.warning(`Формат файла не соответствует разрешенным: ${FileUtils.ALLOWED_EXTENSION}.`);
+            return;
+        }
+        if (filtered.map(file => file.size).reduce((previousValue: number, currentValue: number): number => previousValue + currentValue, 0) > this.MAX_SIZE) {
+            this.$snotify.warning(`Максимальный размер загружаемого файла 10 Мб.`);
+            return;
+        }
+        this.files = filtered;
     }
 
     /**
@@ -201,20 +291,22 @@ export class ImportPage extends UI {
     }
 
     /**
-     * Отправляет отчет на сервер
+     * Отправляет отчет на сервер и обрабатывает ответ
      */
     private async uploadFile(): Promise<void> {
         if (this.files && this.files.length && this.selectedProvider) {
-            const data = new FormData();
-            this.files.forEach(file => data.append("files", file, file.name));
-            const response = await this.importService.importReport(this.selectedProvider, this.portfolio.id, data, {
-                linkTrades: this.linkTrades,
-                autoCommission: this.autoCommission,
-                autoEvents: this.autoEvents,
-                confirmMoneyBalance: this.confirmMoneyBalance
-            });
+            const response = await this.importReport();
             await this.handleUploadResponse(response);
+            this.clearFiles();
         }
+    }
+
+    /**
+     * Отправляет отчет на сервер
+     */
+    @ShowProgress
+    private async importReport(): Promise<ImportResponse> {
+        return this.importService.importReport(this.selectedProvider.code, this.portfolio.id, this.files, this.importProviderFeatures);
     }
 
     /**
@@ -222,9 +314,8 @@ export class ImportPage extends UI {
      * @param response
      */
     private async handleUploadResponse(response: ImportResponse): Promise<void> {
-        console.log(response);
-        if (response.status === Status.ERROR) {
-            this.$snotify.error(response.message, "Ошибка");
+        if (response.status === Status.ERROR && CommonUtils.isBlank(response.generalError)) {
+            this.$snotify.error(response.message);
             return;
         }
         if (response.generalError) {
@@ -236,27 +327,41 @@ export class ImportPage extends UI {
                 errors: response.errors, router: this.$router,
                 validatedTradesCount: response.validatedTradesCount
             });
+            // отображаем диалог с ошибками, но информацию по портфелю надо перезагрузить если были успешно импортированы сделки
+            if (response.validatedTradesCount) {
+                await this.reloadPortfolio(this.portfolio.id);
+            }
             return;
         }
         if (response.validatedTradesCount) {
             const firstWord = Filters.declension(response.validatedTradesCount, "Добавлена", "Добавлено", "Добавлено");
             const secondWord = Filters.declension(response.validatedTradesCount, "сделка", "сделки", "сделок");
-            if (this.confirmMoneyBalance) {
-                const currentMoneyRemainder = await this.portfolioService.getCurrentMoney(this.portfolio.id);
-                const enteredMoneyRemainder = await new ImportSuccessDialog().show({
+            let navigateToPortfolioPage = true;
+            if (this.importProviderFeatures.confirmMoneyBalance) {
+                const currentMoneyRemainder = await this.overviewService.getCurrentMoney(this.portfolio.id);
+                navigateToPortfolioPage = await new ImportSuccessDialog().show({
                     currentMoneyRemainder,
                     router: this.$router,
                     store: this.$store.state[StoreType.MAIN],
                     importResult: response
-                });
-                await this.portfolioService.saveOrUpdateCurrentMoney(this.portfolio.id, enteredMoneyRemainder);
-                this.$router.push("portfolio");
-                this.$snotify.info(`${firstWord} ${secondWord}`, "Результат импорта");
-            } else {
-                this.$snotify.info(`Импорт прошел успешно. ${firstWord} ${secondWord}`, "Результат импорта");
+                }) === BtnReturn.YES;
             }
             await this.reloadPortfolio(this.portfolio.id);
+            this.$snotify.info(`Импорт прошел успешно. ${firstWord} ${response.validatedTradesCount} ${secondWord}.`);
+            if (navigateToPortfolioPage) {
+                this.$router.push("portfolio");
+            }
+        } else {
+            this.$snotify.warning("Импорт завершен. В отчете не содержится информации по сделкам.");
         }
+    }
+
+    /**
+     * Показать инструкцию после нажатия на кнопку "CSV"
+     */
+    private showIntelinvestInctruction(): void {
+        this.onSelectProvider(this.providers.INTELINVEST);
+        this.showInstruction = true;
     }
 
     /**
@@ -264,32 +369,16 @@ export class ImportPage extends UI {
      * @param provider выбранный провайдер
      */
     private onSelectProvider(provider: DealsImportProvider): void {
+        this.showInstruction = false;
         this.selectedProvider = provider;
-        if (this.selectedProvider === DealsImportProvider.INTELINVEST) {
-            this.linkTrades = false;
+        this.importProviderFeatures = {...this.importProviderFeaturesByProvider[provider.code]};
+        if (this.selectedProvider === this.providers.INTELINVEST) {
+            this.importProviderFeatures.createLinkedTrade = false;
         }
+        this.clearFiles();
     }
-}
 
-/** Форматы поддерживаемых брокеров и отчетов */
-export enum DealsImportProvider {
-    ALFADIRECT = "ALFADIRECT",
-    ITINVEST = "ITINVEST",
-    OTKRYTIE = "OTKRYTIE",
-    ZERICH = "ZERICH",
-    PSBANK = "PSBANK",
-    BCS = "BCS",
-    BCS_CYPRUS = "BCS_CYPRUS",
-    FINAM = "FINAM",
-    FREEDOM_FINANCE = "FREEDOM_FINANCE",
-    KITFINANCE = "KITFINANCE",
-    URALSIB = "URALSIB",
-    SBERBANK = "SBERBANK",
-    VTB24 = "VTB24",
-    INTERACTIVE_BROKERS = "INTERACTIVE_BROKERS",
-    TINKOFF = "TINKOFF",
-    NETTRADER = "NETTRADER",
-    INTELINVEST = "INTELINVEST",
-    ATON = "ATON",
-    QUIK = "QUIK"
+    private clearFiles(): void {
+        this.files = [];
+    }
 }

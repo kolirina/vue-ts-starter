@@ -3,8 +3,8 @@ import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
 import {ChangePasswordDialog} from "../../components/dialogs/changePasswordDialog";
-import {ClientService} from "../../services/clientService";
-import {ClientInfo} from "../../types/types";
+import {ShowProgress} from "../../platform/decorators/showProgress";
+import {ClientInfo, ClientService} from "../../services/clientService";
 import {CommonUtils} from "../../utils/commonUtils";
 import {StoreType} from "../../vuex/storeType";
 
@@ -14,20 +14,28 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-container fluid>
-            <v-card>
-                <v-card-text>
-                    <h4 class="display-1">Профиль</h4>
-                    <v-btn dark color="primary" @click.native="changePassword">
+            <v-card flat class="header-first-card">
+                <v-card-title class="header-first-card__wrapper-title">
+                    <div class="section-title header-first-card__title-text">Профиль</div>
+                    <v-spacer></v-spacer>
+                    <v-btn @click.stop="changePassword" class="primary">
                         Сменить пароль
-                        <v-icon>fas fa-key fa-sm</v-icon>
                     </v-btn>
-                    <div style="height: 50px"></div>
-                    <span> Сменить email</span>
-                    <inplace-input :value="email" @input="onEmailChange"></inplace-input>
-                    <div style="height: 50px"></div>
-                    <span>Сменить имя пользователя</span>
-                    <inplace-input :value="username" @input="onUserNameChange"></inplace-input>
-                </v-card-text>
+                </v-card-title>
+            </v-card>
+            <v-card flat class="profile">
+                <div class="fs16 mb-2">
+                    Детали профиля
+                </div>
+                <div class="profile__subtitle margT0">Email</div>
+                <inplace-input name="email" :value="email" @input="onEmailChange">
+                    <v-tooltip content-class="custom-tooltip-wrap" max-width="250px" slot="afterText" top>
+                        <v-icon slot="activator" v-if="!clientInfo.user.emailConfirmed" class="profile-not-confirmed-email">fas fa-exclamation-triangle</v-icon>
+                        <span>Адрес не подтвержден. Пожалуйста подтвердите Ваш адрес эл.почты что воспользоваться всеми функциями сервиса.</span>
+                    </v-tooltip>
+                </inplace-input>
+                <div class="profile__subtitle">Имя пользователя</div>
+                <inplace-input name="username" :value="username" @input="onUserNameChange"></inplace-input>
             </v-card>
         </v-container>
     `
@@ -64,27 +72,45 @@ export class ProfilePage extends UI {
      * Обабатывает смену email пользователя
      * @param email
      */
+    @ShowProgress
     private async onEmailChange(email: string): Promise<void> {
         this.email = CommonUtils.isBlank(email) ? this.clientInfo.user.email : email;
+        if (!(await this.validate())) {
+            this.email = this.clientInfo.user.email;
+            return;
+        }
         // отправляем запрос только если действительно поменяли
         if (this.email !== this.clientInfo.user.email) {
             await this.clientService.changeEmail({id: this.clientInfo.user.id, email: this.email});
             this.clientInfo.user.email = this.email;
-            this.$snotify.success("Вам отправлено письмо с подтверждением на новый адрес эл. почты");
+            this.$snotify.info("Вам отправлено письмо с подтверждением на новый адрес эл. почты");
         }
+    }
+
+    /**
+     * Проверяет введенное значение, если валидация не пройдена, выкидывает ошибку.
+     */
+    private async validate(): Promise<boolean> {
+        this.$validator.attach({name: "value", rules: "email"});
+        const result = await this.$validator.validate("value", this.email);
+        if (!result) {
+            this.$snotify.warning(`Неверное значение e-mail "${this.email}"`);
+        }
+        return result;
     }
 
     /**
      * Обрабатывает смену имени пользователя
      * @param username
      */
+    @ShowProgress
     private async onUserNameChange(username: string): Promise<void> {
         this.username = CommonUtils.isBlank(username) ? this.clientInfo.user.username : username;
         // отправляем запрос только если действительно поменяли
         if (this.username !== this.clientInfo.user.username) {
             await this.clientService.changeUsername({id: this.clientInfo.user.id, username: this.username});
             this.clientInfo.user.username = this.username;
-            this.$snotify.success("Новое имя пользователя успешно сохранено");
+            this.$snotify.info("Новое имя пользователя успешно сохранено");
         }
     }
 }

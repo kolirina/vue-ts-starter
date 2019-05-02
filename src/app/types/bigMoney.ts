@@ -2,23 +2,37 @@ import {Decimal} from "decimal.js";
 
 export class BigMoney {
 
-    private _amount: Decimal;
+    private amountValue: Decimal;
 
-    private _currency: string;
+    private currencyValue: string;
 
     constructor(private value: string) {
         if (value) {
             const ar = value.split(" ");
-            this._amount = new Decimal(ar[1]);
-            this._currency = ar[0];
+            this.amountValue = new Decimal(ar[1]);
+            this.currencyValue = ar[0];
         }
     }
 
+    static isEmptyOrZero(value: string): boolean {
+        if (value) {
+            const result = new BigMoney(value);
+            return result.amount.isZero();
+        }
+        return true;
+    }
+
     get amount(): Decimal {
-        return this._amount;
+        return this.amountValue;
     }
 
     get currency(): string {
-        return this._currency;
+        return this.currencyValue;
+    }
+
+    get currencySymbol(): string {
+        return this.currencyValue === "RUB" ? "₽" :
+            this.currencyValue === "EUR" ? "€" :
+                this.currencyValue === "USD" ? "$" : "";
     }
 }

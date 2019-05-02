@@ -1,32 +1,31 @@
-import Highcharts, {ChartObject, DataPoint, Gradient} from "highcharts";
+import {ChartObject} from "highcharts";
 import Highstock from "highcharts/highstock";
-import {Container} from "typescript-ioc";
-import Component from "vue-class-component";
-import {Watch} from "vue-property-decorator";
-import {namespace} from "vuex-class/lib/bindings";
-import {UI} from "../../app/ui";
-import {PortfolioService} from "../../services/portfolioService";
+import {Inject} from "typescript-ioc";
+import {Component, Prop, UI, Watch} from "../../app/ui";
+import {ShowProgress} from "../../platform/decorators/showProgress";
+import {Storage} from "../../platform/services/storage";
 import {HighStockEventsGroup} from "../../types/charts/types";
-import {Portfolio} from "../../types/types";
-import {StoreType} from "../../vuex/storeType";
-
-const MainStore = namespace(StoreType.MAIN);
+import {ChartUtils} from "../../utils/chartUtils";
 
 @Component({
     // language=Vue
     template: `
         <div>
-            <v-container grid-list-md text-xs-center v-if="!chart">
-                <v-layout row wrap>
-                    <v-flex xs12>
-                        <v-progress-circular :size="70" :width="7" indeterminate
-                                             color="indigo"></v-progress-circular>
-                    </v-flex>
-                </v-layout>
-            </v-container>
+            <v-switch v-model="showTrades" @change="onShowTradesChange" class="margT0" hide-details>
+                <template #label>
+                    <span>Сделки на графике</span>
+                    <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                        <sup class="custom-tooltip" slot="activator">
+                            <v-icon>fas fa-info-circle</v-icon>
+                        </sup>
+                        <span>
+                            Включите, если хотите чтобы на графике отображались сделки
+                        </span>
+                    </v-tooltip>
+                </template>
+            </v-switch>
 
-            <div v-show="chart" ref="container"
-                 style="min-width: 500px; width: 100%; height: 500px; margin: 0 auto"></div>
+            <div v-show="chart" ref="container" style="min-width: 500px; width: 100%; height: 500px; margin: 0 auto" @click.stop></div>
         </div>
     `
 })
@@ -36,97 +35,93 @@ export class PortfolioLineChart extends UI {
         container: HTMLElement
     };
 
-    @MainStore.Getter
-    private portfolio: Portfolio;
+    /** Объект графика */
+    chart: ChartObject = null;
+    @Inject
+    private localStorage: Storage;
 
-    private chartData: any[] = [];
-    private eventsChartData: HighStockEventsGroup[] = [];
-
-    private chart: ChartObject = null;
-
-    private portfolioService = (Container.get(PortfolioService) as PortfolioService);
+    /** Заголовок в тултипе */
+    @Prop({default: "", type: String})
+    private balloonTitle: string;
+    /** Данные для графика */
+    @Prop({required: true})
+    private data: any[];
+    /** Данные по событиям */
+    @Prop({required: false})
+    private eventsChartData: HighStockEventsGroup[];
+    /** Префикс ключа под которым будет хранится состояние */
+    @Prop({type: String, required: false})
+    private stateKeyPrefix: string;
+    /** Набор доступных для выбора диапазонов дат */
+    private ranges: Highstock.RangeSelectorButton[] = [];
+    /** Индекс выбранного диапазона */
+    private selectedRangeIndex: number = 1;
+    /** Выбранный диапазон */
+    private selectedRange: string = null;
+    /** Признак отображения сделок на графике */
+    private showTrades = true;
 
     async mounted(): Promise<void> {
-        await this.doChart();
+        this.showTrades = this.localStorage.get<string>(`${this.stateKeyPrefix}_SHOW_EVENTS`, "true") === "true";
+        this.ranges = [...ChartUtils.getChartRanges()];
+        this.ranges.forEach(range => {
+            range.events = {
+                click: (event: Event): void => this.saveRange(range.text)
+            };
+        });
+        this.selectedRange = this.localStorage.get(`${this.stateKeyPrefix}_RANGE`, "10d");
+        const selectedIndex = this.ranges.map(range => range.text).indexOf(this.selectedRange);
+        this.selectedRangeIndex = selectedIndex === -1 ? 1 : selectedIndex;
+        await this.draw();
     }
 
-    private async doChart(): Promise<void> {
-        this.chartData = await this.portfolioService.getCostChart(this.portfolio.id);
-        this.eventsChartData = await this.portfolioService.getEventsChartDataWithDefaults(this.portfolio.id);
-        await this.draw(this.chartData);
+    @Watch("eventsChartData")
+    private async onDataChange(): Promise<void> {
+        await this.draw();
     }
 
-    @Watch("portfolio")
-    private async onPortfolioChange(): Promise<void> {
-        await this.doChart();
+    @Watch("data")
+    private async onEventsChartDataChange(): Promise<void> {
+        await this.draw();
     }
 
-    private async draw(chartData: any[]): Promise<void> {
-        this.chart = Highstock.stockChart(this.$refs.container, {
-            chart: {
-                zoomType: "x",
-                backgroundColor: null
-            },
-            title: {
-                text: ""
-            },
-            subtitle: {
-                text: "Выделите участок для увеличения"
-            },
-            xAxis: {
-                type: "datetime",
-                gridLineWidth: 1,
-                labels: {
-                    style: {
-                        fontSize: "12px"
-                    }
+    /**
+     * Отображает/скрывает сделки на графике
+     */
+    @ShowProgress
+    private async onShowTradesChange(): Promise<void> {
+        this.chart.series.forEach(s => {
+            if (s.name.includes("events")) {
+                if (this.showTrades) {
+                    s.show();
+                } else {
+                    s.hide();
                 }
-            },
-            yAxis: {
-                title: {
-                    text: "Стоимость портфеля"
-                }
-            },
-            legend: {
-                enabled: false
-            },
-            plotOptions: {
-                area: {
-                    fillColor: {
-                        linearGradient: {
-                            x1: 0,
-                            y1: 0,
-                            x2: 0,
-                            y2: 1
-                        },
-                        stops: [
-                            [0, Highcharts.getOptions().colors[0]],
-                            [1, (Highcharts.Color(Highcharts.getOptions().colors[0]) as Gradient).setOpacity(0).get("rgba")]
-                        ]
-                    },
-                    marker: {
-                        radius: 2
-                    },
-                    lineWidth: 1,
-                    states: {
-                        hover: {
-                            lineWidth: 1
-                        }
-                    },
-                    threshold: null
-                }
-            },
-
-            series: [{
-                type: "area",
-                name: this.portfolio.portfolioParams.name,
-                data: this.chartData,
-                id: "dataseries"
-            },
-                ...this.eventsChartData],
-            exporting: {
-                enabled: true
             }
         });
+        this.localStorage.set<string>(`${this.stateKeyPrefix}_SHOW_EVENTS`, String(this.showTrades));
+    }
+
+    /**
+     * Отрисовывает график
+     */
+    private async draw(): Promise<void> {
+        this.chart = ChartUtils.drawLineChart(this.$refs.container, this.data,
+            this.showTrades ? this.eventsChartData : [],
+            this.ranges, this.selectedRangeIndex, 2, this.balloonTitle,
+            "", "Стоимость портфеля", this.changeLoadState);
+    }
+
+    private changeLoadState(): void {
+    }
+
+    /**
+     * Сохраняет выбранный диапазон графика
+     * @param range выбранный диапазон графика
+     */
+    private saveRange(range: string): void {
+        if (this.stateKeyPrefix) {
+            this.localStorage.set(`${this.stateKeyPrefix}_RANGE`, range);
+        }
     }
 }
