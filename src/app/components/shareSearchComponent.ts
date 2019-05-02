@@ -29,7 +29,7 @@ import {Bond, Share} from "../types/types";
         <v-autocomplete :items="filteredSharesMutated" v-model="share" @change="onShareSelect" @click:clear="onSearchClear"
                         :label="placeholder"
                         :loading="shareSearch" no-data-text="Ничего не найдено" clearable required
-                        dense :hide-no-data="true" :no-filter="true" :search-input.sync="searchQuery" :autofocus="autofocus">
+                        dense :hide-no-data="true" :no-filter="true" :search-input.sync="searchQuery" :autofocus="autofocus" ref="shareSearch">
             <template #selection="data">
                 {{ shareLabelSelected(data.item) }}
             </template>
@@ -42,6 +42,10 @@ import {Bond, Share} from "../types/types";
 })
 export class ShareSearchComponent extends UI {
 
+    $refs: {
+        shareSearch: any
+    };
+
     @Prop({required: true})
     private assetType: AssetType;
 
@@ -53,6 +57,9 @@ export class ShareSearchComponent extends UI {
 
     @Prop({required: false, type: Boolean, default: false})
     private autofocus: boolean;
+
+    @Prop({required: false, default: null})
+    private topStock: Share;
 
     private filteredSharesMutated: Share[] = [];
     private assetTypeMutated: AssetType;
@@ -67,6 +74,15 @@ export class ShareSearchComponent extends UI {
     private share: Share = null;
     private shareSearch = false;
     private notFoundLabel = "Ничего не найдено";
+
+    @Watch("topStock")
+    private async setTopStock(topStock: Share): Promise<void> {
+        if (this.topStock) {
+            this.$refs.shareSearch.focus();
+            this.filteredSharesMutated = [];
+            this.searchQuery = this.topStock.ticker;
+        }
+    }
 
     @Watch("filteredShares")
     private async onFilteredSharesChange(filteredShares: Share[]): Promise<void> {

@@ -6,7 +6,9 @@ import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
 import {AssetTable} from "../components/assetTable";
 import {BalancesTable} from "../components/balancesTable";
+import {PopularPaperDialog} from "../components/dialogs/popularPaperDialog";
 import {StockTable} from "../components/stockTable";
+import {ShowProgress} from "../platform/decorators/showProgress";
 import {MarketHistoryService} from "../services/marketHistoryService";
 import {MarketService} from "../services/marketService";
 import {TradeFields, TradeService} from "../services/tradeService";
@@ -28,17 +30,19 @@ const MainStore = namespace(StoreType.MAIN);
         <v-container fluid class="selectable">
             <v-layout column wrap>
                 <v-flex xs12>
-                    <v-card flat>
-                        <v-card-title>
-                            <span class="headline">Задать текущие остатки портфеля</span>
+                    <v-card flat class="header-first-card">
+                        <v-card-title class="header-first-card__wrapper-title">
+                            <div class="section-title header-first-card__title-text">Задать текущие остатки портфеля</div>
                         </v-card-title>
+                    </v-card>
+                    <v-card flat>
                         <v-card-text>
-                            <p>Перечислите все ценные бумаги и денежные остатки в составе портфеля.
+                            <p class="fs14">Перечислите все ценные бумаги и денежные остатки в составе портфеля.
                                 Старайтесь указывать верную дату и цену покупки бумаг - это повысит точность расчетов.</p>
-                            <p>
+                            <p class="fs14">
                                 Для максимальной гибкости (чтобы учесть облигации, повторные покупки, дивиденды) вы можете поочередно занести
-                                <a href="#/trades">все сделки портфеля</a>
-                                <v-tooltip content-class="custom-tooltip-wrap" :max-width="250" top>
+                                <a href="#/trades" class="decorationNone">все сделки портфеля</a>
+                                <v-tooltip content-class="custom-tooltip-wrap" :max-width="250" bottom>
                                     <sup class="custom-tooltip" slot="activator">
                                         <v-icon>fas fa-info-circle</v-icon>
                                     </sup>
@@ -57,9 +61,14 @@ const MainStore = namespace(StoreType.MAIN);
                                     <v-layout column wrap>
                                         <div class="title">Добавить ценную бумагу</div>
                                         <v-form ref="stockForm" v-model="stockFormIsValid" class="mt-4" lazy-validation>
-                                            <v-flex>
-                                                <share-search :asset-type="assetType" @change="onShareSelect"></share-search>
-                                            </v-flex>
+                                            <v-layout align-center>
+                                                <share-search :asset-type="assetType" :topStock="topPaper" @change="onShareSelect" ref="shareSearch"></share-search>
+                                                <div class="btn-open-dialog-top-paper">
+                                                    <v-btn flat icon color="primary" class="ma-0" @click.stop="popularPaper">
+                                                        <v-icon>stars</v-icon>
+                                                    </v-btn>
+                                                </div>
+                                            </v-layout>
                                             <v-flex class="mt-4">
                                                 <v-menu v-model="dateMenuValue" full-width lazy min-width="290px" offset-y ref="dateMenu"
                                                         transition="scale-transition" :close-on-content-click="false" :return-value.sync="date">
@@ -157,7 +166,8 @@ export class BalancesPage extends UI implements TradeDataHolder {
     $refs: {
         dateMenu: any,
         stockForm: any,
-        moneyForm: any
+        moneyForm: any,
+        shareSearch: any
     };
 
     @Inject
@@ -232,6 +242,23 @@ export class BalancesPage extends UI implements TradeDataHolder {
     private share: Share = null;
 
     private total: string = null;
+
+    private topPapers: Share[] = null;
+
+    private topPaper: Share = null;
+
+    @ShowProgress
+    async created(): Promise<void> {
+        this.topPapers = await this.marketService.getTopStock();
+    }
+
+    private async popularPaper(): Promise<void> {
+        this.$refs.shareSearch.$refs.shareSearch.blur();
+        const result: Share = await new PopularPaperDialog().show({topPapers: this.topPapers});
+        if (result) {
+            this.topPaper = result;
+        }
+    }
 
     private async onDateSelected(date: string): Promise<void> {
         this.$refs.dateMenu.save(date);

@@ -13,6 +13,10 @@ export class MarketService {
     @Inject
     private http: Http;
 
+    async getTopStock(): Promise<Share[]> {
+        return this.http.get(`/market/top-stocks`);
+    }
+
     async searchStocks(query: string): Promise<Share[]> {
         const result: Share[] = await this.http.get("/market/stocks/search", {query});
         return result || [];
