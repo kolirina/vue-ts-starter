@@ -70,3 +70,41 @@
     }
   }
 }
+.up-pagination {
+  margin-top: -60px;
+  ul {
+    li {
+      display: none;
+      button {
+        &:not(.v-pagination__navigation--disabled) {
+          i {
+            color: #3B6EC9 !important;
+          }
+        }
+      }
+      &:first-child {
+        display: flex;
+        button {
+          box-shadow: none;
+          border-radius: none;
+          margin: 0px;
+          outline: none;
+        }
+      }
+      &:last-child {
+        display: flex !important;
+        button {
+          box-shadow: none;
+          border-radius: none;
+          margin: 0px;
+          outline: none;
+        }
+      }
+    }
+  }
+  .pagination-info {
+    font-size: 12px;
+    line-height: 16px;
+    color: #A1A6B6;
+  }
+}

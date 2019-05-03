@@ -3,6 +3,7 @@ import Component from "vue-class-component";
 import {Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
+import {AdditionalPagination} from "../../components/additionalPagination";
 import {AddTradeDialog} from "../../components/dialogs/addTradeDialog";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {MarketService} from "../../services/marketService";
@@ -18,6 +19,8 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-container v-if="portfolio" fluid class="pa-0">
+            <additional-pagination :page="pagination.page" :rowsPerPage="pagination.rowsPerPage" :totalItems="totalItems"
+                                   :pages="pages" @paginationChange="paginationChange"></additional-pagination>
             <v-data-table :headers="headers" :items="bonds" item-key="id" :pagination.sync="pagination"
                           :rows-per-page-items="[25, 50, 100, 200]"
                           :total-items="totalItems" class="quotes-table" must-sort>
@@ -88,7 +91,8 @@ const MainStore = namespace(StoreType.MAIN);
                 </template>
             </v-data-table>
         </v-container>
-    `
+    `,
+    components: {AdditionalPagination}
 })
 export class BondQuotes extends UI {
 
@@ -118,6 +122,8 @@ export class BondQuotes extends UI {
 
     private totalItems = 0;
 
+    private pages: number = 0;
+
     private pagination: Pagination = {
         descending: false,
         page: 1,
@@ -127,10 +133,6 @@ export class BondQuotes extends UI {
     };
 
     private bonds: Bond[] = [];
-
-    async created(): Promise<void> {
-
-    }
 
     @Watch("pagination", {deep: true})
     private async onTablePaginationChange(): Promise<void> {
@@ -143,6 +145,12 @@ export class BondQuotes extends UI {
             this.pagination.rowsPerPage, this.pagination.sortBy, this.pagination.descending);
         this.bonds = response.content;
         this.totalItems = response.totalItems;
+        this.pages = response.pages;
+    }
+
+    private async paginationChange(page: number): Promise<void> {
+        this.pagination.page = page;
+        await this.loadStocks;
     }
 
     private async openTradeDialog(bond: Bond, operation: Operation): Promise<void> {
