@@ -333,7 +333,7 @@ export class AppFrame extends UI {
      * Переключает на старую версию приложения
      */
     private async goToOldVersion(): Promise<void> {
-        window.location.assign(`https://intelinvest.ru/portfolio`);
+        window.location.assign(`https://old.intelinvest.ru/portfolio`);
     }
 
     private togglePanel(): void {
