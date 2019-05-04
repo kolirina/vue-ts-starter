@@ -5,6 +5,7 @@ import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
 import {AdditionalPagination} from "../../components/additionalPagination";
 import {AddTradeDialog} from "../../components/dialogs/addTradeDialog";
+import {QuotesFilterTable} from "../../components/quotesFilterTable";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {MarketService} from "../../services/marketService";
 import {AssetType} from "../../types/assetType";
@@ -21,6 +22,7 @@ const MainStore = namespace(StoreType.MAIN);
         <v-container v-if="portfolio" fluid class="pa-0">
             <additional-pagination :page="pagination.page" :rowsPerPage="pagination.rowsPerPage" :totalItems="totalItems"
                                    :pages="pages" @paginationChange="paginationChange"></additional-pagination>
+            <quotes-filter-table :searchQuery="searchQuery" @input="tableSearch" @switchChange="switchChange" :placeholder="placeholder"></quotes-filter-table>
             <v-data-table :headers="headers" :items="stocks" item-key="id" :pagination.sync="pagination"
                           :rows-per-page-items="[25, 50, 100, 200]"
                           :total-items="totalItems" class="quotes-table" must-sort>
@@ -81,7 +83,7 @@ const MainStore = namespace(StoreType.MAIN);
             </v-data-table>
         </v-container>
     `,
-    components: {AdditionalPagination}
+    components: {AdditionalPagination, QuotesFilterTable}
 })
 export class StockQuotes extends UI {
 
@@ -93,6 +95,10 @@ export class StockQuotes extends UI {
     private operation = Operation;
     @Inject
     private marketservice: MarketService;
+
+    private placeholder: string = "Поиск";
+
+    private searchQuery: string = "";
 
     private headers: TableHeader[] = [
         {text: "Тикер", align: "left", value: "ticker"},
@@ -122,6 +128,16 @@ export class StockQuotes extends UI {
     @Watch("pagination", {deep: true})
     private async onTablePaginationChange(): Promise<void> {
         await this.loadStocks();
+    }
+
+    private switchChange(value: boolean): void {
+        console.log(value);
+    }
+
+    @ShowProgress
+    private async tableSearch(value: string): Promise<void> {
+        this.searchQuery = value;
+        const response = await this.marketservice.paperSearch(this.searchQuery);
     }
 
     @ShowProgress

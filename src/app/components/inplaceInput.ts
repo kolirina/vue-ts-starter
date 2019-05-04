@@ -20,6 +20,7 @@ import {UI} from "../app/ui";
                         append-icon="done"
                         type="text"
                         ref="inplaceInput"
+                        :placeholder="placeholder"
                         :maxlength="maxLength"
                         :class="['inplace-input-field', isEditMode ? '' : 'focus-content-input']">
                 </v-text-field>
@@ -40,6 +41,10 @@ export class InplaceInput extends UI {
     /** Значение отображаемое в режиме просмотра */
     @Prop({default: "", type: String})
     private value: string;
+
+    /** Значение отображаемое в режиме просмотра */
+    @Prop({default: "", type: String})
+    private placeholder: string;
 
     /** Значение введенное пользователем */
     private editableValue: string = null;

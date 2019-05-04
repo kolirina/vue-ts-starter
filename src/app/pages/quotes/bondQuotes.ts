@@ -21,6 +21,11 @@ const MainStore = namespace(StoreType.MAIN);
         <v-container v-if="portfolio" fluid class="pa-0">
             <additional-pagination :page="pagination.page" :rowsPerPage="pagination.rowsPerPage" :totalItems="totalItems"
                                    :pages="pages" @paginationChange="paginationChange"></additional-pagination>
+            <v-layout>
+                <div class="search-place-wrap">
+                    <inplace-input @input="tableSearch" :placeholder="placeholder"></inplace-input>
+                </div>
+            </v-layout>
             <v-data-table :headers="headers" :items="bonds" item-key="id" :pagination.sync="pagination"
                           :rows-per-page-items="[25, 50, 100, 200]"
                           :total-items="totalItems" class="quotes-table" must-sort>
@@ -105,6 +110,8 @@ export class BondQuotes extends UI {
     @Inject
     private marketservice: MarketService;
 
+    private placeholder: string = "Поиск";
+
     private headers: TableHeader[] = [
         {text: "ISIN", align: "left", value: "isin"},
         {text: "Компания", align: "left", value: "shortname"},
@@ -137,6 +144,11 @@ export class BondQuotes extends UI {
     @Watch("pagination", {deep: true})
     private async onTablePaginationChange(): Promise<void> {
         await this.loadStocks();
+    }
+
+    @ShowProgress
+    private async tableSearch(value: string): Promise<void> {
+        const response = await this.marketservice.paperSearch(value);
     }
 
     @ShowProgress

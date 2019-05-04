@@ -25,6 +25,7 @@ const MainStore = namespace(StoreType.MAIN);
                         :key="item"
                         :label="item"
                         :value="item"
+                        class="pl-1"
                     ></v-radio>
                 </v-radio-group>
                 <stock-quotes v-if="currentTab === quotesType.STOCK"></stock-quotes>
