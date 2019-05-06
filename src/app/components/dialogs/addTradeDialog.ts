@@ -38,7 +38,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                 <v-card-title class="paddB0">
                     <span class="headline">{{ tradeId ? "Редактирование" : "Добавление" }} сделки</span>
                     <span v-if="portfolios && portfolio" class="items-dialog-title fs16 bold">
-                        <v-menu bottom content-class="dialog-type-menu" nudge-bottom="20" bottom right>
+                        <v-menu bottom content-class="dialog-type-menu" nudge-bottom="20" bottom right max-height="480">
                             <span slot="activator">
                                 <span>
                                     {{ portfolio.portfolioParams.name }}
@@ -282,7 +282,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     async mounted(): Promise<void> {
         this.clientInfo = await this.clientService.getClientInfo();
         await this.checkAllowedAddTrade();
-        this.portfolios = this.data.portfolios;
+        this.portfolios = this.clientInfo.portfolios;
         this.portfolio = (this.data.store as any).currentPortfolio;
         this.setDialogParams(this.portfolio);
     }
@@ -323,8 +323,12 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private async setPortfolio(portfolio: Portfolio): Promise<void> {
-            this.portfolio = await this.overviewService.getById(portfolio.id);
-            this.setDialogParams(this.portfolio);
+        await this.formattedPortfolio(portfolio.id);
+        this.setDialogParams(this.portfolio);
+    }
+
+    private async formattedPortfolio(portfolioId: number): Promise<void> {
+        this.portfolio = await this.overviewService.getById(portfolioId);
     }
 
     private async onTickerOrDateChange(): Promise<void> {
@@ -757,6 +761,5 @@ export type TradeDialogData = {
     eventFields?: EventFields,
     operation?: Operation,
     assetType?: AssetType,
-    moneyCurrency?: string,
-    portfolios?: PortfolioParams[]
+    moneyCurrency?: string
 };

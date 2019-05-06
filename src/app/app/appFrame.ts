@@ -290,7 +290,7 @@ export class AppFrame extends UI {
     }
 
     private async openDialog(): Promise<void> {
-        const result = await new AddTradeDialog().show({store: this.$store.state[StoreType.MAIN], router: this.$router, portfolios: this.clientInfo.user.portfolios});
+        const result = await new AddTradeDialog().show({store: this.$store.state[StoreType.MAIN], router: this.$router});
         if (result) {
             await this.reloadPortfolio(this.portfolio.id);
         }
