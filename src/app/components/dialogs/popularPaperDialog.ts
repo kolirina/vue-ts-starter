@@ -1,8 +1,5 @@
-import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
-import {ShowProgress} from "../../platform/decorators/showProgress";
 import {CustomDialog} from "../../platform/dialogs/customDialog";
-import {ClientInfo} from "../../services/clientService";
 import {Share} from "../../types/types";
 
 /**

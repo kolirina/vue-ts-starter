@@ -90,10 +90,10 @@ import {UI} from "../../../app/ui";
             <div class="intel-invest-instruction__title-template">Скачать шаблоны отчетов с примерами</div>
             <div class="intel-invest-instruction__template">
                 <div>
-                    <a href="/static/example.csv">example.csv</a>
+                    <a href="static/example.csv">example.csv</a>
                 </div>
                 <div>
-                    <a href="/static/example.xlsx">example.xlsx</a>
+                    <a href="static/example.xlsx">example.xlsx</a>
                 </div>
             </div>
             <div class="intel-invest-instruction__template-requirements">
