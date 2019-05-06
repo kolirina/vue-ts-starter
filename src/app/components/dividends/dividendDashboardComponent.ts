@@ -36,7 +36,7 @@ import {DashboardBrick} from "../../types/types";
             </v-card-title>
             <v-container fluid pl-3 pt-0>
                 <v-layout row class="mx-0 py-2 dashboard-card-big-nums">
-                    <span class="dashboard-currency" :class="block.mainCurrency">{{ block.mainValue }} </span>
+                    <span class="dashboard-currency percent">{{ block.mainValue }} </span>
                 </v-layout>
                 <v-layout row class="mx-0 dashboard-card-small-nums">
                     <div>
