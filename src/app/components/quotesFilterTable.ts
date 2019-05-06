@@ -69,7 +69,7 @@ export class QuotesFilterTable extends UI {
 
     private showUserShares: boolean = this.showUserSharesValue;
 
-    @Watch("switchValue")
+    @Watch("showUserSharesValue")
     private onSwitchChange(): void {
         this.showUserShares = this.showUserSharesValue;
     }
