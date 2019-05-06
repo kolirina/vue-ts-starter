@@ -22,8 +22,8 @@ const MainStore = namespace(StoreType.MAIN);
         <v-container v-if="portfolio" fluid class="pa-0">
             <additional-pagination :page="pagination.page" :rowsPerPage="pagination.rowsPerPage" :totalItems="totalItems"
                                    :pages="pages" @paginationChange="paginationChange"></additional-pagination>
-            <quotes-filter-table :searchQuery="searchQuery" @input="tableSearch" @switchChange="switchChange"
-                                 :placeholder="placeholder" :switchValue="showUserShares"></quotes-filter-table>
+            <quotes-filter-table :searchQuery="searchQuery" @input="tableSearch" @changeShowUserShares="changeShowUserShares"
+                                 :placeholder="searchPlaceholder" :showUserSharesValue="showUserShares"></quotes-filter-table>
             <v-data-table :headers="headers" :items="stocks" item-key="id" :pagination.sync="pagination"
                           :rows-per-page-items="[25, 50, 100, 200]"
                           :total-items="totalItems" class="quotes-table" must-sort>
@@ -97,7 +97,7 @@ export class StockQuotes extends UI {
     @Inject
     private marketservice: MarketService;
 
-    private placeholder: string = "Поиск";
+    private searchPlaceholder: string = "Поиск";
 
     private searchQuery: string = "";
 
@@ -134,7 +134,7 @@ export class StockQuotes extends UI {
     }
 
     @ShowProgress
-    private async switchChange(value: boolean): Promise<void> {
+    private async changeShowUserShares(value: boolean): Promise<void> {
         await this.marketservice.setShowUserStocks(value);
         this.showUserShares = value;
         await this.loadStocks();

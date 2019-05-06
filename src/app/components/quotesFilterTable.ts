@@ -45,7 +45,7 @@ import {Prop, UI, Watch} from "../app/ui";
                     </v-card>
                 </v-menu>
             </div>
-            <v-btn fab small depressed @click="searchOpen = !searchOpen">
+            <v-btn fab small depressed @click="visibleSearchPlace">
                 <v-icon>search</v-icon>
             </v-btn>
             <v-slide-x-transition>
@@ -63,19 +63,23 @@ export class QuotesFilterTable extends UI {
     @Prop({required: false, default: ""})
     private placeholder: string;
     @Prop({required: false, default: false})
-    private switchValue: boolean;
+    private showUserSharesValue: boolean;
 
     private searchOpen: boolean = false;
 
-    private showUserShares: boolean = this.switchValue;
+    private showUserShares: boolean = this.showUserSharesValue;
 
     @Watch("switchValue")
     private onSwitchChange(): void {
-        this.showUserShares = this.switchValue;
+        this.showUserShares = this.showUserSharesValue;
     }
 
     private onChange(): void {
-        this.$emit("switchChange", this.showUserShares);
+        this.$emit("changeShowUserShares", this.showUserShares);
+    }
+
+    private visibleSearchPlace(): void {
+    this.searchOpen = !this.searchOpen;
     }
 
     private tableSearch(searchValue: string): void {
