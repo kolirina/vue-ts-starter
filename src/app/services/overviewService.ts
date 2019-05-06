@@ -44,6 +44,14 @@ export class OverviewService {
     }
 
     /**
+     * Сбрасывает из кеша портфель по переданному идентификатору
+     * @param id идентификатор портфеля
+     */
+    resetCacheForId(id: number): void {
+        this.cache[id] = null;
+    }
+
+    /**
      * Возвращает данные по комбинированному портфелю
      * @param request
      * @return {Promise<>}
