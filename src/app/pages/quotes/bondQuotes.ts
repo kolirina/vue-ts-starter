@@ -20,8 +20,10 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-container v-if="portfolio" fluid class="pa-0">
-            <additional-pagination :page="pagination.page" :rowsPerPage="pagination.rowsPerPage" :totalItems="totalItems"
-                                   :pages="pages" @paginationChange="paginationChange"></additional-pagination>
+            <div class="additional-pagination-quotes-table">
+                <additional-pagination :page="pagination.page" :rowsPerPage="pagination.rowsPerPage" :totalItems="totalItems"
+                :pages="pages" @paginationChange="paginationChange"></additional-pagination>
+            </div>
             <quotes-filter-table :searchQuery="searchQuery" @input="tableSearch" @changeShowUserShares="changeShowUserShares"
                                  :placeholder="searchPlaceholder" :showUserSharesValue="showUserShares"></quotes-filter-table>
             <v-data-table :headers="headers" :items="bonds" item-key="id" :pagination.sync="pagination"
