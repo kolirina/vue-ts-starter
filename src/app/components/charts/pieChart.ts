@@ -12,7 +12,7 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <div>
+        <div style="position: relative; width: 100%; height: 100%;">
             <v-container grid-list-md text-xs-center v-if="!chart">
                 <v-layout row wrap>
                     <v-flex xs12>
@@ -21,7 +21,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-layout>
             </v-container>
 
-            <div v-show="chart" ref="container" style="min-width: 500px; width: 99%; height: 500px; margin: 0 auto"></div>
+            <div v-show="chart" ref="container" style="width: 99%; height: 500px; margin: 0 auto"></div>
         </div>
     `
 })
