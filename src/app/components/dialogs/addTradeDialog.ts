@@ -168,16 +168,17 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                         <!-- Итоговая сумма сделки -->
                         <v-layout wrap>
                             <v-flex xs12 lg6>
-                                <span class="body-2">Сумма сделки: </span><span v-if="total"><b class="title">{{ total | number }} {{ getCurrency() }}</b></span>
+                                <span class="fs14">Сумма сделки: </span><span v-if="total"><span class="bold">{{ total | number }}</span>
+                                <span class="fs12-non-opacity">{{ getCurrency() }}</span></span>
                             </v-flex>
                             <v-flex xs12 lg6>
-                                <span class="body-2">Доступно: </span><span v-if="moneyResiduals"><b
-                                    class="title">{{ moneyResidual | amount }} {{ getCurrency() }}</b></span>
+                                <span class="fs14">Доступно: </span><span v-if="moneyResiduals" class="fs14"><span
+                                    class="fs14 bold">{{ moneyResidual | amount }}</span><span class="fs12-non-opacity pl-1">{{ getCurrency() }}</span></span>
                                 <v-checkbox :disabled="keepMoneyDisabled" :label="keepMoneyLabel" v-model="keepMoney" hide-details></v-checkbox>
                             </v-flex>
                         </v-layout>
                     </v-container>
-                    <small>* обозначает обязательные поля</small>
+                    <small class="fs12">* обозначает обязательные поля</small>
                 </v-card-text>
 
                 <v-card-actions>
