@@ -36,7 +36,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
 
                 <v-card-title class="paddB0">
-                    <span class="headline">{{ editMode ? "Редактирование" : "Добавление" }} сделки</span>
+                    <span class="fs16 bold">{{ editMode ? "Редактирование" : "Добавление" }} сделки</span>
                     <span v-if="!editMode && clientInfo && portfolio" class="items-dialog-title fs16 bold">
                         <v-menu bottom content-class="dialog-type-menu" nudge-bottom="20" bottom right max-height="480">
                             <span slot="activator">
