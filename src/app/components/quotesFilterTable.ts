@@ -79,7 +79,7 @@ export class QuotesFilterTable extends UI {
     }
 
     private visibleSearchPlace(): void {
-    this.searchOpen = !this.searchOpen;
+        this.searchOpen = !this.searchOpen;
     }
 
     private tableSearch(searchValue: string): void {
