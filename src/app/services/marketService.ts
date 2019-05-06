@@ -1,6 +1,7 @@
 import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {Http, UrlParams} from "../platform/services/http";
+import {Storage} from "../platform/services/storage";
 import {BaseChartDot, Dot, EventChartData, HighStockEventData, HighStockEventsGroup} from "../types/charts/types";
 import {Bond, BondInfo, Currency, PageableResponse, Share, Stock, StockDynamic, StockInfo} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
@@ -10,11 +11,27 @@ import {CommonUtils} from "../utils/commonUtils";
 @Singleton
 export class MarketService {
 
+    showUserStocks: boolean = false;
+    showUserBonds: boolean = false;
+
     @Inject
     private http: Http;
+    @Inject
+    private localStorage: Storage;
 
-    async paperSearch(value: string): Promise<void> {
-        console.log(value);
+    constructor() {
+        const showUserStocks = this.localStorage.get<boolean>("showUserStocks", null);
+        const showUserBonds = this.localStorage.get<boolean>("showUserBonds", null);
+        this.showUserStocks = showUserStocks ? showUserStocks : false;
+        this.showUserBonds = showUserBonds ? showUserBonds : false;
+    }
+
+    async setShowUserBonds(value: boolean): Promise<void> {
+        this.localStorage.set<boolean>("showUserBonds", value);
+    }
+
+    async setShowUserStocks(value: boolean): Promise<void> {
+        this.localStorage.set<boolean>("showUserStocks", value);
     }
 
     async searchStocks(query: string): Promise<Share[]> {
@@ -72,8 +89,9 @@ export class MarketService {
     /**
      * Загружает и возвращает список акций
      */
-    async loadStocks(offset: number = 0, pageSize: number = 50, sortColumn: string, descending: boolean = false): Promise<PageableResponse<Stock>> {
-        const urlParams: UrlParams = {offset, pageSize};
+    async loadStocks(offset: number = 0, pageSize: number = 50, sortColumn: string,
+                     descending: boolean = false, search: string, showUserShares: boolean): Promise<PageableResponse<Stock>> {
+        const urlParams: UrlParams = {offset, pageSize, search, showUserShares};
         if (sortColumn) {
             urlParams.sortColumn = sortColumn.toUpperCase();
         }
@@ -86,8 +104,9 @@ export class MarketService {
     /**
      * Загружает и возвращает список облигаций
      */
-    async loadBonds(offset: number = 0, pageSize: number = 50, sortColumn: string, descending: boolean = false): Promise<PageableResponse<Bond>> {
-        const urlParams: UrlParams = {offset, pageSize};
+    async loadBonds(offset: number = 0, pageSize: number = 50, sortColumn: string,
+                    descending: boolean = false, search: string, showUserShares: boolean): Promise<PageableResponse<Bond>> {
+        const urlParams: UrlParams = {offset, pageSize, search, showUserShares};
         if (sortColumn) {
             urlParams.sortColumn = sortColumn.toUpperCase();
         }

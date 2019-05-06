@@ -5,6 +5,7 @@ import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
 import {AdditionalPagination} from "../../components/additionalPagination";
 import {AddTradeDialog} from "../../components/dialogs/addTradeDialog";
+import {QuotesFilterTable} from "../../components/quotesFilterTable";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {MarketService} from "../../services/marketService";
 import {AssetType} from "../../types/assetType";
@@ -21,11 +22,8 @@ const MainStore = namespace(StoreType.MAIN);
         <v-container v-if="portfolio" fluid class="pa-0">
             <additional-pagination :page="pagination.page" :rowsPerPage="pagination.rowsPerPage" :totalItems="totalItems"
                                    :pages="pages" @paginationChange="paginationChange"></additional-pagination>
-            <v-layout>
-                <div class="search-place-wrap">
-                    <inplace-input @input="tableSearch" :placeholder="placeholder"></inplace-input>
-                </div>
-            </v-layout>
+            <quotes-filter-table :searchQuery="searchQuery" @input="tableSearch" @switchChange="switchChange"
+                                 :placeholder="placeholder" :switchValue="showUserShares"></quotes-filter-table>
             <v-data-table :headers="headers" :items="bonds" item-key="id" :pagination.sync="pagination"
                           :rows-per-page-items="[25, 50, 100, 200]"
                           :total-items="totalItems" class="quotes-table" must-sort>
@@ -97,7 +95,7 @@ const MainStore = namespace(StoreType.MAIN);
             </v-data-table>
         </v-container>
     `,
-    components: {AdditionalPagination}
+    components: {AdditionalPagination, QuotesFilterTable}
 })
 export class BondQuotes extends UI {
 
@@ -109,6 +107,10 @@ export class BondQuotes extends UI {
     private operation = Operation;
     @Inject
     private marketservice: MarketService;
+
+    private searchQuery: string = "";
+
+    private showUserShares: boolean = this.marketservice.showUserBonds;
 
     private placeholder: string = "Поиск";
 
@@ -143,18 +145,26 @@ export class BondQuotes extends UI {
 
     @Watch("pagination", {deep: true})
     private async onTablePaginationChange(): Promise<void> {
-        await this.loadStocks();
+        await this.loadBonds();
     }
 
     @ShowProgress
     private async tableSearch(value: string): Promise<void> {
-        const response = await this.marketservice.paperSearch(value);
+        this.searchQuery = value;
+        await this.loadBonds();
     }
 
     @ShowProgress
-    private async loadStocks(): Promise<void> {
+    private async switchChange(value: boolean): Promise<void> {
+        await this.marketservice.setShowUserBonds(value);
+        this.showUserShares = value;
+        await this.loadBonds();
+    }
+
+    @ShowProgress
+    private async loadBonds(): Promise<void> {
         const response = await this.marketservice.loadBonds(this.pagination.rowsPerPage * (this.pagination.page - 1),
-            this.pagination.rowsPerPage, this.pagination.sortBy, this.pagination.descending);
+            this.pagination.rowsPerPage, this.pagination.sortBy, this.pagination.descending, this.searchQuery, this.showUserShares);
         this.bonds = response.content;
         this.totalItems = response.totalItems;
         this.pages = response.pages;
@@ -162,7 +172,7 @@ export class BondQuotes extends UI {
 
     private async paginationChange(page: number): Promise<void> {
         this.pagination.page = page;
-        await this.loadStocks;
+        await this.loadBonds;
     }
 
     private async openTradeDialog(bond: Bond, operation: Operation): Promise<void> {

@@ -29,15 +29,15 @@ import {Prop, UI, Watch} from "../app/ui";
                     </v-btn>
 
                     <v-card class="px-2">
-                        <v-switch v-model="showBuy" @change="onChange">
+                        <v-switch v-model="showUserShares" @change="onChange">
                             <template #label>
-                                <span class="fs13">Скрыть проданные</span>
+                                <span class="fs13">Показать мои бумаги</span>
                                 <v-tooltip content-class="custom-tooltip-wrap" bottom>
                                     <sup class="custom-tooltip" slot="activator">
                                         <v-icon>fas fa-info-circle</v-icon>
                                     </sup>
                                     <span>
-                                        Включите, если хотите скрыть проданные позиции
+                                        Включите, если хотите увидеть только свои бумаги
                                     </span>
                                 </v-tooltip>
                             </template>
@@ -67,15 +67,15 @@ export class QuotesFilterTable extends UI {
 
     private searchOpen: boolean = false;
 
-    private showBuy: boolean = false;
+    private showUserShares: boolean = this.switchValue;
 
     @Watch("switchValue")
     private onSwitchChange(): void {
-        this.showBuy = this.switchValue;
+        this.showUserShares = this.switchValue;
     }
 
     private onChange(): void {
-        this.$emit("switchChange", this.showBuy);
+        this.$emit("switchChange", this.showUserShares);
     }
 
     private tableSearch(searchValue: string): void {

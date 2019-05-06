@@ -22,7 +22,8 @@ const MainStore = namespace(StoreType.MAIN);
         <v-container v-if="portfolio" fluid class="pa-0">
             <additional-pagination :page="pagination.page" :rowsPerPage="pagination.rowsPerPage" :totalItems="totalItems"
                                    :pages="pages" @paginationChange="paginationChange"></additional-pagination>
-            <quotes-filter-table :searchQuery="searchQuery" @input="tableSearch" @switchChange="switchChange" :placeholder="placeholder"></quotes-filter-table>
+            <quotes-filter-table :searchQuery="searchQuery" @input="tableSearch" @switchChange="switchChange"
+                                 :placeholder="placeholder" :switchValue="showUserShares"></quotes-filter-table>
             <v-data-table :headers="headers" :items="stocks" item-key="id" :pagination.sync="pagination"
                           :rows-per-page-items="[25, 50, 100, 200]"
                           :total-items="totalItems" class="quotes-table" must-sort>
@@ -115,6 +116,8 @@ export class StockQuotes extends UI {
 
     private pages: number = 0;
 
+    private showUserShares: boolean = this.marketservice.showUserStocks;
+
     private pagination: Pagination = {
         descending: false,
         page: 1,
@@ -130,20 +133,23 @@ export class StockQuotes extends UI {
         await this.loadStocks();
     }
 
-    private switchChange(value: boolean): void {
-        console.log(value);
+    @ShowProgress
+    private async switchChange(value: boolean): Promise<void> {
+        await this.marketservice.setShowUserStocks(value);
+        this.showUserShares = value;
+        await this.loadStocks();
     }
 
     @ShowProgress
     private async tableSearch(value: string): Promise<void> {
         this.searchQuery = value;
-        const response = await this.marketservice.paperSearch(this.searchQuery);
+        await this.loadStocks();
     }
 
     @ShowProgress
     private async loadStocks(): Promise<void> {
         const response = await this.marketservice.loadStocks(this.pagination.rowsPerPage * (this.pagination.page - 1),
-            this.pagination.rowsPerPage, this.pagination.sortBy, this.pagination.descending);
+            this.pagination.rowsPerPage, this.pagination.sortBy, this.pagination.descending, this.searchQuery, this.showUserShares);
         this.stocks = response.content;
         this.totalItems = response.totalItems;
         this.pages = response.pages;
