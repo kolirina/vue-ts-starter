@@ -134,32 +134,30 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-layout>
                 </v-navigation-drawer>
                 <v-content>
-                    <vue-scroll :ops="horizontalScrollConfig">
-                        <div class="wrapper-for-scroll-content">
-                            <v-container fluid class="paddT0">
-                                <v-slide-y-transition mode="out-in">
-                                    <!--<keep-alive :include="cachedPages">-->
-                                    <router-view></router-view>
-                                    <!--</keep-alive>-->
-                                </v-slide-y-transition>
-                            </v-container>
-                        </div>
-                        <v-footer color="#f7f9fb" class="footer-app">
-                            <v-layout class="footer-app-wrap-content" wrap align-center justify-space-between>
-                                <div class="footer-app-wrap-content__text"><i class="far fa-copyright"></i> {{ copyrightInfo }}</div>
+                    <div class="wrapper-for-scroll-content">
+                        <v-container fluid class="paddT0">
+                            <v-slide-y-transition mode="out-in">
+                                <!--<keep-alive :include="cachedPages">-->
+                                <router-view></router-view>
+                                <!--</keep-alive>-->
+                            </v-slide-y-transition>
+                        </v-container>
+                    </div>
+                    <v-footer color="#f7f9fb" class="footer-app">
+                        <v-layout class="footer-app-wrap-content" wrap align-center justify-space-between>
+                            <div class="footer-app-wrap-content__text"><i class="far fa-copyright"></i> {{ copyrightInfo }}</div>
 
-                                <div>
-                                    <a class="footer-app-wrap-content__text email-btn"
-                                       @click.stop="openFeedBackDialog"><span>Напишите нам</span> <i class="fas fa-envelope"></i>
-                                    </a>
+                            <div>
+                                <a class="footer-app-wrap-content__text email-btn"
+                                   @click.stop="openFeedBackDialog"><span>Напишите нам</span> <i class="fas fa-envelope"></i>
+                                </a>
 
-                                    <a class="footer-app-wrap-content__text decorationNone" href="https://telegram.me/intelinvestSupportBot">
-                                        <span>Telegram</span> <i class="fab fa-telegram"></i>
-                                    </a>
-                                </div>
-                            </v-layout>
-                        </v-footer>
-                    </vue-scroll>
+                                <a class="footer-app-wrap-content__text decorationNone" href="https://telegram.me/intelinvestSupportBot">
+                                    <span>Telegram</span> <i class="fab fa-telegram"></i>
+                                </a>
+                            </div>
+                        </v-layout>
+                    </v-footer>
                 </v-content>
             </template>
         </v-app>`,
@@ -211,12 +209,6 @@ export class AppFrame extends UI {
     private cachedPages = ["PortfolioPage"];
 
     private drawer = true;
-    /* Конфиг для горизонтального скролла страницы */
-    private horizontalScrollConfig: any = {
-        bar: {
-            keepShow: true
-        }
-    };
 
     private mini = true;
     private loading = false;

@@ -10,7 +10,7 @@ import {ChartUtils} from "../../utils/chartUtils";
 @Component({
     // language=Vue
     template: `
-        <div>
+        <div style="position: relative; width: 100%; height: 100%;">
             <v-switch v-model="showTrades" @change="onShowTradesChange" class="margT0" hide-details>
                 <template #label>
                     <span>Сделки на графике</span>
@@ -25,7 +25,7 @@ import {ChartUtils} from "../../utils/chartUtils";
                 </template>
             </v-switch>
 
-            <div v-show="chart" ref="container" style="min-width: 500px; width: 100%; height: 500px; margin: 0 auto" @click.stop></div>
+            <div v-show="chart" ref="container" style="width: 99%; height: 500px; margin: 0 auto" @click.stop></div>
         </div>
     `
 })
