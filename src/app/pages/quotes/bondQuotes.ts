@@ -7,13 +7,13 @@ import {AdditionalPagination} from "../../components/additionalPagination";
 import {AddTradeDialog} from "../../components/dialogs/addTradeDialog";
 import {QuotesFilterTable} from "../../components/quotesFilterTable";
 import {ShowProgress} from "../../platform/decorators/showProgress";
+import {Storage} from "../../platform/services/storage";
 import {MarketService} from "../../services/marketService";
 import {AssetType} from "../../types/assetType";
 import {Operation} from "../../types/operation";
 import {Bond, Pagination, Portfolio, TableHeader} from "../../types/types";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
-import {Storage} from "../../platform/services/storage";
 
 const MainStore = namespace(StoreType.MAIN);
 
