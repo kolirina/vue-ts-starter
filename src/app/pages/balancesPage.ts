@@ -62,7 +62,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         <div class="title">Добавить ценную бумагу</div>
                                         <v-form ref="stockForm" v-model="stockFormIsValid" class="mt-4" lazy-validation>
                                             <v-layout align-center>
-                                                <share-search :asset-type="assetType" :topStock="topPaper" @change="onShareSelect" ref="shareSearch"></share-search>
+                                                <share-search :asset-type="assetType" :topStock="topPaper" @change="onShareSelect"></share-search>
                                                 <div class="btn-open-dialog-top-paper">
                                                     <v-btn flat icon color="primary" class="ma-0" @click.stop="popularPaper">
                                                         <v-icon>stars</v-icon>
@@ -165,8 +165,7 @@ export class BalancesPage extends UI implements TradeDataHolder {
     $refs: {
         dateMenu: any,
         stockForm: any,
-        moneyForm: any,
-        shareSearch: any
+        moneyForm: any
     };
 
     @Inject
@@ -248,11 +247,10 @@ export class BalancesPage extends UI implements TradeDataHolder {
 
     @ShowProgress
     async created(): Promise<void> {
-        this.topPapers = await this.marketService.getTopStock();
+        this.topPapers = await this.marketService.loadTopStocks();
     }
 
     private async popularPaper(): Promise<void> {
-        this.$refs.shareSearch.$refs.shareSearch.blur();
         const result: Share = await new PopularPaperDialog().show({topPapers: this.topPapers});
         if (result) {
             this.topPaper = result;

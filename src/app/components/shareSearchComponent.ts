@@ -36,7 +36,6 @@ import {Bond, Share} from "../types/types";
                 {{ shareLabelListItem(data.item) }}
             </template>
         </v-autocomplete>
-
     `
 })
 export class ShareSearchComponent extends UI {
