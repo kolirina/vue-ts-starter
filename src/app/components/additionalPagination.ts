@@ -21,40 +21,36 @@ import {Pagination} from "../types/types";
 @Component({
     // language=Vue
     template: `
-        <v-layout class="up-pagination" justify-end align-center>
+        <v-layout v-if="pagination" class="up-pagination" justify-end align-center>
             <div class="pagination-info">
-                {{ getStartRowsOnPage }} - {{ getEndRowsOnPage }} из {{ totalItems }}
+                {{ getStartRowsOnPage }} - {{ getEndRowsOnPage }} из {{ pagination.totalItems }}
             </div>
-            <v-pagination v-model="pagination.page" @input="onPageChange" :length="pages"></v-pagination>
+            <v-pagination v-model="pagination.page" @input="onPageChange" :length="pagination.pages"></v-pagination>
         </v-layout>
     `
 })
 export class AdditionalPagination extends UI {
 
+    /** Паджинация */
     @Prop({required: true})
-    private page: number;
-    @Prop({required: true})
-    private rowsPerPage: number;
-    @Prop({required: true})
-    private totalItems: number;
-    @Prop({required: true})
-    private pages: number;
+    private pagination: Pagination;
 
-    private pagination: Pagination = {
-        page: this.page,
-        rowsPerPage: this.rowsPerPage,
-        totalItems: this.totalItems
-    };
-
+    /**
+     * Возвращает начальный номер строки
+     */
     private get getStartRowsOnPage(): string {
-        return `${this.page * this.rowsPerPage - this.rowsPerPage + 1}`;
+        return `${this.pagination.page * this.pagination.rowsPerPage - this.pagination.rowsPerPage + 1}`;
     }
 
+    /**
+     * Возвращает конечный номер строки
+     */
     private get getEndRowsOnPage(): string {
-        return `${this.page * this.rowsPerPage > this.totalItems ? this.totalItems : this.page * this.rowsPerPage}`;
+        return `${this.pagination.page * this.pagination.rowsPerPage > this.pagination.totalItems ?
+            this.pagination.totalItems : this.pagination.page * this.pagination.rowsPerPage}`;
     }
 
     private onPageChange(): void {
-        this.$emit("paginationChange", this.pagination.page);
+        this.$emit("update:pagination", this.pagination);
     }
 }

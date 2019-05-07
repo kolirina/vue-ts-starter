@@ -21,14 +21,13 @@ const MainStore = namespace(StoreType.MAIN);
     template: `
         <v-container v-if="portfolio" fluid class="pa-0">
             <div class="additional-pagination-quotes-table">
-                <additional-pagination :page="pagination.page" :rowsPerPage="pagination.rowsPerPage" :totalItems="totalItems"
-                                       :pages="pages" @paginationChange="paginationChange"></additional-pagination>
+                <additional-pagination :pagination="pagination" @update:pagination="onTablePaginationChange"></additional-pagination>
             </div>
             <quotes-filter-table :searchQuery="searchQuery" @input="tableSearch" @changeShowUserShares="changeShowUserShares"
-                                 :placeholder="searchPlaceholder" :showUserSharesValue="showUserShares"></quotes-filter-table>
-            <v-data-table :headers="headers" :items="stocks" item-key="id" :pagination.sync="pagination"
+                                 placeholder="Поиск" :showUserSharesValue="showUserShares"></quotes-filter-table>
+            <v-data-table :headers="headers" :items="stocks" item-key="id" :pagination="pagination" @update:pagination="onTablePaginationChange"
                           :rows-per-page-items="[25, 50, 100, 200]"
-                          :total-items="totalItems" class="quotes-table" must-sort>
+                          :total-items="pagination.totalItems" class="quotes-table" must-sort>
                 <template #items="props">
                     <tr class="selectable">
                         <td class="text-xs-left">
@@ -46,11 +45,11 @@ const MainStore = namespace(StoreType.MAIN);
                         </td>
                         <td class="text-xs-center">
                             <v-btn v-if="props.item.currency === 'RUB'" :href="'http://moex.com/ru/issue.aspx?code=' + props.item.ticker" target="_blank"
-                               :title="'Профиль эмитента ' + props.item.name + ' на сайте биржи'" icon>
+                                   :title="'Профиль эмитента ' + props.item.name + ' на сайте биржи'" icon>
                                 <i class="quotes-share"></i>
                             </v-btn>
                             <v-btn v-if="props.item.currency !== 'RUB'" :href="'https://finance.yahoo.com/quote/' + props.item.ticker" target="_blank"
-                               :title="'Профиль эмитента ' + props.item.name + ' на сайте Yahoo Finance'" icon>
+                                   :title="'Профиль эмитента ' + props.item.name + ' на сайте Yahoo Finance'" icon>
                                 <i class="quotes-share"></i>
                             </v-btn>
                         </td>
@@ -99,24 +98,18 @@ export class StockQuotes extends UI {
     @Inject
     private marketservice: MarketService;
 
-    private searchPlaceholder: string = "Поиск";
-
     private searchQuery: string = "";
 
     private headers: TableHeader[] = [
         {text: "Тикер", align: "left", value: "ticker"},
         {text: "Компания", align: "left", value: "shortname"},
         {text: "Цена", align: "center", value: "price"},
-        {text: "Изменение", align: "center", value: "change" },
+        {text: "Изменение", align: "center", value: "change"},
         {text: "Размер лота", align: "center", value: "lotsize", sortable: false},
-        {text: "Рейтинг", align: "center", value: "rating" },
-        {text: "Профиль эмитента", align: "center", value: "profile",  sortable: false},
-        {text: "", value: "", align: "center",  sortable: false}
+        {text: "Рейтинг", align: "center", value: "rating"},
+        {text: "Профиль эмитента", align: "center", value: "profile", sortable: false},
+        {text: "", value: "", align: "center", sortable: false}
     ];
-
-    private totalItems = 0;
-
-    private pages: number = 0;
 
     private showUserShares: boolean = this.marketservice.showUserStocks;
 
@@ -125,13 +118,18 @@ export class StockQuotes extends UI {
         page: 1,
         rowsPerPage: 50,
         sortBy: "ticker",
-        totalItems: this.totalItems
+        totalItems: 0,
+        pages: 0
     };
 
     private stocks: Stock[] = [];
 
-    @Watch("pagination", {deep: true})
-    private async onTablePaginationChange(): Promise<void> {
+    /**
+     * Обрыбатывает событие изменения паджинации и загружает данные
+     * @param pagination
+     */
+    private async onTablePaginationChange(pagination: Pagination): Promise<void> {
+        this.pagination = pagination;
         await this.loadStocks();
     }
 
@@ -153,13 +151,8 @@ export class StockQuotes extends UI {
         const response = await this.marketservice.loadStocks(this.pagination.rowsPerPage * (this.pagination.page - 1),
             this.pagination.rowsPerPage, this.pagination.sortBy, this.pagination.descending, this.searchQuery, this.showUserShares);
         this.stocks = response.content;
-        this.totalItems = response.totalItems;
-        this.pages = response.pages;
-    }
-
-    private async paginationChange(page: number): Promise<void> {
-        this.pagination.page = page;
-        await this.loadStocks;
+        this.pagination.totalItems = response.totalItems;
+        this.pagination.pages = response.pages;
     }
 
     private async openTradeDialog(stock: Stock, operation: Operation): Promise<void> {
