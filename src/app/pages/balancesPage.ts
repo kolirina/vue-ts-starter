@@ -251,7 +251,7 @@ export class BalancesPage extends UI implements TradeDataHolder {
     }
 
     private async popularPaper(): Promise<void> {
-        const result: Share = await new PopularPaperDialog().show({topPapers: this.topPapers});
+        const result: Share = await new PopularPaperDialog().show(this.topPapers);
         if (result) {
             this.topPaper = result;
         }

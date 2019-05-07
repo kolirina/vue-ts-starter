@@ -13,7 +13,7 @@ import {Share} from "../../types/types";
                 </v-card-title>
                 <v-card-text class="pt-0">
                     <v-layout wrap class="px-3">
-                        <v-flex v-for="paper in data.topPapers" :key="paper.ticker" xs12 sm6 md4 lg2>
+                        <v-flex v-for="paper in data" :key="paper.ticker" xs12 sm6 md4 lg2>
                             <div @click="close(paper)">
                                 <v-chip class="fs14 top-paper-item">{{ paper.ticker }}</v-chip>
                             </div>
@@ -32,12 +32,8 @@ import {Share} from "../../types/types";
         </v-dialog>
     `
 })
-export class PopularPaperDialog extends CustomDialog<TopStockParams, Share> {
+export class PopularPaperDialog extends CustomDialog<Share[], Share> {
 
     private topPapers: Share[] = [];
 
 }
-
-type TopStockParams = {
-    topPapers: Share[]
-};

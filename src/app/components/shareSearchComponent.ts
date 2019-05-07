@@ -80,11 +80,9 @@ export class ShareSearchComponent extends UI {
     private notFoundLabel = "Ничего не найдено";
 
     @Watch("topStock")
-    private async setTopStock(topStock: Share): Promise<void> {
+    private async setTopStock(): Promise<void> {
         if (this.topStock) {
-            this.$refs.shareSearch.focus();
-            this.filteredSharesMutated = [];
-            this.searchQuery = this.topStock.ticker;
+            this.share = this.topStock;
         }
     }
 
