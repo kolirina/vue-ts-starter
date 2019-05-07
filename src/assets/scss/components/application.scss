@@ -2,10 +2,6 @@
   font-family: $main--font-family;
 }
 
-.wrapper-for-scroll-content {
-  min-width: 800px;
-}
-
 .theme--light.application {
   background: $main--bg-color;
   color: $main--font-color;
@@ -53,4 +49,10 @@
 
 .__rail-is-horizontal {
   z-index: 15 !important;
+}
+
+.v-content__wrap {
+  flex-direction: column;
+  justify-content: space-between;
+  display: flex;
 }
