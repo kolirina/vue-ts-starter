@@ -22,6 +22,7 @@ import {Prop, UI, Watch} from "../app/ui";
     template: `
         <v-layout align-center class="pl-3 quotes-filter-wrap">
             <div class="pl-3">
+                <span v-if="showUserShares" class="quotes-table-active-filter" title="Настроен фильтр"></span>
                 <v-menu :close-on-content-click="false" bottom nudge-bottom="37" content-class="filters-quotes-table">
                     <v-btn slot="activator" round class="portfolio-rows-filter__button">
                         Фильтры
