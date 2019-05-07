@@ -11,28 +11,8 @@ import {CommonUtils} from "../utils/commonUtils";
 @Singleton
 export class MarketService {
 
-    showUserStocks: boolean = false;
-    showUserBonds: boolean = false;
-
     @Inject
     private http: Http;
-    @Inject
-    private localStorage: Storage;
-
-    constructor() {
-        const showUserStocks = this.localStorage.get<boolean>("showUserStocks", null);
-        const showUserBonds = this.localStorage.get<boolean>("showUserBonds", null);
-        this.showUserStocks = showUserStocks ? showUserStocks : false;
-        this.showUserBonds = showUserBonds ? showUserBonds : false;
-    }
-
-    async setShowUserBonds(value: boolean): Promise<void> {
-        this.localStorage.set<boolean>("showUserBonds", value);
-    }
-
-    async setShowUserStocks(value: boolean): Promise<void> {
-        this.localStorage.set<boolean>("showUserStocks", value);
-    }
 
     async searchStocks(query: string): Promise<Share[]> {
         const result: Share[] = await this.http.get("/market/stocks/search", {query});

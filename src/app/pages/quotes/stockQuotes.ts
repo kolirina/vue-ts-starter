@@ -1,6 +1,5 @@
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
-import {Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
 import {AdditionalPagination} from "../../components/additionalPagination";
@@ -13,6 +12,7 @@ import {Operation} from "../../types/operation";
 import {Pagination, Portfolio, Stock, TableHeader} from "../../types/types";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
+import {Storage} from "../../platform/services/storage";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -97,6 +97,8 @@ export class StockQuotes extends UI {
     private operation = Operation;
     @Inject
     private marketservice: MarketService;
+    @Inject
+    private localStorage: Storage;
 
     private searchQuery: string = "";
 
@@ -111,7 +113,7 @@ export class StockQuotes extends UI {
         {text: "", value: "", align: "center", sortable: false}
     ];
 
-    private showUserShares: boolean = this.marketservice.showUserStocks;
+    private showUserShares: boolean = this.localStorage.get<boolean>("showUserStocks", null);
 
     private pagination: Pagination = {
         descending: false,
@@ -135,7 +137,7 @@ export class StockQuotes extends UI {
 
     @ShowProgress
     private async changeShowUserShares(value: boolean): Promise<void> {
-        await this.marketservice.setShowUserStocks(value);
+        this.localStorage.set<boolean>("showUserStocks", value);
         this.showUserShares = value;
         await this.loadStocks();
     }

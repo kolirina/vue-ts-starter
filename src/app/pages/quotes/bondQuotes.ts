@@ -13,6 +13,7 @@ import {Operation} from "../../types/operation";
 import {Bond, Pagination, Portfolio, TableHeader} from "../../types/types";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
+import {Storage} from "../../platform/services/storage";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -21,14 +22,13 @@ const MainStore = namespace(StoreType.MAIN);
     template: `
         <v-container v-if="portfolio" fluid class="pa-0">
             <div class="additional-pagination-quotes-table">
-                <additional-pagination :page="pagination.page" :rowsPerPage="pagination.rowsPerPage" :totalItems="totalItems"
-                :pages="pages" @paginationChange="paginationChange"></additional-pagination>
+                <additional-pagination :pagination="pagination" @update:pagination="onTablePaginationChange"></additional-pagination>
             </div>
             <quotes-filter-table :searchQuery="searchQuery" @input="tableSearch" @changeShowUserShares="changeShowUserShares"
-                                 :placeholder="searchPlaceholder" :showUserSharesValue="showUserShares"></quotes-filter-table>
+                                 placeholder="Поиск" :showUserSharesValue="showUserShares"></quotes-filter-table>
             <v-data-table :headers="headers" :items="bonds" item-key="id" :pagination.sync="pagination"
                           :rows-per-page-items="[25, 50, 100, 200]"
-                          :total-items="totalItems" class="quotes-table" must-sort>
+                          :total-items="pagination.totalItems" class="quotes-table" must-sort>
                 <template #items="props">
                     <tr class="selectable">
                         <td class="text-xs-left">
@@ -109,10 +109,12 @@ export class BondQuotes extends UI {
     private operation = Operation;
     @Inject
     private marketservice: MarketService;
+    @Inject
+    private localStorage: Storage;
 
     private searchQuery: string = "";
 
-    private showUserShares: boolean = this.marketservice.showUserBonds;
+    private showUserShares: boolean = this.localStorage.get<boolean>("showUserBonds", null);
 
     private searchPlaceholder: string = "Поиск";
 
@@ -131,16 +133,13 @@ export class BondQuotes extends UI {
         {text: "Меню", value: "", align: "center", sortable: false}
     ];
 
-    private totalItems = 0;
-
-    private pages: number = 0;
-
     private pagination: Pagination = {
         descending: false,
         page: 1,
         rowsPerPage: 50,
         sortBy: "isin",
-        totalItems: this.totalItems
+        totalItems: 0,
+        pages: 0
     };
 
     private bonds: Bond[] = [];
@@ -158,7 +157,7 @@ export class BondQuotes extends UI {
 
     @ShowProgress
     private async changeShowUserShares(value: boolean): Promise<void> {
-        await this.marketservice.setShowUserBonds(value);
+        this.localStorage.set<boolean>("showUserBonds", value);
         this.showUserShares = value;
         await this.loadBonds();
     }
@@ -168,8 +167,8 @@ export class BondQuotes extends UI {
         const response = await this.marketservice.loadBonds(this.pagination.rowsPerPage * (this.pagination.page - 1),
             this.pagination.rowsPerPage, this.pagination.sortBy, this.pagination.descending, this.searchQuery, this.showUserShares);
         this.bonds = response.content;
-        this.totalItems = response.totalItems;
-        this.pages = response.pages;
+        this.pagination.totalItems = response.totalItems;
+        this.pagination.pages = response.pages;
     }
 
     private async paginationChange(page: number): Promise<void> {
