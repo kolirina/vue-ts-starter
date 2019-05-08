@@ -58,7 +58,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         <div class="title">Добавить ценную бумагу</div>
                                         <v-form ref="stockForm" v-model="stockFormIsValid" class="mt-4" lazy-validation>
                                             <v-flex>
-                                                <share-search :asset-type="assetType" @change="onShareSelect"></share-search>
+                                                <share-search :asset-type="assetType" @change="onShareSelect" required :rules="rulesShare"></share-search>
                                             </v-flex>
                                             <v-flex class="mt-4">
                                                 <v-menu v-model="dateMenuValue" full-width lazy min-width="290px" offset-y ref="dateMenu"
@@ -93,8 +93,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         </v-form>
                                         <v-spacer></v-spacer>
                                         <div class="margT20">
-                                            <v-btn color="primary" class="big_btn" :loading="processState"
-                                                   :disabled="!stockFormIsValid || processState" @click.native="addStock()">
+                                            <v-btn color="primary" class="big_btn" :loading="processState" :disabled="!stockFormIsValid || processState" @click.native="addStock()">
                                                 Добавить
                                                 <span slot="loader" class="custom-loader">
                                                 <v-icon light>fas fa-spinner fa-spin</v-icon>
@@ -338,7 +337,7 @@ export class BalancesPage extends UI implements TradeDataHolder {
     }
 
     private calculateOnQuantity(): void {
-        !!this.quantity ? this.changedQuantity = true : this.changedQuantity = false;
+        this.changedQuantity = !!this.quantity;
         if (this.changedQuantity && this.changedTotal) {
             this.changedPrice = false;
             this.price = new Decimal(this.total).dividedBy(new Decimal(this.quantity)).toDecimalPlaces(6, Decimal.ROUND_HALF_UP).toString();
@@ -364,7 +363,7 @@ export class BalancesPage extends UI implements TradeDataHolder {
     }
 
     private calculateOnTotal(): void {
-        !!this.total ? this.changedTotal = true : this.changedTotal = false;
+        this.changedTotal = !!this.total;
         if (this.changedTotal && this.changedQuantity) {
             this.changedPrice = false;
             this.price = new Decimal(this.total).dividedBy(new Decimal(this.quantity)).toDecimalPlaces(6, Decimal.ROUND_HALF_UP).toString();
@@ -375,7 +374,7 @@ export class BalancesPage extends UI implements TradeDataHolder {
     }
 
     private changeOnQuantity(): void {
-        !!this.quantity ? this.changedQuantity = true : this.changedQuantity = false;
+        this.changedQuantity = !!this.quantity;
         if (this.changedQuantity && this.changedTotal) {
             this.changedPrice = false;
             this.price = new Decimal(this.total).dividedBy(new Decimal(this.quantity)).toDecimalPlaces(6, Decimal.ROUND_HALF_UP).toString();
@@ -387,7 +386,7 @@ export class BalancesPage extends UI implements TradeDataHolder {
     }
 
     private changeOnTotal(): void {
-        !!this.total ? this.changedTotal = true : this.changedTotal = false;
+        this.changedTotal = !!this.total;
         if (this.changedTotal && this.changedQuantity) {
             this.changedPrice = false;
             this.price = new Decimal(this.total).dividedBy(new Decimal(this.quantity)).toDecimalPlaces(6, Decimal.ROUND_HALF_UP).toString();

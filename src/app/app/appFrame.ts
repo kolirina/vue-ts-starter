@@ -90,6 +90,9 @@ const MainStore = namespace(StoreType.MAIN);
                                         <v-menu transition="slide-y-transition" bottom left class="submenu-item-list" content-class="submenu-v-menu" nudge-bottom="47">
                                             <v-list-tile slot="activator" :class="{'active-link': settingsSelected}">
                                                 <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+                                                <v-list-tile-action>
+                                                    <v-icon color="grey lighten-1">keyboard_arrow_down</v-icon>
+                                                </v-list-tile-action>
                                             </v-list-tile>
                                             <v-list-tile active-class="active-link" v-for="subItem in item.subMenu" :key="subItem.action"
                                                          :to="{name: subItem.action, params: item.params}">
@@ -131,32 +134,30 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-layout>
                 </v-navigation-drawer>
                 <v-content>
-                    <vue-scroll :ops="horizontalScrollConfig">
-                        <div class="wrapper-for-scroll-content">
-                            <v-container fluid class="paddT0">
-                                <v-slide-y-transition mode="out-in">
-                                    <!--<keep-alive :include="cachedPages">-->
-                                    <router-view></router-view>
-                                    <!--</keep-alive>-->
-                                </v-slide-y-transition>
-                            </v-container>
-                        </div>
-                        <v-footer color="#f7f9fb" class="footer-app">
-                            <v-layout class="footer-app-wrap-content" wrap align-center justify-space-between>
-                                <div class="footer-app-wrap-content__text"><i class="far fa-copyright"></i> {{ copyrightInfo }}</div>
+                    <div class="wrapper-for-scroll-content">
+                        <v-container fluid class="paddT0">
+                            <v-slide-y-transition mode="out-in">
+                                <!--<keep-alive :include="cachedPages">-->
+                                <router-view></router-view>
+                                <!--</keep-alive>-->
+                            </v-slide-y-transition>
+                        </v-container>
+                    </div>
+                    <v-footer color="#f7f9fb" class="footer-app">
+                        <v-layout class="footer-app-wrap-content" wrap align-center justify-space-between>
+                            <div class="footer-app-wrap-content__text"><i class="far fa-copyright"></i> {{ copyrightInfo }}</div>
 
-                                <div>
-                                    <a class="footer-app-wrap-content__text email-btn"
-                                       @click.stop="openFeedBackDialog"><span>Напишите нам</span> <i class="fas fa-envelope"></i>
-                                    </a>
+                            <div>
+                                <a class="footer-app-wrap-content__text email-btn"
+                                   @click.stop="openFeedBackDialog"><span>Напишите нам</span> <i class="fas fa-envelope"></i>
+                                </a>
 
-                                    <a class="footer-app-wrap-content__text decorationNone" href="https://telegram.me/intelinvestSupportBot">
-                                        <span>Telegram</span> <i class="fab fa-telegram"></i>
-                                    </a>
-                                </div>
-                            </v-layout>
-                        </v-footer>
-                    </vue-scroll>
+                                <a class="footer-app-wrap-content__text decorationNone" href="https://telegram.me/intelinvestSupportBot">
+                                    <span>Telegram</span> <i class="fab fa-telegram"></i>
+                                </a>
+                            </div>
+                        </v-layout>
+                    </v-footer>
                 </v-content>
             </template>
         </v-app>`,
@@ -208,12 +209,6 @@ export class AppFrame extends UI {
     private cachedPages = ["PortfolioPage"];
 
     private drawer = true;
-    /* Конфиг для горизонтального скролла страницы */
-    private horizontalScrollConfig: any = {
-        bar: {
-            keepShow: true
-        }
-    };
 
     private mini = true;
     private loading = false;
@@ -330,7 +325,7 @@ export class AppFrame extends UI {
      * Переключает на старую версию приложения
      */
     private async goToOldVersion(): Promise<void> {
-        window.location.assign(`https://intelinvest.ru/portfolio`);
+        window.location.assign(`https://old.intelinvest.ru/portfolio`);
     }
 
     private togglePanel(): void {

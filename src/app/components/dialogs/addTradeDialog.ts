@@ -7,16 +7,17 @@ import {VueRouter} from "vue-router/types/router";
 import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {CustomDialog} from "../../platform/dialogs/customDialog";
-import {ClientService} from "../../services/clientService";
+import {Client, ClientService} from "../../services/clientService";
 import {DateTimeService} from "../../services/dateTimeService";
 import {EventFields} from "../../services/eventService";
 import {MarketHistoryService} from "../../services/marketHistoryService";
 import {MarketService} from "../../services/marketService";
-import {MoneyResiduals, PortfolioService} from "../../services/portfolioService";
+import {OverviewService} from "../../services/overviewService";
+import {MoneyResiduals, PortfolioParams, PortfolioService} from "../../services/portfolioService";
 import {TradeFields, TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
-import {BigMoney} from "../../types/bigMoney";
 import {Operation} from "../../types/operation";
+import {Tariff} from "../../types/tariff";
 import {TradeDataHolder} from "../../types/trade/tradeDataHolder";
 import {TradeMap} from "../../types/trade/tradeMap";
 import {TradeValue} from "../../types/trade/tradeValue";
@@ -25,6 +26,7 @@ import {CommonUtils} from "../../utils/commonUtils";
 import {DateUtils} from "../../utils/dateUtils";
 import {TradeUtils} from "../../utils/tradeUtils";
 import {MainStore} from "../../vuex/mainStore";
+import {TariffExpiredDialog} from "./tariffExpiredDialog";
 
 @Component({
     // language=Vue
@@ -34,8 +36,23 @@ import {MainStore} from "../../vuex/mainStore";
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
 
                 <v-card-title class="paddB0">
-                    <span class="headline">{{ tradeId ? "Редактирование" : "Добавление" }} сделки</span>
-                    <v-spacer></v-spacer>
+                    <span class="fs16 bold">{{ dialogTitle }}</span>
+                    <span v-if="!editMode && clientInfo && portfolio" class="items-dialog-title fs16 bold">
+                        <v-menu bottom content-class="dialog-type-menu" nudge-bottom="20" bottom right max-height="480">
+                            <span slot="activator">
+                                <span>
+                                    {{ portfolio.portfolioParams.name }}
+                                </span>
+                            </span>
+                            <v-list dense>
+                                <v-flex>
+                                    <div class="menu-text" v-for="portfolioParams in clientInfo.portfolios" :key="portfolioParams.id" @click="setPortfolio(portfolioParams)">
+                                        {{ portfolioParams.name }}
+                                    </div>
+                                </v-flex>
+                            </v-list>
+                        </v-menu>
+                    </span>
                 </v-card-title>
 
                 <v-card-text class="paddT0 paddB0">
@@ -151,22 +168,23 @@ import {MainStore} from "../../vuex/mainStore";
                         <!-- Итоговая сумма сделки -->
                         <v-layout wrap>
                             <v-flex xs12 lg6>
-                                <span class="body-2">Сумма сделки: </span><span v-if="total"><b class="title">{{ total | number }} {{ getCurrency() }}</b></span>
+                                <span class="fs14">Сумма сделки: </span><span v-if="total"><span class="bold">{{ total | number }}</span>
+                                <span class="fs12-non-opacity">{{ getCurrency() }}</span></span>
                             </v-flex>
                             <v-flex xs12 lg6>
-                                <span class="body-2">Доступно: </span><span v-if="moneyResiduals"><b
-                                    class="title">{{ moneyResidual | amount }} {{ getCurrency() }}</b></span>
+                                <span class="fs14">Доступно: </span><span v-if="moneyResiduals" class="fs14"><span
+                                    class="fs14 bold">{{ moneyResidual | amount }}</span><span class="fs12-non-opacity pl-1">{{ getCurrency() }}</span></span>
                                 <v-checkbox :disabled="keepMoneyDisabled" :label="keepMoneyLabel" v-model="keepMoney" hide-details></v-checkbox>
                             </v-flex>
                         </v-layout>
                     </v-container>
-                    <small>* обозначает обязательные поля</small>
+                    <small class="fs12">* обозначает обязательные поля</small>
                 </v-card-text>
 
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn :loading="processState" :disabled="!isValid || processState" color="primary" dark @click.native="addTrade">
-                        {{ tradeId ? "Сохранить" : "Добавить" }}
+                        {{ editMode ? "Сохранить" : "Добавить" }}
                         <span slot="loader" class="custom-loader">
                         <v-icon light>fas fa-spinner fa-spin</v-icon>
                       </span>
@@ -195,9 +213,14 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     @Inject
     private marketHistoryService: MarketHistoryService;
     @Inject
+    private overviewService: OverviewService;
+    @Inject
     private dateTimeService: DateTimeService;
+    /** Информация о клиенте */
+    private clientInfo: Client = null;
     /** Операции начислений */
     private readonly CALCULATION_OPERATIONS = [Operation.COUPON, Operation.DIVIDEND, Operation.AMORTIZATION];
+    /** Выбранный портфель для добавления сделки. По умолчанию текущий */
     private portfolio: Portfolio = null;
 
     private assetTypes = AssetType.values();
@@ -257,14 +280,28 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private portfolioProModeEnabled = false;
 
     async mounted(): Promise<void> {
+        this.clientInfo = await this.clientService.getClientInfo();
+        await this.checkAllowedAddTrade();
+        this.portfolio = (this.data.store as any).currentPortfolio;
+        await this.setDialogParams();
+    }
+
+    @Watch("assetType")
+    private onAssetTypeChange(newValue: AssetType): void {
+        if (this.data.operation === undefined) {
+            this.operation = this.assetType.operations[0];
+        } else {
+            this.operation = this.data.operation;
+        }
+        this.clearFields();
+    }
+
+    private async setDialogParams(): Promise<void> {
         this.assetType = this.data.assetType || AssetType.STOCK;
         this.moneyCurrency = this.data.moneyCurrency || "RUB";
-        this.portfolio = (this.data.store as any).currentPortfolio;
-        const clientInfo = await this.clientService.getClientInfo();
-        this.portfolioProModeEnabled = TradeUtils.isPortfolioProModeEnabled(this.portfolio, clientInfo);
-        this.moneyResiduals = await this.portfolioService.getMoneyResiduals(this.portfolio.id);
         this.share = this.data.share || null;
         this.operation = this.data.operation || Operation.BUY;
+        await this.updatePortfolioInfo();
         if (this.data.quantity) {
             this.quantity = this.data.quantity;
         }
@@ -283,14 +320,22 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         }
     }
 
-    @Watch("assetType")
-    private onAssetTypeChange(newValue: AssetType): void {
-        if (this.data.operation === undefined) {
-            this.operation = this.assetType.operations[0];
-        } else {
-            this.operation = this.data.operation;
-        }
-        this.clearFields();
+    /**
+     * Загружает и устанавливает информацию о выбранном портфеле
+     * @param portfolioParams
+     */
+    @ShowProgress
+    private async setPortfolio(portfolioParams: PortfolioParams): Promise<void> {
+        this.portfolio = await this.overviewService.getById(portfolioParams.id);
+        await this.updatePortfolioInfo();
+    }
+
+    /**
+     * Обновляет данные диалога на основе выбранного портфеля
+     */
+    private async updatePortfolioInfo(): Promise<void> {
+        this.portfolioProModeEnabled = TradeUtils.isPortfolioProModeEnabled(this.portfolio, this.clientInfo);
+        this.moneyResiduals = await this.portfolioService.getMoneyResiduals(this.portfolio.id);
     }
 
     private async onTickerOrDateChange(): Promise<void> {
@@ -393,14 +438,21 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         };
         this.processState = true;
         try {
-            if (this.tradeId) {
+            if (this.editMode) {
                 await this.editTrade(tradeFields);
             } else {
                 await this.saveTrade(tradeFields);
             }
 
-            this.$snotify.info(`Сделка успешно ${this.tradeId ? "отредактирована" : "добавлена"}`);
-            this.close(true);
+            this.$snotify.info(`Сделка успешно ${this.editMode ? "отредактирована" : "добавлена"}`);
+            // отправляем в ответе true если выбранный портфель в диалоге совпадает с текущим,
+            // так как данные перезагружать не нужно если добавили в другой портфель
+            const currentPortfolio = this.portfolio.id === this.clientInfo.currentPortfolioId;
+            // сбрасываем кэш выбранного портфеля чтобы при переключении он загрузкился с новой сделкой
+            if (!currentPortfolio) {
+                this.overviewService.resetCacheForId(this.portfolio.id);
+            }
+            this.close(currentPortfolio);
         } catch (e) {
             this.handleError(e);
         } finally {
@@ -645,6 +697,25 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     private get nkdValidationString(): string {
         return [Operation.BUY, Operation.SELL].includes(this.operation) ? "required" : "";
+    }
+
+    private get editMode(): boolean {
+        return !!this.tradeId;
+    }
+
+    private get dialogTitle(): string {
+        return `${this.editMode ? "Редактирование" : "Добавление"} сделки${this.editMode ? "" : " в"}`;
+    }
+
+    /**
+     * Проверяет тариф на активность
+     */
+    private async checkAllowedAddTrade(): Promise<void> {
+        const tariffExpired = this.clientInfo.tariff !== Tariff.FREE && DateUtils.parseDate(this.clientInfo.paidTill).isBefore(dayjs());
+        if (tariffExpired) {
+            this.close();
+            await new TariffExpiredDialog().show(this.data.router);
+        }
     }
 
     // tslint:disable

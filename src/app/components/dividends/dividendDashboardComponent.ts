@@ -112,7 +112,7 @@ export class DividendDashboardComponent extends UI {
             mainValue: newValue.avgProfit,
             secondValue: newValue.lastYearYield,
             secondValueDesc: "Прибыль за последний год",
-            mainCurrency,
+            mainCurrency: "percent",
             secondCurrency: "percent",
             tooltip: "Дивидендная доходность выраженная в процентах годовых, по отношению " +
                 "к текущей стоимости инвестиций."

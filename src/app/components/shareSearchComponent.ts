@@ -28,7 +28,7 @@ import {Bond, Share} from "../types/types";
     template: `
         <v-autocomplete :items="filteredSharesMutated" v-model="share" @change="onShareSelect" @click:clear="onSearchClear"
                         :label="placeholder"
-                        :loading="shareSearch" no-data-text="Ничего не найдено" clearable required
+                        :loading="shareSearch" no-data-text="Ничего не найдено" clearable :required="required" :rules="rules"
                         dense :hide-no-data="true" :no-filter="true" :search-input.sync="searchQuery" :autofocus="autofocus">
             <template #selection="data">
                 {{ shareLabelSelected(data.item) }}
@@ -53,6 +53,11 @@ export class ShareSearchComponent extends UI {
 
     @Prop({required: false, type: Boolean, default: false})
     private autofocus: boolean;
+
+    @Prop({required: false, type: Boolean, default: false})
+    private required: boolean;
+    @Prop({required: false, type: Array, default: (): any[] => []})
+    private rules: any[];
 
     private filteredSharesMutated: Share[] = [];
     private assetTypeMutated: AssetType;
