@@ -5,7 +5,7 @@
         "strict": true,
         "module": "es2015",
         "moduleResolution": "node",
-        "target": "esnext",
+        "target": "es2015",
         "experimentalDecorators": true,
         "allowSyntheticDefaultImports": true,
         "resolveJsonModule": true,
