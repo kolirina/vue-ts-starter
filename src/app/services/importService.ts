@@ -50,7 +50,7 @@ export class DealsImportProvider extends (EnumType as IStaticEnum<DealsImportPro
     static readonly BCS = new DealsImportProvider("BCS", "БКС");
     static readonly TINKOFF = new DealsImportProvider("TINKOFF", "Тинькофф");
     static readonly PSBANK = new DealsImportProvider("PSBANK", "ПромСвязьБанк");
-    static readonly VTB24 = new DealsImportProvider("VTB24", "ВТВ 24");
+    static readonly VTB24 = new DealsImportProvider("VTB24", "ВТБ 24");
     static readonly OTKRYTIE = new DealsImportProvider("OTKRYTIE", "Открытие");
     static readonly QUIK = new DealsImportProvider("QUIK", "QUIK");
     static readonly FINAM = new DealsImportProvider("FINAM", "Финам");
