@@ -62,7 +62,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         <div class="title">Добавить ценную бумагу</div>
                                         <v-form ref="stockForm" v-model="stockFormIsValid" class="mt-4" lazy-validation>
                                             <v-layout align-center>
-                                                <share-search :asset-type="assetType" :topStock="topPaper" @change="onShareSelect"></share-search>
+                                                <share-search :asset-type="assetType" :filtered-shares="filteredShares" @change="onShareSelect"></share-search>
                                                 <div class="btn-open-dialog-top-paper">
                                                     <v-btn flat icon color="primary" class="ma-0" @click.stop="popularPaper">
                                                         <v-icon>stars</v-icon>
@@ -243,7 +243,7 @@ export class BalancesPage extends UI implements TradeDataHolder {
 
     private topPapers: Share[] = null;
 
-    private topPaper: Share = null;
+    private filteredShares: Share[] = null;
 
     @ShowProgress
     async created(): Promise<void> {
@@ -253,7 +253,8 @@ export class BalancesPage extends UI implements TradeDataHolder {
     private async popularPaper(): Promise<void> {
         const result: Share = await new PopularPaperDialog().show(this.topPapers);
         if (result) {
-            this.topPaper = result;
+            this.filteredShares = [result];
+            this.onShareSelect(this.filteredShares[0]);
         }
     }
 

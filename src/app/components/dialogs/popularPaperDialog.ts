@@ -33,7 +33,4 @@ import {Share} from "../../types/types";
     `
 })
 export class PopularPaperDialog extends CustomDialog<Share[], Share> {
-
-    private topPapers: Share[] = [];
-
 }

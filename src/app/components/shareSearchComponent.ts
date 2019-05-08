@@ -27,8 +27,9 @@ import {Bond, Share} from "../types/types";
     // language=Vue
     template: `
         <v-autocomplete :items="filteredSharesMutated" v-model="share" @change="onShareSelect" @click:clear="onSearchClear"
-                        :label="placeholder" :loading="shareSearch" no-data-text="Ничего не найдено" clearable :required="required" :rules="rules"
-                        dense :hide-no-data="true" :no-filter="true" :search-input.sync="searchQuery" :autofocus="autofocus" ref="shareSearch">
+                        :label="placeholder"
+                        :loading="shareSearch" no-data-text="Ничего не найдено" clearable :required="required" :rules="rules"
+                        dense :hide-no-data="true" :no-filter="true" :search-input.sync="searchQuery" :autofocus="autofocus">
             <template #selection="data">
                 {{ shareLabelSelected(data.item) }}
             </template>
@@ -36,13 +37,10 @@ import {Bond, Share} from "../types/types";
                 {{ shareLabelListItem(data.item) }}
             </template>
         </v-autocomplete>
+
     `
 })
 export class ShareSearchComponent extends UI {
-
-    $refs: {
-        shareSearch: any
-    };
 
     @Prop({required: true})
     private assetType: AssetType;
@@ -56,12 +54,8 @@ export class ShareSearchComponent extends UI {
     @Prop({required: false, type: Boolean, default: false})
     private autofocus: boolean;
 
-    @Prop({required: false, default: null})
-    private topStock: Share;
-
     @Prop({required: false, type: Boolean, default: false})
     private required: boolean;
-
     @Prop({required: false, type: Array, default: (): any[] => []})
     private rules: any[];
 
@@ -78,13 +72,6 @@ export class ShareSearchComponent extends UI {
     private share: Share = null;
     private shareSearch = false;
     private notFoundLabel = "Ничего не найдено";
-
-    @Watch("topStock")
-    private async setTopStock(): Promise<void> {
-        if (this.topStock) {
-            this.share = this.topStock;
-        }
-    }
 
     @Watch("filteredShares")
     private async onFilteredSharesChange(filteredShares: Share[]): Promise<void> {
