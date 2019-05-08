@@ -58,15 +58,11 @@ export class AuthComponent extends UI {
     }
 
     private async login(): Promise<void> {
-        try {
-            const token = this.$route.params.token;
-            this.localStorage.set(StoreKeys.TOKEN_KEY, token);
-            const client = await this.clientService.getClientInfo();
-            await this.loadUser({token: token, user: client});
-            await this.setCurrentPortfolio(this.$store.state[StoreType.MAIN].clientInfo.user.currentPortfolioId);
-            this.$router.push("/portfolio");
-        } catch (e) {
-            throw e;
-        }
+        const token = this.$route.params.token;
+        this.localStorage.set(StoreKeys.TOKEN_KEY, token);
+        const client = await this.clientService.getClientInfo();
+        await this.loadUser({token: token, user: client});
+        await this.setCurrentPortfolio(this.$store.state[StoreType.MAIN].clientInfo.user.currentPortfolioId);
+        this.$router.push("/portfolio");
     }
 }

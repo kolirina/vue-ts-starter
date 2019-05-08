@@ -307,6 +307,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         }
         if (this.data.ticker) {
             await this.setShareFromTicker(this.data.ticker);
+            this.fillFieldsFromShare();
             this.filteredShares = [this.share];
         } else if (this.data.tradeFields) {
             await this.setTradeFields();
