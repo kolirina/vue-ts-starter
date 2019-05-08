@@ -7,7 +7,8 @@ import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
 import {ConfirmDialog} from "../components/dialogs/confirmDialog";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {BtnReturn} from "../platform/dialogs/customDialog";
-import {CalendarDateParams, CalendarParams, DividendNewsItem, EventsAggregateInfo, EventService, ShareEvent} from "../services/eventService";
+import {Storage} from "../platform/services/storage";
+import {CalendarDateParams, CalendarEventParams, CalendarParams, DividendNewsItem, EventsAggregateInfo, EventService, ShareEvent} from "../services/eventService";
 import {AssetType} from "../types/assetType";
 import {Operation} from "../types/operation";
 import {Portfolio, TableHeader} from "../types/types";
@@ -253,13 +254,22 @@ const MainStore = namespace(StoreType.MAIN);
     `
 })
 export class EventsPage extends UI {
-
+    /** Стандартный набор типов для фильтрации если в локалсторедж ничего нету */
+    readonly CALENDAR_EVENTS: string[] = [
+        "coupon",
+        "amortization",
+        "dividend",
+        "repayment",
+        "custom"
+    ];
     @MainStore.Getter
     private portfolio: Portfolio;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
     private reloadPortfolio: (id: number) => Promise<void>;
     @Inject
     private eventService: EventService;
+    @Inject
+    private localStorage: Storage;
     /** События */
     private events: ShareEvent[] = [];
     private eventsAggregateInfo: EventsAggregateInfo = null;
@@ -298,7 +308,7 @@ export class EventsPage extends UI {
     /** Конфиг отображения мини календаря для пика месяца */
     private miniCalendarMenu: boolean = false;
     /** Типы ивентов которые отображаються на странице */
-    private typeCalendarEvents: string[] = this.eventService.calendarEvents;
+    private typeCalendarEvents: string[] = [];
     /** Типы ивентов для использования в шаблоне */
     private calendarEventsTypes = CalendarEventsTypes;
     /**
@@ -307,6 +317,8 @@ export class EventsPage extends UI {
      */
     @ShowProgress
     async created(): Promise<void> {
+        const eventsFromStorage = this.localStorage.get<string[]>("calendarEventsParams", null);
+        this.typeCalendarEvents = eventsFromStorage ? [...eventsFromStorage] : [...this.CALENDAR_EVENTS];
         await this.loadEvents();
         await this.loadDividendNews();
         this.getMonthDay(DateUtils.getYearDate(this.calendarStartDate), DateUtils.getMonthDate(this.calendarStartDate));
@@ -319,10 +331,22 @@ export class EventsPage extends UI {
         await this.loadDividendNews();
     }
 
-    /** Получаем уже отфильтрованные данные для календаря */
+    /** Получаем данные для календаря */
     @ShowProgress
     private async getCalendarEvents(): Promise<void> {
-        this.calendarEvents = await this.eventService.getCalendarEvents(this.calendarParams, this.typeCalendarEvents);
+        const result: CalendarEventParams[] = await this.eventService.getCalendarEvents(this.calendarParams);
+        await this.filterCalendarEvents(result);
+    }
+
+    /** Фильтруем данные календаря */
+    private filterCalendarEvents(calendarEvents: CalendarEventParams[]): void {
+        const map: CalendarParams = {};
+        calendarEvents.forEach((e: CalendarEventParams) => {
+            if (this.typeCalendarEvents.includes(e.styleClass)) {
+                (map[e.startDate] = map[e.startDate] || []).push(e);
+            }
+        });
+        this.calendarEvents = map;
     }
 
     /** Устанавливаем чекбоксы в состояние согласно фильтру */
@@ -364,7 +388,7 @@ export class EventsPage extends UI {
         } else {
             this.typeCalendarEvents.push(typeEvents);
         }
-        await this.eventService.setCaneldarEvents(this.typeCalendarEvents);
+        this.localStorage.set<string[]>("calendarEventsParams", this.typeCalendarEvents);
         this.getCalendarEvents();
     }
 

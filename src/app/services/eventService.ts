@@ -1,35 +1,14 @@
 import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {Http} from "../platform/services/http";
-import {Storage} from "../platform/services/storage";
 import {Share} from "../types/types";
 
 @Service("EventService")
 @Singleton
 export class EventService {
 
-    /** Стандартный набор типов для фильтрации если в локалсторедж ничего нету */
-    readonly CALENDAR_EVENTS: string[] = [
-        "coupon",
-        "amortization",
-        "dividend",
-        "repayment",
-        "custom"
-    ];
-
-    /** Массив типов для фильтрации */
-    calendarEvents: string[] = null;
-
     @Inject
     private http: Http;
-    @Inject
-    private localStorage: Storage;
-
-    /** Получаем из локалсторедж данные, если нету то ставим стандартный набор */
-    constructor() {
-        const eventsFromStorage = this.localStorage.get<string[]>("calendarEventsParams", null);
-        this.calendarEvents = eventsFromStorage ? [...eventsFromStorage] : [...this.CALENDAR_EVENTS];
-    }
 
     /**
      * Возвращает список событий пользователя
@@ -40,27 +19,11 @@ export class EventService {
     }
 
     /**
-     * Получаем данные и фильтруем их
+     * Получаем данные ивентов календаря
      * @param dateParams даты начала и конца месяца
-     * @param filterEvents типы ивентов для начальной фильтрации
      */
-    async getCalendarEvents(dateParams: CalendarDateParams, filterEvents: string[]): Promise<CalendarParams> {
-        const result: CalendarEventParams[] = await this.http.post(`/events/calendar`, dateParams);
-        const map: CalendarParams = {};
-        result.forEach((e: CalendarEventParams) => {
-            if (filterEvents.includes(e.styleClass)) {
-                (map[e.startDate] = map[e.startDate] || []).push(e);
-            }
-        });
-        return map;
-    }
-
-    /**
-     * Запоминаем параметры фильтрации
-     * @param filterEvents типы ивентов для фильтрации
-     */
-    async setCaneldarEvents(filterEvents: string[]): Promise<void> {
-        this.localStorage.set<string[]>("calendarEventsParams", filterEvents);
+    async getCalendarEvents(dateParams: CalendarDateParams): Promise<CalendarEventParams[]> {
+        return await this.http.post(`/events/calendar`, dateParams);
     }
 
     /**
