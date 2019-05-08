@@ -13,9 +13,9 @@ import {Share} from "../../types/types";
                 </v-card-title>
                 <v-card-text class="pt-0">
                     <v-layout wrap class="px-3">
-                        <v-flex v-for="paper in data" :key="paper.ticker" xs12 sm6 md4 lg2>
-                            <div @click="close(paper)">
-                                <v-chip class="fs14 top-paper-item">{{ paper.ticker }}</v-chip>
+                        <v-flex v-for="share in data" :key="share.ticker" xs12 sm6 md4 lg2>
+                            <div @click="close(share)">
+                                <v-chip class="fs14 top-paper-item" :title="share.shortname">{{ share.ticker }}</v-chip>
                             </div>
                         </v-flex>
                     </v-layout>

@@ -242,20 +242,20 @@ export class BalancesPage extends UI implements TradeDataHolder {
 
     private total: string = null;
 
-    private topPapers: Share[] = null;
+    private topShares: Share[] = null;
 
     private filteredShares: Share[] = null;
 
     @ShowProgress
     async created(): Promise<void> {
-        this.topPapers = await this.marketService.loadTopStocks();
+        this.topShares = await this.marketService.loadTopStocks();
     }
 
     private async popularPaper(): Promise<void> {
-        const share: Share = await new PopularPaperDialog().show(this.topPapers);
+        const share: Share = await new PopularPaperDialog().show(this.topShares);
         if (share) {
             this.filteredShares = [share];
-            this.onShareSelect(share);
+            await this.onShareSelect(share);
         }
     }
 
