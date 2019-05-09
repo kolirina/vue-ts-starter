@@ -143,9 +143,12 @@ export class BondQuotes extends UI {
     };
 
     private bonds: Bond[] = [];
-
-    @Watch("pagination", {deep: true})
-    private async onTablePaginationChange(): Promise<void> {
+    /**
+     * Обрыбатывает событие изменения паджинации и загружает данные
+     * @param pagination
+     */
+    private async onTablePaginationChange(pagination: Pagination): Promise<void> {
+        this.pagination = pagination;
         await this.loadBonds();
     }
 
@@ -169,11 +172,6 @@ export class BondQuotes extends UI {
         this.bonds = response.content;
         this.pagination.totalItems = response.totalItems;
         this.pagination.pages = response.pages;
-    }
-
-    private async paginationChange(page: number): Promise<void> {
-        this.pagination.page = page;
-        await this.loadBonds;
     }
 
     private async openTradeDialog(bond: Bond, operation: Operation): Promise<void> {
