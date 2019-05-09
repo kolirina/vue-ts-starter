@@ -88,6 +88,7 @@ export class DateUtils {
 export enum DateFormat {
     DATE = "DD.MM.YYYY",
     DATE2 = "YYYY-MM-DD",
+    DATE_TIME = "DD.MM.YYYY HH:mm",
     TIME = "HH:mm",
     CURRENT_YEAR_FORMAT = "DD MMMM",
     ANOTHER_YEAR_FORMAT = "DD MMMM YYYY"

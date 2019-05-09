@@ -65,7 +65,7 @@ const MainStore = namespace(StoreType.MAIN);
                         <stock-link :ticker="props.item.ticker"></stock-link>
                     </td>
                     <td class="text-xs-left">{{ props.item.shortName }}</td>
-                    <td class="text-xs-right">{{ props.item.date }}</td>
+                    <td class="text-xs-right">{{ props.item.date | date }}</td>
                     <td class="text-xs-right ii-number-cell">{{ props.item.quantity | integer }}</td>
                     <td class="text-xs-right ii-number-cell">
                         {{ props.item.perOne | amount(true) }}&nbsp;<span class="second-value">{{ props.item.perOne | currencySymbol }}
