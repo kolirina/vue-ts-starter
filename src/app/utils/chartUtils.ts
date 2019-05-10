@@ -329,7 +329,7 @@ export class ChartUtils {
                 pie: {
                     allowPointSelect: true,
                     cursor: "pointer",
-                    colors: [ 
+                    colors: [
                         "#f5f5dc", "#000000", "#00ffff", "#00008b", "#008b8b", "#a9a9a9", "#556b2f", "#ff8c00", "#8b0000", "#800080",
                         "#9400d3", "#ff00ff", "#ffd700", "#008000", "#4b0082", "#add8e6", "#90ee90", "#d3d3d3", "#ffb6c1", "#ff0000",
                         "#ffffe0", "#00ff00", "#ff00ff", "#800000", "#000080", "#808000", "#ffa500", "#ffc0cb", "#800080", "#c0c0c0",
