@@ -30,7 +30,7 @@ const MainStore = namespace(StoreType.MAIN);
             <v-card flat class="info-share-page">
                 <share-search :asset-type="assetType.BOND" @change="onShareSelect"></share-search>
                 <div v-if="share">
-                    <v-layout class="info-share-page__name-stock-block" justify-space-between align-center>
+                    <v-layout wrap wrap class="info-share-page__name-stock-block" justify-space-between align-center>
                         <div>
                             <div class="info-share-page__name-stock-block__title selectable">
                                 <span>
@@ -47,10 +47,10 @@ const MainStore = namespace(StoreType.MAIN);
                             </div>
                         </div>
                         <div>
-                            <v-btn class="btn" @click.stop="openDialog">
+                            <v-btn class="btn mt-1" @click.stop="openDialog">
                                 Добавить в портфель
                             </v-btn>
-                            <v-btn class="btn" @click.stop="openCreateNotificationDialog">
+                            <v-btn class="btn mt-1" @click.stop="openCreateNotificationDialog">
                                 Добавить уведомление
                             </v-btn>
                         </div>
@@ -168,7 +168,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <v-spacer></v-spacer>
                     <chart-export-menu @print="print" @exportTo="exportTo($event)"></chart-export-menu>
                 </v-card-title>
-                <v-card-text>
+                <v-card-text class="chart-overflow">
                     <bond-payments-chart ref="chartComponent" :data="paymentsData" title="Платежи по бумаге"></bond-payments-chart>
                 </v-card-text>
             </v-card>

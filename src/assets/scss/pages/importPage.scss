@@ -39,7 +39,9 @@
       }
     }
     .section-upload-file{
-      margin: 20px 0px 16px;
+      .test {
+        margin: 20px 0px 16px;
+      }
       .btn-show-instruction {
         font-size: 12px;
         line-height: 22px;
@@ -60,6 +62,7 @@
         padding: 8px 20px;
         height: 44px;
         text-decoration: none !important;
+        white-space: nowrap;
       }
       .reselect-file-btn {
         .file-link__text {
@@ -67,6 +70,7 @@
           background: none;
           color: #3D4656;
           border: 1px solid #CACED5;
+          white-space: nowrap;
         }
       }
     }
