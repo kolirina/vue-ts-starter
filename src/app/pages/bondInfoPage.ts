@@ -30,7 +30,7 @@ const MainStore = namespace(StoreType.MAIN);
             <v-card flat class="info-share-page">
                 <share-search :asset-type="assetType.BOND" @change="onShareSelect"></share-search>
                 <div v-if="share">
-                    <v-layout wrap wrap class="info-share-page__name-stock-block" justify-space-between align-center>
+                    <v-layout wrap class="info-share-page__name-stock-block" justify-space-between align-center>
                         <div>
                             <div class="info-share-page__name-stock-block__title selectable">
                                 <span>
@@ -67,7 +67,7 @@ const MainStore = namespace(StoreType.MAIN);
                             <div class="info-about-stock__title">
                                 Об облигации
                             </div>
-                            <table class="info-about-stock__content">
+                            <table class="info-about-stock__content information-table">
                                     <thead>
                                         <tr>
                                             <th class="indent-between-title-value-200"></th>
@@ -116,7 +116,7 @@ const MainStore = namespace(StoreType.MAIN);
                             <div class="info-about-stock__title">
                                 События
                             </div>
-                            <table class="info-about-stock__content">
+                            <table class="info-about-stock__content information-table">
                                 <thead>
                                     <tr>
                                         <th class="indent-between-title-value-200"></th>
