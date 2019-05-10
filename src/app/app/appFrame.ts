@@ -14,6 +14,7 @@ import {Storage} from "../platform/services/storage";
 import {ClientInfo, ClientService} from "../services/clientService";
 import {StoreKeys} from "../types/storeKeys";
 import {Portfolio} from "../types/types";
+import {CommonUtils} from "../utils/commonUtils";
 import {UiStateHelper} from "../utils/uiStateHelper";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
@@ -134,32 +135,30 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-layout>
                 </v-navigation-drawer>
                 <v-content>
-                    <vue-scroll :ops="horizontalScrollConfig">
-                        <div class="wrapper-for-scroll-content">
-                            <v-container fluid class="paddT0">
-                                <v-slide-y-transition mode="out-in">
-                                    <!--<keep-alive :include="cachedPages">-->
-                                    <router-view></router-view>
-                                    <!--</keep-alive>-->
-                                </v-slide-y-transition>
-                            </v-container>
-                        </div>
-                        <v-footer color="#f7f9fb" class="footer-app">
-                            <v-layout class="footer-app-wrap-content" wrap align-center justify-space-between>
-                                <div class="footer-app-wrap-content__text"><i class="far fa-copyright"></i> {{ copyrightInfo }}</div>
+                    <div class="wrapper-for-scroll-content">
+                        <v-container fluid class="paddT0">
+                            <v-slide-y-transition mode="out-in">
+                                <!--<keep-alive :include="cachedPages">-->
+                                <router-view></router-view>
+                                <!--</keep-alive>-->
+                            </v-slide-y-transition>
+                        </v-container>
+                    </div>
+                    <v-footer color="#f7f9fb" class="footer-app">
+                        <v-layout class="footer-app-wrap-content" wrap align-center justify-space-between>
+                            <div class="footer-app-wrap-content__text"><i class="far fa-copyright"></i> {{ copyrightInfo }}</div>
 
-                                <div>
-                                    <a class="footer-app-wrap-content__text email-btn"
-                                       @click.stop="openFeedBackDialog"><span>Напишите нам</span> <i class="fas fa-envelope"></i>
-                                    </a>
+                            <div>
+                                <a class="footer-app-wrap-content__text email-btn"
+                                   @click.stop="openFeedBackDialog"><span>Напишите нам</span> <i class="fas fa-envelope"></i>
+                                </a>
 
-                                    <a class="footer-app-wrap-content__text decorationNone" href="https://telegram.me/intelinvestSupportBot">
-                                        <span>Telegram</span> <i class="fab fa-telegram"></i>
-                                    </a>
-                                </div>
-                            </v-layout>
-                        </v-footer>
-                    </vue-scroll>
+                                <a class="footer-app-wrap-content__text decorationNone" href="https://telegram.me/intelinvestSupportBot">
+                                    <span>Telegram</span> <i class="fab fa-telegram"></i>
+                                </a>
+                            </div>
+                        </v-layout>
+                    </v-footer>
                 </v-content>
             </template>
         </v-app>`,
@@ -211,16 +210,9 @@ export class AppFrame extends UI {
     private cachedPages = ["PortfolioPage"];
 
     private drawer = true;
-    /* Конфиг для горизонтального скролла страницы */
-    private horizontalScrollConfig: any = {
-        bar: {
-            keepShow: true
-        }
-    };
 
     private mini = true;
     private loading = false;
-    private publicZone = false;
 
     private mainSection: NavBarItem[] = [
         {title: "Портфель", action: "portfolio", icon: "fas fa-briefcase"},
@@ -247,15 +239,17 @@ export class AppFrame extends UI {
 
     @ShowProgress
     async created(): Promise<void> {
-        this.publicZone = this.$route.meta.public;
-        if (this.localStorage.get(StoreKeys.TOKEN_KEY, null)) {
+        // если стор не прогружен, это не публичная зона и это не переход по авторизации, пробуем загрузить информацию о клиенте
+        if (!CommonUtils.exists(this.$store.state[StoreType.MAIN].clientInfo) && this.externalAuth && !this.publicZone) {
             await this.startup();
         }
         // если удалось восстановить state, значит все уже загружено
-        if (this.$store.state[StoreType.MAIN].clientInfo || this.publicZone) {
-            this.isNotifyAccepted = UiStateHelper.lastUpdateNotification === NotificationUpdateDialog.DATE;
+        if (this.$store.state[StoreType.MAIN].clientInfo) {
+            if (!this.publicZone) {
+                this.isNotifyAccepted = UiStateHelper.lastUpdateNotification === NotificationUpdateDialog.DATE;
+                this.showUpdatesMessage();
+            }
             this.loggedIn = true;
-            this.showUpdatesMessage();
         }
     }
 
@@ -265,8 +259,6 @@ export class AppFrame extends UI {
             const client = await this.clientService.getClientInfo();
             await this.loadUser({token: this.localStorage.get(StoreKeys.TOKEN_KEY, null), user: client});
             await this.setCurrentPortfolio(this.$store.state[StoreType.MAIN].clientInfo.user.currentPortfolioId);
-        } catch (e) {
-            throw e;
         } finally {
             this.loading = false;
         }
@@ -277,14 +269,8 @@ export class AppFrame extends UI {
             this.$snotify.warning("Заполните поля");
             return;
         }
-        try {
-            const clientInfo = await this.clientService.login({username: this.username, password: this.password});
-            await this.loadUser(clientInfo);
-        } catch (e) {
-            console.error("Ошибка при входе", e);
-            this.$snotify.error("Ошибка при входе");
-            return;
-        }
+        const clientInfo = await this.clientService.login({username: this.username, password: this.password});
+        await this.loadUser(clientInfo);
         await this.setCurrentPortfolio(this.$store.state[StoreType.MAIN].clientInfo.user.currentPortfolioId);
         this.loggedIn = true;
     }
@@ -351,6 +337,10 @@ export class AppFrame extends UI {
 
     private get settingsSelected(): boolean {
         return this.$route.path.indexOf("settings") !== -1;
+    }
+
+    private get publicZone(): boolean {
+        return this.$route.meta.public;
     }
 }
 

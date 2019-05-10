@@ -25,7 +25,7 @@ import {DateFormat, DateUtils} from "../../utils/dateUtils";
                     <span>
                         Настройка доступа
                     </span>
-                    <span class="type-dialog-title">
+                    <span class="items-dialog-title">
                         <v-menu bottom content-class="dialog-type-menu" nudge-bottom="20" bottom right>
                             <span slot="activator">
                                 <span>
