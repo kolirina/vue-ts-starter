@@ -43,7 +43,7 @@ import {StoreType} from "../../vuex/storeType";
             <v-card flat class="info-share-page">
                 <share-search :asset-type="assetType.STOCK" @change="onShareSelect"></share-search>
                 <div v-if="share">
-                    <v-layout class="info-share-page__name-stock-block" justify-space-between align-center>
+                    <v-layout class="info-share-page__name-stock-block" justify-space-between align-center wrap>
                         <div>
                             <div class="info-share-page__name-stock-block__title selectable">
                                 <span>
@@ -74,10 +74,10 @@ import {StoreType} from "../../vuex/storeType";
                             </div>
                         </div>
                         <div v-if="!publicZone">
-                            <v-btn class="btn" @click.stop="openDialog">
+                            <v-btn class="btn mt-1" @click.stop="openDialog">
                                 Добавить в портфель
                             </v-btn>
-                            <v-btn class="btn" @click.stop="openCreateNotificationDialog">
+                            <v-btn class="btn mt-1" @click.stop="openCreateNotificationDialog">
                                 Добавить уведомление
                             </v-btn>
                         </div>
@@ -94,7 +94,7 @@ import {StoreType} from "../../vuex/storeType";
                             <div class="info-about-stock__title">
                                 Об акции
                             </div>
-                            <table class="info-about-stock__content">
+                            <table class="info-about-stock__content information-table">
                                 <thead>
                                 <tr>
                                     <th class="indent-between-title-value-200"></th>
@@ -148,7 +148,7 @@ import {StoreType} from "../../vuex/storeType";
                                 <div class="info-about-stock__title">
                                     Динамика
                                 </div>
-                                <table class="info-about-stock__content">
+                                <table class="info-about-stock__content information-table">
                                     <thead>
                                     <tr>
                                         <th class="indent-between-title-value-110"></th>
@@ -196,7 +196,7 @@ import {StoreType} from "../../vuex/storeType";
                                 <div class="info-about-stock__title">
                                     За год
                                 </div>
-                                <table class="info-about-stock__content">
+                                <table class="info-about-stock__content information-table">
                                     <thead>
                                     <tr>
                                         <th class="indent-between-title-value-100"></th>
@@ -232,7 +232,7 @@ import {StoreType} from "../../vuex/storeType";
                             <div class="info-about-stock__title">
                                 Доходность
                             </div>
-                            <table class="info-about-stock__content">
+                            <table class="info-about-stock__content information-table">
                                 <thead>
                                 <tr>
                                     <th class="indent-between-title-value-200"></th>
@@ -310,7 +310,7 @@ import {StoreType} from "../../vuex/storeType";
                         <v-spacer></v-spacer>
                         <chart-export-menu @print="print" @exportTo="exportTo($event)"></chart-export-menu>
                     </v-card-title>
-                    <v-card-text>
+                    <v-card-text class="chart-overflow">
                         <dividend-chart ref="chartComponent" :data="dividends" title="Дивиденды"></dividend-chart>
                     </v-card-text>
                 </v-card>
