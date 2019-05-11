@@ -203,8 +203,9 @@ const MainStore = namespace(StoreType.MAIN);
                             <v-btn v-if="importProviderFeatures && files.length" color="primary" class="big_btn margT20 mr-3" @click="uploadFile">Загрузить</v-btn>
                         </div>
                         <div class="margT20">
-                            <file-link  @select="onFileAdd" :accept="allowedExtensions"
-                            v-if="importProviderFeatures && files.length" class="reselect-file-btn">Выбрать другой файл</file-link>
+                            <file-link @select="onFileAdd" :accept="allowedExtensions"
+                                       v-if="importProviderFeatures && files.length" class="reselect-file-btn">Выбрать другой файл
+                            </file-link>
                         </div>
                         <div class="margT20">
                             <file-link @select="onFileAdd" :accept="allowedExtensions" v-if="importProviderFeatures && !files.length">Выбрать файл</file-link>
