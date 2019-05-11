@@ -294,13 +294,13 @@ export class TariffsPage extends UI {
     async created(): Promise<void> {
         this.clientService.resetClientInfo();
         await this.reloadUser();
-        if (this.$route.params.status) {
-            try {
-                await this.tariffService.getOrderState();
+        // проверяем статус заказа
+        try {
+            const status = await this.tariffService.getOrderState();
+            if (status === "CONFIRMED") {
                 await this.afterSuccessPayment();
-            } finally {
-                this.$router.push({name: "tariffs"});
             }
+        } catch (ignored) {
         }
     }
 
