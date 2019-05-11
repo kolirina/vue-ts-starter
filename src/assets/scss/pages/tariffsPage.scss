@@ -4,6 +4,22 @@
   margin: 0 auto;
   color: $main--font-color;
 
+
+  &-agreement {
+    width: 215px;
+    margin: auto;
+
+    a {
+      font-size: 13px;
+    }
+
+    .v-input--checkbox {
+      label {
+        font-size: 13px;
+      }
+    }
+  }
+
   &__header {
     display: flex;
     justify-content: space-between;
@@ -37,6 +53,10 @@
 
   &__plans {
     min-width: 800px;
+
+    .v-btn {
+      margin-bottom: 20px !important;
+    }
 
     table {
       border-collapse: collapse;

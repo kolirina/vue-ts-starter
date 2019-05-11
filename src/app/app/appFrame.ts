@@ -73,7 +73,7 @@ const MainStore = namespace(StoreType.MAIN);
                             <portfolio-switcher v-if="clientInfo && portfolio" :mini="mini"></portfolio-switcher>
                         </v-layout>
                         <div v-if="!mini" :class="['wrap-toogle-menu-btn', 'small-screen-hide-toogle-menu-btn']">
-                            <v-btn @click="togglePanel" fab dark small depressed color="#F0F3F8" class="toogle-menu-btn">
+                            <v-btn @click="togglePanel" fab dark small depressed color="#F0F3F8" :class="['toogle-menu-btn', publicZone ? 'public-toogle-menu-btn' : '']">
                                 <v-icon dark>keyboard_arrow_left</v-icon>
                             </v-btn>
                         </div>
