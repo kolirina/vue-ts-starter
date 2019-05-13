@@ -85,7 +85,7 @@ export class MarketService {
      * Загружает и возвращает список облигаций
      */
     async loadBonds(offset: number = 0, pageSize: number = 50, sortColumn: string,
-                    descending: boolean = false, search: string, showUserShares: boolean): Promise<PageableResponse<Bond>> {
+                    descending: boolean = false, search: string = null, showUserShares: boolean = false): Promise<PageableResponse<Bond>> {
         const urlParams: UrlParams = {offset, pageSize, search, showUserShares};
         if (sortColumn) {
             urlParams.sortColumn = sortColumn.toUpperCase();

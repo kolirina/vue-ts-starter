@@ -114,7 +114,7 @@ export class BondQuotes extends UI {
 
     private searchQuery: string = "";
 
-    private showUserShares: boolean = this.localStorage.get<boolean>("showUserBonds", null);
+    private showUserShares: boolean = false;
 
     private searchPlaceholder: string = "Поиск";
 
@@ -141,6 +141,10 @@ export class BondQuotes extends UI {
         totalItems: 0,
         pages: 0
     };
+
+    async created(): Promise<void> {
+        this.showUserShares = this.localStorage.get<boolean>("showUserBonds", null);
+    }
 
     private bonds: Bond[] = [];
     /**

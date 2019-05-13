@@ -113,7 +113,7 @@ export class StockQuotes extends UI {
         {text: "", value: "", align: "center", sortable: false}
     ];
 
-    private showUserShares: boolean = this.localStorage.get<boolean>("showUserStocks", null);
+    private showUserShares: boolean = false;
 
     private pagination: Pagination = {
         descending: false,
@@ -125,6 +125,10 @@ export class StockQuotes extends UI {
     };
 
     private stocks: Stock[] = [];
+
+    async created(): Promise<void> {
+        this.showUserShares = this.localStorage.get<boolean>("showUserStocks", null);
+    }
 
     /**
      * Обрыбатывает событие изменения паджинации и загружает данные
