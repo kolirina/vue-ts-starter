@@ -140,6 +140,21 @@ const MainStore = namespace(StoreType.MAIN);
                 <v-card-text>
                     <v-data-table v-if="dividendNews.length" :headers="dividendNewsHeaders" :items="dividendNews" item-key="id" :custom-sort="customSortNews"
                                   class="dividend-news-table events-table" hide-actions must-sort>
+                        <template #headerCell="props">
+                            <v-tooltip v-if="props.header.tooltip" content-class="custom-tooltip-wrap" bottom>
+                                <template #activator="{ on }">
+                                    <span class="data-table__header-with-tooltip" v-on="on">
+                                        {{ props.header.text }}
+                                    </span>
+                                </template>
+                                <span>
+                                  {{ props.header.tooltip }}
+                                </span>
+                            </v-tooltip>
+                            <span v-else>
+                                {{ props.header.text }}
+                            </span>
+                        </template>
                         <template #items="props">
                             <tr class="selectable">
                                 <td class="text-xs-left pl-30">
@@ -151,6 +166,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 <td class="text-xs-right ii-number-cell">
                                     {{ props.item.recCommonValue | number }}
                                     <span class="amount__currency">{{ props.item.currency | currencySymbolByCurrency }}</span>
+                                    ({{ props.item.yield }} %)
                                 </td>
                                 <td class="text-xs-center pr-3">{{ props.item.source }}</td>
                             </tr>
@@ -285,13 +301,13 @@ export class EventsPage extends UI {
         {text: "Начислено", align: "right", value: "cleanAmount", width: "150"},
         {text: "", value: "actions", align: "center", width: "25", sortable: false}
     ];
-    /** Зголовки таблицы Дивидендные новости */
+    /** Заголовки таблицы Дивидендные новости */
     private dividendNewsHeaders: TableHeader[] = [
         {text: "Тикер", align: "left", value: "ticker", width: "50"},
         {text: "Компания", align: "left", value: "shortname"},
         {text: "Дата собрания акционеров", align: "right", value: "meetDate", width: "70"},
         {text: "Закрытие реестра", align: "right", value: "cutDate", width: "70"},
-        {text: "Размер возможных дивидендов", align: "right", value: "recCommonValue", width: "60"},
+        {text: "Размер возможных дивидендов", align: "right", value: "recCommonValue", width: "60", tooltip: "Доходность рассчитана относительно текущей цена акции."},
         {text: "Источник", align: "center", value: "source", sortable: false, width: "70"}
     ];
     /** Параметры дат для отправки в апи */

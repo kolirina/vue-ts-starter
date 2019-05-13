@@ -58,8 +58,8 @@ export class DateUtils {
 
     /**
      * Форматирование даты для отображения
-     * @param date дата
-     * @param format формат
+     * @param {date} дата
+     * @param {format} формат
      * @return {string} отформатированная дата
      */
     static formatDate(date: dayjs.Dayjs, format: string = DateFormat.DATE): string {
@@ -89,7 +89,7 @@ export class DateUtils {
      * @return {string} дата начала месяца в виде строки
      */
     static startMonthDate(year: number, month: number): string {
-        return dayjs(`${year}` + "-" + `${month + 1}` + "-" + "01").format(DateFormat.DATE2);
+        return dayjs(year + "-" + (month + 1) + "-" + "01").format(DateFormat.DATE2);
     }
 
     /**
@@ -99,7 +99,7 @@ export class DateUtils {
      * @return {string} дата конца месяца в виде строки
      */
     static endMonthDate(year: number, month: number): string {
-        return dayjs(`${year}` + "-" + `${month + 1}` + "-" + `${new Date(year, month + 1, 0).getDate()}`).format(DateFormat.DATE2);
+        return dayjs(year + "-" + (month + 1) + "-" + new Date(year, month + 1, 0).getDate()).format(DateFormat.DATE2);
     }
 
     /**
@@ -108,7 +108,7 @@ export class DateUtils {
      * @return {string} дата для отображения на странице
      */
     static formatMonthYear(date: string): string {
-        return dayjs(date).locale("ru").format("MMMM YYYY");
+        return dayjs(date).locale("ru").format(DateFormat.DATE3);
     }
 
     /**
@@ -137,6 +137,7 @@ export enum DateFormat {
     DATE = "DD.MM.YYYY",
     DATE2 = "YYYY-MM-DD",
     DATE3 = "MMMM YYYY",
+    DATE_TIME = "DD.MM.YYYY HH:mm",
     TIME = "HH:mm",
     CURRENT_YEAR_FORMAT = "DD MMMM",
     ANOTHER_YEAR_FORMAT = "DD MMMM YYYY"

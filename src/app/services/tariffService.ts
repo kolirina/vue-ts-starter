@@ -29,10 +29,10 @@ export class TariffService {
     }
 
     /**
-     * Проверяет оплату заказа
+     * Проверяет и возвращает статус заказа
      */
-    async getOrderState(): Promise<void> {
-        await this.http.get("/tariff/order-state");
+    async getOrderState(): Promise<string> {
+        return this.http.get<string>("/tariff/order-state");
     }
 }
 
