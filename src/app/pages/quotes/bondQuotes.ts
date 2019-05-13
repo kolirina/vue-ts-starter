@@ -142,11 +142,12 @@ export class BondQuotes extends UI {
         pages: 0
     };
 
+    private bonds: Bond[] = [];
+
     async created(): Promise<void> {
         this.showUserShares = this.localStorage.get<boolean>("showUserBonds", null);
     }
 
-    private bonds: Bond[] = [];
     /**
      * Обрыбатывает событие изменения паджинации и загружает данные
      * @param pagination
