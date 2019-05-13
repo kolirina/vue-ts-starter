@@ -1,5 +1,4 @@
 import dayjs from "dayjs";
-import "dayjs/locale/ru";
 
 /**
  * Утилитный клас для работы с датами
@@ -37,7 +36,7 @@ export class DateUtils {
     }
 
     /**
-     * Возвращает объект типа {@link dayjs.Dayjs} из строки в указанном формате (по умолчанию - {@link DateFormat.DATE}
+     * Возвращает объект типа {@link dayjs.Dayjs} из строки
      * @param {string} stringValue строковое значение даты
      * @return {dayjs.Dayjs}
      */
@@ -58,7 +57,7 @@ export class DateUtils {
 
     /**
      * Форматирование даты для отображения
-     * @param {date} дата
+     * @param date дата
      * @param {format} формат
      * @return {string} отформатированная дата
      */
@@ -108,7 +107,7 @@ export class DateUtils {
      * @return {string} дата для отображения на странице
      */
     static formatMonthYear(date: string): string {
-        return dayjs(date).locale("ru").format(DateFormat.DATE3);
+        return dayjs(date).format(DateFormat.DATE3);
     }
 
     /**

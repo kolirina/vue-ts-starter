@@ -211,32 +211,15 @@ const MainStore = namespace(StoreType.MAIN);
                 <v-card-text v-if="calendarEvents" class="events-calendar-wrap">
                     <v-layout class="pl-3">
                         <div class="pl-3">
-                            <v-menu
-                                v-model="miniCalendarMenu"
-                                :close-on-content-click="false"
-                                full-width
-                                bottom right
-                                nudge-bottom="23"
-                                nudge-right="6"
-                                max-width="290"
-                            >
+                            <v-menu v-model="miniCalendarMenu" :close-on-content-click="false" full-width bottom right nudge-bottom="23" nudge-right="6" max-width="290">
                                 <template v-slot:activator="{ on }">
                                     <v-flex :class="['select-date-input', miniCalendarMenu ? 'rotate-icons' : '']">
-                                        <v-input
-                                            append-icon="keyboard_arrow_down"
-                                            v-on="on"
-                                            hide-details
-                                        >
+                                        <v-input append-icon="keyboard_arrow_down" v-on="on" hide-details>
                                             {{ formattedDate }}
                                         </v-input>
                                     </v-flex>
                                 </template>
-                                <v-date-picker
-                                    v-model="calendarStartDate"
-                                    type="month"
-                                    locale="ru"
-                                    @change="changeMonth()"
-                                ></v-date-picker>
+                                <v-date-picker v-model="calendarStartDate" type="month" locale="ru" @change="changeMonth()"></v-date-picker>
                             </v-menu>
                         </div>
                     </v-layout>
@@ -288,6 +271,7 @@ export class EventsPage extends UI {
     private localStorage: Storage;
     /** События */
     private events: ShareEvent[] = [];
+    /** Агрегированная информация по событиям */
     private eventsAggregateInfo: EventsAggregateInfo = null;
     /** Дивидендные новости */
     private dividendNews: DividendNewsItem[] = [];
@@ -327,6 +311,7 @@ export class EventsPage extends UI {
     private typeCalendarEvents: string[] = [];
     /** Типы ивентов для использования в шаблоне */
     private calendarEventsTypes = CalendarEventsTypes;
+
     /**
      * Инициализация данных
      * @inheritDoc
@@ -393,16 +378,11 @@ export class EventsPage extends UI {
 
     /** Изменение параметров фильтрации */
     private async changeFilterParams(typeEvents: CalendarEventsTypes): Promise<void> {
-        let i: number = null;
-        this.typeCalendarEvents.forEach((currentValue, index) => {
-            if (currentValue === typeEvents) {
-                i = index;
-            }
-        });
-        if (i || i === 0) {
-            this.typeCalendarEvents.splice(i, 1);
-        } else {
+        const includes = this.typeCalendarEvents.includes(typeEvents);
+        if (!includes) {
             this.typeCalendarEvents.push(typeEvents);
+        } else {
+            this.typeCalendarEvents.splice(this.typeCalendarEvents.indexOf(typeEvents), 1);
         }
         this.localStorage.set<string[]>("calendarEventsParams", this.typeCalendarEvents);
         this.getCalendarEvents();
@@ -521,6 +501,7 @@ export class EventsPage extends UI {
         return this.portfolio.portfolioParams.viewCurrency.toLowerCase();
     }
 }
+
 export enum CalendarEventsTypes {
     COUPON = "coupon",
     AMORTIZATION = "amortization",
