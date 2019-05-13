@@ -47,6 +47,14 @@ const MainStore = namespace(StoreType.MAIN);
             <v-container v-if="pages > 1">
                 <v-layout align-center justify-center row>
                     <v-pagination v-model="pagination.page" @input="onPageChange" :length="pages"></v-pagination>
+                    <div>
+                        <v-select
+                            :items="itemsRowsPerPage"
+                            v-model="rowsPerPage"
+                            @change="onTablePaginationChange()"
+                            hide-details
+                        ></v-select>
+                    </div>
                 </v-layout>
             </v-container>
         </v-container>
@@ -80,10 +88,19 @@ export class TradesPage extends UI {
     /** Ключи для сохранения информации */
     private StoreKeys = StoreKeys;
 
+    private itemsRowsPerPage: Array<string> = [
+        "10",
+        "25",
+        "50",
+        "100"
+    ];
+
+    private rowsPerPage = "50";
+
     private pagination: Pagination = {
         descending: true,
         page: 1,
-        rowsPerPage: 50,
+        rowsPerPage: Number(this.rowsPerPage),
         sortBy: "date",
         totalItems: this.totalTrades
     };
@@ -122,6 +139,11 @@ export class TradesPage extends UI {
             tableName: tableName,
             headers: this.headers[tableName]
         });
+    }
+
+    private async onTablePaginationChange(): Promise<void> {
+        this.pagination.rowsPerPage = Number(this.rowsPerPage);
+        await this.loadTrades();
     }
 
     private async onPageChange(): Promise<void> {
