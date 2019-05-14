@@ -196,7 +196,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     </div>
                                     <v-flex>
                                         <v-checkbox v-for="event in calendarEventsTypes.values()" :input-value="getCurrentFilter(event.code)"
-                                                    @change="changeFilterParams(event.code)" :key="event.code" hide-details class="checkbox-setings">
+                                                    @change="changeFilter(event.code)" :key="event.code" hide-details class="checkbox-setings">
                                             <template #label>
                                                 <span>
                                                     {{ event.description }}
@@ -301,7 +301,7 @@ export class EventsPage extends UI {
     /** Конфиг отображения мини календаря для пика месяца */
     private calendarMenu: boolean = false;
     /** Типы ивентов которые отображаються на странице */
-    private typeCalendarEvents: any = [];
+    private typeCalendarEvents: string[] = [];
     /** Типы ивентов для использования в шаблоне */
     private calendarEventsTypes = CalendarEventType;
 
@@ -355,8 +355,8 @@ export class EventsPage extends UI {
     }
 
     /** Устанавливаем чекбоксы в состояние согласно фильтру */
-    private getCurrentFilter(сalendarEventType: string): boolean {
-        return this.typeCalendarEvents.includes(сalendarEventType);
+    private getCurrentFilter(сalendarEvent: string): boolean {
+        return this.typeCalendarEvents.includes(сalendarEvent);
     }
 
     /** Форматирование даты для отображения на странице согласно макету */
@@ -365,12 +365,12 @@ export class EventsPage extends UI {
     }
 
     /** Изменение параметров фильтрации */
-    private async changeFilterParams(сalendarEventType: string): Promise<void> {
-        const includes = this.typeCalendarEvents.includes(сalendarEventType);
+    private async changeFilter(сalendarEvent: string): Promise<void> {
+        const includes = this.typeCalendarEvents.includes(сalendarEvent);
         if (!includes) {
-            this.typeCalendarEvents.push(сalendarEventType);
+            this.typeCalendarEvents.push(сalendarEvent);
         } else {
-            this.typeCalendarEvents.splice(this.typeCalendarEvents.indexOf(сalendarEventType), 1);
+            this.typeCalendarEvents.splice(this.typeCalendarEvents.indexOf(сalendarEvent), 1);
         }
         this.localStorage.set<string[]>("calendarEvents", this.typeCalendarEvents);
         await this.loadCalendarEvents();
