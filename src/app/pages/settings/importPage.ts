@@ -179,7 +179,7 @@ const MainStore = namespace(StoreType.MAIN);
                             </div>
                         </file-drop-area>
                     </div>
-                    <div v-if="files.length && importProviderFeatures">
+                    <div v-if="files.length && importProviderFeatures" class="attach-file">
                         <div v-for="(file, index) in files" :key="index">
                             <v-layout align-center class="item-files">
                                 <div>
@@ -198,13 +198,20 @@ const MainStore = namespace(StoreType.MAIN);
                         </div>
                     </div>
 
-                    <v-layout align-center class="section-upload-file">
-                        <v-btn v-if="importProviderFeatures && files.length" color="primary" class="big_btn" @click="uploadFile">Загрузить</v-btn>
-                        <file-link  @select="onFileAdd" :accept="allowedExtensions"
-                                    v-if="importProviderFeatures && files.length" class="reselect-file-btn ml-3">Выбрать другой файл</file-link>
-                        <file-link @select="onFileAdd" :accept="allowedExtensions" v-if="importProviderFeatures && !files.length">Выбрать файл</file-link>
+                    <v-layout align-center class="section-upload-file" wrap pb-3>
+                        <div class="margT20">
+                            <v-btn v-if="importProviderFeatures && files.length" color="primary" class="big_btn margT20 mr-3" @click="uploadFile">Загрузить</v-btn>
+                        </div>
+                        <div class="margT20">
+                            <file-link @select="onFileAdd" :accept="allowedExtensions"
+                                       v-if="importProviderFeatures && files.length" class="reselect-file-btn">Выбрать другой файл
+                            </file-link>
+                        </div>
+                        <div class="margT20">
+                            <file-link @select="onFileAdd" :accept="allowedExtensions" v-if="importProviderFeatures && !files.length">Выбрать файл</file-link>
+                        </div>
                         <v-spacer></v-spacer>
-                        <div @click="showInstruction = !showInstruction" class="btn-show-instruction" v-if="importProviderFeatures">
+                        <div @click="showInstruction = !showInstruction" class="btn-show-instruction margT20" v-if="importProviderFeatures">
                             {{ "Как сформировать отчет" + (selectedProvider === providers.INTELINVEST ? "" : (" брокера " + selectedProvider.description)) }}?
                         </div>
                     </v-layout>

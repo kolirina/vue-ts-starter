@@ -46,6 +46,38 @@ export class TariffLimitExceedInfo extends UI {
 @Component({
     // language=Vue
     template: `
+        <div class="tariff-agreement">
+            <v-checkbox v-model="value" @change="onChange" hide-details>
+                <template #label>
+                <span>
+                    Согласие с условиями
+                    <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                        <sup class="custom-tooltip" slot="activator">
+                            <v-icon>fas fa-info-circle</v-icon>
+                        </sup>
+                        <span>
+                            Нажимая чекбокс, вы соглашаетесь с условиями лицензионного соглашения.
+                        </span>
+                    </v-tooltip>
+                </span>
+                </template>
+            </v-checkbox>
+            <a href="https://intelinvest.ru/terms-of-use" target="_blank">Лицензионное соглашение</a>
+        </div>
+    `
+})
+export class TariffAgreement extends UI {
+
+    private value = false;
+
+    private onChange(newValue: boolean): void {
+        this.$emit("agree", newValue);
+    }
+}
+
+@Component({
+    // language=Vue
+    template: `
         <v-container fluid>
             <v-card flat class="header-first-card">
                 <v-card-title class="header-first-card__wrapper-title">
@@ -104,11 +136,12 @@ export class TariffLimitExceedInfo extends UI {
                                 <td>
                                     <div class="tariff__plan_name">Бесплатный</div>
                                     <div class="tariff__plan_price-block">
-                                        <div class="tariff__plan_price">{{ getPriceLabel(Tariff.FREE) }} <span>RUB</span></div>
+                                        <span class="tariff__plan_price">{{ getPriceLabel(Tariff.FREE) }} <span class="rub"> / </span><span>{{ perPart }}</span></span>
                                     </div>
                                     <v-tooltip v-if="!isAvailable(Tariff.FREE)" content-class="custom-tooltip-wrap" bottom>
-                                        <v-btn slot="activator" @click.stop="makePayment(Tariff.FREE)" :class="{'big_btn': true, 'selected': isSelected(Tariff.FREE)}"
-                                               :disabled="!isAvailable(Tariff.FREE) || isSelected(Tariff.FREE) || isProgress">
+                                        <v-btn slot="activator" @click.stop="makePayment(Tariff.FREE)"
+                                               :class="{'big_btn': true, 'selected': isSelected(Tariff.FREE) && agreementState[Tariff.FREE.name]}"
+                                               :disabled="!isAvailable(Tariff.FREE) || isSelected(Tariff.FREE) || isProgress || !agreementState[Tariff.FREE.name]">
                                             <span v-if="!busyState[Tariff.FREE.name]">{{ getButtonLabel(Tariff.FREE) }}</span>
                                             <v-progress-circular v-if="busyState[Tariff.FREE.name]" indeterminate color="primary" :size="20"></v-progress-circular>
                                         </v-btn>
@@ -116,11 +149,13 @@ export class TariffLimitExceedInfo extends UI {
                                                                   :shares-count="clientInfo.user.sharesCount" :foreign-shares="clientInfo.user.foreignShares">
                                         </tariff-limit-exceed-info>
                                     </v-tooltip>
-                                    <v-btn v-else @click.stop="makePayment(Tariff.FREE)" :class="{'big_btn': true, 'selected': isSelected(Tariff.FREE)}"
-                                           :disabled="!isAvailable(Tariff.FREE) || isSelected(Tariff.FREE) || isProgress">
+                                    <v-btn v-else @click.stop="makePayment(Tariff.FREE)"
+                                           :class="{'big_btn': true, 'selected': isSelected(Tariff.FREE) && agreementState[Tariff.FREE.name]}"
+                                           :disabled="!isAvailable(Tariff.FREE) || isSelected(Tariff.FREE) || isProgress || !agreementState[Tariff.FREE.name]">
                                         <span v-if="!busyState[Tariff.FREE.name]">{{ getButtonLabel(Tariff.FREE) }}</span>
                                         <v-progress-circular v-if="busyState[Tariff.FREE.name]" indeterminate color="primary" :size="20"></v-progress-circular>
                                     </v-btn>
+                                    <tariff-agreement @agree="agreementState[Tariff.FREE.name] = $event"></tariff-agreement>
                                     <div class="tariff__plan_expires" v-if="isSelected(Tariff.FREE)">
                                         {{ getExpirationDescription() }}
                                     </div>
@@ -129,12 +164,12 @@ export class TariffLimitExceedInfo extends UI {
                                     <div class="tariff__plan_name">Стандарт</div>
                                     <div class="tariff__plan_price-block">
                                         <span v-if="isDiscountApplied()" class="tariff__plan_old-price">{{ getNoDiscountPriceLabel(Tariff.STANDARD) }}</span>
-                                        <span class="tariff__plan_price">{{ getPriceLabel(Tariff.STANDARD) }} <span>RUB</span></span>
+                                        <span class="tariff__plan_price">{{ getPriceLabel(Tariff.STANDARD) }} <span class="rub"> / </span><span>{{ perPart }}</span></span>
                                     </div>
                                     <v-tooltip v-if="!isAvailable(Tariff.STANDARD)" content-class="custom-tooltip-wrap" bottom>
                                         <v-btn slot="activator" @click="makePayment(Tariff.STANDARD)"
-                                               :class="{'big_btn': true, 'selected': isSelected(Tariff.STANDARD)}"
-                                               :disabled="!isAvailable(Tariff.STANDARD) || isProgress">
+                                               :class="{'big_btn': true, 'selected': isSelected(Tariff.STANDARD) && agreementState[Tariff.STANDARD.name]}"
+                                               :disabled="!isAvailable(Tariff.STANDARD) || isProgress || !agreementState[Tariff.STANDARD.name]">
                                             <span v-if="!busyState[Tariff.STANDARD.name]">{{ getButtonLabel(Tariff.STANDARD) }}</span>
                                             <v-progress-circular v-if="busyState[Tariff.STANDARD.name]" indeterminate color="primary" :size="20"></v-progress-circular>
                                         </v-btn>
@@ -143,11 +178,12 @@ export class TariffLimitExceedInfo extends UI {
                                         </tariff-limit-exceed-info>
                                     </v-tooltip>
                                     <v-btn v-else @click="makePayment(Tariff.STANDARD)"
-                                           :class="{'big_btn': true, 'selected': isSelected(Tariff.STANDARD)}"
-                                           :disabled="!isAvailable(Tariff.STANDARD) || isProgress">
+                                           :class="{'big_btn': true, 'selected': isSelected(Tariff.STANDARD) && agreementState[Tariff.STANDARD.name]}"
+                                           :disabled="!isAvailable(Tariff.STANDARD) || isProgress || !agreementState[Tariff.STANDARD.name]">
                                         <span v-if="!busyState[Tariff.STANDARD.name]">{{ getButtonLabel(Tariff.STANDARD) }}</span>
                                         <v-progress-circular v-if="busyState[Tariff.STANDARD.name]" indeterminate color="primary" :size="20"></v-progress-circular>
                                     </v-btn>
+                                    <tariff-agreement @agree="agreementState[Tariff.STANDARD.name] = $event"></tariff-agreement>
                                     <div v-if="isSelected(Tariff.STANDARD)" class="tariff__plan_expires">
                                         {{ getExpirationDescription() }}
                                     </div>
@@ -156,14 +192,15 @@ export class TariffLimitExceedInfo extends UI {
                                     <div class="tariff__plan_name">Профессионал</div>
                                     <div class="tariff__plan_price-block">
                                         <span v-if="isDiscountApplied()" class="tariff__plan_old-price">{{ getNoDiscountPriceLabel(Tariff.PRO) }}</span>
-                                        <span class="tariff__plan_price">{{ getPriceLabel(Tariff.PRO) }} <span>RUB</span></span>
+                                        <span class="tariff__plan_price">{{ getPriceLabel(Tariff.PRO) }} <span class="rub"> / </span><span>{{ perPart }}</span></span>
                                     </div>
                                     <v-btn @click="makePayment(Tariff.PRO)"
-                                           :class="{'big_btn': true, 'selected': isSelected(Tariff.PRO)}"
-                                           :disabled="!isAvailable(Tariff.PRO) || isProgress">
+                                           :class="{'big_btn': true, 'selected': isSelected(Tariff.PRO) && agreementState[Tariff.PRO.name]}"
+                                           :disabled="!isAvailable(Tariff.PRO) || isProgress || !agreementState[Tariff.PRO.name]">
                                         <span v-if="!busyState[Tariff.PRO.name]">{{ getButtonLabel(Tariff.PRO) }}</span>
                                         <v-progress-circular v-if="busyState[Tariff.PRO.name]" indeterminate color="primary" :size="20"></v-progress-circular>
                                     </v-btn>
+                                    <tariff-agreement @agree="agreementState[Tariff.PRO.name] = $event"></tariff-agreement>
                                     <div v-if="isSelected(Tariff.PRO)" class="tariff__plan_expires">
                                         {{ getExpirationDescription() }}
                                     </div>
@@ -263,7 +300,7 @@ export class TariffLimitExceedInfo extends UI {
             </v-card>
         </v-container>
     `,
-    components: {TariffLimitExceedInfo}
+    components: {TariffLimitExceedInfo, TariffAgreement}
 })
 export class TariffsPage extends UI {
 
@@ -285,6 +322,10 @@ export class TariffsPage extends UI {
     private busyState: { [key: string]: boolean } = {
         FREE: false, STANDARD: false, PRO: false
     };
+    /** Состояния оплат тарифов */
+    private agreementState: { [key: string]: boolean } = {
+        FREE: false, STANDARD: false, PRO: false
+    };
     /** Состояние прогресса оплаты */
     private isProgress = false;
 
@@ -294,13 +335,13 @@ export class TariffsPage extends UI {
     async created(): Promise<void> {
         this.clientService.resetClientInfo();
         await this.reloadUser();
-        if (this.$route.params.status) {
-            try {
-                await this.tariffService.getOrderState();
+        // проверяем статус заказа
+        try {
+            const status = await this.tariffService.getOrderState();
+            if (status === "CONFIRMED") {
                 await this.afterSuccessPayment();
-            } finally {
-                this.$router.push({name: "tariffs"});
             }
+        } catch (ignored) {
         }
     }
 
@@ -409,7 +450,7 @@ export class TariffsPage extends UI {
             return "Недоступно";
         }
         if (this.isSelected(tariff)) {
-            return tariff === Tariff.FREE ? "Подключен" : "Продлить";
+            return tariff === Tariff.FREE ? "Подключен" : "Подписаться";
         }
         return "Подключить";
     }
@@ -439,5 +480,9 @@ export class TariffsPage extends UI {
         const price = this.monthly ? tariff.monthlyPrice : isDiscountApplied ? tariff.yearFullPrice : tariff.yearPrice;
         const nextPurchaseDiscount = isDiscountApplied ? this.clientInfo.user.nextPurchaseDiscount : 0;
         return new Decimal(price).mul(new Decimal(100 - nextPurchaseDiscount)).mul(new Decimal("0.01")).toDecimalPlaces(0, Decimal.ROUND_UP).toString();
+    }
+
+    private get perPart(): string {
+        return this.monthly ? " мес." : " год";
     }
 }

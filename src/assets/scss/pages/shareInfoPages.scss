@@ -18,6 +18,10 @@
   height: 20px;
 }
 
+.information-table {
+  min-width: 350px;
+}
+
 .title-page {
   color: #040427;
   letter-spacing: -0.3px;
@@ -41,7 +45,6 @@
   &__name-stock-block {
     padding: 20px 0px 22px 0px;
     border-bottom: 1px solid #E8E9ED;
-
     &__title {
       font-size: 16px;
       line-height: 18px;
@@ -87,13 +90,15 @@
     flex-wrap: wrap;
 
     &__for-year {
-      margin-left: 50px
+      @media (min-width: 550px){
+        margin-left: 50px
+      }
     }
   }
 
   .info-about-stock {
     padding: 0px 0px 26px 20px;
-
+    overflow: auto;
     &__title {
       margin: 31px 0px 15px 0px;
       font-size: 12px;
