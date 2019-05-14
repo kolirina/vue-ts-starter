@@ -127,7 +127,7 @@ export class StockQuotes extends UI {
     private stocks: Stock[] = [];
 
     async created(): Promise<void> {
-        this.showUserShares = this.localStorage.get<boolean>("showUserStocks", null);
+        this.showUserShares = this.localStorage.get<boolean>("showUserStocks", false);
     }
 
     /**

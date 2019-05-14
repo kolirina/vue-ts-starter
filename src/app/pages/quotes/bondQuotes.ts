@@ -145,7 +145,7 @@ export class BondQuotes extends UI {
     private bonds: Bond[] = [];
 
     async created(): Promise<void> {
-        this.showUserShares = this.localStorage.get<boolean>("showUserBonds", null);
+        this.showUserShares = this.localStorage.get<boolean>("showUserBonds", false);
     }
 
     /**
