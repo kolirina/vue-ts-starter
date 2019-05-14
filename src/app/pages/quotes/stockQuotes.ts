@@ -7,7 +7,7 @@ import {AddTradeDialog} from "../../components/dialogs/addTradeDialog";
 import {QuotesFilterTable} from "../../components/quotesFilterTable";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {Storage} from "../../platform/services/storage";
-import {MarketService} from "../../services/marketService";
+import {MarketService, QuotesFilter} from "../../services/marketService";
 import {AssetType} from "../../types/assetType";
 import {Operation} from "../../types/operation";
 import {Pagination, Portfolio, Stock, TableHeader} from "../../types/types";
@@ -23,8 +23,8 @@ const MainStore = namespace(StoreType.MAIN);
             <div class="additional-pagination-quotes-table">
                 <additional-pagination :pagination="pagination" @update:pagination="onTablePaginationChange"></additional-pagination>
             </div>
-            <quotes-filter-table :searchQuery="searchQuery" @input="tableSearch" @changeShowUserShares="changeShowUserShares"
-                                 placeholder="Поиск" :showUserSharesValue="showUserShares"></quotes-filter-table>
+            <quotes-filter-table :filter="filter" @input="tableSearch" @changeShowUserShares="changeShowUserShares"
+                                 placeholder="Поиск"></quotes-filter-table>
             <v-data-table :headers="headers" :items="stocks" item-key="id" :pagination="pagination" @update:pagination="onTablePaginationChange"
                           :rows-per-page-items="[25, 50, 100, 200]"
                           :total-items="pagination.totalItems" class="quotes-table" must-sort>
@@ -100,7 +100,10 @@ export class StockQuotes extends UI {
     @Inject
     private localStorage: Storage;
 
-    private searchQuery: string = "";
+    private filter: QuotesFilter = {
+        searchQuery: "",
+        showUserShares: false
+    };
 
     private headers: TableHeader[] = [
         {text: "Тикер", align: "left", value: "ticker"},
@@ -112,8 +115,6 @@ export class StockQuotes extends UI {
         {text: "Профиль эмитента", align: "center", value: "profile", sortable: false},
         {text: "", value: "", align: "center", sortable: false}
     ];
-
-    private showUserShares: boolean = false;
 
     private pagination: Pagination = {
         descending: false,
@@ -127,7 +128,7 @@ export class StockQuotes extends UI {
     private stocks: Stock[] = [];
 
     async created(): Promise<void> {
-        this.showUserShares = this.localStorage.get<boolean>("showUserStocks", false);
+        this.filter.showUserShares = this.localStorage.get<boolean>("showUserStocks", false);
     }
 
     /**
@@ -140,22 +141,22 @@ export class StockQuotes extends UI {
     }
 
     @ShowProgress
-    private async changeShowUserShares(value: boolean): Promise<void> {
-        this.localStorage.set<boolean>("showUserStocks", value);
-        this.showUserShares = value;
+    private async changeShowUserShares(showUserShares: boolean): Promise<void> {
+        this.localStorage.set<boolean>("showUserStocks", showUserShares);
+        this.filter.showUserShares = showUserShares;
         await this.loadStocks();
     }
 
     @ShowProgress
-    private async tableSearch(value: string): Promise<void> {
-        this.searchQuery = value;
+    private async tableSearch(search: string): Promise<void> {
+        this.filter.searchQuery = search;
         await this.loadStocks();
     }
 
     @ShowProgress
     private async loadStocks(): Promise<void> {
         const response = await this.marketservice.loadStocks(this.pagination.rowsPerPage * (this.pagination.page - 1),
-            this.pagination.rowsPerPage, this.pagination.sortBy, this.pagination.descending, this.searchQuery, this.showUserShares);
+            this.pagination.rowsPerPage, this.pagination.sortBy, this.pagination.descending, this.filter.searchQuery, this.filter.showUserShares);
         this.stocks = response.content;
         this.pagination.totalItems = response.totalItems;
         this.pagination.pages = response.pages;

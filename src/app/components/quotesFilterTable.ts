@@ -16,74 +16,45 @@
 
 import Component from "vue-class-component";
 import {Prop, UI, Watch} from "../app/ui";
+import {QuotesFilter} from "../services/marketService";
+import {TableFilterBase} from "./tableFilterBase";
 
 @Component({
     // language=Vue
     template: `
-        <v-layout align-center class="pl-3 quotes-filter-wrap">
-            <div class="pl-3">
-                <span v-if="showUserShares" class="quotes-table-active-filter" title="Настроен фильтр"></span>
-                <v-menu :close-on-content-click="false" bottom nudge-bottom="37" content-class="filters-quotes-table">
-                    <v-btn slot="activator" round class="portfolio-rows-filter__button">
-                        Фильтры
-                        <span class="portfolio-rows-filter__button__icon"></span>
-                    </v-btn>
-
-                    <v-card class="px-2">
-                        <v-switch v-model="showUserShares" @change="onChange">
-                            <template #label>
-                                <span class="fs13">Показать мои бумаги</span>
-                                <v-tooltip content-class="custom-tooltip-wrap" bottom>
-                                    <sup class="custom-tooltip" slot="activator">
-                                        <v-icon>fas fa-info-circle</v-icon>
-                                    </sup>
-                                    <span>
-                                        Включите, если хотите увидеть только свои бумаги
-                                    </span>
-                                </v-tooltip>
-                            </template>
-                        </v-switch>
-                    </v-card>
-                </v-menu>
-            </div>
-            <v-btn fab small depressed @click="visibleSearchPlace">
-                <v-icon>search</v-icon>
-            </v-btn>
-            <v-slide-x-transition>
-                <div class="search-place-wrap" v-if="searchOpen">
-                    <inplace-input @input="tableSearch" :placeholder="placeholder" :value="searchQuery"></inplace-input>
-                </div>
-            </v-slide-x-transition>
+        <v-layout align-center class="pl-2">
+            <table-filter-base @search="onSearch" :search-query="filter.searchQuery" :search-label="placeholder" :min-length="2" :is-default="filter.showUserShares">
+                <v-switch v-model="filter.showUserShares" @change="onChange">
+                    <template #label>
+                        <span class="fs13">Показать мои бумаги</span>
+                        <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                            <sup class="custom-tooltip" slot="activator">
+                                <v-icon>fas fa-info-circle</v-icon>
+                            </sup>
+                            <span>
+                                Включите, если хотите увидеть только свои бумаги
+                            </span>
+                        </v-tooltip>
+                    </template>
+                </v-switch>
+            </table-filter-base>
         </v-layout>
-    `
+    `,
+    components: {TableFilterBase}
 })
 export class QuotesFilterTable extends UI {
 
-    @Prop({required: true})
-    private searchQuery: string;
     @Prop({required: false, default: ""})
     private placeholder: string;
-    @Prop({required: false, default: false})
-    private showUserSharesValue: boolean;
-
-    private searchOpen: boolean = false;
-
-    private showUserShares: boolean = this.showUserSharesValue;
-
-    @Watch("showUserSharesValue")
-    private onSwitchChange(): void {
-        this.showUserShares = this.showUserSharesValue;
-    }
+    /** Фильтр */
+    @Prop({required: true, type: Object})
+    private filter: QuotesFilter;
 
     private onChange(): void {
-        this.$emit("changeShowUserShares", this.showUserShares);
+        this.$emit("changeShowUserShares", this.filter.showUserShares);
     }
 
-    private visibleSearchPlace(): void {
-        this.searchOpen = !this.searchOpen;
-    }
-
-    private tableSearch(searchValue: string): void {
-        this.$emit("input", searchValue);
+    private onSearch(searchQuery: string): void {
+        this.$emit("input", searchQuery);
     }
 }

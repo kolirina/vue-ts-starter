@@ -136,6 +136,10 @@ export class MarketService {
     }
 }
 
+export interface QuotesFilter {
+    searchQuery?: string;
+    showUserShares?: boolean;
+}
 /** Информация по акции */
 type _stockInfo = {
     /** Акция */
