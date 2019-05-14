@@ -7,6 +7,7 @@ import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {Filters} from "../../platform/filters/Filters";
 import {Notification, NotificationsService, NotificationType} from "../../services/notificationsService";
+import {BigMoney} from "../../types/bigMoney";
 import {Bond} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {StoreType} from "../../vuex/storeType";
@@ -77,16 +78,16 @@ const MainStore = namespace(StoreType.MAIN);
                     <v-flex v-if="notification.buyPrice || notification.sellPrice" class="notifications-card-body-prices">
                         <div v-if="notification.buyPrice">
                             <div class="notifications-card-body-title w180">Целевая цена покупки</div>
-                            <span class="notifications-card-body-prices-price">{{notification.buyPrice}}</span>
+                            <span class="notifications-card-body-prices-price">{{ notification.buyPrice | number }}</span>
                             <span v-if="notification.buyVariation" class="notifications-card-body-prices-sign">±</span>
-                            <span v-if="notification.buyVariation" class="notifications-card-body-prices-variation">{{ notification.buyVariation }}</span>
+                            <span v-if="notification.buyVariation" class="notifications-card-body-prices-variation">{{ notification.buyVariation | number }}</span>
                             <i class="notifications-card-body-prices-currency" :class="notification.share.currency.toLowerCase()"></i>
                         </div>
                         <div v-if="notification.sellPrice">
                             <div class="notifications-card-body-title w180">Целевая цена продажи</div>
-                            <span class="notifications-card-body-prices-price">{{notification.sellPrice}}</span>
+                            <span class="notifications-card-body-prices-price">{{notification.sellPrice | number }}</span>
                             <span v-if="notification.sellVariation" class="notifications-card-body-prices-sign">±</span>
-                            <span v-if="notification.sellVariation" class="notifications-card-body-prices-variation">{{ notification.sellVariation }}</span>
+                            <span v-if="notification.sellVariation" class="notifications-card-body-prices-variation">{{ notification.sellVariation | number }}</span>
                             <i class="notifications-card-body-prices-currency" :class="notification.share.currency.toLowerCase()"></i>
                         </div>
                     </v-flex>
@@ -178,7 +179,7 @@ export class NotificationsPage extends UI {
     }
 
     private getNotificationPrice(notification: Notification): string {
-        return notification.type === NotificationType.stock ? Filters.formatMoneyAmount(notification.share.price) : Filters.formatNumber((notification.share as Bond).prevprice);
+        return notification.type === NotificationType.stock ? String(new BigMoney(notification.share.price).amount) : Filters.formatNumber((notification.share as Bond).prevprice);
     }
 }
 

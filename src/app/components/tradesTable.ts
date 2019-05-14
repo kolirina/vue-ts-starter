@@ -3,6 +3,7 @@ import Component from "vue-class-component";
 import {Prop, Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class";
 import {UI} from "../app/ui";
+import {Filters} from "../platform/filters/Filters";
 import {ClientService} from "../services/clientService";
 import {TableHeadersState, TABLES_NAME, TablesService} from "../services/tablesService";
 import {TradeFields} from "../services/tradeService";
@@ -11,6 +12,7 @@ import {BigMoney} from "../types/bigMoney";
 import {Operation} from "../types/operation";
 import {Portfolio, TableHeader, TablePagination, TradeRow} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
+import {DateFormat} from "../utils/dateUtils";
 import {TradeUtils} from "../utils/tradeUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
@@ -260,7 +262,7 @@ export class TradesTable extends UI {
     private getTradeDate(trade: TradeRow): string {
         const date = TradeUtils.getDateString(trade.date);
         const time = TradeUtils.getTimeString(trade.date);
-        return this.portfolioProModeEnabled && !!time ? `${date} ${time}` : date;
+        return this.portfolioProModeEnabled && !!time ? Filters.formatDate(`${date} ${time}`, DateFormat.DATE_TIME) : Filters.formatDate(date, DateFormat.DATE);
     }
 
     private getPrice(trade: TradeRow): string {
