@@ -15,7 +15,7 @@
  */
 
 import Component from "vue-class-component";
-import {Prop, UI, Watch} from "../app/ui";
+import {Prop, UI} from "../app/ui";
 import {QuotesFilter} from "../services/marketService";
 import {TableFilterBase} from "./tableFilterBase";
 

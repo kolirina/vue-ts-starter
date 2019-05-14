@@ -156,13 +156,11 @@ export class BondQuotes extends UI {
         await this.loadBonds();
     }
 
-    @ShowProgress
     private async tableSearch(search: string): Promise<void> {
         this.filter.searchQuery = search;
         await this.loadBonds();
     }
 
-    @ShowProgress
     private async changeShowUserShares(showUserShares: boolean): Promise<void> {
         this.localStorage.set<boolean>("showUserBonds", showUserShares);
         this.filter.showUserShares = showUserShares;

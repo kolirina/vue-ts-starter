@@ -140,14 +140,12 @@ export class StockQuotes extends UI {
         await this.loadStocks();
     }
 
-    @ShowProgress
     private async changeShowUserShares(showUserShares: boolean): Promise<void> {
         this.localStorage.set<boolean>("showUserStocks", showUserShares);
         this.filter.showUserShares = showUserShares;
         await this.loadStocks();
     }
 
-    @ShowProgress
     private async tableSearch(search: string): Promise<void> {
         this.filter.searchQuery = search;
         await this.loadStocks();
