@@ -47,7 +47,7 @@ const MainStore = namespace(StoreType.MAIN);
             <v-container v-if="pages > 1">
                 <v-layout align-center justify-center row>
                     <v-pagination v-model="pagination.page" @input="onPageChange" :length="pages"></v-pagination>
-                    <div>
+                    <div class="trades-pagination-items-wrap">
                         <v-select
                             :items="itemsRowsPerPage"
                             v-model="rowsPerPage"
@@ -88,7 +88,7 @@ export class TradesPage extends UI {
     /** Ключи для сохранения информации */
     private StoreKeys = StoreKeys;
 
-    private itemsRowsPerPage: Array<string> = [
+    private itemsRowsPerPage: string[] = [
         "10",
         "25",
         "50",
