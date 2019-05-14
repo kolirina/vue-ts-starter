@@ -7,6 +7,7 @@ import {Filters} from "../../platform/filters/Filters";
 import {MarketService} from "../../services/marketService";
 import {KeyWordsSearchType, Notification, NotificationsService, NotificationType} from "../../services/notificationsService";
 import {AssetType} from "../../types/assetType";
+import {BigMoney} from "../../types/bigMoney";
 import {Bond, Share} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 
@@ -63,8 +64,8 @@ import {CommonUtils} from "../../utils/commonUtils";
                     <v-expansion-panel :value="[buyPriceNotification]" expand>
                         <v-expansion-panel-content>
                             <div class="add-notification-conditional">
-                                <ii-number-field label="Целевая цена покупки" v-model="notification.buyPrice" id="buyPrice" :decimals="2"></ii-number-field>
-                                <ii-number-field label="Допуск цены покупки" v-model="notification.buyVariation" id="buyVariation" :decimals="2"></ii-number-field>
+                                <ii-number-field label="Целевая цена покупки" v-model="notification.buyPrice" id="buyPrice"></ii-number-field>
+                                <ii-number-field label="Допуск цены покупки" v-model="notification.buyVariation" id="buyVariation"></ii-number-field>
                             </div>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
@@ -94,8 +95,8 @@ import {CommonUtils} from "../../utils/commonUtils";
                     <v-expansion-panel :value="[sellPriceNotification]" expand>
                         <v-expansion-panel-content>
                             <div class="add-notification-conditional">
-                                <ii-number-field label="Целевая цена продажи" v-model="notification.sellPrice" id="sellPrice" :decimals="2"></ii-number-field>
-                                <ii-number-field label="Допуск цены продажи" v-model="notification.sellVariation" id="sellVariation" :decimals="2"></ii-number-field>
+                                <ii-number-field label="Целевая цена продажи" v-model="notification.sellPrice" id="sellPrice"></ii-number-field>
+                                <ii-number-field label="Допуск цены продажи" v-model="notification.sellVariation" id="sellVariation"></ii-number-field>
                             </div>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
@@ -310,7 +311,7 @@ export class CreateOrEditNotificationDialog extends CustomDialog<Notification, b
         if (!this.share) {
             return "220";
         }
-        return this.notification.type === NotificationType.stock ? Filters.formatMoneyAmount(this.share.price) : Filters.formatNumber((this.share as Bond).prevprice);
+        return this.notification.type === NotificationType.stock ? String(new BigMoney(this.share.price).amount) : Filters.formatNumber((this.share as Bond).prevprice);
     }
 
     private get shareCurrency(): string {
