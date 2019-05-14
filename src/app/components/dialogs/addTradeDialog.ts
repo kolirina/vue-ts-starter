@@ -2,7 +2,6 @@ import dayjs from "dayjs";
 import Decimal from "decimal.js";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
-import {Watch} from "vue-property-decorator";
 import {VueRouter} from "vue-router/types/router";
 import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
@@ -61,7 +60,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                             <!-- Тип актива -->
                             <v-flex xs12 sm6>
                                 <v-select :items="assetTypes" v-model="assetType" :return-object="true" label="Тип актива" item-text="description" dense
-                                          hide-details></v-select>
+                                          hide-details @change="onAssetTypeChange"></v-select>
                             </v-flex>
 
                             <!-- Операция -->
@@ -286,8 +285,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         await this.setDialogParams();
     }
 
-    @Watch("assetType")
-    private onAssetTypeChange(newValue: AssetType): void {
+    private onAssetTypeChange(): void {
         if (this.data.operation === undefined) {
             this.operation = this.assetType.operations[0];
         } else {
@@ -544,7 +542,6 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         this.price = null;
         this.fee = null;
         this.note = "";
-        this.share = null;
         this.nkd = null;
         this.facevalue = null;
         this.moneyAmount = null;
