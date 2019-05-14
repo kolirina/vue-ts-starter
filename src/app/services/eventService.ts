@@ -1,5 +1,6 @@
 import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
+import {Enum, EnumType, IStaticEnum} from "../platform/enum";
 import {Http} from "../platform/services/http";
 import {Share} from "../types/types";
 
@@ -22,8 +23,30 @@ export class EventService {
      * Получаем данные ивентов календаря
      * @param dateParams даты начала и конца месяца
      */
-    async getCalendarEvents(dateParams: CalendarDateParams): Promise<CalendarEventParams[]> {
-        return await this.http.post(`/events/calendar`, dateParams);
+    async getCalendarEvents(dateParams: CalendarDateParams): Promise<CalendarEvent[]> {
+        const eventsResponse: CalendarEventResponse[] = await this.http.post(`/events/calendar`, dateParams);
+        return eventsResponse.map((event: CalendarEventResponse) => {
+            return {
+                ...event,
+                typeDescription: this.getTypeDescription(event.styleClass)
+            } as CalendarEvent;
+        });
+    }
+
+    getTypeDescription(event: string): string {
+        switch (event) {
+            case CalendarEventType.COUPON.code:
+                return CalendarEventType.COUPON.description;
+            case CalendarEventType.AMORTIZATION.code:
+                return CalendarEventType.AMORTIZATION.description;
+            case CalendarEventType.DIVIDEND.code:
+                return CalendarEventType.DIVIDEND.description;
+            case CalendarEventType.REPAYMENT.code:
+                return CalendarEventType.REPAYMENT.description;
+            case CalendarEventType.CUSTOM.code:
+                return CalendarEventType.CUSTOM.description;
+        }
+        return null;
     }
 
     /**
@@ -60,6 +83,20 @@ export class EventService {
     }
 }
 
+@Enum("code")
+export class CalendarEventType extends (EnumType as IStaticEnum<CalendarEventType>) {
+
+    static readonly COUPON = new CalendarEventType("coupon", "Купон");
+    static readonly AMORTIZATION = new CalendarEventType("amortization", "Амортизация");
+    static readonly DIVIDEND = new CalendarEventType("dividend", "Дивиденды");
+    static readonly REPAYMENT = new CalendarEventType("repayment", "Погашение");
+    static readonly CUSTOM = new CalendarEventType("custom", "Пользоватeль");
+
+    private constructor(public code: string, public description: string) {
+        super();
+    }
+}
+
 /** Параметры даты для отправки в апи календаря */
 export interface CalendarDateParams {
     start: string;
@@ -68,11 +105,10 @@ export interface CalendarDateParams {
 
 /** Отфильтрованный массив ивентов календаря для вывода на страницу */
 export interface CalendarParams {
-    [key: string]: CalendarEventParams[];
+    [key: string]: CalendarEvent[];
 }
 
-/** Поля которые приходят для ивентов календаря */
-export interface CalendarEventParams {
+export interface CalendarEventResponse {
     allDay: boolean;
     data: string;
     description: string;
@@ -83,6 +119,21 @@ export interface CalendarEventParams {
     styleClass: string;
     title: string;
     url: string;
+}
+
+/** Поля которые приходят для ивентов календаря */
+export interface CalendarEvent {
+    allDay: boolean;
+    data: string;
+    description: string;
+    editable: boolean;
+    endDate: string;
+    id: string;
+    startDate: string;
+    styleClass: string;
+    title: string;
+    url: string;
+    typeDescription: string;
 }
 
 /** Информация о событии по ценной бумаге */
