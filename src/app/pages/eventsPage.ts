@@ -8,7 +8,7 @@ import {ConfirmDialog} from "../components/dialogs/confirmDialog";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {BtnReturn} from "../platform/dialogs/customDialog";
 import {Storage} from "../platform/services/storage";
-import {CalendarDateParams, CalendarEvent, CalendarEventType, CalendarParams, DividendNewsItem, EventsAggregateInfo, EventService, ShareEvent, } from "../services/eventService";
+import {CalendarDateParams, CalendarEvent, CalendarEventType, CalendarParams, DividendNewsItem, EventsAggregateInfo, EventService, ShareEvent} from "../services/eventService";
 import {AssetType} from "../types/assetType";
 import {Operation} from "../types/operation";
 import {Portfolio, TableHeader} from "../types/types";
@@ -176,16 +176,15 @@ const MainStore = namespace(StoreType.MAIN);
                     <div v-else class="dividend-news-table__empty">Дивидендных новостей по вашим бумагам нет</div>
                 </v-card-text>
             </v-card>
+
             <v-card class="events__card" flat style="margin-top: 30px">
                 <v-card-title class="events__card-title">
                     <v-layout class="px-0 py-0" align-center>
                         Календарь событий
                         <v-spacer></v-spacer>
                         <div class="import-wrapper-content pr-1">
-                            <span v-if="typeCalendarEvents.length" class="event-calendar-active-filter" title="Настроен фильтр"></span>
-                            <v-menu content-class="dialog-setings-menu"
-                                    transition="slide-y-transition"
-                                    nudge-bottom="36" left bottom class="setings-menu my-0 mx-0"
+                            <span v-if="customFilter" class="event-calendar-active-filter" title="Настроен фильтр"></span>
+                            <v-menu content-class="dialog-setings-menu" transition="slide-y-transition" nudge-bottom="36" left bottom class="setings-menu my-0 mx-0"
                                     :close-on-content-click="false" min-width="255">
                                 <v-btn class="btn" slot="activator">
                                     Настройки
@@ -195,7 +194,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         Тип события
                                     </div>
                                     <v-flex>
-                                        <v-checkbox v-for="event in calendarEventsTypes.values()" :input-value="getCurrentFilter(event.code)"
+                                        <v-checkbox v-for="event in calendarEventsTypes.values()" :input-value="isCalendarTypeChecked(event.code)"
                                                     @change="changeFilter(event.code)" :key="event.code" hide-details class="checkbox-setings">
                                             <template #label>
                                                 <span>
@@ -225,7 +224,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </div>
                     </v-layout>
                     <v-sheet>
-                        <v-calendar :now="today" :value="calendarParams.start" color="primary" locale="ru">
+                        <v-calendar :now="today" :value="calendarRequestParams.start" color="primary" locale="ru">
                             <template v-slot:day="{ date }">
                                 <vue-scroll>
                                     <div class="wrap-list-events">
@@ -233,7 +232,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             <div v-for="event in calendarEvents[date]" :key="event.title">
                                                 <v-menu max-width="267" right nudge-right="150" content-class="fs13 info-about-event">
                                                     <template v-slot:activator="{ on }">
-                                                        <div v-ripple v-on="on" :class="[event.styleClass, 'fs13', 'calendar-events-title', 'pl-2']">
+                                                        <div v-on="on" :class="[event.styleClass, 'fs13', 'calendar-events-title', 'pl-2']">
                                                             {{ event.typeDescription }}
                                                         </div>
                                                     </template>
@@ -288,10 +287,7 @@ export class EventsPage extends UI {
         {text: "Источник", align: "center", value: "source", sortable: false, width: "70"}
     ];
     /** Параметры дат для отправки в апи */
-    private calendarParams: CalendarDateParams = {
-        start: "",
-        end: ""
-    };
+    private calendarRequestParams: CalendarDateParams = {start: "", end: ""};
     /** Устанавливаем сегодняшнюю дату */
     private today: string = DateUtils.currentDate();
     /** При загрузке отображать в календаре текущий месяц */
@@ -311,9 +307,9 @@ export class EventsPage extends UI {
      */
     @ShowProgress
     async created(): Promise<void> {
-        await this.getMonthDay(DateUtils.getYearDate(this.calendarStartDate), DateUtils.getMonthDate(this.calendarStartDate));
+        this.setCalendarRequestParams(DateUtils.getYearDate(this.calendarStartDate), DateUtils.getMonthDate(this.calendarStartDate));
         const eventsFromStorage = this.localStorage.get<string[]>("calendarEvents", null);
-        this.typeCalendarEvents = eventsFromStorage ? eventsFromStorage : await this.getDefaultFilter();
+        this.typeCalendarEvents = eventsFromStorage ? eventsFromStorage : this.getDefaultFilter();
         await this.loadEvents();
         await this.loadDividendNews();
         await this.loadCalendarEvents();
@@ -327,7 +323,7 @@ export class EventsPage extends UI {
     }
 
     /** Получаем дефолтный фильтр если в локал сторе ничего нет */
-    private async getDefaultFilter(): Promise<string[]> {
+    private getDefaultFilter(): string[] {
         const defaultFilter: string[] = [];
         CalendarEventType.values().forEach((element: CalendarEventType) => {
             if (!defaultFilter.includes(element.code)) {
@@ -339,12 +335,15 @@ export class EventsPage extends UI {
 
     @ShowProgress
     private async loadCalendarEvents(): Promise<void> {
-        const calendarEvents: CalendarEvent[] = await this.eventService.getCalendarEvents(this.calendarParams);
-        this.calendarEvents = await this.getFilteredCalendarEvents(calendarEvents);
+        const calendarEvents: CalendarEvent[] = await this.eventService.getCalendarEvents(this.calendarRequestParams);
+        this.calendarEvents = this.getFilteredCalendarEvents(calendarEvents);
     }
 
-    /** Фильтруем данные календаря */
-    private async getFilteredCalendarEvents(calendarEvents: CalendarEvent[]): Promise<CalendarParams> {
+    /**
+     * Возвращает отфильтрованные данные календаря
+     * @param calendarEvents события календаря
+     */
+    private getFilteredCalendarEvents(calendarEvents: CalendarEvent[]): CalendarParams {
         const filtered: CalendarParams = {};
         calendarEvents.forEach((e: CalendarEvent) => {
             if (this.typeCalendarEvents.includes(e.styleClass)) {
@@ -354,38 +353,43 @@ export class EventsPage extends UI {
         return filtered;
     }
 
-    /** Устанавливаем чекбоксы в состояние согласно фильтру */
-    private getCurrentFilter(сalendarEvent: string): boolean {
-        return this.typeCalendarEvents.includes(сalendarEvent);
+    /**
+     * Проверяет, выбран ли данный тип события календаря
+     * @param calendarEvent тип события календаря
+     */
+    private isCalendarTypeChecked(calendarEvent: string): boolean {
+        return this.typeCalendarEvents.includes(calendarEvent);
     }
 
-    /** Форматирование даты для отображения на странице согласно макету */
-    private get formattedDate(): string {
-        return DateUtils.formatMonthYear(this.calendarStartDate);
-    }
-
-    /** Изменение параметров фильтрации */
-    private async changeFilter(сalendarEvent: string): Promise<void> {
-        const includes = this.typeCalendarEvents.includes(сalendarEvent);
+    /**
+     * Изменение параметров фильтрации
+     * @param calendarEvent тип события
+     */
+    private async changeFilter(calendarEvent: string): Promise<void> {
+        const includes = this.typeCalendarEvents.includes(calendarEvent);
         if (!includes) {
-            this.typeCalendarEvents.push(сalendarEvent);
+            this.typeCalendarEvents.push(calendarEvent);
         } else {
-            this.typeCalendarEvents.splice(this.typeCalendarEvents.indexOf(сalendarEvent), 1);
+            this.typeCalendarEvents.splice(this.typeCalendarEvents.indexOf(calendarEvent), 1);
         }
         this.localStorage.set<string[]>("calendarEvents", this.typeCalendarEvents);
         await this.loadCalendarEvents();
     }
 
-    /** Получаем дату начала месяца и дату конца месяца для отправки в апи */
-    private async getMonthDay(year: number, month: number): Promise<void> {
-        this.calendarParams.start = DateUtils.startMonthDate(year, month);
-        this.calendarParams.end = DateUtils.endMonthDate(year, month);
+    /**
+     * Получаем дату начала месяца и дату конца месяца для отправки в апи
+     * @param year год
+     * @param month месяц
+     */
+    private setCalendarRequestParams(year: number, month: number): void {
+        this.calendarRequestParams.start = DateUtils.startMonthDate(year, month);
+        this.calendarRequestParams.end = DateUtils.endMonthDate(year, month);
     }
 
     /** Изменение месяца отображаемого в календаре */
     private async changeMonth(): Promise<void> {
         this.calendarMenu = false;
-        this.getMonthDay(DateUtils.getYearDate(this.calendarStartDate), DateUtils.getMonthDate(this.calendarStartDate));
+        this.setCalendarRequestParams(DateUtils.getYearDate(this.calendarStartDate), DateUtils.getMonthDate(this.calendarStartDate));
         await this.loadCalendarEvents();
     }
 
@@ -487,5 +491,19 @@ export class EventsPage extends UI {
 
     private get currency(): string {
         return this.portfolio.portfolioParams.viewCurrency.toLowerCase();
+    }
+
+    /**
+     * Возвращает отформатированную дату
+     */
+    private get formattedDate(): string {
+        return DateUtils.formatMonthYear(this.calendarStartDate);
+    }
+
+    /**
+     * Возвращает признак что настроен фильтр
+     */
+    private get customFilter(): boolean {
+        return this.typeCalendarEvents.length !== CalendarEventType.values().length;
     }
 }
