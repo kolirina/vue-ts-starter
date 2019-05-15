@@ -1,6 +1,8 @@
 /**
  * Реестр стандартных UI-компонтентов, фильтров и директив
  */
+import dayjs from "dayjs";
+import "dayjs/locale/ru";
 import Highcharts from "highcharts";
 import Highstock from "highcharts/highstock";
 import exporting from "highcharts/modules/exporting";
@@ -141,6 +143,7 @@ export class UIRegistry {
         Validator.dictionary.setDateFormat("ru", "DD.MM.YYYY");
         // устанавливаем локализованные сообщения
         Validator.localize("ru", ruLocale);
+        dayjs.locale("ru");
         // локализация highcharts
         Highcharts.setOptions({lang: highchartsRu});
         Highstock.setOptions({lang: highchartsRu});

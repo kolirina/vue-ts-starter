@@ -7,10 +7,12 @@ import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
 import {ConfirmDialog} from "../components/dialogs/confirmDialog";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {BtnReturn} from "../platform/dialogs/customDialog";
-import {DividendNewsItem, EventsAggregateInfo, EventService, ShareEvent} from "../services/eventService";
+import {Storage} from "../platform/services/storage";
+import {CalendarDateParams, CalendarEvent, CalendarEventType, CalendarParams, DividendNewsItem, EventsAggregateInfo, EventService, ShareEvent} from "../services/eventService";
 import {AssetType} from "../types/assetType";
 import {Operation} from "../types/operation";
 import {Portfolio, TableHeader} from "../types/types";
+import {DateUtils} from "../utils/dateUtils";
 import {SortUtils} from "../utils/sortUtils";
 import {TradeUtils} from "../utils/tradeUtils";
 import {MutationType} from "../vuex/mutationType";
@@ -174,19 +176,94 @@ const MainStore = namespace(StoreType.MAIN);
                     <div v-else class="dividend-news-table__empty">Дивидендных новостей по вашим бумагам нет</div>
                 </v-card-text>
             </v-card>
+
+            <v-card class="events__card" flat style="margin-top: 30px">
+                <v-card-title class="events__card-title">
+                    <v-layout class="px-0 py-0" align-center>
+                        Календарь событий
+                        <v-spacer></v-spacer>
+                        <div class="import-wrapper-content pr-1">
+                            <span v-if="customFilter" class="event-calendar-active-filter" title="Настроен фильтр"></span>
+                            <v-menu content-class="dialog-setings-menu" transition="slide-y-transition" nudge-bottom="36" left bottom class="setings-menu my-0 mx-0"
+                                    :close-on-content-click="false" min-width="255">
+                                <v-btn class="btn" slot="activator">
+                                    Настройки
+                                </v-btn>
+                                <v-list dense>
+                                    <div class="title-setings">
+                                        Тип события
+                                    </div>
+                                    <v-flex>
+                                        <v-checkbox v-for="event in calendarEventsTypes.values()" :input-value="isCalendarTypeChecked(event.code)"
+                                                    @change="changeFilter(event.code)" :key="event.code" hide-details class="checkbox-setings">
+                                            <template #label>
+                                                <span>
+                                                    {{ event.description }}
+                                                </span>
+                                            </template>
+                                        </v-checkbox>
+                                    </v-flex>
+                                </v-list>
+                            </v-menu>
+                        </div>
+                    </v-layout>
+                </v-card-title>
+                <v-card-text v-if="calendarEvents" class="events-calendar-wrap">
+                    <v-layout class="pl-3">
+                        <div class="pl-3">
+                            <v-menu v-model="calendarMenu" :close-on-content-click="false" full-width bottom right nudge-bottom="23" nudge-right="6" max-width="290">
+                                <template v-slot:activator="{ on }">
+                                    <v-flex :class="['select-date-input', calendarMenu ? 'rotate-icons' : '']">
+                                        <v-input append-icon="keyboard_arrow_down" v-on="on" hide-details>
+                                            {{ formattedDate }}
+                                        </v-input>
+                                    </v-flex>
+                                </template>
+                                <v-date-picker v-model="calendarStartDate" type="month" locale="ru" @change="changeMonth()"></v-date-picker>
+                            </v-menu>
+                        </div>
+                    </v-layout>
+                    <v-sheet>
+                        <v-calendar :now="today" :value="calendarRequestParams.start" color="primary" locale="ru">
+                            <template v-slot:day="{ date }">
+                                <vue-scroll>
+                                    <div class="wrap-list-events">
+                                        <div>
+                                            <div v-for="event in calendarEvents[date]" :key="event.title">
+                                                <v-menu max-width="267" right nudge-right="150" content-class="fs13 info-about-event">
+                                                    <template v-slot:activator="{ on }">
+                                                        <div v-on="on" :class="[event.styleClass, 'fs13', 'calendar-events-title', 'pl-2']">
+                                                            {{ event.typeDescription }}
+                                                        </div>
+                                                    </template>
+                                                    <v-card flat>
+                                                        {{ event.description }}
+                                                    </v-card>
+                                                </v-menu>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </vue-scroll>
+                            </template>
+                        </v-calendar>
+                    </v-sheet>
+                </v-card-text>
+            </v-card>
         </v-container>
     `
 })
 export class EventsPage extends UI {
-
     @MainStore.Getter
     private portfolio: Portfolio;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
     private reloadPortfolio: (id: number) => Promise<void>;
     @Inject
     private eventService: EventService;
+    @Inject
+    private localStorage: Storage;
     /** События */
     private events: ShareEvent[] = [];
+    /** Агрегированная информация по событиям */
     private eventsAggregateInfo: EventsAggregateInfo = null;
     /** Дивидендные новости */
     private dividendNews: DividendNewsItem[] = [];
@@ -209,6 +286,20 @@ export class EventsPage extends UI {
         {text: "Размер возможных дивидендов", align: "right", value: "recCommonValue", width: "60", tooltip: "Доходность рассчитана относительно текущей цена акции."},
         {text: "Источник", align: "center", value: "source", sortable: false, width: "70"}
     ];
+    /** Параметры дат для отправки в апи */
+    private calendarRequestParams: CalendarDateParams = {start: "", end: ""};
+    /** Устанавливаем сегодняшнюю дату */
+    private today: string = DateUtils.currentDate();
+    /** При загрузке отображать в календаре текущий месяц */
+    private calendarStartDate: string = DateUtils.currentDate();
+    /** Массив с ивентами для отображения на странице */
+    private calendarEvents: CalendarParams = null;
+    /** Конфиг отображения мини календаря для пика месяца */
+    private calendarMenu: boolean = false;
+    /** Типы ивентов которые отображаються на странице */
+    private typeCalendarEvents: string[] = [];
+    /** Типы ивентов для использования в шаблоне */
+    private calendarEventsTypes = CalendarEventType;
 
     /**
      * Инициализация данных
@@ -216,8 +307,12 @@ export class EventsPage extends UI {
      */
     @ShowProgress
     async created(): Promise<void> {
+        this.setCalendarRequestParams(DateUtils.getYearDate(this.calendarStartDate), DateUtils.getMonthDate(this.calendarStartDate));
+        const eventsFromStorage = this.localStorage.get<string[]>("calendarEvents", null);
+        this.typeCalendarEvents = eventsFromStorage ? eventsFromStorage : this.getDefaultFilter();
         await this.loadEvents();
         await this.loadDividendNews();
+        await this.loadCalendarEvents();
     }
 
     @Watch("portfolio")
@@ -225,6 +320,77 @@ export class EventsPage extends UI {
     private async onPortfolioChange(): Promise<void> {
         await this.loadEvents();
         await this.loadDividendNews();
+    }
+
+    /** Получаем дефолтный фильтр если в локал сторе ничего нет */
+    private getDefaultFilter(): string[] {
+        const defaultFilter: string[] = [];
+        CalendarEventType.values().forEach((element: CalendarEventType) => {
+            if (!defaultFilter.includes(element.code)) {
+                defaultFilter.push(element.code);
+            }
+        });
+        return defaultFilter;
+    }
+
+    @ShowProgress
+    private async loadCalendarEvents(): Promise<void> {
+        const calendarEvents: CalendarEvent[] = await this.eventService.getCalendarEvents(this.calendarRequestParams);
+        this.calendarEvents = this.getFilteredCalendarEvents(calendarEvents);
+    }
+
+    /**
+     * Возвращает отфильтрованные данные календаря
+     * @param calendarEvents события календаря
+     */
+    private getFilteredCalendarEvents(calendarEvents: CalendarEvent[]): CalendarParams {
+        const filtered: CalendarParams = {};
+        calendarEvents.forEach((e: CalendarEvent) => {
+            if (this.typeCalendarEvents.includes(e.styleClass)) {
+                (filtered[e.startDate] = filtered[e.startDate] || []).push(e);
+            }
+        });
+        return filtered;
+    }
+
+    /**
+     * Проверяет, выбран ли данный тип события календаря
+     * @param calendarEvent тип события календаря
+     */
+    private isCalendarTypeChecked(calendarEvent: string): boolean {
+        return this.typeCalendarEvents.includes(calendarEvent);
+    }
+
+    /**
+     * Изменение параметров фильтрации
+     * @param calendarEvent тип события
+     */
+    private async changeFilter(calendarEvent: string): Promise<void> {
+        const includes = this.typeCalendarEvents.includes(calendarEvent);
+        if (!includes) {
+            this.typeCalendarEvents.push(calendarEvent);
+        } else {
+            this.typeCalendarEvents.splice(this.typeCalendarEvents.indexOf(calendarEvent), 1);
+        }
+        this.localStorage.set<string[]>("calendarEvents", this.typeCalendarEvents);
+        await this.loadCalendarEvents();
+    }
+
+    /**
+     * Получаем дату начала месяца и дату конца месяца для отправки в апи
+     * @param year год
+     * @param month месяц
+     */
+    private setCalendarRequestParams(year: number, month: number): void {
+        this.calendarRequestParams.start = DateUtils.startMonthDate(year, month);
+        this.calendarRequestParams.end = DateUtils.endMonthDate(year, month);
+    }
+
+    /** Изменение месяца отображаемого в календаре */
+    private async changeMonth(): Promise<void> {
+        this.calendarMenu = false;
+        this.setCalendarRequestParams(DateUtils.getYearDate(this.calendarStartDate), DateUtils.getMonthDate(this.calendarStartDate));
+        await this.loadCalendarEvents();
     }
 
     private async loadEvents(): Promise<void> {
@@ -325,5 +491,19 @@ export class EventsPage extends UI {
 
     private get currency(): string {
         return this.portfolio.portfolioParams.viewCurrency.toLowerCase();
+    }
+
+    /**
+     * Возвращает отформатированную дату
+     */
+    private get formattedDate(): string {
+        return DateUtils.formatMonthYear(this.calendarStartDate);
+    }
+
+    /**
+     * Возвращает признак что настроен фильтр
+     */
+    private get customFilter(): boolean {
+        return this.typeCalendarEvents.length !== CalendarEventType.values().length;
     }
 }
