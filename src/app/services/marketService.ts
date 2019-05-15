@@ -1,6 +1,7 @@
 import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {Http, UrlParams} from "../platform/services/http";
+import {Storage} from "../platform/services/storage";
 import {BaseChartDot, Dot, EventChartData, HighStockEventData, HighStockEventsGroup} from "../types/charts/types";
 import {Bond, BondInfo, Currency, PageableResponse, Share, Stock, StockDynamic, StockInfo} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
@@ -68,8 +69,9 @@ export class MarketService {
     /**
      * Загружает и возвращает список акций
      */
-    async loadStocks(offset: number = 0, pageSize: number = 50, sortColumn: string, descending: boolean = false): Promise<PageableResponse<Stock>> {
-        const urlParams: UrlParams = {offset, pageSize};
+    async loadStocks(offset: number = 0, pageSize: number = 50, sortColumn: string,
+                     descending: boolean = false, search: string = null, showUserShares: boolean = false): Promise<PageableResponse<Stock>> {
+        const urlParams: UrlParams = {offset, pageSize, search, showUserShares};
         if (sortColumn) {
             urlParams.sortColumn = sortColumn.toUpperCase();
         }
@@ -82,8 +84,9 @@ export class MarketService {
     /**
      * Загружает и возвращает список облигаций
      */
-    async loadBonds(offset: number = 0, pageSize: number = 50, sortColumn: string, descending: boolean = false): Promise<PageableResponse<Bond>> {
-        const urlParams: UrlParams = {offset, pageSize};
+    async loadBonds(offset: number = 0, pageSize: number = 50, sortColumn: string,
+                    descending: boolean = false, search: string = null, showUserShares: boolean = false): Promise<PageableResponse<Bond>> {
+        const urlParams: UrlParams = {offset, pageSize, search, showUserShares};
         if (sortColumn) {
             urlParams.sortColumn = sortColumn.toUpperCase();
         }
@@ -133,6 +136,10 @@ export class MarketService {
     }
 }
 
+export interface QuotesFilter {
+    searchQuery?: string;
+    showUserShares?: boolean;
+}
 /** Информация по акции */
 type _stockInfo = {
     /** Акция */

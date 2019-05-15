@@ -469,7 +469,8 @@ export type Pagination = {
     page?: number,
     rowsPerPage?: number,
     sortBy?: string,
-    totalItems?: number
+    totalItems?: number,
+    pages?: number;
 };
 
 export type TablePagination = {

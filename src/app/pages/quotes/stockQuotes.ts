@@ -1,11 +1,13 @@
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
-import {Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
+import {AdditionalPagination} from "../../components/additionalPagination";
 import {AddTradeDialog} from "../../components/dialogs/addTradeDialog";
+import {QuotesFilterTable} from "../../components/quotesFilterTable";
 import {ShowProgress} from "../../platform/decorators/showProgress";
-import {MarketService} from "../../services/marketService";
+import {Storage} from "../../platform/services/storage";
+import {MarketService, QuotesFilter} from "../../services/marketService";
 import {AssetType} from "../../types/assetType";
 import {Operation} from "../../types/operation";
 import {Pagination, Portfolio, Stock, TableHeader} from "../../types/types";
@@ -18,9 +20,14 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-container v-if="portfolio" fluid class="pa-0">
-            <v-data-table :headers="headers" :items="stocks" item-key="id" :pagination.sync="pagination"
+            <div class="additional-pagination-quotes-table">
+                <additional-pagination :pagination="pagination" @update:pagination="onTablePaginationChange"></additional-pagination>
+            </div>
+            <quotes-filter-table :filter="filter" @input="tableSearch" @changeShowUserShares="changeShowUserShares"
+                                 placeholder="Поиск"></quotes-filter-table>
+            <v-data-table :headers="headers" :items="stocks" item-key="id" :pagination="pagination" @update:pagination="onTablePaginationChange"
                           :rows-per-page-items="[25, 50, 100, 200]"
-                          :total-items="totalItems" class="quotes-table" must-sort>
+                          :total-items="pagination.totalItems" class="quotes-table" must-sort>
                 <template #items="props">
                     <tr class="selectable">
                         <td class="text-xs-left">
@@ -38,11 +45,11 @@ const MainStore = namespace(StoreType.MAIN);
                         </td>
                         <td class="text-xs-center">
                             <v-btn v-if="props.item.currency === 'RUB'" :href="'http://moex.com/ru/issue.aspx?code=' + props.item.ticker" target="_blank"
-                               :title="'Профиль эмитента ' + props.item.name + ' на сайте биржи'" icon>
+                                   :title="'Профиль эмитента ' + props.item.name + ' на сайте биржи'" icon>
                                 <i class="quotes-share"></i>
                             </v-btn>
                             <v-btn v-if="props.item.currency !== 'RUB'" :href="'https://finance.yahoo.com/quote/' + props.item.ticker" target="_blank"
-                               :title="'Профиль эмитента ' + props.item.name + ' на сайте Yahoo Finance'" icon>
+                                   :title="'Профиль эмитента ' + props.item.name + ' на сайте Yahoo Finance'" icon>
                                 <i class="quotes-share"></i>
                             </v-btn>
                         </td>
@@ -77,7 +84,8 @@ const MainStore = namespace(StoreType.MAIN);
                 </template>
             </v-data-table>
         </v-container>
-    `
+    `,
+    components: {AdditionalPagination, QuotesFilterTable}
 })
 export class StockQuotes extends UI {
 
@@ -89,45 +97,68 @@ export class StockQuotes extends UI {
     private operation = Operation;
     @Inject
     private marketservice: MarketService;
+    @Inject
+    private localStorage: Storage;
+
+    /** Фильтр котировок */
+    private filter: QuotesFilter = {
+        searchQuery: "",
+        showUserShares: false
+    };
 
     private headers: TableHeader[] = [
         {text: "Тикер", align: "left", value: "ticker"},
         {text: "Компания", align: "left", value: "shortname"},
         {text: "Цена", align: "center", value: "price"},
-        {text: "Изменение", align: "center", value: "change" },
+        {text: "Изменение", align: "center", value: "change"},
         {text: "Размер лота", align: "center", value: "lotsize", sortable: false},
-        {text: "Рейтинг", align: "center", value: "rating" },
-        {text: "Профиль эмитента", align: "center", value: "profile",  sortable: false},
-        {text: "", value: "", align: "center",  sortable: false}
+        {text: "Рейтинг", align: "center", value: "rating"},
+        {text: "Профиль эмитента", align: "center", value: "profile", sortable: false},
+        {text: "", value: "", align: "center", sortable: false}
     ];
-
-    private totalItems = 0;
 
     private pagination: Pagination = {
         descending: false,
         page: 1,
         rowsPerPage: 50,
         sortBy: "ticker",
-        totalItems: this.totalItems
+        totalItems: 0,
+        pages: 0
     };
 
     private stocks: Stock[] = [];
 
     async created(): Promise<void> {
-
+        this.filter.showUserShares = this.localStorage.get<boolean>("showUserStocks", false);
     }
 
-    @Watch("pagination", {deep: true})
-    private async onTablePaginationChange(): Promise<void> {
+    /**
+     * Обрыбатывает событие изменения паджинации и загружает данные
+     * @param pagination
+     */
+    private async onTablePaginationChange(pagination: Pagination): Promise<void> {
+        this.pagination = pagination;
+        await this.loadStocks();
+    }
+
+    private async changeShowUserShares(showUserShares: boolean): Promise<void> {
+        this.localStorage.set<boolean>("showUserStocks", showUserShares);
+        this.filter.showUserShares = showUserShares;
+        await this.loadStocks();
+    }
+
+    private async tableSearch(search: string): Promise<void> {
+        this.filter.searchQuery = search;
         await this.loadStocks();
     }
 
     @ShowProgress
     private async loadStocks(): Promise<void> {
         const response = await this.marketservice.loadStocks(this.pagination.rowsPerPage * (this.pagination.page - 1),
-            this.pagination.rowsPerPage, this.pagination.sortBy, this.pagination.descending);
+            this.pagination.rowsPerPage, this.pagination.sortBy, this.pagination.descending, this.filter.searchQuery, this.filter.showUserShares);
         this.stocks = response.content;
-        this.totalItems = response.totalItems;
+        this.pagination.totalItems = response.totalItems;
+        this.pagination.pages = response.pages;
     }
 
     private async openTradeDialog(stock: Stock, operation: Operation): Promise<void> {
