@@ -17,13 +17,14 @@
 import Component from "vue-class-component";
 import {Prop, UI} from "../app/ui";
 import {QuotesFilter} from "../services/marketService";
+import {CommonUtils} from "../utils/commonUtils";
 import {TableFilterBase} from "./tableFilterBase";
 
 @Component({
     // language=Vue
     template: `
         <v-layout align-center class="pl-2">
-            <table-filter-base @search="onSearch" :search-query="filter.searchQuery" :search-label="placeholder" :min-length="2" :is-default="filter.showUserShares">
+            <table-filter-base @search="onSearch" :search-query="filter.searchQuery" :search-label="placeholder" :min-length="2" :is-default="isDefaultFilter">
                 <v-switch v-model="filter.showUserShares" @change="onChange">
                     <template #label>
                         <span class="fs13">Показать мои бумаги</span>
@@ -56,5 +57,9 @@ export class QuotesFilterTable extends UI {
 
     private onSearch(searchQuery: string): void {
         this.$emit("input", searchQuery);
+    }
+
+    private get isDefaultFilter(): boolean {
+        return (!CommonUtils.exists(this.filter.showUserShares) || this.filter.showUserShares === false) && CommonUtils.isBlank(this.filter.searchQuery);
     }
 }

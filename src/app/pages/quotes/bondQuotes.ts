@@ -112,6 +112,7 @@ export class BondQuotes extends UI {
     @Inject
     private localStorage: Storage;
 
+    /** Фильтр котировок */
     private filter: QuotesFilter = {
         searchQuery: "",
         showUserShares: false

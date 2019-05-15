@@ -70,7 +70,7 @@ export class MarketService {
      * Загружает и возвращает список акций
      */
     async loadStocks(offset: number = 0, pageSize: number = 50, sortColumn: string,
-                     descending: boolean = false, search: string, showUserShares: boolean): Promise<PageableResponse<Stock>> {
+                     descending: boolean = false, search: string = null, showUserShares: boolean = false): Promise<PageableResponse<Stock>> {
         const urlParams: UrlParams = {offset, pageSize, search, showUserShares};
         if (sortColumn) {
             urlParams.sortColumn = sortColumn.toUpperCase();
