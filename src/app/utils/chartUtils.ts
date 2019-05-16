@@ -1,3 +1,4 @@
+import * as chroma from "chroma-js";
 import {Decimal} from "decimal.js";
 import Highcharts, {AreaChart, ChartObject, DataPoint, Gradient, PlotLines, SeriesChart} from "highcharts";
 import Highstock from "highcharts/highstock";
@@ -325,16 +326,17 @@ export class ChartUtils {
                 pointFormat: this.PIE_CHART_TOOLTIP_FORMAT[tooltipFormat],
                 valueSuffix: `${viewCurrency ? ` ${TradeUtils.getCurrencySymbol(viewCurrency)}` : ""}`
             },
+            colors: ChartUtils.getColors(chartData.length),
+            // colors: [
+            //     "#f5f5dc", "#000000", "#00ffff", "#00008b", "#008b8b", "#a9a9a9", "#556b2f", "#ff8c00", "#8b0000", "#800080",
+            //     "#9400d3", "#ff00ff", "#ffd700", "#008000", "#4b0082", "#add8e6", "#90ee90", "#d3d3d3", "#ffb6c1", "#ff0000",
+            //     "#ffffe0", "#00ff00", "#ff00ff", "#800000", "#000080", "#808000", "#ffa500", "#ffc0cb", "#800080", "#c0c0c0",
+            //     "#ffff00"
+            // ],
             plotOptions: {
                 pie: {
                     allowPointSelect: true,
                     cursor: "pointer",
-                    colors: [
-                        "#f5f5dc", "#000000", "#00ffff", "#00008b", "#008b8b", "#a9a9a9", "#556b2f", "#ff8c00", "#8b0000", "#800080",
-                        "#9400d3", "#ff00ff", "#ffd700", "#008000", "#4b0082", "#add8e6", "#90ee90", "#d3d3d3", "#ffb6c1", "#ff0000",
-                        "#ffffe0", "#00ff00", "#ff00ff", "#800000", "#000080", "#808000", "#ffa500", "#ffc0cb", "#800080", "#c0c0c0",
-                        "#ffff00"
-                    ],
                     dataLabels: {
                         enabled: true,
                         format: "<b>{point.name}</b>: {point.percentage:.2f} %",
@@ -454,5 +456,10 @@ export class ChartUtils {
             series.push({name: key, data: result[key].data, color: ChartUtils.OPERATION_COLORS[key], yAxis: key === Operation.COUPON.description ? 0 : 1});
         });
         return {categoryNames, series};
+    }
+
+    private static getColors(dataSetsCountValue: number = 10): string[] {
+        const dataSetsCount = Math.min(dataSetsCountValue, 30);
+        return chroma.scale(["#040427", "#62ff63", "#f1f3f6"]).mode("hcl").colors(dataSetsCount);
     }
 }

@@ -19,7 +19,9 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.4.1",
     "@sentry/browser": "^4.6.4",
+    "@types/chroma-js": "^1.4.1",
     "@types/highcharts": "^5.0.22",
+    "chroma-js": "^2.0.3",
     "dayjs": "^1.8.11",
     "decimal.js": "^10.0.1",
     "font-awesome": "^4.7.0",
