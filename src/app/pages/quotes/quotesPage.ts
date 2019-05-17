@@ -20,12 +20,7 @@ const MainStore = namespace(StoreType.MAIN);
             </v-card>
             <v-card flat class="pa-0">
                 <v-radio-group v-model="currentTab" row class="mt-0 pt-4 pl-4 margB35" hide-details>
-                    <v-radio
-                        v-for="item in quotesType"
-                        :key="item"
-                        :label="item"
-                        :value="item"
-                    ></v-radio>
+                    <v-radio v-for="item in quotesType" :key="item" :label="item" :value="item" class="pl-1"></v-radio>
                 </v-radio-group>
                 <stock-quotes v-if="currentTab === quotesType.STOCK"></stock-quotes>
                 <bond-quotes v-if="currentTab === quotesType.BOND"></bond-quotes>

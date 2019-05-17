@@ -45,7 +45,7 @@ import {MainStore} from "../../../vuex/mainStore";
                             </div>
 
                             <div class="number-field-balance">
-                                <ii-number-field v-if="portfolio" @keydown.enter="goToNextStep"
+                                <ii-number-field v-if="portfolio" @keydown.enter="goToNextStep" :decimals="2"
                                                  suffix="RUB" label="Текущий остаток" v-model="currentMoneyRemainder" name="currentMoney" class="required">
                                 </ii-number-field>
                             </div>

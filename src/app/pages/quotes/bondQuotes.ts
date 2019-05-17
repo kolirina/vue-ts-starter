@@ -3,9 +3,12 @@ import Component from "vue-class-component";
 import {Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
+import {AdditionalPagination} from "../../components/additionalPagination";
 import {AddTradeDialog} from "../../components/dialogs/addTradeDialog";
+import {QuotesFilterTable} from "../../components/quotesFilterTable";
 import {ShowProgress} from "../../platform/decorators/showProgress";
-import {MarketService} from "../../services/marketService";
+import {Storage} from "../../platform/services/storage";
+import {MarketService, QuotesFilter} from "../../services/marketService";
 import {AssetType} from "../../types/assetType";
 import {Operation} from "../../types/operation";
 import {Bond, Pagination, Portfolio, TableHeader} from "../../types/types";
@@ -18,9 +21,14 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-container v-if="portfolio" fluid class="pa-0">
-            <v-data-table :headers="headers" :items="bonds" item-key="id" :pagination.sync="pagination"
+            <div class="additional-pagination-quotes-table">
+                <additional-pagination :pagination="pagination" @update:pagination="onTablePaginationChange"></additional-pagination>
+            </div>
+            <quotes-filter-table :filter="filter" @input="tableSearch" @changeShowUserShares="changeShowUserShares"
+                                 placeholder="Поиск"></quotes-filter-table>
+            <v-data-table :headers="headers" :items="bonds" item-key="id" :pagination="pagination" @update:pagination="onTablePaginationChange"
                           :rows-per-page-items="[25, 50, 100, 200]"
-                          :total-items="totalItems" class="quotes-table" must-sort>
+                          :total-items="pagination.totalItems" class="quotes-table" must-sort>
                 <template #items="props">
                     <tr class="selectable">
                         <td class="text-xs-left">
@@ -88,7 +96,8 @@ const MainStore = namespace(StoreType.MAIN);
                 </template>
             </v-data-table>
         </v-container>
-    `
+    `,
+    components: {AdditionalPagination, QuotesFilterTable}
 })
 export class BondQuotes extends UI {
 
@@ -100,6 +109,14 @@ export class BondQuotes extends UI {
     private operation = Operation;
     @Inject
     private marketservice: MarketService;
+    @Inject
+    private localStorage: Storage;
+
+    /** Фильтр котировок */
+    private filter: QuotesFilter = {
+        searchQuery: "",
+        showUserShares: false
+    };
 
     private headers: TableHeader[] = [
         {text: "ISIN", align: "left", value: "isin"},
@@ -116,33 +133,48 @@ export class BondQuotes extends UI {
         {text: "Меню", value: "", align: "center", sortable: false}
     ];
 
-    private totalItems = 0;
-
     private pagination: Pagination = {
         descending: false,
         page: 1,
         rowsPerPage: 50,
         sortBy: "isin",
-        totalItems: this.totalItems
+        totalItems: 0,
+        pages: 0
     };
 
     private bonds: Bond[] = [];
 
     async created(): Promise<void> {
-
+        this.filter.showUserShares = this.localStorage.get<boolean>("showUserBonds", false);
     }
 
-    @Watch("pagination", {deep: true})
-    private async onTablePaginationChange(): Promise<void> {
-        await this.loadStocks();
+    /**
+     * Обрыбатывает событие изменения паджинации и загружает данные
+     * @param pagination
+     */
+    private async onTablePaginationChange(pagination: Pagination): Promise<void> {
+        this.pagination = pagination;
+        await this.loadBonds();
+    }
+
+    private async tableSearch(search: string): Promise<void> {
+        this.filter.searchQuery = search;
+        await this.loadBonds();
+    }
+
+    private async changeShowUserShares(showUserShares: boolean): Promise<void> {
+        this.localStorage.set<boolean>("showUserBonds", showUserShares);
+        this.filter.showUserShares = showUserShares;
+        await this.loadBonds();
     }
 
     @ShowProgress
-    private async loadStocks(): Promise<void> {
+    private async loadBonds(): Promise<void> {
         const response = await this.marketservice.loadBonds(this.pagination.rowsPerPage * (this.pagination.page - 1),
-            this.pagination.rowsPerPage, this.pagination.sortBy, this.pagination.descending);
+            this.pagination.rowsPerPage, this.pagination.sortBy, this.pagination.descending, this.filter.searchQuery, this.filter.showUserShares);
         this.bonds = response.content;
-        this.totalItems = response.totalItems;
+        this.pagination.totalItems = response.totalItems;
+        this.pagination.pages = response.pages;
     }
 
     private async openTradeDialog(bond: Bond, operation: Operation): Promise<void> {
