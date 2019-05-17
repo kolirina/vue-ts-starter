@@ -460,6 +460,6 @@ export class ChartUtils {
 
     private static getColors(dataSetsCountValue: number = 10): string[] {
         const dataSetsCount = Math.min(dataSetsCountValue, 30);
-        return chroma.scale(["#040427", "#62ff63", "#f1f3f6"]).mode("hcl").colors(dataSetsCount);
+        return chroma.scale(["#F44336", "#03A9F4", "#4CAF50", "#FFEB3B", "#9C27B0"].reverse()).mode("hcl").colors(dataSetsCount);
     }
 }
