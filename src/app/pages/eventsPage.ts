@@ -230,13 +230,13 @@ const MainStore = namespace(StoreType.MAIN);
                                     <div class="wrap-list-events">
                                         <div>
                                             <div v-for="event in calendarEvents[date]" :key="event.title">
-                                                <v-menu max-width="267" right nudge-right="150" content-class="fs13 info-about-event">
+                                                <v-menu max-width="267" right nudge-right="150" content-class="fs13 info-about-event" :close-on-content-click="false">
                                                     <template v-slot:activator="{ on }">
-                                                        <div v-on="on" :class="[event.styleClass, 'fs13', 'calendar-events-title', 'pl-2']">
+                                                        <div v-on="on" :class="[event.styleClass, 'fs13', 'calendar-events-title', 'pl-2', 'selectable']">
                                                             {{ event.typeDescription }}
                                                         </div>
                                                     </template>
-                                                    <v-card flat>
+                                                    <v-card class="selectable" flat>
                                                         {{ event.description }}
                                                     </v-card>
                                                 </v-menu>
