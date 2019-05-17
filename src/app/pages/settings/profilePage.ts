@@ -3,8 +3,12 @@ import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
 import {ChangePasswordDialog} from "../../components/dialogs/changePasswordDialog";
+import {ConfirmDialog} from "../../components/dialogs/confirmDialog";
 import {ShowProgress} from "../../platform/decorators/showProgress";
+import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {ClientInfo, ClientService} from "../../services/clientService";
+import {TariffService, UserPaymentInfo} from "../../services/tariffService";
+import {Tariff} from "../../types/tariff";
 import {CommonUtils} from "../../utils/commonUtils";
 import {StoreType} from "../../vuex/storeType";
 
@@ -37,6 +41,21 @@ const MainStore = namespace(StoreType.MAIN);
                 <div class="profile__subtitle">Имя пользователя</div>
                 <inplace-input name="username" :value="username" @input="onUserNameChange"></inplace-input>
             </v-card>
+            <v-card v-if="hasPaymentInfo" flat>
+                Способ оплаты
+                <!-- TODO верстка -->
+                <v-tooltip content-class="custom-tooltip-wrap" max-width="280px" bottom>
+                    <div slot="activator">
+                        <div>{{ paymentInfo.pan }}</div>
+                        <div>{{ paymentInfo.expDate }}</div>
+                    </div>
+                    <span>У вас активировано автоматическое продление подписки, вы можете отменить ее с помощью кнопки "Отвязать карту".</span>
+                </v-tooltip>
+
+                <v-btn @click.stop="cancelOrderSchedule" class="primary">
+                    Отвязать карту
+                </v-btn>
+            </v-card>
         </v-container>
     `
 })
@@ -47,18 +66,27 @@ export class ProfilePage extends UI {
     /** Сервис для работы с данными клиента */
     @Inject
     private clientService: ClientService;
+    /** Сервис для работы с тарифами */
+    @Inject
+    private tariffService: TariffService;
     /** Имя пользователя */
     private username = "";
     /** email пользователя */
     private email = "";
+    /** Платежная информация пользователя */
+    private paymentInfo: UserPaymentInfo = null;
 
     /**
      * Инициализирует данные компонента
      * @inheritDoc
      */
-    async mounted(): Promise<void> {
+    @ShowProgress
+    async created(): Promise<void> {
         this.username = this.clientInfo.user.username;
         this.email = this.clientInfo.user.email;
+        if (![Tariff.FREE, Tariff.TRIAL].includes(this.clientInfo.user.tariff)) {
+            this.paymentInfo = await this.tariffService.getPaymentInfo();
+        }
     }
 
     /**
@@ -112,5 +140,29 @@ export class ProfilePage extends UI {
             this.clientInfo.user.username = this.username;
             this.$snotify.info("Новое имя пользователя успешно сохранено");
         }
+    }
+
+    /**
+     * Отменяет автоматическую подписку
+     */
+    private async cancelOrderSchedule(): Promise<void> {
+        const result = await new ConfirmDialog().show("Вы уверены, что хотите отменить подписку? Автоматическое продление будет отключено. " +
+            "После окончания подписки некоторые услуги могут стать недоступны.");
+        if (result === BtnReturn.YES) {
+            await this.cancelOrderScheduleConfirmed();
+            this.$snotify.info("Автоматическое продление подписки успешно отключено");
+        }
+    }
+
+    @ShowProgress
+    private async cancelOrderScheduleConfirmed(): Promise<void> {
+        await this.tariffService.cancelOrderSchedule();
+    }
+
+    /**
+     * Возвращает признак наличия информации о периодической подписке
+     */
+    private get hasPaymentInfo(): boolean {
+        return this.paymentInfo && CommonUtils.exists(this.paymentInfo.pan) && CommonUtils.exists(this.paymentInfo.expDate);
     }
 }

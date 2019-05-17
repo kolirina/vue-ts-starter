@@ -9,10 +9,11 @@ import {ConfirmDialog} from "../../components/dialogs/confirmDialog";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {ClientInfo, ClientService} from "../../services/clientService";
-import {TariffService} from "../../services/tariffService";
+import {TariffService, UserPaymentInfo} from "../../services/tariffService";
 import {Permission} from "../../types/permission";
 import {Tariff} from "../../types/tariff";
 import {Portfolio} from "../../types/types";
+import {CommonUtils} from "../../utils/commonUtils";
 import {DateUtils} from "../../utils/dateUtils";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
@@ -51,12 +52,22 @@ export class TariffLimitExceedInfo extends UI {
                 <template #label>
                 <span>
                     Согласие с условиями
-                    <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                    <v-tooltip content-class="custom-tooltip-wrap" max-width="340px" bottom>
                         <sup class="custom-tooltip" slot="activator">
                             <v-icon>fas fa-info-circle</v-icon>
                         </sup>
                         <span>
-                            Нажимая чекбокс, вы соглашаетесь с условиями лицензионного соглашения.
+                            <p>
+                                Нажимая чекбокс, вы соглашаетесь с условиями <br>
+                                лицензионного соглашения.
+                            </p>
+                            <p>
+                                По истечению оплаченного периода,  <br>
+                                оплата за новый период будет снята <br>
+                                с вашей карты автоматически. <br>
+                                Отписаться от автопродления вы можете<br>
+                                в любой момент в меню "Профиль"
+                            </p>
                         </span>
                     </v-tooltip>
                 </span>
@@ -328,20 +339,22 @@ export class TariffsPage extends UI {
     };
     /** Состояние прогресса оплаты */
     private isProgress = false;
+    /** Платежная информация пользователя */
+    private paymentInfo: UserPaymentInfo = null;
 
     /**
      * Проверка успешно завершенной оплаты
      */
+    @ShowProgress
     async created(): Promise<void> {
         this.clientService.resetClientInfo();
         await this.reloadUser();
-        // проверяем статус заказа
-        try {
-            const status = await this.tariffService.getOrderState();
-            if (status === "CONFIRMED") {
-                await this.afterSuccessPayment();
-            }
-        } catch (ignored) {
+        if (![Tariff.FREE, Tariff.TRIAL].includes(this.clientInfo.user.tariff)) {
+            this.paymentInfo = await this.tariffService.getPaymentInfo();
+        }
+        if (this.$route.params.status) {
+            this.$snotify.info("Оплата заказа успешно завершена");
+            this.$router.push({name: "tariffs"});
         }
     }
 
@@ -452,7 +465,7 @@ export class TariffsPage extends UI {
         if (this.isSelected(tariff)) {
             return tariff === Tariff.FREE ? "Подключен" : "Подписаться";
         }
-        return "Подключить";
+        return "Подписаться";
     }
 
     private isAvailable(tariff: Tariff): boolean {
@@ -484,5 +497,12 @@ export class TariffsPage extends UI {
 
     private get perPart(): string {
         return this.monthly ? " мес." : " год";
+    }
+
+    /**
+     * Возвращает признак наличия информации о периодической подписке
+     */
+    private get hasPaymentInfo(): boolean {
+        return this.paymentInfo && CommonUtils.exists(this.paymentInfo.pan) && CommonUtils.exists(this.paymentInfo.expDate);
     }
 }
