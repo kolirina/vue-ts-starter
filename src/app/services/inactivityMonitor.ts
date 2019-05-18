@@ -17,7 +17,7 @@ import {Inject} from "typescript-ioc";
 import {NewBackendVersionDialog} from "../components/dialogs/newBackendVersionDialog";
 import {Storage} from "../platform/services/storage";
 import {StoreKeys} from "../types/storeKeys";
-import {ApplicationService} from "./applicationService";
+import {ApplicationService, AppVersion} from "./applicationService";
 import {LogoutService} from "./logoutService";
 
 /**
@@ -95,8 +95,8 @@ export class InactivityMonitor {
     private checkBackendVersion(): void {
         setTimeout(async () => {
             const version = await this.applicationService.getBackendVersion();
-            const versionFromLocalStorage = this.storage.get(StoreKeys.BACKEND_VERSION_KEY, null);
-            if (version !== versionFromLocalStorage) {
+            const versionFromLocalStorage = this.storage.get<AppVersion>(StoreKeys.BACKEND_VERSION_KEY, null);
+            if (version && versionFromLocalStorage && version.version !== versionFromLocalStorage.version && version.build !== versionFromLocalStorage.build) {
                 await new NewBackendVersionDialog().show();
             }
         }, 1000 * 60 * 30);

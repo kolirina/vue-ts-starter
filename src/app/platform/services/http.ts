@@ -76,10 +76,11 @@ export class Http {
      * @param {string} url URL запроса
      * @param urlParams    параметры для URL
      * @param options      параметры запроса
+     * @param customBaseUrl
      * @return {Promise<T>}
      */
-    async get<T>(url: string, urlParams?: UrlParams, options?: any): Promise<T> {
-        return this.doRequest<T>("GET", url, {options, urlParams});
+    async get<T>(url: string, urlParams?: UrlParams, options?: any, customBaseUrl: boolean = false): Promise<T> {
+        return this.doRequest<T>("GET", url, {options, urlParams}, customBaseUrl);
     }
 
     /**
@@ -98,10 +99,11 @@ export class Http {
      * @param method метод запроса
      * @param url    URL запроса
      * @param params объект с параметрами запроса
+     * @param customBaseUrl если признак передан, url буден взять напрямую без base_url
      * @return {Promise<T>}
      */
-    private async doRequest<T>(method: string, url: string, params: { options: any, body?: any, urlParams?: UrlParams }): Promise<T> {
-        const paramsInit = this.prepareRequestParams(method, url, params);
+    private async doRequest<T>(method: string, url: string, params: { options: any, body?: any, urlParams?: UrlParams }, customBaseUrl: boolean = false): Promise<T> {
+        const paramsInit = this.prepareRequestParams(method, url, params, customBaseUrl);
 
         let response;
         try {
@@ -122,9 +124,10 @@ export class Http {
      * @param method метод запроса
      * @param requestUrl    URL запроса
      * @param params объект с параметрами, которые необходимо применить к запросу
+     * @param customBaseUrl
      * @return {ParamsInit} объект с данными запроса
      */
-    private prepareRequestParams(method: string, requestUrl: string, params: { options: any, body?: any, urlParams?: UrlParams }): ParamsInit {
+    private prepareRequestParams(method: string, requestUrl: string, params: { options: any, body?: any, urlParams?: UrlParams }, customBaseUrl: boolean = false): ParamsInit {
         let url = requestUrl;
         const requestParams = this.getDefaultRequestInit();
         requestParams.method = method;
@@ -152,7 +155,7 @@ export class Http {
             url = "/" + url;
         }
 
-        return {url: this.BASE_URL + url, params: requestParams};
+        return {url: customBaseUrl ? url : this.BASE_URL + url, params: requestParams};
     }
 
     /**
