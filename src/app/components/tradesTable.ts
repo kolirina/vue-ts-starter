@@ -10,7 +10,7 @@ import {TradeFields} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
 import {Operation} from "../types/operation";
-import {Portfolio, TableHeader, TablePagination, TradeRow} from "../types/types";
+import {Pagination, Portfolio, TableHeader, TablePagination, TradeRow} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
 import {DateFormat} from "../utils/dateUtils";
 import {TradeUtils} from "../utils/tradeUtils";
@@ -24,10 +24,12 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-data-table class="data-table" :headers="headers" :items="trades" item-key="id" :pagination.sync="tradePagination.pagination"
-                      :total-items="tradePagination.totalItems" :custom-sort="customSort"
+        <v-data-table class="data-table table-bottom-pagination" :headers="headers" :items="trades" item-key="id" :pagination="tradePagination.pagination"
+                      @update:pagination="onTablePaginationChange"
+                      :total-items="tradePagination.pagination.totalItems" :custom-sort="customSort"
                       :no-data-text="portfolio.overview.totalTradesCount ? 'Ничего не найдено' : 'Добавьте свою первую сделку и она отобразится здесь'"
-                      expand hide-actions must-sort>
+                      :rows-per-page-items="[25, 50, 100, 200]"
+                      expand must-sort>
             <template #items="props">
                 <tr class="selectable" @dblclick="props.expanded = !props.expanded">
                     <td>
@@ -63,9 +65,9 @@ const MainStore = namespace(StoreType.MAIN);
                     <td class="px-0" style="text-align: center" @click.stop>
                         <v-layout align-center justify-center v-if="props.item.parentTradeId">
                             <v-tooltip transition="slide-y-transition"
-                                       content-class="menu-icons" bottom
-                                       class="hint-for-icon-name-section"
-                                       :max-width="300">
+                                    content-class="menu-icons" bottom
+                                    class="hint-for-icon-name-section"
+                                    :max-width="300">
                                 <img src="img/trades/related_deal.svg" slot="activator">
                                 <div class="pa-3">
                                     Это связанная сделка, отредактируйте основную сделку для изменения.
@@ -210,6 +212,10 @@ export class TradesTable extends UI {
     @Watch("trades")
     onTradesUpdate(trades: TradeRow[]): void {
         this.trades = trades;
+    }
+
+    private onTablePaginationChange(pagination: Pagination): void {
+        this.$emit("update:pagination", pagination);
     }
 
     private async openTradeDialog(trade: TradeRow, operation: Operation): Promise<void> {
