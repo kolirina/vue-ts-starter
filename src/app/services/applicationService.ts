@@ -25,7 +25,13 @@ export class ApplicationService {
     @Inject
     private http: Http;
 
-    async getBackendVersion(): Promise<string> {
-        return this.http.get<string>("/status");
+    async getBackendVersion(): Promise<AppVersion> {
+        return this.http.get<AppVersion>(`/app/version.json`, null, null, true);
     }
+}
+
+export interface AppVersion {
+    version: string;
+    build: string;
+    date: string;
 }

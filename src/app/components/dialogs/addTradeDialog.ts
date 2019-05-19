@@ -345,8 +345,12 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         await this.fillFields();
     }
 
+    /**
+     * Заполняем поля диалога на основе информации бумаги.
+     * Ничего не делаем, если у нас событие, все поля уже заполнены и их перезатирать не нужно
+     */
     private async fillFields(): Promise<void> {
-        if (!this.date || !this.share) {
+        if (!this.date || !this.share || this.processShareEvent) {
             return;
         }
         const date = DateUtils.parseDate(this.date);

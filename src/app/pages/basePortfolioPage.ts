@@ -45,7 +45,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                 <asset-table :assets="overview.assetRows" v-if="blockNotEmpty(emptyBlockType.DEFAULT)" class="mt-3"></asset-table>
 
                 <expanded-panel v-if="blockNotEmpty(emptyBlockType.STOCK_PORTFOLIO)" :value="$uistate.stocksTablePanel"
-                                :withMenu="true" name="stock" :state="$uistate.STOCKS" @click="onStockTablePanelClick" class="mt-3">
+                                :withMenu="true" name="stock" :state="$uistate.STOCKS" @click="onStockTablePanelClick" class="mt-3 selectable">
                     <template #header>
                         <span>Акции</span>
                         <v-fade-transition mode="out-in">
@@ -64,7 +64,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                 </expanded-panel>
 
                 <expanded-panel v-if="blockNotEmpty(emptyBlockType.BOND_PORTFOLIO)" :value="$uistate.bondsTablePanel"
-                                :withMenu="true" name="bond" :state="$uistate.BONDS" @click="onBondTablePanelClick" class="mt-3">
+                                :withMenu="true" name="bond" :state="$uistate.BONDS" @click="onBondTablePanelClick" class="mt-3 selectable">
                     <template #header>
                         <span>Облигации</span>
                         <v-fade-transition mode="out-in">
@@ -134,7 +134,6 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                         <pie-chart ref="bondPieChart" :data="bondPieChartData" :view-currency="viewCurrency"></pie-chart>
                     </v-card-text>
                 </expanded-panel>
-
                 <expanded-panel v-if="blockNotEmpty(emptyBlockType.STOCK_PORTFOLIO)" :value="$uistate.sectorsGraph" :state="$uistate.SECTORS_PANEL" customMenu class="mt-3">
                     <template #header>Состав портфеля по секторам</template>
                     <template #customMenu>

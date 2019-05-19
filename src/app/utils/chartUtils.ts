@@ -1,3 +1,4 @@
+import * as chroma from "chroma-js";
 import {Decimal} from "decimal.js";
 import Highcharts, {AreaChart, ChartObject, DataPoint, Gradient, PlotLines, SeriesChart} from "highcharts";
 import Highstock from "highcharts/highstock";
@@ -325,6 +326,7 @@ export class ChartUtils {
                 pointFormat: this.PIE_CHART_TOOLTIP_FORMAT[tooltipFormat],
                 valueSuffix: `${viewCurrency ? ` ${TradeUtils.getCurrencySymbol(viewCurrency)}` : ""}`
             },
+            colors: ChartUtils.getColors(chartData.length),
             plotOptions: {
                 pie: {
                     allowPointSelect: true,
@@ -448,5 +450,10 @@ export class ChartUtils {
             series.push({name: key, data: result[key].data, color: ChartUtils.OPERATION_COLORS[key], yAxis: key === Operation.COUPON.description ? 0 : 1});
         });
         return {categoryNames, series};
+    }
+
+    private static getColors(dataSetsCountValue: number = 10): string[] {
+        const dataSetsCount = Math.min(dataSetsCountValue, 30);
+        return chroma.scale(["#F44336", "#03A9F4", "#4CAF50", "#FFEB3B", "#9C27B0"].reverse()).mode("hcl").colors(dataSetsCount);
     }
 }
