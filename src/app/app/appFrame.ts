@@ -19,7 +19,6 @@ import {UiStateHelper} from "../utils/uiStateHelper";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {UI} from "./ui";
-import {TariffExpiredDialog} from "../components/dialog/tariffExpiredDialog";
 
 const MainStore = namespace(StoreType.MAIN);
 
