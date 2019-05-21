@@ -24,7 +24,7 @@ import {ForbiddenCode} from "../../types/types";
 @Component({
     // language=Vue
     template: `
-        <v-dialog v-model="showed" max-width="600px">
+        <v-dialog v-model="showed" max-width="600px" ref="dialog" persistent :closable="false">
             <v-card class="dialog-wrap">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
 
