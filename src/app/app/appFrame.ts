@@ -19,6 +19,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {UI} from "./ui";
+import {TariffExpiredDialog} from "../components/dialog/tariffExpiredDialog";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -135,15 +136,13 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-layout>
                 </v-navigation-drawer>
                 <v-content>
-                    <div class="wrapper-for-scroll-content">
-                        <v-container fluid class="paddT0">
-                            <v-slide-y-transition mode="out-in">
-                                <!--<keep-alive :include="cachedPages">-->
-                                <router-view></router-view>
-                                <!--</keep-alive>-->
-                            </v-slide-y-transition>
-                        </v-container>
-                    </div>
+                    <v-container fluid class="paddT0">
+                        <v-slide-y-transition mode="out-in">
+                            <!--<keep-alive :include="cachedPages">-->
+                            <router-view></router-view>
+                            <!--</keep-alive>-->
+                        </v-slide-y-transition>
+                    </v-container>
                     <v-footer color="#f7f9fb" class="footer-app">
                         <v-layout class="footer-app-wrap-content" wrap align-center justify-space-between>
                             <div class="footer-app-wrap-content__text"><i class="far fa-copyright"></i> {{ copyrightInfo }}</div>
