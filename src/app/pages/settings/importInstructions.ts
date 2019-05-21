@@ -147,6 +147,11 @@ const MainStore = namespace(StoreType.MAIN);
                     Quik, можете <a @click="selectProvider(providers.QUIK)">импортировать</a>
                     отчеты из терминала.
                 </p>
+                <p v-if="portfolio.overview.totalTradesCount" style="text-align: center;padding: 20px;">
+                    <b>
+                        Последняя зарегистрированная сделка в портфеле от {{ lastTradeDate | date }}.
+                    </b>
+                </p>
             </div>
         </div>
     `,
