@@ -4,6 +4,7 @@ import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
 import {AdditionalPagination} from "../../components/additionalPagination";
 import {AddTradeDialog} from "../../components/dialogs/addTradeDialog";
+import {EmptySearchResult} from "../../components/emptySearchResult";
 import {QuotesFilterTable} from "../../components/quotesFilterTable";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {Storage} from "../../platform/services/storage";
@@ -25,9 +26,11 @@ const MainStore = namespace(StoreType.MAIN);
             </div>
             <quotes-filter-table :filter="filter" @input="tableSearch" @changeShowUserShares="changeShowUserShares"
                                  placeholder="Поиск"></quotes-filter-table>
-            <v-data-table :headers="headers" :items="stocks" item-key="id" :pagination="pagination" @update:pagination="onTablePaginationChange"
-                          :rows-per-page-items="[25, 50, 100, 200]"
-                          :total-items="pagination.totalItems" class="quotes-table" must-sort>
+            <empty-search-result v-if="isEmptySearchResult" @resetFilter="resetFilter"></empty-search-result>
+            <v-data-table v-else
+                        :headers="headers" :items="stocks" item-key="id" :pagination="pagination" @update:pagination="onTablePaginationChange"
+                        :rows-per-page-items="[25, 50, 100, 200]"
+                        :total-items="pagination.totalItems" class="quotes-table" must-sort>
                 <template #items="props">
                     <tr class="selectable">
                         <td class="text-xs-left">
@@ -41,15 +44,15 @@ const MainStore = namespace(StoreType.MAIN);
                         <td class="text-xs-center ii-number-cell">{{ props.item.lotsize }}</td>
                         <td class="text-xs-center">
                             <v-rating v-model="props.item.rating" color="#A1A6B6" size="10" dense readonly full-icon="fiber_manual_record"
-                                      empty-icon="panorama_fish_eye" title=""></v-rating>
+                                    empty-icon="panorama_fish_eye" title=""></v-rating>
                         </td>
                         <td class="text-xs-center">
                             <v-btn v-if="props.item.currency === 'RUB'" :href="'http://moex.com/ru/issue.aspx?code=' + props.item.ticker" target="_blank"
-                                   :title="'Профиль эмитента ' + props.item.name + ' на сайте биржи'" icon>
+                                :title="'Профиль эмитента ' + props.item.name + ' на сайте биржи'" icon>
                                 <i class="quotes-share"></i>
                             </v-btn>
                             <v-btn v-if="props.item.currency !== 'RUB'" :href="'https://finance.yahoo.com/quote/' + props.item.ticker" target="_blank"
-                                   :title="'Профиль эмитента ' + props.item.name + ' на сайте Yahoo Finance'" icon>
+                                :title="'Профиль эмитента ' + props.item.name + ' на сайте Yahoo Finance'" icon>
                                 <i class="quotes-share"></i>
                             </v-btn>
                         </td>
@@ -82,7 +85,7 @@ const MainStore = namespace(StoreType.MAIN);
             </v-data-table>
         </v-container>
     `,
-    components: {AdditionalPagination, QuotesFilterTable}
+    components: {AdditionalPagination, QuotesFilterTable, EmptySearchResult}
 })
 export class StockQuotes extends UI {
 
@@ -102,6 +105,8 @@ export class StockQuotes extends UI {
         searchQuery: "",
         showUserShares: false
     };
+
+    private isEmptySearchResult: boolean = false;
 
     private headers: TableHeader[] = [
         {text: "Тикер", align: "left", value: "ticker"},
@@ -127,6 +132,13 @@ export class StockQuotes extends UI {
 
     async created(): Promise<void> {
         this.filter.showUserShares = this.localStorage.get<boolean>("showUserStocks", false);
+        await this.loadStocks();
+    }
+
+    private async resetFilter(): Promise<void> {
+        this.filter.searchQuery = "";
+        this.filter.showUserShares = false;
+        await this.loadStocks();
     }
 
     /**
@@ -156,6 +168,7 @@ export class StockQuotes extends UI {
         this.stocks = response.content;
         this.pagination.totalItems = response.totalItems;
         this.pagination.pages = response.pages;
+        this.stocks.length > 0 ? this.isEmptySearchResult = false : this.isEmptySearchResult = true;
     }
 
     private async openTradeDialog(stock: Stock, operation: Operation): Promise<void> {

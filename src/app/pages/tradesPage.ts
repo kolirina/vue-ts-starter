@@ -41,7 +41,7 @@ const MainStore = namespace(StoreType.MAIN);
                 <trades-table-filter v-if="tradesFilter" :store-key="StoreKeys.TRADES_FILTER_SETTINGS_KEY" @filter="onFilterChange" :filter="tradesFilter"
                                      :is-default="isDefaultFilter"></trades-table-filter>
                 <trades-table v-if="tradePagination" :trades="trades" :trade-pagination="tradePagination"
-                              :headers="getHeaders(TABLES_NAME.TRADE)" @delete="onDelete"></trades-table>
+                              :headers="getHeaders(TABLES_NAME.TRADE)" @delete="onDelete" @resetFilter="resetFilter"></trades-table>
             </expanded-panel>
 
             <v-container v-if="pages > 1">
@@ -122,6 +122,10 @@ export class TradesPage extends UI {
             tableName: tableName,
             headers: this.headers[tableName]
         });
+    }
+
+    private async resetFilter(): Promise<void> {
+        this.tradesFilter = this.filterService.getFilter(StoreKeys.TRADES_FILTER_SETTINGS_KEY);
     }
 
     private async onPageChange(): Promise<void> {

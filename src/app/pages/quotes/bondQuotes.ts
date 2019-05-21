@@ -5,6 +5,7 @@ import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
 import {AdditionalPagination} from "../../components/additionalPagination";
 import {AddTradeDialog} from "../../components/dialogs/addTradeDialog";
+import {EmptySearchResult} from "../../components/emptySearchResult";
 import {QuotesFilterTable} from "../../components/quotesFilterTable";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {Storage} from "../../platform/services/storage";
@@ -26,7 +27,9 @@ const MainStore = namespace(StoreType.MAIN);
             </div>
             <quotes-filter-table :filter="filter" @input="tableSearch" @changeShowUserShares="changeShowUserShares"
                                  placeholder="Поиск"></quotes-filter-table>
-            <v-data-table :headers="headers" :items="bonds" item-key="id" :pagination="pagination" @update:pagination="onTablePaginationChange"
+            <empty-search-result v-if="isEmptySearchResult" @resetFilter="resetFilter"></empty-search-result>
+            <v-data-table v-else
+                          :headers="headers" :items="bonds" item-key="id" :pagination="pagination" @update:pagination="onTablePaginationChange"
                           :rows-per-page-items="[25, 50, 100, 200]"
                           :total-items="pagination.totalItems" class="quotes-table" must-sort>
                 <template #items="props">
@@ -97,7 +100,7 @@ const MainStore = namespace(StoreType.MAIN);
             </v-data-table>
         </v-container>
     `,
-    components: {AdditionalPagination, QuotesFilterTable}
+    components: {AdditionalPagination, QuotesFilterTable, EmptySearchResult}
 })
 export class BondQuotes extends UI {
 
@@ -111,6 +114,8 @@ export class BondQuotes extends UI {
     private marketservice: MarketService;
     @Inject
     private localStorage: Storage;
+
+    private isEmptySearchResult: boolean = false;
 
     /** Фильтр котировок */
     private filter: QuotesFilter = {
@@ -146,7 +151,20 @@ export class BondQuotes extends UI {
 
     async created(): Promise<void> {
         this.filter.showUserShares = this.localStorage.get<boolean>("showUserBonds", false);
+        await this.loadBonds();
     }
+
+    private async resetFilter(): Promise<void> {
+        this.filter.searchQuery = "";
+        this.filter.showUserShares = false;
+        await this.loadBonds();
+    }
+
+    // private get checkForEmptySearchResult(): boolean {
+    //     if() {
+    //         return
+    //     }
+    // }
 
     /**
      * Обрыбатывает событие изменения паджинации и загружает данные
@@ -175,6 +193,7 @@ export class BondQuotes extends UI {
         this.bonds = response.content;
         this.pagination.totalItems = response.totalItems;
         this.pagination.pages = response.pages;
+        this.bonds.length > 0 ? this.isEmptySearchResult = false : this.isEmptySearchResult = true;
     }
 
     private async openTradeDialog(bond: Bond, operation: Operation): Promise<void> {

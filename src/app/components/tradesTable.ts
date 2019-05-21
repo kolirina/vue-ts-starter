@@ -17,6 +17,7 @@ import {TradeUtils} from "../utils/tradeUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {AddTradeDialog} from "./dialogs/addTradeDialog";
+import {EmptySearchResult} from "./emptySearchResult";
 import {TradesTableExtInfo} from "./tradesTableExtInfo";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -24,138 +25,141 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-data-table class="data-table" :headers="headers" :items="trades" item-key="id" :pagination.sync="tradePagination.pagination"
-                      :total-items="tradePagination.totalItems" :custom-sort="customSort"
-                      :no-data-text="portfolio.overview.totalTradesCount ? 'Ничего не найдено' : 'Добавьте свою первую сделку и она отобразится здесь'"
-                      expand hide-actions must-sort>
-            <template #items="props">
-                <tr class="selectable" @dblclick="props.expanded = !props.expanded">
-                    <td>
-                        <span @click="props.expanded = !props.expanded" class="data-table-cell" :class="{'data-table-cell-open': props.expanded, 'path': true}"></span>
-                    </td>
-                    <td v-if="tableHeadersState.ticker" class="text-xs-left">
-                        <stock-link v-if="props.item.asset === 'STOCK'" :ticker="props.item.ticker"></stock-link>
-                        <bond-link v-if="props.item.asset === 'BOND'" :ticker="props.item.ticker"></bond-link>
-                        <span v-if="props.item.asset === 'MONEY'">{{ props.item.ticker }}</span>
-                    </td>
-                    <td v-if="tableHeadersState.name" class="text-xs-left">{{ props.item.companyName }}</td>
-                    <td v-if="tableHeadersState.operationLabel" class="text-xs-left">{{ props.item.operationLabel }}</td>
-                    <td v-if="tableHeadersState.date" class="text-xs-center">{{ getTradeDate(props.item) }}</td>
-                    <td v-if="tableHeadersState.quantity" class="text-xs-right ii-number-cell">{{ props.item.quantity }}</td>
-                    <td v-if="tableHeadersState.price" :class="['text-xs-right', 'ii-number-cell']">
-                        {{ getPrice(props.item) }}&nbsp;<span class="second-value">{{ currencyForPrice(props.item) }}</span>
-                    </td>
-                    <td v-if="tableHeadersState.facevalue" :class="['text-xs-right', 'ii-number-cell']">
-                        {{ props.item.facevalue | amount(false, null, false) }}&nbsp;<span class="second-value">{{ props.item.facevalue | currencySymbol }}</span>
-                    </td>
-                    <td v-if="tableHeadersState.nkd" :class="['text-xs-right', 'ii-number-cell']">
-                        {{ props.item.nkd | amount(false, null, false) }}&nbsp;<span class="second-value">{{ props.item.nkd | currencySymbol }}</span>
-                    </td>
-                    <td v-if="tableHeadersState.fee" :class="['text-xs-right', 'ii-number-cell']">
-                        {{ getFee(props.item) }}&nbsp;<span class="second-value">{{ props.item.fee | currencySymbol }}</span>
-                    </td>
-                    <td v-if="tableHeadersState.signedTotal" :class="['text-xs-right', 'ii-number-cell']">
-                        {{ props.item.signedTotal | amount(true) }}&nbsp;<span class="second-value">{{ props.item.signedTotal | currencySymbol }}</span>
-                    </td>
-                    <td v-if="tableHeadersState.totalWithoutFee" :class="['text-xs-right', 'ii-number-cell']">
-                        {{ props.item.totalWithoutFee | amount }}&nbsp;<span class="second-value">{{ props.item.totalWithoutFee | currencySymbol }}</span>
-                    </td>
-                    <td class="px-0" style="text-align: center" @click.stop>
-                        <v-layout align-center justify-center v-if="props.item.parentTradeId">
-                            <v-tooltip transition="slide-y-transition"
-                                       content-class="menu-icons" bottom
-                                       class="hint-for-icon-name-section"
-                                       :max-width="300">
-                                <img src="img/trades/related_deal.svg" slot="activator">
-                                <div class="pa-3">
-                                    Это связанная сделка, отредактируйте основную сделку для изменения.
-                                </div>
-                            </v-tooltip>
-                        </v-layout>
-                    </td>
-                    <td class="px-0" @click.stop>
-                        <v-layout align-center justify-center>
-                            <v-menu transition="slide-y-transition" bottom left>
-                                <v-btn slot="activator" flat icon dark>
-                                    <span class="menuDots"></span>
-                                </v-btn>
-                                <v-list dense>
-                                    <v-list-tile v-if="!props.item.parentTradeId" @click.stop="openEditTradeDialog(props.item)">
-                                        <v-list-tile-title>
-                                            Редактировать
-                                        </v-list-tile-title>
-                                    </v-list-tile>
-                                    <v-divider v-if="!props.item.parentTradeId"></v-divider>
-                                    <v-list-tile v-if="!isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.BUY)">
-                                        <v-list-tile-title>
-                                            Купить
-                                        </v-list-tile-title>
-                                    </v-list-tile>
-                                    <v-list-tile v-if="!isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.SELL)">
-                                        <v-list-tile-title>
-                                            Продать
-                                        </v-list-tile-title>
-                                    </v-list-tile>
-                                    <v-list-tile v-if="isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.DEPOSIT)">
-                                        <v-list-tile-title>
-                                            Внести
-                                        </v-list-tile-title>
-                                    </v-list-tile>
-                                    <v-list-tile v-if="isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.WITHDRAW)">
-                                        <v-list-tile-title>
-                                            Вывести
-                                        </v-list-tile-title>
-                                    </v-list-tile>
-                                    <v-list-tile v-if="isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.INCOME)">
-                                        <v-list-tile-title>
-                                            Доход
-                                        </v-list-tile-title>
-                                    </v-list-tile>
-                                    <v-list-tile v-if="isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.LOSS)">
-                                        <v-list-tile-title>
-                                            Расход
-                                        </v-list-tile-title>
-                                    </v-list-tile>
-                                    <v-list-tile v-if="isStockTrade(props.item)" @click="openTradeDialog(props.item, operation.DIVIDEND)">
-                                        <v-list-tile-title>
-                                            Дивиденд
-                                        </v-list-tile-title>
-                                    </v-list-tile>
-                                    <v-list-tile v-if="isBondTrade(props.item)" @click="openTradeDialog(props.item, operation.COUPON)">
-                                        <v-list-tile-title>
-                                            Купон
-                                        </v-list-tile-title>
-                                    </v-list-tile>
-                                    <v-list-tile v-if="isBondTrade(props.item)" @click="openTradeDialog(props.item, operation.AMORTIZATION)">
-                                        <v-list-tile-title>
-                                            Амортизация
-                                        </v-list-tile-title>
-                                    </v-list-tile>
-                                    <v-list-tile v-if="isBondTrade(props.item)" @click="openTradeDialog(props.item, operation.REPAYMENT)">
-                                        <v-list-tile-title>
-                                            Погашение
-                                        </v-list-tile-title>
-                                    </v-list-tile>
-                                    <!-- Связанную сделку удалить можно только удалив родительскую -->
-                                    <v-divider v-if="!props.item.parentTradeId"></v-divider>
-                                    <v-list-tile v-if="!props.item.parentTradeId" @click="deleteTrade(props.item)">
-                                        <v-list-tile-title>
-                                            Удалить
-                                        </v-list-tile-title>
-                                    </v-list-tile>
-                                </v-list>
-                            </v-menu>
-                        </v-layout>
-                    </td>
-                </tr>
-            </template>
+        <div>
+            <empty-search-result v-if="trades.length == 0" @resetFilter="resetFilter"></empty-search-result>
+            <v-data-table class="data-table" :headers="headers" :items="trades" item-key="id" :pagination.sync="tradePagination.pagination"
+                        :total-items="tradePagination.totalItems" :custom-sort="customSort"
+                        :no-data-text="portfolio.overview.totalTradesCount ? 'Ничего не найдено' : 'Добавьте свою первую сделку и она отобразится здесь'"
+                        expand hide-actions must-sort v-else>
+                <template #items="props">
+                    <tr class="selectable" @dblclick="props.expanded = !props.expanded">
+                        <td>
+                            <span @click="props.expanded = !props.expanded" class="data-table-cell" :class="{'data-table-cell-open': props.expanded, 'path': true}"></span>
+                        </td>
+                        <td v-if="tableHeadersState.ticker" class="text-xs-left">
+                            <stock-link v-if="props.item.asset === 'STOCK'" :ticker="props.item.ticker"></stock-link>
+                            <bond-link v-if="props.item.asset === 'BOND'" :ticker="props.item.ticker"></bond-link>
+                            <span v-if="props.item.asset === 'MONEY'">{{ props.item.ticker }}</span>
+                        </td>
+                        <td v-if="tableHeadersState.name" class="text-xs-left">{{ props.item.companyName }}</td>
+                        <td v-if="tableHeadersState.operationLabel" class="text-xs-left">{{ props.item.operationLabel }}</td>
+                        <td v-if="tableHeadersState.date" class="text-xs-center">{{ getTradeDate(props.item) }}</td>
+                        <td v-if="tableHeadersState.quantity" class="text-xs-right ii-number-cell">{{ props.item.quantity }}</td>
+                        <td v-if="tableHeadersState.price" :class="['text-xs-right', 'ii-number-cell']">
+                            {{ getPrice(props.item) }}&nbsp;<span class="second-value">{{ currencyForPrice(props.item) }}</span>
+                        </td>
+                        <td v-if="tableHeadersState.facevalue" :class="['text-xs-right', 'ii-number-cell']">
+                            {{ props.item.facevalue | amount(false, null, false) }}&nbsp;<span class="second-value">{{ props.item.facevalue | currencySymbol }}</span>
+                        </td>
+                        <td v-if="tableHeadersState.nkd" :class="['text-xs-right', 'ii-number-cell']">
+                            {{ props.item.nkd | amount(false, null, false) }}&nbsp;<span class="second-value">{{ props.item.nkd | currencySymbol }}</span>
+                        </td>
+                        <td v-if="tableHeadersState.fee" :class="['text-xs-right', 'ii-number-cell']">
+                            {{ getFee(props.item) }}&nbsp;<span class="second-value">{{ props.item.fee | currencySymbol }}</span>
+                        </td>
+                        <td v-if="tableHeadersState.signedTotal" :class="['text-xs-right', 'ii-number-cell']">
+                            {{ props.item.signedTotal | amount(true) }}&nbsp;<span class="second-value">{{ props.item.signedTotal | currencySymbol }}</span>
+                        </td>
+                        <td v-if="tableHeadersState.totalWithoutFee" :class="['text-xs-right', 'ii-number-cell']">
+                            {{ props.item.totalWithoutFee | amount }}&nbsp;<span class="second-value">{{ props.item.totalWithoutFee | currencySymbol }}</span>
+                        </td>
+                        <td class="px-0" style="text-align: center" @click.stop>
+                            <v-layout align-center justify-center v-if="props.item.parentTradeId">
+                                <v-tooltip transition="slide-y-transition"
+                                        content-class="menu-icons" bottom
+                                        class="hint-for-icon-name-section"
+                                        :max-width="300">
+                                    <img src="img/trades/related_deal.svg" slot="activator">
+                                    <div class="pa-3">
+                                        Это связанная сделка, отредактируйте основную сделку для изменения.
+                                    </div>
+                                </v-tooltip>
+                            </v-layout>
+                        </td>
+                        <td class="px-0" @click.stop>
+                            <v-layout align-center justify-center>
+                                <v-menu transition="slide-y-transition" bottom left>
+                                    <v-btn slot="activator" flat icon dark>
+                                        <span class="menuDots"></span>
+                                    </v-btn>
+                                    <v-list dense>
+                                        <v-list-tile v-if="!props.item.parentTradeId" @click.stop="openEditTradeDialog(props.item)">
+                                            <v-list-tile-title>
+                                                Редактировать
+                                            </v-list-tile-title>
+                                        </v-list-tile>
+                                        <v-divider v-if="!props.item.parentTradeId"></v-divider>
+                                        <v-list-tile v-if="!isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.BUY)">
+                                            <v-list-tile-title>
+                                                Купить
+                                            </v-list-tile-title>
+                                        </v-list-tile>
+                                        <v-list-tile v-if="!isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.SELL)">
+                                            <v-list-tile-title>
+                                                Продать
+                                            </v-list-tile-title>
+                                        </v-list-tile>
+                                        <v-list-tile v-if="isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.DEPOSIT)">
+                                            <v-list-tile-title>
+                                                Внести
+                                            </v-list-tile-title>
+                                        </v-list-tile>
+                                        <v-list-tile v-if="isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.WITHDRAW)">
+                                            <v-list-tile-title>
+                                                Вывести
+                                            </v-list-tile-title>
+                                        </v-list-tile>
+                                        <v-list-tile v-if="isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.INCOME)">
+                                            <v-list-tile-title>
+                                                Доход
+                                            </v-list-tile-title>
+                                        </v-list-tile>
+                                        <v-list-tile v-if="isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.LOSS)">
+                                            <v-list-tile-title>
+                                                Расход
+                                            </v-list-tile-title>
+                                        </v-list-tile>
+                                        <v-list-tile v-if="isStockTrade(props.item)" @click="openTradeDialog(props.item, operation.DIVIDEND)">
+                                            <v-list-tile-title>
+                                                Дивиденд
+                                            </v-list-tile-title>
+                                        </v-list-tile>
+                                        <v-list-tile v-if="isBondTrade(props.item)" @click="openTradeDialog(props.item, operation.COUPON)">
+                                            <v-list-tile-title>
+                                                Купон
+                                            </v-list-tile-title>
+                                        </v-list-tile>
+                                        <v-list-tile v-if="isBondTrade(props.item)" @click="openTradeDialog(props.item, operation.AMORTIZATION)">
+                                            <v-list-tile-title>
+                                                Амортизация
+                                            </v-list-tile-title>
+                                        </v-list-tile>
+                                        <v-list-tile v-if="isBondTrade(props.item)" @click="openTradeDialog(props.item, operation.REPAYMENT)">
+                                            <v-list-tile-title>
+                                                Погашение
+                                            </v-list-tile-title>
+                                        </v-list-tile>
+                                        <!-- Связанную сделку удалить можно только удалив родительскую -->
+                                        <v-divider v-if="!props.item.parentTradeId"></v-divider>
+                                        <v-list-tile v-if="!props.item.parentTradeId" @click="deleteTrade(props.item)">
+                                            <v-list-tile-title>
+                                                Удалить
+                                            </v-list-tile-title>
+                                        </v-list-tile>
+                                    </v-list>
+                                </v-menu>
+                            </v-layout>
+                        </td>
+                    </tr>
+                </template>
 
-            <template #expand="props">
-                <trades-table-ext-info :trade-row="props.item" :portfolio-pro-mode="portfolioProModeEnabled"></trades-table-ext-info>
-            </template>
-        </v-data-table>
+                <template #expand="props">
+                    <trades-table-ext-info :trade-row="props.item" :portfolio-pro-mode="portfolioProModeEnabled"></trades-table-ext-info>
+                </template>
+            </v-data-table>
+        </div>
     `,
-    components: {TradesTableExtInfo}
+    components: {TradesTableExtInfo, EmptySearchResult}
 })
 export class TradesTable extends UI {
 
@@ -209,7 +213,12 @@ export class TradesTable extends UI {
 
     @Watch("trades")
     onTradesUpdate(trades: TradeRow[]): void {
+        console.log(trades);
         this.trades = trades;
+    }
+
+    private async resetFilter(): Promise<void> {
+        this.$emit("resetFilter");
     }
 
     private async openTradeDialog(trade: TradeRow, operation: Operation): Promise<void> {
