@@ -90,12 +90,12 @@ function configureErrorHandling(errorHandler: (error: Error | string) => void): 
  * Сохраняет версию бэкенда при инициализации
  */
 async function storeBackendVersion(): Promise<void> {
-    const appService: ApplicationService = Container.get(ApplicationService);
-    const version = await appService.getBackendVersion();
-    // если версии еще нет, сохраняем, иначе она сбросится в мониторе как только появится новая версия бэкэнда
-    if (!!version) {
+    try {
+        const appService: ApplicationService = Container.get(ApplicationService);
         const storage: Storage = Container.get(Storage);
+        const version = await appService.getBackendVersion();
         storage.set(StoreKeys.BACKEND_VERSION_KEY, version);
+    } catch (ignored) {
     }
 }
 
