@@ -51,7 +51,6 @@ export class PortfolioPage extends UI {
      */
     async created(): Promise<void> {
         await this.loadPortfolioLineChart();
-        console.log(this.portfolio);
     }
 
     @Watch("portfolio")
