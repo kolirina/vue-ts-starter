@@ -32,7 +32,7 @@ import {BtnReturn, CustomDialog} from "../../platform/dialogs/customDialog";
                 <v-card-title class="bold fs16 margB64">Закончилась подписка на тарифный план</v-card-title>
                 <v-card-text class="paddB128">
                     <v-layout align-center column>
-                        <v-img src="./img/tariffs/update_tariff.svg" width="100%" heigth="100%" max-width="346" max-height="131"></v-img>
+                        <v-img src="./img/tariffs/update_tariff.svg" width="100%" height="100%" max-width="346" max-height="131"></v-img>
                         <div class="fs14 mw320 alignC mt-2">Срок действия вашего тарифного плана истек, рекомендуем обновить тарифный план</div>
                         <div class="margT24">
                             <v-btn @click="tariffs" color="primary">

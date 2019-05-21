@@ -28,21 +28,23 @@ import {ForbiddenCode} from "../../types/types";
             <v-card class="dialog-wrap">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
 
-                <v-card-title class="headline">Обратите внимание на ваш тариф</v-card-title>
-                <v-card-text>
-                    <div>{{ data.description }}</div>
+                <v-card-title class="bold fs16 margB64">Обратите внимание на ваш тариф</v-card-title>
+                <v-card-text class="paddB128">
+                    <v-layout align-center column>
+                        <v-img src="./img/tariffs/update_tariff.svg" width="100%" height="100%" max-width="346" max-height="131"></v-img>
+                        <div class="fs14 alignC mt-2">{{ data.description }}</div>
+                        <div class="margT24">
+                            <v-btn v-if="data.code !== 'SUBSCRIPTION_EXPIRED'" color="primary" @click="tariffs">
+                                Обновить тарифный план
+                            </v-btn>
+                            <v-btn v-if="data.code === 'SUBSCRIPTION_EXPIRED'" color="primary" @click="tariffs">
+                                Продлить подписку
+                            </v-btn>
+                        </div>
+                    </v-layout>
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn v-if="data.code !== 'SUBSCRIPTION_EXPIRED'" color="primary" @click="tariffs">
-                        Обновить тарифный план
-                        <v-icon right dark small>fas fa-rocket</v-icon>
-                    </v-btn>
-                    <v-btn v-if="data.code === 'SUBSCRIPTION_EXPIRED'" color="primary" @click="tariffs">
-                        Продлить подписку
-                        <v-icon right dark small>fas fa-sync-alt</v-icon>
-                    </v-btn>
-
                     <v-btn @click.native="close('NO')">Закрыть</v-btn>
                 </v-card-actions>
             </v-card>
