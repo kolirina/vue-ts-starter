@@ -133,10 +133,6 @@ export class TradesPage extends UI {
         await this.loadTrades();
     }
 
-    private async onTradePaginationChange(): Promise<void> {
-        await this.loadTrades();
-    }
-
     @ShowProgress
     private async onDelete(tradeRow: TradeRow): Promise<void> {
         await this.tradeService.deleteTrade({portfolioId: this.portfolio.id, tradeId: tradeRow.id});
