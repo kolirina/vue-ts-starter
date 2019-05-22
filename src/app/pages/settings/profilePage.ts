@@ -27,35 +27,46 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-btn>
                 </v-card-title>
             </v-card>
-            <v-card flat class="profile">
-                <div class="fs16 mb-2">
-                    Детали профиля
-                </div>
-                <div class="profile__subtitle margT0">Email</div>
-                <inplace-input name="email" :value="email" @input="onEmailChange">
-                    <v-tooltip content-class="custom-tooltip-wrap" max-width="250px" slot="afterText" top>
-                        <v-icon slot="activator" v-if="!clientInfo.user.emailConfirmed" class="profile-not-confirmed-email">fas fa-exclamation-triangle</v-icon>
-                        <span>Адрес не подтвержден. Пожалуйста подтвердите Ваш адрес эл.почты что воспользоваться всеми функциями сервиса.</span>
-                    </v-tooltip>
-                </inplace-input>
-                <div class="profile__subtitle">Имя пользователя</div>
-                <inplace-input name="username" :value="username" @input="onUserNameChange"></inplace-input>
-            </v-card>
-            <v-card v-if="hasPaymentInfo" flat>
-                Способ оплаты
-                <!-- TODO верстка -->
-                <v-tooltip content-class="custom-tooltip-wrap" max-width="280px" bottom>
-                    <div slot="activator">
-                        <div>{{ paymentInfo.pan }}</div>
-                        <div>{{ paymentInfo.expDate }}</div>
+            <v-layout class="profile" wrap>
+                <v-card flat class="margR60">
+                    <div class="fs16 mb-2">
+                        Детали профиля
                     </div>
-                    <span>У вас активировано автоматическое продление подписки, вы можете отменить ее с помощью кнопки "Отвязать карту".</span>
-                </v-tooltip>
-
-                <v-btn @click.stop="cancelOrderSchedule" class="primary">
-                    Отвязать карту
-                </v-btn>
-            </v-card>
+                    <div class="profile__subtitle margT0">Email</div>
+                    <inplace-input name="email" :value="email" @input="onEmailChange">
+                        <v-tooltip content-class="custom-tooltip-wrap" max-width="250px" slot="afterText" top>
+                            <v-icon slot="activator" v-if="!clientInfo.user.emailConfirmed" class="profile-not-confirmed-email">fas fa-exclamation-triangle</v-icon>
+                            <span>Адрес не подтвержден. Пожалуйста подтвердите Ваш адрес эл.почты что воспользоваться всеми функциями сервиса.</span>
+                        </v-tooltip>
+                    </inplace-input>
+                    <div class="profile__subtitle">Имя пользователя</div>
+                    <inplace-input name="username" :value="username" @input="onUserNameChange"></inplace-input>
+                </v-card>
+                <v-card v-if="hasPaymentInfo" flat class="wrapper-payment-card">
+                    <span class="profile__subtitle">
+                        Способ оплаты
+                    </span>
+                    <v-layout class="mt-3" wrap>
+                        <v-layout class="margR100">
+                            <v-tooltip content-class="custom-tooltip-wrap payment-card-hint" max-width="280px" bottom nudge-right="60">
+                                <div slot="activator">
+                                    <v-layout align-center>
+                                        <div class="fs13">
+                                            **** **** {{ paymentInfo.pan }}
+                                        </div>
+                                        <v-icon class="ml-3">done</v-icon>
+                                    </v-layout>
+                                    <div class="fs13 payment-card-date">{{ paymentInfo.expDate }}</div>
+                                </div>
+                                <span class="fs13">У вас активировано автоматическое продление подписки, вы можете отменить ее с помощью кнопки "Отвязать карту".</span>
+                            </v-tooltip>
+                        </v-layout>
+                        <v-btn @click.stop="cancelOrderSchedule" class="mt-0" color="#EBEFF7">
+                            Отвязать карту
+                        </v-btn>
+                    </v-layout>
+                </v-card>
+            </v-layout>
         </v-container>
     `
 })
