@@ -27,41 +27,41 @@ import {MainStore} from "../../vuex/mainStore";
                     <v-layout wrap>
                         <v-flex xs12 class="section-portfolio-name">
                             <v-text-field label="Введите название портфеля" v-model.trim="portfolioParams.name" required autofocus
-                                v-validate="'required|max:40|min:3'"
-                                :error-messages="errors.collect('name')"
-                                data-vv-name="name" @keyup.enter="savePortfolio"
-                                class="required">
+                                          v-validate="'required|max:40|min:3'"
+                                          :error-messages="errors.collect('name')"
+                                          data-vv-name="name" @keyup.enter="savePortfolio"
+                                          class="required">
                             </v-text-field>
                         </v-flex>
 
                         <v-layout class="select-option-wrap">
                             <v-flex class="select-section">
                                 <v-select :items="accessTypes" v-model="portfolioParams.access" menu-props="returnValue" item-text="label" label="Доступ"
-                                            dense hide-details :menu-props="{nudgeBottom:'22'}"></v-select>
+                                          dense hide-details :menu-props="{nudgeBottom:'22'}"></v-select>
                             </v-flex>
 
                             <v-flex class="select-section">
                                 <v-select :items="currencyList" v-model="portfolioParams.viewCurrency" label="Валюта портфеля"
-                                            :persistent-hint="true" dense hide-details
-                                            hint="Валюта, в которой происходит расчет всех показателей. Активы, приобретенные в другой валюте
+                                          :persistent-hint="true" dense hide-details
+                                          hint="Валюта, в которой происходит расчет всех показателей. Активы, приобретенные в другой валюте
                                             будут конвертированы по курсу на дату совершения сделки." :menu-props="{nudgeBottom:'22'}">
                                 </v-select>
                             </v-flex>
 
                             <v-flex class="select-section">
                                 <v-select :items="accountTypes" v-model="portfolioParams.accountType" :return-object="true" item-text="description" dense hide-details
-                                            label="Тип счета" :menu-props="{nudgeBottom:'22'}"></v-select>
+                                          label="Тип счета" :menu-props="{nudgeBottom:'22'}"></v-select>
                             </v-flex>
-                            <v-flex class="select-section" v-if="portfolioParams.accountType === accountType.IIS" >
+                            <v-flex class="select-section" v-if="portfolioParams.accountType === accountType.IIS">
                                 <v-select :items="iisTypes" dense hide-details :menu-props="{nudgeBottom:'22'}"
-                                            v-model="portfolioParams.iisType" :return-object="true" item-text="description" label="Тип вычета"></v-select>
+                                          v-model="portfolioParams.iisType" :return-object="true" item-text="description" label="Тип вычета"></v-select>
                             </v-flex>
                         </v-layout>
 
                         <v-layout>
                             <v-flex xs12 sm5>
                                 <ii-number-field label="Фиксированная комиссия" v-model="portfolioParams.fixFee"
-                                                    hint="Для автоматического рассчета комиссии при внесении сделок." :decimals="5" @keyup.enter="savePortfolio">
+                                                 hint="Для автоматического рассчета комиссии при внесении сделок." :decimals="5" @keyup.enter="savePortfolio">
                                 </ii-number-field>
                             </v-flex>
 
@@ -86,7 +86,7 @@ import {MainStore} from "../../vuex/mainStore";
                                             append-icon="event"
                                             readonly></v-text-field>
                                     <v-date-picker v-model="portfolioParams.openDate" :no-title="true" locale="ru" :first-day-of-week="1"
-                                                    @input="onDateSelected"></v-date-picker>
+                                                   @input="onDateSelected"></v-date-picker>
                                 </v-menu>
                             </v-flex>
                         </v-layout>
@@ -94,14 +94,14 @@ import {MainStore} from "../../vuex/mainStore";
                         <v-layout>
                             <v-flex xs12 class="textarea-section">
                                 <v-textarea label="Заметка" v-model="portfolioParams.note" :rows="2" :counter="500"
-                                v-validate="'max:500'" :error-messages="errors.collect('note')" data-vv-name="note"></v-textarea>
+                                            v-validate="'max:500'" :error-messages="errors.collect('note')" data-vv-name="note"></v-textarea>
                             </v-flex>
                         </v-layout>
 
                         <v-flex xs12>
                             <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" top>
                                 <v-checkbox slot="activator" label="Профессиональный режим"
-                                v-model="portfolioParams.professionalMode" class="portfolio-default-text"></v-checkbox>
+                                            v-model="portfolioParams.professionalMode" class="portfolio-default-text"></v-checkbox>
                                 <span>
                                     Профессиональный режим включает дополнительные возможности, необходимые опытным инвесторам:
                                     <ul>
@@ -178,7 +178,15 @@ export class PortfolioEditDialog extends CustomDialog<PortfolioDialogData, boole
             return;
         }
         this.processState = true;
-        await this.portfolioService.createOrUpdatePortfolio(this.portfolioParams);
+        try {
+            await this.portfolioService.createOrUpdatePortfolio(this.portfolioParams);
+        } catch (error) {
+            // если 403 ошибки при добавлении портфеля, диалог уже отобразили, больше ошибок показывать не нужно
+            if (error.code !== "403") {
+                throw error;
+            }
+            return;
+        }
         this.$snotify.info(`Портфель успешно ${this.portfolioParams.id ? "изменен" : "создан"}`);
         this.processState = false;
         if (this.portfolioParams.id) {
