@@ -24,14 +24,14 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-data-table class="data-table table-bottom-pagination" :headers="headers" :items="trades" item-key="id" :pagination="tradePagination.pagination"
+        <v-data-table class="data-table table-bottom-pagination selectable" :headers="headers" :items="trades" item-key="id" :pagination="tradePagination.pagination"
                       @update:pagination="onTablePaginationChange"
                       :total-items="tradePagination.pagination.totalItems" :custom-sort="customSort"
                       :no-data-text="portfolio.overview.totalTradesCount ? 'Ничего не найдено' : 'Добавьте свою первую сделку и она отобразится здесь'"
                       :rows-per-page-items="[25, 50, 100, 200]"
                       expand must-sort>
             <template #items="props">
-                <tr class="selectable" @dblclick="props.expanded = !props.expanded">
+                <tr @dblclick="props.expanded = !props.expanded">
                     <td>
                         <span @click="props.expanded = !props.expanded" class="data-table-cell" :class="{'data-table-cell-open': props.expanded, 'path': true}"></span>
                     </td>
