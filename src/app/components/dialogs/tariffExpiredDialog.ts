@@ -24,22 +24,23 @@ import {BtnReturn, CustomDialog} from "../../platform/dialogs/customDialog";
 @Component({
     // language=Vue
     template: `
-        <v-dialog v-model="showed" ref="dialog" persistent max-width="600px">
+        <v-dialog v-model="showed" ref="dialog" persistent max-width="600px" :closable="false">
             <v-card class="dialog-wrap">
                 <v-icon v-if="allowClose" class="closeDialog" @click.native="closeDialog">close</v-icon>
                 <span v-else class="closeDialog">{{ count }}</span>
 
-                <v-card-title class="headline">Закончилась подписка на тарифный план</v-card-title>
-                <v-card-text>
-                    <div>Срок действия вашего тарифного плана истек, рекомендуем обновить подписку.</div>
+                <v-card-title class="bold fs16 margB64">Закончилась подписка на тарифный план</v-card-title>
+                <v-card-text class="paddB128">
+                    <v-layout align-center column>
+                        <v-img src="./img/tariffs/update_tariff.svg" width="100%" height="100%" max-width="346" max-height="131"></v-img>
+                        <div class="fs14 mw320 alignC mt-2">Срок действия вашего тарифного плана истек, рекомендуем обновить тарифный план</div>
+                        <div class="margT24">
+                            <v-btn @click="tariffs" color="primary">
+                                Обновить подписку
+                            </v-btn>
+                        </div>
+                    </v-layout>
                 </v-card-text>
-                <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn color="primary" light @click="tariffs">
-                        Обновить подписку
-                        <v-icon right dark small>fas fa-rocket</v-icon>
-                    </v-btn>
-                </v-card-actions>
             </v-card>
         </v-dialog>
     `
