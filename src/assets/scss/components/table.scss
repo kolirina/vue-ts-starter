@@ -255,6 +255,6 @@ table.v-table thead td:first-child, table.v-table thead td:not(:nth-child(1)), t
     }
   }
   .v-datatable__actions {
-    border-top: none;
+    border-top: none !important;
   }
 }

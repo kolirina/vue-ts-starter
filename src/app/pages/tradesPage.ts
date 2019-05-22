@@ -133,7 +133,6 @@ export class TradesPage extends UI {
         await this.loadTrades();
     }
 
-    @Watch("tradePagination.pagination", {deep: true})
     private async onTradePaginationChange(): Promise<void> {
         await this.loadTrades();
     }
