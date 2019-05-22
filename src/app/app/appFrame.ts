@@ -135,7 +135,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-layout>
                 </v-navigation-drawer>
                 <v-content>
-                    <v-container fluid class="paddT0">
+                    <v-container fluid class="paddT0 fb-0">
                         <v-slide-y-transition mode="out-in">
                             <!--<keep-alive :include="cachedPages">-->
                             <router-view></router-view>
@@ -185,9 +185,9 @@ export class AppFrame extends UI {
     @MainStore.Mutation(MutationType.CHANGE_SIDEBAR_STATE)
     private changeSideBarState: (sideBarState: boolean) => void;
 
-    private username: string = null;
+    private username: string = "FirstUser";
 
-    private password: string = null;
+    private password: string = "12345678";
 
     /**
      * Переменная используется только для удобства локальной разработки при тестировании с отдельным приложением лэндинга
@@ -237,6 +237,7 @@ export class AppFrame extends UI {
 
     @ShowProgress
     async created(): Promise<void> {
+        this.login();
         // если стор не прогружен, это не публичная зона и это не переход по авторизации, пробуем загрузить информацию о клиенте
         if (!CommonUtils.exists(this.$store.state[StoreType.MAIN].clientInfo) && this.externalAuth && !this.publicZone) {
             await this.startup();
