@@ -10,14 +10,13 @@ import {TradeFields} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
 import {Operation} from "../types/operation";
-import {Portfolio, TableHeader, TablePagination, TradeRow} from "../types/types";
+import {Pagination, Portfolio, TableHeader, TablePagination, TradeRow} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
 import {DateFormat} from "../utils/dateUtils";
 import {TradeUtils} from "../utils/tradeUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {AddTradeDialog} from "./dialogs/addTradeDialog";
-import {EmptySearchResult} from "./emptySearchResult";
 import {TradesTableExtInfo} from "./tradesTableExtInfo";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -26,11 +25,12 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <div>
-            <empty-search-result v-if="trades.length == 0" @resetFilter="resetFilter"></empty-search-result>
-            <v-data-table class="data-table" :headers="headers" :items="trades" item-key="id" :pagination.sync="tradePagination.pagination"
-                        :total-items="tradePagination.totalItems" :custom-sort="customSort"
-                        :no-data-text="portfolio.overview.totalTradesCount ? 'Ничего не найдено' : 'Добавьте свою первую сделку и она отобразится здесь'"
-                        expand hide-actions must-sort v-else>
+            <v-data-table class="data-table table-bottom-pagination" :headers="headers" :items="trades" item-key="id" :pagination="tradePagination.pagination"
+                      @update:pagination="onTablePaginationChange"
+                      :total-items="tradePagination.pagination.totalItems" :custom-sort="customSort"
+                      :no-data-text="portfolio.overview.totalTradesCount ? 'Ничего не найдено' : 'Добавьте свою первую сделку и она отобразится здесь'"
+                      :rows-per-page-items="[25, 50, 100, 200]"
+                      expand must-sort>
                 <template #items="props">
                     <tr class="selectable" @dblclick="props.expanded = !props.expanded">
                         <td>
@@ -159,7 +159,7 @@ const MainStore = namespace(StoreType.MAIN);
             </v-data-table>
         </div>
     `,
-    components: {TradesTableExtInfo, EmptySearchResult}
+    components: {TradesTableExtInfo}
 })
 export class TradesTable extends UI {
 
@@ -219,6 +219,10 @@ export class TradesTable extends UI {
 
     private async resetFilter(): Promise<void> {
         this.$emit("resetFilter");
+    }
+
+    private onTablePaginationChange(pagination: Pagination): void {
+        this.$emit("update:pagination", pagination);
     }
 
     private async openTradeDialog(trade: TradeRow, operation: Operation): Promise<void> {

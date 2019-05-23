@@ -1,6 +1,7 @@
 import {Inject} from "typescript-ioc";
 import {namespace} from "vuex-class/lib/bindings";
 import {Component, UI, Watch} from "../app/ui";
+import {EmptyPortfolioStub} from "../components/emptyPortfolioStub";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {ExportService, ExportType} from "../services/exportService";
 import {OverviewService} from "../services/overviewService";
@@ -17,22 +18,17 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <base-portfolio-page v-if="portfolio" :overview="portfolio.overview" :portfolio-name="portfolio.portfolioParams.name" :portfolio-id="String(portfolio.portfolioParams.id)"
-                             :line-chart-data="lineChartData" :line-chart-events="lineChartEvents" :view-currency="portfolio.portfolioParams.viewCurrency"
-                             :state-key-prefix="StoreKeys.PORTFOLIO_CHART" :side-bar-opened="sideBarOpened" :share-notes="portfolio.portfolioParams.shareNotes"
-                             @reloadLineChart="loadPortfolioLineChart" @exportTable="onExportTable" exportable>
-            <template #afterDashboard>
-                <v-alert v-if="isEmptyBlockShowed" :value="true" type="info" outline>
-                    Для начала работы заполните свой портфель. Вы можете
-                    <router-link to="/settings/import">загрузить отчет</router-link>
-                    со сделками вашего брокера или просто
-                    <router-link to="/balances">указать остатки</router-link>
-                    портфеля, если знаете цену или стоимость покупки бумаг
-                </v-alert>
-            </template>
-        </base-portfolio-page>
+        <div v-if="portfolio" class="h100pc">
+            <empty-portfolio-stub v-if="isEmptyBlockShowed"></empty-portfolio-stub>
+            <base-portfolio-page v-else :overview="portfolio.overview" :portfolio-name="portfolio.portfolioParams.name"
+                                :portfolio-id="String(portfolio.portfolioParams.id)"
+                                :line-chart-data="lineChartData" :line-chart-events="lineChartEvents" :view-currency="portfolio.portfolioParams.viewCurrency"
+                                :state-key-prefix="StoreKeys.PORTFOLIO_CHART" :side-bar-opened="sideBarOpened" :share-notes="portfolio.portfolioParams.shareNotes"
+                                @reloadLineChart="loadPortfolioLineChart" @exportTable="onExportTable" exportable>
+            </base-portfolio-page>
+        </div>
     `,
-    components: {BasePortfolioPage}
+    components: {BasePortfolioPage, EmptyPortfolioStub}
 })
 export class PortfolioPage extends UI {
 
