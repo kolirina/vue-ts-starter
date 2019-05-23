@@ -111,33 +111,33 @@ export class TariffAgreement extends UI {
         <td>
             <div class="tariff__plan_name">{{ tariff.description }}</div>
             <div class="tariff__plan_price-block">
-                <span v-if="tariff !== Tariff.FREE && isDiscountApplied()" class="tariff__plan_old-price">{{ getNoDiscountPriceLabel(tariff) }}</span>
-                <span class="tariff__plan_price">{{ getPriceLabel(tariff) }} <span class="rub"> / </span><span>{{ perPart }}</span></span>
+                <span v-if="tariff !== Tariff.FREE && discountApplied" class="tariff__plan_old-price">{{ noDiscountPriceLabel }}</span>
+                <span class="tariff__plan_price">{{ priceLabel }} <span class="rub"> / </span><span>{{ perPart }}</span></span>
             </div>
-            <v-tooltip v-if="!isAvailable(tariff) || activeSubscription" content-class="custom-tooltip-wrap" bottom>
+            <v-tooltip v-if="!available || !payAllowed" content-class="custom-tooltip-wrap" bottom>
                 <v-btn slot="activator" @click.stop="makePayment(tariff)"
-                       :class="{'big_btn': true, 'selected': isSelected(tariff) && agreementState[tariff.name]}"
-                       :disabled="!isAvailable(tariff) || isProgress || !agreementState[tariff.name] || activeSubscription">
-                    <span v-if="!busyState[tariff.name]">{{ getButtonLabel(tariff) }}</span>
+                       :class="{'big_btn': true, 'selected': selected && agreementState[tariff.name]}"
+                       :disabled="disabled">
+                    <span v-if="!busyState[tariff.name]">{{ buttonLabel }}</span>
                     <v-progress-circular v-if="busyState[tariff.name]" indeterminate color="white" :size="20"></v-progress-circular>
                 </v-btn>
-                <tariff-limit-exceed-info v-if="!isAvailable(tariff)" :portfolios-count="clientInfo.user.portfoliosCount" :tariff="tariff"
+                <tariff-limit-exceed-info v-if="!available" :portfolios-count="clientInfo.user.portfoliosCount" :tariff="tariff"
                                           :shares-count="clientInfo.user.sharesCount" :foreign-shares="clientInfo.user.foreignShares">
                 </tariff-limit-exceed-info>
-                <span v-if="activeSubscription">
+                <span v-if="!payAllowed">
                     У вас уже действует активная подписка<br>
                     Для управления подпиской перейдите в Профиль
                 </span>
             </v-tooltip>
             <v-btn v-else @click="makePayment(tariff)"
-                   :class="{'big_btn': true, 'selected': isSelected(tariff) && agreementState[tariff.name]}"
-                   :disabled="!isAvailable(tariff) || isProgress || !agreementState[tariff.name] || activeSubscription">
-                <span v-if="!busyState[tariff.name]">{{ getButtonLabel(tariff) }}</span>
+                   :class="{'big_btn': true, 'selected': selected && agreementState[tariff.name]}"
+                   :disabled="disabled">
+                <span v-if="!busyState[tariff.name]">{{ buttonLabel }}</span>
                 <v-progress-circular v-if="busyState[tariff.name]" indeterminate color="white" :size="20"></v-progress-circular>
             </v-btn>
             <tariff-agreement :value="agreementState[tariff.name]" @agree="agreementState[tariff.name] = $event"></tariff-agreement>
-            <div v-if="isSelected(tariff)" class="tariff__plan_expires">
-                {{ getExpirationDescription() }}
+            <div v-if="selected" class="tariff__plan_expires">
+                {{ expirationDescription }}
             </div>
         </td>
     `,
@@ -179,73 +179,64 @@ export class PayButton extends UI {
 
     /**
      * Возвращает признак выбранного тарифа у пользователя
-     * @param tariff тариф
      */
-    private isSelected(tariff: Tariff): boolean {
+    private get selected(): boolean {
         let userTariff = this.clientInfo.user.tariff;
         if (userTariff === Tariff.TRIAL) {
             userTariff = Tariff.PRO;
         }
-        return userTariff === tariff;
+        return userTariff === this.tariff;
     }
 
     /**
      * Возвращает признак доступности тарифа для выбора
-     * @param tariff тариф
      */
-    private isAvailable(tariff: Tariff): boolean {
-        return tariff.maxSharesCount >= this.clientInfo.user.sharesCount &&
-            tariff.maxPortfoliosCount >= this.clientInfo.user.portfoliosCount &&
-            (tariff.hasPermission(Permission.FOREIGN_SHARES) || !this.clientInfo.user.foreignShares);
+    private get available(): boolean {
+        return this.tariff.maxSharesCount >= this.clientInfo.user.sharesCount &&
+            this.tariff.maxPortfoliosCount >= this.clientInfo.user.portfoliosCount &&
+            (this.tariff.hasPermission(Permission.FOREIGN_SHARES) || !this.clientInfo.user.foreignShares);
     }
 
     /**
      * Возвращает подпись к кнопке оплаты тарифа
-     * @param tariff тариф
      */
-    private getButtonLabel(tariff: Tariff): string {
-        if (!this.isAvailable(tariff)) {
+    private get buttonLabel(): string {
+        if (!this.available) {
             return "Недоступно";
         }
-        if (this.isSelected(tariff)) {
-            return tariff === Tariff.FREE ? "Подключен" : "Подписаться";
+        if (this.activeSubscription) {
+            return this.selected ? "Продлить" : "Подписаться";
         }
-        return "Подписаться";
+        return this.tariff === Tariff.FREE ? "Подключен" : "Подписаться";
     }
 
-    private getExpirationDescription(): string {
+    private get expirationDescription(): string {
         const paidTill = DateUtils.parseDate(this.clientInfo.user.paidTill);
-        return (paidTill.isAfter(dayjs()) ? "Действует до " : "Истек ") + this.getExpirationDate();
+        return (paidTill.isAfter(dayjs()) ? "Действует до " : "Истек ") + this.expirationDate;
     }
 
-    private getExpirationDate(): string {
+    private get expirationDate(): string {
         return DateUtils.formatDate(DateUtils.parseDate(this.clientInfo.user.paidTill));
     }
 
-    private getNoDiscountPriceLabel(tariff: Tariff): string {
+    private get noDiscountPriceLabel(): string {
         let price;
         if (this.monthly) {
-            price = tariff.monthlyPrice;
+            price = this.tariff.monthlyPrice;
         } else {
-            price = new Decimal(tariff.monthlyPrice).mul(new Decimal(12));
+            price = new Decimal(this.tariff.monthlyPrice).mul(new Decimal(12));
         }
         return `${price.toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toString()}`;
     }
 
     /**
      * Возвращает цену для тарифа с учетом скидки, если она действует
-     * @param tariff тариф
      * @return цена для тарифа
      */
-    private getPrice(tariff: Tariff): string {
-        const isDiscountApplied = this.isDiscountApplied();
-        const price = this.monthly ? tariff.monthlyPrice : isDiscountApplied ? tariff.yearFullPrice : tariff.yearPrice;
-        const nextPurchaseDiscount = isDiscountApplied ? this.clientInfo.user.nextPurchaseDiscount : 0;
+    private get priceLabel(): string {
+        const price = this.monthly ? this.tariff.monthlyPrice : this.discountApplied ? this.tariff.yearFullPrice : this.tariff.yearPrice;
+        const nextPurchaseDiscount = this.discountApplied ? this.clientInfo.user.nextPurchaseDiscount : 0;
         return new Decimal(price).mul(new Decimal(100 - nextPurchaseDiscount)).mul(new Decimal("0.01")).toDecimalPlaces(0, Decimal.ROUND_UP).toString();
-    }
-
-    private getPriceLabel(tariff: Tariff): string {
-        return `${this.getPrice(tariff)}`;
     }
 
     /**
@@ -256,7 +247,7 @@ export class PayButton extends UI {
      * </ul>
      * @return признак того что для пользователя действует скидка
      */
-    private isDiscountApplied(): boolean {
+    private get discountApplied(): boolean {
         return TariffUtils.isDiscountApplied(this.clientInfo);
     }
 
@@ -264,8 +255,26 @@ export class PayButton extends UI {
         return this.monthly ? " мес." : " год";
     }
 
+    /**
+     * Возвращает признак возможности оплаты выбранного тарифа.
+     * Оплата возможна если нет активной подписки и выбранный тариф совпадает с пользовательским
+     */
+    private get payAllowed(): boolean {
+        return !this.activeSubscription || this.selected;
+    }
+
+    /**
+     * Возвращает признак наличия информации о периодической подписке
+     */
     private get activeSubscription(): boolean {
         return this.paymentInfo && CommonUtils.exists(this.paymentInfo.expDate) && CommonUtils.exists(this.paymentInfo.pan);
+    }
+
+    /**
+     * Возвращает true если кнопка недоступна для нажатия
+     */
+    private get disabled(): boolean {
+        return !this.available || this.isProgress || !this.agreementState[this.tariff.name] || !this.payAllowed;
     }
 }
 
@@ -286,13 +295,13 @@ export class PayButton extends UI {
                             <div>
                                 <v-radio-group v-model="monthly" class="radio-horizontal">
                                     <v-radio label="На год" :value="false"></v-radio>
-                                    <b>&nbsp;{{isDiscountApplied() ? '' : '-20%'}}</b>
+                                    <b>&nbsp;{{discountApplied ? '' : '-20%'}}</b>
                                     <v-radio label="На месяц" :value="true"></v-radio>
                                 </v-radio-group>
                             </div>
                         </div>
                         <div class="promo-code-component">
-                            <v-tooltip v-if="isDiscountApplied()" content-class="custom-tooltip-wrap" :max-width="250" bottom>
+                            <v-tooltip v-if="discountApplied" content-class="custom-tooltip-wrap" :max-width="250" bottom>
                                 <template #activator="{ on }">
                                     <span @click.stop="applyPromoCode" v-on="on">Применить промокод</span>
                                     <div v-on="on" class="promo-code-component__icon"></div>
@@ -311,7 +320,7 @@ export class PayButton extends UI {
 
                     </div>
 
-                    <p v-if="isDiscountApplied()" class="promotion">
+                    <p v-if="discountApplied" class="promotion">
                         Совершите покупку с вашей персональной скидкой <b>{{ clientInfo.user.nextPurchaseDiscount }}%</b>!
                         <template v-if="clientInfo.user.nextPurchaseDiscountExpired">(срок действия скидки до {{ clientInfo.user.nextPurchaseDiscountExpired | date }})</template>
                     </p>
@@ -548,7 +557,7 @@ export class TariffsPage extends UI {
      * </ul>
      * @return признак того что для пользователя действует скидка
      */
-    private isDiscountApplied(): boolean {
+    private get discountApplied(): boolean {
         return TariffUtils.isDiscountApplied(this.clientInfo);
     }
 

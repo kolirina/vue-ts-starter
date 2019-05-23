@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
@@ -10,6 +11,7 @@ import {ClientInfo, ClientService} from "../../services/clientService";
 import {TariffService, UserPaymentInfo} from "../../services/tariffService";
 import {Tariff} from "../../types/tariff";
 import {CommonUtils} from "../../utils/commonUtils";
+import {DateUtils} from "../../utils/dateUtils";
 import {StoreType} from "../../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -65,6 +67,10 @@ const MainStore = namespace(StoreType.MAIN);
                             Отвязать карту
                         </v-btn>
                     </v-layout>
+                    <div class="fs13 mt-3">
+                        Тарифный план {{ clientInfo.user.tariff.description }}<br>
+                        {{ expirationDescription }}
+                    </div>
                 </v-card>
             </v-layout>
         </v-container>
@@ -175,5 +181,14 @@ export class ProfilePage extends UI {
      */
     private get hasPaymentInfo(): boolean {
         return this.paymentInfo && CommonUtils.exists(this.paymentInfo.pan) && CommonUtils.exists(this.paymentInfo.expDate);
+    }
+
+    private get expirationDescription(): string {
+        const paidTill = DateUtils.parseDate(this.clientInfo.user.paidTill);
+        return `${paidTill.isAfter(dayjs()) ? "действует до " : "истек "} ${this.expirationDate}`;
+    }
+
+    private get expirationDate(): string {
+        return DateUtils.formatDate(DateUtils.parseDate(this.clientInfo.user.paidTill));
     }
 }
