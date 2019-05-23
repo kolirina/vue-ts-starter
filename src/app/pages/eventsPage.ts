@@ -8,7 +8,17 @@ import {ConfirmDialog} from "../components/dialogs/confirmDialog";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {BtnReturn} from "../platform/dialogs/customDialog";
 import {Storage} from "../platform/services/storage";
-import {CalendarDateParams, CalendarEvent, CalendarEventType, CalendarParams, DividendNewsItem, EventsAggregateInfo, EventService, ShareEvent} from "../services/eventService";
+import {
+    CalendarDateParams,
+    CalendarEvent,
+    CalendarEventType,
+    CalendarParams,
+    CalendarType,
+    DividendNewsItem,
+    EventsAggregateInfo,
+    EventService,
+    ShareEvent
+} from "../services/eventService";
 import {AssetType} from "../types/assetType";
 import {Operation} from "../types/operation";
 import {Portfolio, TableHeader} from "../types/types";
@@ -229,15 +239,27 @@ const MainStore = namespace(StoreType.MAIN);
                                 <vue-scroll>
                                     <div class="wrap-list-events">
                                         <div>
-                                            <div v-for="event in calendarEvents[date]" :key="event.title">
+                                            <div v-for="(event, index) in calendarEvents[date]" :key="index">
                                                 <v-menu max-width="267" right nudge-right="150" content-class="fs13 info-about-event" :close-on-content-click="false">
                                                     <template v-slot:activator="{ on }">
-                                                        <div v-on="on" :class="[event.styleClass, 'fs13', 'calendar-events-title', 'pl-2', 'selectable']">
-                                                            {{ event.typeDescription }}
+                                                        <div v-on="on" :class="[event.type.toLowerCase(), 'fs13', 'calendar-events-title', 'pl-2', 'selectable']">
+                                                            {{ event.ticker }} {{ event.description }}
                                                         </div>
                                                     </template>
                                                     <v-card class="selectable" flat>
-                                                        {{ event.description }}
+                                                        <div v-if="['COUPON', 'AMORTIZATION', 'REPAYMENT'].includes(event.type)">
+                                                            <span>
+                                                                {{ event.description }} по облигации
+                                                                <bond-link :ticker="event.ticker"></bond-link>
+                                                                ({{ event.shortName }}) в размере {{ event.amount }} {{ event.currency | currencySymbolByCurrency}}
+                                                            </span>
+                                                        </div>
+                                                        <div v-if="['DIVIDEND_HISTORY', 'DIVIDEND_NEWS'].includes(event.type)">
+                                                            <span v-if="event.type === 'DIVIDEND_HISTORY'">Выплата дивиденда по акции</span>
+                                                            <span v-if="event.type === 'DIVIDEND_NEWS'">Планируемый дивиденд по акции</span>
+                                                            <stock-link :ticker="event.ticker"></stock-link>
+                                                            ({{ event.shortName }}) в размере {{ event.amount }} {{ event.currency | currencySymbolByCurrency}}
+                                                        </div>
                                                     </v-card>
                                                 </v-menu>
                                             </div>
@@ -287,7 +309,7 @@ export class EventsPage extends UI {
         {text: "Источник", align: "center", value: "source", sortable: false, width: "70"}
     ];
     /** Параметры дат для отправки в апи */
-    private calendarRequestParams: CalendarDateParams = {start: "", end: ""};
+    private calendarRequestParams: CalendarDateParams = {start: "", end: "", calendarEventTypes: []};
     /** Устанавливаем сегодняшнюю дату */
     private today: string = DateUtils.currentDate();
     /** При загрузке отображать в календаре текущий месяц */
@@ -310,6 +332,7 @@ export class EventsPage extends UI {
         this.setCalendarRequestParams(DateUtils.getYearDate(this.calendarStartDate), DateUtils.getMonthDate(this.calendarStartDate));
         const eventsFromStorage = this.localStorage.get<string[]>("calendarEvents", null);
         this.typeCalendarEvents = eventsFromStorage ? eventsFromStorage : this.getDefaultFilter();
+        this.calendarRequestParams.calendarEventTypes = this.typeCalendarEvents.map(e => e.toUpperCase() as CalendarType);
         await this.loadEvents();
         await this.loadDividendNews();
         await this.loadCalendarEvents();
@@ -346,9 +369,7 @@ export class EventsPage extends UI {
     private getFilteredCalendarEvents(calendarEvents: CalendarEvent[]): CalendarParams {
         const filtered: CalendarParams = {};
         calendarEvents.forEach((e: CalendarEvent) => {
-            if (this.typeCalendarEvents.includes(e.styleClass)) {
-                (filtered[e.startDate] = filtered[e.startDate] || []).push(e);
-            }
+            (filtered[e.date] = filtered[e.date] || []).push(e);
         });
         return filtered;
     }
@@ -373,6 +394,7 @@ export class EventsPage extends UI {
             this.typeCalendarEvents.splice(this.typeCalendarEvents.indexOf(calendarEvent), 1);
         }
         this.localStorage.set<string[]>("calendarEvents", this.typeCalendarEvents);
+        this.calendarRequestParams.calendarEventTypes = this.typeCalendarEvents.map(e => e.toUpperCase() as CalendarType);
         await this.loadCalendarEvents();
     }
 
