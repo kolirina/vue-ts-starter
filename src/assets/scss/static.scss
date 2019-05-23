@@ -29,6 +29,8 @@ input[type="search"] {
 
 .margR8 {margin-right: 8px}
 .margR16 {margin-right: 16px}
+.margR60 {margin-right: 60px}
+.margR100 {margin-right: 100px}
 
 .margB8 {margin-bottom: 8px}
 .margB16 {margin-bottom: 16px}
@@ -45,6 +47,11 @@ input[type="search"] {
 
 .paddT0 {padding-top: 0 !important;}
 .paddB0 {padding-bottom: 0 !important;}
+.paddB128 {padding-bottom: 128px}
+
+// Высота ==============================================================================================================
+
+.h100pc {height: 100%}
 
 // Ширина ==============================================================================================================
 
@@ -54,7 +61,8 @@ input[type="search"] {
 .w25pc {width: 25%}
 .w20pc {width: 20%}
 .w10pc {width: 10%}
-
+.mw520 {max-width: 520px}
+.mw320 {max-width: 320px}
 .w506 {width: 506px}
 .w470 {width: 470px}
 .w275 {width: 275px !important;}
@@ -252,3 +260,4 @@ input[type="search"] {
 .line-through {
   text-decoration: line-through;
 }
+.fb-0 {flex-basis: 0px !important}
