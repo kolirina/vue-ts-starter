@@ -368,7 +368,7 @@ export class PayButton extends UI {
                                 </td>
                             </tr>
                             <tr>
-                                <td>Составной портфель</td>
+                                <td class="text-nowrap">Составной портфель</td>
                                 <td></td>
                                 <td>
                                     <div class="tariff__plans_check"></div>
