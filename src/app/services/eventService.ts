@@ -24,13 +24,7 @@ export class EventService {
      * @param dateParams даты начала и конца месяца
      */
     async getCalendarEvents(dateParams: CalendarDateParams): Promise<CalendarEvent[]> {
-        const eventsResponse: BaseCalendarEvent[] = await this.http.post(`/events/calendar`, dateParams);
-        return eventsResponse.map((event: BaseCalendarEvent) => {
-            return {
-                ...event,
-                typeDescription: this.getTypeDescription(event.styleClass)
-            } as CalendarEvent;
-        });
+        return this.http.post<CalendarEvent[]>(`/events/calendar`, dateParams);
     }
 
     /**
@@ -65,22 +59,6 @@ export class EventService {
     async rejectEvent(request: RejectShareEventRequest): Promise<void> {
         await this.http.post(`/events/reject`, request);
     }
-
-    private getTypeDescription(event: string): string {
-        switch (event) {
-            case CalendarEventType.COUPON.code:
-                return CalendarEventType.COUPON.description;
-            case CalendarEventType.AMORTIZATION.code:
-                return CalendarEventType.AMORTIZATION.description;
-            case CalendarEventType.DIVIDEND.code:
-                return CalendarEventType.DIVIDEND.description;
-            case CalendarEventType.REPAYMENT.code:
-                return CalendarEventType.REPAYMENT.description;
-            case CalendarEventType.CUSTOM.code:
-                return CalendarEventType.CUSTOM.description;
-        }
-        return null;
-    }
 }
 
 @Enum("code")
@@ -88,9 +66,10 @@ export class CalendarEventType extends (EnumType as IStaticEnum<CalendarEventTyp
 
     static readonly COUPON = new CalendarEventType("coupon", "Купон");
     static readonly AMORTIZATION = new CalendarEventType("amortization", "Амортизация");
-    static readonly DIVIDEND = new CalendarEventType("dividend", "Дивиденды");
+    static readonly DIVIDEND_HISTORY = new CalendarEventType("dividend_history", "Дивиденд (История)");
+    static readonly DIVIDEND_NEWS = new CalendarEventType("dividend_news", "Дивиденды (Новости)");
     static readonly REPAYMENT = new CalendarEventType("repayment", "Погашение");
-    static readonly CUSTOM = new CalendarEventType("custom", "Пользовательские");
+    static readonly USER = new CalendarEventType("user", "Пользовательские");
 
     private constructor(public code: string, public description: string) {
         super();
@@ -99,8 +78,12 @@ export class CalendarEventType extends (EnumType as IStaticEnum<CalendarEventTyp
 
 /** Параметры даты для отправки в апи календаря */
 export interface CalendarDateParams {
+    /** Дата начала фильтрации */
     start: string;
+    /** Дата окончания фильтрации */
     end: string;
+    /** Типы событий календаря */
+    calendarEventTypes?: CalendarType[];
 }
 
 /** Объект событий календаря, с ключом по дате */
@@ -109,22 +92,21 @@ export interface CalendarParams {
 }
 
 /** Базовая сущность события календаря */
-export interface BaseCalendarEvent {
-    allDay: boolean;
-    data: string;
+export interface CalendarEvent {
+    /** Дата начала фильтрации */
+    type: CalendarType;
+    /** Краткое описание события (Купон, Дивиденд) */
     description: string;
-    editable: boolean;
-    endDate: string;
-    id: string;
-    startDate: string;
-    styleClass: string;
-    title: string;
-    url: string;
-}
-
-/** Сущность события календаря, используемая в интерфейсе */
-export interface CalendarEvent extends BaseCalendarEvent {
-    typeDescription: string;
+    /** Дата события. Для дивидендной новости это дата отсечки */
+    date: string;
+    /** Сумма начисления */
+    amount: string;
+    /** Тикер бумаги */
+    ticker: string;
+    /** Краткое название бумги */
+    shortName: string;
+    /** Валюта начисления */
+    currency: string;
 }
 
 /** Информация о событии по ценной бумаге */
@@ -243,4 +225,14 @@ export interface DividendNewsItem {
     isin?: string;
     /** Идентификатор бумаги в системе */
     stockId: number;
+}
+
+/** Типы событий календаря */
+export enum CalendarType {
+    COUPON = "COUPON",
+    AMORTIZATION = "AMORTIZATION",
+    REPAYMENT = "REPAYMENT",
+    DIVIDEND_HISTORY = "DIVIDEND_HISTORY",
+    DIVIDEND_NEWS = "STOCK_NEWS",
+    USER = "USER"
 }

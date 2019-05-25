@@ -379,7 +379,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             this.operation.enumName, this.share.ticker, this.date);
         if (suggestedInfo) {
             this.quantity = suggestedInfo.quantity;
-            this.price = suggestedInfo.amount;
+            this.price = suggestedInfo.amount || this.price;
         }
     }
 

@@ -344,7 +344,7 @@ export class PayButton extends UI {
                                             :agreement-state="agreementState" :busy-state="busyState" :is-progress="isProgress" :payment-info="paymentInfo"></pay-button>
                             </tr>
                             <tr class="no-borders">
-                                <td>Объем портфеля</td>
+                                <td class="text-nowrap">Объем портфеля</td>
                                 <td class="fs13">
                                     <span>7 ценных бумаг<br>1 портфель</span>
                                 </td>
@@ -356,7 +356,7 @@ export class PayButton extends UI {
                                 </td>
                             </tr>
                             <tr>
-                                <td>Базовый функционал</td>
+                                <td class="text-nowrap">Базовый функционал</td>
                                 <td>
                                     <div class="tariff__plans_check"></div>
                                 </td>
@@ -378,7 +378,7 @@ export class PayButton extends UI {
                                 </td>
                             </tr>
                             <tr>
-                                <td>Доступ к функционалу "Стандарт"</td>
+                                <td class="text-nowrap">Доступ к функционалу "Стандарт"</td>
                                 <td></td>
                                 <td>
                                     <div class="tariff__plans_check"></div>
@@ -388,7 +388,7 @@ export class PayButton extends UI {
                                 </td>
                             </tr>
                             <tr>
-                                <td>Мобильное приложение</td>
+                                <td class="text-nowrap">Мобильное приложение</td>
                                 <td></td>
                                 <td>
                                     <div class="tariff__plans_check"></div>
@@ -398,7 +398,7 @@ export class PayButton extends UI {
                                 </td>
                             </tr>
                             <tr>
-                                <td>Учет зарубежных акций</td>
+                                <td class="text-nowrap">Учет зарубежных акций</td>
                                 <td></td>
                                 <td></td>
                                 <td>
@@ -406,7 +406,7 @@ export class PayButton extends UI {
                                 </td>
                             </tr>
                             <tr>
-                                <td>Учет коротких позиций</td>
+                                <td class="text-nowrap">Учет коротких позиций</td>
                                 <td></td>
                                 <td></td>
                                 <td>
@@ -414,7 +414,7 @@ export class PayButton extends UI {
                                 </td>
                             </tr>
                             <tr>
-                                <td>Ранний доступ<br>к новому функционалу</td>
+                                <td class="text-nowrap">Ранний доступ<br>к новому функционалу</td>
                                 <td></td>
                                 <td></td>
                                 <td>
