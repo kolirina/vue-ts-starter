@@ -236,36 +236,34 @@ const MainStore = namespace(StoreType.MAIN);
                     <v-sheet>
                         <v-calendar :now="today" :value="calendarRequestParams.start" color="primary" locale="ru">
                             <template v-slot:day="{ date }">
-                                <vue-scroll>
-                                    <div class="wrap-list-events">
-                                        <div>
-                                            <div v-for="(event, index) in calendarEvents[date]" :key="index">
-                                                <v-menu max-width="267" right nudge-right="150" content-class="fs13 info-about-event" :close-on-content-click="false">
-                                                    <template v-slot:activator="{ on }">
-                                                        <div v-on="on" :class="[event.type.toLowerCase(), 'fs13', 'calendar-events-title', 'pl-2', 'selectable']">
-                                                            {{ event.ticker }} {{ event.description }}
-                                                        </div>
-                                                    </template>
-                                                    <v-card class="selectable" flat>
-                                                        <div v-if="['COUPON', 'AMORTIZATION', 'REPAYMENT'].includes(event.type)">
+                                <div class="wrap-list-events">
+                                    <div>
+                                        <div v-for="(event, index) in calendarEvents[date]" :key="index">
+                                            <v-menu max-width="267" right nudge-right="150" content-class="fs13 info-about-event" :close-on-content-click="false">
+                                                <template v-slot:activator="{ on }">
+                                                    <div v-on="on" :class="[event.type.toLowerCase(), 'fs13', 'calendar-events-title', 'pl-2', 'selectable']">
+                                                        {{ event.ticker }} {{ event.description }}
+                                                    </div>
+                                                </template>
+                                                <v-card class="selectable" flat>
+                                                    <div v-if="['COUPON', 'AMORTIZATION', 'REPAYMENT'].includes(event.type)">
                                                             <span>
                                                                 {{ event.description }} по облигации
                                                                 <bond-link :ticker="event.ticker"></bond-link>
                                                                 ({{ event.shortName }}) в размере {{ event.amount }} {{ event.currency | currencySymbolByCurrency}}
                                                             </span>
-                                                        </div>
-                                                        <div v-if="['DIVIDEND_HISTORY', 'DIVIDEND_NEWS'].includes(event.type)">
-                                                            <span v-if="event.type === 'DIVIDEND_HISTORY'">Выплата дивиденда по акции</span>
-                                                            <span v-if="event.type === 'DIVIDEND_NEWS'">Планируемый дивиденд по акции</span>
-                                                            <stock-link :ticker="event.ticker"></stock-link>
-                                                            ({{ event.shortName }}) в размере {{ event.amount }} {{ event.currency | currencySymbolByCurrency}}
-                                                        </div>
-                                                    </v-card>
-                                                </v-menu>
-                                            </div>
+                                                    </div>
+                                                    <div v-if="['DIVIDEND_HISTORY', 'DIVIDEND_NEWS'].includes(event.type)">
+                                                        <span v-if="event.type === 'DIVIDEND_HISTORY'">Выплата дивиденда по акции</span>
+                                                        <span v-if="event.type === 'DIVIDEND_NEWS'">Планируемый дивиденд по акции</span>
+                                                        <stock-link :ticker="event.ticker"></stock-link>
+                                                        ({{ event.shortName }}) в размере {{ event.amount }} {{ event.currency | currencySymbolByCurrency}}
+                                                    </div>
+                                                </v-card>
+                                            </v-menu>
                                         </div>
                                     </div>
-                                </vue-scroll>
+                                </div>
                             </template>
                         </v-calendar>
                     </v-sheet>
@@ -343,6 +341,10 @@ export class EventsPage extends UI {
     private async onPortfolioChange(): Promise<void> {
         await this.loadEvents();
         await this.loadDividendNews();
+        // если выбран фильтр Пользовательские, нужно перезагрузить календарь
+        if (this.typeCalendarEvents.includes(CalendarEventType.USER.code.toLowerCase())) {
+            await this.loadCalendarEvents();
+        }
     }
 
     /** Получаем дефолтный фильтр если в локал сторе ничего нет */
