@@ -167,6 +167,7 @@ export class ProfilePage extends UI {
             "После окончания подписки некоторые услуги могут стать недоступны.");
         if (result === BtnReturn.YES) {
             await this.cancelOrderScheduleConfirmed();
+            this.paymentInfo = await this.tariffService.getPaymentInfo();
             this.$snotify.info("Автоматическое продление подписки успешно отключено");
         }
     }
