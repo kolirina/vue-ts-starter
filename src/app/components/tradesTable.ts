@@ -24,7 +24,7 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-data-table class="data-table table-bottom-pagination selectable" :headers="headers" :items="trades" item-key="id" :pagination="tradePagination.pagination"
+        <v-data-table class="data-table table-bottom-pagination" :headers="headers" :items="trades" item-key="id" :pagination="tradePagination.pagination"
                       @update:pagination="onTablePaginationChange"
                       :total-items="tradePagination.pagination.totalItems" :custom-sort="customSort"
                       :no-data-text="portfolio.overview.totalTradesCount ? 'Ничего не найдено' : 'Добавьте свою первую сделку и она отобразится здесь'"
