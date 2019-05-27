@@ -125,7 +125,7 @@ export class ExportPage extends UI {
     @ShowProgress
     async mounted(): Promise<void> {
         this.portfolios = this.clientInfo.user.portfolios;
-        this.laodPortfolioBackup();
+        await this.laodPortfolioBackup();
     }
 
     private async laodPortfolioBackup(): Promise<void> {
