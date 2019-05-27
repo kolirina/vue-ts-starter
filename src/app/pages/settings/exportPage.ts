@@ -49,7 +49,7 @@ const MainStore = namespace(StoreType.MAIN);
                         <v-card-text class="export-page__content">
                             <div class="info-block">
                                 Выгрузите сделки вашего текущего портфеля в csv или xlsx формате.
-                                На триале и если тариф истек экспортировать сделки нельзя.
+                                На триале если тариф истек экспортировать сделки нельзя.
                                 <v-tooltip v-if="isDownloadNotAllowed()" content-class="custom-tooltip-wrap" bottom>
                                     <sup class="custom-tooltip" slot="activator">
                                         <v-icon>fas fa-info-circle</v-icon>
