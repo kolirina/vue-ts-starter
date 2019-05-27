@@ -1,7 +1,6 @@
 import Component from "vue-class-component";
 import {CustomDialog} from "../../platform/dialogs/customDialog";
 import {PortfolioParams} from "../../services/portfolioService";
-import {TableHeader} from "../../types/types";
 
 @Component({
     // language=Vue
@@ -25,11 +24,11 @@ import {TableHeader} from "../../types/types";
                     </div>
                     <div class="pl-3">
                         <v-data-table v-if="data.portfolios"
-                                    :items="data.portfolios"
-                                    v-model="backupPortfolio.selectedPortfolios"
-                                    item-key="id"
-                                    select-all hide-actions
-                                    class="portfolio-choose-table">
+                                     :items="data.portfolios"
+                                     v-model="backupPortfolio.selectedPortfolios"
+                                     item-key="id"
+                                     select-all hide-actions
+                                     class="portfolio-choose-table">
                             <template v-slot:headers="props">
                                 <v-layout align-center>
                                     <v-checkbox
@@ -46,10 +45,10 @@ import {TableHeader} from "../../types/types";
                             </template>
                             <template #items="props">
                                 <v-layout align-center>
-                                    <div class="pr-0">
+                                    <div>
                                         <v-checkbox v-model="props.selected" primary hide-details></v-checkbox>
                                     </div>
-                                    <div class="text-xs-left pl-0">{{ props.item.name }}</div>
+                                    <div class="text-xs-left">{{ props.item.name }}</div>
                                 </v-layout>
                             </template>
                         </v-data-table>

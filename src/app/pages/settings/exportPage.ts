@@ -49,7 +49,7 @@ const MainStore = namespace(StoreType.MAIN);
                         <v-card-text class="export-page__content">
                             <div class="info-block">
                                 Выгрузите сделки вашего текущего портфеля в csv или xlsx формате.
-                                На триале и если тариф истек экспортировать сделки нельзя
+                                На триале и если тариф истек экспортировать сделки нельзя.
                                 <v-tooltip v-if="isDownloadNotAllowed()" content-class="custom-tooltip-wrap" bottom>
                                     <sup class="custom-tooltip" slot="activator">
                                         <v-icon>fas fa-info-circle</v-icon>
@@ -69,8 +69,8 @@ const MainStore = namespace(StoreType.MAIN);
                                 <div class="fs14 mw640 margT20">
                                     Настройте автоматический бэкап портфеля. Файлы выбранных портфелей (в csv формате) будут отравляться на вашу эл почту по заданному расписанию.
                                 </div>
-                                <v-layout align-center clas bns="margT20">
-                                    <v-btn color="#EBEFF7" @click.stop="openBackupDialog()" :disabled="!clientInfo.user.emailConfirmed || isDownloadNotAllowed()" class="margT20">
+                                <v-layout align-center class="margT20">
+                                    <v-btn color="#EBEFF7" @click.stop="openBackupDialog()" :disabled="!clientInfo.user.emailConfirmed || isDownloadNotAllowed()">
                                         Настроить
                                     </v-btn>
                                     <v-tooltip v-if="!clientInfo.user.emailConfirmed || isDownloadNotAllowed()" content-class="custom-tooltip-wrap" bottom>
