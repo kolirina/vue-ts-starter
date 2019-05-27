@@ -1,6 +1,7 @@
 import Component from "vue-class-component";
 import {CustomDialog} from "../../platform/dialogs/customDialog";
 import {PortfolioParams} from "../../services/portfolioService";
+import {PortfolioBackup} from "../../types/types";
 
 @Component({
     // language=Vue
@@ -17,7 +18,7 @@ import {PortfolioParams} from "../../services/portfolioService";
                     </div>
                     <div class="btn-days-select-wrapper pl-3 pt-4 margB30">
                         <v-btn-toggle v-model="selectedDays" multiple light>
-                            <v-btn v-for="day in data.days" :value="day" :key="day" depressed class="btn-item">
+                            <v-btn v-for="day in days" :value="day" :key="day" depressed class="btn-item">
                                 {{ day }}
                             </v-btn>
                         </v-btn-toggle>
@@ -25,7 +26,7 @@ import {PortfolioParams} from "../../services/portfolioService";
                     <div class="pl-3">
                         <v-data-table v-if="data.portfolios"
                                      :items="data.portfolios"
-                                     v-model="backupPortfolio.selectedPortfolios"
+                                     v-model="selectedPortfolios"
                                      item-key="id"
                                      select-all hide-actions
                                      class="portfolio-choose-table">
@@ -66,50 +67,56 @@ import {PortfolioParams} from "../../services/portfolioService";
         </v-dialog>
     `
 })
-export class BackupPortfolioDialog extends CustomDialog<BackupPortfolioData, BackupPortfolio> {
+export class BackupPortfolioDialog extends CustomDialog<BackupPortfolioData, PortfolioBackup> {
 
-    private backupPortfolio: BackupPortfolio = {
-        selectedDaysInner: [],
-        selectedPortfolios: []
-    };
+    /** Дни для выбора расписания */
+    private days: string[] = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
+    /** Выбранный день по умолчанию */
+    private selectedDaysInner: string[] = ["Сб"];
+    /** Список параметров всех портфелей */
+    private selectedPortfolios: PortfolioParams[] = [];
+    private signChangeSelectedDaysInner: string[] = [];
+    private signChangeSelectedPortfolios: PortfolioParams[] = [];
 
     mounted(): void {
-        this.backupPortfolio.selectedDaysInner = this.data.selectedDaysInner;
-        this.backupPortfolio.selectedPortfolios = this.data.selectedPortfolios;
+        this.selectedDaysInner = this.data.portfolioBackup.days.map(day => day - 2).map(day => this.days[day]);
+        this.selectedPortfolios = this.data.portfolios.filter(portfolio => this.data.portfolioBackup.portfolioIds.includes(portfolio.id));
+        this.signChangeSelectedDaysInner = this.selectedDaysInner;
+        this.signChangeSelectedPortfolios = this.selectedPortfolios;
     }
 
     private toggleAll(): void {
-        if (this.backupPortfolio.selectedPortfolios.length) {
-            this.backupPortfolio.selectedPortfolios = [];
+        if (this.selectedPortfolios.length) {
+            this.selectedPortfolios = [];
         } else {
-            this.backupPortfolio.selectedPortfolios = this.data.portfolios;
+            this.selectedPortfolios = this.data.portfolios;
         }
     }
 
     private get selectedDays(): string[] {
-        return this.backupPortfolio.selectedDaysInner;
+        return this.selectedDaysInner;
     }
 
     private set selectedDays(newValue: string[]) {
         if (newValue.length === 0) {
             return;
         }
-        this.backupPortfolio.selectedDaysInner = newValue;
+        this.selectedDaysInner = newValue;
     }
 
     private applyConfig(): void {
-        this.close(this.backupPortfolio);
+        if (this.selectedDaysInner !== this.signChangeSelectedDaysInner || this.selectedPortfolios !== this.signChangeSelectedPortfolios) {
+            const days = this.selectedDaysInner.map(day => this.days.indexOf(day) + 2);
+            const portfolioIds = this.selectedPortfolios.map(portfolio => portfolio.id);
+            const portfolioBackup: PortfolioBackup = {id: this.data.portfolioBackup.id, days, portfolioIds};
+            this.close(portfolioBackup);
+        } else {
+            this.close();
+        }
     }
 }
 
 export type BackupPortfolioData = {
     portfolios: PortfolioParams[];
-    days: string[];
-    selectedDaysInner: string[];
-    selectedPortfolios: PortfolioParams[];
-};
-
-export type BackupPortfolio = {
-    selectedDaysInner: string[];
-    selectedPortfolios: PortfolioParams[];
+    portfolioBackup: PortfolioBackup;
 };

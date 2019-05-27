@@ -9,7 +9,7 @@ import {ClientInfo} from "../../services/clientService";
 import {ExportService, ExportType} from "../../services/exportService";
 import {PortfolioParams, PortfolioService} from "../../services/portfolioService";
 import {Tariff} from "../../types/tariff";
-import {Portfolio, PortfolioBackup, TableHeader} from "../../types/types";
+import {Portfolio, PortfolioBackup} from "../../types/types";
 import {DateUtils} from "../../utils/dateUtils";
 import {StoreType} from "../../vuex/storeType";
 
@@ -109,14 +109,8 @@ export class ExportPage extends UI {
     /** Сервис для экспорта портфеля */
     @Inject
     private portfolioService: PortfolioService;
-    /** Дни для выбора расписания */
-    private days = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
-    /** Выбранный день по умолчанию */
-    private selectedDaysInner = ["Сб"];
     /** Поисковый запрос для поиска по портфелям */
     private search = "";
-    /** Список параметров всех портфелей */
-    private selectedPortfolios: PortfolioParams[] = [];
     /** Портфели пользователя */
     private portfolios: PortfolioParams[] = null;
     /** Информация о бэкапе портфеля */
@@ -131,6 +125,10 @@ export class ExportPage extends UI {
     @ShowProgress
     async mounted(): Promise<void> {
         this.portfolios = this.clientInfo.user.portfolios;
+        this.laodPortfolioBackup();
+    }
+
+    private async laodPortfolioBackup(): Promise<void> {
         this.portfolioBackup = await this.portfolioService.getPortfolioBackup(this.clientInfo.user.id);
         if (!this.portfolioBackup) {
             this.portfolioBackup = {
@@ -138,8 +136,6 @@ export class ExportPage extends UI {
                 portfolioIds: []
             };
         }
-        this.selectedPortfolios = this.portfolios.filter(portfolio => this.portfolioBackup.portfolioIds.includes(portfolio.id));
-        this.selectedDaysInner = this.portfolioBackup.days.map(day => day - 2).map(day => this.days[day]);
     }
 
     /**
@@ -151,12 +147,9 @@ export class ExportPage extends UI {
     }
 
     private async openBackupDialog(): Promise<void> {
-        const result = await new BackupPortfolioDialog().show({portfolios: this.portfolios, days: this.days, selectedDaysInner: this.selectedDaysInner,
-                                                               selectedPortfolios: this.selectedPortfolios});
-        if (result && (result.selectedDaysInner !== this.selectedDays || result.selectedPortfolios !== this.selectedPortfolios)) {
-            this.selectedDaysInner = result.selectedDaysInner;
-            this.selectedPortfolios = result.selectedPortfolios;
-            this.saveBackupSchedule();
+        const portfolioBackup: PortfolioBackup = await new BackupPortfolioDialog().show({portfolios: this.portfolios, portfolioBackup: this.portfolioBackup});
+        if (portfolioBackup) {
+            await this.saveBackupSchedule(portfolioBackup);
         }
     }
 
@@ -172,27 +165,14 @@ export class ExportPage extends UI {
      * Сохраняет выбранные настройки расписания
      */
     @ShowProgress
-    private async saveBackupSchedule(): Promise<void> {
-        const days = this.selectedDaysInner.map(day => this.days.indexOf(day) + 2);
-        const portfolioIds = this.selectedPortfolios.map(portfolio => portfolio.id);
-        const pb: PortfolioBackup = {id: this.portfolioBackup.id, days, portfolioIds};
-        await this.portfolioService.saveOrUpdatePortfolioBackup(this.clientInfo.user.id, pb);
+    private async saveBackupSchedule(portfolioBackup: PortfolioBackup): Promise<void> {
+        await this.portfolioService.saveOrUpdatePortfolioBackup(this.clientInfo.user.id, portfolioBackup);
+        await this.laodPortfolioBackup();
         this.$snotify.info("Настройки бэкапа успешно обновлены");
     }
 
     @ShowProgress
     private async exportPortfolio(): Promise<void> {
         await this.exportService.exportReport(this.portfolio.id, ExportType.COMPLEX);
-    }
-
-    private get selectedDays(): string[] {
-        return this.selectedDaysInner;
-    }
-
-    private set selectedDays(newValue: string[]) {
-        if (newValue.length === 0) {
-            return;
-        }
-        this.selectedDaysInner = newValue;
     }
 }
