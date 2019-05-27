@@ -125,10 +125,10 @@ export class ExportPage extends UI {
     @ShowProgress
     async mounted(): Promise<void> {
         this.portfolios = this.clientInfo.user.portfolios;
-        await this.laodPortfolioBackup();
+        await this.loadPortfolioBackup();
     }
 
-    private async laodPortfolioBackup(): Promise<void> {
+    private async loadPortfolioBackup(): Promise<void> {
         this.portfolioBackup = await this.portfolioService.getPortfolioBackup(this.clientInfo.user.id);
         if (!this.portfolioBackup) {
             this.portfolioBackup = {
@@ -167,7 +167,7 @@ export class ExportPage extends UI {
     @ShowProgress
     private async saveBackupSchedule(portfolioBackup: PortfolioBackup): Promise<void> {
         await this.portfolioService.saveOrUpdatePortfolioBackup(this.clientInfo.user.id, portfolioBackup);
-        await this.laodPortfolioBackup();
+        await this.loadPortfolioBackup();
         this.$snotify.info("Настройки бэкапа успешно обновлены");
     }
 

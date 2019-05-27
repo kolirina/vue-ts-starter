@@ -17,7 +17,7 @@ import {PortfolioBackup} from "../../types/types";
                         Отправка бэкапов осуществляется по выбранным дням в 9:30 минут.
                     </div>
                     <div class="btn-days-select-wrapper pl-3 pt-4 margB30">
-                        <v-btn-toggle v-model="selectedDays" multiple light>
+                        <v-btn-toggle v-model="selectedDaysInner" multiple light>
                             <v-btn v-for="day in days" :value="day" :key="day" depressed class="btn-item">
                                 {{ day }}
                             </v-btn>
@@ -25,11 +25,11 @@ import {PortfolioBackup} from "../../types/types";
                     </div>
                     <div class="pl-3">
                         <v-data-table v-if="data.portfolios"
-                                     :items="data.portfolios"
-                                     v-model="selectedPortfolios"
-                                     item-key="id"
-                                     select-all hide-actions
-                                     class="portfolio-choose-table">
+                                      :items="data.portfolios"
+                                      v-model="selectedPortfolios"
+                                      item-key="id"
+                                      select-all hide-actions
+                                      class="portfolio-choose-table">
                             <template v-slot:headers="props">
                                 <v-layout align-center>
                                     <v-checkbox
@@ -47,9 +47,8 @@ import {PortfolioBackup} from "../../types/types";
                             <template #items="props">
                                 <v-layout align-center>
                                     <div>
-                                        <v-checkbox v-model="props.selected" primary hide-details></v-checkbox>
+                                        <v-checkbox v-model="props.selected" :label="props.item.name" primary hide-details class="portfolio-choose-checkbox"></v-checkbox>
                                     </div>
-                                    <div class="text-xs-left">{{ props.item.name }}</div>
                                 </v-layout>
                             </template>
                         </v-data-table>
@@ -75,14 +74,10 @@ export class BackupPortfolioDialog extends CustomDialog<BackupPortfolioData, Por
     private selectedDaysInner: string[] = ["Сб"];
     /** Список параметров всех портфелей */
     private selectedPortfolios: PortfolioParams[] = [];
-    private signChangeSelectedDaysInner: string[] = [];
-    private signChangeSelectedPortfolios: PortfolioParams[] = [];
 
     mounted(): void {
         this.selectedDaysInner = this.data.portfolioBackup.days.map(day => day - 2).map(day => this.days[day]);
         this.selectedPortfolios = this.data.portfolios.filter(portfolio => this.data.portfolioBackup.portfolioIds.includes(portfolio.id));
-        this.signChangeSelectedDaysInner = this.selectedDaysInner;
-        this.signChangeSelectedPortfolios = this.selectedPortfolios;
     }
 
     private toggleAll(): void {
@@ -93,26 +88,11 @@ export class BackupPortfolioDialog extends CustomDialog<BackupPortfolioData, Por
         }
     }
 
-    private get selectedDays(): string[] {
-        return this.selectedDaysInner;
-    }
-
-    private set selectedDays(newValue: string[]) {
-        if (newValue.length === 0) {
-            return;
-        }
-        this.selectedDaysInner = newValue;
-    }
-
     private applyConfig(): void {
-        if (this.selectedDaysInner !== this.signChangeSelectedDaysInner || this.selectedPortfolios !== this.signChangeSelectedPortfolios) {
-            const days = this.selectedDaysInner.map(day => this.days.indexOf(day) + 2);
-            const portfolioIds = this.selectedPortfolios.map(portfolio => portfolio.id);
-            const portfolioBackup: PortfolioBackup = {id: this.data.portfolioBackup.id, days, portfolioIds};
-            this.close(portfolioBackup);
-        } else {
-            this.close();
-        }
+        const days = this.selectedDaysInner.map(day => this.days.indexOf(day) + 2);
+        const portfolioIds = this.selectedPortfolios.map(portfolio => portfolio.id);
+        const portfolioBackup: PortfolioBackup = {id: this.data.portfolioBackup.id, days, portfolioIds};
+        this.close(portfolioBackup);
     }
 }
 
