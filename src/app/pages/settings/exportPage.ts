@@ -3,6 +3,7 @@ import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
+import {BackupPortfolioDialog} from "../../components/dialogs/backupPortfolioDialog";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {ClientInfo} from "../../services/clientService";
 import {ExportService, ExportType} from "../../services/exportService";
@@ -48,7 +49,7 @@ const MainStore = namespace(StoreType.MAIN);
                         <v-card-text class="export-page__content">
                             <div class="info-block">
                                 Выгрузите сделки вашего текущего портфеля в csv или xlsx формате.
-                                <!-- На триале и если тариф истек экспортировать сделки нельзя -->
+                                На триале и если тариф истек экспортировать сделки нельзя
                                 <v-tooltip v-if="isDownloadNotAllowed()" content-class="custom-tooltip-wrap" bottom>
                                     <sup class="custom-tooltip" slot="activator">
                                         <v-icon>fas fa-info-circle</v-icon>
@@ -61,70 +62,32 @@ const MainStore = namespace(StoreType.MAIN);
                                 <br>
                                 Данный файл содержит полную информацию о всех сделках и является полностью совместимым для обратного импорта в сервис.
                             </div>
-
-                            <!-- TODO раскомментировать после стилизации
-                            <h3>Автоматический бэкап портфеля</h3>
-                            <p>Настройте автоматический бэкап портфеля. Файлы выбранных портфелей (в csv формате) будут отравляться на вашу эл почту по заданному
-                                расписанию.</p>
-                            <div class="EmptyBox20"></div>
-                            <v-data-table v-if="portfolios"
-                                          :headers="headers"
-                                          :items="portfolios"
-                                          :search="search"
-                                          v-model="selectedPortfolios"
-                                          item-key="id"
-                                          select-all
-                                          class="elevation-1" must-sort>
-                                <template #headerCell="props">
-                                    <v-tooltip content-class="custom-tooltip-wrap" bottom>
-                                        <span slot="activator">
-                                          {{ props.header.text }}
+                            <div class="export-page__content-backup-wrapper margT20">
+                                <div class="fs12-non-opacity margT20">
+                                    Настройте автоматический бэкап портфеля
+                                </div>
+                                <div class="fs14 mw640 margT20">
+                                    Настройте автоматический бэкап портфеля. Файлы выбранных портфелей (в csv формате) будут отравляться на вашу эл почту по заданному расписанию.
+                                </div>
+                                <v-layout align-center clas bns="margT20">
+                                    <v-btn color="#EBEFF7" @click.stop="openBackupDialog()" :disabled="!clientInfo.user.emailConfirmed || isDownloadNotAllowed()" class="margT20">
+                                        Настроить
+                                    </v-btn>
+                                    <v-tooltip v-if="!clientInfo.user.emailConfirmed || isDownloadNotAllowed()" content-class="custom-tooltip-wrap" bottom>
+                                        <sup class="custom-tooltip" slot="activator">
+                                            <v-icon>fas fa-info-circle</v-icon>
+                                        </sup>
+                                        <span v-if="!clientInfo.user.emailConfirmed" class="fs13">
+                                            Вам необходимо подтвердить адрес электронной почты чтобы воспользоваться данным функционалом.
                                         </span>
-                                        <span>
-                                          {{ props.header.text }}
+                                        <span v-if="isDownloadNotAllowed()" class="fs13">Экспорт сделок в csv-формат недоступен на TRIAL-плане.
+                                            Пожалуйства <a href="/#/settings/tariffs">обновите</a>
+                                            подписку чтобы иметь возможность экспортировать сделки в csv формат.
+                                            Или воспользуйтесь экспортом в xlsx.
                                         </span>
                                     </v-tooltip>
-                                </template>
-                                <template #items="props">
-                                    <td style="width: 50px">
-                                        <v-checkbox v-model="props.selected" primary hide-details></v-checkbox>
-                                    </td>
-                                    <td class="text-xs-left">{{ props.item.id }}</td>
-                                    <td class="text-xs-left">{{ props.item.name }}</td>
-                                    <td class="text-xs-center">{{ props.item.viewCurrency }}</td>
-                                </template>
-                            </v-data-table>
-
-                            <div class="margT24">
-                                <span>Присылать резервные копии по дням:</span>
-                                <v-btn-toggle v-model="selectedDays" multiple dark>
-                                    <v-btn v-for="day in days" :value="day" :key="day" color="info">
-                                        {{ day }}
-                                    </v-btn>
-                                </v-btn-toggle>
+                                </v-layout>
                             </div>
-
-                            <div class="EmptyBox20"></div>
-                            <span>Отправка бэкапов осуществляется по выбранным дням в 9:30 минут.</span>
-                            <div class="EmptyBox20"></div>
-                            <v-btn color="primary" class="big_btn" @click="saveBackupSchedule"
-                                   :disabled="!clientInfo.user.emailConfirmed || isDownloadNotAllowed()">
-                                Сохранить расписание
-                            </v-btn>
-                            <v-tooltip v-if="!clientInfo.user.emailConfirmed || isDownloadNotAllowed()" content-class="custom-tooltip-wrap" bottom>
-                                <sup class="custom-tooltip" slot="activator">
-                                    <v-icon>fas fa-info-circle</v-icon>
-                                </sup>
-                                <span v-if="!clientInfo.user.emailConfirmed">
-                                    Вам необходимо подтвердить адрес электронной почты чтобы воспользоваться данным функционалом.
-                                </span>
-                                <span v-if="isDownloadNotAllowed()">Экспорт сделок в csv-формат недоступен на TRIAL-плане.
-                                    Пожалуйства <a href="/#/settings/tariffs">обновите</a>
-                                    подписку чтобы иметь возможность экспортировать сделки в csv формат.
-                                    Или воспользуйтесь экспортом в xlsx.
-                                </span>
-                            </v-tooltip>
-                            -->
                         </v-card-text>
                     </v-card>
                 </v-flex>
@@ -152,12 +115,6 @@ export class ExportPage extends UI {
     private selectedDaysInner = ["Сб"];
     /** Поисковый запрос для поиска по портфелям */
     private search = "";
-    /** Список заголовков таблицы */
-    private headers: TableHeader[] = [
-        {text: "ID", align: "left", value: "id", width: "100"},
-        {text: "Название", align: "left", value: "name"},
-        {text: "Валюта", align: "center", value: "viewCurrency"}
-    ];
     /** Список параметров всех портфелей */
     private selectedPortfolios: PortfolioParams[] = [];
     /** Портфели пользователя */
@@ -191,6 +148,16 @@ export class ExportPage extends UI {
     @ShowProgress
     private async downloadFile(): Promise<void> {
         await this.exportService.exportTrades(this.portfolio.id);
+    }
+
+    private async openBackupDialog(): Promise<void> {
+        const result = await new BackupPortfolioDialog().show({portfolios: this.portfolios, days: this.days, selectedDaysInner: this.selectedDaysInner,
+                                                               selectedPortfolios: this.selectedPortfolios});
+        if (result && (result.selectedDaysInner !== this.selectedDays || result.selectedPortfolios !== this.selectedPortfolios)) {
+            this.selectedDaysInner = result.selectedDaysInner;
+            this.selectedPortfolios = result.selectedPortfolios;
+            this.saveBackupSchedule();
+        }
     }
 
     /**
