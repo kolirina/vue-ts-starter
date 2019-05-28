@@ -40,7 +40,7 @@
     }
     .v-calendar-weekly__day {
       padding-left: 11px;
-      max-height: 159px;
+
       .v-calendar-weekly__day-month {
         text-transform: capitalize;
       }
@@ -65,26 +65,26 @@
   .calendar-events-title {
     border-radius: 4px;
     background: #F7F9FB !important;
-    max-width: 150px;
+    max-width: 200px;
     margin-top: 5px;
     cursor: pointer;
   }
   .amortization {
     border-left: 3px solid #9C27B0;
   }
-  
+
   .repayment {
     border-left: 3px solid #4CAF50;
   }
-  
+
   .custom {
     border-left: 3px solid #FF9DB7;
   }
-  
+
   .dividend_news {
     border-left: 3px solid #95EEDA;
   }
-  
+
   .dividend {
     border-left: 3px solid #F44336;
   }
@@ -106,7 +106,6 @@
   .wrap-list-events {
     display: flex;
     flex-direction: column;
-    height: -webkit-fill-available;
   }
   .select-date-input {
     .v-input {

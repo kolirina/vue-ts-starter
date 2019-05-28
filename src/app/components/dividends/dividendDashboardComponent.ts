@@ -19,6 +19,7 @@ import {Prop, Watch} from "vue-property-decorator";
 import {UI} from "../../app/ui";
 import {Filters} from "../../platform/filters/Filters";
 import {DividendDashboard} from "../../services/dividendService";
+import {BigMoney} from "../../types/bigMoney";
 import {DashboardBrick} from "../../types/types";
 
 @Component({
@@ -97,6 +98,7 @@ export class DividendDashboardComponent extends UI {
 
     private fillBricks(newValue: DividendDashboard): void {
         const mainCurrency = this.viewCurrency.toLowerCase();
+        const secondCurrency = new BigMoney(newValue.dividendsTotalInAlternativeCurrency).currency.toLowerCase();
 
         this.blocks[0] = {
             name: "Всего получено дивидендов",
@@ -104,7 +106,7 @@ export class DividendDashboardComponent extends UI {
             secondValue: Filters.formatMoneyAmount(newValue.dividendsTotalInAlternativeCurrency, true),
             hasNotBorderLeft: true,
             mainCurrency,
-            secondCurrency: mainCurrency,
+            secondCurrency: secondCurrency,
             tooltip: "Общая сумма полученных дивинедов за все время ведения портфеля"
         };
         this.blocks[1] = {

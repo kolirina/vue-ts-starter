@@ -23,7 +23,7 @@ import {TradeUtils} from "../utils/tradeUtils";
 @Component({
     // language=Vue
     template: `
-        <table class="ext-info" @click.stop>
+        <table class="ext-info selectable" @click.stop>
             <!-- Сделка по деньгам -->
             <tr v-if="tradeRow.asset === 'MONEY'">
                 <td>

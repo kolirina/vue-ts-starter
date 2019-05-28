@@ -1,10 +1,7 @@
 import {Inject, Singleton} from "typescript-ioc";
-import * as versionConfig from "../../version.json";
 import {Service} from "../platform/decorators/service";
 import {Storage} from "../platform/services/storage";
-import {StoreKeys} from "../types/storeKeys";
 import {TableHeader} from "../types/types";
-import {DateUtils} from "../utils/dateUtils";
 
 @Service("TablesService")
 @Singleton
@@ -261,16 +258,9 @@ export class TablesService {
      * Проверяет localStorage на дату последенго изменения и выставляет колонки по умолчанию
      */
     constructor() {
-        const needUpdate = this.needUpdate();
         const headersFromStorage = this.localStorage.get<TableHeaders>("tableHeadersParams", null);
-        if (needUpdate) {
-            this.headers = {...this.HEADERS};
-            this.localStorage.set<TableHeaders>("tableHeadersParams", this.headers);
-            this.localStorage.set<string>(StoreKeys.LOCAL_STORAGE_LAST_UPDATE_DATE_KEY, versionConfig.date);
-        } else {
-            // если восстановили из localStorage или берем по умолчанию
-            this.headers = headersFromStorage ? {...headersFromStorage} : {...this.HEADERS};
-        }
+        // если восстановили из localStorage или берем по умолчанию
+        this.headers = headersFromStorage ? {...headersFromStorage} : {...this.HEADERS};
     }
 
     /**
@@ -306,16 +296,6 @@ export class TablesService {
      */
     getHiddenHeaders(name: string): TableHeader[] {
         return (this.headers[name] || []).filter(el => !el.active && !el.ghost);
-    }
-
-    /**
-     * Возвращает признак необходимости обновления данных.
-     * Если дата в localStorage не совпадает с датой версии
-     */
-    private needUpdate(): boolean {
-        const currentDate = DateUtils.currentDate();
-        const lastUpdateDate = DateUtils.parseDate(this.localStorage.get<string>(StoreKeys.LOCAL_STORAGE_LAST_UPDATE_DATE_KEY, currentDate));
-        return !DateUtils.parseDate(versionConfig.date).isSame(lastUpdateDate, "day");
     }
 }
 

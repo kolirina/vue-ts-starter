@@ -18,6 +18,9 @@
 
   &__content {
     padding: 24px;
+    &-backup-wrapper {
+      border-top: 1px solid #E8E9ED;
+    }
   }
 
   .info-block {
@@ -26,5 +29,42 @@
     line-height: 22px;
     letter-spacing: -0.3px;
     color: #040427;
+  }
+}
+.btn-days-select-wrapper {
+  .v-item-group {
+    box-shadow: none;
+  }
+  .btn-item {
+    height: inherit !important;
+    padding: 12px 17px !important;
+    margin-right: 12px !important;
+    border: 1px solid #CACED5 !important;
+    color: #3D4656 !important;
+  }
+}
+.portfolio-choose-table {
+  tbody {
+    tr {
+      border-bottom: none !important;
+    }
+  }
+  thead {
+    tr {
+      height: inherit !important;
+    }
+  }
+  .select-all-icon {
+    transform: rotate(-90deg);
+  }
+  .none-select-all-icon {
+    transform: rotate(90deg);
+  }
+  .portfolio-choose-checkbox {
+    .v-label {
+      font-size: 13px !important;
+      line-height: 18px !important;
+      color: #040427 !important;
+    }
   }
 }

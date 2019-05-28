@@ -2,7 +2,6 @@ import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {Http} from "../platform/services/http";
 import {Tariff} from "../types/tariff";
-import {ClientInfo} from "./clientService";
 
 @Service("TariffService")
 @Singleton
@@ -28,11 +27,12 @@ export class TariffService {
         await this.http.post(`/tariff/apply-promo-code/${promoCode}`);
     }
 
-    /**
-     * Проверяет и возвращает статус заказа
-     */
-    async getOrderState(): Promise<string> {
-        return this.http.get<string>("/tariff/order-state");
+    async getPaymentInfo(): Promise<UserPaymentInfo> {
+        return this.http.get<UserPaymentInfo>("/tariff/payment-info");
+    }
+
+    async cancelOrderSchedule(): Promise<void> {
+        return this.http.post("/tariff/cancel-order-schedule");
     }
 }
 
@@ -108,4 +108,12 @@ export interface PaymentParams {
     DATA: string;
     /** Флаг открытия платежной формы во фрейме */
     Frame: boolean;
+}
+
+/** Поля, содержащию информацию о способе оплаты подписки пользователя */
+export interface UserPaymentInfo {
+    /** Маскированный номер карты в виде **** 1234 */
+    pan: string;
+    /** Срок действия карты */
+    expDate: string;
 }
