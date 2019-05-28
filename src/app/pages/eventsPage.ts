@@ -347,12 +347,15 @@ export class EventsPage extends UI {
         }
     }
 
-    /** Получаем дефолтный фильтр если в локал сторе ничего нет */
+    /**
+     * Получаем дефолтный фильтр если в локал сторе ничего нет
+     * Пользовательские события не грузим по умолчанию, пока пользователь сам явно их не выберет
+     */
     private getDefaultFilter(): string[] {
         const defaultFilter: string[] = [];
-        CalendarEventType.values().forEach((element: CalendarEventType) => {
-            if (!defaultFilter.includes(element.code)) {
-                defaultFilter.push(element.code);
+        CalendarEventType.values().map((type: CalendarEventType) => {
+            if (type !== CalendarEventType.USER) {
+                defaultFilter.push(type.code);
             }
         });
         return defaultFilter;
