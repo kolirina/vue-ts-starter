@@ -4,6 +4,7 @@ import Component from "vue-class-component";
 import {Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
+import {AdditionalPagination} from "../components/additionalPagination";
 import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog";
 import {ExpandedPanel} from "../components/expandedPanel";
 import {TradesTable} from "../components/tradesTable";
@@ -31,27 +32,25 @@ const MainStore = namespace(StoreType.MAIN);
         <v-container v-if="portfolio" fluid class="paddT0">
             <dashboard :data="portfolio.overview.dashboardData" :side-bar-opened="sideBarOpened" :view-currency="portfolio.portfolioParams.viewCurrency"></dashboard>
 
-            <expanded-panel :disabled="true" :withMenu="true" name="trades" :alwaysOpen="true" :value="[true]">
+            <expanded-panel :disabled="true" :withMenu="true" name="trades" :alwaysOpen="true" :value="[true]" class="auto-cursor">
                 <template #header>Сделки</template>
                 <template #list>
                     <v-list-tile-title @click="openTableSettings(TABLES_NAME.TRADE)">Настроить колонки</v-list-tile-title>
                     <v-list-tile-title @click="exportTable(ExportType.TRADES)">Экспорт в xlsx</v-list-tile-title>
                     <v-list-tile-title :disabled="isDownloadNotAllowed()" @click="downloadFile">Экспорт в csv</v-list-tile-title>
                 </template>
-                <trades-table-filter v-if="tradesFilter" :store-key="StoreKeys.TRADES_FILTER_SETTINGS_KEY" @filter="onFilterChange" :filter="tradesFilter"
+                <v-layout>
+                    <trades-table-filter v-if="tradesFilter" :store-key="StoreKeys.TRADES_FILTER_SETTINGS_KEY" @filter="onFilterChange" :filter="tradesFilter"
                                      :is-default="isDefaultFilter"></trades-table-filter>
-                <trades-table v-if="tradePagination" :trades="trades" :trade-pagination="tradePagination"
-                              :headers="getHeaders(TABLES_NAME.TRADE)" @delete="onDelete"></trades-table>
-            </expanded-panel>
-
-            <v-container v-if="pages > 1">
-                <v-layout align-center justify-center row>
-                    <v-pagination v-model="pagination.page" @input="onPageChange" :length="pages"></v-pagination>
+                    <v-spacer></v-spacer>
+                    <additional-pagination :pagination="tradePagination.pagination" @update:pagination="onTablePaginationChange"></additional-pagination>
                 </v-layout>
-            </v-container>
+                <trades-table v-if="tradePagination" :trades="trades" :trade-pagination="tradePagination"
+                              :headers="getHeaders(TABLES_NAME.TRADE)" @delete="onDelete" @update:pagination="onTablePaginationChange"></trades-table>
+            </expanded-panel>
         </v-container>
     `,
-    components: {TradesTable, ExpandedPanel, TradesTableFilter}
+    components: {TradesTable, ExpandedPanel, TradesTableFilter, AdditionalPagination}
 })
 export class TradesPage extends UI {
 
@@ -73,10 +72,6 @@ export class TradesPage extends UI {
     private reloadPortfolio: (id: number) => Promise<void>;
     @MainStore.Getter
     private sideBarOpened: boolean;
-    /** Общее количество сделок */
-    private totalTrades = 0;
-    /** Количество страниц */
-    private pages = 0;
     /** Ключи для сохранения информации */
     private StoreKeys = StoreKeys;
 
@@ -85,12 +80,12 @@ export class TradesPage extends UI {
         page: 1,
         rowsPerPage: 50,
         sortBy: "date",
-        totalItems: this.totalTrades
+        totalItems: 0,
+        pages: 0
     };
 
     private tradePagination: TablePagination = {
-        pagination: this.pagination,
-        totalItems: this.totalTrades
+        pagination: this.pagination
     };
 
     private trades: TradeRow[] = [];
@@ -114,6 +109,11 @@ export class TradesPage extends UI {
         return this.tablesService.getFilterHeaders(name);
     }
 
+    private async onTablePaginationChange(pagination: Pagination): Promise<void> {
+        this.pagination = pagination;
+        await this.loadTrades();
+    }
+
     /**
      * Открывает диалог с настройкой заголовков таблицы
      */
@@ -130,11 +130,6 @@ export class TradesPage extends UI {
 
     @Watch("portfolio")
     private async onPortfolioChange(): Promise<void> {
-        await this.loadTrades();
-    }
-
-    @Watch("tradePagination.pagination", {deep: true})
-    private async onTradePaginationChange(): Promise<void> {
         await this.loadTrades();
     }
 
@@ -158,8 +153,9 @@ export class TradesPage extends UI {
             this.filterService.getTradesFilterRequest(this.tradesFilter)
         );
         this.trades = result.content;
-        this.totalTrades = result.totalItems;
-        this.pages = result.pages;
+        this.pagination.totalItems = result.totalItems;
+        this.pagination.pages = result.pages;
+        this.tradePagination.pagination = this.pagination;
     }
 
     @ShowProgress

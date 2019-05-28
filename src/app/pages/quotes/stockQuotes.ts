@@ -27,7 +27,7 @@ const MainStore = namespace(StoreType.MAIN);
                                  placeholder="Поиск"></quotes-filter-table>
             <v-data-table :headers="headers" :items="stocks" item-key="id" :pagination="pagination" @update:pagination="onTablePaginationChange"
                           :rows-per-page-items="[25, 50, 100, 200]"
-                          :total-items="pagination.totalItems" class="quotes-table" must-sort>
+                          :total-items="pagination.totalItems" class="table-bottom-pagination" must-sort>
                 <template #items="props">
                     <tr class="selectable">
                         <td class="text-xs-left">

@@ -62,7 +62,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </span>
             </template>
             <template #items="props">
-                <tr :class="['selectable', {'bold-row': !props.item.stock}]" @dblclick="props.expanded = !props.expanded">
+                <tr :class="['selectable', {'bold-row': !props.item.stock}]" @dblclick="expandRow(props)">
                     <td>
                         <span v-if="props.item.stock" @click="props.expanded = !props.expanded"
                               :class="{'data-table-cell-open': props.expanded, 'path': true, 'data-table-cell': true}"></span>
@@ -365,6 +365,12 @@ export class StockTable extends UI {
                 row.stock.price.includes(search) ||
                 row.yearYield.includes(search));
         });
+    }
+
+    private expandRow(props: any): void {
+        if (props.item.stock) {
+            props.expanded = !props.expanded;
+        }
     }
 
     private getHeaderText(header: TableHeader): string {

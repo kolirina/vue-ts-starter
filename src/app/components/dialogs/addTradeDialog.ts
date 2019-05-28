@@ -379,7 +379,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             this.operation.enumName, this.share.ticker, this.date);
         if (suggestedInfo) {
             this.quantity = suggestedInfo.quantity;
-            this.price = suggestedInfo.amount;
+            this.price = suggestedInfo.amount || this.price;
         }
     }
 
@@ -490,8 +490,9 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private handleError(error: ErrorInfo): void {
+        // если 403 ошибки при добавлении сделок, диалог уже отобразили, больше ошибок показывать не нужно
         if (!CommonUtils.exists(error.fields)) {
-            if (error.message !== "Доступ запрещен") {
+            if ((error as any).code !== "403") {
                 throw error;
             }
             return;
