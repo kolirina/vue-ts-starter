@@ -10,6 +10,7 @@ import {RouterConfiguration} from "./app/router/routerConfiguration";
 import {ApplicationService} from "./app/services/applicationService";
 import {DateTimeService} from "./app/services/dateTimeService";
 import {InactivityMonitor} from "./app/services/inactivityMonitor";
+import {LocalStorageUpdater} from "./app/services/localStorageUpdater";
 import {EventType} from "./app/types/eventType";
 import {StoreKeys} from "./app/types/storeKeys";
 import {VuexConfiguration} from "./app/vuex/vuexConfiguration";
@@ -17,11 +18,8 @@ import * as versionConfig from "./version.json";
 
 /**
  * Запуск приложения
- * @param resolve
- * @param reject
- * @private
  */
-async function _start(resolve: () => void, reject: () => void): Promise<void> {
+export async function start(): Promise<void> {
     try {
         const client = new BrowserClient({
             dsn: "https://0a69d1634cf74275959234ed4e0bd8f0@sentry.io/1407959",
@@ -56,6 +54,8 @@ async function _start(resolve: () => void, reject: () => void): Promise<void> {
         await storeBackendVersion();
         /** Запрашиваем серверное время и сохраняем его локально */
         await Container.get(DateTimeService).initServerTimeDiff();
+        /** Обновляем данные в localStorage */
+        LocalStorageUpdater.getInstance().updateLocalStorage();
         /** Запуск приложения */
         const router = RouterConfiguration.getRouter();
         // Обработчик _синхронных_ ошибок в lifecycle-хуках роутера
@@ -63,17 +63,9 @@ async function _start(resolve: () => void, reject: () => void): Promise<void> {
         const store = VuexConfiguration.getStore();
         const app = new AppFrame({router, store});
         app.$mount("#app");
-        resolve();
     } catch (error) {
         console.error("ERROR WHILE INIT APPLICATION", error);
-        reject();
     }
-}
-
-export function start(): void {
-    new Promise((resolve, reject): void => {
-        _start(resolve, reject);
-    });
 }
 
 /**
