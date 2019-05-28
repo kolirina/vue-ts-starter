@@ -6,12 +6,12 @@
  *       420107, REPUBLIC OF TATARSTAN, KAZAN CITY, SPARTAKOVSKAYA STREET, HOUSE 2, ROOM 119
  * (c) "Intelinvest" Ltd, 2019
  *
- * СТРОГО КОНФИДЕНЦИАЛЬНО
- * КОММЕРЧЕСКАЯ ТАЙНА
- * СОБСТВЕННИК:
- *       ООО "Интеллектуальные инвестиции", ИНН 1655386205
- *       420107, РЕСПУБЛИКА ТАТАРСТАН, ГОРОД КАЗАНЬ, УЛИЦА СПАРТАКОВСКАЯ, ДОМ 2, ПОМЕЩЕНИЕ 119
- * (c) ООО "Интеллектуальные инвестиции", 2019
+ * РЎРўР РћР“Рћ РљРћРќР¤РР”Р•РќР¦РРђР›Р¬РќРћ
+ * РљРћРњРњР•Р Р§Р•РЎРљРђРЇ РўРђР™РќРђ
+ * РЎРћР‘РЎРўР’Р•РќРќРРљ:
+ *       РћРћРћ "РРЅС‚РµР»Р»РµРєС‚СѓР°Р»СЊРЅС‹Рµ РёРЅРІРµСЃС‚РёС†РёРё", РРќРќ 1655386205
+ *       420107, Р Р•РЎРџРЈР‘Р›РРљРђ РўРђРўРђР РЎРўРђРќ, Р“РћР РћР” РљРђР—РђРќР¬, РЈР›РР¦Рђ РЎРџРђР РўРђРљРћР’РЎРљРђРЇ, Р”РћРњ 2, РџРћРњР•Р©Р•РќРР• 119
+ * (c) РћРћРћ "РРЅС‚РµР»Р»РµРєС‚СѓР°Р»СЊРЅС‹Рµ РёРЅРІРµСЃС‚РёС†РёРё", 2019
  */
 
 import {Inject} from "typescript-ioc";
@@ -23,7 +23,7 @@ import {TableHeaders, TablesService} from "./tablesService";
 
 export class LocalStorageUpdater {
 
-    /** Экземпляр класса */
+    /** Р­РєР·РµРјРїР»СЏСЂ РєР»Р°СЃСЃР° */
     private static instance: LocalStorageUpdater = new LocalStorageUpdater();
 
     @Inject
@@ -32,14 +32,14 @@ export class LocalStorageUpdater {
     private tableService: TablesService;
 
     /**
-     * Возвращает экземпляр класса
+     * Р’РѕР·РІСЂР°С‰Р°РµС‚ СЌРєР·РµРјРїР»СЏСЂ РєР»Р°СЃСЃР°
      */
     static getInstance(): LocalStorageUpdater {
         return LocalStorageUpdater.instance;
     }
 
     /**
-     * Централизованно изменяет данные в localStorage, которые потеряли свою актуальность изза новых версий приложения
+     * Р¦РµРЅС‚СЂР°Р»РёР·РѕРІР°РЅРЅРѕ РёР·РјРµРЅСЏРµС‚ РґР°РЅРЅС‹Рµ РІ localStorage, РєРѕС‚РѕСЂС‹Рµ РїРѕС‚РµСЂСЏР»Рё СЃРІРѕСЋ Р°РєС‚СѓР°Р»СЊРЅРѕСЃС‚СЊ РёР·Р·Р° РЅРѕРІС‹С… РІРµСЂСЃРёР№ РїСЂРёР»РѕР¶РµРЅРёСЏ
      */
     updateLocalStorage(): void {
         this.updateCalendarEventTypes();
@@ -47,11 +47,11 @@ export class LocalStorageUpdater {
     }
 
     /**
-     * Обновляет типы событий календаря
+     * РћР±РЅРѕРІР»СЏРµС‚ С‚РёРїС‹ СЃРѕР±С‹С‚РёР№ РєР°Р»РµРЅРґР°СЂСЏ
      */
     private updateCalendarEventTypes(): void {
         const eventsFromStorage = this.localStorage.get<string[]>("calendarEvents", null);
-        // обновляем старое значение CUSTOM на новое USER
+        // РѕР±РЅРѕРІР»СЏРµРј СЃС‚Р°СЂРѕРµ Р·РЅР°С‡РµРЅРёРµ CUSTOM РЅР° РЅРѕРІРѕРµ USER
         if (eventsFromStorage && eventsFromStorage.includes("custom")) {
             eventsFromStorage.splice(eventsFromStorage.indexOf("custom"), 1);
             this.localStorage.set<string[]>("calendarEvents", eventsFromStorage);
@@ -59,7 +59,7 @@ export class LocalStorageUpdater {
     }
 
     /**
-     * Обновляет настройки колонок таблиц
+     * РћР±РЅРѕРІР»СЏРµС‚ РЅР°СЃС‚СЂРѕР№РєРё РєРѕР»РѕРЅРѕРє С‚Р°Р±Р»РёС†
      */
     private updateTableColumns(): void {
         const needUpdate = this.needUpdate();
@@ -71,8 +71,8 @@ export class LocalStorageUpdater {
     }
 
     /**
-     * Возвращает признак необходимости обновления данных.
-     * Если дата в localStorage не совпадает с датой версии
+     * Р’РѕР·РІСЂР°С‰Р°РµС‚ РїСЂРёР·РЅР°Рє РЅРµРѕР±С…РѕРґРёРјРѕСЃС‚Рё РѕР±РЅРѕРІР»РµРЅРёСЏ РґР°РЅРЅС‹С….
+     * Р•СЃР»Рё РґР°С‚Р° РІ localStorage РЅРµ СЃРѕРІРїР°РґР°РµС‚ СЃ РґР°С‚РѕР№ РІРµСЂСЃРёРё
      */
     private needUpdate(): boolean {
         const currentDate = DateUtils.currentDate();
