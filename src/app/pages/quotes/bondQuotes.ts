@@ -160,12 +160,6 @@ export class BondQuotes extends UI {
         await this.loadBonds();
     }
 
-    // private get checkForEmptySearchResult(): boolean {
-    //     if() {
-    //         return
-    //     }
-    // }
-
     /**
      * Обрыбатывает событие изменения паджинации и загружает данные
      * @param pagination

@@ -32,7 +32,6 @@ import {StoreKeys} from "../types/storeKeys";
 import {BondPortfolioRow, Overview, StockPortfolioRow, TableHeader} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
 import {UiStateHelper} from "../utils/uiStateHelper";
-import {EmptySearchResult} from "../components/emptySearchResult";
 
 @Component({
     // language=Vue
@@ -61,7 +60,7 @@ import {EmptySearchResult} from "../components/emptySearchResult";
                     </template>
                     <portfolio-rows-table-filter :filter.sync="stockFilter" :store-key="StoreKeys.STOCKS_TABLE_FILTER_KEY"></portfolio-rows-table-filter>
                     <stock-table :rows="stockRows" :headers="getHeaders(TABLES_NAME.STOCK)" :search="stockFilter.search" :filter="stockFilter"
-                                 :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes" @resetFilter="resetFilter"></stock-table>
+                                 :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes"></stock-table>
                 </expanded-panel>
 
                 <expanded-panel v-if="blockNotEmpty(emptyBlockType.BOND_PORTFOLIO)" :value="$uistate.bondsTablePanel"
@@ -147,7 +146,7 @@ import {EmptySearchResult} from "../components/emptySearchResult";
             </v-layout>
         </v-container>
     `,
-    components: {AssetTable, StockTable, BondTable, PortfolioLineChart, PortfolioRowsTableFilter, EmptySearchResult}
+    components: {AssetTable, StockTable, BondTable, PortfolioLineChart, PortfolioRowsTableFilter}
 })
 export class BasePortfolioPage extends UI {
 
@@ -255,10 +254,6 @@ export class BasePortfolioPage extends UI {
             case EmptyBlockType.STOCK_PORTFOLIO:
                 return this.overview.stockPortfolio.rows.length > 0;
         }
-    }
-
-    private resetFilter(): void {
-        this.stockFilter = this.storageService.get(StoreKeys.STOCKS_TABLE_FILTER_KEY, {});
     }
 
     private doStockPieChartData(): DataPoint[] {

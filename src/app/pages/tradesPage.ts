@@ -42,11 +42,11 @@ const MainStore = namespace(StoreType.MAIN);
                 </template>
                 <v-layout>
                     <trades-table-filter v-if="tradesFilter" :store-key="StoreKeys.TRADES_FILTER_SETTINGS_KEY" @filter="onFilterChange" :filter="tradesFilter"
-                                     :is-default="isDefaultFilter"></trades-table-filter>
+                                         :is-default="isDefaultFilter"></trades-table-filter>
                     <v-spacer></v-spacer>
                     <additional-pagination :pagination="tradePagination.pagination" @update:pagination="onTablePaginationChange"></additional-pagination>
                 </v-layout>
-                <empty-search-result v-if="trades.length == 0" @resetFilter="resetFilter"></empty-search-result>
+                <empty-search-result v-if="isEmptySearchResult" @resetFilter="resetFilter"></empty-search-result>
                 <trades-table v-else :trades="trades" :trade-pagination="tradePagination"
                               :headers="getHeaders(TABLES_NAME.TRADE)" @delete="onDelete" @resetFilter="resetFilter" @update:pagination="onTablePaginationChange"></trades-table>
             </expanded-panel>
@@ -96,6 +96,8 @@ export class TradesPage extends UI {
 
     private headers: TableHeaders = this.tablesService.headers;
 
+    private isEmptySearchResult: boolean = false;
+
     private TABLES_NAME = TABLES_NAME;
     private ExportType = ExportType;
 
@@ -105,7 +107,6 @@ export class TradesPage extends UI {
      */
     async created(): Promise<void> {
         this.tradesFilter = this.filterService.getFilter(StoreKeys.TRADES_FILTER_SETTINGS_KEY);
-        await this.loadTrades();
     }
 
     getHeaders(name: string): TableHeader[] {
@@ -128,10 +129,8 @@ export class TradesPage extends UI {
     }
 
     private async resetFilter(): Promise<void> {
-        console.log(this.filterService.getFilter(StoreKeys.TRADES_FILTER_SETTINGS_KEY));
-        console.log(this.tradesFilter);
-        this.tradesFilter.search = null;
-        await this.loadTrades();
+        this.tradesFilter = this.filterService.getDefaultFilter();
+        await this.onFilterChange();
     }
 
     private async onPageChange(): Promise<void> {
@@ -166,6 +165,7 @@ export class TradesPage extends UI {
         this.pagination.totalItems = result.totalItems;
         this.pagination.pages = result.pages;
         this.tradePagination.pagination = this.pagination;
+        this.trades.length > 0 ? this.isEmptySearchResult = false : this.isEmptySearchResult = true;
     }
 
     @ShowProgress

@@ -37,17 +37,14 @@ import {ConfirmDialog} from "./dialogs/confirmDialog";
 import {EditShareNoteDialog, EditShareNoteDialogData} from "./dialogs/editShareNoteDialog";
 import {ShareTradesDialog} from "./dialogs/shareTradesDialog";
 import {PortfolioRowFilter} from "./portfolioRowsTableFilter";
-import {EmptySearchResult} from "./emptySearchResult";
 
 const MainStore = namespace(StoreType.MAIN);
 
 @Component({
     // language=Vue
     template: `
-        <div>
-        <empty-search-result v-if="test === 0" @resetFilter="resetFilter"></empty-search-result>
-        <v-data-table v-else class="data-table" :headers="headers" :items="filteredRows" item-key="stock.id" ref="tableStock"
-                      :search="search" :custom-sort="customSort" :custom-filter="customFilter" :pagination.sync="pagination" expand hide-actions must-sort @update:pagination="onTest">
+        <v-data-table class="data-table" :headers="headers" :items="filteredRows" item-key="stock.id"
+                      :search="search" :custom-sort="customSort" :custom-filter="customFilter" :pagination.sync="pagination" expand hide-actions must-sort>
             <v-progress-linear slot="progress" color="blue" indeterminate></v-progress-linear>
             <template #headerCell="props">
                 <v-tooltip v-if="props.header.tooltip" content-class="custom-tooltip-wrap" bottom>
@@ -201,15 +198,9 @@ const MainStore = namespace(StoreType.MAIN);
                 </table>
             </template>
         </v-data-table>
-        </div>
-    `,
-    components: {EmptySearchResult}
+    `
 })
 export class StockTable extends UI {
-
-    $refs: {
-        tableStock: any
-    };
 
     @Inject
     private tradeService: TradeService;
@@ -261,8 +252,6 @@ export class StockTable extends UI {
         rowsPerPage: -1
     };
 
-    private test: number = 1;
-
     /**
      * Инициализация данных
      * @inheritDoc
@@ -271,10 +260,6 @@ export class StockTable extends UI {
         /** Установка состояния заголовков таблицы */
         this.setHeadersState();
         this.setFilteredRows();
-    }
-
-     mounted(): void {
-        this.onTest();
     }
 
     @Watch("headers")
@@ -302,17 +287,6 @@ export class StockTable extends UI {
 
     setHeadersState(): void {
         this.tableHeadersState = this.tablesService.getHeadersState(this.headers);
-    }
-
-    private onTest(): void {
-        console.log(1);
-        if (this.$refs.tableStock) {
-            this.test = this.$refs.tableStock.searchLength;
-        }
-    }
-
-    private resetFilter(): void {
-        this.$emit("resetFilter");
     }
 
     private async openShareTradesDialog(ticker: string): Promise<void> {
