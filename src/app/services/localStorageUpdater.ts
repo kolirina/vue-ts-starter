@@ -51,9 +51,13 @@ export class LocalStorageUpdater {
      */
     private updateCalendarEventTypes(): void {
         const eventsFromStorage = this.localStorage.get<string[]>("calendarEvents", null);
-        // обновляем старое значение CUSTOM на новое USER
-        if (eventsFromStorage && eventsFromStorage.includes("custom")) {
-            eventsFromStorage.splice(eventsFromStorage.indexOf("custom"), 1);
+        if (eventsFromStorage) {
+            if (eventsFromStorage.includes("custom")) {
+                eventsFromStorage.splice(eventsFromStorage.indexOf("custom"), 1);
+            }
+            if (eventsFromStorage.includes("dividend")) {
+                eventsFromStorage.splice(eventsFromStorage.indexOf("dividend"), 1);
+            }
             this.localStorage.set<string[]>("calendarEvents", eventsFromStorage);
         }
     }
