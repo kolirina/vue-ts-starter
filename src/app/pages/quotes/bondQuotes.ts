@@ -151,7 +151,6 @@ export class BondQuotes extends UI {
 
     async created(): Promise<void> {
         this.filter.showUserShares = this.localStorage.get<boolean>("showUserBonds", false);
-        await this.loadBonds();
     }
 
     private async resetFilter(): Promise<void> {

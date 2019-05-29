@@ -25,11 +25,11 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-data-table class="data-table table-bottom-pagination" :headers="headers" :items="trades" item-key="id" :pagination="tradePagination.pagination"
-                        @update:pagination="onTablePaginationChange"
-                        :total-items="tradePagination.pagination.totalItems" :custom-sort="customSort"
-                        :no-data-text="portfolio.overview.totalTradesCount ? 'Ничего не найдено' : 'Добавьте свою первую сделку и она отобразится здесь'"
-                        :rows-per-page-items="[25, 50, 100, 200]"
-                        expand must-sort>
+                      @update:pagination="onTablePaginationChange"
+                      :total-items="tradePagination.pagination.totalItems" :custom-sort="customSort"
+                      :no-data-text="portfolio.overview.totalTradesCount ? 'Ничего не найдено' : 'Добавьте свою первую сделку и она отобразится здесь'"
+                      :rows-per-page-items="[25, 50, 100, 200]"
+                      expand must-sort>
             <template #items="props">
                 <tr class="selectable" @dblclick="props.expanded = !props.expanded">
                     <td>
@@ -65,9 +65,9 @@ const MainStore = namespace(StoreType.MAIN);
                     <td class="px-0" style="text-align: center" @click.stop>
                         <v-layout align-center justify-center v-if="props.item.parentTradeId">
                             <v-tooltip transition="slide-y-transition"
-                                    content-class="menu-icons" bottom
-                                    class="hint-for-icon-name-section"
-                                    :max-width="300">
+                                       content-class="menu-icons" bottom
+                                       class="hint-for-icon-name-section"
+                                       :max-width="300">
                                 <img src="img/trades/related_deal.svg" slot="activator">
                                 <div class="pa-3">
                                     Это связанная сделка, отредактируйте основную сделку для изменения.

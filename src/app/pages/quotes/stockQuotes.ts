@@ -132,7 +132,6 @@ export class StockQuotes extends UI {
 
     async created(): Promise<void> {
         this.filter.showUserShares = this.localStorage.get<boolean>("showUserStocks", false);
-        await this.loadStocks();
     }
 
     private async resetFilter(): Promise<void> {
