@@ -1,5 +1,5 @@
 import Component from "vue-class-component";
-import {Prop, Watch} from "vue-property-decorator";
+import {Prop} from "vue-property-decorator";
 import {namespace} from "vuex-class";
 import {UI} from "../app/ui";
 import {AssetType} from "../types/assetType";
@@ -7,8 +7,8 @@ import {BigMoney} from "../types/bigMoney";
 import {Operation} from "../types/operation";
 import {PortfolioAssetType} from "../types/portfolioAssetType";
 import {AssetRow, Pagination, Portfolio, TableHeader} from "../types/types";
-import {CommonUtils} from "../utils/commonUtils";
 import {SortUtils} from "../utils/sortUtils";
+import {TradeUtils} from "../utils/tradeUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {AddTradeDialog} from "./dialogs/addTradeDialog";
@@ -38,9 +38,11 @@ const MainStore = namespace(StoreType.MAIN);
                 <tr class="selectable">
                     <td class="text-xs-left">{{ props.item.type | assetDesc }}</td>
                     <td class="text-xs-right ii-number-cell">{{ props.item.currCost | amount(true) }}</td>
-                    <td :class="[( amount(props.item.profit) >= 0 ) ? 'ii--green-markup' : 'ii--red-markup', 'ii-number-cell', 'text-xs-right']">
+                    <td :class="markupClasses(amount(props.item.profit))">
                         {{ props.item.profit | amount(true) }}
                     </td>
+                    <td :class="markupClasses(amount(props.item.dailyPl))">{{ props.item.dailyPl | amount(true) }}</td>
+                    <td :class="markupClasses(Number(props.item.dailyPlPercent))">{{ props.item.dailyPlPercent | number }}</td>
                     <td class="text-xs-right ii-number-cell">{{ props.item.percCurrShare | number }}</td>
                     <td class="justify-center layout px-0" @click.stop>
                         <v-menu transition="slide-y-transition" bottom left>
@@ -104,6 +106,8 @@ export class AssetTable extends UI {
                 "                        ранее сделок (бумага куплена дешевле и продана дороже), выплаченные дивиденды и купоны, " +
                 "                        курсовую прибыль (бумага куплена дешевле и подорожала, но еще не продана)."
         },
+        {text: "Изменение за день", align: "right", value: "dailyPl"},
+        {text: "Изменение за день, %", align: "right", value: "dailyPlPercent"},
         {text: "Текущая доля", align: "right", value: "percCurrShare"},
         {text: "", align: "center", value: "actions", sortable: false, width: "25"}
     ];
@@ -155,5 +159,9 @@ export class AssetTable extends UI {
 
     private customSort(items: AssetRow[], index: string, isDesc: boolean): AssetRow[] {
         return SortUtils.simpleSort(items, index, isDesc);
+    }
+
+    private markupClasses(amount: number): string[] {
+        return TradeUtils.markupClasses(amount);
     }
 }

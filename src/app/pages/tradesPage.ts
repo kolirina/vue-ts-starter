@@ -6,6 +6,7 @@ import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
 import {AdditionalPagination} from "../components/additionalPagination";
 import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog";
+import {EmptyPortfolioStub} from "../components/emptyPortfolioStub";
 import {EmptySearchResult} from "../components/emptySearchResult";
 import {ExpandedPanel} from "../components/expandedPanel";
 import {TradesTable} from "../components/tradesTable";
@@ -30,29 +31,32 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-container v-if="portfolio" fluid class="paddT0">
-            <dashboard :data="portfolio.overview.dashboardData" :side-bar-opened="sideBarOpened" :view-currency="portfolio.portfolioParams.viewCurrency"></dashboard>
+        <v-container v-if="portfolio" fluid class="paddT0 h100pc">
+            <empty-portfolio-stub v-if="isEmptyBlockShowed"></empty-portfolio-stub>
+            <div v-else>
+                <dashboard :data="portfolio.overview.dashboardData" :side-bar-opened="sideBarOpened" :view-currency="portfolio.portfolioParams.viewCurrency"></dashboard>
 
-            <expanded-panel :disabled="true" :withMenu="true" name="trades" :alwaysOpen="true" :value="[true]" class="auto-cursor">
-                <template #header>Сделки</template>
-                <template #list>
-                    <v-list-tile-title @click="openTableSettings(TABLES_NAME.TRADE)">Настроить колонки</v-list-tile-title>
-                    <v-list-tile-title @click="exportTable(ExportType.TRADES)">Экспорт в xlsx</v-list-tile-title>
-                    <v-list-tile-title :disabled="isDownloadNotAllowed()" @click="downloadFile">Экспорт в csv</v-list-tile-title>
-                </template>
-                <v-layout>
-                    <trades-table-filter v-if="tradesFilter" :store-key="StoreKeys.TRADES_FILTER_SETTINGS_KEY" @filter="onFilterChange" :filter="tradesFilter"
-                                         :is-default="isDefaultFilter"></trades-table-filter>
-                    <v-spacer></v-spacer>
-                    <additional-pagination :pagination="tradePagination.pagination" @update:pagination="onTablePaginationChange"></additional-pagination>
-                </v-layout>
-                <empty-search-result v-if="isEmptySearchResult" @resetFilter="resetFilter"></empty-search-result>
-                <trades-table v-else :trades="trades" :trade-pagination="tradePagination"
-                              :headers="getHeaders(TABLES_NAME.TRADE)" @delete="onDelete" @resetFilter="resetFilter" @update:pagination="onTablePaginationChange"></trades-table>
-            </expanded-panel>
+                <expanded-panel :disabled="true" :withMenu="true" name="trades" :alwaysOpen="true" :value="[true]" class="auto-cursor">
+                    <template #header>Сделки</template>
+                    <template #list>
+                        <v-list-tile-title @click="openTableSettings(TABLES_NAME.TRADE)">Настроить колонки</v-list-tile-title>
+                        <v-list-tile-title @click="exportTable(ExportType.TRADES)">Экспорт в xlsx</v-list-tile-title>
+                        <v-list-tile-title :disabled="isDownloadNotAllowed()" @click="downloadFile">Экспорт в csv</v-list-tile-title>
+                    </template>
+                    <v-layout>
+                        <trades-table-filter v-if="tradesFilter" :store-key="StoreKeys.TRADES_FILTER_SETTINGS_KEY" @filter="onFilterChange" :filter="tradesFilter"
+                                            :is-default="isDefaultFilter"></trades-table-filter>
+                        <v-spacer></v-spacer>
+                        <additional-pagination :pagination="tradePagination.pagination" @update:pagination="onTablePaginationChange"></additional-pagination>
+                    </v-layout>
+                    <empty-search-result v-if="isEmptySearchResult" @resetFilter="resetFilter"></empty-search-result>
+                    <trades-table v-else :trades="trades" :trade-pagination="tradePagination"
+                                :headers="getHeaders(TABLES_NAME.TRADE)" @delete="onDelete" @resetFilter="resetFilter" @update:pagination="onTablePaginationChange"></trades-table>
+                </expanded-panel>
+            </div>
         </v-container>
     `,
-    components: {TradesTable, ExpandedPanel, TradesTableFilter, AdditionalPagination, EmptySearchResult}
+    components: {TradesTable, ExpandedPanel, TradesTableFilter, AdditionalPagination, EmptySearchResult, EmptyPortfolioStub}
 })
 export class TradesPage extends UI {
 
@@ -111,6 +115,10 @@ export class TradesPage extends UI {
 
     getHeaders(name: string): TableHeader[] {
         return this.tablesService.getFilterHeaders(name);
+    }
+
+    private get isEmptyBlockShowed(): boolean {
+        return this.portfolio && this.portfolio.overview.stockPortfolio.rows.length === 0 && this.portfolio.overview.bondPortfolio.rows.length === 0;
     }
 
     private async onTablePaginationChange(pagination: Pagination): Promise<void> {
