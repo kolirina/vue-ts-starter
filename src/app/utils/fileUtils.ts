@@ -4,7 +4,7 @@
 export class FileUtils {
 
     /** Допустимые расширения файлов */
-    static readonly ALLOWED_EXTENSION = ["txt", "csv", "xml", "xls", "xlsx", "json", "cpt", "html"];
+    static readonly ALLOWED_EXTENSION = ["txt", "csv", "xml", "xls", "xlsx", "json", "cpt", "html", "htm"];
     /** Допустимые MIME типы */
     static readonly ALLOWED_MIME_TYPES = "text/plain, application/excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel," +
         " application/x-excel, application/x-msexcel, application/xml, text/xml, .csv, .json, .cpt, application/x-cpt, text/html";
