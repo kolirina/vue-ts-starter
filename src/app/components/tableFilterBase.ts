@@ -68,8 +68,12 @@ export class TableFilterBase extends UI {
     private currentTimer: number = null;
 
     created(): void {
-        this.searchQueryMutated = this.searchQuery;
         this.showSearch = !!this.searchQueryMutated;
+    }
+
+    @Watch("searchQuery")
+    private setSearchData(): void {
+        this.searchQueryMutated = this.searchQuery;
     }
 
     private onSearch(value: string): void {
