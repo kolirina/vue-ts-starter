@@ -214,10 +214,6 @@ export class TradesTable extends UI {
         this.trades = trades;
     }
 
-    private async resetFilter(): Promise<void> {
-        this.$emit("resetFilter");
-    }
-
     private onTablePaginationChange(pagination: Pagination): void {
         this.$emit("update:pagination", pagination);
     }

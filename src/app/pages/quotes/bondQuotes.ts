@@ -186,7 +186,7 @@ export class BondQuotes extends UI {
         this.bonds = response.content;
         this.pagination.totalItems = response.totalItems;
         this.pagination.pages = response.pages;
-        this.bonds.length > 0 ? this.isEmptySearchResult = false : this.isEmptySearchResult = true;
+        this.isEmptySearchResult = this.bonds.length === 0;
     }
 
     private async openTradeDialog(bond: Bond, operation: Operation): Promise<void> {

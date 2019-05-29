@@ -165,7 +165,7 @@ export class TradesPage extends UI {
         this.pagination.totalItems = result.totalItems;
         this.pagination.pages = result.pages;
         this.tradePagination.pagination = this.pagination;
-        this.trades.length > 0 ? this.isEmptySearchResult = false : this.isEmptySearchResult = true;
+        this.isEmptySearchResult = this.trades.length === 0;
     }
 
     @ShowProgress

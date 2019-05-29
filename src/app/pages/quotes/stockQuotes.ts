@@ -167,7 +167,7 @@ export class StockQuotes extends UI {
         this.stocks = response.content;
         this.pagination.totalItems = response.totalItems;
         this.pagination.pages = response.pages;
-        this.stocks.length > 0 ? this.isEmptySearchResult = false : this.isEmptySearchResult = true;
+        this.isEmptySearchResult = this.stocks.length === 0;
     }
 
     private async openTradeDialog(stock: Stock, operation: Operation): Promise<void> {
