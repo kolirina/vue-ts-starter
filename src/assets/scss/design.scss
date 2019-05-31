@@ -42,7 +42,9 @@
     &.modal-tooltip {z-index: 205 !important;}
   }
 }
-
+.v-menu__content {
+  z-index: 101 !important;
+}
 .second-value {
   color: $font-color--lite;
 }

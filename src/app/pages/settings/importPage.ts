@@ -200,7 +200,7 @@ const MainStore = namespace(StoreType.MAIN);
 
                     <v-layout align-center class="section-upload-file" wrap pb-3>
                         <div class="margT20">
-                            <v-btn v-if="importProviderFeatures && files.length" color="primary" class="big_btn margT20 mr-3" @click="uploadFile">Загрузить</v-btn>
+                            <v-btn v-if="importProviderFeatures && files.length" color="primary" class="big_btn mr-3" @click="uploadFile">Загрузить</v-btn>
                         </div>
                         <div class="margT20">
                             <file-link @select="onFileAdd" :accept="allowedExtensions"
