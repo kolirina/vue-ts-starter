@@ -73,10 +73,11 @@ const MainStore = namespace(StoreType.MAIN);
                                     <v-btn color="#EBEFF7" @click.stop="openBackupDialog()" :disabled="!clientInfo.user.emailConfirmed || isDownloadNotAllowed()">
                                         Настроить
                                     </v-btn>
-                                    <v-tooltip v-if="!clientInfo.user.emailConfirmed || isDownloadNotAllowed()" content-class="custom-tooltip-wrap" bottom>
-                                        <sup class="custom-tooltip" slot="activator">
-                                            <v-icon>fas fa-info-circle</v-icon>
-                                        </sup>
+                                    <v-menu v-if="!clientInfo.user.emailConfirmed || isDownloadNotAllowed()" open-on-hover bottom nudge-bottom="12"
+                                            content-class="pa-3 bg-white" max-width="400">
+                                        <span slot="activator">
+                                            <sup class="custom-tooltip"></sup>
+                                        </span>
                                         <span v-if="!clientInfo.user.emailConfirmed" class="fs13">
                                             Вам необходимо подтвердить адрес электронной почты чтобы воспользоваться данным функционалом.
                                         </span>
@@ -85,7 +86,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             подписку чтобы иметь возможность экспортировать сделки в csv формат.
                                             Или воспользуйтесь экспортом в xlsx.
                                         </span>
-                                    </v-tooltip>
+                                    </v-menu>
                                 </v-layout>
                             </div>
                         </v-card-text>
