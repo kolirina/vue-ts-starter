@@ -47,10 +47,10 @@ const MainStore = namespace(StoreType.MAIN);
                         <trades-table-filter v-if="tradesFilter" :store-key="StoreKeys.TRADES_FILTER_SETTINGS_KEY" @filter="onFilterChange" :filter="tradesFilter"
                                             :is-default="isDefaultFilter"></trades-table-filter>
                         <v-spacer></v-spacer>
-                        <additional-pagination :pagination="tradePagination.pagination" @update:pagination="onTablePaginationChange"></additional-pagination>
+                        <additional-pagination :pagination="pagination" @update:pagination="onTablePaginationChange"></additional-pagination>
                     </v-layout>
                     <empty-search-result v-if="isEmptySearchResult" @resetFilter="resetFilter"></empty-search-result>
-                    <trades-table v-else :trades="trades" :trade-pagination="tradePagination"
+                    <trades-table v-else :trades="trades" :pagination="pagination"
                                 :headers="getHeaders(TABLES_NAME.TRADE)" @delete="onDelete" @resetFilter="resetFilter" @update:pagination="onTablePaginationChange"></trades-table>
                 </expanded-panel>
             </div>
@@ -88,10 +88,6 @@ export class TradesPage extends UI {
         sortBy: "date",
         totalItems: 0,
         pages: 0
-    };
-
-    private tradePagination: TablePagination = {
-        pagination: this.pagination
     };
 
     private trades: TradeRow[] = [];
@@ -165,14 +161,13 @@ export class TradesPage extends UI {
             this.portfolio.id,
             this.pagination.rowsPerPage * (this.pagination.page - 1),
             this.pagination.rowsPerPage,
-            this.tradePagination.pagination.sortBy,
-            this.tradePagination.pagination.descending,
+            this.pagination.sortBy,
+            this.pagination.descending,
             this.filterService.getTradesFilterRequest(this.tradesFilter)
         );
         this.trades = result.content;
         this.pagination.totalItems = result.totalItems;
         this.pagination.pages = result.pages;
-        this.tradePagination.pagination = this.pagination;
         this.isEmptySearchResult = this.trades.length === 0;
     }
 
