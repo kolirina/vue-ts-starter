@@ -24,9 +24,9 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-data-table class="data-table table-bottom-pagination" :headers="headers" :items="trades" item-key="id" :pagination="tradePagination.pagination"
+        <v-data-table class="data-table table-bottom-pagination" :headers="headers" :items="trades" item-key="id" :pagination="pagination"
                       @update:pagination="onTablePaginationChange"
-                      :total-items="tradePagination.pagination.totalItems" :custom-sort="customSort"
+                      :total-items="pagination.totalItems" :custom-sort="customSort"
                       :no-data-text="portfolio.overview.totalTradesCount ? 'Ничего не найдено' : 'Добавьте свою первую сделку и она отобразится здесь'"
                       :rows-per-page-items="[25, 50, 100, 200]"
                       expand must-sort>
@@ -177,7 +177,7 @@ export class TradesTable extends UI {
     private trades: TradeRow[];
     /** Паджинация таблицы */
     @Prop({required: true, type: Object})
-    private tradePagination: TablePagination;
+    private pagination: Pagination;
     /** Состояние столбцов таблицы */
     private tableHeadersState: TableHeadersState;
     /** Текущая операция */
