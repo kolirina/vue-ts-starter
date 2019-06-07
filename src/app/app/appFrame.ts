@@ -3,7 +3,6 @@ import Component from "vue-class-component";
 import {SnotifyToast} from "vue-snotify";
 import {namespace} from "vuex-class/lib/bindings";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
-import {FeedbackDialog} from "../components/dialogs/feedbackDialog";
 import {NotificationUpdateDialog} from "../components/dialogs/notificationUpdateDialog";
 import {ErrorHandler} from "../components/errorHandler";
 import {FooterContent} from "../components/footerContent";
@@ -119,12 +118,12 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-slide-y-transition>
                     </v-container>
                     <v-footer color="#f7f9fb" class="footer-app">
-                        <footer-content></footer-content>
+                        <footer-content :clientInfo="clientInfo"></footer-content>
                     </v-footer>
                 </v-content>
             </template>
         </v-app>`,
-    components: {PortfolioSwitcher, ErrorHandler, FeedbackDialog, SignIn, FooterContent}
+    components: {PortfolioSwitcher, ErrorHandler, SignIn, FooterContent}
 })
 export class AppFrame extends UI {
 
@@ -274,10 +273,6 @@ export class AppFrame extends UI {
         } else if (dlgReturn === BtnReturn.SHOW_FEEDBACK) {
             await new FeedbackDialog().show(this.clientInfo);
         }
-    }
-
-    private async openFeedBackDialog(): Promise<void> {
-        await new FeedbackDialog().show(this.clientInfo);
     }
 
     /**
