@@ -123,7 +123,7 @@ const MainStore = namespace(StoreType.MAIN);
             </v-layout>
         </v-container>
     `,
-    components:{FooterContent}
+    components: {FooterContent}
 })
 export class SignIn extends UI {
 
