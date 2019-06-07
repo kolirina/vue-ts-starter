@@ -1,6 +1,3 @@
-/**
- * Компонент для inplace-редактирования.
- */
 import Component from "vue-class-component";
 import {Prop} from "vue-property-decorator";
 import * as versionConfig from "../../version.json";

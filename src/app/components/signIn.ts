@@ -1,6 +1,7 @@
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
+import {SignInData} from "../types/types";
 import {StoreType} from "../vuex/storeType";
 import {FooterContent} from "./footerContent";
 
@@ -127,7 +128,7 @@ const MainStore = namespace(StoreType.MAIN);
 })
 export class SignIn extends UI {
 
-    private signInData: any = {
+    private signInData: SignInData = {
         username: null,
         password: null,
         rememberMe: true

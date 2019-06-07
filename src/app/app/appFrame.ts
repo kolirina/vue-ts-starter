@@ -3,6 +3,7 @@ import Component from "vue-class-component";
 import {SnotifyToast} from "vue-snotify";
 import {namespace} from "vuex-class/lib/bindings";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
+import {FeedbackDialog} from "../components/dialogs/feedbackDialog";
 import {NotificationUpdateDialog} from "../components/dialogs/notificationUpdateDialog";
 import {ErrorHandler} from "../components/errorHandler";
 import {FooterContent} from "../components/footerContent";
@@ -13,7 +14,7 @@ import {BtnReturn} from "../platform/dialogs/customDialog";
 import {Storage} from "../platform/services/storage";
 import {ClientInfo, ClientService} from "../services/clientService";
 import {StoreKeys} from "../types/storeKeys";
-import {Portfolio} from "../types/types";
+import {Portfolio, SignInData} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
 import {UiStateHelper} from "../utils/uiStateHelper";
 import {MutationType} from "../vuex/mutationType";
@@ -154,8 +155,6 @@ export class AppFrame extends UI {
 
     private loggedIn = false;
 
-    private errorLoginMsg: string = null;
-
     /* Пользователь уведомлен об обновлениях */
     private isNotifyAccepted = false;
 
@@ -224,7 +223,7 @@ export class AppFrame extends UI {
         }
     }
 
-    private async login(signInData: any): Promise<void> {
+    private async login(signInData: SignInData): Promise<void> {
         this.username = signInData.username;
         this.password = signInData.password;
         if (!this.username || !this.password) {
