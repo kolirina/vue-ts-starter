@@ -258,7 +258,6 @@ export class Http {
         if (response.status === 401) {
             // при неавторизованном обращении отправляем пользователя на форму входа
             this.localStorage.delete(StoreKeys.TOKEN_KEY);
-            window.location.replace("/");
             throw new Error("Доступ запрещен");
         }
         let responseError = null;

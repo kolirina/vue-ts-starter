@@ -33,7 +33,7 @@ const MainStore = namespace(StoreType.MAIN);
                 <sign-in @login="login"></sign-in>
             </template>
 
-            <template v-else>
+            <template v-if="!loading && loggedIn">
                 <v-navigation-drawer disable-resize-watcher fixed stateless app class="sidebar" v-model="drawer" :mini-variant="mini" width="320">
                     <div>
                         <v-layout :class="['pt-3', 'overflow-hidden', mini ? 'column' : '']" align-center>
@@ -230,12 +230,12 @@ export class AppFrame extends UI {
             this.$snotify.warning("Заполните поля");
             return;
         }
-        this.localStorage.set(StoreKeys.REMEMBER_ME_KEY, JSON.stringify(signInData.rememberMe));
+        this.localStorage.set(StoreKeys.REMEMBER_ME_KEY, signInData.rememberMe);
         const clientInfo = await this.clientService.login({username: this.username, password: this.password});
         await this.loadUser(clientInfo);
         await this.setCurrentPortfolio(this.$store.state[StoreType.MAIN].clientInfo.user.currentPortfolioId);
         this.loggedIn = true;
-        window.location.assign("#/portfolio");
+        this.$router.push("portfolio");
     }
 
     private async openDialog(): Promise<void> {
