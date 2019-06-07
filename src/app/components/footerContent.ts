@@ -25,7 +25,6 @@ import {FeedbackDialog} from "./dialogs/feedbackDialog";
 })
 export class FooterContent extends UI {
 
-    /** Максимальный размер введенного значения */
     @Prop({required: false, default: null})
     private clientInfo: ClientInfo;
 
