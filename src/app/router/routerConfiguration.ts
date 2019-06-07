@@ -64,7 +64,6 @@ export class RouterConfiguration {
                 const authorized = !!localStorage.get(StoreKeys.TOKEN_KEY, null);
                 if (!to.meta.public && !authorized) {
                     next(false);
-                    window.location.assign(location.origin + location.pathname);
                     return;
                 }
                 // осуществляем переход по роуту если пользователь залогинен, его тариф не Бесплатный и тариф действущий
