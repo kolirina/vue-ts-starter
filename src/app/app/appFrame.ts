@@ -2,12 +2,13 @@ import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {SnotifyToast} from "vue-snotify";
 import {namespace} from "vuex-class/lib/bindings";
-import * as versionConfig from "../../version.json";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
 import {FeedbackDialog} from "../components/dialogs/feedbackDialog";
 import {NotificationUpdateDialog} from "../components/dialogs/notificationUpdateDialog";
 import {ErrorHandler} from "../components/errorHandler";
+import {FooterContent} from "../components/footerContent";
 import {PortfolioSwitcher} from "../components/portfolioSwitcher";
+import {SignIn} from "../components/signIn";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {BtnReturn} from "../platform/dialogs/customDialog";
 import {Storage} from "../platform/services/storage";
@@ -28,36 +29,11 @@ const MainStore = namespace(StoreType.MAIN);
         <v-app id="inspire" light>
             <vue-snotify></vue-snotify>
             <error-handler></error-handler>
-            <template v-if="!loading && !loggedIn && !externalAuth">
-                <v-content>
-                    <v-container fluid fill-height>
-                        <v-layout align-center justify-center>
-                            <v-flex xs12 sm8 md4>
-                                <v-card class="elevation-12">
-                                    <v-toolbar color="primary">
-                                        <v-toolbar-title>Вход</v-toolbar-title>
-                                        <v-spacer></v-spacer>
-                                    </v-toolbar>
-                                    <v-card-text>
-                                        <v-form>
-                                            <v-text-field prepend-icon="person" name="login" label="Имя пользователя" type="text" required
-                                                          v-model="username"></v-text-field>
-                                            <v-text-field id="password" prepend-icon="lock" name="password" label="Пароль" required type="password"
-                                                          v-model="password" @keydown.enter="login"></v-text-field>
-                                        </v-form>
-                                    </v-card-text>
-                                    <v-card-actions>
-                                        <v-spacer></v-spacer>
-                                        <v-btn color="primary" @click="login">Вход</v-btn>
-                                    </v-card-actions>
-                                </v-card>
-                            </v-flex>
-                        </v-layout>
-                    </v-container>
-                </v-content>
+            <template v-if="!loading && !loggedIn">
+                <sign-in @login="login"></sign-in>
             </template>
 
-            <template v-if="!loading && (loggedIn || externalAuth)">
+            <template v-else>
                 <v-navigation-drawer disable-resize-watcher fixed stateless app class="sidebar" v-model="drawer" :mini-variant="mini" width="320">
                     <div>
                         <v-layout :class="['pt-3', 'overflow-hidden', mini ? 'column' : '']" align-center>
@@ -143,24 +119,12 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-slide-y-transition>
                     </v-container>
                     <v-footer color="#f7f9fb" class="footer-app">
-                        <v-layout class="footer-app-wrap-content" wrap align-center justify-space-between>
-                            <div class="footer-app-wrap-content__text"><i class="far fa-copyright"></i> {{ copyrightInfo }}</div>
-
-                            <div>
-                                <a class="footer-app-wrap-content__text email-btn"
-                                   @click.stop="openFeedBackDialog"><span>Напишите нам</span> <i class="fas fa-envelope"></i>
-                                </a>
-
-                                <a class="footer-app-wrap-content__text decorationNone" href="https://telegram.me/intelinvestSupportBot">
-                                    <span>Telegram</span> <i class="fab fa-telegram"></i>
-                                </a>
-                            </div>
-                        </v-layout>
+                        <footer-content></footer-content>
                     </v-footer>
                 </v-content>
             </template>
         </v-app>`,
-    components: {PortfolioSwitcher, ErrorHandler, FeedbackDialog}
+    components: {PortfolioSwitcher, ErrorHandler, FeedbackDialog, SignIn, FooterContent}
 })
 export class AppFrame extends UI {
 
@@ -189,12 +153,9 @@ export class AppFrame extends UI {
 
     private password: string = null;
 
-    /**
-     * Переменная используется только для удобства локальной разработки при тестировании с отдельным приложением лэндинга
-     * Ддля PRODUCTION режима используется внешняя аутентификация с лэндинга
-     */
-    private externalAuth = true;
     private loggedIn = false;
+
+    private errorLoginMsg: string = null;
 
     /* Пользователь уведомлен об обновлениях */
     private isNotifyAccepted = false;
@@ -237,8 +198,9 @@ export class AppFrame extends UI {
 
     @ShowProgress
     async created(): Promise<void> {
-        // если стор не прогружен, это не публичная зона и это не переход по авторизации, пробуем загрузить информацию о клиенте
-        if (!CommonUtils.exists(this.$store.state[StoreType.MAIN].clientInfo) && this.externalAuth && !this.publicZone) {
+        const authorized = !!this.localStorage.get(StoreKeys.TOKEN_KEY, null);
+        // если есть токен юзера в локал стор и стор пуст и это не публичная зона то пробуем загрузить инфу о клиенте
+        if (authorized && !CommonUtils.exists(this.$store.state[StoreType.MAIN].clientInfo) && !this.publicZone) {
             await this.startup();
         }
         // если удалось восстановить state, значит все уже загружено
@@ -259,18 +221,23 @@ export class AppFrame extends UI {
             await this.setCurrentPortfolio(this.$store.state[StoreType.MAIN].clientInfo.user.currentPortfolioId);
         } finally {
             this.loading = false;
+            this.loggedIn = true;
         }
     }
 
-    private async login(): Promise<void> {
+    private async login(signInData: any): Promise<void> {
+        this.username = signInData.username;
+        this.password = signInData.password;
         if (!this.username || !this.password) {
             this.$snotify.warning("Заполните поля");
             return;
         }
+        this.localStorage.set(StoreKeys.REMEMBER_ME_KEY, JSON.stringify(signInData.rememberMe));
         const clientInfo = await this.clientService.login({username: this.username, password: this.password});
         await this.loadUser(clientInfo);
         await this.setCurrentPortfolio(this.$store.state[StoreType.MAIN].clientInfo.user.currentPortfolioId);
         this.loggedIn = true;
+        window.location.assign("#/portfolio");
     }
 
     private async openDialog(): Promise<void> {
@@ -323,14 +290,6 @@ export class AppFrame extends UI {
     private togglePanel(): void {
         this.mini = !this.mini;
         this.changeSideBarState(this.mini);
-    }
-
-    private get actualYear(): string {
-        return String(new Date().getFullYear());
-    }
-
-    private get copyrightInfo(): string {
-        return `Intelligent Investments 2012-${this.actualYear} версия ${versionConfig.version} сборка ${versionConfig.build} от ${versionConfig.date}`;
     }
 
     private get settingsSelected(): boolean {

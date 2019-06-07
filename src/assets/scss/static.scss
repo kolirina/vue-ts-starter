@@ -55,6 +55,8 @@ input[type="search"] {
 
 // Ширина ==============================================================================================================
 
+.maxW778 {max-width: 778px}
+.maxW275 {max-width: 275px}
 .maxW0 {max-width: 0}
 .w100pc {width: 100%}
 .w33pc {width: 33.3%}
@@ -219,7 +221,22 @@ input[type="search"] {
 
 // Размер текста =======================================================================================================
 
+.fs36 {
+  font-size: 36px;
+  line-height: 58px;
+  letter-spacing: 0.2px;
+  color: $theme-color-dark-blue;
+}
+
 .fs24 {font-size: 24px}
+
+.fs18 {
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 16px;
+  letter-spacing: 0.2px;
+  color: #040427;
+}
 
 .fs16 {
   font-size: 16px;
