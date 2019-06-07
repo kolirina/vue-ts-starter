@@ -117,7 +117,9 @@ export interface BaseClient {
     username: string;
     /** email пользователя */
     email: string;
-    /** Дата; до которой оплачен тариф */
+    /** Дата регистрации */
+    regDate: string;
+    /** Дата до которой оплачен тариф */
     paidTill: string;
     /** Признак подтвержденного email */
     emailConfirmed: string;
