@@ -13,6 +13,12 @@ export type _portfolioRow = {
     assetType: string
 };
 
+export type SignInData = {
+    username: string,
+    password: string,
+    rememberMe: boolean
+};
+
 export type AssetRow = _portfolioRow & {
     type: string
 };
