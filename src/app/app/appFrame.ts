@@ -149,10 +149,6 @@ export class AppFrame extends UI {
     @MainStore.Mutation(MutationType.CHANGE_SIDEBAR_STATE)
     private changeSideBarState: (sideBarState: boolean) => void;
 
-    private username: string = null;
-
-    private password: string = null;
-
     private loggedIn = false;
 
     /* Пользователь уведомлен об обновлениях */
@@ -196,6 +192,7 @@ export class AppFrame extends UI {
 
     @ShowProgress
     async created(): Promise<void> {
+        this.mini = this.localStorage.get(StoreKeys.MENU_STATE_KEY, true);
         const authorized = !!this.localStorage.get(StoreKeys.TOKEN_KEY, null);
         // если есть токен юзера в локал стор и стор пуст и это не публичная зона то пробуем загрузить инфу о клиенте
         if (authorized && !CommonUtils.exists(this.$store.state[StoreType.MAIN].clientInfo) && !this.publicZone) {
@@ -224,17 +221,16 @@ export class AppFrame extends UI {
     }
 
     private async login(signInData: SignInData): Promise<void> {
-        this.username = signInData.username;
-        this.password = signInData.password;
-        if (!this.username || !this.password) {
-            this.$snotify.warning("Заполните поля");
+        if (!signInData.username || !signInData.password) {
+            this.$snotify.warning("Введите логин и пароль");
             return;
         }
         this.localStorage.set(StoreKeys.REMEMBER_ME_KEY, signInData.rememberMe);
-        const clientInfo = await this.clientService.login({username: this.username, password: this.password});
+        const clientInfo = await this.clientService.login({username: signInData.username, password: signInData.password});
         await this.loadUser(clientInfo);
         await this.setCurrentPortfolio(this.$store.state[StoreType.MAIN].clientInfo.user.currentPortfolioId);
         this.loggedIn = true;
+        this.$snotify.clear();
         this.$router.push("portfolio");
     }
 
@@ -284,6 +280,7 @@ export class AppFrame extends UI {
     private togglePanel(): void {
         this.mini = !this.mini;
         this.changeSideBarState(this.mini);
+        this.localStorage.set(StoreKeys.MENU_STATE_KEY, this.mini);
     }
 
     private get settingsSelected(): boolean {
