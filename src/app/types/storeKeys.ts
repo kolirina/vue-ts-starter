@@ -21,4 +21,6 @@ export enum StoreKeys {
     BONDS_TABLE_FILTER_KEY = "bonds_table_filter",
     /** Ключ с датой последнего обновления данных хранящихся в localStorage */
     LOCAL_STORAGE_LAST_UPDATE_DATE_KEY = "local_storage_last_update_date",
+    /** Ключ под которым хранится признак развернутого меню */
+    MENU_STATE_KEY = "MENU_STATE",
 }

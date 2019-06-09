@@ -74,6 +74,6 @@ export class PortfolioPage extends UI {
     }
 
     private get isEmptyBlockShowed(): boolean {
-        return this.portfolio && this.portfolio.overview.stockPortfolio.rows.length === 0 && this.portfolio.overview.bondPortfolio.rows.length === 0;
+        return this.portfolio && this.portfolio.overview.totalTradesCount === 0;
     }
 }

@@ -22,7 +22,7 @@ export class ExportService {
             const link = document.createElement("a");
             link.href = (window.URL || (window as any).webkitURL).createObjectURL(new Blob(binaryData, {type: "application/octet-stream"}));
             link.download = `trades_portfolio_${portfolioId}.csv`;
-            link.click();
+            link.dispatchEvent(new MouseEvent("click", {bubbles: true, cancelable: true, view: window}));
         } else {
             // BLOB FOR EXPLORER 11
             window.navigator.msSaveOrOpenBlob(await response.blob(), `trades_portfolio_${portfolioId}.csv`);
@@ -44,7 +44,7 @@ export class ExportService {
             const link = document.createElement("a");
             link.href = (window.URL || (window as any).webkitURL).createObjectURL(new Blob(binaryData, {type: "application/octet-stream"}));
             link.download = fileName;
-            link.click();
+            link.dispatchEvent(new MouseEvent("click", {bubbles: true, cancelable: true, view: window}));
         } else {
             // BLOB FOR EXPLORER 11
             window.navigator.msSaveOrOpenBlob(response.blob(), fileName);

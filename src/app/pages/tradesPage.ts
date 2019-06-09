@@ -6,6 +6,8 @@ import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
 import {AdditionalPagination} from "../components/additionalPagination";
 import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog";
+import {EmptyPortfolioStub} from "../components/emptyPortfolioStub";
+import {EmptySearchResult} from "../components/emptySearchResult";
 import {ExpandedPanel} from "../components/expandedPanel";
 import {TradesTable} from "../components/tradesTable";
 import {TradesTableFilter} from "../components/tradesTableFilter";
@@ -29,28 +31,32 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-container v-if="portfolio" fluid class="paddT0">
-            <dashboard :data="portfolio.overview.dashboardData" :side-bar-opened="sideBarOpened" :view-currency="portfolio.portfolioParams.viewCurrency"></dashboard>
+        <v-container v-if="portfolio" fluid class="paddT0 h100pc">
+            <empty-portfolio-stub v-if="isEmptyBlockShowed"></empty-portfolio-stub>
+            <div v-else>
+                <dashboard :data="portfolio.overview.dashboardData" :side-bar-opened="sideBarOpened" :view-currency="portfolio.portfolioParams.viewCurrency"></dashboard>
 
-            <expanded-panel :disabled="true" :withMenu="true" name="trades" :alwaysOpen="true" :value="[true]" class="auto-cursor">
-                <template #header>Сделки</template>
-                <template #list>
-                    <v-list-tile-title @click="openTableSettings(TABLES_NAME.TRADE)">Настроить колонки</v-list-tile-title>
-                    <v-list-tile-title @click="exportTable(ExportType.TRADES)">Экспорт в xlsx</v-list-tile-title>
-                    <v-list-tile-title :disabled="isDownloadNotAllowed()" @click="downloadFile">Экспорт в csv</v-list-tile-title>
-                </template>
-                <v-layout>
-                    <trades-table-filter v-if="tradesFilter" :store-key="StoreKeys.TRADES_FILTER_SETTINGS_KEY" @filter="onFilterChange" :filter="tradesFilter"
-                                     :is-default="isDefaultFilter"></trades-table-filter>
-                    <v-spacer></v-spacer>
-                    <additional-pagination :pagination="tradePagination.pagination" @update:pagination="onTablePaginationChange"></additional-pagination>
-                </v-layout>
-                <trades-table v-if="tradePagination" :trades="trades" :trade-pagination="tradePagination"
-                              :headers="getHeaders(TABLES_NAME.TRADE)" @delete="onDelete" @update:pagination="onTablePaginationChange"></trades-table>
-            </expanded-panel>
+                <expanded-panel :disabled="true" :withMenu="true" name="trades" :alwaysOpen="true" :value="[true]" class="auto-cursor">
+                    <template #header>Сделки</template>
+                    <template #list>
+                        <v-list-tile-title @click="openTableSettings(TABLES_NAME.TRADE)">Настроить колонки</v-list-tile-title>
+                        <v-list-tile-title @click="exportTable(ExportType.TRADES)">Экспорт в xlsx</v-list-tile-title>
+                        <v-list-tile-title :disabled="isDownloadNotAllowed()" @click="downloadFile">Экспорт в csv</v-list-tile-title>
+                    </template>
+                    <v-layout>
+                        <trades-table-filter v-if="tradesFilter" :store-key="StoreKeys.TRADES_FILTER_SETTINGS_KEY" @filter="onFilterChange" :filter="tradesFilter"
+                                            :is-default="isDefaultFilter"></trades-table-filter>
+                        <v-spacer></v-spacer>
+                        <additional-pagination :pagination="pagination" @update:pagination="onTablePaginationChange"></additional-pagination>
+                    </v-layout>
+                    <empty-search-result v-if="isEmptySearchResult" @resetFilter="resetFilter"></empty-search-result>
+                    <trades-table v-else :trades="trades" :pagination="pagination"
+                                :headers="getHeaders(TABLES_NAME.TRADE)" @delete="onDelete" @resetFilter="resetFilter" @update:pagination="onTablePaginationChange"></trades-table>
+                </expanded-panel>
+            </div>
         </v-container>
     `,
-    components: {TradesTable, ExpandedPanel, TradesTableFilter, AdditionalPagination}
+    components: {TradesTable, ExpandedPanel, TradesTableFilter, AdditionalPagination, EmptySearchResult, EmptyPortfolioStub}
 })
 export class TradesPage extends UI {
 
@@ -84,15 +90,13 @@ export class TradesPage extends UI {
         pages: 0
     };
 
-    private tradePagination: TablePagination = {
-        pagination: this.pagination
-    };
-
     private trades: TradeRow[] = [];
 
     private tradesFilter: TradesFilter = null;
 
     private headers: TableHeaders = this.tablesService.headers;
+
+    private isEmptySearchResult: boolean = false;
 
     private TABLES_NAME = TABLES_NAME;
     private ExportType = ExportType;
@@ -109,6 +113,10 @@ export class TradesPage extends UI {
         return this.tablesService.getFilterHeaders(name);
     }
 
+    private get isEmptyBlockShowed(): boolean {
+        return this.portfolio && this.portfolio.overview.totalTradesCount === 0;
+    }
+
     private async onTablePaginationChange(pagination: Pagination): Promise<void> {
         this.pagination = pagination;
         await this.loadTrades();
@@ -122,6 +130,11 @@ export class TradesPage extends UI {
             tableName: tableName,
             headers: this.headers[tableName]
         });
+    }
+
+    private async resetFilter(): Promise<void> {
+        this.tradesFilter = this.filterService.getDefaultFilter();
+        await this.onFilterChange();
     }
 
     private async onPageChange(): Promise<void> {
@@ -148,14 +161,14 @@ export class TradesPage extends UI {
             this.portfolio.id,
             this.pagination.rowsPerPage * (this.pagination.page - 1),
             this.pagination.rowsPerPage,
-            this.tradePagination.pagination.sortBy,
-            this.tradePagination.pagination.descending,
+            this.pagination.sortBy,
+            this.pagination.descending,
             this.filterService.getTradesFilterRequest(this.tradesFilter)
         );
         this.trades = result.content;
         this.pagination.totalItems = result.totalItems;
         this.pagination.pages = result.pages;
-        this.tradePagination.pagination = this.pagination;
+        this.isEmptySearchResult = this.trades.length === 0;
     }
 
     @ShowProgress
