@@ -17,6 +17,6 @@ export class LogoutService {
         await this.http.post("/user/logout");
         this.localStorage.delete(StoreKeys.TOKEN_KEY);
         this.localStorage.delete(StoreKeys.BACKEND_VERSION_KEY);
-        window.location.replace("/");
+        window.location.assign(location.origin + location.pathname);
     }
 }
