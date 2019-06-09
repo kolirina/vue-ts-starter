@@ -106,10 +106,12 @@
     .dashboard-wrap {
       position: fixed;
       top: 0;
-      left: 80px;
       width: 100%;
       z-index: 98;
       margin: 0 !important;
+      @media (min-width: 550px){
+        left: 80px;
+      }
 
       &.menu-open {
         left: 320px;

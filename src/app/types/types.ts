@@ -13,6 +13,17 @@ export type _portfolioRow = {
     assetType: string
 };
 
+export type NavBarItem = {
+    title: string,
+    /** routing, для корневых элементов может не заполнен */
+    action?: string,
+    path?: string,
+    icon?: string,
+    active?: boolean,
+    subMenu?: NavBarItem[],
+    params?: { [key: string]: string }
+};
+
 export type AssetRow = _portfolioRow & {
     type: string
 };
