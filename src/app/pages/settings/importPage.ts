@@ -210,9 +210,13 @@ const MainStore = namespace(StoreType.MAIN);
                         <div class="margT20">
                             <file-link @select="onFileAdd" :accept="allowedExtensions" v-if="importProviderFeatures && !files.length">Выбрать файл</file-link>
                         </div>
+                        <v-spacer></v-spacer>
+                        <div @click="showInstruction = !showInstruction" class="btn-show-instruction margT20" v-if="importProviderFeatures">
+                            {{ (showInstruction ? "Скрыть" : "Показать") + " инструкцию" }}
+                        </div>
                     </v-layout>
 
-                    <import-instructions :provider="selectedProvider" @selectProvider="onSelectProvider"></import-instructions>
+                    <import-instructions v-if="showInstruction" :provider="selectedProvider" @selectProvider="onSelectProvider"></import-instructions>
 
                 </v-card-text>
             </v-card>
@@ -248,6 +252,8 @@ export class ImportPage extends UI {
     private showExtendedSettings = false;
     /** Допустимые MIME типы */
     private allowedExtensions = FileUtils.ALLOWED_MIME_TYPES;
+    /** Отображение инструкции к провайдеру */
+    private showInstruction: boolean = true;
 
     /**
      * Инициализирует необходимые для работы данные
@@ -362,6 +368,7 @@ export class ImportPage extends UI {
      */
     private showIntelinvestInctruction(): void {
         this.onSelectProvider(this.providers.INTELINVEST);
+        this.showInstruction = true;
     }
 
     /**
