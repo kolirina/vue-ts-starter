@@ -65,7 +65,7 @@ export class TariffLimitExceedInfo extends UI {
 @Component({
     // language=Vue
     template: `
-        <div class="tariff-agreement">
+        <div>
             <v-checkbox v-model="value" @change="onChange" hide-details>
                 <template #label>
                 <span>
@@ -108,7 +108,7 @@ export class TariffAgreement extends UI {
 @Component({
     // language=Vue
     template: `
-        <td>
+        <v-layout v-if="tariff !== Tariff.TRIAL" align-center column class="tariff-item">
             <div class="tariff__plan_name">{{ tariff.description }}</div>
             <div class="tariff__plan_price-block">
                 <span v-if="tariff !== Tariff.FREE && discountApplied" class="tariff__plan_old-price">{{ noDiscountPrice }}</span>
@@ -140,7 +140,7 @@ export class TariffAgreement extends UI {
             <div v-if="selected" class="tariff__plan_expires">
                 {{ expirationDescription }}
             </div>
-        </td>
+        </v-layout>
     `,
     components: {TariffAgreement, TariffLimitExceedInfo}
 })
@@ -338,104 +338,12 @@ export class PayButton extends UI {
                         <template v-if="clientInfo.user.nextPurchaseDiscountExpired">(срок действия скидки до {{ clientInfo.user.nextPurchaseDiscountExpired | date }})</template>
                     </p>
 
-                    <div class="tariff__plans">
-                        <table>
-                            <tr>
-                                <td class="no-borders"></td>
-                                <td colspan="3">
-                                    Получите бесплатный месяц подписки.
-                                    <a @click="$router.push({name: 'promo-codes'})">Подробнее</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <pay-button @pay="makePayment" :tariff="Tariff.FREE" :client-info="clientInfo" :monthly="monthly"
-                                            :agreement-state="agreementState" :busy-state="busyState" :is-progress="isProgress" :payment-info="paymentInfo"></pay-button>
-                                <pay-button @pay="makePayment" :tariff="Tariff.STANDARD" :client-info="clientInfo" :monthly="monthly"
-                                            :agreement-state="agreementState" :busy-state="busyState" :is-progress="isProgress" :payment-info="paymentInfo"></pay-button>
-                                <pay-button @pay="makePayment" :tariff="Tariff.PRO" :client-info="clientInfo" :monthly="monthly"
-                                            :agreement-state="agreementState" :busy-state="busyState" :is-progress="isProgress" :payment-info="paymentInfo"></pay-button>
-                            </tr>
-                            <tr class="no-borders">
-                                <td class="text-nowrap">Объем портфеля</td>
-                                <td class="fs13">
-                                    <span>7 ценных бумаг<br>1 портфель</span>
-                                </td>
-                                <td class="fs13">
-                                    <span>Неограниченное кол-во бумаг<br/>2 портфеля</span>
-                                </td>
-                                <td class="fs13">
-                                    <span>Неограниченное кол-во бумаг и портфелей</span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-nowrap">Базовый функционал</td>
-                                <td>
-                                    <div class="tariff__plans_check"></div>
-                                </td>
-                                <td>
-                                    <div class="tariff__plans_check"></div>
-                                </td>
-                                <td>
-                                    <div class="tariff__plans_check"></div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-nowrap">Составной портфель</td>
-                                <td></td>
-                                <td>
-                                    <div class="tariff__plans_check"></div>
-                                </td>
-                                <td>
-                                    <div class="tariff__plans_check"></div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-nowrap">Доступ к функционалу "Стандарт"</td>
-                                <td></td>
-                                <td>
-                                    <div class="tariff__plans_check"></div>
-                                </td>
-                                <td>
-                                    <div class="tariff__plans_check"></div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-nowrap">Мобильное приложение</td>
-                                <td></td>
-                                <td>
-                                    <div class="tariff__plans_check"></div>
-                                </td>
-                                <td>
-                                    <div class="tariff__plans_check"></div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-nowrap">Учет зарубежных акций</td>
-                                <td></td>
-                                <td></td>
-                                <td>
-                                    <div class="tariff__plans_check"></div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-nowrap">Учет коротких позиций</td>
-                                <td></td>
-                                <td></td>
-                                <td>
-                                    <div class="tariff__plans_check"></div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-nowrap">Ранний доступ<br>к новому функционалу</td>
-                                <td></td>
-                                <td></td>
-                                <td>
-                                    <div class="tariff__plans_check"></div>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
+                    <v-layout>
+                        <v-layout justify-space-between>
+                            <pay-button v-for="item in Tariff.values()" :key="item.name" @pay="makePayment" :tariff="item" :client-info="clientInfo" :monthly="monthly"
+                                        :agreement-state="agreementState" :busy-state="busyState" :is-progress="isProgress" :payment-info="paymentInfo"></pay-button>
+                        </v-layout>
+                    </v-layout>
                 </div>
             </v-card>
         </v-container>
