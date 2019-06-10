@@ -111,8 +111,9 @@ export class TariffAgreement extends UI {
         <td>
             <div class="tariff__plan_name">{{ tariff.description }}</div>
             <div class="tariff__plan_price-block">
-                <span v-if="tariff !== Tariff.FREE && discountApplied" class="tariff__plan_old-price">{{ noDiscountPriceLabel }}</span>
-                <span class="tariff__plan_price">{{ priceLabel }} <span class="rub"> / </span><span>{{ perPart }}</span></span>
+                <span v-if="tariff !== Tariff.FREE && discountApplied" class="tariff__plan_old-price">{{ noDiscountPrice }}</span>
+                <span class="tariff__plan_price">&nbsp;{{ price }} <span class="rub"> / </span><span>{{ perPart }}<sup v-if="isNewUser">*</sup></span></span>
+                <div v-if="!monthly && isNewUser" class="tariff__plan_year-price">{{ tariff === Tariff.FREE ? "&nbsp;" : "* при оплате за год" }}</div>
             </div>
             <v-tooltip v-if="!available || !payAllowed" content-class="custom-tooltip-wrap" bottom>
                 <v-btn slot="activator" @click.stop="makePayment(tariff)"
@@ -144,6 +145,9 @@ export class TariffAgreement extends UI {
     components: {TariffAgreement, TariffLimitExceedInfo}
 })
 export class PayButton extends UI {
+
+    /** Дата, начиная с которой действуют новые тарифы */
+    private readonly NEW_TARIFFS_DATE = DateUtils.parseDate("2019-06-10");
 
     /** Тариф */
     @Prop({required: true, type: Object})
@@ -219,24 +223,33 @@ export class PayButton extends UI {
         return DateUtils.formatDate(DateUtils.parseDate(this.clientInfo.user.paidTill));
     }
 
-    private get noDiscountPriceLabel(): string {
-        let price;
-        if (this.monthly) {
-            price = this.tariff.monthlyPrice;
-        } else {
-            price = new Decimal(this.tariff.monthlyPrice).mul(new Decimal(12));
-        }
-        return `${price.toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toString()}`;
+    private get noDiscountPrice(): string {
+        return `${this.commonPrice.toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toString()}`;
     }
 
     /**
      * Возвращает цену для тарифа с учетом скидки, если она действует
      * @return цена для тарифа
      */
-    private get priceLabel(): string {
-        const price = this.monthly ? this.tariff.monthlyPrice : this.discountApplied ? this.tariff.yearFullPrice : this.tariff.yearPrice;
+    private get price(): string {
         const nextPurchaseDiscount = this.discountApplied ? this.clientInfo.user.nextPurchaseDiscount : 0;
-        return new Decimal(price).mul(new Decimal(100 - nextPurchaseDiscount)).mul(new Decimal("0.01")).toDecimalPlaces(0, Decimal.ROUND_UP).toString();
+        return this.discountApplied ? this.commonPrice.mul(new Decimal(100 - nextPurchaseDiscount))
+            .mul(new Decimal("0.01")).toDecimalPlaces(0, Decimal.ROUND_UP).toString() : this.commonPrice.toString();
+    }
+
+    /**
+     * Возвращает цену без скидок, с учетом признака нового пользователя
+     */
+    private get commonPrice(): Decimal {
+        return this.monthly ? this.isNewUser ? this.tariff.monthlyPriceNew : this.tariff.monthlyPrice :
+            this.isNewUser ? this.tariff.monthlyPrice : this.tariff.yearFullPrice;
+    }
+
+    /**
+     * Возвращает признак использования новой тарифной сетки для пользователей
+     */
+    private get isNewUser(): boolean {
+        return DateUtils.parseDate(this.clientInfo.user.regDate).isAfter(this.NEW_TARIFFS_DATE);
     }
 
     /**
@@ -252,7 +265,7 @@ export class PayButton extends UI {
     }
 
     private get perPart(): string {
-        return this.monthly ? " мес." : " год";
+        return this.isNewUser ? " мес." : this.monthly ? " мес." : " год";
     }
 
     /**
@@ -295,7 +308,7 @@ export class PayButton extends UI {
                             <div>
                                 <v-radio-group v-model="monthly" class="radio-horizontal">
                                     <v-radio label="На год" :value="false"></v-radio>
-                                    <b>&nbsp;{{discountApplied ? '' : '-20%'}}</b>
+                                    <b>&nbsp;{{discountApplied ? '' : 'выгоднее до 2-х раз'}}</b>
                                     <v-radio label="На месяц" :value="true"></v-radio>
                                 </v-radio-group>
                             </div>
