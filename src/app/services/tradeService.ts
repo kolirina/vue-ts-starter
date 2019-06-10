@@ -1,5 +1,6 @@
 import {Container, Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
+import {Enum, EnumType, IStaticEnum} from "../platform/enum";
 import {Http, UrlParams} from "../platform/services/http";
 import {Storage} from "../platform/services/storage";
 import {AssetType} from "../types/assetType";
@@ -105,6 +106,18 @@ export class TradeService {
             }
         }
         return trade;
+    }
+}
+
+@Enum("code")
+export class TradeType extends (EnumType as IStaticEnum<TradeType>) {
+
+    static readonly STOCK = new TradeType("STOCK", "stock-color");
+    static readonly BOND = new TradeType("BOND", "bond-color");
+    static readonly MONEY = new TradeType("MONEY", "money-color");
+
+    private constructor(public code: string, public description: string) {
+        super();
     }
 }
 

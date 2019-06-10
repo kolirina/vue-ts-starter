@@ -42,7 +42,15 @@
     &.modal-tooltip {z-index: 205 !important;}
   }
 }
-
 .second-value {
   color: $font-color--lite;
+}
+.money-color {
+  border-right: 1px solid #4CAF50;
+}
+.bond-color {
+  border-right: 1px solid #FFEB3B;
+}
+.stock-color {
+  border-right: 1px solid #9C27B0;
 }
