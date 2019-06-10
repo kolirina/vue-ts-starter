@@ -368,7 +368,6 @@ export class ImportPage extends UI {
      */
     private showIntelinvestInctruction(): void {
         this.onSelectProvider(this.providers.INTELINVEST);
-        this.showInstruction = true;
     }
 
     /**
