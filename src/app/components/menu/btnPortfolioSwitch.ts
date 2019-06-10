@@ -10,15 +10,17 @@ import {PortfolioSwitcher} from "../portfolioSwitcher";
     template: `
         <v-layout :class="['pt-3', 'overflow-hidden', mini && !isMobile ? 'column' : '']" align-center>
             <v-layout class="mini-menu-width sidebar-item-action" justify-center>
-                <v-btn @click="togglePanel" v-if="mini" flat icon dark class="small-screen-hide-toogle-menu-btn">
+                <v-btn @click="togglePanel" v-if="mini" flat icon dark>
                     <span class="hamburger-icon"></span>
                 </v-btn>
-                <span v-else class="sidebar-icon sidebar-logo small-screen-hide-toogle-menu-btn"></span>
-                <v-btn @click="togglePanel" flat icon dark class="small-screen-show-toogle-menu-btn">
-                    <span class="hamburger-icon"></span>
-                </v-btn>
+                <span v-else class="sidebar-icon sidebar-logo"></span>
             </v-layout>
             <portfolio-switcher v-if="clientInfo && portfolio" :mini="mini" :isMobile="isMobile"></portfolio-switcher>
+            <v-layout v-if="isMobile" justify-end class="w100pc">
+                <v-btn @click="togglePanel" v-if="!mini && isMobile" flat icon dark class="mobile-menu-close-btn">
+                    <v-icon>close</v-icon>
+                </v-btn>
+            </v-layout>
         </v-layout>
     `,
     components: {PortfolioSwitcher}
