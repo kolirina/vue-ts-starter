@@ -25,7 +25,7 @@ import {PortfolioSwitcher} from "../portfolioSwitcher";
     `,
     components: {PortfolioSwitcher}
 })
-export class BtnPortfolioSwitch extends UI {
+export class MenuHeader extends UI {
 
     @Prop({type: Boolean, required: true})
     private mini: boolean;

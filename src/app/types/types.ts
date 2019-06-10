@@ -22,7 +22,8 @@ export type NavBarItem = {
     active?: boolean,
     subMenu?: NavBarItem[],
     params?: { [key: string]: string }
-}
+};
+
 export type SignInData = {
     username: string,
     password: string,

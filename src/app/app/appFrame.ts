@@ -8,7 +8,7 @@ import {NotificationUpdateDialog} from "../components/dialogs/notificationUpdate
 import {ErrorHandler} from "../components/errorHandler";
 import {FooterContent} from "../components/footerContent";
 import {BottomNavigationBtn} from "../components/menu/bottomNavigationBtn";
-import {BtnPortfolioSwitch} from "../components/menu/btnPortfolioSwitch";
+import {MenuHeader} from "../components/menu/menuHeader";
 import {NavigationList} from "../components/menu/navigationList";
 import {SignIn} from "../components/signIn";
 import {ShowProgress} from "../platform/decorators/showProgress";
@@ -70,7 +70,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-content>
             </template>
         </v-app>`,
-        components: {ErrorHandler, FeedbackDialog, SignIn, FooterContent, BtnPortfolioSwitch, NavigationList, BottomNavigationBtn}
+        components: {ErrorHandler, FeedbackDialog, SignIn, FooterContent, MenuHeader, NavigationList, BottomNavigationBtn}
 })
 export class AppFrame extends UI {
 
