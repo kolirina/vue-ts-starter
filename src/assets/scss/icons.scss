@@ -160,3 +160,8 @@
   @extend .icon;
   background: url('../img/sidebar/case.svg') no-repeat center;
 }
+
+.logo-sign-in {
+  @extend .icon;
+  background: url('../img/common/logo-sign-in.svg') no-repeat center;
+}

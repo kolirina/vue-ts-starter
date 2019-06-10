@@ -47,11 +47,6 @@ export class RouterConfiguration {
 
     /** Экземпляр роутера */
     private static router: VueRouter;
-    /**
-     * Переменная используется только для удобства локальной разработки при тестировании с отдельным приложением лэндинга
-     * Ддля PRODUCTION режима используется внешняя аутентификация с лэндинга
-     */
-    private static externalAuth = true;
 
     /**
      * Возвращает инициализированный экземпляр роутера
@@ -67,9 +62,8 @@ export class RouterConfiguration {
             RouterConfiguration.router.beforeEach(async (to: Route, from: Route, next: Resolver): Promise<void> => {
                 RouterConfiguration.renderMetaTags(to);
                 const authorized = !!localStorage.get(StoreKeys.TOKEN_KEY, null);
-                if (!to.meta.public && !authorized && RouterConfiguration.externalAuth) {
+                if (!to.meta.public && !authorized) {
                     next(false);
-                    window.location.replace("/");
                     return;
                 }
                 // осуществляем переход по роуту если пользователь залогинен, его тариф не Бесплатный и тариф действущий

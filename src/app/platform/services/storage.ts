@@ -1,4 +1,5 @@
 import {Singleton} from "typescript-ioc";
+import {CommonUtils} from "../../utils/commonUtils";
 import {Service} from "../decorators/service";
 
 /**
@@ -26,7 +27,7 @@ export class Storage {
         const storage = this.getStorage(session);
         try {
             const value = JSON.parse(storage[key]) as T;
-            return value ? value : defaultValue;
+            return CommonUtils.exists(value) ? value : defaultValue;
         } catch (e) {
             return defaultValue;
         }
