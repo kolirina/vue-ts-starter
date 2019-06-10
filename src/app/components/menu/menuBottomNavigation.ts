@@ -8,7 +8,7 @@ import {PortfolioSwitcher} from "../portfolioSwitcher";
 @Component({
     // language=Vue
     template: `
-        <v-layout v-if="!publicZone" column>
+        <v-layout column>
             <v-layout class="mini-menu-width" align-center justify-end column>
                 <div>
                     <v-btn flat round icon dark :to="{name: 'portfolio-management'}" title="Управление портфелями"
@@ -27,6 +27,4 @@ import {PortfolioSwitcher} from "../portfolioSwitcher";
     components: {PortfolioSwitcher}
 })
 export class MenuBottomNavigation extends UI {
-    @Prop({required: true})
-    private publicZone: boolean;
 }

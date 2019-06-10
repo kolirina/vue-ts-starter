@@ -48,23 +48,23 @@ const MainStore = namespace(StoreType.MAIN);
                         <navigation-list :mainSection="mainSection" :mini="mini" :settingsSelected="settingsSelected" @openDialog="openDialog"
                                          @goToOldVersion="goToOldVersion"></navigation-list>
                     </div>
-                    <menu-bottom-navigation :publicZone="publicZone"></menu-bottom-navigation>
+                    <menu-bottom-navigation v-if="!publicZone"></menu-bottom-navigation>
                 </v-navigation-drawer>
                 <v-content>
                     <div class="mobile-wrapper-menu">
-                        <menu-header :mini="mini" :portfolio="portfolio" :clientInfo="clientInfo" @togglePanel="togglePanel" :isMobile="true"></menu-header>
+                        <menu-header :mini="mini" :isMobile="true" :portfolio="portfolio" :clientInfo="clientInfo" @togglePanel="togglePanel"></menu-header>
                         <navigation-list :mainSection="mainSection" :mini="mini" :settingsSelected="settingsSelected" @openDialog="openDialog"
                                          @goToOldVersion="goToOldVersion" :class="mini ? 'part-mobile-menu' : ''"></navigation-list>
-                        <menu-bottom-navigation :publicZone="publicZone" :class="mini ? 'part-mobile-menu' : ''"></menu-bottom-navigation>
+                        <menu-bottom-navigation v-if="!publicZone" :class="mini ? 'part-mobile-menu' : ''"></menu-bottom-navigation>
                     </div>
-                    <v-container fluid class="paddT0 fb-0">
+                    <v-container fluid :class="['paddT0', 'fb-0', mini ? '' : 'hide-main-content']">
                         <v-slide-y-transition mode="out-in">
                             <!--<keep-alive :include="cachedPages">-->
                             <router-view></router-view>
                             <!--</keep-alive>-->
                         </v-slide-y-transition>
                     </v-container>
-                    <v-footer color="#f7f9fb" class="footer-app">
+                    <v-footer color="#f7f9fb" :class="['footer-app', mini ? '' : 'hide-main-content']">
                         <footer-content :clientInfo="clientInfo"></footer-content>
                     </v-footer>
                 </v-content>
