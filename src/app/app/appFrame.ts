@@ -39,7 +39,7 @@ const MainStore = namespace(StoreType.MAIN);
             <template v-if="!loading && loggedIn">
                 <v-navigation-drawer disable-resize-watcher fixed stateless app class="sidebar" v-model="drawer" :mini-variant="mini" width="320">
                     <div>
-                        <btn-portfolio-switch :mini="mini" :portfolio="portfolio" :clientInfo="clientInfo" @togglePanel="togglePanel"></btn-portfolio-switch>
+                        <menu-header :mini="mini" :portfolio="portfolio" :clientInfo="clientInfo" @togglePanel="togglePanel"></menu-header>
                         <div v-if="!mini" :class="['wrap-toogle-menu-btn', 'small-screen-hide-toogle-menu-btn']">
                             <v-btn @click="togglePanel" fab dark small depressed color="#F0F3F8" :class="['toogle-menu-btn', publicZone ? 'public-toogle-menu-btn' : '']">
                                 <v-icon dark>keyboard_arrow_left</v-icon>
@@ -52,7 +52,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-navigation-drawer>
                 <v-content>
                     <div class="mobile-wrapper-menu">
-                        <btn-portfolio-switch :mini="mini" :portfolio="portfolio" :clientInfo="clientInfo" @togglePanel="togglePanel" :isMobile="true"></btn-portfolio-switch>
+                        <menu-header :mini="mini" :portfolio="portfolio" :clientInfo="clientInfo" @togglePanel="togglePanel" :isMobile="true"></menu-header>
                         <navigation-list :mainSection="mainSection" :mini="mini" :settingsSelected="settingsSelected" @openDialog="openDialog"
                                          @goToOldVersion="goToOldVersion" :class="mini ? 'part-mobile-menu' : ''"></navigation-list>
                         <bottom-navigation-btn :publicZone="publicZone" :class="mini ? 'part-mobile-menu' : ''"></bottom-navigation-btn>
