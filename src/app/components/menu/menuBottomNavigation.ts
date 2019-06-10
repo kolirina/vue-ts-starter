@@ -26,7 +26,7 @@ import {PortfolioSwitcher} from "../portfolioSwitcher";
     `,
     components: {PortfolioSwitcher}
 })
-export class BottomNavigationBtn extends UI {
+export class MenuBottomNavigation extends UI {
     @Prop({required: true})
     private publicZone: boolean;
 }

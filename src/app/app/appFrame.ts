@@ -7,7 +7,7 @@ import {FeedbackDialog} from "../components/dialogs/feedbackDialog";
 import {NotificationUpdateDialog} from "../components/dialogs/notificationUpdateDialog";
 import {ErrorHandler} from "../components/errorHandler";
 import {FooterContent} from "../components/footerContent";
-import {BottomNavigationBtn} from "../components/menu/bottomNavigationBtn";
+import {MenuBottomNavigation} from "../components/menu/menuBottomNavigation";
 import {MenuHeader} from "../components/menu/menuHeader";
 import {NavigationList} from "../components/menu/navigationList";
 import {SignIn} from "../components/signIn";
@@ -48,14 +48,14 @@ const MainStore = namespace(StoreType.MAIN);
                         <navigation-list :mainSection="mainSection" :mini="mini" :settingsSelected="settingsSelected" @openDialog="openDialog"
                                          @goToOldVersion="goToOldVersion"></navigation-list>
                     </div>
-                    <bottom-navigation-btn :publicZone="publicZone"></bottom-navigation-btn>
+                    <menu-bottom-navigation :publicZone="publicZone"></menu-bottom-navigation>
                 </v-navigation-drawer>
                 <v-content>
                     <div class="mobile-wrapper-menu">
                         <menu-header :mini="mini" :portfolio="portfolio" :clientInfo="clientInfo" @togglePanel="togglePanel" :isMobile="true"></menu-header>
                         <navigation-list :mainSection="mainSection" :mini="mini" :settingsSelected="settingsSelected" @openDialog="openDialog"
                                          @goToOldVersion="goToOldVersion" :class="mini ? 'part-mobile-menu' : ''"></navigation-list>
-                        <bottom-navigation-btn :publicZone="publicZone" :class="mini ? 'part-mobile-menu' : ''"></bottom-navigation-btn>
+                        <menu-bottom-navigation :publicZone="publicZone" :class="mini ? 'part-mobile-menu' : ''"></menu-bottom-navigation>
                     </div>
                     <v-container fluid class="paddT0 fb-0">
                         <v-slide-y-transition mode="out-in">
@@ -70,7 +70,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-content>
             </template>
         </v-app>`,
-        components: {ErrorHandler, FeedbackDialog, SignIn, FooterContent, MenuHeader, NavigationList, BottomNavigationBtn}
+        components: {ErrorHandler, FeedbackDialog, SignIn, FooterContent, MenuHeader, NavigationList, MenuBottomNavigation}
 })
 export class AppFrame extends UI {
 
