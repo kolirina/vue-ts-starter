@@ -81,7 +81,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 <v-checkbox v-model="importProviderFeatures.createLinkedTrade" hide-details class="checkbox-setings">
                                     <template #label>
                                         <span>Добавлять сделки по списанию/зачислению денежных средств
-                                            <v-menu transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12">
+                                            <v-menu content-class="zi-102" transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12">
                                                 <sup class="custom-tooltip" slot="activator">
                                                     <v-icon>fas fa-info-circle</v-icon>
                                                 </sup>
@@ -98,7 +98,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     <template #label>
                                         <span>
                                             Автоматически рассчитывать комиссию для сделок
-                                            <v-menu transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12" max-width="520">
+                                            <v-menu content-class="zi-102" transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12" max-width="520">
                                                 <sup class="custom-tooltip" slot="activator">
                                                     <v-icon>fas fa-info-circle</v-icon>
                                                 </sup>
@@ -117,7 +117,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     <template #label>
                                         <span>
                                             Автоматически исполнять события по бумагам
-                                            <v-menu transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12" max-width="520">
+                                            <v-menu content-class="zi-102" transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12" max-width="520">
                                                 <sup class="custom-tooltip" slot="activator">
                                                     <v-icon>fas fa-info-circle</v-icon>
                                                 </sup>
@@ -136,7 +136,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     <template #label>
                                         <span>
                                             Спрашивать текущий остаток ДС
-                                            <v-menu transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12" max-width="520">
+                                            <v-menu content-class="zi-102" transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12" max-width="520">
                                                 <sup class="custom-tooltip" slot="activator">
                                                     <v-icon>fas fa-info-circle</v-icon>
                                                 </sup>
@@ -154,7 +154,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     <template #label>
                                         <span>
                                             Импорт сделок по денежным средствам
-                                            <v-menu transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12" max-width="520">
+                                            <v-menu content-class="zi-102" transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12" max-width="520">
                                                 <sup class="custom-tooltip" slot="activator">
                                                     <v-icon>fas fa-info-circle</v-icon>
                                                 </sup>
