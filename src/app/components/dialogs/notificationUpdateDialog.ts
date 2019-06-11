@@ -7,7 +7,7 @@ import {UpdateServiceInfo} from "../updateServiceInfo";
     template: `
         <v-dialog v-model="showed" max-width="600px">
             <v-card class="dialog-wrap update-service-dialog">
-                <v-icon class="closeDialog" @click.native="close">close</v-icon>
+                <v-icon class="closeDialog" @click.native="acceptAndClose">close</v-icon>
 
                 <v-card-title class="pb-0">
                     <span class="dialog-header-text pl-3">Обновления сервиса</span>
@@ -31,7 +31,7 @@ import {UpdateServiceInfo} from "../updateServiceInfo";
 })
 export class NotificationUpdateDialog extends CustomDialog<void, BtnReturn> {
 
-    static readonly DATE: string = "2019-05-28";
+    static readonly DATE: string = "2019-06-11";
 
     private acceptAndClose(): void {
         this.close(BtnReturn.YES);
