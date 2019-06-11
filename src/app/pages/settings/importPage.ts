@@ -212,7 +212,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </div>
                         <v-spacer></v-spacer>
                         <div @click="showInstruction = !showInstruction" class="btn-show-instruction margT20" v-if="importProviderFeatures">
-                            {{ "Как сформировать отчет" + (selectedProvider === providers.INTELINVEST ? "" : (" брокера " + selectedProvider.description)) }}?
+                            {{ (showInstruction ? "Скрыть" : "Показать") + " инструкцию" }}
                         </div>
                     </v-layout>
 
@@ -250,10 +250,10 @@ export class ImportPage extends UI {
     private selectedProvider: DealsImportProvider = null;
     /** Признак отображения панели с расширенными настройками */
     private showExtendedSettings = false;
-    /** Отображение инструкции к провайдеру */
-    private showInstruction: boolean = false;
     /** Допустимые MIME типы */
     private allowedExtensions = FileUtils.ALLOWED_MIME_TYPES;
+    /** Отображение инструкции к провайдеру */
+    private showInstruction: boolean = true;
 
     /**
      * Инициализирует необходимые для работы данные
@@ -368,7 +368,6 @@ export class ImportPage extends UI {
      */
     private showIntelinvestInctruction(): void {
         this.onSelectProvider(this.providers.INTELINVEST);
-        this.showInstruction = true;
     }
 
     /**
@@ -376,7 +375,6 @@ export class ImportPage extends UI {
      * @param provider выбранный провайдер
      */
     private onSelectProvider(provider: DealsImportProvider): void {
-        this.showInstruction = false;
         this.selectedProvider = provider;
         this.importProviderFeatures = {...this.importProviderFeaturesByProvider[provider.code]};
         if (this.selectedProvider === this.providers.INTELINVEST) {
