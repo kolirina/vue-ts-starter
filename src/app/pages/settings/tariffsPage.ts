@@ -421,7 +421,7 @@ export class PayButton extends UI {
                         Получите бесплатный месяц подписки.
                         <a @click="$router.push({name: 'promo-codes'})">Подробнее</a>
                     </div>
-                    <p v-if="discountApplied" class="promotion">
+                    <p v-if="discountApplied" class="promotion alignC">
                         Совершите покупку с вашей персональной скидкой <b>{{ clientInfo.user.nextPurchaseDiscount }}%</b>!
                         <template v-if="clientInfo.user.nextPurchaseDiscountExpired">(срок действия скидки до {{ clientInfo.user.nextPurchaseDiscountExpired | date }})</template>
                     </p>
