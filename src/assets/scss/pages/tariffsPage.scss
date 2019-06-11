@@ -122,13 +122,10 @@
       margin: 8px 0 16px;
     }
 
-    &_price-block {
-      margin-bottom: 24px;
-    }
-
     &_price {
       font-size: 20px;
       font-weight: bold;
+      color: #3b6ec9;
 
       span {
         font-size: 14px;
@@ -163,7 +160,7 @@
     font-size: 16px;
     color: #F878A8;
     max-width: 800px;
-    margin: 0 auto 25px auto;
+    margin: 0 auto 70px auto;
     line-height: normal;
   }
 
@@ -244,4 +241,27 @@
   width: 100%;
   background: #F7F9FB;
   border-radius: 8px;
+}
+.pro-tarrif {
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+}
+.tariff-description-wrap {
+  div {
+    border-bottom: 1px solid #E8E9ED;
+    &:last-child {
+      border-bottom: none; 
+    }
+  }
+}
+.tariff-most-popular {
+  margin-top: -42px;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  padding: 12px 0px;
+  color: #3B6EC9;
+  background: #F0F3F8;
+}
+.link-license-agreement {
+  color: #3B6EC9;
 }
