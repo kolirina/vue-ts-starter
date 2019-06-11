@@ -26,7 +26,7 @@ export class ApplicationService {
     private http: Http;
 
     async getBackendVersion(): Promise<AppVersion> {
-        return this.http.get<AppVersion>(`/app/version.json`, null, null, true);
+        return this.http.get<AppVersion>(`/app/version.json?${new Date().getTime()}`, null, null, true);
     }
 }
 
