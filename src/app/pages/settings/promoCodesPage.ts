@@ -74,10 +74,6 @@ const MainStore = namespace(StoreType.MAIN);
                                         <span>Из них хоть раз оплативших:</span>{{ promoCodeStatistics.hasPaymentsReferralCount }}
                                     </div>
                                     <div>
-                                        <span>Всего оплат пользователей:</span>{{ promoCodeStatistics.referralPaymentTotalAmount }}
-                                        <span class="rewards-currency rub"></span>
-                                    </div>
-                                    <div>
                                         <span>Всего заработано:</span>{{ promoCodeStatistics.referrerPaymentsTotal }}
                                         <span class="rewards-currency rub"></span>
                                     </div>
