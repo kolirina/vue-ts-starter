@@ -2,6 +2,7 @@ import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
 import {SignInData} from "../types/types";
+import {CommonUtils} from "../utils/commonUtils";
 import {StoreType} from "../vuex/storeType";
 import {FooterContent} from "./footerContent";
 import {UpdateServiceInfo} from "./updateServiceInfo";
@@ -28,20 +29,20 @@ const MainStore = namespace(StoreType.MAIN);
                                 </div>
                                 <div class="mt-4 maxW275">
                                     <v-text-field
-                                        v-model="signInData.username"
+                                        v-model.trim="signInData.username"
                                         type="text"
                                         :placeholder="'Логин'">
                                     </v-text-field>
                                 </div>
                                 <div class="margT30 maxW275">
                                     <v-text-field
-                                        v-model="signInData.password"
+                                        v-model.trim="signInData.password"
                                         type="password"
                                         :placeholder="'Пароль'">
                                     </v-text-field>
                                 </div>
                                 <div class="margT30 maxW275">
-                                    <v-btn class="btn sign-in-btn" @click="signIn">Войти</v-btn>
+                                    <v-btn :disabled="loginBtnDisabled" class="btn sign-in-btn" @click="signIn">Войти</v-btn>
                                 </div>
                                 <div class="margT30 mb-4">
                                     <v-checkbox v-model="signInData.rememberMe"
@@ -88,8 +89,8 @@ const MainStore = namespace(StoreType.MAIN);
 export class SignIn extends UI {
 
     private signInData: SignInData = {
-        username: null,
-        password: null,
+        username: "",
+        password: "",
         rememberMe: true
     };
 
@@ -97,4 +98,7 @@ export class SignIn extends UI {
         this.$emit("login", this.signInData);
     }
 
+    private get loginBtnDisabled(): boolean {
+        return CommonUtils.isBlank(this.signInData.username) || CommonUtils.isBlank(this.signInData.password);
+    }
 }

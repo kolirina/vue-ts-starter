@@ -82,7 +82,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             Вам необходимо подтвердить адрес электронной почты чтобы воспользоваться данным функционалом.
                                         </span>
                                         <span v-if="isDownloadNotAllowed()" class="fs13">Экспорт сделок в csv-формат недоступен на TRIAL-плане.
-                                            Пожалуйства <a href="/#/settings/tariffs">обновите</a>
+                                            Пожалуйства <a @click="goToTariffs">обновите</a>
                                             подписку чтобы иметь возможность экспортировать сделки в csv формат.
                                             Или воспользуйтесь экспортом в xlsx.
                                         </span>
@@ -127,6 +127,10 @@ export class ExportPage extends UI {
     async mounted(): Promise<void> {
         this.portfolios = this.clientInfo.user.portfolios;
         await this.loadPortfolioBackup();
+    }
+
+    private goToTariffs(): void {
+        this.$router.push("tariffs");
     }
 
     private async loadPortfolioBackup(): Promise<void> {
