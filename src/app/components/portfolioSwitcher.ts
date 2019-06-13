@@ -17,7 +17,7 @@ const MainStore = namespace(StoreType.MAIN);
             <v-list-tile-content class="portfolio-content">
                 <v-menu offset-y transition="slide-y-transition" class="portfolios-drop portfolios-menu">
                     <v-layout slot="activator" class="pa-0 w100pc" justify-center align-center row>
-                        <span :class="['portfolio-switcher-icon', mini ? '' : 'mx-3', isMobile ? 'mr-3' : '']"></span>
+                        <span :class="['portfolio-switcher-icon', mini ? '' : 'mx-3', isMobile ? 'mx-3' : '']"></span>
                         <div v-if="!mini || isMobile" class="portfolios-inner-content">
                             <span class="w140 fs13 ellipsis">{{ selected.name }}</span>
                             <v-layout align-center class="portfolios-list-icons">
