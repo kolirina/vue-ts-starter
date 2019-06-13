@@ -3,7 +3,7 @@ import Decimal from "decimal.js";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
-import {Prop, UI} from "../../app/ui";
+import {Prop, UI, Watch} from "../../app/ui";
 import {ApplyPromoCodeDialog} from "../../components/dialogs/applyPromoCodeDialog";
 import {ConfirmDialog} from "../../components/dialogs/confirmDialog";
 import {ShowProgress} from "../../platform/decorators/showProgress";
@@ -102,7 +102,8 @@ export class TariffAgreement extends UI {
 
     private mutableValue: boolean = false;
 
-    created(): void {
+    @Watch("value")
+    private setMutableValue(): void {
         this.mutableValue = this.value;
     }
 
