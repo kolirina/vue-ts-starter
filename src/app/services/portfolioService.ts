@@ -40,6 +40,14 @@ export class PortfolioService {
     }
 
     /**
+     * Возвращает данные по бэкапу портфеля
+     * @param portfolioId идентификатор пользователя
+     */
+    async getAdvice(portfolioId: string): Promise<PortfolioBackup> {
+        return this.http.get<any>(`/advice/${portfolioId}`);
+    }
+
+    /**
      * Отправляет запрос на создание/обновление данных бэкапа портфеля
      * @param userId идентификатор пользователя
      * @param portfolioBackup идентификатор портфеля
