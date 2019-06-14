@@ -81,7 +81,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 <v-checkbox v-model="importProviderFeatures.createLinkedTrade" hide-details class="checkbox-setings">
                                     <template #label>
                                         <span>Добавлять сделки по списанию/зачислению денежных средств
-                                            <v-menu transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12">
+                                            <v-menu content-class="zi-102" transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12">
                                                 <sup class="custom-tooltip" slot="activator">
                                                     <v-icon>fas fa-info-circle</v-icon>
                                                 </sup>
@@ -98,7 +98,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     <template #label>
                                         <span>
                                             Автоматически рассчитывать комиссию для сделок
-                                            <v-menu transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12" max-width="520">
+                                            <v-menu content-class="zi-102" transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12" max-width="520">
                                                 <sup class="custom-tooltip" slot="activator">
                                                     <v-icon>fas fa-info-circle</v-icon>
                                                 </sup>
@@ -117,7 +117,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     <template #label>
                                         <span>
                                             Автоматически исполнять события по бумагам
-                                            <v-menu transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12" max-width="520">
+                                            <v-menu content-class="zi-102" transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12" max-width="520">
                                                 <sup class="custom-tooltip" slot="activator">
                                                     <v-icon>fas fa-info-circle</v-icon>
                                                 </sup>
@@ -136,7 +136,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     <template #label>
                                         <span>
                                             Спрашивать текущий остаток ДС
-                                            <v-menu transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12" max-width="520">
+                                            <v-menu content-class="zi-102" transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12" max-width="520">
                                                 <sup class="custom-tooltip" slot="activator">
                                                     <v-icon>fas fa-info-circle</v-icon>
                                                 </sup>
@@ -154,7 +154,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     <template #label>
                                         <span>
                                             Импорт сделок по денежным средствам
-                                            <v-menu transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12" max-width="520">
+                                            <v-menu content-class="zi-102" transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12" max-width="520">
                                                 <sup class="custom-tooltip" slot="activator">
                                                     <v-icon>fas fa-info-circle</v-icon>
                                                 </sup>
@@ -212,7 +212,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </div>
                         <v-spacer></v-spacer>
                         <div @click="showInstruction = !showInstruction" class="btn-show-instruction margT20" v-if="importProviderFeatures">
-                            {{ "Как сформировать отчет" + (selectedProvider === providers.INTELINVEST ? "" : (" брокера " + selectedProvider.description)) }}?
+                            {{ (showInstruction ? "Скрыть" : "Показать") + " инструкцию" }}
                         </div>
                     </v-layout>
 
@@ -250,10 +250,10 @@ export class ImportPage extends UI {
     private selectedProvider: DealsImportProvider = null;
     /** Признак отображения панели с расширенными настройками */
     private showExtendedSettings = false;
-    /** Отображение инструкции к провайдеру */
-    private showInstruction: boolean = false;
     /** Допустимые MIME типы */
     private allowedExtensions = FileUtils.ALLOWED_MIME_TYPES;
+    /** Отображение инструкции к провайдеру */
+    private showInstruction: boolean = true;
 
     /**
      * Инициализирует необходимые для работы данные
@@ -368,7 +368,6 @@ export class ImportPage extends UI {
      */
     private showIntelinvestInctruction(): void {
         this.onSelectProvider(this.providers.INTELINVEST);
-        this.showInstruction = true;
     }
 
     /**
@@ -376,7 +375,6 @@ export class ImportPage extends UI {
      * @param provider выбранный провайдер
      */
     private onSelectProvider(provider: DealsImportProvider): void {
-        this.showInstruction = false;
         this.selectedProvider = provider;
         this.importProviderFeatures = {...this.importProviderFeaturesByProvider[provider.code]};
         if (this.selectedProvider === this.providers.INTELINVEST) {

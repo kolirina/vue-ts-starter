@@ -17,8 +17,8 @@ const MainStore = namespace(StoreType.MAIN);
             <v-list-tile-content class="portfolio-content">
                 <v-menu offset-y transition="slide-y-transition" class="portfolios-drop portfolios-menu">
                     <v-layout slot="activator" class="pa-0 w100pc" justify-center align-center row>
-                        <span :class="['portfolio-switcher-icon', mini ? '' : 'mx-3']"></span>
-                        <div v-if="!mini" class="portfolios-inner-content">
+                        <span :class="['portfolio-switcher-icon', mini ? '' : 'mx-3', isMobile ? 'mx-3' : '']"></span>
+                        <div v-if="!mini || isMobile" class="portfolios-inner-content">
                             <span class="w140 fs13 ellipsis">{{ selected.name }}</span>
                             <v-layout align-center class="portfolios-list-icons">
                                 <i :class="selected.viewCurrency.toLowerCase()" title="Валюта"></i>
@@ -26,7 +26,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 <i v-if="selected.professionalMode" class="professional-mode-icon" title="Профессиональный режим"></i>
                             </v-layout>
                         </div>
-                        <div v-if="!mini" class="portfolios-arrow">
+                        <div v-if="!mini || isMobile" class="portfolios-arrow">
                             <v-icon>keyboard_arrow_down</v-icon>
                         </div>
                     </v-layout>
@@ -63,6 +63,9 @@ export class PortfolioSwitcher extends UI {
 
     @Prop({default: false, required: false})
     private mini: boolean;
+
+    @Prop({default: false, required: false})
+    private isMobile: boolean;
 
     private selected: PortfolioParams = null;
 

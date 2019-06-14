@@ -234,7 +234,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </div>
                     </v-layout>
                     <v-sheet>
-                        <v-calendar :now="today" :value="calendarRequestParams.start" color="primary" locale="ru">
+                        <v-calendar :now="today" :value="calendarRequestParams.start" :weekdays="weekdays" color="primary" locale="ru">
                             <template v-slot:day="{ date }">
                                 <div class="wrap-list-events">
                                     <div>
@@ -320,6 +320,8 @@ export class EventsPage extends UI {
     private typeCalendarEvents: string[] = [];
     /** Типы ивентов для использования в шаблоне */
     private calendarEventsTypes = CalendarEventType;
+    /** Порядок дней отображаемых в календаре */
+    private weekdays = [1, 2, 3, 4, 5, 6, 0];
 
     /**
      * Инициализация данных

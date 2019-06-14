@@ -109,7 +109,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                             <v-flex v-if="shareAssetType" xs12 sm6>
                                 <ii-number-field label="Количество" v-model="quantity" @keyup="calculateFee" :hint="lotSizeHint"
                                                  persistent-hint name="quantity" :decimals="0"
-                                                 v-validate="'required|min_value:1'" :error-messages="errors.collect('quantity')" class="required">
+                                                 v-validate="'required|min_value:1'" :error-messages="errors.collect('quantity')" class="required" browser-autocomplete="false">
                                 </ii-number-field>
                             </v-flex>
 
