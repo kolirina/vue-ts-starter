@@ -12,6 +12,8 @@ import {EmptyAdvice} from "./emptyAdvice";
 import {ChooseRisk} from "./chooseRisk";
 import {Preloader} from "./preloader";
 import {Portfolio} from "../../types/types";
+import {RiskType} from "../../types/types";
+import {MutationType} from "../../vuex/mutationType";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -25,7 +27,8 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-card-title>
             </v-card>
             <v-card flat class="pa-0">
-                <choose-risk v-if="!activePreloader && !isAnalys" @analysisPortfolio="analysisPortfolio"></choose-risk>
+                <choose-risk v-if="!activePreloader && !isAnalys" @setRiskLevel="setRiskLevel"
+                             @analysisPortfolio="analysisPortfolio" :currentRiskLevel="currentRiskLevel"></choose-risk>
                 <preloader v-if="activePreloader"></preloader>
                 <analysis-result v-if="!activePreloader && isAnalys" @goToChooseRiskType="goToChooseRiskType"></analysis-result>
                 <!-- <empty-advice></empty-advice> -->
@@ -40,15 +43,20 @@ export class AdviserPage extends UI {
     private clientInfo: ClientInfo;
     @MainStore.Getter
     private portfolio: Portfolio;
+    @MainStore.Action(MutationType.RELOAD_CLIENT_INFO)
+    private reloadUser: () => Promise<void>;
     @Inject
     private portfolioService: PortfolioService;
+
+    private currentRiskLevel: string = null;
 
     private activePreloader: boolean = false;
 
     private isAnalys: boolean = false;
 
     async created(): Promise<void> {
-        // console.log(await this.portfolioService.getAdvice(this.portfolio.id.toString()));
+        this.currentRiskLevel = this.clientInfo.user.riskLevel.toLowerCase() || RiskType.LOWER.code;
+        console.log(await this.portfolioService.getAdvice(this.portfolio.id.toString()));
     }
 
     private async analysisPortfolio(riskType: any): Promise<void> {
@@ -63,6 +71,11 @@ export class AdviserPage extends UI {
             this.activePreloader = false;
             this.isAnalys = false;
         }
+    }
+
+    private async setRiskLevel(riskLevel: string): Promise<void> {
+        await this.portfolioService.setRiskLevel(riskLevel);
+        await this.reloadUser();
     }
 
 }

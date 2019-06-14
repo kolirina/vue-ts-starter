@@ -40,8 +40,16 @@ export class PortfolioService {
     }
 
     /**
-     * Возвращает данные по бэкапу портфеля
-     * @param portfolioId идентификатор пользователя
+     * Возвращает данные по советам
+     * @param test идентификатор портфеля
+     */
+    async setRiskLevel(test: string): Promise<void> {
+        this.http.post(`/user/risk-level`, test.toUpperCase(), null , null, "text/plain");
+    }
+
+    /**
+     * Возвращает данные по советам
+     * @param portfolioId идентификатор портфеля
      */
     async getAdvice(portfolioId: string): Promise<PortfolioBackup> {
         return this.http.get<any>(`/advice/${portfolioId}`);

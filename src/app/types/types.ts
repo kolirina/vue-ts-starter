@@ -559,9 +559,9 @@ export class ForbiddenCode extends (EnumType as IStaticEnum<ForbiddenCode>) {
 @Enum("code")
 export class RiskType extends (EnumType as IStaticEnum<RiskType>) {
 
-    static readonly LOWER = new RiskType("lower", "низкий", "Хочу сохранить накопленный капитал, не готов рисковать более 5-10% портфеля", "lowerRisk.svg");
-    static readonly MIDLE = new RiskType("midle", "средний", "Хочу получить доходность выше депозита, готов к потерям до 10-20%", "midleRisk.svg");
-    static readonly HIGH = new RiskType("high", "высокий", "Хочу получить максимальный доход, готов на значительный риск", "highestRisk.svg");
+    static readonly LOWER = new RiskType("lower", "низкий", "Хочу сохранить накопленный капитал, не готов рисковать более 5-10% портфеля", "./img/adviser/lowerRisk.svg");
+    static readonly MIDLE = new RiskType("middle", "средний", "Хочу получить доходность выше депозита, готов к потерям до 10-20%", "./img/adviser/midleRisk.svg");
+    static readonly HIGH = new RiskType("high", "высокий", "Хочу получить максимальный доход, готов на значительный риск", "./img/adviser/highestRisk.svg");
     private constructor(public code: string, public title: string, public description: string, public imgSrc: string) {
         super();
     }

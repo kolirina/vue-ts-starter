@@ -141,6 +141,8 @@ export interface BaseClient {
     nextPurchaseDiscount: number;
     /** Количество портфелей в профиле пользователя */
     portfoliosCount: number;
+    /** Текущий риск левел */
+    riskLevel: string;
     /** Общее количество ценнных бумаг в составе всех портфелей */
     sharesCount: number;
     /** Присутствуют ли во всех портфелях пользователя сделки по иностранным акциям */
