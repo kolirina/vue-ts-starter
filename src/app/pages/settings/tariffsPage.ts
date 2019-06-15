@@ -242,7 +242,7 @@ export class PayButton extends UI {
      */
     private get commonPrice(): Decimal {
         return this.monthly ? this.isNewUser ? this.tariff.monthlyPriceNew : this.tariff.monthlyPrice :
-            this.isNewUser ? this.tariff.monthlyPrice : this.tariff.yearFullPrice;
+            this.isNewUser ? this.tariff.monthlyPrice : this.tariff.yearPrice;
     }
 
     /**
