@@ -205,7 +205,8 @@ const MainStore = namespace(StoreType.MAIN);
                                 <template v-if="!props.item.bond.isRepaid">НКД {{ props.item.bond.accruedint | amount(true) }}</template>
                                 <br>
                                 Выплаченный НКД {{ props.item.buyNkd | amount }} <span>{{ portfolioCurrency }}</span><br>
-                                Полученный НКД {{ props.item.sellNkd | amount }} <span>{{ portfolioCurrency }}</span>
+                                Полученный НКД {{ props.item.sellNkd | amount }} <span>{{ portfolioCurrency }}</span><br>
+                                Заметка {{ shareNotes[props.item.bond.ticker] }}
                             </div>
                         </td>
                         <td>

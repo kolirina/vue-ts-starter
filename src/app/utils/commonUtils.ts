@@ -59,4 +59,13 @@ export class CommonUtils {
         }
         return uuid;
     }
+
+    /**
+     * Возвращает признак работы на мобильном устройстве
+     */
+    static isMobile(): boolean {
+        const UA = window.navigator.userAgent.toLowerCase();
+        return (UA && UA.indexOf("android") > 0) || (UA && /iphone|ipad|ipod|ios/.test(UA));
+
+    }
 }
