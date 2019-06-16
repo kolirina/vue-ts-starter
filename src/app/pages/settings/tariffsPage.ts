@@ -3,7 +3,7 @@ import Decimal from "decimal.js";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
-import {Prop, UI} from "../../app/ui";
+import {Prop, UI, Watch} from "../../app/ui";
 import {ApplyPromoCodeDialog} from "../../components/dialogs/applyPromoCodeDialog";
 import {ConfirmDialog} from "../../components/dialogs/confirmDialog";
 import {ShowProgress} from "../../platform/decorators/showProgress";
@@ -66,7 +66,7 @@ export class TariffLimitExceedInfo extends UI {
     // language=Vue
     template: `
         <div class="tariff-agreement">
-            <v-checkbox v-model="value" @change="onChange" hide-details>
+            <v-checkbox v-model="mutableValue" @change="onChange" hide-details>
                 <template #label>
                 <span>
                     Согласие с условиями
@@ -100,6 +100,13 @@ export class TariffAgreement extends UI {
     @Prop({required: true, type: Boolean})
     private value = false;
 
+    private mutableValue: boolean = false;
+
+    @Watch("value")
+    private setMutableValue(): void {
+        this.mutableValue = this.value;
+    }
+
     private onChange(newValue: boolean): void {
         this.$emit("agree", newValue);
     }
@@ -130,7 +137,7 @@ export class TariffAgreement extends UI {
                     Для управления подпиской перейдите в Профиль
                 </span>
             </v-tooltip>
-            <v-btn v-else @click="makePayment(tariff)"
+            <v-btn v-else @click.stop="makePayment(tariff)"
                    :class="{'big_btn': true, 'selected': selected && agreementState[tariff.name]}"
                    :disabled="disabled">
                 <span v-if="!busyState[tariff.name]">{{ buttonLabel }}</span>
@@ -211,7 +218,7 @@ export class PayButton extends UI {
         if (this.activeSubscription) {
             return this.selected ? "Продлить" : "Подписаться";
         }
-        return this.tariff === Tariff.FREE ? "Подключен" : "Подписаться";
+        return this.clientInfo.user.tariff === this.tariff ? "Подключен" : "Подписаться";
     }
 
     private get expirationDescription(): string {
