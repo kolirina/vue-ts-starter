@@ -303,7 +303,7 @@ export class PayButton extends UI {
         if (this.activeSubscription) {
             return this.selected ? "Продлить" : "Подписаться";
         }
-        return this.clientInfo.user.tariff === this.tariff ? "Подключен" : "Подписаться";
+        return this.clientInfo.user.tariff === this.tariff ? "Продлить" : "Подписаться";
     }
 
     private get expirationDescription(): string {
@@ -433,7 +433,7 @@ export class PayButton extends UI {
                         <template v-if="clientInfo.user.nextPurchaseDiscountExpired">(срок действия скидки до {{ clientInfo.user.nextPurchaseDiscountExpired | date }})</template>
                     </p>
 
-                    <v-layout>
+                    <v-layout class="wrap-tariffs-sentence">
                         <v-layout justify-space-around wrap>
                             <pay-button v-for="item in Tariff.values()" :key="item.name" @pay="makePayment" :tariff="item" :client-info="clientInfo" :monthly="monthly"
                                         :agreement-state="agreementState" :busy-state="busyState" :is-progress="isProgress" :payment-info="paymentInfo"></pay-button>
