@@ -189,7 +189,7 @@ export class AdviceService {
      * Загружаем данные по советам
      * @param portfolioId идентификатор портфеля
      */
-    async loadAdvices(portfolioId: string): Promise<number[]> {
+    async loadAdvices(portfolioId: string): Promise<AdviceUnicCode[]> {
         return this.http.get(`/advice/${portfolioId}`);
     }
 }

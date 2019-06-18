@@ -5,7 +5,7 @@ import {UI, Watch} from "../../app/ui";
 import {ConfirmDialog} from "../../components/dialogs/confirmDialog";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {AdviceService, AdviceUnicCode} from "../../services/adviceService";
-import {ClientInfo} from "../../services/clientService";
+import {ClientInfo, ClientService} from "../../services/clientService";
 import {Portfolio, RiskType} from "../../types/types";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
@@ -45,6 +45,8 @@ export class AdviserPage extends UI {
     private reloadUser: () => Promise<void>;
     @Inject
     private adviceService: AdviceService;
+    @Inject
+    private clientService: ClientService;
 
     private currentRiskLevel: string = null;
 
@@ -52,7 +54,7 @@ export class AdviserPage extends UI {
 
     private isAnalys: boolean = false;
 
-    private advicesUnicCode: AdviceUnicCode = null;
+    private advicesUnicCode: AdviceUnicCode[] = [];
 
     async created(): Promise<void> {
         this.currentRiskLevel = this.clientInfo.user.riskLevel.toLowerCase() || RiskType.LOWER.code;
@@ -90,6 +92,10 @@ export class AdviserPage extends UI {
 
     private async setRiskLevel(riskLevel: string): Promise<void> {
         await this.adviceService.setRiskLevel(riskLevel.toUpperCase());
-        await this.reloadUser();
+        this.clientService.resetClientInfo();
+        setTimeout(async () => {
+            await this.reloadUser();
+            this.currentRiskLevel = this.clientInfo.user.riskLevel.toLowerCase() || RiskType.LOWER.code;
+        }, 1000);
     }
 }
