@@ -57,7 +57,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <v-layout justify-space-between wrap class="intelinvest-section">
                         <div class="intelinvest-section__description">
                             Если в списке нет вашего брокера или терминала, вы всегда можете осуществить импорт через универсальный формат
-                            <a @click="showIntelinvestInctruction()">CSV</a>
+                            <a @click="showIntelinvestInstruction()">CSV</a>
                             или обратиться к нам через обратную связь, по <a href="mailto:web@intelinvest.ru">почте</a> или
                             в группе <a href="http://vk.com/intelinvest" target="_blank">вконтакте</a>.
                         </div>
@@ -216,6 +216,11 @@ const MainStore = namespace(StoreType.MAIN);
                         </div>
                     </v-layout>
 
+                    <p v-if="portfolio.overview.totalTradesCount" style="text-align: center;padding: 20px;">
+                        <b>
+                            Последняя зарегистрированная сделка в портфеле от {{ portfolio.overview.lastTradeDate | date }}.
+                        </b>
+                    </p>
                     <import-instructions v-if="showInstruction" :provider="selectedProvider" @selectProvider="onSelectProvider"></import-instructions>
 
                 </v-card-text>
@@ -366,7 +371,7 @@ export class ImportPage extends UI {
     /**
      * Показать инструкцию после нажатия на кнопку "CSV"
      */
-    private showIntelinvestInctruction(): void {
+    private showIntelinvestInstruction(): void {
         this.onSelectProvider(this.providers.INTELINVEST);
     }
 
