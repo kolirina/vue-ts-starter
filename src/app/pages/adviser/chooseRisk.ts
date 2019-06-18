@@ -42,7 +42,7 @@ export class ChooseRisk extends UI {
     @Prop({required: true, default: null})
     private currentRiskLevel: string;
 
-    async created(): Promise<void> {
+    created(): void {
         this.mutableCurrentRiskLevel = this.currentRiskLevel;
     }
 

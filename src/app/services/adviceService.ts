@@ -141,14 +141,14 @@ export class AdviceService {
     private http: Http;
 
     getAdvice(adviceUnicCode: AdviceUnicCode): any {
-        const problem = this.getSwitch(adviceUnicCode);
+        const problem = this.getProblem(adviceUnicCode);
         let advice: Advice = null;
         return advice = {
             ...this.GLOBALRISK[adviceUnicCode.code][0], problem
         };
     }
 
-    getSwitch(adviceUnicCode: AdviceUnicCode): any {
+    getProblem(adviceUnicCode: AdviceUnicCode): any {
         switch (adviceUnicCode.code) {
             case AdviceCode.ONLY_ONE_CURRENCY:
                 return `В вашем портфеле всего лишь одна валюта`;

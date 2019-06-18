@@ -4,7 +4,7 @@ import {namespace} from "vuex-class/lib/bindings";
 import {UI, Watch} from "../../app/ui";
 import {ConfirmDialog} from "../../components/dialogs/confirmDialog";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
-import {AdviceService} from "../../services/adviceService";
+import {AdviceService, AdviceUnicCode} from "../../services/adviceService";
 import {ClientInfo} from "../../services/clientService";
 import {Portfolio, RiskType} from "../../types/types";
 import {MutationType} from "../../vuex/mutationType";
@@ -52,7 +52,7 @@ export class AdviserPage extends UI {
 
     private isAnalys: boolean = false;
 
-    private advicesUnicCode: any = null;
+    private advicesUnicCode: AdviceUnicCode = null;
 
     async created(): Promise<void> {
         this.currentRiskLevel = this.clientInfo.user.riskLevel.toLowerCase() || RiskType.LOWER.code;
