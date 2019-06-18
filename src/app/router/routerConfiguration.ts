@@ -116,7 +116,7 @@ export class RouterConfiguration {
                 name: "adviser",
                 path: "/adviser",
                 meta: {
-                    title: "Советчик"
+                    title: "Рекомендации"
                 },
                 component: AdviserPage,
             },

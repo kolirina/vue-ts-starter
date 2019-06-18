@@ -4,13 +4,12 @@ import {UI} from "../../app/ui";
 @Component({
     // language=Vue
     template: `
-        <v-layout>
-            <v-layout>
-                <img src="./img/common/logo-sign-in.svg" alt="pic">
-                <span>
-                    Идет анализ
-                </span>
-            </v-layout>
+        <v-layout align-center justify-center class="py-5">
+            <v-progress-circular
+                :size="50"
+                color="primary"
+                indeterminate
+            ></v-progress-circular>
         </v-layout>
     `
 })

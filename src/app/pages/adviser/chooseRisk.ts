@@ -1,8 +1,8 @@
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {Prop, UI, Watch} from "../../app/ui";
-import {RiskType} from "../../types/types";
 import {PortfolioService} from "../../services/portfolioService";
+import {RiskType} from "../../types/types";
 
 @Component({
     // language=Vue

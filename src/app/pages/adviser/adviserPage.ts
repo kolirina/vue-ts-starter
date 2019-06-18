@@ -1,20 +1,18 @@
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
-import {UI} from "../../app/ui";
+import {UI, Watch} from "../../app/ui";
 import {ConfirmDialog} from "../../components/dialogs/confirmDialog";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
+import {AdviceService} from "../../services/adviceService";
 import {ClientInfo} from "../../services/clientService";
-import {PortfolioService} from "../../services/portfolioService";
+import {Portfolio, RiskType} from "../../types/types";
+import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 import {AnalysisResult} from "./analysisResult";
-import {EmptyAdvice} from "./emptyAdvice";
 import {ChooseRisk} from "./chooseRisk";
+import {EmptyAdvice} from "./emptyAdvice";
 import {Preloader} from "./preloader";
-import {Portfolio} from "../../types/types";
-import {RiskType} from "../../types/types";
-import {MutationType} from "../../vuex/mutationType";
-
 const MainStore = namespace(StoreType.MAIN);
 
 @Component({
@@ -23,22 +21,22 @@ const MainStore = namespace(StoreType.MAIN);
         <v-container>
             <v-card flat class="header-first-card">
                 <v-card-title class="header-first-card__wrapper-title">
-                    <div class="section-title header-first-card__title-text">Советчик</div>
+                    <div class="section-title header-first-card__title-text">Рекомендации</div>
                 </v-card-title>
             </v-card>
             <v-card flat class="pa-0">
                 <choose-risk v-if="!activePreloader && !isAnalys" @setRiskLevel="setRiskLevel"
                              @analysisPortfolio="analysisPortfolio" :currentRiskLevel="currentRiskLevel"></choose-risk>
                 <preloader v-if="activePreloader"></preloader>
-                <analysis-result v-if="!activePreloader && isAnalys" @goToChooseRiskType="goToChooseRiskType"></analysis-result>
-                <!-- <empty-advice></empty-advice> -->
+                <analysis-result v-if="!activePreloader && isAnalys && advicesUnicCode.length !== 0"
+                                 @goToChooseRiskType="goToChooseRiskType" :advicesUnicCode="advicesUnicCode"></analysis-result>
+                <empty-advice v-if="!activePreloader && isAnalys && advicesUnicCode.length === 0"></empty-advice>
             </v-card>
         </v-container>
     `,
     components: {ChooseRisk, Preloader, AnalysisResult, EmptyAdvice}
 })
 export class AdviserPage extends UI {
-
     @MainStore.Getter
     private clientInfo: ClientInfo;
     @MainStore.Getter
@@ -46,7 +44,7 @@ export class AdviserPage extends UI {
     @MainStore.Action(MutationType.RELOAD_CLIENT_INFO)
     private reloadUser: () => Promise<void>;
     @Inject
-    private portfolioService: PortfolioService;
+    private adviceService: AdviceService;
 
     private currentRiskLevel: string = null;
 
@@ -54,15 +52,32 @@ export class AdviserPage extends UI {
 
     private isAnalys: boolean = false;
 
+    private advicesUnicCode: any = null;
+
     async created(): Promise<void> {
         this.currentRiskLevel = this.clientInfo.user.riskLevel.toLowerCase() || RiskType.LOWER.code;
-        console.log(await this.portfolioService.getAdvice(this.portfolio.id.toString()));
     }
 
-    private async analysisPortfolio(riskType: any): Promise<void> {
+    @Watch("portfolio")
+    private onPortfolioChange(): void {
+        if (this.isAnalys) {
+            this.analysisPortfolio();
+        }
+    }
 
+    private async analysisPortfolio(): Promise<void> {
         this.activePreloader = true;
         this.isAnalys = true;
+        const start = new Date().getTime();
+        this.advicesUnicCode = await this.adviceService.loadAdvices(this.portfolio.id.toString());
+        const end = new Date().getTime();
+        if (end - start >= 5000) {
+            this.activePreloader = false;
+        } else {
+            setTimeout(() => {
+                this.activePreloader = false;
+            }, 1000 - (end - start));
+        }
     }
 
     private async goToChooseRiskType(): Promise<void> {
@@ -74,8 +89,7 @@ export class AdviserPage extends UI {
     }
 
     private async setRiskLevel(riskLevel: string): Promise<void> {
-        await this.portfolioService.setRiskLevel(riskLevel);
+        await this.adviceService.setRiskLevel(riskLevel.toUpperCase());
         await this.reloadUser();
     }
-
 }

@@ -1,6 +1,7 @@
 .info-about-portfolio {
-    background: #3B6EC9;
+    border-left: 3px solid #3B6EC9;
     border-radius: 4px 0px 0px 4px;
+    background: #F7F9FB;
 }
 .non-sovet-block {
     max-width: 460px;
@@ -8,5 +9,12 @@
 .choose-risk-wrap {
     .v-input__control {
         width: 100%;
+    }
+}
+.advice-item{
+    background: #F7F9FB;
+    border-radius: 6px;
+    &__header {
+        cursor: pointer;
     }
 }

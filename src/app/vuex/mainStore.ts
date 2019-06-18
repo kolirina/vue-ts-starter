@@ -102,7 +102,6 @@ const Actions = {
     [MutationType.RELOAD_CLIENT_INFO](context: ActionContext<StateHolder, void>): Promise<void> {
         return new Promise<void>((resolve): void => {
             clientService.getClientInfo().then((client: Client) => {
-                console.log(client);
                 context.commit(MutationType.SET_CLIENT, client);
                 resolve();
             });
