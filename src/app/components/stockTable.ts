@@ -178,7 +178,8 @@ const MainStore = namespace(StoreType.MAIN);
                         <td>
                             <div class="ext-info__item">
                                 Курсовая прибыль {{ props.item.rateProfit | amount }} <span>{{ portfolioCurrency }}</span><br>
-                                Курсовая прибыль {{ props.item.rateProfitPercent | number }} <span>%</span>
+                                Курсовая прибыль {{ props.item.rateProfitPercent | number }} <span>%</span><br>
+                                Заметка {{ shareNotes[props.item.stock.ticker] }}
                             </div>
                         </td>
                         <td>

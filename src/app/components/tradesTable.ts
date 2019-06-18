@@ -6,7 +6,7 @@ import {UI} from "../app/ui";
 import {Filters} from "../platform/filters/Filters";
 import {ClientService} from "../services/clientService";
 import {TableHeadersState, TABLES_NAME, TablesService} from "../services/tablesService";
-import {TradeFields} from "../services/tradeService";
+import {TradeFields, TradeType} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
 import {Operation} from "../types/operation";
@@ -32,13 +32,13 @@ const MainStore = namespace(StoreType.MAIN);
                       expand must-sort>
             <template #items="props">
                 <tr class="selectable" @dblclick="props.expanded = !props.expanded">
-                    <td>
+                    <v-layout justify-center align-center :class="['h48', getTradeType(props.item.asset)]">
                         <span @click="props.expanded = !props.expanded" class="data-table-cell" :class="{'data-table-cell-open': props.expanded, 'path': true}"></span>
-                    </td>
+                    </v-layout>
                     <td v-if="tableHeadersState.ticker" class="text-xs-left">
-                        <stock-link v-if="props.item.asset === 'STOCK'" :ticker="props.item.ticker"></stock-link>
-                        <bond-link v-if="props.item.asset === 'BOND'" :ticker="props.item.ticker"></bond-link>
-                        <span v-if="props.item.asset === 'MONEY'">{{ props.item.ticker }}</span>
+                        <stock-link v-if="props.item.asset === tradeType.STOCK.code" :ticker="props.item.ticker"></stock-link>
+                        <bond-link v-if="props.item.asset === tradeType.BOND.code" :ticker="props.item.ticker"></bond-link>
+                        <span v-if="props.item.asset === tradeType.MONEY.code">{{ props.item.ticker }}</span>
                     </td>
                     <td v-if="tableHeadersState.name" class="text-xs-left">{{ props.item.companyName }}</td>
                     <td v-if="tableHeadersState.operationLabel" class="text-xs-left">{{ props.item.operationLabel }}</td>
@@ -188,6 +188,7 @@ export class TradesTable extends UI {
     private AssetType = AssetType;
     /** Признак доступности профессионального режима */
     private portfolioProModeEnabled = false;
+    private tradeType = TradeType;
 
     /**
      * Инициализация данных
@@ -263,6 +264,18 @@ export class TradesTable extends UI {
 
     private async deleteTrade(tradeRow: TradeRow): Promise<void> {
         this.$emit("delete", tradeRow);
+    }
+
+    private getTradeType(tradeType: string): string {
+        switch (tradeType) {
+            case TradeType.STOCK.code:
+                return TradeType.STOCK.description;
+            case TradeType.BOND.code:
+                return TradeType.BOND.description;
+            case TradeType.MONEY.code:
+                return TradeType.MONEY.description;
+        }
+        throw new Error(`Неизвестный тип сделки ${tradeType}`);
     }
 
     private getTradeDate(trade: TradeRow): string {

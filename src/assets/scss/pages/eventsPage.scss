@@ -15,7 +15,7 @@
  */
 
 .info-about-event {
-  padding: 17px 16px 28px !important;
+  padding: 17px !important;
   background: #ffffff;
 }
 
@@ -30,6 +30,11 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      color: #B0B4C2;
+      font-size: 13px;
+      &:last-child {
+        border-right: none;
+      }
     }
   }
   .v-calendar-weekly__week {
@@ -40,7 +45,10 @@
     }
     .v-calendar-weekly__day {
       padding-left: 11px;
-
+      &:last-child {
+        border-right: none;
+        padding-right: 5px;
+      }
       .v-calendar-weekly__day-month {
         text-transform: capitalize;
       }
@@ -56,6 +64,17 @@
         &:not(.v-calendar-weekly__day-label) {
           margin-left: 10px;
         }
+      }
+      .v-calendar-weekly__day-label {
+        &:hover {
+          text-decoration: none;
+          cursor: default;
+        }
+      }
+    }
+    &:last-child {
+      .v-calendar-weekly__day {
+        border-bottom: none;
       }
     }
   }
@@ -227,7 +246,16 @@
         tr {
           th {
             &:first-child {
-              padding-left: 30px;
+              padding-left: 30px !important;
+            }
+          }
+        }
+      }
+      tbody {
+        tr {
+          td {
+            &:first-child {
+              padding-left: 30px !important;
             }
           }
         }

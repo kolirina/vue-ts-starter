@@ -234,30 +234,37 @@ const MainStore = namespace(StoreType.MAIN);
                         </div>
                     </v-layout>
                     <v-sheet>
-                        <v-calendar :now="today" :value="calendarRequestParams.start" color="primary" locale="ru">
+                        <v-calendar :now="today" :value="calendarRequestParams.start" :weekdays="weekdays" color="primary" locale="ru">
                             <template v-slot:day="{ date }">
                                 <div class="wrap-list-events">
                                     <div>
-                                        <div v-for="(event, index) in calendarEvents[date]" :key="index">
+                                        <div v-for="(calendarEvent, index) in calendarEvents[date]" :key="index">
                                             <v-menu max-width="267" right nudge-right="150" content-class="fs13 info-about-event" :close-on-content-click="false">
                                                 <template v-slot:activator="{ on }">
-                                                    <div v-on="on" :class="[event.type.toLowerCase(), 'fs13', 'calendar-events-title', 'pl-2', 'selectable']">
-                                                        {{ event.ticker }} {{ event.description }}
+                                                    <div v-on="on" :class="[calendarEvent.type.toLowerCase(), 'fs13', 'calendar-events-title', 'pl-2', 'selectable']">
+                                                        {{ calendarEvent.ticker }} {{ calendarEvent.description }}
                                                     </div>
                                                 </template>
                                                 <v-card class="selectable" flat>
-                                                    <div v-if="['COUPON', 'AMORTIZATION', 'REPAYMENT'].includes(event.type)">
-                                                            <span>
-                                                                {{ event.description }} по облигации
-                                                                <bond-link :ticker="event.ticker"></bond-link>
-                                                                ({{ event.shortName }}) в размере {{ event.amount }} {{ event.currency | currencySymbolByCurrency}}
-                                                            </span>
+                                                    <div v-if="['COUPON', 'AMORTIZATION', 'REPAYMENT'].includes(calendarEvent.type)">
+                                                        <span>
+                                                            {{ calendarEvent.description }} по облигации
+                                                            <bond-link :ticker="calendarEvent.ticker"></bond-link>
+                                                            ({{ calendarEvent.shortName }})
+                                                            в размере {{ calendarEvent.amount }} {{ calendarEvent.currency | currencySymbolByCurrency}}
+                                                        </span>
+                                                        <div class="margT10">
+                                                            <a @click="openTradeDialogForEvent(calendarEvent.ticker, AssetType.BOND)">Добавить в портфель</a>
+                                                        </div>
                                                     </div>
-                                                    <div v-if="['DIVIDEND_HISTORY', 'DIVIDEND_NEWS'].includes(event.type)">
-                                                        <span v-if="event.type === 'DIVIDEND_HISTORY'">Выплата дивиденда по акции</span>
-                                                        <span v-if="event.type === 'DIVIDEND_NEWS'">Планируемый дивиденд по акции</span>
-                                                        <stock-link :ticker="event.ticker"></stock-link>
-                                                        ({{ event.shortName }}) в размере {{ event.amount }} {{ event.currency | currencySymbolByCurrency}}
+                                                    <div v-if="['DIVIDEND_HISTORY', 'DIVIDEND_NEWS'].includes(calendarEvent.type)">
+                                                        <span v-if="calendarEvent.type === 'DIVIDEND_HISTORY'">Выплата дивиденда по акции</span>
+                                                        <span v-if="calendarEvent.type === 'DIVIDEND_NEWS'">Планируемый дивиденд по акции</span>
+                                                        <stock-link :ticker="calendarEvent.ticker"></stock-link>
+                                                        ({{ calendarEvent.shortName }}) в размере {{ calendarEvent.amount }} {{ calendarEvent.currency | currencySymbolByCurrency}}
+                                                        <div  class="margT10">
+                                                            <a @click="openTradeDialogForEvent(calendarEvent.ticker, AssetType.STOCK)">Добавить в портфель</a>
+                                                        </div>
                                                     </div>
                                                 </v-card>
                                             </v-menu>
@@ -320,6 +327,10 @@ export class EventsPage extends UI {
     private typeCalendarEvents: string[] = [];
     /** Типы ивентов для использования в шаблоне */
     private calendarEventsTypes = CalendarEventType;
+    /** Типы актива для использования в шаблоне */
+    private AssetType = AssetType;
+    /** Порядок дней отображаемых в календаре */
+    private weekdays = [1, 2, 3, 4, 5, 6, 0];
 
     /**
      * Инициализация данных
@@ -446,6 +457,20 @@ export class EventsPage extends UI {
             },
             operation,
             assetType: operation === Operation.DIVIDEND ? AssetType.STOCK : AssetType.BOND
+        });
+        if (result) {
+            // только перезагружаем портфель, вотчер перезагрузит события и дивиденды
+            await this.reloadPortfolio(this.portfolio.id);
+        }
+    }
+
+    private async openTradeDialogForEvent(ticker: string, assetType: AssetType): Promise<void> {
+        const result = await new AddTradeDialog().show({
+            store: this.$store.state[StoreType.MAIN],
+            router: this.$router,
+            ticker: ticker,
+            operation: Operation.BUY,
+            assetType: assetType
         });
         if (result) {
             // только перезагружаем портфель, вотчер перезагрузит события и дивиденды
