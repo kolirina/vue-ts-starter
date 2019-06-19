@@ -34,6 +34,7 @@
     "vue": "^2.6.8",
     "vue-class-component": "^7.0.1",
     "vue-content-loader": "^0.2.1",
+    "vue-cookies": "^1.5.13",
     "vue-property-decorator": "^8.0.0",
     "vue-qriously": "^1.1.1",
     "vue-router": "^3.0.2",
