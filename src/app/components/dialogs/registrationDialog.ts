@@ -14,7 +14,7 @@ import {StoreKeys} from "../../types/storeKeys";
                 <v-text-field
                     v-model.trim="email"
                     type="email"
-                    @keydown.enter="submit"
+                    @keydown.enter="registration"
                     :placeholder="'Эл.почта'">
                 </v-text-field>
                 <div class="alignC mt-4">
