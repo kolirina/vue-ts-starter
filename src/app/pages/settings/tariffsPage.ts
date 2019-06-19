@@ -303,7 +303,7 @@ export class PayButton extends UI {
         if (this.activeSubscription) {
             return this.selected ? "Продлить" : "Подписаться";
         }
-        return this.clientInfo.user.tariff === this.tariff ? "Продлить" : "Подписаться";
+        return "Подписаться";
     }
 
     private get expirationDescription(): string {
