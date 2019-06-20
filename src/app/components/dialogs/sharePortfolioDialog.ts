@@ -72,34 +72,16 @@ import {DateFormat, DateUtils} from "../../utils/dateUtils";
                                             Не задавайте слишком большое время жизни ссылки, отменить ее будет невозможно.
                                         </div>
                                     </div>
-                                    <div v-if="shareOption === dialogTypes.BY_IDENTIFICATION">
-                                        <div>
-                                            Предоставляйте временный доступ к просмотру портфеля конкретному пользователю Intelinvest.
-                                        </div>
-                                            <br>
-                                        <div>
-                                            Для просмотра пользователю будет необходимо авторизоваться в свой аккаунт. По истечению времени ссылка станет неактивна.
-                                        </div>
-                                            <br>
-                                        <div>
-                                            Не задавайте слишком большое время жизни ссылки, отменить ее будет невозможно.
-                                        </div>
-                                    </div>
                                 </div>
                             </v-list>
                         </v-tooltip>
                     </span>
                 </v-card-title>
                 <v-card-text class="paddT0 paddB0">
-
                     <div>
                         <v-layout column class="mt-4">
                             <v-layout align-center class="px-0 py-0" wrap>
-                                <v-flex xs12 sm5 v-if="shareOption === dialogTypes.BY_IDENTIFICATION">
-                                    <v-text-field label="Идентификатор пользователя" v-model="userId"></v-text-field>
-                                </v-flex>
-                                <v-flex v-if="showCalendar" align-center
-                                        :class="['xs11', 'sm5', shareOption === dialogTypes.BY_IDENTIFICATION ? 'margL16' : '']">
+                                <v-flex v-if="showCalendar" align-center class="xs11 sm5">
                                     <v-menu
                                             ref="dateMenu"
                                             :close-on-content-click="false"
@@ -118,13 +100,13 @@ import {DateFormat, DateUtils} from "../../utils/dateUtils";
                                                 append-icon="event"
                                                 readonly></v-text-field>
                                         <v-date-picker v-model="expiredDate" :no-title="true" locale="ru" :first-day-of-week="1"
-                                                    @input="$refs.dateMenu.save(expiredDate)"></v-date-picker>
+                                                       @input="$refs.dateMenu.save(expiredDate)"></v-date-picker>
                                     </v-menu>
                                 </v-flex>
                                 <v-flex v-if="link && showCalendar" sm1 xs1 class="mt-1">
                                     <v-tooltip transition="slide-y-transition"
-                                    open-on-hover content-class="menu-icons" bottom max-width="292"
-                                    nudge-right="120">
+                                               open-on-hover content-class="menu-icons" bottom max-width="292"
+                                               nudge-right="120">
                                         <sup slot="activator">
                                             <div class="repeat-link-btn" @click="generateTokenLink">
                                                 <img src="img/portfolio/link.svg">
@@ -146,28 +128,28 @@ import {DateFormat, DateUtils} from "../../utils/dateUtils";
                                 <div>
                                     <v-flex xs12 class="mb-2">
                                         <v-checkbox v-model="access"
-                                        hide-details class="shrink mr-2 portfolio-default-text"
-                                        label="Публичный доступ к портфелю"></v-checkbox>
+                                                    hide-details class="shrink mr-2 portfolio-default-text"
+                                                    label="Публичный доступ к портфелю"></v-checkbox>
                                     </v-flex>
                                     <v-flex xs12 class="mb-2">
                                         <v-checkbox v-model="divAccess"
-                                        hide-details class="shrink mr-2 mt-0 portfolio-default-text"
-                                        label="Просмотр дивидендов"></v-checkbox>
+                                                    hide-details class="shrink mr-2 mt-0 portfolio-default-text"
+                                                    label="Просмотр дивидендов"></v-checkbox>
                                     </v-flex>
                                     <v-flex xs12 class="mb-2">
                                         <v-checkbox v-model="tradeAccess"
-                                        hide-details class="shrink mr-2 mt-0 portfolio-default-text"
-                                        label="Просмотр сделок"></v-checkbox>
+                                                    hide-details class="shrink mr-2 mt-0 portfolio-default-text"
+                                                    label="Просмотр сделок"></v-checkbox>
                                     </v-flex>
                                     <v-flex xs12 class="mb-2">
                                         <v-checkbox v-model="lineDataAccess"
-                                        hide-details class="shrink mr-2 mt-0 portfolio-default-text"
-                                        label="Просмотр графика"></v-checkbox>
+                                                    hide-details class="shrink mr-2 mt-0 portfolio-default-text"
+                                                    label="Просмотр графика"></v-checkbox>
                                     </v-flex>
                                     <v-flex xs12>
                                         <v-checkbox v-model="dashboardAccess"
-                                        hide-details class="shrink mr-2 mt-0 portfolio-default-text"
-                                        label="Просмотр дашборда"></v-checkbox>
+                                                    hide-details class="shrink mr-2 mt-0 portfolio-default-text"
+                                                    label="Просмотр дашборда"></v-checkbox>
                                     </v-flex>
                                 </div>
                                 <div>
@@ -248,7 +230,6 @@ export class SharePortfolioDialog extends CustomDialog<SharePortfolioDialogData,
     private shareUrlsCache: { [key: string]: string } = {
         [PortfoliosDialogType.DEFAULT_ACCESS.code]: null,
         [PortfoliosDialogType.BY_LINK.code]: null,
-        [PortfoliosDialogType.BY_IDENTIFICATION.code]: null
     };
 
     mounted(): void {
@@ -291,7 +272,8 @@ export class SharePortfolioDialog extends CustomDialog<SharePortfolioDialogData,
         if (this.shareOption === PortfoliosDialogType.DEFAULT_ACCESS) {
             return `${window.location.protocol}//${window.location.host}/public-portfolio/${this.data.portfolio.id}/?ref=${this.data.clientInfo.user.id}`;
         }
-        return this.shareUrlsCache[this.shareOption.code];
+        const link = this.shareUrlsCache[this.shareOption.code];
+        return link ? `${this.shareUrlsCache[this.shareOption.code]}?ref=${this.data.clientInfo.user.id}` : null;
     }
 
     private copyLink(): void {
@@ -300,7 +282,7 @@ export class SharePortfolioDialog extends CustomDialog<SharePortfolioDialogData,
 
     /** Условие для отображения календаря */
     private get showCalendar(): boolean {
-        return [PortfoliosDialogType.BY_LINK, PortfoliosDialogType.BY_IDENTIFICATION].includes(this.shareOption);
+        return PortfoliosDialogType.BY_LINK === this.shareOption;
     }
 
     private selectDialogType(type: PortfoliosDialogType): void {
@@ -313,10 +295,6 @@ export class SharePortfolioDialog extends CustomDialog<SharePortfolioDialogData,
         }
         if (this.expiredDate === null || dayjs().isAfter(DateUtils.parseDate(this.expiredDate))) {
             this.$snotify.warning("Срок действия токена должна быть больше текущей даты");
-            return false;
-        }
-        if (this.shareOption === PortfoliosDialogType.BY_IDENTIFICATION && CommonUtils.isBlank(this.userId)) {
-            this.$snotify.warning("Идентификатор пользователя должен быть заполнен");
             return false;
         }
         return true;
