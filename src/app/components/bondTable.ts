@@ -206,7 +206,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 <br>
                                 Выплаченный НКД {{ props.item.buyNkd | amount }} <span>{{ portfolioCurrency }}</span><br>
                                 Полученный НКД {{ props.item.sellNkd | amount }} <span>{{ portfolioCurrency }}</span><br>
-                                Заметка {{ shareNotes[props.item.bond.ticker] }}
+                                <template v-if="shareNotes">Заметка {{ shareNotes[props.item.bond.ticker] }}</template>
                             </div>
                         </td>
                         <td>
