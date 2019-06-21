@@ -9,7 +9,6 @@ import exporting from "highcharts/modules/exporting";
 import Clipboard from "v-clipboard";
 import VeeValidate, {Validator} from "vee-validate";
 import Vue from "vue";
-import VueCookies from "vue-cookies";
 // import VueGtm from "vue-gtm";
 import VueQriously from "vue-qriously";
 import Snotify, {SnotifyPosition} from "vue-snotify";
@@ -49,7 +48,6 @@ export class UIRegistry {
      */
     static init(): void {
 
-        Vue.use(VueCookies);
         Vue.use(Clipboard);
 
         Vue.use(vuescroll, {

@@ -44,10 +44,10 @@ const MainStore = namespace(StoreType.MAIN);
                                     </v-text-field>
                                 </div>
                                 <div class="margT30">
-                                    <v-btn :disabled="loginBtnDisabled" class="btn sign-in-btn maxW275" @click="signIn">Войти</v-btn>
+                                    <v-btn :disabled="loginBtnDisabled" class="btn sign-btn maxW275" @click="signIn">Войти</v-btn>
                                 </div>
                                 <div class="margT30">
-                                    <v-btn class="btn sign-in-btn maxW275" @click.stop="openRegistrationDialog">Регистрация</v-btn>
+                                    <v-btn class="btn sign-btn maxW275" @click.stop="openRegistrationDialog">Регистрация</v-btn>
                                 </div>
                                 <div class="margT30 mb-4">
                                     <v-checkbox v-model="signInData.rememberMe"

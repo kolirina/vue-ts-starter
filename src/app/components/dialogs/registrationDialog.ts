@@ -6,23 +6,29 @@ import {StoreKeys} from "../../types/storeKeys";
 
 @Component({
     template: `
-        <v-dialog v-model="showed" max-width="420px">
+        <v-dialog v-model="showed" max-width="600px">
             <v-card class="dialog-wrap pa-5">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
-                <div class="fs18 bold alignC mb-4">Регистрация</div>
-                <div v-if="errorMsg" class="mb-4 alignC fs16 error-text">{{ errorMsg }}</div>
-                <v-text-field
-                    v-model.trim="email"
-                    type="email"
-                    @keydown.enter="registration"
-                    :placeholder="'Эл.почта'">
-                </v-text-field>
-                <div class="alignC mt-4">
-                    <v-btn @click="registration" color="primary" large>Зарегистрироваться</v-btn>
-                </div>
-                <div class="fs14 alignC mt-4">
-                    Нажимая кнопку Зарегистрироваться, вы принимаете условия <a href="https://intelinvest.ru/terms-of-use" target="_blank" class="decorationNone">соглашения</a>
-                </div>
+                <v-layout justify-center class="py-5">
+                    <v-layout class="maxW275" column>
+                        <div class="fs18 bold alignC mb-5">Регистрация</div>
+                        <div>
+                            <v-text-field
+                                v-model.trim="email"
+                                type="email"
+                                @keydown.enter="registration"
+                                :placeholder="'Введите Email'">
+                            </v-text-field>
+                        </div>
+                        <div class="fs14 mt-3">
+                            Нажимая кнопку Зарегистрироваться, вы принимаете условия
+                            <a href="https://intelinvest.ru/terms-of-use" target="_blank" class="decorationNone">соглашения</a>
+                        </div>
+                        <div class="alignC mt-3">
+                            <v-btn @click="registration" color="primary sign-btn maxW275">Зарегистрироваться</v-btn>
+                        </div>
+                    </v-layout>
+                </v-layout>
             </v-card>
         </v-dialog>
     `
@@ -31,24 +37,17 @@ export class RegistrationDialog extends CustomDialog<string, BtnReturn> {
     @Inject
     private clientService: ClientService;
     private email: string = "";
-    private errorMsg: string = null;
 
     private async registration(): Promise<void> {
-        this.errorMsg = null;
         if (!this.isEmailValid) {
             return;
         }
-        try {
-            const referrerId = this.$cookies.get("referrer_id");
-            const googleId = this.getGaId();
-            const userInfo = await this.clientService.signUp({email: this.email, referrerId, googleId});
-            localStorage.setItem(StoreKeys.TOKEN_KEY, JSON.stringify(userInfo.token));
-            localStorage.setItem(StoreKeys.REMEMBER_ME_KEY, "true");
-            this.close(BtnReturn.YES);
-        } catch (e) {
-            this.errorMsg = e.message;
-            return;
-        }
+        const referrerId = this.getCookie("referrer_id");
+        const googleId = this.getGaId();
+        const userInfo = await this.clientService.signUp({email: this.email, referrerId, googleId});
+        localStorage.setItem(StoreKeys.TOKEN_KEY, JSON.stringify(userInfo.token));
+        localStorage.setItem(StoreKeys.REMEMBER_ME_KEY, "true");
+        this.close(BtnReturn.YES);
     }
 
     private get isEmailValid(): boolean {
@@ -57,11 +56,18 @@ export class RegistrationDialog extends CustomDialog<string, BtnReturn> {
 
     private getGaId(): string {
         try {
-            const ga: string = this.$cookies.get("_ga");
+            const ga: string = this.getCookie("_ga");
             const array = ga.split(".");
             return array[array.length - 1];
         } catch (e) {
             return null;
         }
+    }
+
+    private getCookie(name: string): string {
+        const matches = document.cookie.match(new RegExp(
+          "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") + "=([^;]*)"
+        ));
+        return matches ? decodeURIComponent(matches[1]) : undefined;
     }
 }
