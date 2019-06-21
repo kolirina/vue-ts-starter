@@ -52,8 +52,8 @@ export class RegistrationDialog extends CustomDialog<string, BtnReturn> {
 
     private get isEmailValid(): boolean {
         // tslint:disable-next-line
-        const res = new RegExp(/^(?=.{1,254}$)(?=.{1,64}@)[-!#$%&'*+/0-9=?A-Z^_`a-z{|}~]+(\.[-!#$%&'*+/0-9=?A-Z^_`a-z{|}~]+)*@[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?(\.[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?)+$/).test(this.email);
-        if (this.email.length > 0 && res) {
+        const isEmailValid = this.email.length > 0 && new RegExp(/^(?=.{1,254}$)(?=.{1,64}@)[-!#$%&'*+/0-9=?A-Z^_`a-z{|}~]+(\.[-!#$%&'*+/0-9=?A-Z^_`a-z{|}~]+)*@[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?(\.[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?)+$/).test(this.email);
+        if (isEmailValid) {
             return true;
         } else {
             this.$snotify.error("Неверный формат Email");
