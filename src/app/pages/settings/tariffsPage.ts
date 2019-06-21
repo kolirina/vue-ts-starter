@@ -230,6 +230,9 @@ export class TariffAgreement extends UI {
                     <div class="py-3 fs14">
                         Дивидендный анализ
                     </div>
+                    <div class="py-3 fs14">
+                        Операции с валютой
+                    </div>
                 </div>
             </v-layout>
         </v-layout>
