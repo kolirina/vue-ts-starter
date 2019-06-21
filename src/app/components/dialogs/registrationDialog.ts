@@ -51,7 +51,14 @@ export class RegistrationDialog extends CustomDialog<string, BtnReturn> {
     }
 
     private get isEmailValid(): boolean {
-        return this.email.length > 0;
+        // tslint:disable-next-line
+        const res = new RegExp(/^(?=.{1,254}$)(?=.{1,64}@)[-!#$%&'*+/0-9=?A-Z^_`a-z{|}~]+(\.[-!#$%&'*+/0-9=?A-Z^_`a-z{|}~]+)*@[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?(\.[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?)+$/).test(this.email);
+        if (this.email.length > 0 && res) {
+            return true;
+        } else {
+            this.$snotify.error("Неверный формат Email");
+            return false;
+        }
     }
 
     private getGaId(): string {
