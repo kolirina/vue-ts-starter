@@ -99,6 +99,8 @@ export class SignIn extends UI {
         rememberMe: true
     };
 
+    private isRegistration: boolean = true;
+
     async signIn(): Promise<void> {
         this.$emit("login", this.signInData);
     }
@@ -106,8 +108,7 @@ export class SignIn extends UI {
     private async openRegistrationDialog(): Promise<void> {
         const result = await new RegistrationDialog().show();
         if (result === BtnReturn.YES) {
-            this.$router.push("/portfolio");
-            this.$emit("registration");
+            this.$emit("registration", this.isRegistration);
         }
     }
 
