@@ -400,7 +400,7 @@ export class PayButton extends UI {
                             <div>
                                 <v-radio-group v-model="monthly" class="radio-horizontal">
                                     <v-radio label="На год" :value="false"></v-radio>
-                                    <b>&nbsp;{{discountApplied ? '' : 'выгоднее до 2-х раз'}}</b>
+                                    &nbsp;
                                     <v-radio label="На месяц" :value="true"></v-radio>
                                 </v-radio-group>
                             </div>
