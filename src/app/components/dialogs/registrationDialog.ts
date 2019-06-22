@@ -37,6 +37,8 @@ export class RegistrationDialog extends CustomDialog<string, BtnReturn> {
     @Inject
     private clientService: ClientService;
     private email: string = "";
+    // tslint:disable-next-line
+    private emailRule = new RegExp(/^(?=.{1,254}$)(?=.{1,64}@)[-!#$%&'*+/0-9=?A-Z^_`a-z{|}~]+(\.[-!#$%&'*+/0-9=?A-Z^_`a-z{|}~]+)*@[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?(\.[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?)+$/);
 
     private async registration(): Promise<void> {
         if (!this.isEmailValid) {
@@ -51,8 +53,7 @@ export class RegistrationDialog extends CustomDialog<string, BtnReturn> {
     }
 
     private get isEmailValid(): boolean {
-        // tslint:disable-next-line
-        const isEmailValid = this.email.length > 0 && new RegExp(/^(?=.{1,254}$)(?=.{1,64}@)[-!#$%&'*+/0-9=?A-Z^_`a-z{|}~]+(\.[-!#$%&'*+/0-9=?A-Z^_`a-z{|}~]+)*@[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?(\.[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?)+$/).test(this.email);
+        const isEmailValid = this.email.length > 0 && this.emailRule.test(this.email);
         if (isEmailValid) {
             return true;
         } else {
