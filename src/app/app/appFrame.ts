@@ -19,6 +19,7 @@ import {StoreKeys} from "../types/storeKeys";
 import {Portfolio, SignInData} from "../types/types";
 import {NavBarItem} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
+import {DateUtils} from "../utils/dateUtils";
 import {UiStateHelper} from "../utils/uiStateHelper";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
@@ -45,16 +46,18 @@ const MainStore = namespace(StoreType.MAIN);
                                 <v-icon dark>keyboard_arrow_left</v-icon>
                             </v-btn>
                         </div>
-                        <navigation-list :mainSection="mainSection" :mini="mini" :settingsSelected="settingsSelected" @openDialog="openDialog"
-                                         @goToOldVersion="goToOldVersion"></navigation-list>
+                        <navigation-list :mainSection="mainSection" :mini="mini" :settingsSelected="settingsSelected"
+                                         :show-link-to-old-version="showLinkToOldVersion"
+                                         @openDialog="openDialog" @goToOldVersion="goToOldVersion"></navigation-list>
                     </div>
                     <menu-bottom-navigation v-if="!publicZone"></menu-bottom-navigation>
                 </v-navigation-drawer>
                 <v-content>
                     <div class="mobile-wrapper-menu">
                         <menu-header :mini="mini" :isMobile="true" :portfolio="portfolio" :clientInfo="clientInfo" @togglePanel="togglePanel"></menu-header>
-                        <navigation-list :mainSection="mainSection" :mini="mini" :settingsSelected="settingsSelected" @openDialog="openDialog"
-                                         @goToOldVersion="goToOldVersion" :class="mini ? 'part-mobile-menu' : ''"></navigation-list>
+                        <navigation-list :mainSection="mainSection" :mini="mini" :settingsSelected="settingsSelected"
+                                         :show-link-to-old-version="showLinkToOldVersion"
+                                         @openDialog="openDialog" @goToOldVersion="goToOldVersion" :class="mini ? 'part-mobile-menu' : ''"></navigation-list>
                         <menu-bottom-navigation v-if="!publicZone" :class="mini ? 'part-mobile-menu' : ''"></menu-bottom-navigation>
                     </div>
                     <v-container fluid :class="['paddT0', 'fb-0', mini ? '' : 'hide-main-content']">
@@ -70,9 +73,12 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-content>
             </template>
         </v-app>`,
-        components: {ErrorHandler, FeedbackDialog, SignIn, FooterContent, MenuHeader, NavigationList, MenuBottomNavigation}
+    components: {ErrorHandler, FeedbackDialog, SignIn, FooterContent, MenuHeader, NavigationList, MenuBottomNavigation}
 })
 export class AppFrame extends UI {
+
+    /** Дата новой версии */
+    private readonly NEW_USERS_DATE = DateUtils.parseDate("2019-05-02");
 
     @Inject
     private localStorage: Storage;
@@ -235,5 +241,9 @@ export class AppFrame extends UI {
 
     private get publicZone(): boolean {
         return this.$route.meta.public;
+    }
+
+    private get showLinkToOldVersion(): boolean {
+        return DateUtils.parseDate(this.clientInfo.user.regDate).isAfter(this.NEW_USERS_DATE);
     }
 }
