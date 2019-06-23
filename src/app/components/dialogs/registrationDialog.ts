@@ -49,6 +49,10 @@ export class RegistrationDialog extends CustomDialog<string, BtnReturn> {
         const userInfo = await this.clientService.signUp({email: this.email, referrerId, googleId});
         localStorage.setItem(StoreKeys.TOKEN_KEY, JSON.stringify(userInfo.token));
         localStorage.setItem(StoreKeys.REMEMBER_ME_KEY, "true");
+        // сообщение не пропадет пока пользователь на него не кликнет
+        this.$snotify.info("Поздавляем! Вы успешно зарегистрированы. Письмо с паролем отправлено вам на почту", {
+            timeout: 0
+        });
         this.close(BtnReturn.YES);
     }
 
@@ -74,7 +78,7 @@ export class RegistrationDialog extends CustomDialog<string, BtnReturn> {
 
     private getCookie(name: string): string {
         const matches = document.cookie.match(new RegExp(
-          "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") + "=([^;]*)"
+            "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") + "=([^;]*)"
         ));
         return matches ? decodeURIComponent(matches[1]) : undefined;
     }
