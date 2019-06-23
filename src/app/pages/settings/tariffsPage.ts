@@ -65,7 +65,7 @@ export class TariffLimitExceedInfo extends UI {
 @Component({
     // language=Vue
     template: `
-        <div class="tariff-agreement">
+        <div class="mt-3 alignC">
             <v-checkbox v-model="mutableValue" @change="onChange" hide-details>
                 <template #label>
                 <span>
@@ -91,7 +91,7 @@ export class TariffLimitExceedInfo extends UI {
                 </span>
                 </template>
             </v-checkbox>
-            <a href="https://intelinvest.ru/terms-of-use" target="_blank">Лицензионное соглашение</a>
+            <a href="https://intelinvest.ru/terms-of-use" target="_blank" class="fs12-non-opacity decorationNone link-license-agreement">Лицензионное соглашение</a>
         </div>
     `
 })
@@ -115,39 +115,127 @@ export class TariffAgreement extends UI {
 @Component({
     // language=Vue
     template: `
-        <td>
-            <div class="tariff__plan_name">{{ tariff.description }}</div>
-            <div class="tariff__plan_price-block">
-                <span v-if="tariff !== Tariff.FREE && discountApplied" class="tariff__plan_old-price">{{ noDiscountPrice }}</span>
-                <span class="tariff__plan_price">&nbsp;{{ price }} <span class="rub"> / </span><span>{{ perPart }}<sup v-if="isNewUser">*</sup></span></span>
-                <div v-if="!monthly && isNewUser" class="tariff__plan_year-price">{{ tariff === Tariff.FREE ? "&nbsp;" : "* при оплате за год" }}</div>
+        <v-layout v-if="tariff !== Tariff.TRIAL" column :class="['tariff-item', 'margB30', tariff === Tariff.PRO ? 'pro-tarrif' : '']">
+            <div v-if="tariff == Tariff.PRO" class="alignC fs13 tariff-most-popular">
+                Выбор 67% инвесторов
             </div>
-            <v-tooltip v-if="!available || !payAllowed" content-class="custom-tooltip-wrap" bottom>
-                <v-btn slot="activator" @click.stop="makePayment(tariff)"
-                       :class="{'big_btn': true, 'selected': selected && agreementState[tariff.name]}"
-                       :disabled="disabled">
+            <v-layout align-center column class="px-4">
+                <div class="fs14 bold margT20">{{ tariff.description }}</div>
+                <div>
+                    <span v-if="tariff !== Tariff.FREE && discountApplied" class="tariff__plan_old-price">{{ noDiscountPrice }}</span>
+                    <span class="tariff__plan_price">&nbsp;{{ price }} <span class="rub"> / </span><span>{{ perPart }}<sup v-if="isNewUser">*</sup></span></span>
+                    <div v-if="!monthly && isNewUser" class="tariff__plan_year-price">{{ tariff === Tariff.FREE ? "&nbsp;" : "* при оплате за год" }}</div>
+                </div>
+                <div>
+                    <div v-if="tariff == Tariff.STANDARD" class="fs13 margB20 mt-2">
+                        <div>
+                            <span class="bold">Неограниченное</span> кол-во бумаг
+                        </div>
+                        <div>
+                            <span class="bold">2</span> портфеля
+                        </div>
+                    </div>
+                    <div v-if="tariff == Tariff.PRO" class="fs13 margB20 mt-2">
+                        <div>
+                            <span class="bold">Неограниченное</span> кол-во бумаг
+                        </div>
+                        <div>
+                            <span class="bold">Неограниченное</span> кол-во портфелей
+                        </div>
+                    </div>
+                    <div v-if="tariff == Tariff.FREE" class="fs13 margB20 mt-2">
+                        <div>
+                            <span class="bold">7</span> ценных бумаг
+                        </div>
+                        <div>
+                            <span class="bold">1</span> портфель
+                        </div>
+                    </div>
+                </div>
+                <v-tooltip v-if="!available || !payAllowed" content-class="custom-tooltip-wrap" bottom>
+                    <v-btn slot="activator" @click.stop="makePayment(tariff)"
+                        :class="{'big_btn': true, 'selected': selected && agreementState[tariff.name]}"
+                        :disabled="disabled">
+                        <span v-if="!busyState[tariff.name]">{{ buttonLabel }}</span>
+                        <v-progress-circular v-if="busyState[tariff.name]" indeterminate color="white" :size="20"></v-progress-circular>
+                    </v-btn>
+                    <tariff-limit-exceed-info v-if="!available" :portfolios-count="clientInfo.user.portfoliosCount" :tariff="tariff"
+                                            :shares-count="clientInfo.user.sharesCount" :foreign-shares="clientInfo.user.foreignShares">
+                    </tariff-limit-exceed-info>
+                    <span v-if="!payAllowed">
+                        У вас уже действует активная подписка<br>
+                        Для управления подпиской перейдите в Профиль
+                    </span>
+                </v-tooltip>
+                <v-btn v-else @click="makePayment(tariff)"
+                    :class="{'big_btn': true, 'selected': selected && agreementState[tariff.name]}"
+                    :disabled="disabled">
                     <span v-if="!busyState[tariff.name]">{{ buttonLabel }}</span>
                     <v-progress-circular v-if="busyState[tariff.name]" indeterminate color="white" :size="20"></v-progress-circular>
                 </v-btn>
-                <tariff-limit-exceed-info v-if="!available" :portfolios-count="clientInfo.user.portfoliosCount" :tariff="tariff"
-                                          :shares-count="clientInfo.user.sharesCount" :foreign-shares="clientInfo.user.foreignShares">
-                </tariff-limit-exceed-info>
-                <span v-if="!payAllowed">
-                    У вас уже действует активная подписка<br>
-                    Для управления подпиской перейдите в Профиль
-                </span>
-            </v-tooltip>
-            <v-btn v-else @click.stop="makePayment(tariff)"
-                   :class="{'big_btn': true, 'selected': selected && agreementState[tariff.name]}"
-                   :disabled="disabled">
-                <span v-if="!busyState[tariff.name]">{{ buttonLabel }}</span>
-                <v-progress-circular v-if="busyState[tariff.name]" indeterminate color="white" :size="20"></v-progress-circular>
-            </v-btn>
-            <tariff-agreement :value="agreementState[tariff.name]" @agree="agreementState[tariff.name] = $event"></tariff-agreement>
-            <div v-if="selected" class="tariff__plan_expires">
-                {{ expirationDescription }}
-            </div>
-        </td>
+                <div v-if="selected" class="tariff__plan_expires">
+                    {{ expirationDescription }}
+                </div>
+                <tariff-agreement :value="agreementState[tariff.name]" @agree="agreementState[tariff.name] = $event"></tariff-agreement>
+                <div v-if="tariff == Tariff.STANDARD" class="tariff-description-wrap">
+                    <div class="py-3 fs14">
+                        Базовый функционал
+                    </div>
+                    <div class="py-3 fs14">
+                        Доступ к разделу “Рекомендации”
+                    </div>
+                    <div class="py-3 fs14">
+                        Формирование составного портфеля из портфелей различных брокеров
+                    </div>
+                    <div class="py-3 fs14">
+                        Мобильное приложение
+                    </div>
+                </div>
+                <div v-if="tariff == Tariff.PRO" class="tariff-description-wrap">
+                    <div class="py-3 fs14">
+                        Функционал тарифа Стандарт
+                    </div>
+                    <div class="py-3 fs14">
+                        Учет зарубежных акций, валютных активов и коротких позиций
+                    </div>
+                    <div class="py-3 fs14">
+                        VIP поддержка в закрытом чате в Telegram
+                    </div>
+                    <div class="py-3 fs14">
+                        Приоритетный доступ к функционалу, который будет добавляться в сервис в будущем
+                    </div>
+                    <div class="py-3 fs14">
+                        Льготные условия на обучение инвестированию у наших школ-партнеров
+                    </div>
+                </div>
+                <div v-if="tariff == Tariff.FREE" class="tariff-description-wrap">
+                    <div class="py-3 fs14">
+                        Импорт и экспорт сделок
+                    </div>
+                    <div class="py-3 fs14">
+                        Полная аналитика портфеля
+                    </div>
+                    <div class="py-3 fs14">
+                        Учет дивидендов, купонов, комиссий и амортизации
+                    </div>
+                    <div class="py-3 fs14">
+                        Котировки и актуальная информация о эмитенте
+                    </div>
+                    <div class="py-3 fs14">
+                        Уведомления о ценах акций и облигаций
+                    </div>
+                    <div class="py-3 fs14">
+                        Возможность публичного доступа к портфелю
+                    </div>
+                    <div class="py-3 fs14">
+                        Дивидендный анализ
+                    </div>
+                    <div class="py-3 fs14">
+                        Операции с валютой
+                    </div>
+                </div>
+            </v-layout>
+        </v-layout>
     `,
     components: {TariffAgreement, TariffLimitExceedInfo}
 })
@@ -218,7 +306,7 @@ export class PayButton extends UI {
         if (this.activeSubscription) {
             return this.selected ? "Продлить" : "Подписаться";
         }
-        return this.clientInfo.user.tariff === this.tariff ? "Подключен" : "Подписаться";
+        return "Подписаться";
     }
 
     private get expirationDescription(): string {
@@ -339,110 +427,21 @@ export class PayButton extends UI {
                     <div class="tariff__info">
 
                     </div>
-
-                    <p v-if="discountApplied" class="promotion">
+                    <div class="alignC">
+                        Получите бесплатный месяц подписки.
+                        <a @click="$router.push({name: 'promo-codes'})">Подробнее</a>
+                    </div>
+                    <p v-if="discountApplied" class="promotion alignC">
                         Совершите покупку с вашей персональной скидкой <b>{{ clientInfo.user.nextPurchaseDiscount }}%</b>!
                         <template v-if="clientInfo.user.nextPurchaseDiscountExpired">(срок действия скидки до {{ clientInfo.user.nextPurchaseDiscountExpired | date }})</template>
                     </p>
 
-                    <div class="tariff__plans">
-                        <table>
-                            <tr>
-                                <td class="no-borders"></td>
-                                <td colspan="3">
-                                    Получите бесплатный месяц подписки.
-                                    <a @click="$router.push({name: 'promo-codes'})">Подробнее</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <pay-button @pay="makePayment" :tariff="Tariff.FREE" :client-info="clientInfo" :monthly="monthly"
-                                            :agreement-state="agreementState" :busy-state="busyState" :is-progress="isProgress" :payment-info="paymentInfo"></pay-button>
-                                <pay-button @pay="makePayment" :tariff="Tariff.STANDARD" :client-info="clientInfo" :monthly="monthly"
-                                            :agreement-state="agreementState" :busy-state="busyState" :is-progress="isProgress" :payment-info="paymentInfo"></pay-button>
-                                <pay-button @pay="makePayment" :tariff="Tariff.PRO" :client-info="clientInfo" :monthly="monthly"
-                                            :agreement-state="agreementState" :busy-state="busyState" :is-progress="isProgress" :payment-info="paymentInfo"></pay-button>
-                            </tr>
-                            <tr class="no-borders">
-                                <td class="text-nowrap">Объем портфеля</td>
-                                <td class="fs13">
-                                    <span>7 ценных бумаг<br>1 портфель</span>
-                                </td>
-                                <td class="fs13">
-                                    <span>Неограниченное кол-во бумаг<br/>2 портфеля</span>
-                                </td>
-                                <td class="fs13">
-                                    <span>Неограниченное кол-во бумаг и портфелей</span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-nowrap">Базовый функционал</td>
-                                <td>
-                                    <div class="tariff__plans_check"></div>
-                                </td>
-                                <td>
-                                    <div class="tariff__plans_check"></div>
-                                </td>
-                                <td>
-                                    <div class="tariff__plans_check"></div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-nowrap">Составной портфель</td>
-                                <td></td>
-                                <td>
-                                    <div class="tariff__plans_check"></div>
-                                </td>
-                                <td>
-                                    <div class="tariff__plans_check"></div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-nowrap">Доступ к функционалу "Стандарт"</td>
-                                <td></td>
-                                <td>
-                                    <div class="tariff__plans_check"></div>
-                                </td>
-                                <td>
-                                    <div class="tariff__plans_check"></div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-nowrap">Мобильное приложение</td>
-                                <td></td>
-                                <td>
-                                    <div class="tariff__plans_check"></div>
-                                </td>
-                                <td>
-                                    <div class="tariff__plans_check"></div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-nowrap">Учет зарубежных акций</td>
-                                <td></td>
-                                <td></td>
-                                <td>
-                                    <div class="tariff__plans_check"></div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-nowrap">Учет коротких позиций</td>
-                                <td></td>
-                                <td></td>
-                                <td>
-                                    <div class="tariff__plans_check"></div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-nowrap">Ранний доступ<br>к новому функционалу</td>
-                                <td></td>
-                                <td></td>
-                                <td>
-                                    <div class="tariff__plans_check"></div>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
+                    <v-layout class="wrap-tariffs-sentence">
+                        <v-layout justify-space-around wrap>
+                            <pay-button v-for="item in Tariff.values()" :key="item.name" @pay="makePayment" :tariff="item" :client-info="clientInfo" :monthly="monthly"
+                                        :agreement-state="agreementState" :busy-state="busyState" :is-progress="isProgress" :payment-info="paymentInfo"></pay-button>
+                        </v-layout>
+                    </v-layout>
                 </div>
             </v-card>
         </v-container>

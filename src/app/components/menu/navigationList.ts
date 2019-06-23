@@ -40,7 +40,7 @@ import {PortfolioSwitcher} from "../portfolioSwitcher";
                         </v-list-tile-content>
                     </v-list-tile>
                 </div>
-                <v-list-tile active-class="sidebar-list-item-active" @click="goToOldVersion">
+                <v-list-tile v-if="showLinkToOldVersion" active-class="sidebar-list-item-active" @click="goToOldVersion">
                     <v-list-tile-content>
                         <v-list-tile-title>Старая версия сервиса</v-list-tile-title>
                     </v-list-tile-content>
@@ -60,6 +60,9 @@ export class NavigationList extends UI {
 
     @Prop({required: true})
     private mainSection: NavBarItem[];
+
+    @Prop({required: true, type: Boolean})
+    private showLinkToOldVersion: boolean;
 
     private openDialog(): void {
         this.$emit("openDialog");

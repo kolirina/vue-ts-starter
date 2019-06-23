@@ -20,6 +20,10 @@
 }
 
 .events-calendar-wrap {
+  overflow: auto;
+  .restriction-calendar-width {
+    min-width: 1400px;
+  }
   .v-calendar-weekly__head {
     border-bottom: 1px solid #E8E9ED;
     .v-outside {
