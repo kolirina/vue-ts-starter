@@ -16,6 +16,7 @@ import {
 } from "../types/charts/types";
 import {Operation} from "../types/operation";
 import {Overview, StockPortfolioRow} from "../types/types";
+import {CommonUtils} from "./commonUtils";
 import {TradeUtils} from "./tradeUtils";
 
 export class ChartUtils {
@@ -310,6 +311,7 @@ export class ChartUtils {
      */
     static drawPieChart(container: HTMLElement, chartData: any[], balloonTitle: string, title: string = "", viewCurrency: string = "",
                         tooltipFormat: PieChartTooltipFormat = PieChartTooltipFormat.COMMON): ChartObject {
+        const isMobile = CommonUtils.isMobile();
         return Highcharts.chart(container, {
             chart: {
                 type: "pie",
@@ -332,7 +334,7 @@ export class ChartUtils {
                     allowPointSelect: true,
                     cursor: "pointer",
                     dataLabels: {
-                        enabled: true,
+                        enabled: !isMobile,
                         format: "<b>{point.name}</b>: {point.percentage:.2f} %",
                         style: {
                             color: "black"

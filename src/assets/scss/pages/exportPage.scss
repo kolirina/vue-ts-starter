@@ -34,6 +34,11 @@
 .btn-days-select-wrapper {
   .v-item-group {
     box-shadow: none;
+    flex-wrap: wrap;
+    .btn-item {
+      margin-top: 24px !important;
+      width: 52px !important;
+    }
   }
   .btn-item {
     height: inherit !important;

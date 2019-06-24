@@ -15,11 +15,15 @@
  */
 
 .info-about-event {
-  padding: 17px 16px 28px !important;
+  padding: 17px !important;
   background: #ffffff;
 }
 
 .events-calendar-wrap {
+  overflow: auto;
+  .restriction-calendar-width {
+    min-width: 1400px;
+  }
   .v-calendar-weekly__head {
     border-bottom: 1px solid #E8E9ED;
     .v-outside {

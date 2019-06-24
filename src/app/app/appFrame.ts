@@ -7,7 +7,9 @@ import {FeedbackDialog} from "../components/dialogs/feedbackDialog";
 import {NotificationUpdateDialog} from "../components/dialogs/notificationUpdateDialog";
 import {ErrorHandler} from "../components/errorHandler";
 import {FooterContent} from "../components/footerContent";
-import {PortfolioSwitcher} from "../components/portfolioSwitcher";
+import {MenuBottomNavigation} from "../components/menu/menuBottomNavigation";
+import {MenuHeader} from "../components/menu/menuHeader";
+import {NavigationList} from "../components/menu/navigationList";
 import {SignIn} from "../components/signIn";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {BtnReturn} from "../platform/dialogs/customDialog";
@@ -15,7 +17,9 @@ import {Storage} from "../platform/services/storage";
 import {ClientInfo, ClientService} from "../services/clientService";
 import {StoreKeys} from "../types/storeKeys";
 import {Portfolio, SignInData} from "../types/types";
+import {NavBarItem} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
+import {DateUtils} from "../utils/dateUtils";
 import {UiStateHelper} from "../utils/uiStateHelper";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
@@ -30,103 +34,51 @@ const MainStore = namespace(StoreType.MAIN);
             <vue-snotify></vue-snotify>
             <error-handler></error-handler>
             <template v-if="!loading && !loggedIn">
-                <sign-in @login="login"></sign-in>
+                <sign-in @login="login" @registration="checkAuthorized"></sign-in>
             </template>
 
             <template v-if="!loading && loggedIn">
                 <v-navigation-drawer disable-resize-watcher fixed stateless app class="sidebar" v-model="drawer" :mini-variant="mini" width="320">
                     <div>
-                        <v-layout :class="['pt-3', 'overflow-hidden', mini ? 'column' : '']" align-center>
-                            <v-layout class="mini-menu-width sidebar-item-action" justify-center>
-                                <v-btn @click="togglePanel" v-if="mini" flat icon dark class="small-screen-hide-toogle-menu-btn">
-                                    <span class="hamburger-icon"></span>
-                                </v-btn>
-                                <span v-else class="sidebar-icon sidebar-logo small-screen-hide-toogle-menu-btn"></span>
-                                <v-btn @click="togglePanel" flat icon dark class="small-screen-show-toogle-menu-btn">
-                                    <span class="hamburger-icon"></span>
-                                </v-btn>
-                            </v-layout>
-                            <portfolio-switcher v-if="clientInfo && portfolio" :mini="mini"></portfolio-switcher>
-                        </v-layout>
+                        <menu-header :mini="mini" :portfolio="portfolio" :clientInfo="clientInfo" @togglePanel="togglePanel"></menu-header>
                         <div v-if="!mini" :class="['wrap-toogle-menu-btn', 'small-screen-hide-toogle-menu-btn']">
                             <v-btn @click="togglePanel" fab dark small depressed color="#F0F3F8" :class="['toogle-menu-btn', publicZone ? 'public-toogle-menu-btn' : '']">
                                 <v-icon dark>keyboard_arrow_left</v-icon>
                             </v-btn>
                         </div>
-                        <v-layout class="overflow-hidden">
-                            <v-layout column justify-space-between align-center class="mini-menu-width">
-                                <div>
-                                    <v-btn @click.stop="openDialog" fab dark small color="indigo" depressed class="add-btn-menu">
-                                        <v-icon dark>add</v-icon>
-                                    </v-btn>
-                                </div>
-                            </v-layout>
-                            <v-layout v-if="!mini" column class="wrap-list-menu">
-                                <div v-for="item in mainSection">
-                                    <template v-if="item.subMenu">
-                                        <v-menu transition="slide-y-transition" bottom left class="submenu-item-list" content-class="submenu-v-menu" nudge-bottom="47">
-                                            <v-list-tile slot="activator" :class="{'active-link': settingsSelected}">
-                                                <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-                                                <v-list-tile-action>
-                                                    <v-icon color="grey lighten-1">keyboard_arrow_down</v-icon>
-                                                </v-list-tile-action>
-                                            </v-list-tile>
-                                            <v-list-tile active-class="active-link" v-for="subItem in item.subMenu" :key="subItem.action"
-                                                         :to="{name: subItem.action, params: item.params}">
-                                                <v-list-tile-content>
-                                                    <v-list-tile-title>{{ subItem.title }}</v-list-tile-title>
-                                                </v-list-tile-content>
-                                            </v-list-tile>
-                                        </v-menu>
-                                    </template>
-                                    <v-list-tile v-else :key="item.action" active-class="active-link"
-                                                 :to="{path: item.path, name: item.action, params: item.params}">
-                                        <v-list-tile-content>
-                                            <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-                                        </v-list-tile-content>
-                                    </v-list-tile>
-                                </div>
-                                <v-list-tile active-class="sidebar-list-item-active" @click="goToOldVersion">
-                                    <v-list-tile-content>
-                                        <v-list-tile-title>Старая версия сервиса</v-list-tile-title>
-                                    </v-list-tile-content>
-                                </v-list-tile>
-                            </v-layout>
-                        </v-layout>
+                        <navigation-list :mainSection="mainSection" :mini="mini" :settingsSelected="settingsSelected"
+                                         :show-link-to-old-version="showLinkToOldVersion"
+                                         @openDialog="openDialog" @goToOldVersion="goToOldVersion"></navigation-list>
                     </div>
-                    <v-layout v-if="!publicZone" column>
-                        <v-layout class="mini-menu-width" align-center justify-end column>
-                            <div>
-                                <v-btn flat round icon dark :to="{name: 'portfolio-management'}" title="Управление портфелями"
-                                       active-class="active-btn-link" class="link-icon-btn">
-                                    <span class="settings-icon"></span>
-                                </v-btn>
-                            </div>
-                            <div class="mt-1 mb-3">
-                                <v-btn flat icon dark :to="{name: 'profile'}" title="Профиль" active-class="active-btn-link" class="link-icon-btn">
-                                    <span class="profile-icon"></span>
-                                </v-btn>
-                            </div>
-                        </v-layout>
-                    </v-layout>
+                    <menu-bottom-navigation v-if="!publicZone"></menu-bottom-navigation>
                 </v-navigation-drawer>
                 <v-content>
-                    <v-container fluid class="paddT0 fb-0">
+                    <div class="mobile-wrapper-menu">
+                        <menu-header :mini="mini" :isMobile="true" :portfolio="portfolio" :clientInfo="clientInfo" @togglePanel="togglePanel"></menu-header>
+                        <navigation-list :mainSection="mainSection" :mini="mini" :settingsSelected="settingsSelected"
+                                         :show-link-to-old-version="showLinkToOldVersion"
+                                         @openDialog="openDialog" @goToOldVersion="goToOldVersion" :class="mini ? 'part-mobile-menu' : ''"></navigation-list>
+                        <menu-bottom-navigation v-if="!publicZone" :class="mini ? 'part-mobile-menu' : ''"></menu-bottom-navigation>
+                    </div>
+                    <v-container fluid :class="['paddT0', 'fb-0', mini ? '' : 'hide-main-content']">
                         <v-slide-y-transition mode="out-in">
                             <!--<keep-alive :include="cachedPages">-->
                             <router-view></router-view>
                             <!--</keep-alive>-->
                         </v-slide-y-transition>
                     </v-container>
-                    <v-footer color="#f7f9fb" class="footer-app">
+                    <v-footer color="#f7f9fb" :class="['footer-app', mini ? '' : 'hide-main-content']">
                         <footer-content :clientInfo="clientInfo"></footer-content>
                     </v-footer>
                 </v-content>
             </template>
         </v-app>`,
-    components: {PortfolioSwitcher, ErrorHandler, SignIn, FooterContent}
+    components: {ErrorHandler, FeedbackDialog, SignIn, FooterContent, MenuHeader, NavigationList, MenuBottomNavigation}
 })
 export class AppFrame extends UI {
+
+    /** Дата новой версии */
+    private readonly NEW_USERS_DATE = DateUtils.parseDate("2019-05-02");
 
     @Inject
     private localStorage: Storage;
@@ -194,11 +146,7 @@ export class AppFrame extends UI {
     @ShowProgress
     async created(): Promise<void> {
         this.mini = this.localStorage.get(StoreKeys.MENU_STATE_KEY, true);
-        const authorized = !!this.localStorage.get(StoreKeys.TOKEN_KEY, null);
-        // если есть токен юзера в локал стор и стор пуст и это не публичная зона то пробуем загрузить инфу о клиенте
-        if (authorized && !CommonUtils.exists(this.$store.state[StoreType.MAIN].clientInfo) && !this.publicZone) {
-            await this.startup();
-        }
+        await this.checkAuthorized();
         // если удалось восстановить state, значит все уже загружено
         if (this.$store.state[StoreType.MAIN].clientInfo) {
             if (!this.publicZone) {
@@ -206,6 +154,17 @@ export class AppFrame extends UI {
                 this.showUpdatesMessage();
             }
             this.loggedIn = true;
+        }
+    }
+
+    private async checkAuthorized(registration?: boolean): Promise<void> {
+        const authorized = !!this.localStorage.get(StoreKeys.TOKEN_KEY, null);
+        // если есть токен юзера в локал стор и стор пуст и это не публичная зона то пробуем загрузить инфу о клиенте
+        if (authorized && !CommonUtils.exists(this.$store.state[StoreType.MAIN].clientInfo) && !this.publicZone) {
+            await this.startup();
+        }
+        if (registration) {
+            this.$router.push("/portfolio");
         }
     }
 
@@ -291,15 +250,8 @@ export class AppFrame extends UI {
     private get publicZone(): boolean {
         return this.$route.meta.public;
     }
-}
 
-export type NavBarItem = {
-    title: string,
-    /** routing, для корневых элементов может не заполнен */
-    action?: string,
-    path?: string,
-    icon?: string,
-    active?: boolean,
-    subMenu?: NavBarItem[],
-    params?: { [key: string]: string }
-};
+    private get showLinkToOldVersion(): boolean {
+        return DateUtils.parseDate(this.clientInfo.user.regDate).isAfter(this.NEW_USERS_DATE);
+    }
+}

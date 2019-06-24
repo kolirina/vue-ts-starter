@@ -2,7 +2,8 @@
     padding: 22px 0px 32px 30px;
     background: #FFFFFF;
     &__item {
-        margin-right: 66px;
+        margin-right: 35px;
+        width: 172px;
         &-content-wrapper {
             a {
                 text-decoration: none;
@@ -41,6 +42,13 @@
     &__paired-section {
         display: flex;
         padding: 22px 76px 22px 29px;
+        flex-wrap: wrap;
+        @media screen and (max-width: 500px) {
+            padding: 22px 22px 22px 22px;
+            &-item {
+                margin-right: 0px;  
+            }
+        }
         &-item {
             max-width: 404px;
             width: 100%;
@@ -82,6 +90,10 @@
             width: 52px;
             height: 52px;
         }
+    }
+    img {
+        max-width: 100%;
+        height: auto;
     }
 }
 .border-block-in-paired-section {

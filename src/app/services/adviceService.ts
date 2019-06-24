@@ -173,7 +173,7 @@ export class AdviceService {
             case AdviceCode.SHARE_ABOVE_40:
                 return `В вашем портфеле есть акция ${adviceUnicCode.param}, занимающая более 40% всех ваших инвестиций`;
             case AdviceCode.AVG_BOND_YIELD_BELOW_DEPOSIT:
-                return `Среднегодовая доходность вашего портфеля ${adviceUnicCode.param} меньше ставки по депозитам`;
+                return `Среднегодовая доходность вашего портфеля меньше ставки по депозитам`;
         }
     }
 

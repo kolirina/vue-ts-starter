@@ -57,7 +57,8 @@ export class AdviserPage extends UI {
     private advicesUnicCode: AdviceUnicCode[] = [];
 
     async created(): Promise<void> {
-        this.currentRiskLevel = this.clientInfo.user.riskLevel.toLowerCase() || RiskType.LOW.code;
+        console.log(this.clientInfo);
+        this.currentRiskLevel = this.clientInfo.user.riskLevel ? this.clientInfo.user.riskLevel.toLowerCase() : RiskType.LOW.code;
     }
 
     @Watch("portfolio")

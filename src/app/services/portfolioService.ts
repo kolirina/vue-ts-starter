@@ -197,7 +197,6 @@ export class PortfoliosDialogType extends (EnumType as IStaticEnum<PortfoliosDia
 
     static readonly DEFAULT_ACCESS = new PortfoliosDialogType("DEFAULT_ACCESS", "Обычная");
     static readonly BY_LINK = new PortfoliosDialogType("BY_LINK", "Со сроком действия");
-    static readonly BY_IDENTIFICATION = new PortfoliosDialogType("BY_IDENTIFICATION", "Пользователю");
 
     private constructor(public code: string, public description: string) {
         super();

@@ -26,7 +26,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </div>
                 </v-card-title>
             </v-card>
-            <v-layout class="wrapper-list-reference">
+            <v-layout class="wrapper-list-reference" wrap>
                 <div class="wrapper-list-reference__item">
                     <div class="wrapper-list-reference__item-content-wrapper">
                         <a @click.stop="$vuetify.goTo('#about')">О сервисе</a>

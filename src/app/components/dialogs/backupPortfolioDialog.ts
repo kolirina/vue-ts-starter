@@ -16,7 +16,7 @@ import {PortfolioBackup} from "../../types/types";
                     <div class="pl-3">
                         Отправка бэкапов осуществляется по выбранным дням в 9:30 минут.
                     </div>
-                    <div class="btn-days-select-wrapper pl-3 pt-4 margB30">
+                    <div class="btn-days-select-wrapper pl-3 margB30">
                         <v-btn-toggle v-model="selectedDaysInner" multiple light>
                             <v-btn v-for="day in days" :value="day" :key="day" depressed class="btn-item">
                                 {{ day }}
