@@ -14,6 +14,10 @@ export class ClientService {
 
     private clientInfoCache: Client = null;
 
+    async signUp(registrationRequest: RegistrationRequest): Promise<ClientInfoResponse> {
+        return this.http.post("/user/register", registrationRequest);
+    }
+
     async login(request: LoginRequest): Promise<ClientInfo> {
         const clientInfo = await this.http.post<ClientInfoResponse>("/user/login", request);
         return this.mapClientInfoResponse(clientInfo);
@@ -98,6 +102,18 @@ export class ClientService {
             })
         } as Client;
     }
+}
+
+/** Запрос на регистрацию пользователя */
+export interface RegistrationRequest {
+    /** E-mail пользователя */
+    email: string;
+    /** Идентификатор реферала */
+    referrerId?: string;
+    /** Идентификатор пользователя в google */
+    googleId?: string;
+    /** Источник входа пользователя */
+    userEnterSourceType?: "WEB";
 }
 
 export interface ClientInfo {
