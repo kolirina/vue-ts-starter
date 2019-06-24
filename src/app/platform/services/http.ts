@@ -56,8 +56,8 @@ export class Http {
      * @param options      параметры запроса
      * @return {Promise<T>}
      */
-    async post<T>(url: string, body?: any, urlParams?: UrlParams, options?: any, contentType?: string): Promise<T> {
-        return this.doRequest<T>("POST", url, {options, urlParams, body}, false, contentType);
+    async post<T>(url: string, body?: any, urlParams?: UrlParams, options?: any): Promise<T> {
+        return this.doRequest<T>("POST", url, {options, urlParams, body});
     }
 
     /**
@@ -102,9 +102,8 @@ export class Http {
      * @param customBaseUrl если признак передан, url буден взять напрямую без base_url
      * @return {Promise<T>}
      */
-    private async doRequest<T>(method: string, url: string, params: { options: any, body?: any, urlParams?: UrlParams }, customBaseUrl: boolean = false,
-                               contentType?: string): Promise<T> {
-        const paramsInit = this.prepareRequestParams(method, url, params, customBaseUrl, contentType);
+    private async doRequest<T>(method: string, url: string, params: { options: any, body?: any, urlParams?: UrlParams }, customBaseUrl: boolean = false): Promise<T> {
+        const paramsInit = this.prepareRequestParams(method, url, params, customBaseUrl);
 
         let response;
         try {
@@ -128,14 +127,13 @@ export class Http {
      * @param customBaseUrl
      * @return {ParamsInit} объект с данными запроса
      */
-    private prepareRequestParams(method: string, requestUrl: string, params: { options: any, body?: any, urlParams?: UrlParams }, customBaseUrl: boolean = false,
-                                 contentType?: string): ParamsInit {
+    private prepareRequestParams(method: string, requestUrl: string, params: { options: any, body?: any, urlParams?: UrlParams }, customBaseUrl: boolean = false): ParamsInit {
         let url = requestUrl;
         const requestParams = this.getDefaultRequestInit();
         requestParams.method = method;
         const token = this.localStorage.get(StoreKeys.TOKEN_KEY, null);
         requestParams.headers = {
-            "Content-Type": contentType || "application/json;charset=UTF-8"
+            "Content-Type": "application/json;charset=UTF-8"
         };
         if (!CommonUtils.isBlank(token)) {
             requestParams.headers.Authorization = `Bearer ${token}`;

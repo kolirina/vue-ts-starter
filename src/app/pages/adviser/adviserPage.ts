@@ -57,7 +57,7 @@ export class AdviserPage extends UI {
     private advicesUnicCode: AdviceUnicCode[] = [];
 
     async created(): Promise<void> {
-        this.currentRiskLevel = this.clientInfo.user.riskLevel.toLowerCase() || RiskType.LOWER.code;
+        this.currentRiskLevel = this.clientInfo.user.riskLevel.toLowerCase() || RiskType.LOW.code;
     }
 
     @Watch("portfolio")
@@ -95,7 +95,7 @@ export class AdviserPage extends UI {
         this.clientService.resetClientInfo();
         setTimeout(async () => {
             await this.reloadUser();
-            this.currentRiskLevel = this.clientInfo.user.riskLevel.toLowerCase() || RiskType.LOWER.code;
+            this.currentRiskLevel = this.clientInfo.user.riskLevel.toLowerCase() || RiskType.LOW.code;
         }, 1000);
     }
 }

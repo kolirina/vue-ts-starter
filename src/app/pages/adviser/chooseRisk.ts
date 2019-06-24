@@ -36,7 +36,7 @@ export class ChooseRisk extends UI {
 
     private mutableCurrentRiskLevel: string = null;
 
-    private risk = RiskType.LOWER;
+    private risk = RiskType.LOW;
     private riskType = RiskType;
 
     @Prop({required: true, default: null})

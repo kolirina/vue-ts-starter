@@ -182,7 +182,7 @@ export class AdviceService {
      * @param riskLevel уровень риска
      */
     async setRiskLevel(riskLevel: string): Promise<void> {
-        this.http.post(`/user/risk-level`, riskLevel, null , null, "text/plain");
+        return this.http.post(`/user/risk-level`, riskLevel);
     }
 
     /**
