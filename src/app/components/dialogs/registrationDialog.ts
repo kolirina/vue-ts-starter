@@ -9,7 +9,7 @@ import {StoreKeys} from "../../types/storeKeys";
         <v-dialog v-model="showed" max-width="600px">
             <v-card class="dialog-wrap pa-5">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
-                <v-layout justify-center class="py-5">
+                <v-layout justify-center class="wrap-registration-form">
                     <v-layout class="maxW275" column>
                         <div class="fs18 bold alignC mb-5">Регистрация</div>
                         <div>
