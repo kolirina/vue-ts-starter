@@ -40,8 +40,8 @@ import {Bond, Share} from "../types/types";
             </v-menu>
             <v-icon @click.native="toggleSearch">search</v-icon>
             <v-slide-x-transition>
-                <v-text-field v-if="showSearch" :value="searchQueryMutated" @input="onSearch" @click:clear="onClear" @blur="hideInput" :label="searchLabel"
-                              single-line hide-details autofocus></v-text-field>
+                <v-text-field v-if="showSearch || searchQueryMutated.length" :value="searchQueryMutated" @input="onSearch" @click:clear="onClear" @blur="hideInput"
+                              :label="searchLabel" single-line hide-details autofocus></v-text-field>
             </v-slide-x-transition>
         </div>
     `
