@@ -115,7 +115,7 @@ export class TariffAgreement extends UI {
 @Component({
     // language=Vue
     template: `
-        <v-layout v-if="tariff !== Tariff.TRIAL && tariff !== Tariff.FREE" column :class="['tariff-item', 'margB30', tariff === Tariff.PRO ? 'pro-tarrif' : '']">
+        <v-layout v-if="tariff !== Tariff.TRIAL && tariff !== Tariff.FREE" column :class="['tariff-item', 'margB30', tariff === Tariff.PRO ? 'pro-tariff' : '']">
             <div v-if="tariff == Tariff.PRO" class="alignC fs13 tariff-most-popular">
                 Выбор 67% инвесторов
             </div>
@@ -437,7 +437,7 @@ export class PayButton extends UI {
                     </p>
 
                     <v-layout class="wrap-tariffs-sentence">
-                        <v-layout justify-space-around wrap>
+                        <v-layout justify-center wrap>
                             <pay-button v-for="item in Tariff.values()" :key="item.name" @pay="makePayment" :tariff="item" :client-info="clientInfo" :monthly="monthly"
                                         :agreement-state="agreementState" :busy-state="busyState" :is-progress="isProgress" :payment-info="paymentInfo"></pay-button>
                         </v-layout>
