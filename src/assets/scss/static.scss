@@ -23,6 +23,7 @@ input[type="search"] {
 .margT24 {margin-top: 24px !important}
 .margT40 {margin-top: 40px}
 .margT30 {margin-top: 30px}
+.margT70 {margin-top: 70px}
 
 .margL8 {margin-left: 8px  !important}
 .margL16 {margin-left: 16px  !important}
@@ -43,12 +44,12 @@ input[type="search"] {
 
 .margT20 {margin-top: 20px !important}
 .margT50 {margin-top: 50px}
-.margT0 {margin-top: 0 !important;}
+.margT0 {margin-top: 0 !important}
 
 // Паддинги =============================================================================================================
 
-.paddT0 {padding-top: 0 !important;}
-.paddB0 {padding-bottom: 0 !important;}
+.paddT0 {padding-top: 0 !important}
+.paddB0 {padding-bottom: 0 !important}
 .paddB128 {padding-bottom: 128px}
 
 // Высота ==============================================================================================================
@@ -287,4 +288,4 @@ input[type="search"] {
 .text-nowrap {white-space: nowrap}
 .bg-white {background: #ffffff !important}
 .zi-102 {z-index: 102 !important}
-.error-text {color: red}
+.rotate-icons {transform: rotate(90deg)}
