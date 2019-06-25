@@ -1,4 +1,3 @@
-import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {Prop, UI} from "../../app/ui";
 import {Advice} from "../../services/adviceService";

@@ -23,7 +23,7 @@ import {Http} from "../platform/services/http";
 export class AdviceService {
 
     // tslint:disable
-    readonly GLOBALRISK: any = {
+    readonly GLOBALRISK: AdviceTable = {
         [AdviceCode.ONLY_ONE_CURRENCY]: [
             {
                 description: "Основным назначением валютной диверсификации является защита инвесторов от возможных курсовых колебаний денежных средств, а также падения курсов одной валюты по отношению к другой. Имеется в виду обесценивание не только национальной, но и важнейшей мировой валюты: евро или доллара. Так, к примеру, инвестиции только в евро при нестабильности и временном падении его курса могут принести инвестору довольно большие убытки, даже при общей прибыльности его проекта в целом. Отсюда следует, что суть валютной диверсификации подразумевает осуществление инвестирования частями с использованием разных валют: часть в евро, часть в швейцарских франках, часть в долларах или золоте и т.д.",
@@ -140,7 +140,7 @@ export class AdviceService {
     @Inject
     private http: Http;
 
-    getAdvice(adviceUnicCode: AdviceUnicCode): any {
+    getAdvice(adviceUnicCode: AdviceUnicCode): Advice {
         const problem = this.getProblem(adviceUnicCode);
         let advice: Advice = null;
         return advice = {
@@ -148,7 +148,7 @@ export class AdviceService {
         };
     }
 
-    getProblem(adviceUnicCode: AdviceUnicCode): any {
+    getProblem(adviceUnicCode: AdviceUnicCode): string {
         switch (adviceUnicCode.code) {
             case AdviceCode.ONLY_ONE_CURRENCY:
                 return `В вашем портфеле всего лишь одна валюта`;
@@ -175,6 +175,7 @@ export class AdviceService {
             case AdviceCode.AVG_BOND_YIELD_BELOW_DEPOSIT:
                 return `Среднегодовая доходность вашего портфеля меньше ставки по депозитам`;
         }
+        throw new Error(`Неизвестный тип проблемы`);
     }
 
     /**
@@ -193,11 +194,15 @@ export class AdviceService {
         return this.http.get(`/advice/${portfolioId}`);
     }
 }
+export interface AdviceTable {
+    [key: string]: Advice[];
+}
 export interface AdviceUnicCode {
     code: string;
     param: string;
 }
 export interface Advice {
+    problem?: string;
     description: string;
     decisionTitle: string;
     decisions: string[];

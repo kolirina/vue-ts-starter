@@ -21,7 +21,7 @@ const MainStore = namespace(StoreType.MAIN);
         <v-container>
             <v-card flat class="header-first-card">
                 <v-card-title class="header-first-card__wrapper-title">
-                    <div class="section-title header-first-card__title-text">Рекомендации</div>
+                    <div class="section-title header-first-card__title-text">Аналитика</div>
                 </v-card-title>
             </v-card>
             <v-card flat class="pa-0">
@@ -57,7 +57,6 @@ export class AdviserPage extends UI {
     private advicesUnicCode: AdviceUnicCode[] = [];
 
     async created(): Promise<void> {
-        console.log(this.clientInfo);
         this.currentRiskLevel = this.clientInfo.user.riskLevel ? this.clientInfo.user.riskLevel.toLowerCase() : RiskType.LOW.code;
     }
 
@@ -94,9 +93,7 @@ export class AdviserPage extends UI {
     private async setRiskLevel(riskLevel: string): Promise<void> {
         await this.adviceService.setRiskLevel(riskLevel.toUpperCase());
         this.clientService.resetClientInfo();
-        setTimeout(async () => {
-            await this.reloadUser();
-            this.currentRiskLevel = this.clientInfo.user.riskLevel.toLowerCase() || RiskType.LOW.code;
-        }, 1000);
+        await this.reloadUser();
+        this.currentRiskLevel = this.clientInfo.user.riskLevel.toLowerCase() || RiskType.LOW.code;
     }
 }
