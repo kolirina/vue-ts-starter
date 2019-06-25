@@ -34,7 +34,7 @@ const MainStore = namespace(StoreType.MAIN);
             <vue-snotify></vue-snotify>
             <error-handler></error-handler>
             <template v-if="!loading && !loggedIn">
-                <sign-in @login="login"></sign-in>
+                <sign-in @login="login" @registration="checkAuthorized"></sign-in>
             </template>
 
             <template v-if="!loading && loggedIn">
@@ -121,6 +121,7 @@ export class AppFrame extends UI {
 
     private mainSection: NavBarItem[] = [
         {title: "Портфель", action: "portfolio", icon: "fas fa-briefcase"},
+        {title: "Аналитика", action: "adviser"},
         {title: "Сделки", action: "trades", icon: "fas fa-list-alt"},
         {title: "События", action: "events", icon: "far fa-calendar-check"},
         {title: "Дивиденды", action: "dividends", icon: "far fa-calendar-plus"},
@@ -146,11 +147,7 @@ export class AppFrame extends UI {
     async created(): Promise<void> {
         this.mini = this.localStorage.get(StoreKeys.MENU_STATE_KEY, true);
         this.changeSideBarState(this.mini);
-        const authorized = !!this.localStorage.get(StoreKeys.TOKEN_KEY, null);
-        // если есть токен юзера в локал стор и стор пуст и это не публичная зона то пробуем загрузить инфу о клиенте
-        if (authorized && !CommonUtils.exists(this.$store.state[StoreType.MAIN].clientInfo) && !this.publicZone) {
-            await this.startup();
-        }
+        await this.checkAuthorized();
         // если удалось восстановить state, значит все уже загружено
         if (this.$store.state[StoreType.MAIN].clientInfo) {
             if (!this.publicZone) {
@@ -158,6 +155,17 @@ export class AppFrame extends UI {
                 this.showUpdatesMessage();
             }
             this.loggedIn = true;
+        }
+    }
+
+    private async checkAuthorized(registration?: boolean): Promise<void> {
+        const authorized = !!this.localStorage.get(StoreKeys.TOKEN_KEY, null);
+        // если есть токен юзера в локал стор и стор пуст и это не публичная зона то пробуем загрузить инфу о клиенте
+        if (authorized && !CommonUtils.exists(this.$store.state[StoreType.MAIN].clientInfo) && !this.publicZone) {
+            await this.startup();
+        }
+        if (registration) {
+            this.$router.push("/portfolio");
         }
     }
 

@@ -1,6 +1,8 @@
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
+import {RegistrationDialog} from "../components/dialogs/registrationDialog";
+import {BtnReturn} from "../platform/dialogs/customDialog";
 import {SignInData} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
 import {StoreType} from "../vuex/storeType";
@@ -17,12 +19,12 @@ const MainStore = namespace(StoreType.MAIN);
                 <v-layout align-center justify-center column>
                     <v-layout class="paired-section" wrap justify-center>
                         <v-layout class="paired-section__left-section" column align-center>
-                            <div class="logo-wrap w100pc">
+                            <a href="https://intelinvest.ru/" class="logo-wrap w100pc decorationNone" target="_blank">
                                 <span class="logo-sign-in auto-cursor"></span>
                                 <span class="fs18">
                                     Intelinvest
                                 </span>
-                            </div>
+                            </a>
                             <div>
                                 <div class="fs36 alignC">
                                     Здравствуйте!
@@ -41,8 +43,11 @@ const MainStore = namespace(StoreType.MAIN);
                                         :placeholder="'Пароль'">
                                     </v-text-field>
                                 </div>
-                                <div class="margT30 maxW275">
-                                    <v-btn :disabled="loginBtnDisabled" class="btn sign-in-btn" @click="signIn">Войти</v-btn>
+                                <div class="margT30">
+                                    <v-btn :disabled="loginBtnDisabled" class="btn sign-btn maxW275" @click="signIn">Войти</v-btn>
+                                </div>
+                                <div class="margT30">
+                                    <v-btn class="btn sign-btn maxW275" @click.stop="openRegistrationDialog">Регистрация</v-btn>
                                 </div>
                                 <div class="margT30 mb-4">
                                     <v-checkbox v-model="signInData.rememberMe"
@@ -96,6 +101,13 @@ export class SignIn extends UI {
 
     async signIn(): Promise<void> {
         this.$emit("login", this.signInData);
+    }
+
+    private async openRegistrationDialog(): Promise<void> {
+        const result = await new RegistrationDialog().show();
+        if (result === BtnReturn.YES) {
+            this.$emit("registration", true);
+        }
     }
 
     private get loginBtnDisabled(): boolean {
