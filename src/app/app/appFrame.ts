@@ -145,6 +145,7 @@ export class AppFrame extends UI {
     @ShowProgress
     async created(): Promise<void> {
         this.mini = this.localStorage.get(StoreKeys.MENU_STATE_KEY, true);
+        this.changeSideBarState(this.mini);
         const authorized = !!this.localStorage.get(StoreKeys.TOKEN_KEY, null);
         // если есть токен юзера в локал стор и стор пуст и это не публичная зона то пробуем загрузить инфу о клиенте
         if (authorized && !CommonUtils.exists(this.$store.state[StoreType.MAIN].clientInfo) && !this.publicZone) {
