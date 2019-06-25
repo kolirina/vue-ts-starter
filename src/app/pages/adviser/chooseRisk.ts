@@ -16,7 +16,7 @@ import {RiskType} from "../../types/types";
                     <v-layout justify-center column class="margT70 maxW275 fs12-non-opacity">
                         <img :src="item.imgSrc" alt="pic">
                         <v-layout justify-center class="mt-3">
-                                <v-radio :label="item.title" :value="item.code" class="pl-1"></v-radio>
+                            <v-radio :label="item.title" :value="item.code" class="pl-1"></v-radio>
                         </v-layout>
                         <div class="alignC mt-3">
                             {{ item.description }}
@@ -31,6 +31,7 @@ import {RiskType} from "../../types/types";
     `
 })
 export class ChooseRisk extends UI {
+
     @Inject
     private portfolioService: PortfolioService;
 

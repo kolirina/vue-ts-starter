@@ -6,9 +6,9 @@ import {UI} from "../../app/ui";
     template: `
         <v-layout align-center justify-center class="py-5">
             <v-progress-circular
-                :size="50"
-                color="primary"
-                indeterminate
+                    :size="50"
+                    color="primary"
+                    indeterminate
             ></v-progress-circular>
         </v-layout>
     `

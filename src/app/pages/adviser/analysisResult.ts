@@ -26,6 +26,7 @@ import {AdviceTemplate} from "./adviceTemplate";
     components: {AdviceTemplate}
 })
 export class AnalysisResult extends UI {
+
     @Prop({required: true, default: null})
     private advicesUnicCode: AdviceUnicCode[];
 

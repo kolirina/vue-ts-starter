@@ -13,6 +13,7 @@ import {AnalysisResult} from "./analysisResult";
 import {ChooseRisk} from "./chooseRisk";
 import {EmptyAdvice} from "./emptyAdvice";
 import {Preloader} from "./preloader";
+
 const MainStore = namespace(StoreType.MAIN);
 
 @Component({
@@ -37,6 +38,7 @@ const MainStore = namespace(StoreType.MAIN);
     components: {ChooseRisk, Preloader, AnalysisResult, EmptyAdvice}
 })
 export class AdviserPage extends UI {
+
     @MainStore.Getter
     private clientInfo: ClientInfo;
     @MainStore.Getter
@@ -61,9 +63,9 @@ export class AdviserPage extends UI {
     }
 
     @Watch("portfolio")
-    private onPortfolioChange(): void {
+    private async onPortfolioChange(): Promise<void> {
         if (this.isAnalys) {
-            this.analysisPortfolio();
+            await this.analysisPortfolio();
         }
     }
 

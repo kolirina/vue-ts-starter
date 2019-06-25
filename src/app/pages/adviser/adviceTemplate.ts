@@ -20,7 +20,8 @@ import {Advice} from "../../services/adviceService";
                     </div>
                     <div :class="!advice.decisionTitle ? 'mt-3' : 'mt-1'">
                         <div v-for="decision in advice.decisions" class="fs14">
-                            <v-icon>done</v-icon> Решение: {{ decision }}
+                            <v-icon>done</v-icon>
+                            Решение: {{ decision }}
                         </div>
                     </div>
                 </div>
@@ -29,6 +30,7 @@ import {Advice} from "../../services/adviceService";
     `
 })
 export class AdviceTemplate extends UI {
+
     @Prop({required: true, default: null})
     private advice: Advice;
 
