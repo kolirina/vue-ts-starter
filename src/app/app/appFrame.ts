@@ -146,6 +146,7 @@ export class AppFrame extends UI {
     @ShowProgress
     async created(): Promise<void> {
         this.mini = this.localStorage.get(StoreKeys.MENU_STATE_KEY, true);
+        this.changeSideBarState(this.mini);
         await this.checkAuthorized();
         // если удалось восстановить state, значит все уже загружено
         if (this.$store.state[StoreType.MAIN].clientInfo) {
