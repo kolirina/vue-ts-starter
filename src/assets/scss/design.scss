@@ -54,3 +54,9 @@
 .stock-color {
   border-left: 2px solid #9C27B0;
 }
+.highcharts-container {
+  width: 100% !important;
+  svg {
+    width: 100% !important;
+  }
+}
