@@ -241,8 +241,12 @@
   width: 100%;
   background: #F7F9FB;
   border-radius: 8px;
+  margin-left: 195px;
+  &:first-child {
+    margin-left: 0px;
+  }
 }
-.pro-tarrif {
+.pro-tariff {
   border-top-left-radius: 0px;
   border-top-right-radius: 0px;
 }
