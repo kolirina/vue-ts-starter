@@ -269,6 +269,7 @@ export class PayButton extends UI {
     /** Признак отображать ли free тариф */
     @Prop({required: true, type: Boolean})
     private isNewTariffLayout: boolean;
+
     /** Тарифы */
     private Tariff = Tariff;
 
