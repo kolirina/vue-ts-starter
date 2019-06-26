@@ -19,6 +19,7 @@ import {StoreKeys} from "../types/storeKeys";
 import {Portfolio, SignInData} from "../types/types";
 import {NavBarItem} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
+import {DateUtils} from "../utils/dateUtils";
 import {UiStateHelper} from "../utils/uiStateHelper";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
@@ -33,7 +34,7 @@ const MainStore = namespace(StoreType.MAIN);
             <vue-snotify></vue-snotify>
             <error-handler></error-handler>
             <template v-if="!loading && !loggedIn">
-                <sign-in @login="login"></sign-in>
+                <sign-in @login="login" @registration="checkAuthorized"></sign-in>
             </template>
 
             <template v-if="!loading && loggedIn">
@@ -45,16 +46,18 @@ const MainStore = namespace(StoreType.MAIN);
                                 <v-icon dark>keyboard_arrow_left</v-icon>
                             </v-btn>
                         </div>
-                        <navigation-list :mainSection="mainSection" :mini="mini" :settingsSelected="settingsSelected" @openDialog="openDialog"
-                                         @goToOldVersion="goToOldVersion"></navigation-list>
+                        <navigation-list :mainSection="mainSection" :mini="mini" :settingsSelected="settingsSelected"
+                                         :show-link-to-old-version="showLinkToOldVersion"
+                                         @openDialog="openDialog" @goToOldVersion="goToOldVersion"></navigation-list>
                     </div>
                     <menu-bottom-navigation v-if="!publicZone"></menu-bottom-navigation>
                 </v-navigation-drawer>
                 <v-content>
                     <div class="mobile-wrapper-menu">
                         <menu-header :mini="mini" :isMobile="true" :portfolio="portfolio" :clientInfo="clientInfo" @togglePanel="togglePanel"></menu-header>
-                        <navigation-list :mainSection="mainSection" :mini="mini" :settingsSelected="settingsSelected" @openDialog="openDialog"
-                                         @goToOldVersion="goToOldVersion" :class="mini ? 'part-mobile-menu' : ''"></navigation-list>
+                        <navigation-list :mainSection="mainSection" :mini="mini" :settingsSelected="settingsSelected"
+                                         :show-link-to-old-version="showLinkToOldVersion"
+                                         @openDialog="openDialog" @goToOldVersion="goToOldVersion" :class="mini ? 'part-mobile-menu' : ''"></navigation-list>
                         <menu-bottom-navigation v-if="!publicZone" :class="mini ? 'part-mobile-menu' : ''"></menu-bottom-navigation>
                     </div>
                     <v-container fluid :class="['paddT0', 'fb-0', mini ? '' : 'hide-main-content']">
@@ -70,9 +73,12 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-content>
             </template>
         </v-app>`,
-        components: {ErrorHandler, FeedbackDialog, SignIn, FooterContent, MenuHeader, NavigationList, MenuBottomNavigation}
+    components: {ErrorHandler, FeedbackDialog, SignIn, FooterContent, MenuHeader, NavigationList, MenuBottomNavigation}
 })
 export class AppFrame extends UI {
+
+    /** Дата новой версии */
+    private readonly NEW_USERS_DATE = DateUtils.parseDate("2019-05-02");
 
     @Inject
     private localStorage: Storage;
@@ -95,6 +101,7 @@ export class AppFrame extends UI {
     @MainStore.Mutation(MutationType.CHANGE_SIDEBAR_STATE)
     private changeSideBarState: (sideBarState: boolean) => void;
 
+    /** Признак залогиненного пользователя */
     private loggedIn = false;
 
     /* Пользователь уведомлен об обновлениях */
@@ -115,6 +122,7 @@ export class AppFrame extends UI {
 
     private mainSection: NavBarItem[] = [
         {title: "Портфель", action: "portfolio", icon: "fas fa-briefcase"},
+        {title: "Аналитика", action: "adviser"},
         {title: "Сделки", action: "trades", icon: "fas fa-list-alt"},
         {title: "События", action: "events", icon: "far fa-calendar-check"},
         {title: "Дивиденды", action: "dividends", icon: "far fa-calendar-plus"},
@@ -139,11 +147,8 @@ export class AppFrame extends UI {
     @ShowProgress
     async created(): Promise<void> {
         this.mini = this.localStorage.get(StoreKeys.MENU_STATE_KEY, true);
-        const authorized = !!this.localStorage.get(StoreKeys.TOKEN_KEY, null);
-        // если есть токен юзера в локал стор и стор пуст и это не публичная зона то пробуем загрузить инфу о клиенте
-        if (authorized && !CommonUtils.exists(this.$store.state[StoreType.MAIN].clientInfo) && !this.publicZone) {
-            await this.startup();
-        }
+        this.changeSideBarState(this.mini);
+        await this.checkAuthorized();
         // если удалось восстановить state, значит все уже загружено
         if (this.$store.state[StoreType.MAIN].clientInfo) {
             if (!this.publicZone) {
@@ -151,6 +156,17 @@ export class AppFrame extends UI {
                 this.showUpdatesMessage();
             }
             this.loggedIn = true;
+        }
+    }
+
+    private async checkAuthorized(registration?: boolean): Promise<void> {
+        const authorized = !!this.localStorage.get(StoreKeys.TOKEN_KEY, null);
+        // если есть токен юзера в локал стор и стор пуст и это не публичная зона то пробуем загрузить инфу о клиенте
+        if (authorized && !CommonUtils.exists(this.$store.state[StoreType.MAIN].clientInfo) && !this.publicZone) {
+            await this.startup();
+        }
+        if (registration) {
+            this.$router.push("/portfolio");
         }
     }
 
@@ -235,5 +251,9 @@ export class AppFrame extends UI {
 
     private get publicZone(): boolean {
         return this.$route.meta.public;
+    }
+
+    private get showLinkToOldVersion(): boolean {
+        return DateUtils.parseDate(this.clientInfo.user.regDate).isAfter(this.NEW_USERS_DATE);
     }
 }

@@ -115,7 +115,7 @@ export class TariffAgreement extends UI {
 @Component({
     // language=Vue
     template: `
-        <v-layout v-if="tariff !== Tariff.TRIAL" column :class="['tariff-item', 'margB30', tariff === Tariff.PRO ? 'pro-tarrif' : '']">
+        <v-layout v-if="tariff !== Tariff.TRIAL && !(tariff === Tariff.FREE && isNewUser)" column :class="['tariff-item', 'margB30', tariff === Tariff.PRO ? 'pro-tariff' : '']">
             <div v-if="tariff == Tariff.PRO" class="alignC fs13 tariff-most-popular">
                 Выбор 67% инвесторов
             </div>
@@ -182,7 +182,7 @@ export class TariffAgreement extends UI {
                         Базовый функционал
                     </div>
                     <div class="py-3 fs14">
-                        Доступ к разделу “Рекомендации”
+                        Доступ к разделу “Аналитика”
                     </div>
                     <div class="py-3 fs14">
                         Формирование составного портфеля из портфелей различных брокеров
@@ -219,7 +219,7 @@ export class TariffAgreement extends UI {
                         Учет дивидендов, купонов, комиссий и амортизации
                     </div>
                     <div class="py-3 fs14">
-                        Котировкии актуальная информация о эмитенте
+                        Котировки и актуальная информация о эмитенте
                     </div>
                     <div class="py-3 fs14">
                         Уведомления о ценах акций и облигаций
@@ -229,6 +229,9 @@ export class TariffAgreement extends UI {
                     </div>
                     <div class="py-3 fs14">
                         Дивидендный анализ
+                    </div>
+                    <div class="py-3 fs14">
+                        Операции с валютой
                     </div>
                 </div>
             </v-layout>
@@ -400,7 +403,7 @@ export class PayButton extends UI {
                             <div>
                                 <v-radio-group v-model="monthly" class="radio-horizontal">
                                     <v-radio label="На год" :value="false"></v-radio>
-                                    <b>&nbsp;{{discountApplied ? '' : 'выгоднее до 2-х раз'}}</b>
+                                    &nbsp;
                                     <v-radio label="На месяц" :value="true"></v-radio>
                                 </v-radio-group>
                             </div>
@@ -433,11 +436,9 @@ export class PayButton extends UI {
                         <template v-if="clientInfo.user.nextPurchaseDiscountExpired">(срок действия скидки до {{ clientInfo.user.nextPurchaseDiscountExpired | date }})</template>
                     </p>
 
-                    <v-layout class="wrap-tariffs-sentence">
-                        <v-layout justify-space-around wrap>
-                            <pay-button v-for="item in Tariff.values()" :key="item.name" @pay="makePayment" :tariff="item" :client-info="clientInfo" :monthly="monthly"
-                                        :agreement-state="agreementState" :busy-state="busyState" :is-progress="isProgress" :payment-info="paymentInfo"></pay-button>
-                        </v-layout>
+                    <v-layout class="wrap-tariffs-sentence" justify-center wrap>
+                        <pay-button v-for="item in Tariff.values()" :key="item.name" @pay="makePayment" :tariff="item" :client-info="clientInfo" :monthly="monthly"
+                                    :agreement-state="agreementState" :busy-state="busyState" :is-progress="isProgress" :payment-info="paymentInfo"></pay-button>
                     </v-layout>
                 </div>
             </v-card>

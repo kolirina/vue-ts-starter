@@ -6,6 +6,7 @@ import {RouteConfig} from "vue-router/types/router";
 import {Resolver} from "../../../typings/vue";
 import {AuthComponent} from "../app/authComponent";
 import {TariffExpiredDialog} from "../components/dialogs/tariffExpiredDialog";
+import {AdviserPage} from "../pages/adviser/adviserPage";
 import {BalancesPage} from "../pages/balancesPage";
 import {BondInfoPage} from "../pages/bondInfoPage";
 import {CombinedPortfolioPage} from "../pages/combinedPortfolioPage";
@@ -110,6 +111,14 @@ export class RouterConfiguration {
                 meta: {
                     title: "Портфель"
                 }
+            },
+            {
+                name: "adviser",
+                path: "/adviser",
+                meta: {
+                    title: "Аналитика"
+                },
+                component: AdviserPage,
             },
             {
                 name: "events",

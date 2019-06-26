@@ -60,3 +60,9 @@ input.highcharts-range-selector:focus {
   width: 95px !important;
   background: white;
 }
+.highcharts-container {
+  width: 100% !important;
+  svg {
+    width: 100% !important;
+  }
+}
