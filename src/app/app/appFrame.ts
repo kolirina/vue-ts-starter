@@ -101,6 +101,7 @@ export class AppFrame extends UI {
     @MainStore.Mutation(MutationType.CHANGE_SIDEBAR_STATE)
     private changeSideBarState: (sideBarState: boolean) => void;
 
+    /** Признак залогиненного пользователя */
     private loggedIn = false;
 
     /* Пользователь уведомлен об обновлениях */
