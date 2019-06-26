@@ -1,6 +1,8 @@
+import {Decimal} from "decimal.js";
 import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {Http} from "../platform/services/http";
+import {LineChartItem} from "../types/charts/types";
 import {Bond, BondHistoryResponse, Stock, StockHistoryResponse} from "../types/types";
 
 @Service("MarketHistoryService")
@@ -41,6 +43,20 @@ export class MarketHistoryService {
         const response = await this.http.get<BondHistoryResponse>(`/history/bond/${secid}`, {date: date});
         this.bondCache[`${secid}:${date}`] = response.bond;
         return response.bond;
+    }
+
+    /**
+     * Получение исторических данных по облигации на дату
+     * @param index тип индекса
+     * @param date дата
+     */
+    async getIndexHistory(index: string, date: string): Promise<any[]> {
+        const data = await this.http.get<LineChartItem[]>(`/history/${index}/index-history`, {date: date});
+        const result: any[] = [];
+        data.forEach(value => {
+            result.push([new Date(value.date).getTime(), new Decimal(value.amount).toDP(2, Decimal.ROUND_HALF_UP).toNumber()]);
+        });
+        return result;
     }
 
 }

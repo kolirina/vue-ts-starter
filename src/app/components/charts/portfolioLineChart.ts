@@ -46,6 +46,9 @@ export class PortfolioLineChart extends UI {
     /** Данные для графика */
     @Prop({required: true})
     private data: any[];
+    /** Данные для графика */
+    @Prop({required: true})
+    private compareData: any[];
     /** Данные по событиям */
     @Prop({required: false})
     private eventsChartData: HighStockEventsGroup[];
@@ -109,7 +112,7 @@ export class PortfolioLineChart extends UI {
         this.chart = ChartUtils.drawLineChart(this.$refs.container, this.data,
             this.showTrades ? this.eventsChartData : [],
             this.ranges, this.selectedRangeIndex, 2, this.balloonTitle,
-            "", "Стоимость портфеля", this.changeLoadState);
+            "", "Стоимость портфеля", this.changeLoadState, null, this.compareData, "Индекс МосБиржи");
     }
 
     private changeLoadState(): void {

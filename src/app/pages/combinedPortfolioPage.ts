@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import {Container, Inject} from "typescript-ioc";
 import {ContentLoader} from "vue-content-loader";
 import {Route} from "vue-router";
@@ -7,6 +8,7 @@ import {Component, UI} from "../app/ui";
 import {BlockByTariffDialog} from "../components/dialogs/blockByTariffDialog";
 import {CompositePortfolioManagement} from "../components/dialogs/compositePortfolioManagement";
 import {ClientInfo, ClientService} from "../services/clientService";
+import {MarketHistoryService} from "../services/marketHistoryService";
 import {OverviewService} from "../services/overviewService";
 import {HighStockEventsGroup} from "../types/charts/types";
 import {Permission} from "../types/permission";
@@ -21,47 +23,47 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-            <v-slide-x-reverse-transition>
-                <template v-if="overview">
-                    <base-portfolio-page :overview="overview" :line-chart-data="lineChartData" :line-chart-events="lineChartEvents"
-                                         :view-currency="viewCurrency" :state-key-prefix="StoreKeys.PORTFOLIO_COMBINED_CHART" :side-bar-opened="sideBarOpened"
-                                         @reloadLineChart="loadPortfolioLineChart">
-                        <template #afterDashboard>
-                            <v-layout align-center>
-                                <div :class="['control-porfolios-title', blockNotEmpty() ? '' : 'pl-3']">
-                                    Управление составным портфелем
-                                </div>
-                                <v-spacer></v-spacer>
-                                <div v-if="blockNotEmpty()">
-                                    <v-btn class="btn" color="primary" @click.stop="showDialogCompositePortfolio">
-                                        Сформировать
-                                    </v-btn>
-                                </div>
-                            </v-layout>
-                            <v-layout v-if="!blockNotEmpty()" column class="empty-station px-4 py-4 mt-3">
-                                <div class="empty-station__description">
-                                    Здесь вы можете объединить для просмотра несколько портфелей в один, и проанализировать
-                                    состав и доли каждой акции, если, например, она входит в состав нескольких портфелей.
-                                </div>
-                                <div class="mt-4">
-                                    <v-btn class="btn" color="primary" @click.stop="showDialogCompositePortfolio">
-                                        Сформировать
-                                    </v-btn>
-                                </div>
-                            </v-layout>
-                        </template>
-                    </base-portfolio-page>
-                </template>
-                <template v-else>
-                    <content-loader :height="800" :width="800" :speed="1" primaryColor="#f3f3f3" secondaryColor="#ecebeb">
-                        <rect x="0" y="20" rx="5" ry="5" width="801.11" height="80"/>
-                        <rect x="0" y="120" rx="5" ry="5" width="801.11" height="30"/>
-                        <rect x="0" y="170" rx="5" ry="5" width="801.11" height="180"/>
-                        <rect x="0" y="370" rx="5" ry="5" width="801.11" height="180"/>
-                        <rect x="0" y="570" rx="5" ry="5" width="801.11" height="180"/>
-                    </content-loader>
-                </template>
-            </v-slide-x-reverse-transition>
+        <v-slide-x-reverse-transition>
+            <template v-if="overview">
+                <base-portfolio-page :overview="overview" :line-chart-data="lineChartData" :line-chart-events="lineChartEvents" :index-line-chart-data="indexLineChartData"
+                                     :view-currency="viewCurrency" :state-key-prefix="StoreKeys.PORTFOLIO_COMBINED_CHART" :side-bar-opened="sideBarOpened"
+                                     @reloadLineChart="loadPortfolioLineChart">
+                    <template #afterDashboard>
+                        <v-layout align-center>
+                            <div :class="['control-porfolios-title', blockNotEmpty() ? '' : 'pl-3']">
+                                Управление составным портфелем
+                            </div>
+                            <v-spacer></v-spacer>
+                            <div v-if="blockNotEmpty()">
+                                <v-btn class="btn" color="primary" @click.stop="showDialogCompositePortfolio">
+                                    Сформировать
+                                </v-btn>
+                            </div>
+                        </v-layout>
+                        <v-layout v-if="!blockNotEmpty()" column class="empty-station px-4 py-4 mt-3">
+                            <div class="empty-station__description">
+                                Здесь вы можете объединить для просмотра несколько портфелей в один, и проанализировать
+                                состав и доли каждой акции, если, например, она входит в состав нескольких портфелей.
+                            </div>
+                            <div class="mt-4">
+                                <v-btn class="btn" color="primary" @click.stop="showDialogCompositePortfolio">
+                                    Сформировать
+                                </v-btn>
+                            </div>
+                        </v-layout>
+                    </template>
+                </base-portfolio-page>
+            </template>
+            <template v-else>
+                <content-loader :height="800" :width="800" :speed="1" primaryColor="#f3f3f3" secondaryColor="#ecebeb">
+                    <rect x="0" y="20" rx="5" ry="5" width="801.11" height="80"/>
+                    <rect x="0" y="120" rx="5" ry="5" width="801.11" height="30"/>
+                    <rect x="0" y="170" rx="5" ry="5" width="801.11" height="180"/>
+                    <rect x="0" y="370" rx="5" ry="5" width="801.11" height="180"/>
+                    <rect x="0" y="570" rx="5" ry="5" width="801.11" height="180"/>
+                </content-loader>
+            </template>
+        </v-slide-x-reverse-transition>
     `,
     components: {BasePortfolioPage, ContentLoader}
 })
@@ -73,6 +75,8 @@ export class CombinedPortfolioPage extends UI {
     private sideBarOpened: boolean;
     @Inject
     private overviewService: OverviewService;
+    @Inject
+    private marketHistoryService: MarketHistoryService;
     /** Данные комбинированного портфеля */
     private overview: Overview = null;
     /** Валюта просмотра портфеля */
@@ -81,6 +85,8 @@ export class CombinedPortfolioPage extends UI {
     private lineChartData: any[] = null;
     /** Данные по событиям для графика стоимости */
     private lineChartEvents: HighStockEventsGroup[] = null;
+    /** Данные стоимости индекса ММВБ */
+    private indexLineChartData: any[] = null;
     /** Ключи для сохранения информации */
     private StoreKeys = StoreKeys;
 
@@ -138,6 +144,7 @@ export class CombinedPortfolioPage extends UI {
         const ids = this.clientInfo.user.portfolios.filter(value => value.combined).map(value => value.id);
         if (UiStateHelper.historyPanel[0] === 1) {
             this.lineChartData = await this.overviewService.getCostChartCombined({ids: ids, viewCurrency: this.viewCurrency});
+            this.indexLineChartData = await this.marketHistoryService.getIndexHistory("MMVB", dayjs(this.overview.firstTradeDate).format("DD.MM.YYYY"));
             this.lineChartEvents = await this.overviewService.getEventsChartDataCombined({ids: ids, viewCurrency: this.viewCurrency});
         }
     }

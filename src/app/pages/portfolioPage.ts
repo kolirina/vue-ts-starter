@@ -1,9 +1,11 @@
+import dayjs from "dayjs";
 import {Inject} from "typescript-ioc";
 import {namespace} from "vuex-class/lib/bindings";
 import {Component, UI, Watch} from "../app/ui";
 import {EmptyPortfolioStub} from "../components/emptyPortfolioStub";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {ExportService, ExportType} from "../services/exportService";
+import {MarketHistoryService} from "../services/marketHistoryService";
 import {OverviewService} from "../services/overviewService";
 import {HighStockEventsGroup} from "../types/charts/types";
 import {StoreKeys} from "../types/storeKeys";
@@ -21,10 +23,11 @@ const MainStore = namespace(StoreType.MAIN);
         <div v-if="portfolio" class="h100pc">
             <empty-portfolio-stub v-if="isEmptyBlockShowed"></empty-portfolio-stub>
             <base-portfolio-page v-else :overview="portfolio.overview" :portfolio-name="portfolio.portfolioParams.name"
-                                :portfolio-id="String(portfolio.portfolioParams.id)"
-                                :line-chart-data="lineChartData" :line-chart-events="lineChartEvents" :view-currency="portfolio.portfolioParams.viewCurrency"
-                                :state-key-prefix="StoreKeys.PORTFOLIO_CHART" :side-bar-opened="sideBarOpened" :share-notes="portfolio.portfolioParams.shareNotes"
-                                @reloadLineChart="loadPortfolioLineChart" @exportTable="onExportTable" exportable>
+                                 :portfolio-id="String(portfolio.portfolioParams.id)"
+                                 :line-chart-data="lineChartData" :line-chart-events="lineChartEvents" :index-line-chart-data="indexLineChartData"
+                                 :view-currency="portfolio.portfolioParams.viewCurrency"
+                                 :state-key-prefix="StoreKeys.PORTFOLIO_CHART" :side-bar-opened="sideBarOpened" :share-notes="portfolio.portfolioParams.shareNotes"
+                                 @reloadLineChart="loadPortfolioLineChart" @exportTable="onExportTable" exportable>
             </base-portfolio-page>
         </div>
     `,
@@ -39,8 +42,14 @@ export class PortfolioPage extends UI {
     @Inject
     private overviewService: OverviewService;
     @Inject
+    private marketHistoryService: MarketHistoryService;
+    @Inject
     private exportService: ExportService;
+    /** Данные графика стоимости портфеля */
     private lineChartData: any[] = null;
+    /** Данные стоимости индекса ММВБ */
+    private indexLineChartData: any[] = null;
+    /** События для графика стоимости портфеля */
     private lineChartEvents: HighStockEventsGroup[] = null;
     /** Ключи для сохранения информации */
     private StoreKeys = StoreKeys;
@@ -64,6 +73,7 @@ export class PortfolioPage extends UI {
     private async loadPortfolioLineChart(): Promise<void> {
         if (UiStateHelper.historyPanel[0] === 1 && !CommonUtils.exists(this.lineChartData) && !CommonUtils.exists(this.lineChartEvents)) {
             this.lineChartData = await this.overviewService.getCostChart(this.portfolio.id);
+            this.indexLineChartData = await this.marketHistoryService.getIndexHistory("MMVB", dayjs(this.portfolio.overview.firstTradeDate).format("DD.MM.YYYY"));
             this.lineChartEvents = await this.overviewService.getEventsChartDataWithDefaults(this.portfolio.id);
         }
     }
