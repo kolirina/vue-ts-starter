@@ -40,8 +40,8 @@ import {Bond, Share} from "../types/types";
             </v-menu>
             <v-icon @click.native="toggleSearch">search</v-icon>
             <v-slide-x-transition>
-                <v-text-field v-if="showSearch" :value="searchQueryMutated" @input="onSearch" @click:clear="onClear" @blur="hideInput" :label="searchLabel"
-                              single-line hide-details autofocus></v-text-field>
+                <v-text-field v-if="showSearch" :value="searchQueryMutated" @input="onSearch" @click:clear="onClear" @blur="hideInput"
+                              :label="searchLabel" single-line hide-details autofocus></v-text-field>
             </v-slide-x-transition>
         </div>
     `
@@ -68,6 +68,7 @@ export class TableFilterBase extends UI {
     private currentTimer: number = null;
 
     created(): void {
+        this.searchQueryMutated = this.searchQuery;
         this.showSearch = !!this.searchQueryMutated;
     }
 
