@@ -107,6 +107,8 @@ export class TableFilterBase extends UI {
     }
 
     private hideInput(): void {
-        this.showSearch = false;
+        if (this.searchQueryMutated.length === 0) {
+            this.showSearch = false;
+        }
     }
 }
