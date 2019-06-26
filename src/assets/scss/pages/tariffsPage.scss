@@ -241,10 +241,7 @@
   width: 100%;
   background: #F7F9FB;
   border-radius: 8px;
-  margin-left: 195px;
-  &:first-child {
-    margin-left: 0px;
-  }
+  margin-top: 70px;
 }
 .pro-tariff {
   border-top-left-radius: 0px;
@@ -269,6 +266,19 @@
 .link-license-agreement {
   color: #3B6EC9;
 }
-.wrap-tariffs-sentence {
-  margin-top: 70px;
+.free-tariff-delete {
+  justify-content: center;
+  @media screen and (max-width: 990px) {
+    justify-content: space-around !important;
+    .tariff-item{
+      &:first-child {
+        margin-right: 0px !important;
+      }
+    }
+  }
+  .tariff-item{
+    &:first-child {
+      margin-right: 195px;
+    }
+  }
 }
