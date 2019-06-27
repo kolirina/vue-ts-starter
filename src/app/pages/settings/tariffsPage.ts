@@ -116,7 +116,7 @@ export class TariffAgreement extends UI {
     // language=Vue
     template: `
         <v-layout v-if="tariff !== Tariff.TRIAL" column :class="['tariff-item', 'margB30', tariff === Tariff.PRO ? 'pro-tarrif' : '']">
-            <div v-if="tariff == Tariff.PRO" class="alignC fs13 tariff-most-popular">
+            <div v-if="tariff === Tariff.PRO" class="alignC fs13 tariff-most-popular">
                 Выбор 67% инвесторов
             </div>
             <v-layout align-center column class="px-4">
@@ -127,7 +127,7 @@ export class TariffAgreement extends UI {
                     <div v-if="!monthly && isNewUser" class="tariff__plan_year-price">{{ tariff === Tariff.FREE ? "&nbsp;" : "* при оплате за год" }}</div>
                 </div>
                 <div>
-                    <div v-if="tariff == Tariff.STANDARD" class="fs13 margB20 mt-2">
+                    <div v-if="tariff === Tariff.STANDARD" class="fs13 margB20 mt-2">
                         <div>
                             <span class="bold">Неограниченное</span> кол-во бумаг
                         </div>
@@ -135,7 +135,7 @@ export class TariffAgreement extends UI {
                             <span class="bold">2</span> портфеля
                         </div>
                     </div>
-                    <div v-if="tariff == Tariff.PRO" class="fs13 margB20 mt-2">
+                    <div v-if="tariff === Tariff.PRO" class="fs13 margB20 mt-2">
                         <div>
                             <span class="bold">Неограниченное</span> кол-во бумаг
                         </div>
@@ -143,7 +143,7 @@ export class TariffAgreement extends UI {
                             <span class="bold">Неограниченное</span> кол-во портфелей
                         </div>
                     </div>
-                    <div v-if="tariff == Tariff.FREE" class="fs13 margB20 mt-2">
+                    <div v-if="tariff === Tariff.FREE" class="fs13 margB20 mt-2">
                         <div>
                             <span class="bold">7</span> ценных бумаг
                         </div>
@@ -154,22 +154,22 @@ export class TariffAgreement extends UI {
                 </div>
                 <v-tooltip v-if="!available || !payAllowed" content-class="custom-tooltip-wrap" bottom>
                     <v-btn slot="activator" @click.stop="makePayment(tariff)"
-                        :class="{'big_btn': true, 'selected': selected && agreementState[tariff.name]}"
-                        :disabled="disabled">
+                           :class="{'big_btn': true, 'selected': selected || agreementState[tariff.name]}"
+                           :disabled="disabled">
                         <span v-if="!busyState[tariff.name]">{{ buttonLabel }}</span>
                         <v-progress-circular v-if="busyState[tariff.name]" indeterminate color="white" :size="20"></v-progress-circular>
                     </v-btn>
                     <tariff-limit-exceed-info v-if="!available" :portfolios-count="clientInfo.user.portfoliosCount" :tariff="tariff"
-                                            :shares-count="clientInfo.user.sharesCount" :foreign-shares="clientInfo.user.foreignShares">
+                                              :shares-count="clientInfo.user.sharesCount" :foreign-shares="clientInfo.user.foreignShares">
                     </tariff-limit-exceed-info>
                     <span v-if="!payAllowed">
                         У вас уже действует активная подписка<br>
                         Для управления подпиской перейдите в Профиль
                     </span>
                 </v-tooltip>
-                <v-btn v-else @click="makePayment(tariff)"
-                    :class="{'big_btn': true, 'selected': selected && agreementState[tariff.name]}"
-                    :disabled="disabled">
+                <v-btn v-else @click.stop="makePayment(tariff)"
+                       :class="{'big_btn': true, 'selected': selected || agreementState[tariff.name]}"
+                       :disabled="disabled">
                     <span v-if="!busyState[tariff.name]">{{ buttonLabel }}</span>
                     <v-progress-circular v-if="busyState[tariff.name]" indeterminate color="white" :size="20"></v-progress-circular>
                 </v-btn>
@@ -177,12 +177,12 @@ export class TariffAgreement extends UI {
                     {{ expirationDescription }}
                 </div>
                 <tariff-agreement :value="agreementState[tariff.name]" @agree="agreementState[tariff.name] = $event"></tariff-agreement>
-                <div v-if="tariff == Tariff.STANDARD" class="tariff-description-wrap">
+                <div v-if="tariff === Tariff.STANDARD" class="tariff-description-wrap">
                     <div class="py-3 fs14">
                         Базовый функционал
                     </div>
                     <div class="py-3 fs14">
-                        Доступ к разделу “Рекомендации”
+                        Доступ к разделу "Аналитика"
                     </div>
                     <div class="py-3 fs14">
                         Формирование составного портфеля из портфелей различных брокеров
@@ -191,7 +191,7 @@ export class TariffAgreement extends UI {
                         Мобильное приложение
                     </div>
                 </div>
-                <div v-if="tariff == Tariff.PRO" class="tariff-description-wrap">
+                <div v-if="tariff === Tariff.PRO" class="tariff-description-wrap">
                     <div class="py-3 fs14">
                         Функционал тарифа Стандарт
                     </div>
@@ -208,7 +208,7 @@ export class TariffAgreement extends UI {
                         Льготные условия на обучение инвестированию у наших школ-партнеров
                     </div>
                 </div>
-                <div v-if="tariff == Tariff.FREE" class="tariff-description-wrap">
+                <div v-if="tariff === Tariff.FREE" class="tariff-description-wrap">
                     <div class="py-3 fs14">
                         Импорт и экспорт сделок
                     </div>
@@ -515,8 +515,12 @@ export class TariffsPage extends UI {
         }
         this.isProgress = true;
         this.busyState[tariff.name] = true;
-        const result = tariff === Tariff.FREE ? await new ConfirmDialog().show("Вы собираетесь перейти на Бесплатный план. " +
-            "Оплата за неиспользованные дни вашего текущего тарифного плана будет при этом утеряна.") : BtnReturn.YES;
+        let result = BtnReturn.YES;
+        // если переходим на тариф Бесплатный и подписка не истекла, спрашиваем пользователя
+        if (tariff === Tariff.FREE && !this.isSubscriptionExpired()) {
+            result = await new ConfirmDialog().show("Вы собираетесь перейти на Бесплатный план. " +
+                "Оплата за неиспользованные дни вашего текущего тарифного плана будет при этом утеряна.");
+        }
         if (result === BtnReturn.YES) {
             await this.makePaymentConfirmed(tariff);
         } else {
