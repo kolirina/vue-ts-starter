@@ -67,19 +67,15 @@ export class RouterConfiguration {
                     next(false);
                     return;
                 }
-                // осуществляем переход по роуту если пользователь залогинен, его тариф не Бесплатный и тариф действущий
+                next();
+                // осуществляем переход по роуту и если пользователь залогинен отображаем диалог об истечении тарифа при соблюдении условий
                 const tariffAllowed = (to.meta as RouteMeta).tariffAllowed;
                 if (!tariffAllowed && authorized) {
                     const client = await clientService.getClientInfo();
                     const tariffExpired = client.tariff !== Tariff.FREE && DateUtils.parseDate(client.paidTill).isBefore(dayjs());
                     if (tariffExpired) {
-                        next();
                         await new TariffExpiredDialog().show(RouterConfiguration.router);
-                    } else {
-                        next();
                     }
-                } else {
-                    next();
                 }
             });
         }
@@ -284,25 +280,6 @@ export class RouterConfiguration {
                     title: "Балансы"
                 }
             },
-            // ============================== public urls ==============================
-            {
-                name: "public-portfolio",
-                path: "/public/portfolio/:id",
-                component: PublicPortfolioPage,
-                meta: {
-                    title: "Портфель",
-                    public: true
-                }
-            },
-            {
-                name: "public-dividends",
-                path: "/public/dividends/:id",
-                component: PublicDividendsPage,
-                meta: {
-                    title: "Дивиденды",
-                    public: true
-                }
-            }
         ];
     }
 

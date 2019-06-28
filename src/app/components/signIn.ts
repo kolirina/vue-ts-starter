@@ -30,18 +30,10 @@ const MainStore = namespace(StoreType.MAIN);
                                     Здравствуйте!
                                 </div>
                                 <div class="mt-4 maxW275">
-                                    <v-text-field
-                                        v-model.trim="signInData.username"
-                                        type="text"
-                                        :placeholder="'Логин'">
-                                    </v-text-field>
+                                    <v-text-field v-model.trim="signInData.username" type="text" :placeholder="'Логин'" @keydown.enter="signIn"></v-text-field>
                                 </div>
                                 <div class="margT30 maxW275">
-                                    <v-text-field
-                                        v-model.trim="signInData.password"
-                                        type="password"
-                                        :placeholder="'Пароль'">
-                                    </v-text-field>
+                                    <v-text-field v-model.trim="signInData.password" type="password" :placeholder="'Пароль'" @keydown.enter="signIn"></v-text-field>
                                 </div>
                                 <div class="margT30">
                                     <v-btn :disabled="loginBtnDisabled" class="btn sign-btn maxW275" @click="signIn">Войти</v-btn>
@@ -50,9 +42,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     <v-btn class="btn sign-btn maxW275" @click.stop="openRegistrationDialog">Регистрация</v-btn>
                                 </div>
                                 <div class="margT30 mb-4">
-                                    <v-checkbox v-model="signInData.rememberMe"
-                                                hide-details
-                                                label="Запомнить меня"></v-checkbox>
+                                    <v-checkbox v-model="signInData.rememberMe" hide-details label="Запомнить меня"></v-checkbox>
                                 </div>
                             </div>
                         </v-layout>
