@@ -60,7 +60,12 @@ export class AdviserPage extends UI {
     private advicesUnicCode: AdviceUnicCode[] = [];
 
     async created(): Promise<void> {
-        this.currentRiskLevel = this.clientInfo.user.riskLevel ? this.clientInfo.user.riskLevel.toLowerCase() : RiskType.LOW.code;
+        if (this.clientInfo.user.riskLevel) {
+            this.currentRiskLevel =  this.clientInfo.user.riskLevel.toLowerCase();
+            await this.analysisPortfolio();
+        } else {
+            this.currentRiskLevel =  RiskType.LOW.code;
+        }
         UI.on(EventType.TRADE_CREATED, async () => await this.analysisPortfolio());
         UI.on(EventType.TRADE_UPDATED, async () => await this.analysisPortfolio());
     }
