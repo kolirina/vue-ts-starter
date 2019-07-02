@@ -1,5 +1,5 @@
 import Component from "vue-class-component";
-import {Prop, UI} from "../../app/ui";
+import {UI} from "../../app/ui";
 
 @Component({
     // language=Vue
@@ -19,6 +19,7 @@ import {Prop, UI} from "../../app/ui";
     `
 })
 export class EmptyAdvice extends UI {
+
     private goToChooseRiskType(): void {
         this.$emit("goToChooseRiskType");
     }

@@ -61,10 +61,10 @@ export class AdviserPage extends UI {
 
     async created(): Promise<void> {
         if (this.clientInfo.user.riskLevel) {
-            this.currentRiskLevel =  this.clientInfo.user.riskLevel.toLowerCase();
+            this.currentRiskLevel = this.clientInfo.user.riskLevel.toLowerCase();
             await this.analysisPortfolio();
         } else {
-            this.currentRiskLevel =  RiskType.LOW.code;
+            this.currentRiskLevel = RiskType.LOW.code;
         }
         UI.on(EventType.TRADE_CREATED, async () => await this.analysisPortfolio());
         UI.on(EventType.TRADE_UPDATED, async () => await this.analysisPortfolio());
