@@ -5,5 +5,7 @@ export enum EventType {
     PORTFOLIO_RELOAD = "PORTFOLIO_RELOAD",
     HANDLE_ERROR = "HANDLE_ERROR",
     PRINT = "print",
-    EXPORT = "exportTo"
+    EXPORT = "exportTo",
+    TRADE_CREATED = "DEAL_CREATED",
+    TRADE_UPDATED = "DEAL_UPDATED"
 }

@@ -6,6 +6,7 @@ import {ConfirmDialog} from "../../components/dialogs/confirmDialog";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {AdviceService, AdviceUnicCode} from "../../services/adviceService";
 import {ClientInfo, ClientService} from "../../services/clientService";
+import {EventType} from "../../types/eventType";
 import {Portfolio, RiskType} from "../../types/types";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
@@ -31,7 +32,7 @@ const MainStore = namespace(StoreType.MAIN);
                 <preloader v-if="activePreloader"></preloader>
                 <analysis-result v-if="!activePreloader && isAnalys && advicesUnicCode.length !== 0"
                                  @goToChooseRiskType="goToChooseRiskType" :advicesUnicCode="advicesUnicCode"></analysis-result>
-                <empty-advice v-if="!activePreloader && isAnalys && advicesUnicCode.length === 0"></empty-advice>
+                <empty-advice v-if="!activePreloader && isAnalys && advicesUnicCode.length === 0" @goToChooseRiskType="goToChooseRiskType"></empty-advice>
             </v-card>
         </v-container>
     `,
@@ -59,7 +60,19 @@ export class AdviserPage extends UI {
     private advicesUnicCode: AdviceUnicCode[] = [];
 
     async created(): Promise<void> {
-        this.currentRiskLevel = this.clientInfo.user.riskLevel ? this.clientInfo.user.riskLevel.toLowerCase() : RiskType.LOW.code;
+        if (this.clientInfo.user.riskLevel) {
+            this.currentRiskLevel = this.clientInfo.user.riskLevel.toLowerCase();
+            await this.analysisPortfolio();
+        } else {
+            this.currentRiskLevel = RiskType.LOW.code;
+        }
+        UI.on(EventType.TRADE_CREATED, async () => await this.analysisPortfolio());
+        UI.on(EventType.TRADE_UPDATED, async () => await this.analysisPortfolio());
+    }
+
+    beforeDestroy(): void {
+        UI.off(EventType.TRADE_CREATED);
+        UI.off(EventType.TRADE_UPDATED);
     }
 
     @Watch("portfolio")
