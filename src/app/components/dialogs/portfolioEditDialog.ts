@@ -186,6 +186,8 @@ export class PortfolioEditDialog extends CustomDialog<PortfolioDialogData, boole
                 throw error;
             }
             return;
+        } finally {
+            this.processState = false;
         }
         this.$snotify.info(`Портфель успешно ${this.portfolioParams.id ? "изменен" : "создан"}`);
         this.processState = false;

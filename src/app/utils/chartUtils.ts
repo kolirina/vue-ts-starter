@@ -246,7 +246,7 @@ export class ChartUtils {
             rangeSelector: {
                 buttons: ranges,
                 selected: selectedRangeIndex,
-                inputEnabled: false
+                inputEnabled: true
             },
             xAxis: {
                 type: "datetime",
