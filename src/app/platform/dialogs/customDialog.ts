@@ -37,7 +37,7 @@ export class CustomDialog<ParamType, ReturnType> extends UI {
         this.showed = true;
         return new Promise<ReturnType>((resolve, reject): void => {
             let dialogResult: ReturnType = this.responseByDefault;
-            // // регистрируем обработчик события на закрытие диалога
+            // регистрируем обработчик события на закрытие диалога
             this.$on("close", (result: ReturnType | MouseEvent) => {
                 if (!(result instanceof MouseEvent)) {
                     dialogResult = result as ReturnType;
