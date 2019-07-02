@@ -211,6 +211,7 @@ export class BondInfoPage extends UI {
     private async onShareSelect(share: Share): Promise<void> {
         this.share = share;
         if (this.share) {
+            this.events = [];
             const result = await this.marketService.getBondInfo(this.share.isin);
             this.share = result.bond;
             this.history = result.history;
