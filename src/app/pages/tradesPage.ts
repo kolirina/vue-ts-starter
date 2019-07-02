@@ -154,7 +154,6 @@ export class TradesPage extends UI {
             `по бумаге ${tradeRow.ticker}`} была успешно удалена`);
     }
 
-    @ShowProgress
     private async loadTrades(): Promise<void> {
         const result = await this.tradeService.loadTrades(
             this.portfolio.id,
