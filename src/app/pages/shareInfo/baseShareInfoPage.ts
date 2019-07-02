@@ -376,6 +376,7 @@ export class BaseShareInfoPage extends UI {
     @ShowProgress
     private async loadShareInfo(ticker: string): Promise<void> {
         const result = await this.marketService.getStockInfo(ticker);
+        this.events = [];
         this.share = result.stock;
         this.history = result.history;
         this.dividends = result.dividends;
