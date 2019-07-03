@@ -87,7 +87,7 @@ export class PortfolioLineChart extends UI {
     private selectedRange: string = null;
     /** Признак отображения сделок на графике */
     private showTrades = true;
-    /** Признак отображения сравнения с индексом Мос биржи на графике */
+    /** Признак отображения диаграммы для сравнения с индексом Мос биржи */
     private showStockExchange = true;
 
     async mounted(): Promise<void> {
