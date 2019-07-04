@@ -64,6 +64,7 @@ export class DealsImportProvider extends (EnumType as IStaticEnum<DealsImportPro
     static readonly NETTRADER = new DealsImportProvider("NETTRADER", "Nettrader");
     static readonly ITINVEST = new DealsImportProvider("ITINVEST", "ITIcapital");
     static readonly ATON = new DealsImportProvider("ATON", "Атон");
+    static readonly ALFACAPITAL = new DealsImportProvider("ALFACAPITAL", "Альфа-Капитал");
     static readonly INTELINVEST = new DealsImportProvider("INTELINVEST", "Intelinvest");
 
     private constructor(public code: string, public description: string) {
