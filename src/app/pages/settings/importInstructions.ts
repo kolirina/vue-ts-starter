@@ -129,6 +129,14 @@ const MainStore = namespace(StoreType.MAIN);
                     </p>
                 </div>
 
+                <!-- ALFACAPITAL -->
+                <div v-if="provider === providers.ALFACAPITAL">
+                    <p class="import-default-text">
+                        Используйте для импорта отчеты по сделкам (cashflows) в формате xls. Будут импортированы сделки по бумагам,
+                        движения ДС (связанные с вводом/выводом на счет, налоги и расходы не связанные напрямую со сделками).
+                    </p>
+                </div>
+
                 <!-- Формат intelinvest -->
                 <div v-if="provider === providers.INTELINVEST">
                     <IntelinvestInstruction></IntelinvestInstruction>
