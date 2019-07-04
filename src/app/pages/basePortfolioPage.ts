@@ -91,7 +91,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                                            class="exp-panel-menu"></chart-export-menu>
                     </template>
                     <v-card-text>
-                        <portfolio-line-chart v-if="lineChartData && lineChartEvents" ref="portfolioLineChart" :data="lineChartData"
+                        <portfolio-line-chart v-if="lineChartData && lineChartEvents" ref="portfolioLineChart" :data="lineChartData" :compare-data="indexLineChartData"
                                               :state-key-prefix="stateKeyPrefix"
                                               :events-chart-data="lineChartEvents" :balloon-title="portfolioName"></portfolio-line-chart>
                         <v-container v-else grid-list-md text-xs-center>
@@ -173,6 +173,9 @@ export class BasePortfolioPage extends UI {
     /** Данные по графику стоимости портфеля */
     @Prop({required: false})
     private lineChartData: any[];
+    /** Данные по графику индекса */
+    @Prop({required: false})
+    private indexLineChartData: any[];
     /** Данные по событиям графика стоимости портфеля */
     @Prop({required: false})
     private lineChartEvents: HighStockEventsGroup[];

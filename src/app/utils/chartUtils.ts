@@ -217,10 +217,12 @@ export class ChartUtils {
      * @param yAxisTitle заголовок для оси y
      * @param callback callback вызваемый после загрузки
      * @param portfolioAvg средняя цена бумаги в портфеле (для рисования горизонтальной линии)
+     * @param compareData
+     * @param compareDataBalloonTitle
      */
     static drawLineChart(container: HTMLElement, chartData: any[], eventsChartData: HighStockEventsGroup[], ranges: Highstock.RangeSelectorButton[],
                          selectedRangeIndex: number, decimals: number, balloonTitle: string, title: string = "", yAxisTitle: string = "",
-                         callback: () => void = null, portfolioAvg: number = null): ChartObject {
+                         callback: () => void = null, portfolioAvg: number = null, compareData: any[] = [], compareDataBalloonTitle: string = ""): ChartObject {
         return Highstock.stockChart(container, {
             chart: {
                 zoomType: "x",
@@ -276,7 +278,17 @@ export class ChartUtils {
                 enabled: false
             },
             plotOptions: {
-                area: ChartUtils.areaChart
+                area: ChartUtils.areaChart,
+                series: {
+                    compare: "percent",
+                    showInNavigator: true
+                } as any
+            },
+            tooltip: {
+                pointFormat: compareData.length ? "<span style=\"color:{series.color}\">{series.name}</span>: <b>{point.y}</b> ({point.change}%)<br/>" :
+                    "<span style=\"color:{series.color}\">{series.name}</span>: <b>{point.y}</b><br/>",
+                valueDecimals: decimals,
+                split: true
             },
             exporting: {
                 enabled: false
@@ -288,11 +300,12 @@ export class ChartUtils {
                 type: "area",
                 name: balloonTitle,
                 data: chartData,
-                id: "dataseries",
-                // @ts-ignore
-                tooltip: {
-                    valueDecimals: decimals
-                }
+                id: "dataseries"
+            }, {
+                type: "area",
+                name: compareDataBalloonTitle,
+                data: compareData,
+                id: "dataseries"
             },
                 // @ts-ignore
                 ...eventsChartData || []

@@ -10,21 +10,45 @@ import {ChartUtils} from "../../utils/chartUtils";
 @Component({
     // language=Vue
     template: `
-        <div style="position: relative; width: 100%; height: 100%;">
-            <v-switch v-model="showTrades" @change="onShowTradesChange" class="margT0" hide-details>
-                <template #label>
-                    <span>Сделки на графике</span>
-                    <v-tooltip content-class="custom-tooltip-wrap" bottom>
-                        <sup class="custom-tooltip" slot="activator">
-                            <v-icon>fas fa-info-circle</v-icon>
-                        </sup>
-                        <span>
-                            Включите, если хотите чтобы на графике отображались сделки
-                        </span>
-                    </v-tooltip>
-                </template>
-            </v-switch>
+        <div>
+            <span v-if="!isDefault" class="chart-custom-filter" title="Настроен фильтр"></span>
+            <v-menu :close-on-content-click="false" :nudge-width="294" :nudge-bottom="40" bottom>
+                <div class="pl-3" slot="activator">
+                    <v-btn round class="chart-filter-btn">
+                        Фильтры
+                        <span class="portfolio-rows-filter__button__icon"></span>
+                    </v-btn>
+                </div>
 
+                <v-card class="portfolio-rows-filter__settings" style="box-shadow: none !important;">
+                    <v-switch v-model="showTrades" @change="onShowTradesChange" class="margT0" hide-details>
+                        <template #label>
+                            <span>Сделки на графике</span>
+                            <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                                <sup class="custom-tooltip" slot="activator">
+                                    <v-icon>fas fa-info-circle</v-icon>
+                                </sup>
+                                <span>
+                                    Включите, если хотите чтобы на графике отображались сделки
+                                </span>
+                            </v-tooltip>
+                        </template>
+                    </v-switch>
+                    <v-switch v-model="showStockExchange" @change="onShowStockExchangeChange" class="mt-3" hide-details>
+                        <template #label>
+                            <span>Сравнение с индексом МосБиржи</span>
+                            <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                                <sup class="custom-tooltip" slot="activator">
+                                    <v-icon>fas fa-info-circle</v-icon>
+                                </sup>
+                                <span>
+                                    Включите, если хотите чтобы на графике отображалось сравнение с индексом МосБиржи
+                                </span>
+                            </v-tooltip>
+                        </template>
+                    </v-switch>
+                </v-card>
+            </v-menu>
             <div v-show="chart" ref="container" style="width: 99%; height: 500px; margin: 0 auto" @click.stop></div>
         </div>
     `
@@ -46,6 +70,9 @@ export class PortfolioLineChart extends UI {
     /** Данные для графика */
     @Prop({required: true})
     private data: any[];
+    /** Данные для графика */
+    @Prop({required: true})
+    private compareData: any[];
     /** Данные по событиям */
     @Prop({required: false})
     private eventsChartData: HighStockEventsGroup[];
@@ -60,9 +87,12 @@ export class PortfolioLineChart extends UI {
     private selectedRange: string = null;
     /** Признак отображения сделок на графике */
     private showTrades = true;
+    /** Признак отображения диаграммы для сравнения с индексом Мос биржи */
+    private showStockExchange = false;
 
     async mounted(): Promise<void> {
-        this.showTrades = this.localStorage.get<string>(`${this.stateKeyPrefix}_SHOW_EVENTS`, "true") === "true";
+        this.showTrades = this.localStorage.get<boolean>(`${this.stateKeyPrefix}_SHOW_EVENTS`, true);
+        this.showStockExchange = this.localStorage.get<boolean>(`${this.stateKeyPrefix}_SHOW_INDEX_STOCK_EXCHANGE`, false);
         this.ranges = [...ChartUtils.getChartRanges()];
         this.ranges.forEach(range => {
             range.events = {
@@ -102,6 +132,11 @@ export class PortfolioLineChart extends UI {
         this.localStorage.set<string>(`${this.stateKeyPrefix}_SHOW_EVENTS`, String(this.showTrades));
     }
 
+    private async onShowStockExchangeChange(): Promise<void> {
+        this.localStorage.set<string>(`${this.stateKeyPrefix}_SHOW_INDEX_STOCK_EXCHANGE`, String(this.showStockExchange));
+        await this.draw();
+    }
+
     /**
      * Отрисовывает график
      */
@@ -109,7 +144,7 @@ export class PortfolioLineChart extends UI {
         this.chart = ChartUtils.drawLineChart(this.$refs.container, this.data,
             this.showTrades ? this.eventsChartData : [],
             this.ranges, this.selectedRangeIndex, 2, this.balloonTitle,
-            "", "Стоимость портфеля", this.changeLoadState);
+            "", "Стоимость портфеля", this.changeLoadState, null, this.showStockExchange ? this.compareData : [], this.showStockExchange ? "Индекс МосБиржи" : "");
     }
 
     private changeLoadState(): void {
@@ -123,5 +158,9 @@ export class PortfolioLineChart extends UI {
         if (this.stateKeyPrefix) {
             this.localStorage.set(`${this.stateKeyPrefix}_RANGE`, range);
         }
+    }
+
+    private get isDefault(): boolean {
+        return this.showTrades && !this.showStockExchange;
     }
 }
