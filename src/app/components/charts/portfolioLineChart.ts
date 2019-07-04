@@ -88,11 +88,11 @@ export class PortfolioLineChart extends UI {
     /** Признак отображения сделок на графике */
     private showTrades = true;
     /** Признак отображения диаграммы для сравнения с индексом Мос биржи */
-    private showStockExchange = true;
+    private showStockExchange = false;
 
     async mounted(): Promise<void> {
-        this.showTrades = this.localStorage.get<string>(`${this.stateKeyPrefix}_SHOW_EVENTS`, "true") === "true";
-        this.showStockExchange = this.localStorage.get<string>(`${this.stateKeyPrefix}_SHOW_INDEX_STOCK_EXCHANGE`, "true") === "true";
+        this.showTrades = this.localStorage.get<boolean>(`${this.stateKeyPrefix}_SHOW_EVENTS`, true);
+        this.showStockExchange = this.localStorage.get<boolean>(`${this.stateKeyPrefix}_SHOW_INDEX_STOCK_EXCHANGE`, false);
         this.ranges = [...ChartUtils.getChartRanges()];
         this.ranges.forEach(range => {
             range.events = {
@@ -144,7 +144,7 @@ export class PortfolioLineChart extends UI {
         this.chart = ChartUtils.drawLineChart(this.$refs.container, this.data,
             this.showTrades ? this.eventsChartData : [],
             this.ranges, this.selectedRangeIndex, 2, this.balloonTitle,
-            "", "Стоимость портфеля", this.changeLoadState, null, this.showStockExchange ? this.compareData : [], "Индекс МосБиржи");
+            "", "Стоимость портфеля", this.changeLoadState, null, this.showStockExchange ? this.compareData : [], this.showStockExchange ? "Индекс МосБиржи" : "");
     }
 
     private changeLoadState(): void {
@@ -161,6 +161,6 @@ export class PortfolioLineChart extends UI {
     }
 
     private get isDefault(): boolean {
-        return this.showTrades === true && this.showStockExchange === true;
+        return this.showTrades && !this.showStockExchange;
     }
 }
