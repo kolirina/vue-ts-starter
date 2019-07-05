@@ -119,11 +119,6 @@
 .active-btn-link {
   filter: none;
 }
-.small-screen-hide-toogle-menu-btn {
-  @media screen and (max-width: 1024px) {
-    display: none !important;
-  }
-}
 .small-screen-show-toogle-menu-btn {
   display: none;
   @media screen and (max-width: 1024px) {

@@ -1,6 +1,5 @@
 .tariff {
   max-width: 1510px;
-  min-width: 800px;
   margin: 0 auto;
   color: $main--font-color;
 
@@ -267,18 +266,36 @@
   color: #3B6EC9;
 }
 .free-tariff-delete {
-  justify-content: center;
-  @media screen and (max-width: 990px) {
-    justify-content: space-around !important;
-    .tariff-item{
-      &:first-child {
-        margin-right: 0px !important;
-      }
+  max-width: 1000px;
+  margin: 0 auto;
+  justify-content: space-around;
+}
+.toggle-block-basic-functionality {
+  .v-expansion-panel__header {
+    border-bottom: none;
+    padding: 0px;
+    div {
+      border-bottom: 0px;
+      font-family: "Open Sans" !important;
+    }
+    .v-expansion-panel__header__icon {
+      background: url("../img/common/icon-dropdown.svg") no-repeat center;
+      width: 10px;
+      height: 10px;
+      transform: rotate(180deg);
+      transition: transform 0.2s ease;
+
+      i {display: none}
     }
   }
-  .tariff-item{
-    &:first-child {
-      margin-right: 195px;
-    }
+  .v-expansion-panel__container--active .v-expansion-panel__header__icon {transform: rotate(0deg)}
+  .exp-panel-arrow {
+    margin-right: 0px;
+  }
+}
+.functional-list {
+  div {
+    border-bottom: 1px solid #e8e9ed;
+    background: #f7f9fb;
   }
 }
