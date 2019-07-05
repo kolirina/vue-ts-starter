@@ -179,7 +179,40 @@ export class TariffAgreement extends UI {
                 </div>
                 <tariff-agreement :value="agreementState[tariff.name]" @agree="agreementState[tariff.name] = $event"></tariff-agreement>
                 <div v-if="tariff === Tariff.STANDARD" class="tariff-description-wrap">
-                    <div class="py-3 fs14">
+                    <v-menu v-if="isNewTariffLayout" transition="slide-y-transition" class="w100pc toggle-block-basic-functionality" bottom right nudge-bottom="48">
+                        <v-layout align-center slot="activator" class="py-3 fs14">
+                            <span>Базовый функционал</span>
+                            <v-spacer></v-spacer>
+                            <span :class="['exp-panel-arrow']"></span>
+                        </v-layout>
+                        <v-list dense class="functional-list">
+                            <div class="pa-3 fs14">
+                                Импорт и экспорт сделок
+                            </div>
+                            <div class="pa-3 fs14">
+                                Полная аналитика портфеля
+                            </div>
+                            <div class="pa-3 fs14">
+                                Учет дивидендов, купонов, комиссий и амортизации
+                            </div>
+                            <div class="pa-3 fs14">
+                                Котировки и актуальная информация о эмитенте
+                            </div>
+                            <div class="pa-3 fs14">
+                                Уведомления о ценах акций и облигаций
+                            </div>
+                            <div class="pa-3 fs14">
+                                Возможность публичного доступа к портфелю
+                            </div>
+                            <div class="pa-3 fs14">
+                                Дивидендный анализ
+                            </div>
+                            <div class="pa-3 fs14">
+                                Операции с валютой
+                            </div>
+                        </v-list>
+                    </v-menu>
+                    <div v-else class="py-3 fs14">
                         Базовый функционал
                     </div>
                     <div class="py-3 fs14">

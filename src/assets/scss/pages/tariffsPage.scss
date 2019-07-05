@@ -1,6 +1,5 @@
 .tariff {
   max-width: 1510px;
-  min-width: 800px;
   margin: 0 auto;
   color: $main--font-color;
 
@@ -280,5 +279,23 @@
     &:first-child {
       margin-right: 195px;
     }
+  }
+}
+.toggle-block-basic-functionality {
+  .spacer {
+    border-bottom: none !important;
+  }
+  .exp-panel-arrow {
+    margin-right: 0px !important;
+  }
+  .v-menu__activator--active {
+    .exp-panel-arrow {
+      @extend .rotate-icons
+    }
+  }
+}
+.functional-list {
+  div {
+    border-bottom: 1px solid #e8e9ed;
   }
 }
