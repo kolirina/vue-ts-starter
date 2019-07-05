@@ -6,6 +6,7 @@ import {namespace} from "vuex-class/lib/bindings";
 import {Prop, UI, Watch} from "../../app/ui";
 import {ApplyPromoCodeDialog} from "../../components/dialogs/applyPromoCodeDialog";
 import {ConfirmDialog} from "../../components/dialogs/confirmDialog";
+import {ExpandedPanel} from "../../components/expandedPanel";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {ClientInfo, ClientService} from "../../services/clientService";
@@ -179,39 +180,39 @@ export class TariffAgreement extends UI {
                 </div>
                 <tariff-agreement :value="agreementState[tariff.name]" @agree="agreementState[tariff.name] = $event"></tariff-agreement>
                 <div v-if="tariff === Tariff.STANDARD" class="tariff-description-wrap">
-                    <v-menu v-if="isNewTariffLayout" transition="slide-y-transition" class="w100pc toggle-block-basic-functionality" bottom right nudge-bottom="48">
-                        <v-layout align-center slot="activator" class="py-3 fs14">
-                            <span>Базовый функционал</span>
-                            <v-spacer></v-spacer>
-                            <span :class="['exp-panel-arrow']"></span>
-                        </v-layout>
-                        <v-list dense class="functional-list">
-                            <div class="pa-3 fs14">
+                    <expanded-panel v-if="isNewTariffLayout" class="toggle-block-basic-functionality">
+                        <template #header>
+                            <div class="py-3 fs14">
+                                Базовый функционал
+                            </div>
+                        </template>
+                        <div class="functional-list">
+                            <div class="py-3 fs14">
                                 Импорт и экспорт сделок
                             </div>
-                            <div class="pa-3 fs14">
+                            <div class="py-3 fs14">
                                 Полная аналитика портфеля
                             </div>
-                            <div class="pa-3 fs14">
+                            <div class="py-3 fs14">
                                 Учет дивидендов, купонов, комиссий и амортизации
                             </div>
-                            <div class="pa-3 fs14">
+                            <div class="py-3 fs14">
                                 Котировки и актуальная информация о эмитенте
                             </div>
-                            <div class="pa-3 fs14">
+                            <div class="py-3 fs14">
                                 Уведомления о ценах акций и облигаций
                             </div>
-                            <div class="pa-3 fs14">
+                            <div class="py-3 fs14">
                                 Возможность публичного доступа к портфелю
                             </div>
-                            <div class="pa-3 fs14">
+                            <div class="py-3 fs14">
                                 Дивидендный анализ
                             </div>
-                            <div class="pa-3 fs14">
+                            <div class="py-3 fs14">
                                 Операции с валютой
                             </div>
-                        </v-list>
-                    </v-menu>
+                        </div>
+                    </expanded-panel>
                     <div v-else class="py-3 fs14">
                         Базовый функционал
                     </div>
@@ -271,7 +272,7 @@ export class TariffAgreement extends UI {
             </v-layout>
         </v-layout>
     `,
-    components: {TariffAgreement, TariffLimitExceedInfo}
+    components: {TariffAgreement, TariffLimitExceedInfo, ExpandedPanel}
 })
 export class PayButton extends UI {
 
