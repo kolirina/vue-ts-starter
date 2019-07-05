@@ -31,8 +31,12 @@ export class TariffService {
         return this.http.get<UserPaymentInfo>("/tariff/payment-info");
     }
 
-    async cancelOrderSchedule(): Promise<void> {
-        return this.http.post("/tariff/cancel-order-schedule");
+    /**
+     * Отменяет текущую подписку и отвязывает карту
+     * @param request запрос
+     */
+    async cancelOrderSchedule(request: CancelOrderRequest): Promise<void> {
+        return this.http.post("/tariff/cancel-order-schedule", request);
     }
 }
 
@@ -116,4 +120,33 @@ export interface UserPaymentInfo {
     pan: string;
     /** Срок действия карты */
     expDate: string;
+}
+
+/** Сущность с данными при отвзяке карты */
+export interface CancelOrderRequest {
+    /** Тип ответа */
+    answer: UnLinkCardAnswer;
+    /** Комментарий к ответу */
+    comment?: string;
+}
+
+/**
+ * Перечисление возможных типов ответов при отвязке карты
+ */
+export enum UnLinkCardAnswer {
+
+    /** Прекратил или уменьшил свою инвесторскую деятельность */
+    REDUCE_INVEST_ACTIVITY = "REDUCE_INVEST_ACTIVITY",
+    /** Не хочу, чтобы была привязана карта */
+    DONT_WANT_LINKED_CARD = "DONT_WANT_LINKED_CARD",
+    /** Нет нужного мне функционала */
+    ABSENT_FUNCTIONALITY = "ABSENT_FUNCTIONALITY",
+    /** Ошибки в сервисе */
+    ERRORS = "ERRORS",
+    /** Не устроило качество обратной связи от тех. поддержки */
+    SUPPORT_QUALITY = "SUPPORT_QUALITY",
+    /** Дорогие тарифные планы */
+    EXPENSIVE_TARIFFS = "EXPENSIVE_TARIFFS",
+    /** Другое */
+    OTHER = "OTHER"
 }
