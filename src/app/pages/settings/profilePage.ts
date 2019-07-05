@@ -8,7 +8,7 @@ import {ConfirmDialog} from "../../components/dialogs/confirmDialog";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {ClientInfo, ClientService} from "../../services/clientService";
-import {TariffService, UserPaymentInfo} from "../../services/tariffService";
+import {CancelOrderRequest, TariffService, UnLinkCardAnswer, UserPaymentInfo} from "../../services/tariffService";
 import {Tariff} from "../../types/tariff";
 import {CommonUtils} from "../../utils/commonUtils";
 import {DateUtils} from "../../utils/dateUtils";
@@ -174,7 +174,11 @@ export class ProfilePage extends UI {
 
     @ShowProgress
     private async cancelOrderScheduleConfirmed(): Promise<void> {
-        await this.tariffService.cancelOrderSchedule();
+        const request: CancelOrderRequest = {
+            answer: UnLinkCardAnswer.OTHER,
+            comment: "noComments"
+        };
+        await this.tariffService.cancelOrderSchedule(request);
     }
 
     /**
