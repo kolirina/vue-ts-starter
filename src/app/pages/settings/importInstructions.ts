@@ -6,6 +6,7 @@ import {ClientInfo} from "../../services/clientService";
 import {DealsImportProvider} from "../../services/importService";
 import {Portfolio} from "../../types/types";
 import {StoreType} from "../../vuex/storeType";
+import {AlfaCapitalInstruction} from "./import_instructions/alfaCapitalInstruction";
 import {AlfadirectInstruction} from "./import_instructions/alfadirectInstruction";
 import {BcsCyprusInstruction} from "./import_instructions/bcsCyprusInstruction";
 import {BcsInstruction} from "./import_instructions/bcsInstruction";
@@ -131,10 +132,7 @@ const MainStore = namespace(StoreType.MAIN);
 
                 <!-- ALFACAPITAL -->
                 <div v-if="provider === providers.ALFACAPITAL">
-                    <p class="import-default-text">
-                        Используйте для импорта отчеты по сделкам (cashflows) в формате xls. Будут импортированы сделки по бумагам,
-                        движения ДС (связанные с вводом/выводом на счет, налоги и расходы не связанные напрямую со сделками).
-                    </p>
+                    <AlfaCapitalInstruction></AlfaCapitalInstruction>
                 </div>
 
                 <!-- Формат intelinvest -->
@@ -160,7 +158,7 @@ const MainStore = namespace(StoreType.MAIN);
     `,
     components: {
         AlfadirectInstruction, ItInvestInstruction, OtkrytieInstruction, PsbInstruction, BcsInstruction, BcsCyprusInstruction, ZerichInstruction, FinamInstruction,
-        UralsibInstruction, TinkoffInstruction, QuikInstruction, IntelinvestInstruction, VtbInstruction
+        UralsibInstruction, TinkoffInstruction, QuikInstruction, IntelinvestInstruction, VtbInstruction, AlfaCapitalInstruction
     }
 })
 export class ImportInstructions extends UI {
