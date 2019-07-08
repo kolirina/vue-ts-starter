@@ -101,6 +101,8 @@ export class ShareSearchComponent extends UI {
                         this.filteredSharesMutated = await this.marketService.searchStocks(this.searchQuery);
                     } else if (this.assetType === AssetType.BOND) {
                         this.filteredSharesMutated = await this.marketService.searchBonds(this.searchQuery);
+                    } else {
+                        this.filteredSharesMutated = await this.marketService.searchShares(this.searchQuery);
                     }
                     this.shareSearch = false;
                 } catch (error) {

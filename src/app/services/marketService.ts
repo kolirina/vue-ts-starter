@@ -1,7 +1,6 @@
 import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {Http, UrlParams} from "../platform/services/http";
-import {Storage} from "../platform/services/storage";
 import {BaseChartDot, Dot, EventChartData, HighStockEventData, HighStockEventsGroup} from "../types/charts/types";
 import {Bond, BondInfo, Currency, PageableResponse, Share, Stock, StockDynamic, StockInfo} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
@@ -15,13 +14,15 @@ export class MarketService {
     private http: Http;
 
     async searchStocks(query: string): Promise<Share[]> {
-        const result: Share[] = await this.http.get("/market/stocks/search", {query});
-        return result || [];
+        return this.http.get("/market/stocks/search", {query});
     }
 
     async searchBonds(query: string): Promise<Share[]> {
-        const result: Share[] = await this.http.get("/market/bonds/search", {query});
-        return result || [];
+        return this.http.get("/market/bonds/search", {query});
+    }
+
+    async searchShares(query: string): Promise<Share[]> {
+        return this.http.get("/market/shares/search", {query});
     }
 
     async getStockInfo(ticker: string): Promise<StockInfo> {

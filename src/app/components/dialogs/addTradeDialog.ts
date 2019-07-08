@@ -644,16 +644,14 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         if (!this.isValid) {
             return null;
         }
-        const total = TradeMap.TRADE_CLASSES[this.assetType.enumName][this.operation.enumName][TradeValue.TOTAL](this);
-        return total;
+        return TradeMap.TRADE_CLASSES[this.assetType.enumName][this.operation.enumName][TradeValue.TOTAL](this);
     }
 
     private get totalWithoutFee(): string {
         if (!this.isValid) {
             return null;
         }
-        const total = TradeMap.TRADE_CLASSES[this.assetType.enumName][this.operation.enumName][TradeValue.TOTAL_WF](this);
-        return total;
+        return TradeMap.TRADE_CLASSES[this.assetType.enumName][this.operation.enumName][TradeValue.TOTAL_WF](this);
     }
 
     private get isValid(): boolean {
