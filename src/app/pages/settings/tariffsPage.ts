@@ -217,7 +217,7 @@ export class TariffAgreement extends UI {
                         Базовый функционал
                     </div>
                     <div class="py-3 fs14">
-                        Доступ к разделу “Аналитика”
+                        Доступ к разделу "Аналитика"
                     </div>
                     <div class="py-3 fs14">
                         Формирование составного портфеля из портфелей различных брокеров
@@ -484,7 +484,7 @@ export class TariffsPage extends UI {
     /** Дата, начиная с которой действуют новые тарифы */
     private readonly NEW_TARIFFS_DATE = DateUtils.parseDate("2019-06-10");
     /** Дата, начиная с которой для новых пользователей не будет отображаться free тариф */
-    private readonly DELETE_FREE_TARIFF_DATE = DateUtils.parseDate("2019-07-01");
+    private readonly DELETE_FREE_TARIFF_DATE = DateUtils.parseDate("2019-07-10");
 
     @Inject
     private clientService: ClientService;

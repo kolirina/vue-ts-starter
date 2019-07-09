@@ -42,7 +42,7 @@ import {Bond, Share} from "../types/types";
 })
 export class ShareSearchComponent extends UI {
 
-    @Prop({required: true})
+    @Prop({required: false})
     private assetType: AssetType;
 
     @Prop({required: false})
