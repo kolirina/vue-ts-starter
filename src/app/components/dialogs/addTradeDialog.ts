@@ -3,6 +3,7 @@ import Decimal from "decimal.js";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {VueRouter} from "vue-router/types/router";
+import {UI} from "../../app/ui";
 import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {CustomDialog} from "../../platform/dialogs/customDialog";
@@ -15,6 +16,7 @@ import {OverviewService} from "../../services/overviewService";
 import {MoneyResiduals, PortfolioParams, PortfolioService} from "../../services/portfolioService";
 import {TradeFields, TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
+import {EventType} from "../../types/eventType";
 import {Operation} from "../../types/operation";
 import {Tariff} from "../../types/tariff";
 import {TradeDataHolder} from "../../types/trade/tradeDataHolder";
@@ -443,8 +445,10 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         try {
             if (this.editMode) {
                 await this.editTrade(tradeFields);
+                UI.emit(EventType.TRADE_UPDATED);
             } else {
                 await this.saveTrade(tradeFields);
+                UI.emit(EventType.TRADE_CREATED);
             }
 
             this.$snotify.info(`Сделка успешно ${this.editMode ? "отредактирована" : "добавлена"}`);
@@ -640,16 +644,14 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         if (!this.isValid) {
             return null;
         }
-        const total = TradeMap.TRADE_CLASSES[this.assetType.enumName][this.operation.enumName][TradeValue.TOTAL](this);
-        return total;
+        return TradeMap.TRADE_CLASSES[this.assetType.enumName][this.operation.enumName][TradeValue.TOTAL](this);
     }
 
     private get totalWithoutFee(): string {
         if (!this.isValid) {
             return null;
         }
-        const total = TradeMap.TRADE_CLASSES[this.assetType.enumName][this.operation.enumName][TradeValue.TOTAL_WF](this);
-        return total;
+        return TradeMap.TRADE_CLASSES[this.assetType.enumName][this.operation.enumName][TradeValue.TOTAL_WF](this);
     }
 
     private get isValid(): boolean {

@@ -6,6 +6,7 @@ import {ClientInfo} from "../../services/clientService";
 import {DealsImportProvider} from "../../services/importService";
 import {Portfolio} from "../../types/types";
 import {StoreType} from "../../vuex/storeType";
+import {AlfaCapitalInstruction} from "./import_instructions/alfaCapitalInstruction";
 import {AlfadirectInstruction} from "./import_instructions/alfadirectInstruction";
 import {BcsCyprusInstruction} from "./import_instructions/bcsCyprusInstruction";
 import {BcsInstruction} from "./import_instructions/bcsInstruction";
@@ -129,6 +130,11 @@ const MainStore = namespace(StoreType.MAIN);
                     </p>
                 </div>
 
+                <!-- ALFACAPITAL -->
+                <div v-if="provider === providers.ALFACAPITAL">
+                    <AlfaCapitalInstruction></AlfaCapitalInstruction>
+                </div>
+
                 <!-- Формат intelinvest -->
                 <div v-if="provider === providers.INTELINVEST">
                     <IntelinvestInstruction></IntelinvestInstruction>
@@ -152,7 +158,7 @@ const MainStore = namespace(StoreType.MAIN);
     `,
     components: {
         AlfadirectInstruction, ItInvestInstruction, OtkrytieInstruction, PsbInstruction, BcsInstruction, BcsCyprusInstruction, ZerichInstruction, FinamInstruction,
-        UralsibInstruction, TinkoffInstruction, QuikInstruction, IntelinvestInstruction, VtbInstruction
+        UralsibInstruction, TinkoffInstruction, QuikInstruction, IntelinvestInstruction, VtbInstruction, AlfaCapitalInstruction
     }
 })
 export class ImportInstructions extends UI {

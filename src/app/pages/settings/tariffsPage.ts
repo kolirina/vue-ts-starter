@@ -6,6 +6,7 @@ import {namespace} from "vuex-class/lib/bindings";
 import {Prop, UI, Watch} from "../../app/ui";
 import {ApplyPromoCodeDialog} from "../../components/dialogs/applyPromoCodeDialog";
 import {ConfirmDialog} from "../../components/dialogs/confirmDialog";
+import {ExpandedPanel} from "../../components/expandedPanel";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {ClientInfo, ClientService} from "../../services/clientService";
@@ -115,7 +116,8 @@ export class TariffAgreement extends UI {
 @Component({
     // language=Vue
     template: `
-        <v-layout v-if="tariff !== Tariff.TRIAL" column :class="['tariff-item', 'margB30', tariff === Tariff.PRO ? 'pro-tarrif' : '']">
+        <v-layout v-if="tariff !== Tariff.TRIAL && !(tariff === Tariff.FREE && isNewTariffLayout)" column
+                  :class="['tariff-item', 'margB30', tariff === Tariff.PRO ? 'pro-tariff' : '']">
             <div v-if="tariff === Tariff.PRO" class="alignC fs13 tariff-most-popular">
                 Выбор 67% инвесторов
             </div>
@@ -178,7 +180,40 @@ export class TariffAgreement extends UI {
                 </div>
                 <tariff-agreement :value="agreementState[tariff.name]" @agree="agreementState[tariff.name] = $event"></tariff-agreement>
                 <div v-if="tariff === Tariff.STANDARD" class="tariff-description-wrap">
-                    <div class="py-3 fs14">
+                    <expanded-panel v-if="isNewTariffLayout" class="toggle-block-basic-functionality">
+                        <template #header>
+                            <div class="py-3 fs14">
+                                Базовый функционал
+                            </div>
+                        </template>
+                        <div class="functional-list">
+                            <div class="py-3 fs14">
+                                Импорт и экспорт сделок
+                            </div>
+                            <div class="py-3 fs14">
+                                Полная аналитика портфеля
+                            </div>
+                            <div class="py-3 fs14">
+                                Учет дивидендов, купонов, комиссий и амортизации
+                            </div>
+                            <div class="py-3 fs14">
+                                Котировки и актуальная информация о эмитенте
+                            </div>
+                            <div class="py-3 fs14">
+                                Уведомления о ценах акций и облигаций
+                            </div>
+                            <div class="py-3 fs14">
+                                Возможность публичного доступа к портфелю
+                            </div>
+                            <div class="py-3 fs14">
+                                Дивидендный анализ
+                            </div>
+                            <div class="py-3 fs14">
+                                Операции с валютой
+                            </div>
+                        </div>
+                    </expanded-panel>
+                    <div v-else class="py-3 fs14">
                         Базовый функционал
                     </div>
                     <div class="py-3 fs14">
@@ -237,12 +272,9 @@ export class TariffAgreement extends UI {
             </v-layout>
         </v-layout>
     `,
-    components: {TariffAgreement, TariffLimitExceedInfo}
+    components: {TariffAgreement, TariffLimitExceedInfo, ExpandedPanel}
 })
 export class PayButton extends UI {
-
-    /** Дата, начиная с которой действуют новые тарифы */
-    private readonly NEW_TARIFFS_DATE = DateUtils.parseDate("2019-06-10");
 
     /** Тариф */
     @Prop({required: true, type: Object})
@@ -265,6 +297,13 @@ export class PayButton extends UI {
     /** Платежная информация пользователя */
     @Prop({required: false, type: Object})
     private paymentInfo: UserPaymentInfo;
+    /** Признак использования новой тарифной сетки для пользователей */
+    @Prop({required: true, type: Boolean})
+    private isNewUser: boolean;
+    /** Признак отображать ли free тариф */
+    @Prop({required: true, type: Boolean})
+    private isNewTariffLayout: boolean;
+
     /** Тарифы */
     private Tariff = Tariff;
 
@@ -338,13 +377,6 @@ export class PayButton extends UI {
     private get commonPrice(): Decimal {
         return this.monthly ? this.isNewUser ? this.tariff.monthlyPriceNew : this.tariff.monthlyPrice :
             this.isNewUser ? this.tariff.monthlyPrice : this.tariff.yearPrice;
-    }
-
-    /**
-     * Возвращает признак использования новой тарифной сетки для пользователей
-     */
-    private get isNewUser(): boolean {
-        return DateUtils.parseDate(this.clientInfo.user.regDate).isAfter(this.NEW_TARIFFS_DATE);
     }
 
     /**
@@ -436,11 +468,10 @@ export class PayButton extends UI {
                         <template v-if="clientInfo.user.nextPurchaseDiscountExpired">(срок действия скидки до {{ clientInfo.user.nextPurchaseDiscountExpired | date }})</template>
                     </p>
 
-                    <v-layout class="wrap-tariffs-sentence">
-                        <v-layout justify-space-around wrap>
-                            <pay-button v-for="item in Tariff.values()" :key="item.name" @pay="makePayment" :tariff="item" :client-info="clientInfo" :monthly="monthly"
-                                        :agreement-state="agreementState" :busy-state="busyState" :is-progress="isProgress" :payment-info="paymentInfo"></pay-button>
-                        </v-layout>
+                    <v-layout :class="['wrap-tariffs-sentence', isNewTariffLayout ? 'free-tariff-delete' : 'justify-space-around']" wrap>
+                        <pay-button v-for="item in Tariff.values()" :key="item.name" @pay="makePayment" :tariff="item" :client-info="clientInfo" :monthly="monthly"
+                                    :agreement-state="agreementState" :busy-state="busyState" :is-progress="isProgress" :payment-info="paymentInfo"
+                                    :isNewUser="isNewUser" :isNewTariffLayout="isNewTariffLayout"></pay-button>
                     </v-layout>
                 </div>
             </v-card>
@@ -449,6 +480,11 @@ export class PayButton extends UI {
     components: {PayButton}
 })
 export class TariffsPage extends UI {
+
+    /** Дата, начиная с которой действуют новые тарифы */
+    private readonly NEW_TARIFFS_DATE = DateUtils.parseDate("2019-06-10");
+    /** Дата, начиная с которой для новых пользователей не будет отображаться free тариф */
+    private readonly DELETE_FREE_TARIFF_DATE = DateUtils.parseDate("2019-07-10");
 
     @Inject
     private clientService: ClientService;
@@ -579,5 +615,18 @@ export class TariffsPage extends UI {
      */
     private get activeSubscription(): boolean {
         return this.paymentInfo && CommonUtils.exists(this.paymentInfo.expDate) && CommonUtils.exists(this.paymentInfo.pan);
+    }
+
+    /**
+     * Возвращает признак использования новой тарифной сетки для пользователей
+     */
+    private get isNewUser(): boolean {
+        return DateUtils.parseDate(this.clientInfo.user.regDate).isAfter(this.NEW_TARIFFS_DATE);
+    }
+    /**
+     * Возвращает признак отображать ли free тариф
+     */
+    private get isNewTariffLayout(): boolean {
+        return DateUtils.parseDate(this.clientInfo.user.regDate).isAfter(this.DELETE_FREE_TARIFF_DATE);
     }
 }

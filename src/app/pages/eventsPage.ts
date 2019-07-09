@@ -451,12 +451,12 @@ export class EventsPage extends UI {
             router: this.$router,
             share: event.share,
             eventFields: {
-                amount: event.cleanAmountPerShare || event.amountPerShare,
+                amount: event.cleanAmount,
                 quantity: event.quantity,
                 eventPeriod: event.period,
                 eventDate: event.date,
                 note: TradeUtils.eventNote(event),
-                perOne: true,
+                perOne: false,
             },
             operation,
             assetType: operation === Operation.DIVIDEND ? AssetType.STOCK : AssetType.BOND

@@ -79,14 +79,14 @@ export class TableFilterBase extends UI {
 
     private onSearch(value: string): void {
         this.searchQueryMutated = value;
-        // поле было очищено
-        if ((!this.searchQueryMutated || this.searchQueryMutated.length <= this.minLength)) {
-            this.emitClear();
-            return;
-        }
         clearTimeout(this.currentTimer);
         this.currentTimer = setTimeout((): void => {
-            this.emitSearch();
+            if ((this.searchQueryMutated.length || this.searchQueryMutated.length >= this.minLength)) {
+                this.emitSearch();
+            } else {
+                this.emitClear();
+                return;
+            }
         }, 1000);
     }
 
@@ -107,6 +107,6 @@ export class TableFilterBase extends UI {
     }
 
     private hideInput(): void {
-        this.showSearch = false;
+        this.showSearch = this.searchQueryMutated.length !== 0;
     }
 }

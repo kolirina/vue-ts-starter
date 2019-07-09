@@ -15,7 +15,7 @@ export class CalculationTrade implements Trade {
             if (!holder.isPerOne()) {
                 amount = amount.dividedBy(quantity);
             }
-            return amount.mul(quantity).toString();
+            return amount.mul(quantity).toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toString();
         }
         return null;
     }

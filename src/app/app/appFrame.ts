@@ -1,5 +1,6 @@
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
+import {ContentLoader} from "vue-content-loader";
 import {SnotifyToast} from "vue-snotify";
 import {namespace} from "vuex-class/lib/bindings";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
@@ -34,7 +35,7 @@ const MainStore = namespace(StoreType.MAIN);
             <vue-snotify></vue-snotify>
             <error-handler></error-handler>
             <template v-if="!loading && !loggedIn">
-                <sign-in @login="login"></sign-in>
+                <sign-in @login="login" @registration="checkAuthorized"></sign-in>
             </template>
 
             <template v-if="!loading && loggedIn">
@@ -42,7 +43,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <div>
                         <menu-header :mini="mini" :portfolio="portfolio" :clientInfo="clientInfo" @togglePanel="togglePanel"></menu-header>
                         <div v-if="!mini" :class="['wrap-toogle-menu-btn', 'small-screen-hide-toogle-menu-btn']">
-                            <v-btn @click="togglePanel" fab dark small depressed color="#F0F3F8" :class="['toogle-menu-btn', publicZone ? 'public-toogle-menu-btn' : '']">
+                            <v-btn @click="togglePanel" fab dark small depressed color="#F0F3F8" class="toogle-menu-btn">
                                 <v-icon dark>keyboard_arrow_left</v-icon>
                             </v-btn>
                         </div>
@@ -50,7 +51,7 @@ const MainStore = namespace(StoreType.MAIN);
                                          :show-link-to-old-version="showLinkToOldVersion"
                                          @openDialog="openDialog" @goToOldVersion="goToOldVersion"></navigation-list>
                     </div>
-                    <menu-bottom-navigation v-if="!publicZone"></menu-bottom-navigation>
+                    <menu-bottom-navigation></menu-bottom-navigation>
                 </v-navigation-drawer>
                 <v-content>
                     <div class="mobile-wrapper-menu">
@@ -58,7 +59,7 @@ const MainStore = namespace(StoreType.MAIN);
                         <navigation-list :mainSection="mainSection" :mini="mini" :settingsSelected="settingsSelected"
                                          :show-link-to-old-version="showLinkToOldVersion"
                                          @openDialog="openDialog" @goToOldVersion="goToOldVersion" :class="mini ? 'part-mobile-menu' : ''"></navigation-list>
-                        <menu-bottom-navigation v-if="!publicZone" :class="mini ? 'part-mobile-menu' : ''"></menu-bottom-navigation>
+                        <menu-bottom-navigation :class="mini ? 'part-mobile-menu' : ''"></menu-bottom-navigation>
                     </div>
                     <v-container fluid :class="['paddT0', 'fb-0', mini ? '' : 'hide-main-content']">
                         <v-slide-y-transition mode="out-in">
@@ -72,8 +73,28 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-footer>
                 </v-content>
             </template>
+
+            <template v-if="loading">
+                <v-content>
+                    <div class="mobile-wrapper-menu">
+
+                    </div>
+                    <v-container fluid :class="['paddT0', 'fb-0', mini ? '' : 'hide-main-content']">
+                        <content-loader :height="800" :width="800" :speed="1" primaryColor="#f3f3f3" secondaryColor="#ecebeb">
+                            <rect x="0" y="20" rx="5" ry="5" width="801.11" height="80"/>
+                            <rect x="0" y="120" rx="5" ry="5" width="801.11" height="30"/>
+                            <rect x="0" y="170" rx="5" ry="5" width="801.11" height="180"/>
+                            <rect x="0" y="370" rx="5" ry="5" width="801.11" height="180"/>
+                            <rect x="0" y="570" rx="5" ry="5" width="801.11" height="180"/>
+                        </content-loader>
+                    </v-container>
+                    <v-footer color="#f7f9fb" :class="['footer-app', mini ? '' : 'hide-main-content']">
+
+                    </v-footer>
+                </v-content>
+            </template>
         </v-app>`,
-    components: {ErrorHandler, FeedbackDialog, SignIn, FooterContent, MenuHeader, NavigationList, MenuBottomNavigation}
+    components: {ContentLoader, ErrorHandler, FeedbackDialog, SignIn, FooterContent, MenuHeader, NavigationList, MenuBottomNavigation}
 })
 export class AppFrame extends UI {
 
@@ -101,6 +122,7 @@ export class AppFrame extends UI {
     @MainStore.Mutation(MutationType.CHANGE_SIDEBAR_STATE)
     private changeSideBarState: (sideBarState: boolean) => void;
 
+    /** Признак залогиненного пользователя */
     private loggedIn = false;
 
     /* Пользователь уведомлен об обновлениях */
@@ -121,6 +143,7 @@ export class AppFrame extends UI {
 
     private mainSection: NavBarItem[] = [
         {title: "Портфель", action: "portfolio", icon: "fas fa-briefcase"},
+        // {title: "Аналитика", action: "adviser"},
         {title: "Сделки", action: "trades", icon: "fas fa-list-alt"},
         {title: "События", action: "events", icon: "far fa-calendar-check"},
         {title: "Дивиденды", action: "dividends", icon: "far fa-calendar-plus"},
@@ -146,18 +169,23 @@ export class AppFrame extends UI {
     async created(): Promise<void> {
         this.mini = this.localStorage.get(StoreKeys.MENU_STATE_KEY, true);
         this.changeSideBarState(this.mini);
-        const authorized = !!this.localStorage.get(StoreKeys.TOKEN_KEY, null);
-        // если есть токен юзера в локал стор и стор пуст и это не публичная зона то пробуем загрузить инфу о клиенте
-        if (authorized && !CommonUtils.exists(this.$store.state[StoreType.MAIN].clientInfo) && !this.publicZone) {
-            await this.startup();
-        }
+        await this.checkAuthorized();
         // если удалось восстановить state, значит все уже загружено
         if (this.$store.state[StoreType.MAIN].clientInfo) {
-            if (!this.publicZone) {
-                this.isNotifyAccepted = UiStateHelper.lastUpdateNotification === NotificationUpdateDialog.DATE;
-                this.showUpdatesMessage();
-            }
+            this.isNotifyAccepted = UiStateHelper.lastUpdateNotification === NotificationUpdateDialog.DATE;
+            this.showUpdatesMessage();
             this.loggedIn = true;
+        }
+    }
+
+    private async checkAuthorized(registration?: boolean): Promise<void> {
+        const authorized = !!this.localStorage.get(StoreKeys.TOKEN_KEY, null);
+        // если есть токен юзера в локал стор и стор пуст и это не публичная зона то пробуем загрузить инфу о клиенте
+        if (authorized && !CommonUtils.exists(this.$store.state[StoreType.MAIN].clientInfo)) {
+            await this.startup();
+        }
+        if (registration) {
+            this.$router.push("/portfolio");
         }
     }
 
@@ -167,9 +195,9 @@ export class AppFrame extends UI {
             const client = await this.clientService.getClientInfo();
             await this.loadUser({token: this.localStorage.get(StoreKeys.TOKEN_KEY, null), user: client});
             await this.setCurrentPortfolio(this.$store.state[StoreType.MAIN].clientInfo.user.currentPortfolioId);
+            this.loggedIn = true;
         } finally {
             this.loading = false;
-            this.loggedIn = true;
         }
     }
 
@@ -178,13 +206,18 @@ export class AppFrame extends UI {
             this.$snotify.warning("Введите логин и пароль");
             return;
         }
-        this.localStorage.set(StoreKeys.REMEMBER_ME_KEY, signInData.rememberMe);
-        const clientInfo = await this.clientService.login({username: signInData.username, password: signInData.password});
-        await this.loadUser(clientInfo);
-        await this.setCurrentPortfolio(this.$store.state[StoreType.MAIN].clientInfo.user.currentPortfolioId);
-        this.loggedIn = true;
-        this.$snotify.clear();
-        this.$router.push("portfolio");
+        this.loading = true;
+        try {
+            this.localStorage.set(StoreKeys.REMEMBER_ME_KEY, signInData.rememberMe);
+            const clientInfo = await this.clientService.login({username: signInData.username, password: signInData.password});
+            await this.loadUser(clientInfo);
+            await this.setCurrentPortfolio(this.$store.state[StoreType.MAIN].clientInfo.user.currentPortfolioId);
+            this.loggedIn = true;
+            this.$snotify.clear();
+            this.$router.push("portfolio");
+        } finally {
+            this.loading = false;
+        }
     }
 
     private async openDialog(): Promise<void> {
@@ -199,7 +232,7 @@ export class AppFrame extends UI {
      * Только для приватной зоны
      */
     private showUpdatesMessage(): void {
-        if (!this.isNotifyAccepted && !this.publicZone) {
+        if (!this.isNotifyAccepted) {
             this.$snotify.info("Мы улучшили сервис для Вас, ознакомьтесь с обновлениями", {
                 closeOnClick: false,
                 timeout: 0,
@@ -238,10 +271,6 @@ export class AppFrame extends UI {
 
     private get settingsSelected(): boolean {
         return this.$route.path.indexOf("settings") !== -1;
-    }
-
-    private get publicZone(): boolean {
-        return this.$route.meta.public;
     }
 
     private get showLinkToOldVersion(): boolean {

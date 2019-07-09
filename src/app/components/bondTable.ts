@@ -174,6 +174,7 @@ const MainStore = namespace(StoreType.MAIN);
                         <td>
                             <div class="ext-info__item">
                                 Средняя цена {{ props.item.avgBuy | number }} <span>%</span><br>
+                                Средняя цена {{ props.item.absoluteAvgPrice | amount(false, 2, false) }} <span>{{ props.item.bond.currency }}</span><br>
                                 Средний номинал {{props.item.nominal | amount}} <span>{{ portfolioCurrency }}</span><br>
                                 Текущая цена {{ props.item.currPrice | number }} <span>%</span>
                             </div>
@@ -206,7 +207,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 <br>
                                 Выплаченный НКД {{ props.item.buyNkd | amount }} <span>{{ portfolioCurrency }}</span><br>
                                 Полученный НКД {{ props.item.sellNkd | amount }} <span>{{ portfolioCurrency }}</span><br>
-                                <template v-if="shareNotes">Заметка {{ shareNotes[props.item.bond.ticker] }}</template>
+                                <template v-if="shareNotes && shareNotes[props.item.bond.ticker]">Заметка {{ shareNotes[props.item.bond.ticker] }}</template>
                             </div>
                         </td>
                         <td>

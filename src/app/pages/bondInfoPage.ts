@@ -11,7 +11,7 @@ import {NotificationType} from "../services/notificationsService";
 import {AssetType} from "../types/assetType";
 import {ColumnChartData, Dot, HighStockEventsGroup} from "../types/charts/types";
 import {Operation} from "../types/operation";
-import {Portfolio, Share} from "../types/types";
+import {Portfolio, Share, ShareType} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
@@ -28,7 +28,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-card-title>
             </v-card>
             <v-card flat class="info-share-page">
-                <share-search :asset-type="assetType.BOND" @change="onShareSelect"></share-search>
+                <share-search @change="onShareSelect"></share-search>
                 <div v-if="share">
                     <v-layout wrap class="info-share-page__name-stock-block" justify-space-between align-center>
                         <div>
@@ -211,6 +211,11 @@ export class BondInfoPage extends UI {
     private async onShareSelect(share: Share): Promise<void> {
         this.share = share;
         if (this.share) {
+            if (this.share.shareType === ShareType.STOCK) {
+                this.$router.push(`/share-info/${share.ticker}`);
+                return;
+            }
+            this.events = [];
             const result = await this.marketService.getBondInfo(this.share.isin);
             this.share = result.bond;
             this.history = result.history;

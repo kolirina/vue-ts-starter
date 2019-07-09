@@ -26,7 +26,7 @@ import {NotificationType} from "../../services/notificationsService";
 import {AssetType} from "../../types/assetType";
 import {BaseChartDot, Dot, HighStockEventsGroup} from "../../types/charts/types";
 import {Operation} from "../../types/operation";
-import {Share, Stock, StockDynamic} from "../../types/types";
+import {Share, ShareType, Stock, StockDynamic} from "../../types/types";
 import {ChartUtils} from "../../utils/chartUtils";
 import {TradeUtils} from "../../utils/tradeUtils";
 import {StoreType} from "../../vuex/storeType";
@@ -41,7 +41,7 @@ import {StoreType} from "../../vuex/storeType";
                 </v-card-title>
             </v-card>
             <v-card flat class="info-share-page">
-                <share-search :asset-type="assetType.STOCK" @change="onShareSelect"></share-search>
+                <share-search @change="onShareSelect"></share-search>
                 <div v-if="share">
                     <v-layout class="info-share-page__name-stock-block" justify-space-between align-center wrap>
                         <div>
@@ -376,6 +376,7 @@ export class BaseShareInfoPage extends UI {
     @ShowProgress
     private async loadShareInfo(ticker: string): Promise<void> {
         const result = await this.marketService.getStockInfo(ticker);
+        this.events = [];
         this.share = result.stock;
         this.history = result.history;
         this.dividends = result.dividends;
@@ -400,6 +401,10 @@ export class BaseShareInfoPage extends UI {
     private async onShareSelect(share: Share): Promise<void> {
         this.share = share;
         if (this.share) {
+            if (this.share.shareType === ShareType.BOND) {
+                this.$router.push(`/bond-info/${share.isin}`);
+                return;
+            }
             this.$router.push(`/share-info/${share.ticker}`);
         }
     }

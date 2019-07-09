@@ -365,10 +365,10 @@ export class BalancesPage extends UI implements TradeDataHolder {
 
     private calculateOnQuantity(): void {
         this.changedQuantity = !!this.quantity;
-        if (this.changedQuantity && this.changedTotal) {
+        if (this.changedQuantity && !!this.total) {
             this.changedPrice = false;
             this.price = new Decimal(this.total).dividedBy(new Decimal(this.quantity)).toDecimalPlaces(6, Decimal.ROUND_HALF_UP).toString();
-        } else if (this.changedQuantity && this.changedPrice) {
+        } else if (this.changedQuantity && !!this.price) {
             this.total = new Decimal(this.getPrice()).mul(new Decimal(this.getQuantity())).toString();
         } else if (!this.changedQuantity && this.changedTotal) {
             this.changedPrice = false;
@@ -380,7 +380,7 @@ export class BalancesPage extends UI implements TradeDataHolder {
 
     private calculateOnPrice(): void {
         !!this.price ? this.changedPrice = true : this.changedPrice = false;
-        if (this.changedPrice && this.changedQuantity) {
+        if (this.changedPrice && !!this.quantity) {
             this.changedTotal = false;
             this.total = new Decimal(this.getPrice()).mul(new Decimal(this.getQuantity())).toString();
         } else {
@@ -406,7 +406,7 @@ export class BalancesPage extends UI implements TradeDataHolder {
             this.changedPrice = false;
             this.price = new Decimal(this.total).dividedBy(new Decimal(this.quantity)).toDecimalPlaces(6, Decimal.ROUND_HALF_UP).toString();
             this.total = new Decimal(this.price).mul(new Decimal(this.quantity)).toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toString();
-        } else if (this.changedQuantity && this.changedPrice) {
+        } else if (this.changedQuantity && !!this.price) {
             this.total = new Decimal(this.getPrice()).mul(new Decimal(this.getQuantity())).toString();
             this.total = new Decimal(this.price).mul(new Decimal(this.quantity)).toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toString();
         }
