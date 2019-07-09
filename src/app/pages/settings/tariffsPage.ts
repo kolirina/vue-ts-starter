@@ -208,9 +208,6 @@ export class TariffAgreement extends UI {
                             <div class="py-3 fs14">
                                 Дивидендный анализ
                             </div>
-                            <div class="py-3 fs14">
-                                Операции с валютой
-                            </div>
                         </div>
                     </expanded-panel>
                     <div v-else class="py-3 fs14">
@@ -229,6 +226,9 @@ export class TariffAgreement extends UI {
                 <div v-if="tariff === Tariff.PRO" class="tariff-description-wrap">
                     <div class="py-3 fs14">
                         Функционал тарифа Стандарт
+                    </div>
+                    <div class="py-3 fs14">
+                        Операции с валютой
                     </div>
                     <div class="py-3 fs14">
                         Учет зарубежных акций, валютных активов и коротких позиций
@@ -264,9 +264,6 @@ export class TariffAgreement extends UI {
                     </div>
                     <div class="py-3 fs14">
                         Дивидендный анализ
-                    </div>
-                    <div class="py-3 fs14">
-                        Операции с валютой
                     </div>
                 </div>
             </v-layout>
