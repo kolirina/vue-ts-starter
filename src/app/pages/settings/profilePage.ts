@@ -175,7 +175,8 @@ export class ProfilePage extends UI {
     @ShowProgress
     private async cancelOrderScheduleConfirmed(): Promise<void> {
         const request: CancelOrderRequest = {
-            answer: UnLinkCardAnswer.ERRORS
+            answer: UnLinkCardAnswer.OTHER,
+            comment: "noComments"
         };
         await this.tariffService.cancelOrderSchedule(request);
     }
