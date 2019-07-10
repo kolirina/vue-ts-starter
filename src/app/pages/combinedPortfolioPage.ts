@@ -144,7 +144,9 @@ export class CombinedPortfolioPage extends UI {
         const ids = this.clientInfo.user.portfolios.filter(value => value.combined).map(value => value.id);
         if (UiStateHelper.historyPanel[0] === 1) {
             this.lineChartData = await this.overviewService.getCostChartCombined({ids: ids, viewCurrency: this.viewCurrency});
-            this.indexLineChartData = await this.marketHistoryService.getIndexHistory("MMVB", dayjs(this.overview.firstTradeDate).format("DD.MM.YYYY"));
+            if (this.overview.firstTradeDate) {
+                this.indexLineChartData = await this.marketHistoryService.getIndexHistory("MMVB", dayjs(this.overview.firstTradeDate).format("DD.MM.YYYY"));
+            }
             this.lineChartEvents = await this.overviewService.getEventsChartDataCombined({ids: ids, viewCurrency: this.viewCurrency});
         }
     }
