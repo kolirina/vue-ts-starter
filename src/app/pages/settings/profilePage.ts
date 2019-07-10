@@ -5,7 +5,7 @@ import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
 import {ChangePasswordDialog} from "../../components/dialogs/changePasswordDialog";
 import {ConfirmDialog} from "../../components/dialogs/confirmDialog";
-import {UnsubscribedDialog} from "../../components/dialogs/unsubscribedDialog";
+import {UnsubscribedAnswerDialog} from "../../components/dialogs/UnsubscribedAnswerDialog";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {ClientInfo, ClientService} from "../../services/clientService";
@@ -30,7 +30,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-btn>
                 </v-card-title>
             </v-card>
-            <v-layout class="profile" wrap column>
+            <v-layout class="profile" column>
                 <v-card flat class="margR60">
                     <div class="fs16 mb-2">
                         Детали профиля
@@ -45,7 +45,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <div class="profile__subtitle">Имя пользователя</div>
                     <inplace-input name="username" :value="username" @input="onUserNameChange"></inplace-input>
                 </v-card>
-                <v-layout v-if="hasPaymentInfo" class="wrapper-payment-info mt-5">
+                <v-layout v-if="hasPaymentInfo" class="wrapper-payment-info mt-5" wrap>
                     <v-card flat class="mr-5">
                         <span class="profile__subtitle">
                             Информация по тарифному плану
@@ -173,7 +173,7 @@ export class ProfilePage extends UI {
     private async cancelOrderSchedule(): Promise<void> {
         const result = await new ConfirmDialog().show("Вы уверены, что хотите отменить подписку? Автоматическое продление будет отключено. " +
             "После окончания подписки некоторые услуги могут стать недоступны.");
-        const request = await new UnsubscribedDialog().show();
+        const request = await new UnsubscribedAnswerDialog().show();
         if (result === BtnReturn.YES) {
             await this.cancelOrderScheduleConfirmed(request);
             this.paymentInfo = await this.tariffService.getPaymentInfo();

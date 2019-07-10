@@ -26,7 +26,6 @@ import {CancelOrderRequest, UnLinkCardAnswer} from "../../services/tariffService
                             v-model="otherAnswer"
                             box
                             :rules="rulesTextArea"
-                            color="deep-purple"
                             counter="500"
                             label="Описание причины"
                             type="text"
@@ -43,7 +42,7 @@ import {CancelOrderRequest, UnLinkCardAnswer} from "../../services/tariffService
     </v-dialog>
   `
 })
-export class UnsubscribedDialog extends CustomDialog<any, CancelOrderRequest> {
+export class UnsubscribedAnswerDialog extends CustomDialog<any, CancelOrderRequest> {
     private unsubscribedAnswer: UnLinkCardAnswer = UnLinkCardAnswer.REDUCE_INVEST_ACTIVITY;
     private unLinkCardAnswer = UnLinkCardAnswer;
     private otherAnswer: string = "";
