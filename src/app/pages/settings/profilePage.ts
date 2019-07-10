@@ -9,7 +9,7 @@ import {UnsubscribedAnswerDialog} from "../../components/dialogs/UnsubscribedAns
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {ClientInfo, ClientService} from "../../services/clientService";
-import {CancelOrderRequest, TariffService, UnLinkCardAnswer, UserPaymentInfo} from "../../services/tariffService";
+import {CancelOrderRequest, TariffService, UserPaymentInfo} from "../../services/tariffService";
 import {Tariff} from "../../types/tariff";
 import {CommonUtils} from "../../utils/commonUtils";
 import {DateUtils} from "../../utils/dateUtils";
@@ -174,7 +174,7 @@ export class ProfilePage extends UI {
         const result = await new ConfirmDialog().show("Вы уверены, что хотите отменить подписку? Автоматическое продление будет отключено. " +
             "После окончания подписки некоторые услуги могут стать недоступны.");
         const request = await new UnsubscribedAnswerDialog().show();
-        if (result === BtnReturn.YES) {
+        if (result === BtnReturn.YES && request) {
             await this.cancelOrderScheduleConfirmed(request);
             this.paymentInfo = await this.tariffService.getPaymentInfo();
             this.$snotify.info("Автоматическое продление подписки успешно отключено");
