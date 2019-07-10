@@ -35,4 +35,17 @@
   .v-messages {
     min-height: 0 !important;
   }
+  .content {
+    max-width: 439px;
+    width: 100%;
+    justify-content: space-between;
+  }
+  .save-btn {
+    height: 52px !important;
+    margin-top: 10px !important;
+    &.v-btn--disabled {
+      border-color: #f5f7fb!important;
+      background-color: #f5f7fb!important;
+    }
+  }
 }

@@ -31,7 +31,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-card-title>
             </v-card>
             <v-layout class="profile" column>
-                <v-card flat class="margR60">
+                <v-card flat>
                     <div class="fs16 mb-2">
                         Детали профиля
                     </div>

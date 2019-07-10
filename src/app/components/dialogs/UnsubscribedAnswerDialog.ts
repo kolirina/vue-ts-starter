@@ -15,10 +15,10 @@ import {CancelOrderRequest, UnLinkCardAnswer} from "../../services/tariffService
                 <v-layout column class="pl-3">
                     <v-radio-group v-model="unsubscribedAnswer">
                         <v-radio
-                            v-for="n in unLinkCardAnswer.values()"
-                            :key="n.code"
-                            :label="n.description"
-                            :value="n"
+                            v-for="answer in unLinkCardAnswer.values()"
+                            :key="answer.code"
+                            :label="answer.description"
+                            :value="answer"
                         ></v-radio>
                     </v-radio-group>
                     <v-layout v-if="unsubscribedAnswer === unLinkCardAnswer.OTHER">

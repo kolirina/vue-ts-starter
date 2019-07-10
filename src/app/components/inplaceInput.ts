@@ -9,21 +9,18 @@ import {UI} from "../app/ui";
     // language=Vue
     template: `
         <div class="inplace-input">
-            <v-layout>
+            <v-layout wrap class="content">
                 <v-text-field
                         v-model.trim="editableValue"
-                        @keyup.enter="emitCompleteEvent"
-                        @click:append="emitCompleteEvent"
-                        @keyup.esc="closeInput"
-                        @focus="setEditMode(true)"
-                        @blur="setEditMode(false)"
-                        append-icon="done"
                         type="text"
                         ref="inplaceInput"
                         :placeholder="placeholder"
                         :maxlength="maxLength"
-                        :class="['inplace-input-field', isEditMode ? '' : 'focus-content-input']">
+                        class="inplace-input-field">
                 </v-text-field>
+                <v-btn @click="emitCompleteEvent" :disabled="editableValue === value" color="#EBEFF7" class="save-btn">
+                    Сохранить изменения
+                </v-btn>
             </v-layout>
         </div>
     `
@@ -56,7 +53,7 @@ export class InplaceInput extends UI {
      * @inheritDoc
      */
     created(): void {
-        this.updateEditableValue();
+        this.editableValue = this.value;
     }
 
     /**
@@ -68,24 +65,6 @@ export class InplaceInput extends UI {
         }
         if (this.editableValue !== this.value) {
             this.$emit("input", this.editableValue);
-            this.closeInput();
         }
     }
-
-    private updateEditableValue(): void {
-        this.$nextTick(() => {
-            this.editableValue = this.value;
-        });
-    }
-
-    private setEditMode(editMode: boolean): void {
-        this.updateEditableValue();
-        this.isEditMode = editMode;
-    }
-
-    private closeInput(): void {
-        this.updateEditableValue();
-        this.$refs.inplaceInput.blur();
-    }
-
 }
