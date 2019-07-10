@@ -26,13 +26,18 @@ const MainStore = namespace(StoreType.MAIN);
                     <div class="section-title header-first-card__title-text">Аналитика</div>
                 </v-card-title>
             </v-card>
-            <v-card flat class="pa-0">
+            <v-card v-if="tradesCount" flat class="pa-0">
                 <choose-risk v-if="!activePreloader && !isAnalys" @setRiskLevel="setRiskLevel"
                              @analysisPortfolio="analysisPortfolio" :currentRiskLevel="currentRiskLevel"></choose-risk>
                 <preloader v-if="activePreloader"></preloader>
                 <analysis-result v-if="!activePreloader && isAnalys && advicesUnicCode.length !== 0"
                                  @goToChooseRiskType="goToChooseRiskType" :advicesUnicCode="advicesUnicCode"></analysis-result>
                 <empty-advice v-if="!activePreloader && isAnalys && advicesUnicCode.length === 0" @goToChooseRiskType="goToChooseRiskType"></empty-advice>
+            </v-card>
+            <v-card v-else flat class="py-5">
+                <div class="alignC fs18">
+                    В вашем портфеле не обнаружено сделок для анализа
+                </div>
             </v-card>
         </v-container>
     `,
@@ -68,6 +73,7 @@ export class AdviserPage extends UI {
         }
         UI.on(EventType.TRADE_CREATED, async () => await this.analysisPortfolio());
         UI.on(EventType.TRADE_UPDATED, async () => await this.analysisPortfolio());
+        console.log(this.portfolio);
     }
 
     beforeDestroy(): void {
@@ -110,5 +116,9 @@ export class AdviserPage extends UI {
         this.clientService.resetClientInfo();
         await this.reloadUser();
         this.currentRiskLevel = this.clientInfo.user.riskLevel.toLowerCase() || RiskType.LOW.code;
+    }
+
+    private get tradesCount(): boolean {
+        return this.portfolio.overview.totalTradesCount > 0;
     }
 }
