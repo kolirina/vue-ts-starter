@@ -2,6 +2,7 @@ import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
 import {RegistrationDialog} from "../components/dialogs/registrationDialog";
+import {RestorePasswordDialog} from "../components/dialogs/restorePasswordDialog";
 import {BtnReturn} from "../platform/dialogs/customDialog";
 import {SignInData} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
@@ -41,9 +42,10 @@ const MainStore = namespace(StoreType.MAIN);
                                 <div class="margT30">
                                     <v-btn class="btn sign-btn maxW275" @click.stop="openRegistrationDialog">Регистрация</v-btn>
                                 </div>
-                                <div class="margT30 mb-4">
+                                <v-layout class="margT30 mb-4" align-center>
                                     <v-checkbox v-model="signInData.rememberMe" hide-details label="Запомнить меня"></v-checkbox>
-                                </div>
+                                    <a @click.stop="restorePassword" class="fs14 restore-password-btn">Забыли пароль?</a>
+                                </v-layout>
                             </div>
                         </v-layout>
                         <v-layout class="paired-section__right-section" column>
@@ -102,5 +104,9 @@ export class SignIn extends UI {
 
     private get loginBtnDisabled(): boolean {
         return CommonUtils.isBlank(this.signInData.username) || CommonUtils.isBlank(this.signInData.password);
+    }
+
+    private async restorePassword(): Promise<void> {
+        await new RestorePasswordDialog().show();
     }
 }
