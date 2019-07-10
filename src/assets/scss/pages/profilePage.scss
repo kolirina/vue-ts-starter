@@ -1,5 +1,5 @@
 .profile {
-  padding: 30px 0px 30px 37px;
+  padding: 30px 33px;
   box-sizing: border-box;
   background: #fff;
 
@@ -111,8 +111,9 @@
     color: red !important;
     font-size: 12px !important;
   }
-  .wrapper-payment-card {
-    padding-top: 30px;
+  .wrapper-payment-info {
+    padding-top: 19px;
+    border-top: 1px solid #E8E9ED;
     .payment-content-text {
       line-height: 18px;
     }
@@ -132,4 +133,23 @@
 }
 .payment-card-hint {
   box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1) !important;
+}
+.other-answer-area {
+  max-width: 445px;
+  .v-input__control {
+    .v-input__slot {
+      padding-left: 0px !important;
+      .v-text-field__slot {
+        .v-label--active {
+          top: 50% !important;
+        }
+        .error--text {
+          color: #ff5252 !important;
+        }
+      }
+    }
+    .v-text-field__details {
+      padding-left: 16px !important;
+    }
+  }
 }

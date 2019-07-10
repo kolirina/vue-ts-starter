@@ -5,6 +5,7 @@ import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
 import {ChangePasswordDialog} from "../../components/dialogs/changePasswordDialog";
 import {ConfirmDialog} from "../../components/dialogs/confirmDialog";
+import {UnsubscribedDialog} from "../../components/dialogs/unsubscribedDialog";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {ClientInfo, ClientService} from "../../services/clientService";
@@ -29,7 +30,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-btn>
                 </v-card-title>
             </v-card>
-            <v-layout class="profile" wrap>
+            <v-layout class="profile" wrap column>
                 <v-card flat class="margR60">
                     <div class="fs16 mb-2">
                         Детали профиля
@@ -44,34 +45,41 @@ const MainStore = namespace(StoreType.MAIN);
                     <div class="profile__subtitle">Имя пользователя</div>
                     <inplace-input name="username" :value="username" @input="onUserNameChange"></inplace-input>
                 </v-card>
-                <v-card v-if="hasPaymentInfo" flat class="wrapper-payment-card">
-                    <span class="profile__subtitle">
-                        Способ оплаты
-                    </span>
-                    <v-layout class="mt-3" wrap>
-                        <v-layout class="margR100">
-                            <v-tooltip content-class="custom-tooltip-wrap payment-card-hint" max-width="280px" bottom nudge-right="60">
-                                <div slot="activator">
-                                    <v-layout align-center>
-                                        <div class="fs13">
-                                            **** **** {{ paymentInfo.pan }}
-                                        </div>
-                                        <v-icon class="ml-3">done</v-icon>
-                                    </v-layout>
-                                    <div class="fs13 payment-card-date">{{ paymentInfo.expDate }}</div>
-                                </div>
-                                <span class="fs13">У вас активировано автоматическое продление подписки, вы можете отменить ее с помощью кнопки "Отвязать карту".</span>
-                            </v-tooltip>
+                <v-layout v-if="hasPaymentInfo" class="wrapper-payment-info mt-5">
+                    <v-card flat class="mr-5">
+                        <span class="profile__subtitle">
+                            Информация по тарифному плану
+                        </span>
+                        <div class="fs13 mt-3">
+                            Тарифный план {{ clientInfo.user.tariff.description }}<br>
+                            {{ expirationDescription }}
+                        </div>
+                    </v-card>
+                    <v-card flat>
+                        <span class="profile__subtitle">
+                            Способ оплаты
+                        </span>
+                        <v-layout class="mt-3" wrap>
+                            <v-layout class="mr-4">
+                                <v-tooltip content-class="custom-tooltip-wrap payment-card-hint" max-width="280px" bottom nudge-right="60">
+                                    <div slot="activator">
+                                        <v-layout align-center>
+                                            <div class="fs13">
+                                                **** **** {{ paymentInfo.pan }}
+                                            </div>
+                                            <v-icon class="ml-3">done</v-icon>
+                                        </v-layout>
+                                        <div class="fs13 payment-card-date">{{ paymentInfo.expDate }}</div>
+                                    </div>
+                                    <span class="fs13">У вас активировано автоматическое продление подписки, вы можете отменить ее с помощью кнопки "Отвязать карту".</span>
+                                </v-tooltip>
+                            </v-layout>
+                            <v-btn @click.stop="cancelOrderSchedule" class="mt-0" color="#EBEFF7">
+                                Отвязать карту
+                            </v-btn>
                         </v-layout>
-                        <v-btn @click.stop="cancelOrderSchedule" class="mt-0" color="#EBEFF7">
-                            Отвязать карту
-                        </v-btn>
-                    </v-layout>
-                    <div class="fs13 mt-3">
-                        Тарифный план {{ clientInfo.user.tariff.description }}<br>
-                        {{ expirationDescription }}
-                    </div>
-                </v-card>
+                    </v-card>
+                </v-layout>
             </v-layout>
         </v-container>
     `
@@ -165,19 +173,16 @@ export class ProfilePage extends UI {
     private async cancelOrderSchedule(): Promise<void> {
         const result = await new ConfirmDialog().show("Вы уверены, что хотите отменить подписку? Автоматическое продление будет отключено. " +
             "После окончания подписки некоторые услуги могут стать недоступны.");
+        const request = await new UnsubscribedDialog().show();
         if (result === BtnReturn.YES) {
-            await this.cancelOrderScheduleConfirmed();
+            await this.cancelOrderScheduleConfirmed(request);
             this.paymentInfo = await this.tariffService.getPaymentInfo();
             this.$snotify.info("Автоматическое продление подписки успешно отключено");
         }
     }
 
     @ShowProgress
-    private async cancelOrderScheduleConfirmed(): Promise<void> {
-        const request: CancelOrderRequest = {
-            answer: UnLinkCardAnswer.OTHER,
-            comment: "noComments"
-        };
+    private async cancelOrderScheduleConfirmed(request: CancelOrderRequest): Promise<void> {
         await this.tariffService.cancelOrderSchedule(request);
     }
 
