@@ -23,6 +23,10 @@ export class ClientService {
         return this.mapClientInfoResponse(clientInfo);
     }
 
+    async restorePassword(email: string): Promise<void> {
+        await this.http.post("/user/restore", email);
+    }
+
     async getClientInfo(): Promise<Client> {
         if (!this.clientInfoCache) {
             const clientInfo = await this.http.get<ClientResponse>("/user/info");
