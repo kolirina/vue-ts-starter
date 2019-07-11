@@ -5,6 +5,7 @@ import VueRouter, {Route} from "vue-router";
 import {RouteConfig} from "vue-router/types/router";
 import {Resolver} from "../../../typings/vue";
 import {AuthComponent} from "../app/authComponent";
+import {NotAccessToSection} from "../components/dialogs/notAccessToSection";
 import {TariffExpiredDialog} from "../components/dialogs/tariffExpiredDialog";
 import {AdviserPage} from "../pages/adviser/adviserPage";
 import {BalancesPage} from "../pages/balancesPage";
@@ -65,12 +66,23 @@ export class RouterConfiguration {
                     next(false);
                     return;
                 }
+                const client = await clientService.getClientInfo();
+                if (to.name === "adviser" && (client.tariff !== Tariff.PRO && client.tariff !== Tariff.TRIAL)) {
+                    next(false);
+                    await new NotAccessToSection().show(RouterConfiguration.router);
+                    // если переход по ссылке или закладке что бы не отображать пустую страницу делаем редирект в портфель
+                    if (!from.name) {
+                        RouterConfiguration.router.push({path: "/portfolio"});
+                    } else {
+                        return;
+                    }
+                }
                 next();
                 // осуществляем переход по роуту и если пользователь залогинен отображаем диалог об истечении тарифа при соблюдении условий
                 const tariffAllowed = (to.meta as RouteMeta).tariffAllowed;
                 if (!tariffAllowed && authorized) {
-                    const client = await clientService.getClientInfo();
                     const tariffExpired = client.tariff !== Tariff.FREE && DateUtils.parseDate(client.paidTill).isBefore(dayjs());
+
                     if (tariffExpired) {
                         await new TariffExpiredDialog().show(RouterConfiguration.router);
                     }

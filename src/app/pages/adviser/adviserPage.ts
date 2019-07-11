@@ -35,7 +35,7 @@ const MainStore = namespace(StoreType.MAIN);
                 <empty-advice v-if="!activePreloader && isAnalys && advicesUnicCode.length === 0" @goToChooseRiskType="goToChooseRiskType"></empty-advice>
             </v-card>
             <v-card v-else flat class="py-5">
-                <div class="alignC fs18">
+                <div class="alignC fs16">
                     В вашем портфеле не обнаружено сделок для анализа
                 </div>
             </v-card>
@@ -73,7 +73,6 @@ export class AdviserPage extends UI {
         }
         UI.on(EventType.TRADE_CREATED, async () => await this.analysisPortfolio());
         UI.on(EventType.TRADE_UPDATED, async () => await this.analysisPortfolio());
-        console.log(this.portfolio);
     }
 
     beforeDestroy(): void {
