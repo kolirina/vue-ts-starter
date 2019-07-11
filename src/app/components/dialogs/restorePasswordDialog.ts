@@ -1,26 +1,22 @@
 import {Inject} from "typescript-ioc";
-import Component from "vue-class-component";
+import {Component} from "../../app/ui";
 import {CustomDialog} from "../../platform/dialogs/customDialog";
 import {ClientService} from "../../services/clientService";
 
 @Component({
+    // language=Vue
     template: `
         <v-dialog v-model="showed" max-width="600px">
             <v-card class="dialog-wrap pa-5">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
                 <v-layout justify-center class="wrap-registration-form">
                     <v-layout class="maxW275" column>
-                        <div class="fs18 bold alignC mb-5">Востановление пароля</div>
+                        <div class="fs18 bold alignC mb-5">Восстановление пароля</div>
                         <div>
-                            <v-text-field
-                                v-model.trim="email"
-                                type="email"
-                                @keydown.enter="restorePassword"
-                                :placeholder="'Введите Email'">
-                            </v-text-field>
+                            <v-text-field v-model.trim="email" @keydown.enter="restorePassword" :placeholder="'Введите Email'"></v-text-field>
                         </div>
                         <div class="alignC mt-3">
-                            <v-btn @click="restorePassword" color="primary sign-btn maxW275">Востановить</v-btn>
+                            <v-btn @click="restorePassword" color="primary sign-btn maxW275">Восстановить</v-btn>
                         </div>
                     </v-layout>
                 </v-layout>
@@ -29,14 +25,14 @@ import {ClientService} from "../../services/clientService";
     `
 })
 export class RestorePasswordDialog extends CustomDialog<string, void> {
+
     @Inject
     private clientService: ClientService;
+    /** Почта */
     private email: string = "";
-    // tslint:disable-next-line
-    private emailRule = new RegExp(/^(?=.{1,254}$)(?=.{1,64}@)[-!#$%&'*+/0-9=?A-Z^_`a-z{|}~]+(\.[-!#$%&'*+/0-9=?A-Z^_`a-z{|}~]+)*@[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?(\.[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?)+$/);
 
     private async restorePassword(): Promise<void> {
-        if (!this.isEmailValid) {
+        if (!(await this.isEmailValid())) {
             return;
         }
         await this.clientService.restorePassword(this.email);
@@ -46,13 +42,12 @@ export class RestorePasswordDialog extends CustomDialog<string, void> {
         this.close();
     }
 
-    private get isEmailValid(): boolean {
-        const isEmailValid = this.email.length > 0 && this.emailRule.test(this.email);
-        if (isEmailValid) {
-            return true;
-        } else {
-            this.$snotify.error("Неверный формат Email");
-            return false;
+    private async isEmailValid(): Promise<boolean> {
+        this.$validator.attach({name: "value", rules: "required|email"});
+        const result = await this.$validator.validate("value", this.email);
+        if (!result) {
+            this.$snotify.warning("Неверное значение e-mail");
         }
+        return result;
     }
 }
