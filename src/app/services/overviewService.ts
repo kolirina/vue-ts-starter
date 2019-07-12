@@ -64,15 +64,6 @@ export class OverviewService {
         return overview;
     }
 
-    async getCostChartCombined(request: CombinedInfoRequest): Promise<any> {
-        const data = await this.http.post<LineChartItem[]>(`/portfolios/cost-chart-combined`, request);
-        const result: any[] = [];
-        data.forEach(value => {
-            result.push([new Date(value.date).getTime(), new BigMoney(value.amount).amount.toDP(2, Decimal.ROUND_HALF_UP).toNumber()]);
-        });
-        return result;
-    }
-
     /**
      * Проставляет флаг combined в портфеле
      * @param {string} id
@@ -92,13 +83,12 @@ export class OverviewService {
         await this.http.post(`/portfolios/${id}/default`);
     }
 
-    async getCostChart(id: number, publicZone: boolean = false): Promise<any> {
-        const data = await this.http.get<LineChartItem[]>(`${publicZone ? "public" : ""}/portfolios/${id}/cost-chart`);
-        const result: any[] = [];
-        data.forEach(value => {
-            result.push([new Date(value.date).getTime(), new BigMoney(value.amount).amount.toDP(2, Decimal.ROUND_HALF_UP).toNumber()]);
-        });
-        return result;
+    async getCostChart(id: number, publicZone: boolean = false): Promise<LineChartItem[]> {
+        return this.http.get<LineChartItem[]>(`${publicZone ? "public" : ""}/portfolios/${id}/cost-chart`);
+    }
+
+    async getCostChartCombined(request: CombinedInfoRequest): Promise<LineChartItem[]> {
+        return this.http.post<LineChartItem[]>(`/portfolios/cost-chart-combined`, request);
     }
 
     async getEventsChartDataWithDefaults(id: number, publicZone: boolean = false): Promise<HighStockEventsGroup[]> {
