@@ -21,12 +21,11 @@ import {CancelOrderRequest, UnLinkCardAnswer} from "../../services/tariffService
                             :value="answer"
                         ></v-radio>
                     </v-radio-group>
-                    <v-layout v-if="unsubscribedAnswer === unLinkCardAnswer.OTHER">
+                    <v-layout>
                         <v-text-field
-                            v-model="otherAnswer"
+                            v-model="comment"
                             box
-                            :rules="rulesTextArea"
-                            counter="500"
+                            counter="255"
                             label="Описание причины"
                             type="text"
                             class="other-answer-area"
@@ -36,22 +35,21 @@ import {CancelOrderRequest, UnLinkCardAnswer} from "../../services/tariffService
             </v-card-text>
             <v-layout class="action-btn pt-0">
                 <v-spacer></v-spacer>
-                <v-btn @click.native="reply" color="primary" class="btn">Ответить</v-btn>
+                <v-btn @click.native="reply" color="primary" class="btn" :disadbled="!unsubscribedAnswer">Ответить</v-btn>
             </v-layout>
         </v-card>
     </v-dialog>
   `
 })
 export class UnsubscribedAnswerDialog extends CustomDialog<any, CancelOrderRequest> {
-    private unsubscribedAnswer: UnLinkCardAnswer = UnLinkCardAnswer.REDUCE_INVEST_ACTIVITY;
+    private unsubscribedAnswer: UnLinkCardAnswer = null;
     private unLinkCardAnswer = UnLinkCardAnswer;
-    private otherAnswer: string = "";
-    private rulesTextArea = [(v: string): boolean | string => (v || "").length >= 1 || "Заполните причину отписки"];
+    private comment: string = "";
 
     private reply(): void {
         const requestData: CancelOrderRequest = {
             answer: this.unsubscribedAnswer.code,
-            comment: this.otherAnswer
+            comment: this.comment
         };
         this.close(requestData);
     }
