@@ -79,6 +79,7 @@ export interface LineChartSeries {
     balloonTitle: string;
     data: any[];
     enabled?: boolean;
+    id: string;
 }
 
 /** Перечислению типов графиков */

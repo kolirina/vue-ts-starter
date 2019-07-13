@@ -80,6 +80,7 @@ export class LineChart extends UI {
         const compareData: LineChartSeries = {
             balloonTitle: this.balloonTitle,
             data: this.data,
+            id: "dataseries"
         };
         this.chart = ChartUtils.drawLineChart(this.$refs.container, this.eventsChartData, this.ranges,
             this.ranges.length - 1, this.decimals, this.title, this.yAxisTitle, null, this.avgLineValue, [compareData]);
