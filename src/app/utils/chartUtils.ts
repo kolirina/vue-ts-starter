@@ -217,17 +217,18 @@ export class ChartUtils {
      * @param yAxisTitle заголовок для оси y
      * @param callback callback вызваемый после загрузки
      * @param portfolioAvg средняя цена бумаги в портфеле (для рисования горизонтальной линии)
-     * @param compareData
+     * @param compareData данные графика
+     * @param compare тип сравнения графиков percent или ""
      */
     static drawLineChart(container: HTMLElement, eventsChartData: HighStockEventsGroup[], ranges: Highstock.RangeSelectorButton[],
                          selectedRangeIndex: number, decimals: number, title: string = "", yAxisTitle: string = "",
-                         callback: () => void = null, portfolioAvg: number = null, compareData: LineChartSeries[] = []): ChartObject {
+                         callback: () => void = null, portfolioAvg: number = null, compareData: LineChartSeries[] = [], compare: boolean = false): ChartObject {
         const compareSeries: IndividualSeriesOptions[] = compareData.map(series => {
             return {
                 type: "area",
                 name: series.balloonTitle,
                 data: series.data,
-                id: "dataseries"
+                id: series.id
             };
         });
         return Highstock.stockChart(container, {
@@ -287,12 +288,12 @@ export class ChartUtils {
             plotOptions: {
                 area: ChartUtils.areaChart,
                 series: {
-                    compare: compareSeries.length > 1 ? "percent" : "",
+                    compare: compare ? "percent" : "",
                     showInNavigator: true
                 } as any
             },
             tooltip: {
-                pointFormat: compareSeries.length > 0 ? "<span style=\"color:{series.color}\">{series.name}</span>: <b>{point.y}</b> ({point.change}%)<br/>" :
+                pointFormat: compare ? "<span style=\"color:{series.color}\">{series.name}</span>: <b>{point.y}</b> ({point.change}%)<br/>" :
                     "<span style=\"color:{series.color}\">{series.name}</span>: <b>{point.y}</b><br/>",
                 valueDecimals: decimals,
                 split: true
