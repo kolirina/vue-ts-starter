@@ -265,8 +265,10 @@ export class PortfolioLineChart extends UI {
 
     async resetFilter(): Promise<void> {
         this.seriesFilter.totalChart = true;
+        this.seriesFilter.showTrades = true;
+        await this.onShowTradesChange();
         this.toggleChartSeries(ChartSeries.TOTAL);
-        await this.draw();
+        setTimeout(async () => await this.draw(), 0);
     }
 
     private toggleChartSeries(series: ChartSeries): void {
