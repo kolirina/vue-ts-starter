@@ -21,7 +21,7 @@ import {CancelOrderRequest, UnLinkCardAnswer} from "../../services/tariffService
                             :value="answer"
                         ></v-radio>
                     </v-radio-group>
-                    <v-layout>
+                    <v-layout v-if="unsubscribedAnswer">
                         <v-text-field
                             v-model="comment"
                             box
@@ -35,7 +35,7 @@ import {CancelOrderRequest, UnLinkCardAnswer} from "../../services/tariffService
             </v-card-text>
             <v-layout class="action-btn pt-0">
                 <v-spacer></v-spacer>
-                <v-btn @click.native="reply" color="primary" class="btn" :disadbled="!unsubscribedAnswer">Ответить</v-btn>
+                <v-btn @click.native="reply" color="primary" class="btn" :disabled="!unsubscribedAnswer">Ответить</v-btn>
             </v-layout>
         </v-card>
     </v-dialog>
