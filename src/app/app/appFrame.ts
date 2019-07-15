@@ -143,12 +143,11 @@ export class AppFrame extends UI {
 
     private mainSection: NavBarItem[] = [
         {title: "Портфель", action: "portfolio", icon: "fas fa-briefcase"},
-        {title: "Аналитика", action: "adviser"},
+        // {title: "Аналитика", action: "adviser"},
         {title: "Сделки", action: "trades", icon: "fas fa-list-alt"},
         {title: "События", action: "events", icon: "far fa-calendar-check"},
         {title: "Дивиденды", action: "dividends", icon: "far fa-calendar-plus"},
         {title: "Составной портфель", action: "combined-portfolio", icon: "fas fa-object-group"},
-        // Закомментировано для первого релиза
         {title: "Котировки", action: "quotes", icon: "fas fa-chart-area"},
         {title: "Информация", path: "/share-info", icon: "fas fa-info"},
         {

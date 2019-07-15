@@ -67,7 +67,7 @@ export class RouterConfiguration {
                     return;
                 }
                 const client = await clientService.getClientInfo();
-                if (to.name === "adviser" && (client.tariff !== Tariff.PRO && client.tariff !== Tariff.TRIAL)) {
+                if (Object.values(BanListStandartFreeTariff).includes(to.name) && (client.tariff !== Tariff.PRO && client.tariff !== Tariff.TRIAL)) {
                     next(false);
                     await new NotAccessToSection().show(RouterConfiguration.router);
                     // если переход по ссылке или закладке что бы не отображать пустую страницу делаем редирект в портфель
@@ -307,4 +307,8 @@ interface RouteMeta {
     tariffAllowed: boolean;
     title?: string;
     public?: boolean;
+}
+
+export enum BanListStandartFreeTariff {
+    ADVISER = "adviser"
 }
