@@ -37,7 +37,7 @@ import {Portfolio} from "../types/types";
             <expanded-panel :value="$uistate.sumYearDivsTablePanel" :withMenu="true" :name="ExportType.DIVIDENDS_BY_YEAR" :state="$uistate.SUM_YEAR_DIVIDENDS">
                 <template #header>Сумма дивидендов по годам</template>
                 <template #list>
-                    <v-list-tile-title v-if="!publicZone" @click="exportTable(ExportType.DIVIDENDS_BY_YEAR)">Экспорт в xlsx</v-list-tile-title>
+                    <v-list-tile-title @click="exportTable(ExportType.DIVIDENDS_BY_YEAR)">Экспорт в xlsx</v-list-tile-title>
                 </template>
                 <dividends-by-year-table :rows="dividendInfo.summaryDividendsByYear"></dividends-by-year-table>
             </expanded-panel>
@@ -45,7 +45,7 @@ import {Portfolio} from "../types/types";
             <expanded-panel :value="$uistate.sumDivsTablePanel" :withMenu="true" :name="ExportType.DIVIDENDS_BY_TICKER" :state="$uistate.SUM_DIVS" class="margT20">
                 <template #header>Дивиденды по тикерам</template>
                 <template #list>
-                    <v-list-tile-title v-if="!publicZone" @click="exportTable(ExportType.DIVIDENDS_BY_TICKER)">Экспорт в xlsx</v-list-tile-title>
+                    <v-list-tile-title @click="exportTable(ExportType.DIVIDENDS_BY_TICKER)">Экспорт в xlsx</v-list-tile-title>
                 </template>
                 <dividends-by-ticker-table :rows="dividendInfo.summaryDividendsByTicker"></dividends-by-ticker-table>
             </expanded-panel>
@@ -53,7 +53,7 @@ import {Portfolio} from "../types/types";
             <expanded-panel :value="$uistate.yearDivsTablePanel" :withMenu="true" :name="ExportType.DIVIDENDS_BY_YEAR_AND_TICKER" :state="$uistate.YEAR_DIV_LIST" class="margT20">
                 <template #header>Дивиденды по годам</template>
                 <template #list>
-                    <v-list-tile-title v-if="!publicZone" @click="exportTable(ExportType.DIVIDENDS_BY_YEAR_AND_TICKER)">Экспорт в xlsx</v-list-tile-title>
+                    <v-list-tile-title @click="exportTable(ExportType.DIVIDENDS_BY_YEAR_AND_TICKER)">Экспорт в xlsx</v-list-tile-title>
                 </template>
                 <dividends-by-year-and-ticker-table :rows="dividendInfo.summaryDividendsByYearAndTicker"></dividends-by-year-and-ticker-table>
             </expanded-panel>
@@ -61,7 +61,7 @@ import {Portfolio} from "../types/types";
             <expanded-panel :value="$uistate.divTradesTablePanel" :withMenu="true" :name="ExportType.DIVIDENDS" :state="$uistate.DIV_LIST" class="margT20">
                 <template #header>Сделки по дивидендам</template>
                 <template #list>
-                    <v-list-tile-title v-if="!publicZone" @click="exportTable(ExportType.DIVIDENDS)">Экспорт в xlsx</v-list-tile-title>
+                    <v-list-tile-title @click="exportTable(ExportType.DIVIDENDS)">Экспорт в xlsx</v-list-tile-title>
                 </template>
                 <dividend-trades-table :rows="dividendInfo.dividendTrades"></dividend-trades-table>
             </expanded-panel>
@@ -77,9 +77,6 @@ export class BaseDividendsPage extends UI {
     /** Данные по портфелю */
     @Prop({default: null, required: true})
     private dividendInfo: DividendAggregateInfo;
-    /** Признак публичной зоны */
-    @Prop({type: Boolean, default: false, required: false})
-    private publicZone: boolean;
     /** Признак открытой боковой панели */
     @Prop({required: true, type: Boolean, default: true})
     private sideBarOpened: boolean;
