@@ -99,6 +99,6 @@ export class InactivityMonitor {
             if (version && versionFromLocalStorage && version.version !== versionFromLocalStorage.version && version.build !== versionFromLocalStorage.build) {
                 await new NewBackendVersionDialog().show();
             }
-        }, 1000 * 60 * 30);
+        }, 1000 * 60 * 10);
     }
 }

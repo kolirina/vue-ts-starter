@@ -1,6 +1,6 @@
 import * as chroma from "chroma-js";
 import {Decimal} from "decimal.js";
-import Highcharts, {AreaChart, ChartObject, DataPoint, Gradient, PlotLines, SeriesChart} from "highcharts";
+import Highcharts, {AreaChart, ChartObject, DataPoint, Gradient, IndividualSeriesOptions, PlotLines, SeriesChart} from "highcharts";
 import Highstock from "highcharts/highstock";
 import {Filters} from "../platform/filters/Filters";
 import {BigMoney} from "../types/bigMoney";
@@ -11,6 +11,8 @@ import {
     EventChartData,
     HighStockEventData,
     HighStockEventsGroup,
+    LineChartItem,
+    LineChartSeries,
     PieChartTooltipFormat,
     SectorChartData
 } from "../types/charts/types";
@@ -207,22 +209,28 @@ export class ChartUtils {
     /**
      * Отрисовывает график и возвращает объект
      * @param container контейнер где будет рисоваться график
-     * @param chartData данные для графика
      * @param eventsChartData данные по событиям
      * @param ranges диапазон выбора дат
      * @param selectedRangeIndex индекс выбранного диапазона
      * @param decimals количество знаков для округления на графике
-     * @param balloonTitle заголовок в тултипе
      * @param title заголовк графика
      * @param yAxisTitle заголовок для оси y
      * @param callback callback вызваемый после загрузки
      * @param portfolioAvg средняя цена бумаги в портфеле (для рисования горизонтальной линии)
-     * @param compareData
-     * @param compareDataBalloonTitle
+     * @param compareData данные графика
+     * @param compare тип сравнения графиков percent или ""
      */
-    static drawLineChart(container: HTMLElement, chartData: any[], eventsChartData: HighStockEventsGroup[], ranges: Highstock.RangeSelectorButton[],
-                         selectedRangeIndex: number, decimals: number, balloonTitle: string, title: string = "", yAxisTitle: string = "",
-                         callback: () => void = null, portfolioAvg: number = null, compareData: any[] = [], compareDataBalloonTitle: string = ""): ChartObject {
+    static drawLineChart(container: HTMLElement, eventsChartData: HighStockEventsGroup[], ranges: Highstock.RangeSelectorButton[],
+                         selectedRangeIndex: number, decimals: number, title: string = "", yAxisTitle: string = "",
+                         callback: () => void = null, portfolioAvg: number = null, compareData: LineChartSeries[] = [], compare: boolean = false): ChartObject {
+        const compareSeries: IndividualSeriesOptions[] = compareData.map(series => {
+            return {
+                type: "area",
+                name: series.balloonTitle,
+                data: series.data,
+                id: series.id
+            };
+        });
         return Highstock.stockChart(container, {
             chart: {
                 zoomType: "x",
@@ -280,12 +288,12 @@ export class ChartUtils {
             plotOptions: {
                 area: ChartUtils.areaChart,
                 series: {
-                    compare: "percent",
+                    compare: compare ? "percent" : "",
                     showInNavigator: true
                 } as any
             },
             tooltip: {
-                pointFormat: compareData.length ? "<span style=\"color:{series.color}\">{series.name}</span>: <b>{point.y}</b> ({point.change}%)<br/>" :
+                pointFormat: compare ? "<span style=\"color:{series.color}\">{series.name}</span>: <b>{point.y}</b> ({point.change}%)<br/>" :
                     "<span style=\"color:{series.color}\">{series.name}</span>: <b>{point.y}</b><br/>",
                 valueDecimals: decimals,
                 split: true
@@ -296,17 +304,8 @@ export class ChartUtils {
             scrollbar: {
                 enabled: false
             },
-            series: [{
-                type: "area",
-                name: balloonTitle,
-                data: chartData,
-                id: "dataseries"
-            }, {
-                type: "area",
-                name: compareDataBalloonTitle,
-                data: compareData,
-                id: "dataseries"
-            },
+            series: [
+                ...compareSeries || [],
                 // @ts-ignore
                 ...eventsChartData || []
             ],
@@ -465,6 +464,19 @@ export class ChartUtils {
             series.push({name: key, data: result[key].data, color: ChartUtils.OPERATION_COLORS[key], yAxis: key === Operation.COUPON.description ? 0 : 1});
         });
         return {categoryNames, series};
+    }
+
+    /**
+     * Возвращает массив точек для заданного поля из объекта LineChartItem
+     * @param data массив объектов
+     * @param fieldName название поля
+     */
+    static convertToDots(data: LineChartItem[], fieldName: string): any[] {
+        const result: any[] = [];
+        data.forEach(value => {
+            result.push([new Date(value.date).getTime(), new BigMoney((value as any)[fieldName]).amount.toDP(2, Decimal.ROUND_HALF_UP).toNumber()]);
+        });
+        return result;
     }
 
     private static getColors(dataSetsCountValue: number = 10): string[] {

@@ -1,5 +1,6 @@
 import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
+import {Enum, EnumType, IStaticEnum} from "../platform/enum";
 import {Http} from "../platform/services/http";
 import {Tariff} from "../types/tariff";
 
@@ -125,28 +126,22 @@ export interface UserPaymentInfo {
 /** Сущность с данными при отвзяке карты */
 export interface CancelOrderRequest {
     /** Тип ответа */
-    answer: UnLinkCardAnswer;
+    answer: string;
     /** Комментарий к ответу */
     comment?: string;
 }
+/** Перечисление возможных типов ответов при отвязке карты */
+@Enum("code")
+export class UnLinkCardAnswer extends (EnumType as IStaticEnum<UnLinkCardAnswer>) {
 
-/**
- * Перечисление возможных типов ответов при отвязке карты
- */
-export enum UnLinkCardAnswer {
+    static readonly REDUCE_INVEST_ACTIVITY = new UnLinkCardAnswer("REDUCE_INVEST_ACTIVITY", "Прекратил или уменьшил инвесторскую деятельность");
+    static readonly ABSENT_FUNCTIONALITY = new UnLinkCardAnswer("ABSENT_FUNCTIONALITY", "Нет нужного мне функционала");
+    static readonly ERRORS = new UnLinkCardAnswer("ERRORS", "Ошибки в сервисе");
+    static readonly SUPPORT_QUALITY = new UnLinkCardAnswer("SUPPORT_QUALITY", "Не устроило качество обратной связи от тех. поддержки");
+    static readonly EXPENSIVE_TARIFFS = new UnLinkCardAnswer("EXPENSIVE_TARIFFS", "Дорогие тарифные планы");
+    static readonly OTHER = new UnLinkCardAnswer("OTHER", "Другое...");
 
-    /** Прекратил или уменьшил свою инвесторскую деятельность */
-    REDUCE_INVEST_ACTIVITY = "REDUCE_INVEST_ACTIVITY",
-    /** Не хочу, чтобы была привязана карта */
-    DONT_WANT_LINKED_CARD = "DONT_WANT_LINKED_CARD",
-    /** Нет нужного мне функционала */
-    ABSENT_FUNCTIONALITY = "ABSENT_FUNCTIONALITY",
-    /** Ошибки в сервисе */
-    ERRORS = "ERRORS",
-    /** Не устроило качество обратной связи от тех. поддержки */
-    SUPPORT_QUALITY = "SUPPORT_QUALITY",
-    /** Дорогие тарифные планы */
-    EXPENSIVE_TARIFFS = "EXPENSIVE_TARIFFS",
-    /** Другое */
-    OTHER = "OTHER"
+    private constructor(public code: string, public description: string) {
+        super();
+    }
 }

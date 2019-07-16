@@ -91,7 +91,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                                            class="exp-panel-menu"></chart-export-menu>
                     </template>
                     <v-card-text>
-                        <portfolio-line-chart v-if="lineChartData && lineChartEvents" ref="portfolioLineChart" :data="lineChartData" :compare-data="indexLineChartData"
+                        <portfolio-line-chart v-if="lineChartData && lineChartEvents" ref="portfolioLineChart" :data="lineChartData" :moex-index-data="indexLineChartData"
                                               :state-key-prefix="stateKeyPrefix"
                                               :events-chart-data="lineChartEvents" :balloon-title="portfolioName"></portfolio-line-chart>
                         <v-container v-else grid-list-md text-xs-center>
@@ -188,9 +188,6 @@ export class BasePortfolioPage extends UI {
     /** Префикс ключа под которым будет хранится состояние */
     @Prop({type: String, required: true})
     private stateKeyPrefix: string;
-    /** Признак публичной зоны */
-    @Prop({type: Boolean, default: false, required: false})
-    private publicZone: boolean;
     /** Признак открытой боковой панели */
     @Prop({required: true, type: Boolean, default: true})
     private sideBarOpened: boolean;

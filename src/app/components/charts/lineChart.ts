@@ -3,7 +3,7 @@ import Highstock from "highcharts/highstock";
 import Component from "vue-class-component";
 import {Prop, Watch} from "vue-property-decorator";
 import {UI} from "../../app/ui";
-import {HighStockEventsGroup} from "../../types/charts/types";
+import {HighStockEventsGroup, LineChartSeries} from "../../types/charts/types";
 import {ChartUtils} from "../../utils/chartUtils";
 
 @Component({
@@ -77,8 +77,13 @@ export class LineChart extends UI {
      * Отрисовывает график
      */
     private async draw(): Promise<void> {
-        this.chart = ChartUtils.drawLineChart(this.$refs.container, this.data, this.eventsChartData, this.ranges,
-            this.ranges.length - 1, this.decimals, this.balloonTitle, this.title, this.yAxisTitle, null, this.avgLineValue);
+        const compareData: LineChartSeries = {
+            balloonTitle: this.balloonTitle,
+            data: this.data,
+            id: "dataseries"
+        };
+        this.chart = ChartUtils.drawLineChart(this.$refs.container, this.eventsChartData, this.ranges,
+            this.ranges.length - 1, this.decimals, this.title, this.yAxisTitle, null, this.avgLineValue, [compareData]);
     }
 
     private defineDecimals(): number {
