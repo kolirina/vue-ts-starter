@@ -188,9 +188,6 @@ export class BasePortfolioPage extends UI {
     /** Префикс ключа под которым будет хранится состояние */
     @Prop({type: String, required: true})
     private stateKeyPrefix: string;
-    /** Признак публичной зоны */
-    @Prop({type: Boolean, default: false, required: false})
-    private publicZone: boolean;
     /** Признак открытой боковой панели */
     @Prop({required: true, type: Boolean, default: true})
     private sideBarOpened: boolean;

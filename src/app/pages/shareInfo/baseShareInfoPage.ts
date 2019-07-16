@@ -73,7 +73,7 @@ import {StoreType} from "../../vuex/storeType";
                                 </div>
                             </div>
                         </div>
-                        <div v-if="!publicZone">
+                        <div>
                             <v-btn class="btn mt-1" @click.stop="openDialog">
                                 Добавить в портфель
                             </v-btn>
@@ -331,8 +331,6 @@ export class BaseShareInfoPage extends UI {
     @Prop({type: Number, default: null, required: false})
     private portfolioAvgPrice: number;
 
-    @Prop({type: Boolean, default: false, required: false})
-    private publicZone: boolean;
     @Inject
     private marketService: MarketService;
     /** Типы активов */
