@@ -173,8 +173,11 @@ export class ProfilePage extends UI {
     private async cancelOrderSchedule(): Promise<void> {
         const result = await new ConfirmDialog().show("Вы уверены, что хотите отменить подписку? Автоматическое продление будет отключено. " +
             "После окончания подписки некоторые услуги могут стать недоступны.");
+        if (result !== BtnReturn.YES) {
+            return;
+        }
         const request = await new UnsubscribedAnswerDialog().show();
-        if (result === BtnReturn.YES && request) {
+        if (request) {
             await this.cancelOrderScheduleConfirmed(request);
             this.paymentInfo = await this.tariffService.getPaymentInfo();
             this.$snotify.info("Автоматическое продление подписки успешно отключено");
