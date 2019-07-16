@@ -240,7 +240,7 @@ export class RouterConfiguration {
                         path: "promo-codes",
                         meta: {
                             tariffAllowed: true,
-                            title: "Промокоды"
+                            title: "Партнерская программа"
                         },
                         component: PromoCodesPage
                     },
