@@ -4,6 +4,7 @@ import {UI} from "../app/ui";
 import {Filters} from "../platform/filters/Filters";
 import {BigMoney} from "../types/bigMoney";
 import {DashboardBrick, DashboardData} from "../types/types";
+import {NegativeBalanceNotification} from "./negativeBalanceNotification";
 
 @Component({
     // language=Vue
@@ -12,7 +13,7 @@ import {DashboardBrick, DashboardData} from "../types/types";
             <v-card-title primary-title class="pb-2 dashboard-card-string">
                 <span>{{ block.name }}</span>
                 <v-tooltip content-class="custom-tooltip-wrap dashboard-tooltip" :max-width="450" bottom right>
-                    <v-icon class="custom-tooltip" slot="activator" small>far fa-question-circle</v-icon>
+                    <v-icon class="dashboard-info" slot="activator" small></v-icon>
                     <span v-html="block.tooltip"></span>
                 </v-tooltip>
             </v-card-title>
@@ -58,24 +59,27 @@ export class DashboardBrickComponent extends UI {
 @Component({
     // language=Vue
     template: `
-        <v-container v-if="data" px-0 grid-list-md text-xs-center fluid :class="{'fixed-dashboard': fixedDashboard}" v-scroll="setDashboardPosition">
-            <v-layout class="dashboard-wrap px-4 selectable" row wrap :class="{'menu-open': !sideBarOpened}">
-                <v-flex xl3 lg3 md6 sm12 xs12>
-                    <dashboard-brick-component :block="blocks[0]"></dashboard-brick-component>
-                </v-flex>
-                <v-flex xl3 lg3 md6 sm12 xs12 :align-content-start="true">
-                    <dashboard-brick-component :block="blocks[1]"></dashboard-brick-component>
-                </v-flex>
-                <v-flex xl3 lg3 md6 sm12 xs12>
-                    <dashboard-brick-component :block="blocks[2]"></dashboard-brick-component>
-                </v-flex>
-                <v-flex xl3 lg3 md6 sm12 xs12>
-                    <dashboard-brick-component :block="blocks[3]"></dashboard-brick-component>
-                </v-flex>
-            </v-layout>
-        </v-container>
+        <div>
+            <v-container v-if="data" px-0 grid-list-md text-xs-center fluid :class="{'fixed-dashboard': fixedDashboard}" v-scroll="setDashboardPosition">
+                <v-layout class="dashboard-wrap px-4 selectable" row wrap :class="{'menu-open': !sideBarOpened}">
+                    <v-flex xl3 lg3 md6 sm12 xs12>
+                        <dashboard-brick-component :block="blocks[0]"></dashboard-brick-component>
+                    </v-flex>
+                    <v-flex xl3 lg3 md6 sm12 xs12 :align-content-start="true">
+                        <dashboard-brick-component :block="blocks[1]"></dashboard-brick-component>
+                    </v-flex>
+                    <v-flex xl3 lg3 md6 sm12 xs12>
+                        <dashboard-brick-component :block="blocks[2]"></dashboard-brick-component>
+                    </v-flex>
+                    <v-flex xl3 lg3 md6 sm12 xs12>
+                        <dashboard-brick-component :block="blocks[3]"></dashboard-brick-component>
+                    </v-flex>
+                </v-layout>
+            </v-container>
+            <negative-balance-notification v-if="!blocks[1].isSummaryIncome.isUpward"></negative-balance-notification>
+    </div>
     `,
-    components: {DashboardBrickComponent}
+    components: {DashboardBrickComponent, NegativeBalanceNotification}
 })
 export class Dashboard extends UI {
 

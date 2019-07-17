@@ -40,7 +40,6 @@
     font-family: $dashbord--num--font-family !important;
     font-size: $dashbord--num--font-size !important;
     font-weight: $dashbord--num--font-weight !important;
-    color: $dashbord--num--font-color !important;
   }
 
   &-second-value-desc {
@@ -127,4 +126,8 @@
       .container {padding: 0}
     }
   }
+}
+.negative-balance-notification {
+  background: #FFFFFF;
+  padding: 19px 35px;
 }

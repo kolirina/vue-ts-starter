@@ -9,6 +9,7 @@ import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog";
 import {EmptyPortfolioStub} from "../components/emptyPortfolioStub";
 import {EmptySearchResult} from "../components/emptySearchResult";
 import {ExpandedPanel} from "../components/expandedPanel";
+import {NegativeBalanceNotification} from "../components/negativeBalanceNotification";
 import {TradesTable} from "../components/tradesTable";
 import {TradesTableFilter} from "../components/tradesTableFilter";
 import {ShowProgress} from "../platform/decorators/showProgress";
@@ -34,7 +35,6 @@ const MainStore = namespace(StoreType.MAIN);
             <empty-portfolio-stub v-if="isEmptyBlockShowed"></empty-portfolio-stub>
             <div v-else>
                 <dashboard :data="portfolio.overview.dashboardData" :side-bar-opened="sideBarOpened" :view-currency="portfolio.portfolioParams.viewCurrency"></dashboard>
-
                 <expanded-panel :disabled="true" :withMenu="true" name="trades" :alwaysOpen="true" :value="[true]" class="auto-cursor">
                     <template #header>Сделки</template>
                     <template #list>
@@ -55,7 +55,7 @@ const MainStore = namespace(StoreType.MAIN);
             </div>
         </v-container>
     `,
-    components: {TradesTable, ExpandedPanel, TradesTableFilter, AdditionalPagination, EmptySearchResult, EmptyPortfolioStub}
+    components: {TradesTable, ExpandedPanel, TradesTableFilter, AdditionalPagination, EmptySearchResult, EmptyPortfolioStub, NegativeBalanceNotification}
 })
 export class TradesPage extends UI {
 
