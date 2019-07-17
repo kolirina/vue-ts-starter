@@ -128,7 +128,9 @@
   width: 100%;
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  max-width: 1917px;
+  margin: 0 auto;
+  justify-content: space-between;
 
   .item {
     display: flex;
@@ -219,7 +221,7 @@
     background: url("../img/fileimport/aton.svg") center no-repeat;
   }
   .alfacapital {
-    background: url("../img/fileimport/alfadirect.svg") center no-repeat;
+    background: url("../img/fileimport/alfacapital.svg") center no-repeat;
   }
   .quik {
     background: url("../img/fileimport/quik.svg") center no-repeat;

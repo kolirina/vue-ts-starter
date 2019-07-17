@@ -54,7 +54,7 @@ import {ForbiddenCode} from "../../types/types";
 export class BlockByTariffDialog extends CustomDialog<ForbiddenCode, BtnReturn> {
 
     private tariffs(): void {
-        window.location.replace("/#/settings/tariffs");
+        window.location.assign(location.origin + location.pathname + "#/settings/tariffs");
         this.close();
     }
 }
