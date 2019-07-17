@@ -236,7 +236,7 @@ export class BasePortfolioPage extends UI {
     async created(): Promise<void> {
         this.stockTablePanelClosed = UiStateHelper.stocksTablePanel[0] === 0;
         this.bondTablePanelClosed = UiStateHelper.bondsTablePanel[0] === 0;
-        this.getCurrentMoneyRemainder();
+        await this.getCurrentMoneyRemainder();
         this.assetsPieChartData = this.doAssetsPieChartData();
         this.stockPieChartData = this.doStockPieChartData();
         this.bondPieChartData = this.doBondPieChartData();
@@ -247,7 +247,7 @@ export class BasePortfolioPage extends UI {
 
     @Watch("overview")
     private async onPortfolioChange(): Promise<void> {
-        this.getCurrentMoneyRemainder();
+        await this.getCurrentMoneyRemainder();
         this.assetsPieChartData = this.doAssetsPieChartData();
         this.stockPieChartData = this.doStockPieChartData();
         this.bondPieChartData = this.doBondPieChartData();
