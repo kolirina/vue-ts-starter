@@ -246,7 +246,6 @@ export class BasePortfolioPage extends UI {
         this.sectorsChartData = this.doSectorsChartData();
         this.stockFilter = this.storageService.get(StoreKeys.STOCKS_TABLE_FILTER_KEY, {});
         this.bondFilter = this.storageService.get(StoreKeys.BONDS_TABLE_FILTER_KEY, {});
-        console.log(this.overview);
     }
 
     @Watch("overview")
