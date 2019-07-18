@@ -17,6 +17,15 @@ const MainStore = namespace(StoreType.MAIN);
         <v-layout class="negative-balance-notification" align-center>
             <div class="fs16">
                 У Вас отрицательный баланс денежных средств
+                <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" bottom>
+                    <sup class="custom-tooltip" slot="activator">
+                        <v-icon>fas fa-info-circle</v-icon>
+                    </sup>
+                    <span>
+                        В Вашем портфеле отрицательный баланс денежных средств. Это вероятно является причиной некорректного отображения стоимости портфеля и других показателей.
+                        Для исправления данной ситуации, вам необходимо указать корректный остаток денежных средств по ссылке: Сверить балансы
+                    </span>
+                </v-tooltip>
             </div>
             <v-spacer></v-spacer>
             <v-layout class="initial-flex">

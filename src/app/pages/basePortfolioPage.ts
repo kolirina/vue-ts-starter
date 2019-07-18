@@ -42,7 +42,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
             <v-layout column>
                 <dashboard :data="overview.dashboardData" :view-currency="viewCurrency" :side-bar-opened="sideBarOpened"></dashboard>
 
-                <negative-balance-notification v-if="Number(currentMoneyRemainder) < 0"></negative-balance-notification>
+                <negative-balance-notification v-if="showNegativeBalance"></negative-balance-notification>
 
                 <slot name="afterDashboard"></slot>
 
@@ -195,6 +195,9 @@ export class BasePortfolioPage extends UI {
     /** Признак открытой боковой панели */
     @Prop({required: true, type: Boolean, default: true})
     private sideBarOpened: boolean;
+    /** Признак проф. режима */
+    @Prop({required: true, type: Boolean, default: false})
+    private isProfessionalMode: boolean;
     @Inject
     private tablesService: TablesService;
     @Inject
@@ -243,6 +246,7 @@ export class BasePortfolioPage extends UI {
         this.sectorsChartData = this.doSectorsChartData();
         this.stockFilter = this.storageService.get(StoreKeys.STOCKS_TABLE_FILTER_KEY, {});
         this.bondFilter = this.storageService.get(StoreKeys.BONDS_TABLE_FILTER_KEY, {});
+        console.log(this.overview);
     }
 
     @Watch("overview")
@@ -326,6 +330,10 @@ export class BasePortfolioPage extends UI {
 
     private get bondRows(): BondPortfolioRow[] {
         return [...this.overview.bondPortfolio.rows, this.overview.bondPortfolio.sumRow as BondPortfolioRow];
+    }
+
+    private get showNegativeBalance(): boolean {
+        return Number(this.currentMoneyRemainder) < 0 && !this.isProfessionalMode;
     }
 
 }
