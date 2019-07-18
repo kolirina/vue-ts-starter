@@ -22,14 +22,14 @@ const MainStore = namespace(StoreType.MAIN);
                         <v-icon>fas fa-info-circle</v-icon>
                     </sup>
                     <span>
-                        В Вашем портфеле отрицательный баланс денежных средств. Это вероятно является причиной некорректного отображения стоимости портфеля и других показателей.
+                        В Вашем портфеле отрицательный баланс денежных средств. Это может являться причиной некорректного отображения стоимости портфеля и других показателей.
                         Для исправления данной ситуации, вам необходимо указать корректный остаток денежных средств по ссылке: Сверить балансы
                     </span>
                 </v-tooltip>
             </div>
             <v-spacer></v-spacer>
             <v-layout class="initial-flex">
-                <v-btn @click="goToСalculations()" class="mr-3">
+                <v-btn @click="goToCalculations()" class="mr-3">
                     Сверить расчеты
                 </v-btn>
                 <v-btn @click="openDialogResidueIndications">
@@ -40,6 +40,7 @@ const MainStore = namespace(StoreType.MAIN);
     `
 })
 export class NegativeBalanceNotification extends UI {
+
     @MainStore.Getter
     private portfolio: Portfolio;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
@@ -47,7 +48,7 @@ export class NegativeBalanceNotification extends UI {
     @Inject
     private overviewService: OverviewService;
 
-    private goToСalculations(): void {
+    private goToCalculations(): void {
         window.open("https://blog.intelinvest.ru/calculations-explained");
     }
 

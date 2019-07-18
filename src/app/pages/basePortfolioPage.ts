@@ -144,7 +144,8 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                         <chart-export-menu @print="print('sectorsChart')" @exportTo="exportTo('sectorsChart', $event)" class="exp-panel-menu"></chart-export-menu>
                     </template>
                     <v-card-text>
-                        <pie-chart ref="sectorsChart" :data="sectorsChartData.data" :balloon-title="portfolioName" :view-currency="viewCurrency"></pie-chart>
+                        <pie-chart v-if="sectorsChartData" ref="sectorsChart"
+                                   :data="sectorsChartData.data" :balloon-title="portfolioName" :view-currency="viewCurrency"></pie-chart>
                     </v-card-text>
                 </expanded-panel>
             </v-layout>
@@ -197,7 +198,7 @@ export class BasePortfolioPage extends UI {
     private sideBarOpened: boolean;
     /** Признак проф. режима */
     @Prop({required: true, type: Boolean, default: false})
-    private isProfessionalMode: boolean;
+    private professionalMode: boolean;
     @Inject
     private tablesService: TablesService;
     @Inject
@@ -332,7 +333,7 @@ export class BasePortfolioPage extends UI {
     }
 
     private get showNegativeBalance(): boolean {
-        return Number(this.currentMoneyRemainder) < 0 && !this.isProfessionalMode;
+        return Number(this.currentMoneyRemainder) < 0 && !this.professionalMode;
     }
 
 }

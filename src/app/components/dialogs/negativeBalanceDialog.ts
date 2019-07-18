@@ -36,17 +36,11 @@ import {MainStore} from "../../vuex/mainStore";
                     <v-card-text @click.stop class="pb-0">
                         <v-layout align-center column>
                             <div class="fs18 alignC">
-                                Введите сумму вашего остатка денежных средств на брокерском счету
+                                Введите сумму остатка денежных средств на брокерском счету
                             </div>
                             <div class="maxW275 my-4">
-                                <v-text-field
-                                    v-if="portfolio"
-                                    v-model.trim="currentMoneyRemainder"
-                                    type="text"
-                                    suffix="RUB"
-                                    @keydown.enter="specifyResidues"
-                                    label="Текущий остаток"
-                                    :decimals="2">
+                                <v-text-field v-if="portfolio" v-model.trim="currentMoneyRemainder" type="text" suffix="RUB" @keydown.enter="specifyResidues"
+                                              label="Текущий остаток" :decimals="2">
                                 </v-text-field>
                             </div>
                         </v-layout>
