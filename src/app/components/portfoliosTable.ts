@@ -133,14 +133,23 @@ const MainStore = namespace(StoreType.MAIN);
                                 </v-btn>
                             </v-layout>
 
-                            <div class="link-section">
-                                <div>
-                                    <a class="portfolio-link portfolio-default-text" :href="informerH(props.item.id)" target="_blank">Информер-картинка горизонтальный</a>
-                                </div>
-                                <div>
-                                    <a class="portfolio-link portfolio-default-text" :href="informerV(props.item.id)" target="_blank">Информер-картинка вертикальный</a>
-                                </div>
-                            </div>
+                            <v-layout class="link-section" wrap>
+                                <v-flex md3>
+                                    <div>
+                                        <a class="portfolio-link portfolio-default-text fs14" :href="informerH(props.item.id)" target="_blank">Информер-картинка горизонтальный</a>
+                                    </div>
+                                    <div>
+                                        <a class="portfolio-link portfolio-default-text fs14" :href="informerV(props.item.id)" target="_blank">Информер-картинка вертикальный</a>
+                                    </div>
+                                </v-flex>
+                                <v-flex md9 class="fs14">
+                                    <div v-if="props.item.note">
+                                        <span class="bold">Заметка:</span>
+                                        <span>{{ props.item.note }}</span>
+                                    </div>
+                                    <a v-else @click.stop="openDialogForEdit(props.item)">Создать заметку</a>
+                                </v-flex>
+                            </v-layout>
                         </div>
                     </v-card-text>
                 </v-card>
