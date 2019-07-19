@@ -14,8 +14,8 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-layout class="negative-balance-notification" align-center>
-            <div class="fs16">
+        <v-layout class="negative-balance-notification" align-center justify-space-between wrap>
+            <div class="fs16 description">
                 У Вас отрицательный баланс денежных средств
                 <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" bottom>
                     <sup class="custom-tooltip" slot="activator">
@@ -27,9 +27,8 @@ const MainStore = namespace(StoreType.MAIN);
                     </span>
                 </v-tooltip>
             </div>
-            <v-spacer></v-spacer>
-            <v-layout class="initial-flex">
-                <v-btn @click="goToCalculations()" class="mr-3">
+            <v-layout class="btn-action-section" wrap justify-space-between>
+                <v-btn @click="goToCalculations()">
                     Сверить расчеты
                 </v-btn>
                 <v-btn @click="openDialogResidueIndications">

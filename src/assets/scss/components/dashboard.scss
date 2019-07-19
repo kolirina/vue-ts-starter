@@ -129,5 +129,14 @@
 }
 .negative-balance-notification {
   background: #FFFFFF;
-  padding: 19px 35px;
+  padding: 12px 35px 19px;
+  .description {
+    margin-top: 7px;
+  }
+  .btn-action-section {
+    max-width: 321px;
+    button {
+      margin-top: 7px !important;
+    }
+  }
 }
