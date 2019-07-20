@@ -10,6 +10,7 @@ import {ClientInfo} from "../services/clientService";
 import {PortfolioParams, PortfoliosDialogType, PortfolioService} from "../services/portfolioService";
 import {EventType} from "../types/eventType";
 import {Portfolio, TableHeader} from "../types/types";
+import {CommonUtils} from "../utils/commonUtils";
 import {SortUtils} from "../utils/sortUtils";
 import {TradeUtils} from "../utils/tradeUtils";
 import {MutationType} from "../vuex/mutationType";
@@ -96,8 +97,8 @@ const MainStore = namespace(StoreType.MAIN);
                                 <v-spacer></v-spacer>
                                 <v-tooltip content-class="custom-tooltip-wrap" top>
                                     <v-checkbox slot="activator" label="Профессиональный режим"
-                                        @change="onProfessionalModeChange(props.item)"
-                                        v-model="props.item.professionalMode" hide-details class="portfolio-default-text">
+                                                @change="onProfessionalModeChange(props.item)"
+                                                v-model="props.item.professionalMode" hide-details class="portfolio-default-text">
                                     </v-checkbox>
                                     <span>
                                         Профессиональный режим включает дополнительные возможности, необходимые опытным инвесторам:
@@ -143,7 +144,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     </div>
                                 </v-flex>
                                 <v-flex md9 class="fs14">
-                                    <div v-if="props.item.note">
+                                    <div v-if="showNoteLink(props.item.note)">
                                         <span class="bold">Заметка:</span>
                                         <span>{{ props.item.note }}</span>
                                     </div>
@@ -266,5 +267,9 @@ export class PortfoliosTable extends UI {
 
     private copyPortfolioLink(): void {
         this.$snotify.info("Ссылка скопирована");
+    }
+
+    private showNoteLink(note: string): boolean {
+        return !CommonUtils.isBlank(note);
     }
 }
