@@ -7,7 +7,7 @@ import {ShowProgress} from "../platform/decorators/showProgress";
 import {ExportService, ExportType} from "../services/exportService";
 import {MarketHistoryService} from "../services/marketHistoryService";
 import {OverviewService} from "../services/overviewService";
-import {HighStockEventsGroup} from "../types/charts/types";
+import {HighStockEventsGroup, LineChartItem} from "../types/charts/types";
 import {StoreKeys} from "../types/storeKeys";
 import {Portfolio} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
@@ -46,7 +46,7 @@ export class PortfolioPage extends UI {
     @Inject
     private exportService: ExportService;
     /** Данные графика стоимости портфеля */
-    private lineChartData: any[] = null;
+    private lineChartData: LineChartItem[] = null;
     /** Данные стоимости индекса ММВБ */
     private indexLineChartData: any[] = null;
     /** События для графика стоимости портфеля */

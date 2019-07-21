@@ -23,10 +23,10 @@ export class OverviewService {
 
     private cache: { [key: number]: Portfolio } = {};
 
-    async getById(id: number, publicZone: boolean = false): Promise<Portfolio> {
+    async getById(id: number): Promise<Portfolio> {
         let portfolio = this.cache[id];
         if (!portfolio) {
-            portfolio = await this.loadPortfolio(id, publicZone);
+            portfolio = await this.loadPortfolio(id);
             this.cache[id] = portfolio;
             return portfolio;
         }
@@ -64,15 +64,6 @@ export class OverviewService {
         return overview;
     }
 
-    async getCostChartCombined(request: CombinedInfoRequest): Promise<any> {
-        const data = await this.http.post<LineChartItem[]>(`/portfolios/cost-chart-combined`, request);
-        const result: any[] = [];
-        data.forEach(value => {
-            result.push([new Date(value.date).getTime(), new BigMoney(value.amount).amount.toDP(2, Decimal.ROUND_HALF_UP).toNumber()]);
-        });
-        return result;
-    }
-
     /**
      * Проставляет флаг combined в портфеле
      * @param {string} id
@@ -92,21 +83,20 @@ export class OverviewService {
         await this.http.post(`/portfolios/${id}/default`);
     }
 
-    async getCostChart(id: number, publicZone: boolean = false): Promise<any> {
-        const data = await this.http.get<LineChartItem[]>(`${publicZone ? "public" : ""}/portfolios/${id}/cost-chart`);
-        const result: any[] = [];
-        data.forEach(value => {
-            result.push([new Date(value.date).getTime(), new BigMoney(value.amount).amount.toDP(2, Decimal.ROUND_HALF_UP).toNumber()]);
-        });
-        return result;
+    async getCostChart(id: number): Promise<LineChartItem[]> {
+        return this.http.get<LineChartItem[]>(`/portfolios/${id}/cost-chart`);
     }
 
-    async getEventsChartDataWithDefaults(id: number, publicZone: boolean = false): Promise<HighStockEventsGroup[]> {
-        return this.getEventsChartData(id, publicZone);
+    async getCostChartCombined(request: CombinedInfoRequest): Promise<LineChartItem[]> {
+        return this.http.post<LineChartItem[]>(`/portfolios/cost-chart-combined`, request);
     }
 
-    async getEventsChartData(id: number, publicZone: boolean = false): Promise<HighStockEventsGroup[]> {
-        const data = await this.http.get<EventChartData[]>(`${publicZone ? "public" : ""}/portfolios/${id}/events-chart-data`);
+    async getEventsChartDataWithDefaults(id: number): Promise<HighStockEventsGroup[]> {
+        return this.getEventsChartData(id);
+    }
+
+    async getEventsChartData(id: number): Promise<HighStockEventsGroup[]> {
+        const data = await this.http.get<EventChartData[]>(`/portfolios/${id}/events-chart-data`);
         return ChartUtils.processEventsChartData(data);
     }
 
@@ -126,18 +116,17 @@ export class OverviewService {
     /**
      * Возвращает данные по портфелю
      * @param {string} id идентификатор портфеля
-     * @param publicZone
      * @return {Promise<Portfolio>}
      */
-    private async loadPortfolio(id: number, publicZone: boolean = false): Promise<Portfolio> {
-        const portfolioResponse: PortfolioParamsResponse = await this.http.get<PortfolioParamsResponse>(`${publicZone ? "public" : ""}/portfolios/${id}`);
+    private async loadPortfolio(id: number): Promise<Portfolio> {
+        const portfolioResponse: PortfolioParamsResponse = await this.http.get<PortfolioParamsResponse>(`/portfolios/${id}`);
         const portfolio = {
             ...portfolioResponse,
             accountType: portfolioResponse.accountType ? PortfolioAccountType.valueByName(portfolioResponse.accountType) : null,
             iisType: portfolioResponse.iisType ? IisType.valueByName(portfolioResponse.iisType) : null,
             shareNotes: portfolioResponse.shareNotes ? portfolioResponse.shareNotes : {}
         } as PortfolioParams;
-        const overview = await this.http.get<Overview>(`${publicZone ? "public" : ""}/portfolios/${id}/overview`);
+        const overview = await this.http.get<Overview>(`/portfolios/${id}/overview`);
         // проставляем идентификаторы чтобы работали разворачиваютщиеся блоки в табилицах
         overview.stockPortfolio.rows.forEach((value, index) => value.id = index.toString());
         overview.bondPortfolio.rows.forEach((value, index) => value.id = index.toString());

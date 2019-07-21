@@ -24,7 +24,7 @@ import {TableFilterBase} from "./tableFilterBase";
     // language=Vue
     template: `
         <v-layout align-center class="pl-2">
-            <table-filter-base @search="onSearch" :search-query="filter.searchQuery" :search-label="placeholder" :min-length="2" :is-default="isDefaultFilter">
+            <table-filter-base @search="onSearch" :search-query="filter.searchQuery" :search-label="placeholder" :min-length="minLength" :is-default="isDefaultFilter">
                 <v-switch v-model="filter.showUserShares" @change="onChange">
                     <template #label>
                         <span class="fs13">Показать мои бумаги</span>
@@ -50,6 +50,9 @@ export class QuotesFilterTable extends UI {
     /** Фильтр */
     @Prop({required: true, type: Object})
     private filter: QuotesFilter;
+    /** Минимальная длина поиска */
+    @Prop({required: false, type: Number, default: 0})
+    private minLength: number;
 
     private onChange(): void {
         this.$emit("changeShowUserShares", this.filter.showUserShares);
