@@ -81,11 +81,10 @@ export class TableFilterBase extends UI {
         this.searchQueryMutated = value;
         clearTimeout(this.currentTimer);
         this.currentTimer = setTimeout((): void => {
-            if ((this.searchQueryMutated.length || this.searchQueryMutated.length >= this.minLength)) {
-                this.emitSearch();
-            } else {
+            if (!this.searchQueryMutated.length) {
                 this.emitClear();
-                return;
+            } else if (this.searchQueryMutated.length >= this.minLength) {
+                this.emitSearch();
             }
         }, 1000);
     }
