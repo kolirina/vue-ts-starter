@@ -37,7 +37,7 @@ const MainStore = namespace(StoreType.MAIN);
                             <stock-link :ticker="props.item.ticker"></stock-link>
                         </td>
                         <td class="text-xs-left">{{ props.item.shortname }}</td>
-                        <td class="text-xs-center ii-number-cell">{{ props.item.price | amount(true) }}</td>
+                        <td class="text-xs-center ii-number-cell">{{ props.item.price | amount(false, null, false, false) }}</td>
                         <td :class="[( Number(props.item.change) >= 0 ) ? 'ii--green-markup' : 'ii--red-markup', 'ii-number-cell', 'text-xs-center']">
                             {{ props.item.change }}&nbsp;%
                         </td>
