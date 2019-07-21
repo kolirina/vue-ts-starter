@@ -89,7 +89,7 @@ export class ShareSearchComponent extends UI {
     @Watch("searchQuery")
     private async onSearch(): Promise<void> {
         clearTimeout(this.currentTimer);
-        if (!this.searchQuery || this.searchQuery.length <= 2) {
+        if (!this.searchQuery || this.searchQuery.length < 1) {
             this.shareSearch = false;
             return;
         }
