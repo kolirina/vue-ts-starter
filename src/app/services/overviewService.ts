@@ -1,11 +1,9 @@
-import {Decimal} from "decimal.js";
-import {Container, Inject, Singleton} from "typescript-ioc";
+import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {Cache} from "../platform/services/cache";
 import {Http} from "../platform/services/http";
-import {BigMoney} from "../types/bigMoney";
 import {EventChartData, HighStockEventsGroup, LineChartItem} from "../types/charts/types";
-import {CombinedInfoRequest, Overview, Portfolio} from "../types/types";
+import {CombinedInfoRequest, CurrentMoneyRequest, Overview, Portfolio} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
 import {IisType, PortfolioAccountType, PortfolioParams, PortfolioParamsResponse} from "./portfolioService";
 
@@ -109,8 +107,8 @@ export class OverviewService {
         return await this.http.get<string>(`/portfolios/${portfolioId}/current-money`);
     }
 
-    async saveOrUpdateCurrentMoney(portfolioId: number, currentMoney: string): Promise<void> {
-        await this.http.post(`/portfolios/${portfolioId}/current-money`, {currentMoney});
+    async saveOrUpdateCurrentMoney(portfolioId: number, currentMoneyRequest: CurrentMoneyRequest): Promise<void> {
+        await this.http.post(`/portfolios/${portfolioId}/current-money`, currentMoneyRequest);
     }
 
     /**
