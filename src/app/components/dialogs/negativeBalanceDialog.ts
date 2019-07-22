@@ -39,7 +39,7 @@ import {MainStore} from "../../vuex/mainStore";
                                 Введите сумму остатка денежных средств на брокерском счету
                             </div>
                             <div class="maxW275 my-4">
-                                <v-text-field v-if="portfolio" v-model.trim="currentMoneyRemainder" type="text" suffix="RUB" @keydown.enter="specifyResidues"
+                                <v-text-field v-if="portfolio" v-model.trim="currentMoneyRemainder" type="number" suffix="RUB" @keydown.enter="specifyResidues"
                                               label="Текущий остаток" :decimals="2">
                                 </v-text-field>
                             </div>
