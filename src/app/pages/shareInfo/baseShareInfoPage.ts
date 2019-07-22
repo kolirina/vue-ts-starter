@@ -117,7 +117,7 @@ import {StoreType} from "../../vuex/storeType";
                                     <td class="info-about-stock__content-title">Последняя цена</td>
                                     <td>
                                         <span class="info-about-stock__content-value" :title="'Время последнего обновления ' + share.lastUpdateTime">
-                                            {{ share.price | amount }}
+                                            {{ share.price | amount(false, null, false, false) }}
                                         </span>
                                         <span class="info-about-stock__content-legend">{{ currencySymbol }}</span>
                                     </td>

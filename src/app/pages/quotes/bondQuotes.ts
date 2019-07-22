@@ -25,7 +25,7 @@ const MainStore = namespace(StoreType.MAIN);
             <div class="additional-pagination-quotes-table">
                 <additional-pagination :pagination="pagination" @update:pagination="onTablePaginationChange"></additional-pagination>
             </div>
-            <quotes-filter-table :filter="filter" @input="tableSearch" @changeShowUserShares="changeShowUserShares"
+            <quotes-filter-table :filter="filter" @input="tableSearch" @changeShowUserShares="changeShowUserShares" :min-length="3"
                                  placeholder="Поиск"></quotes-filter-table>
             <empty-search-result v-if="isEmptySearchResult" @resetFilter="resetFilter"></empty-search-result>
             <v-data-table v-else

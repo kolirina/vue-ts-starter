@@ -10,6 +10,7 @@ import {ClientInfo} from "../services/clientService";
 import {PortfolioParams, PortfoliosDialogType, PortfolioService} from "../services/portfolioService";
 import {EventType} from "../types/eventType";
 import {Portfolio, TableHeader} from "../types/types";
+import {CommonUtils} from "../utils/commonUtils";
 import {SortUtils} from "../utils/sortUtils";
 import {TradeUtils} from "../utils/tradeUtils";
 import {MutationType} from "../vuex/mutationType";
@@ -96,8 +97,8 @@ const MainStore = namespace(StoreType.MAIN);
                                 <v-spacer></v-spacer>
                                 <v-tooltip content-class="custom-tooltip-wrap" top>
                                     <v-checkbox slot="activator" label="Профессиональный режим"
-                                        @change="onProfessionalModeChange(props.item)"
-                                        v-model="props.item.professionalMode" hide-details class="portfolio-default-text">
+                                                @change="onProfessionalModeChange(props.item)"
+                                                v-model="props.item.professionalMode" hide-details class="portfolio-default-text">
                                     </v-checkbox>
                                     <span>
                                         Профессиональный режим включает дополнительные возможности, необходимые опытным инвесторам:
@@ -133,14 +134,23 @@ const MainStore = namespace(StoreType.MAIN);
                                 </v-btn>
                             </v-layout>
 
-                            <div class="link-section">
-                                <div>
-                                    <a class="portfolio-link portfolio-default-text" :href="informerH(props.item.id)" target="_blank">Информер-картинка горизонтальный</a>
-                                </div>
-                                <div>
-                                    <a class="portfolio-link portfolio-default-text" :href="informerV(props.item.id)" target="_blank">Информер-картинка вертикальный</a>
-                                </div>
-                            </div>
+                            <v-layout class="link-section" wrap>
+                                <v-flex md3>
+                                    <div>
+                                        <a class="portfolio-link portfolio-default-text fs14" :href="informerH(props.item.id)" target="_blank">Информер-картинка горизонтальный</a>
+                                    </div>
+                                    <div>
+                                        <a class="portfolio-link portfolio-default-text fs14" :href="informerV(props.item.id)" target="_blank">Информер-картинка вертикальный</a>
+                                    </div>
+                                </v-flex>
+                                <v-flex md9 class="fs14">
+                                    <div v-if="showNoteLink(props.item.note)">
+                                        <span class="bold">Заметка:</span>
+                                        <span>{{ props.item.note }}</span>
+                                    </div>
+                                    <a v-else @click.stop="openDialogForEdit(props.item)">Создать заметку</a>
+                                </v-flex>
+                            </v-layout>
                         </div>
                     </v-card-text>
                 </v-card>
@@ -257,5 +267,9 @@ export class PortfoliosTable extends UI {
 
     private copyPortfolioLink(): void {
         this.$snotify.info("Ссылка скопирована");
+    }
+
+    private showNoteLink(note: string): boolean {
+        return !CommonUtils.isBlank(note);
     }
 }

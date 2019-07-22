@@ -27,6 +27,7 @@ const MainStore = namespace(StoreType.MAIN);
                                  :line-chart-data="lineChartData" :line-chart-events="lineChartEvents" :index-line-chart-data="indexLineChartData"
                                  :view-currency="portfolio.portfolioParams.viewCurrency"
                                  :state-key-prefix="StoreKeys.PORTFOLIO_CHART" :side-bar-opened="sideBarOpened" :share-notes="portfolio.portfolioParams.shareNotes"
+                                 :professional-mode="portfolio.portfolioParams.professionalMode"
                                  @reloadLineChart="loadPortfolioLineChart" @exportTable="onExportTable" exportable>
             </base-portfolio-page>
         </div>

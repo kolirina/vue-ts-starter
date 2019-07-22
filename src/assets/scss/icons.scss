@@ -165,3 +165,8 @@
   @extend .icon;
   background: url('../img/common/logo-sign-in.svg') no-repeat center;
 }
+.dashboard-info {
+  @extend .icon;
+  background: url('../img/common/dashboard-info.svg') no-repeat center;
+  margin-left: 0px !important;
+}
