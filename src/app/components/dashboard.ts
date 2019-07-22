@@ -12,7 +12,7 @@ import {DashboardBrick, DashboardData} from "../types/types";
             <v-card-title primary-title class="pb-2 dashboard-card-string">
                 <span>{{ block.name }}</span>
                 <v-tooltip content-class="custom-tooltip-wrap dashboard-tooltip" :max-width="450" bottom right>
-                    <v-icon class="custom-tooltip" slot="activator" small>far fa-question-circle</v-icon>
+                    <v-icon class="dashboard-info" slot="activator" small></v-icon>
                     <span v-html="block.tooltip"></span>
                 </v-tooltip>
             </v-card-title>
@@ -37,8 +37,8 @@ import {DashboardBrick, DashboardData} from "../types/types";
                             <span class="dashboard-currency" :class="block.secondCurrency">{{ block.secondValue }} </span>
                             <span class="dashboard-second-value-desc">{{ block.secondValueDesc }} </span>
                             <v-tooltip v-if="block.secondTooltip" content-class="custom-tooltip-wrap dashboard-tooltip" :max-width="450" bottom right>
-                                <sup  slot="activator">
-                                    <v-icon  slot="activator" style="font-size: 12px">far fa-question-circle</v-icon>
+                                <sup slot="activator">
+                                    <v-icon slot="activator" style="font-size: 12px">far fa-question-circle</v-icon>
                                 </sup>
                                 <span>{{ block.secondTooltip }}</span>
                             </v-tooltip>
