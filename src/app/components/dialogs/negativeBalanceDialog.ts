@@ -39,9 +39,9 @@ import {MainStore} from "../../vuex/mainStore";
                                 Введите сумму остатка денежных средств на брокерском счету
                             </div>
                             <div class="maxW275 my-4">
-                                <v-text-field v-if="portfolio" v-model.trim="currentMoneyRemainder" type="number" suffix="RUB" @keydown.enter="specifyResidues"
-                                              label="Текущий остаток" :decimals="2">
-                                </v-text-field>
+                                <ii-number-field v-if="portfolio" @keydown.enter="goToNextStep" :decimals="2"
+                                                 suffix="RUB" label="Текущий остаток" v-model="currentMoneyRemainder" class="required" persistent-hint :hint="hint">
+                                </ii-number-field>
                             </div>
                         </v-layout>
                     </v-card-text>
@@ -63,6 +63,8 @@ export class NegativeBalanceDialog extends CustomDialog<CurrentPortfolioInfo, Bt
     private currentMoneyRemainder: string = null;
     /** Текущий выбранный портфель */
     private portfolio: Portfolio = null;
+    /** Подсказка  */
+    private hint: string = "";
 
     /**
      * Инициализация данных диалога
@@ -71,6 +73,9 @@ export class NegativeBalanceDialog extends CustomDialog<CurrentPortfolioInfo, Bt
     mounted(): void {
         this.portfolio = (this.data.store as any).currentPortfolio;
         this.currentMoneyRemainder = this.data.currentMoneyRemainder;
+        if (Number(this.currentMoneyRemainder) < 0) {
+            this.hint = "Ваш баланс отрицательный";
+        }
     }
 
     @ShowProgress
