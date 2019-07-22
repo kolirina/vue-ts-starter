@@ -56,7 +56,8 @@ export class NegativeBalanceNotification extends UI {
         const result = await new NegativeBalanceDialog().show({
             currentMoneyRemainder,
             router: this.$router,
-            store: this.$store.state[StoreType.MAIN]
+            store: this.$store.state[StoreType.MAIN],
+            currency: this.portfolio.portfolioParams.viewCurrency
         });
         if (result === BtnReturn.YES) {
             await this.reloadPortfolio(this.portfolio.id);
