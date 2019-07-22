@@ -37,8 +37,8 @@ import {DashboardBrick, DashboardData} from "../types/types";
                             <span class="dashboard-currency" :class="block.secondCurrency">{{ block.secondValue }} </span>
                             <span class="dashboard-second-value-desc">{{ block.secondValueDesc }} </span>
                             <v-tooltip v-if="block.secondTooltip" content-class="custom-tooltip-wrap dashboard-tooltip" :max-width="450" bottom right>
-                                <sup  slot="activator">
-                                    <v-icon  slot="activator" style="font-size: 12px">far fa-question-circle</v-icon>
+                                <sup slot="activator">
+                                    <v-icon slot="activator" style="font-size: 12px">far fa-question-circle</v-icon>
                                 </sup>
                                 <span>{{ block.secondTooltip }}</span>
                             </v-tooltip>
@@ -74,7 +74,6 @@ export class DashboardBrickComponent extends UI {
                 </v-flex>
             </v-layout>
         </v-container>
-    </div>
     `,
     components: {DashboardBrickComponent}
 })
