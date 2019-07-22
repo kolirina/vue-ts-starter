@@ -77,6 +77,9 @@ export class NegativeBalanceDialog extends CustomDialog<CurrentPortfolioInfo, Bt
 
     @ShowProgress
     private async specifyResidues(): Promise<void> {
+        if (!this.currentMoneyRemainder) {
+            return;
+        }
         await this.overviewService.saveOrUpdateCurrentMoney(this.portfolio.id, this.currentMoneyRemainder);
         this.close(BtnReturn.YES);
     }
