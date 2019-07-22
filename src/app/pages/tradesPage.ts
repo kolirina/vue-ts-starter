@@ -9,7 +9,6 @@ import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog";
 import {EmptyPortfolioStub} from "../components/emptyPortfolioStub";
 import {EmptySearchResult} from "../components/emptySearchResult";
 import {ExpandedPanel} from "../components/expandedPanel";
-import {NegativeBalanceNotification} from "../components/negativeBalanceNotification";
 import {TradesTable} from "../components/tradesTable";
 import {TradesTableFilter} from "../components/tradesTableFilter";
 import {ShowProgress} from "../platform/decorators/showProgress";
@@ -55,7 +54,7 @@ const MainStore = namespace(StoreType.MAIN);
             </div>
         </v-container>
     `,
-    components: {TradesTable, ExpandedPanel, TradesTableFilter, AdditionalPagination, EmptySearchResult, EmptyPortfolioStub, NegativeBalanceNotification}
+    components: {TradesTable, ExpandedPanel, TradesTableFilter, AdditionalPagination, EmptySearchResult, EmptyPortfolioStub}
 })
 export class TradesPage extends UI {
 
