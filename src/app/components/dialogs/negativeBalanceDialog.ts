@@ -80,7 +80,7 @@ export class NegativeBalanceDialog extends CustomDialog<CurrentPortfolioInfo, Bt
         if (!this.currentMoneyRemainder) {
             return;
         }
-        await this.overviewService.saveOrUpdateCurrentMoney(this.portfolio.id, this.currentMoneyRemainder);
+        await this.overviewService.saveOrUpdateCurrentMoney(this.portfolio.id, {currentMoney: this.currentMoneyRemainder});
         this.close(BtnReturn.YES);
     }
 }

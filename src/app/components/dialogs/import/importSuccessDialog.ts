@@ -97,7 +97,7 @@ export class ImportSuccessDialog extends CustomDialog<ImportSuccessDialogData, B
 
     @ShowProgress
     private async goToNextStep(): Promise<void> {
-        await this.overviewService.saveOrUpdateCurrentMoney(this.portfolio.id, this.currentMoneyRemainder);
+        await this.overviewService.saveOrUpdateCurrentMoney(this.portfolio.id, {currentMoney: this.currentMoneyRemainder, afterImport: true});
         this.step++;
     }
 
