@@ -22,11 +22,14 @@ const MainStore = namespace(StoreType.MAIN);
     template: `
         <v-container>
             <v-card flat class="header-first-card">
-                <v-card-title class="header-first-card__wrapper-title">
-                    <div class="section-title header-first-card__title-text">Аналитика</div>
+                <v-card-title @click="isShowAnalytics = !isShowAnalytics" class="header-first-card__wrapper-title">
+                    <v-layout justify-space-between align-center class="pointer-cursor pr-3">
+                        <div class="section-title header-first-card__title-text">Аналитика</div>
+                        <v-icon :class="['', isShowAnalytics ? 'rotate-icons' : '']" >keyboard_arrow_right</v-icon>
+                    </v-layout>
                 </v-card-title>
             </v-card>
-            <v-card v-if="tradesCount" flat class="pa-0">
+            <v-card v-if="tradesCount && isShowAnalytics" flat class="pa-0">
                 <choose-risk v-if="!activePreloader && !isAnalys" @setRiskLevel="setRiskLevel"
                              @analysisPortfolio="analysisPortfolio" :currentRiskLevel="currentRiskLevel"></choose-risk>
                 <preloader v-if="activePreloader"></preloader>
@@ -34,10 +37,21 @@ const MainStore = namespace(StoreType.MAIN);
                                  @goToChooseRiskType="goToChooseRiskType" :advicesUnicCode="advicesUnicCode"></analysis-result>
                 <empty-advice v-if="!activePreloader && isAnalys && advicesUnicCode.length === 0" @goToChooseRiskType="goToChooseRiskType"></empty-advice>
             </v-card>
-            <v-card v-else flat class="py-5">
+            <v-card v-if="!tradesCount && isShowAnalytics" flat class="py-5">
                 <div class="alignC fs16">
                     В вашем портфеле не обнаружено сделок для анализа
                 </div>
+            </v-card>
+            <v-card flat class="header-first-card margT30">
+                <v-card-title @click="isShowPortfolioSummary = !isShowPortfolioSummary" class="header-first-card__wrapper-title">
+                    <v-layout justify-space-between align-center class="pointer-cursor pr-3">
+                        <div class="section-title header-first-card__title-text">Аналитическая сводка по портфелю</div>
+                        <v-icon :class="['', isShowPortfolioSummary ? 'rotate-icons' : '']" >keyboard_arrow_right</v-icon>
+                    </v-layout>
+                </v-card-title>
+            </v-card>
+            <v-card v-if="isShowPortfolioSummary" flat class="pa-4">
+                Аналитическая сводка по портфелю
             </v-card>
         </v-container>
     `,
@@ -63,6 +77,10 @@ export class AdviserPage extends UI {
     private isAnalys: boolean = false;
 
     private advicesUnicCode: AdviceUnicCode[] = [];
+
+    private isShowAnalytics: boolean = true;
+
+    private isShowPortfolioSummary: boolean = true;
 
     async created(): Promise<void> {
         if (this.clientInfo.user.riskLevel) {

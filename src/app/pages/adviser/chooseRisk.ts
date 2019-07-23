@@ -9,7 +9,7 @@ import {RiskType} from "../../types/types";
     template: `
         <v-layout class="pa-4" column>
             <div class="fs16">
-                Советчик поможет увеличить прибыль в соответствии с Вашим уровнем риска
+                Данный раздел поможет увеличить прибыль в соответствии с Вашим уровнем риска
             </div>
             <v-radio-group v-model="mutableCurrentRiskLevel" row class="choose-risk-wrap" hide-details @change="setRiskLevel">
                 <v-layout v-for="item in riskType.values()" :key="item.code" wrap justify-space-around>
