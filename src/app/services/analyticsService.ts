@@ -17,6 +17,7 @@
 import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {Http} from "../platform/services/http";
+import {ChartUtils} from "../utils/chartUtils";
 
 @Service("AnalyticsService")
 @Singleton
@@ -29,7 +30,7 @@ export class AnalyticsService {
      * Возвращает данные по доходностям бенчмарков в сравнении с доходностью портфеля
      * @param portfolioId
      */
-    async getComparedYields(portfolioId: string): Promise<YieldCompareData> {
+    async getComparedYields(portfolioId: string): Promise<any> {
         return this.http.get<YieldCompareData>(`/analytics/compare-yields/${portfolioId}`);
     }
 
@@ -43,8 +44,10 @@ export class AnalyticsService {
     /**
      * Возвращает данные по инфляции за последние 6 месяцев
      */
-    async getInflationForLastSixMonths(): Promise<Inflation[]> {
-        return this.http.get<Inflation[]>("/analytics/inflation");
+    async getInflationForLastSixMonths(): Promise<any> {
+        const result = await this.http.get<Inflation[]>("/analytics/inflation");
+        const res = ChartUtils.test(result);
+        return res;
     }
 }
 

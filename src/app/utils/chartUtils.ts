@@ -202,6 +202,18 @@ export class ChartUtils {
         threshold: null
     };
 
+    static test(data: any): any {
+        const result: any = {
+            categoryNames: [],
+            values: []
+        };
+        data.forEach((item: any) => {
+            result.categoryNames.push(item.date);
+            result.values.push(Number(item.value));
+        });
+        return result;
+    }
+
     static getChartRanges(): Highstock.RangeSelectorButton[] {
         return this.ranges;
     }

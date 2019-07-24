@@ -2,9 +2,12 @@ import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI, Watch} from "../../app/ui";
+import {AverageAnnualYield} from "../../components/charts/averageAnnualYield";
+import {MonthlyInflationChart} from "../../components/charts/monthlyInflationChart";
 import {ConfirmDialog} from "../../components/dialogs/confirmDialog";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {AdviceService, AdviceUnicCode} from "../../services/adviceService";
+import {AnalyticsService} from "../../services/analyticsService";
 import {ClientInfo, ClientService} from "../../services/clientService";
 import {EventType} from "../../types/eventType";
 import {Portfolio, RiskType} from "../../types/types";
@@ -50,12 +53,15 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-layout>
                 </v-card-title>
             </v-card>
-            <v-card v-if="isShowPortfolioSummary" flat class="pa-4">
-                Аналитическая сводка по портфелю
+            <v-card v-if="isShowPortfolioSummary && averageAnnualYieldData" flat class="pa-4">
+                <average-annual-yield :data="averageAnnualYieldData"></average-annual-yield>
+            </v-card>
+            <v-card v-if="isShowPortfolioSummary && monthlyInflationData"  flat>
+                <monthly-inflation-chart :data="monthlyInflationData"></monthly-inflation-chart>
             </v-card>
         </v-container>
     `,
-    components: {ChooseRisk, Preloader, AnalysisResult, EmptyAdvice}
+    components: {ChooseRisk, Preloader, AnalysisResult, EmptyAdvice, AverageAnnualYield, MonthlyInflationChart}
 })
 export class AdviserPage extends UI {
 
@@ -69,6 +75,8 @@ export class AdviserPage extends UI {
     private adviceService: AdviceService;
     @Inject
     private clientService: ClientService;
+    @Inject
+    private analyticsService: AnalyticsService;
 
     private currentRiskLevel: string = null;
 
@@ -82,6 +90,10 @@ export class AdviserPage extends UI {
 
     private isShowPortfolioSummary: boolean = true;
 
+    private averageAnnualYieldData: any = null;
+
+    private monthlyInflationData: any = null;
+
     async created(): Promise<void> {
         if (this.clientInfo.user.riskLevel) {
             this.currentRiskLevel = this.clientInfo.user.riskLevel.toLowerCase();
@@ -91,6 +103,11 @@ export class AdviserPage extends UI {
         }
         UI.on(EventType.TRADE_CREATED, async () => await this.analysisPortfolio());
         UI.on(EventType.TRADE_UPDATED, async () => await this.analysisPortfolio());
+        this.averageAnnualYieldData = await this.analyticsService.getComparedYields(this.portfolio.id.toString());
+        this.monthlyInflationData = await this.analyticsService.getInflationForLastSixMonths();
+        const res = await this.analyticsService.getInflationForLastSixMonths();
+        console.log(this.monthlyInflationData);
+        console.log(res);
     }
 
     beforeDestroy(): void {
