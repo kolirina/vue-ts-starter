@@ -1,4 +1,5 @@
 import * as chroma from "chroma-js";
+import dayjs from "dayjs";
 import {Decimal} from "decimal.js";
 import Highcharts, {AreaChart, ChartObject, DataPoint, Gradient, IndividualSeriesOptions, PlotLines, SeriesChart} from "highcharts";
 import Highstock from "highcharts/highstock";
@@ -19,6 +20,7 @@ import {
 import {Operation} from "../types/operation";
 import {Overview, StockPortfolioRow} from "../types/types";
 import {CommonUtils} from "./commonUtils";
+import {DateUtils} from "./dateUtils";
 import {TradeUtils} from "./tradeUtils";
 
 export class ChartUtils {
@@ -75,7 +77,7 @@ export class ChartUtils {
         return {data, categories: categoryNames};
     }
 
-    static processEventsChartData(data: EventChartData[], flags: string = "flags", onSeries: string = "dataseries",
+    static processEventsChartData(data: EventChartData[], flags: string = "flags", onSeries: string = "totalChart",
                                   shape: string = "circlepin", width: number = 10): HighStockEventsGroup[] {
         const eventsGroups: HighStockEventsGroup[] = [];
         const events: HighStockEventData[] = [];
@@ -293,10 +295,28 @@ export class ChartUtils {
                 } as any
             },
             tooltip: {
-                pointFormat: compare ? "<span style=\"color:{series.color}\">{series.name}</span>: <b>{point.y}</b> ({point.change}%)<br/>" :
-                    "<span style=\"color:{series.color}\">{series.name}</span>: <b>{point.y}</b><br/>",
                 valueDecimals: decimals,
-                split: true
+                split: true,
+                shared: CommonUtils.isMobile(),
+                // @ts-ignore
+                formatter: function(): string {
+                    // @ts-ignore
+                    if (this.points) {
+                        // The first returned item is the header, subsequent items are the points
+                        // @ts-ignore
+                        return ["<b>" + DateUtils.formatDate(dayjs(this.x)) + "</b>"].concat(
+                            // @ts-ignore
+                            this.points.map((point): string => {
+                                return compare ? `<span style=\"color:${point.series.color}\">${point.series.name}</span>: <b>${point.y}</b> (${point.change}%)<br/>` :
+                                    `<span style=\"color:${point.series.color}\">${point.series.name}</span>: <b>${point.y}</b><br/>`;
+                            })
+                        );
+                        // @ts-ignore
+                    } else if (this.point) {
+                        // @ts-ignore
+                        return this.point.text;
+                    }
+                }
             },
             exporting: {
                 enabled: false
