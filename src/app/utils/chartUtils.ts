@@ -1,4 +1,5 @@
 import * as chroma from "chroma-js";
+import dayjs from "dayjs";
 import {Decimal} from "decimal.js";
 import Highcharts, {AreaChart, ChartObject, DataPoint, Gradient, IndividualSeriesOptions, PlotLines, SeriesChart} from "highcharts";
 import Highstock from "highcharts/highstock";
@@ -19,9 +20,8 @@ import {
 import {Operation} from "../types/operation";
 import {Overview, StockPortfolioRow} from "../types/types";
 import {CommonUtils} from "./commonUtils";
-import {TradeUtils} from "./tradeUtils";
 import {DateUtils} from "./dateUtils";
-import dayjs from "dayjs";
+import {TradeUtils} from "./tradeUtils";
 
 export class ChartUtils {
 
@@ -299,7 +299,7 @@ export class ChartUtils {
                 split: true,
                 shared: CommonUtils.isMobile(),
                 // @ts-ignore
-                formatter: function () {
+                formatter: function(): string {
                     // @ts-ignore
                     if (this.points) {
                         // The first returned item is the header, subsequent items are the points
