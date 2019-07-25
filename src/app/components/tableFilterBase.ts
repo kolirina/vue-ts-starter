@@ -14,14 +14,10 @@
  * (c) ООО "Интеллектуальные инвестиции", 2019
  */
 
-import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {Watch} from "vue-property-decorator";
+import {DateUtils} from "../utils/dateUtils";
 import {Prop, UI} from "../app/ui";
-import {MarketService} from "../services/marketService";
-import {AssetType} from "../types/assetType";
-import {BigMoney} from "../types/bigMoney";
-import {Bond, Share} from "../types/types";
 
 @Component({
     // language=Vue
@@ -43,6 +39,12 @@ import {Bond, Share} from "../types/types";
                 <v-text-field v-if="showSearch" :value="searchQueryMutated" @input="onSearch" @click:clear="onClear" @blur="hideInput"
                               :label="searchLabel" single-line hide-details autofocus></v-text-field>
             </v-slide-x-transition>
+            <v-menu ref="dateMenu" :close-on-content-click="true" v-model="dateMenuValue" :nudge-right="40" :return-value.sync="date"
+                    lazy transition="scale-transition" offset-y full-width min-width="290px">
+                <v-text-field name="date" slot="activator" v-model="date" label="Начальная дата" v-validate="'required'"
+                              readonly></v-text-field>
+                <v-date-picker v-model="date" :no-title="true" locale="ru" :first-day-of-week="1" @input="onDateSelected"></v-date-picker>
+            </v-menu>
         </div>
     `
 })
@@ -66,6 +68,8 @@ export class TableFilterBase extends UI {
     private showSearch = false;
     /** Текущий объект таймера */
     private currentTimer: number = null;
+    private dateMenuValue = false;
+    private date = DateUtils.currentDate();
 
     created(): void {
         this.searchQueryMutated = this.searchQuery;
@@ -75,6 +79,10 @@ export class TableFilterBase extends UI {
     @Watch("searchQuery")
     private setSearchData(): void {
         this.searchQueryMutated = this.searchQuery;
+    }
+
+    private onDateSelected(date: string): void {
+        console.log(date);
     }
 
     private onSearch(value: string): void {
