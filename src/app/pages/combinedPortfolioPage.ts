@@ -26,7 +26,8 @@ const MainStore = namespace(StoreType.MAIN);
         <v-slide-x-reverse-transition>
             <template v-if="overview">
                 <base-portfolio-page :overview="overview" :line-chart-data="lineChartData" :line-chart-events="lineChartEvents" :index-line-chart-data="indexLineChartData"
-                                     :view-currency="viewCurrency" :state-key-prefix="StoreKeys.PORTFOLIO_COMBINED_CHART" :side-bar-opened="sideBarOpened"
+                                     portfolio-name="Составной портфель" :view-currency="viewCurrency" :state-key-prefix="StoreKeys.PORTFOLIO_COMBINED_CHART" 
+                                     :side-bar-opened="sideBarOpened"
                                      @reloadLineChart="loadPortfolioLineChart">
                     <template #afterDashboard>
                         <v-layout align-center>
