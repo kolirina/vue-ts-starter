@@ -34,7 +34,6 @@ const MainStore = namespace(StoreType.MAIN);
             <empty-portfolio-stub v-if="isEmptyBlockShowed"></empty-portfolio-stub>
             <div v-else>
                 <dashboard :data="portfolio.overview.dashboardData" :side-bar-opened="sideBarOpened" :view-currency="portfolio.portfolioParams.viewCurrency"></dashboard>
-
                 <expanded-panel :disabled="true" :withMenu="true" name="trades" :alwaysOpen="true" :value="[true]" class="auto-cursor">
                     <template #header>Сделки</template>
                     <template #list>

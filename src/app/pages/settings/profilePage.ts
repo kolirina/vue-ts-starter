@@ -45,7 +45,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <div class="profile__subtitle mt-2">Имя пользователя</div>
                     <inplace-input name="username" :value="username" @input="onUserNameChange"></inplace-input>
                 </v-card>
-                <v-layout v-if="hasPaymentInfo" class="wrapper-payment-info mt-5" wrap>
+                <v-layout class="wrapper-payment-info mt-5" wrap>
                     <v-card flat class="mr-5">
                         <span class="profile__subtitle">
                             Информация по тарифному плану
@@ -55,7 +55,7 @@ const MainStore = namespace(StoreType.MAIN);
                             {{ expirationDescription }}
                         </div>
                     </v-card>
-                    <v-card flat>
+                    <v-card v-if="hasPaymentInfo" flat>
                         <span class="profile__subtitle">
                             Способ оплаты
                         </span>
