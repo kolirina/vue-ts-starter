@@ -2,6 +2,7 @@ import Highcharts, {ChartObject} from "highcharts";
 import Component from "vue-class-component";
 import {Prop, Watch} from "vue-property-decorator";
 import {UI} from "../../app/ui";
+import {YieldCompareData} from "../../types/types";
 
 @Component({
     // language=Vue
@@ -31,9 +32,7 @@ export class AverageAnnualYieldChart extends UI {
     private title: string;
 
     @Prop({required: true})
-    private data: any;
-
-    private categoryNames: string[] = [];
+    private data: YieldCompareData;
 
     async mounted(): Promise<void> {
         await this.draw();
@@ -47,17 +46,18 @@ export class AverageAnnualYieldChart extends UI {
     private async draw(): Promise<void> {
         this.chart = Highcharts.chart(this.$refs.container, {
             chart: {
+                backgroundColor: "#F7F9FB",
                 type: "column"
             },
             title: {
-                text: "Сравнение среднегодовой доходности"
+                text: ""
             },
             xAxis: {
                 type: "category"
             },
             yAxis: {
                 title: {
-                    text: "Доходность"
+                    text: ""
                 }
             },
             exporting: {

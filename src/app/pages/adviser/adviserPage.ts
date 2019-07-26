@@ -58,14 +58,41 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-card-title>
             </v-card>
             <v-layout v-if="isDiagramsBlockShow" wrap class="adviser-diagram-section">
-                <v-flex v-if="yieldCompareData" flat xs12 sm12 md12 lg6 class="pr-2 mt-3 left-section">
-                    <average-annual-yield-chart :data="yieldCompareData"></average-annual-yield-chart>
+                <v-flex xs12 sm12 md12 lg6 class="pr-2 left-section">
+                    <v-flex v-if="yieldCompareData" class="margT30 pa-2">
+                        <v-layout class="item-header">
+                            <span class="fs14">Сравнение среднегодовой доходности</span>
+                        </v-layout>
+                        <average-annual-yield-chart :data="yieldCompareData"></average-annual-yield-chart>
+                    </v-flex>
                 </v-flex>
                 <v-flex xs12 sm12 md12 lg6 class="pl-2 right-section">
-                    <v-flex v-if="monthlyInflationData" flat class="mt-3">
+                    <v-flex v-if="monthlyInflationData" class="margT30 pa-2">
+                        <v-layout class="item-header" align-center>
+                            <span class="fs14">Инфляция по месяцам</span>
+                            <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                                <template #activator="{ on }">
+                                    <v-icon v-on="on" class="ml-2">far fa-question-circle</v-icon>
+                                </template>
+                                <span>
+                                    Официальная инфляция по данным открытых источников.
+                                </span>
+                            </v-tooltip>
+                        </v-layout>
                         <monthly-inflation-chart :data="monthlyInflationData"></monthly-inflation-chart>
                     </v-flex>
-                    <v-flex v-if="depositeRatesData" flat class="mt-3">
+                    <v-flex v-if="depositeRatesData" class="margT30 pa-2">
+                        <v-layout class="item-header">
+                            <span class="fs14">Ставки по депозитам</span>
+                            <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                                <template #activator="{ on }">
+                                    <v-icon v-on="on" class="ml-2">far fa-question-circle</v-icon>
+                                </template>
+                                <span>
+                                    Информация по ставкам депозитов официальная с ЦБР.
+                                </span>
+                            </v-tooltip>
+                        </v-layout>
                         <deposite-rates-chart :data="depositeRatesData"></deposite-rates-chart>
                     </v-flex>
                 </v-flex>
