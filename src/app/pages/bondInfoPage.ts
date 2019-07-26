@@ -203,7 +203,6 @@ export class BondInfoPage extends UI {
             this.share = result.bond;
             this.history = result.history;
             this.paymentsData = result.payments;
-            console.log(this.paymentsData);
             this.events.push(...result.events);
         }
     }
