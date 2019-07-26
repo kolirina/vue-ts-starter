@@ -15,11 +15,11 @@ import {UI} from "../../app/ui";
                 </v-layout>
             </v-container>
 
-            <div v-show="chart" ref="container" style="min-width: 500px; width: 100%; height: 500px; margin: 0 auto"></div>
+            <div v-show="chart" ref="container" style="min-width: 500px; width: 100%; height: 400px; margin: 0 auto"></div>
         </div>
     `
 })
-export class AverageAnnualYield extends UI {
+export class AverageAnnualYieldChart extends UI {
 
     $refs: {
         container: HTMLElement
@@ -55,6 +55,14 @@ export class AverageAnnualYield extends UI {
             xAxis: {
                 type: "category"
             },
+            yAxis: {
+                title: {
+                    text: "Доходность"
+                }
+            },
+            exporting: {
+                enabled: false
+            },
             legend: {
                 enabled: false
             },
@@ -67,6 +75,7 @@ export class AverageAnnualYield extends UI {
                 }
             },
             tooltip: {
+                headerFormat: "",
                 pointFormat: "<span style='color:{point.color}'>{point.name}</span>: <b>{point.y:.2f}%</b><br/>"
             },
             series: [

@@ -18,3 +18,13 @@
         cursor: pointer;
     }
 }
+.adviser-diagram-section {
+    @media (max-width: 1263px){
+        .left-section {
+            padding-right: 0px !important;
+        }
+        .right-section {
+            padding-left: 0px !important;
+        }
+    }
+}

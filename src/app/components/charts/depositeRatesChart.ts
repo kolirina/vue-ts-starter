@@ -19,7 +19,7 @@ import {UI} from "../../app/ui";
         </div>
     `
 })
-export class MonthlyInflationChart extends UI {
+export class DepositeRatesChart extends UI {
 
     $refs: {
         container: HTMLElement
@@ -47,12 +47,7 @@ export class MonthlyInflationChart extends UI {
     private async draw(): Promise<void> {
         this.chart = Highcharts.chart(this.$refs.container, {
             title: {
-                text: "Инфляция по месяцам"
-            },
-            yAxis: {
-                title: {
-                    text: "Инфляция"
-                }
+                text: "Ставки по депозитам"
             },
             legend: {
                 enabled: false
@@ -60,12 +55,17 @@ export class MonthlyInflationChart extends UI {
             xAxis: {
                 categories: this.data.categoryNames
             },
+            yAxis: {
+                title: {
+                    text: "Ставки"
+                }
+            },
             exporting: {
                 enabled: false
             },
             tooltip: {
                 headerFormat: "",
-                pointFormat: "<span>Инфляция за {point.name}</span>: <b>{point.y:.2f}%</b>"
+                pointFormat: "<span>Ставка по депозитам за {point.name}</span>: <b>{point.y:.2f}%</b>"
             },
             series: [
                 {

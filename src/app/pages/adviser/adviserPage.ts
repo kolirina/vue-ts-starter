@@ -2,15 +2,19 @@ import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI, Watch} from "../../app/ui";
-import {AverageAnnualYield} from "../../components/charts/averageAnnualYield";
+import {AverageAnnualYieldChart} from "../../components/charts/averageAnnualYield";
+import {DepositeRatesChart} from "../../components/charts/depositeRatesChart";
 import {MonthlyInflationChart} from "../../components/charts/monthlyInflationChart";
 import {ConfirmDialog} from "../../components/dialogs/confirmDialog";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
+import {Storage} from "../../platform/services/storage";
 import {AdviceService, AdviceUnicCode} from "../../services/adviceService";
 import {AnalyticsService} from "../../services/analyticsService";
 import {ClientInfo, ClientService} from "../../services/clientService";
 import {EventType} from "../../types/eventType";
-import {Portfolio, RiskType} from "../../types/types";
+import {StoreKeys} from "../../types/storeKeys";
+import {AdviserSchedule, Portfolio, RiskType, YieldCompareData} from "../../types/types";
+import {ChartUtils} from "../../utils/chartUtils";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 import {AnalysisResult} from "./analysisResult";
@@ -25,7 +29,7 @@ const MainStore = namespace(StoreType.MAIN);
     template: `
         <v-container>
             <v-card flat class="header-first-card">
-                <v-card-title @click="isShowAnalytics = !isShowAnalytics" class="header-first-card__wrapper-title">
+                <v-card-title @click="toggleAnalyticsBlock" class="header-first-card__wrapper-title">
                     <v-layout justify-space-between align-center class="pointer-cursor pr-3">
                         <div class="section-title header-first-card__title-text">Аналитика</div>
                         <v-icon :class="['', isShowAnalytics ? 'rotate-icons' : '']" >keyboard_arrow_right</v-icon>
@@ -46,25 +50,34 @@ const MainStore = namespace(StoreType.MAIN);
                 </div>
             </v-card>
             <v-card flat class="header-first-card margT30">
-                <v-card-title @click="isShowPortfolioSummary = !isShowPortfolioSummary" class="header-first-card__wrapper-title">
+                <v-card-title @click="toggleDiagramsBlock" class="header-first-card__wrapper-title pb-2">
                     <v-layout justify-space-between align-center class="pointer-cursor pr-3">
                         <div class="section-title header-first-card__title-text">Аналитическая сводка по портфелю</div>
-                        <v-icon :class="['', isShowPortfolioSummary ? 'rotate-icons' : '']" >keyboard_arrow_right</v-icon>
+                        <v-icon :class="['', isDiagramsBlockShow ? 'rotate-icons' : '']" >keyboard_arrow_right</v-icon>
                     </v-layout>
                 </v-card-title>
             </v-card>
-            <v-card v-if="isShowPortfolioSummary && averageAnnualYieldData" flat class="pa-4">
-                <average-annual-yield :data="averageAnnualYieldData"></average-annual-yield>
-            </v-card>
-            <v-card v-if="isShowPortfolioSummary && monthlyInflationData"  flat>
-                <monthly-inflation-chart :data="monthlyInflationData"></monthly-inflation-chart>
-            </v-card>
+            <v-layout v-if="isDiagramsBlockShow" wrap class="adviser-diagram-section">
+                <v-flex v-if="yieldCompareData" flat xs12 sm12 md12 lg6 class="pr-2 mt-3 left-section">
+                    <average-annual-yield-chart :data="yieldCompareData"></average-annual-yield-chart>
+                </v-flex>
+                <v-flex xs12 sm12 md12 lg6 class="pl-2 right-section">
+                    <v-flex v-if="monthlyInflationData" flat class="mt-3">
+                        <monthly-inflation-chart :data="monthlyInflationData"></monthly-inflation-chart>
+                    </v-flex>
+                    <v-flex v-if="depositeRatesData" flat class="mt-3">
+                        <deposite-rates-chart :data="depositeRatesData"></deposite-rates-chart>
+                    </v-flex>
+                </v-flex>
+            </v-layout>
         </v-container>
     `,
-    components: {ChooseRisk, Preloader, AnalysisResult, EmptyAdvice, AverageAnnualYield, MonthlyInflationChart}
+    components: {ChooseRisk, Preloader, AnalysisResult, EmptyAdvice, AverageAnnualYieldChart, MonthlyInflationChart, DepositeRatesChart}
 })
 export class AdviserPage extends UI {
 
+    @Inject
+    private localStorage: Storage;
     @MainStore.Getter
     private clientInfo: ClientInfo;
     @MainStore.Getter
@@ -88,26 +101,32 @@ export class AdviserPage extends UI {
 
     private isShowAnalytics: boolean = true;
 
-    private isShowPortfolioSummary: boolean = true;
+    private isDiagramsBlockShow: boolean = true;
 
-    private averageAnnualYieldData: any = null;
+    private yieldCompareData: YieldCompareData = null;
 
-    private monthlyInflationData: any = null;
+    private monthlyInflationData: AdviserSchedule = null;
+
+    private depositeRatesData: AdviserSchedule = null;
 
     async created(): Promise<void> {
+        this.isShowAnalytics = this.localStorage.get(StoreKeys.ANALYTICS_STATE_KEY, true);
+        this.isDiagramsBlockShow = this.localStorage.get(StoreKeys.DIAGRAM_BLOCK_STATE_KEY, true);
         if (this.clientInfo.user.riskLevel) {
             this.currentRiskLevel = this.clientInfo.user.riskLevel.toLowerCase();
             await this.analysisPortfolio();
         } else {
             this.currentRiskLevel = RiskType.LOW.code;
         }
+        const diagramData = {
+            monthlyInflationData: await this.analyticsService.getInflationForLastSixMonths(),
+            depositeRatesData: await this.analyticsService.getRatesForLastSixMonths()
+        };
+        this.getYieldCompareData();
+        this.monthlyInflationData = ChartUtils.convertInflationData(diagramData.monthlyInflationData);
+        this.depositeRatesData = ChartUtils.convertRatesData(diagramData.depositeRatesData);
         UI.on(EventType.TRADE_CREATED, async () => await this.analysisPortfolio());
         UI.on(EventType.TRADE_UPDATED, async () => await this.analysisPortfolio());
-        this.averageAnnualYieldData = await this.analyticsService.getComparedYields(this.portfolio.id.toString());
-        this.monthlyInflationData = await this.analyticsService.getInflationForLastSixMonths();
-        const res = await this.analyticsService.getInflationForLastSixMonths();
-        console.log(this.monthlyInflationData);
-        console.log(res);
     }
 
     beforeDestroy(): void {
@@ -120,6 +139,12 @@ export class AdviserPage extends UI {
         if (this.isAnalys) {
             await this.analysisPortfolio();
         }
+        this.getYieldCompareData();
+    }
+
+    private async getYieldCompareData(): Promise<void> {
+        const result = await this.analyticsService.getComparedYields(this.portfolio.id.toString());
+        this.yieldCompareData = result;
     }
 
     private async analysisPortfolio(): Promise<void> {
@@ -154,5 +179,15 @@ export class AdviserPage extends UI {
 
     private get tradesCount(): boolean {
         return this.portfolio.overview.totalTradesCount > 0;
+    }
+
+    private toggleAnalyticsBlock(): void {
+        this.isShowAnalytics = !this.isShowAnalytics;
+        this.localStorage.set(StoreKeys.ANALYTICS_STATE_KEY, this.isShowAnalytics);
+    }
+
+    private toggleDiagramsBlock(): void {
+        this.isDiagramsBlockShow = !this.isDiagramsBlockShow;
+        this.localStorage.set(StoreKeys.DIAGRAM_BLOCK_STATE_KEY, this.isDiagramsBlockShow);
     }
 }

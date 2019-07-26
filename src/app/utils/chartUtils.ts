@@ -17,8 +17,9 @@ import {
     SectorChartData
 } from "../types/charts/types";
 import {Operation} from "../types/operation";
-import {Overview, StockPortfolioRow} from "../types/types";
+import {AdviserSchedule, DepositRate, Inflation, Overview, StockPortfolioRow} from "../types/types";
 import {CommonUtils} from "./commonUtils";
+import {DateUtils} from "./dateUtils";
 import {TradeUtils} from "./tradeUtils";
 
 export class ChartUtils {
@@ -202,14 +203,36 @@ export class ChartUtils {
         threshold: null
     };
 
-    static test(data: any): any {
-        const result: any = {
+    static convertInflationData(data: Inflation[]): AdviserSchedule {
+        const result: AdviserSchedule = {
             categoryNames: [],
             values: []
         };
-        data.forEach((item: any) => {
-            result.categoryNames.push(item.date);
-            result.values.push(Number(item.value));
+        data.forEach((item: Inflation) => {
+            result.categoryNames.push(DateUtils.getNameMonthDate(item.date));
+            result.values.push(
+                {
+                    name: DateUtils.getNameMonthDate(item.date),
+                    y: Number(item.value)
+                }
+            );
+        });
+        return result;
+    }
+
+    static convertRatesData(data: DepositRate[]): AdviserSchedule {
+        const result: AdviserSchedule = {
+            categoryNames: [],
+            values: []
+        };
+        data.forEach((item: DepositRate) => {
+            result.categoryNames.push(DateUtils.getNameMonthDate(item.date));
+            result.values.push(
+                {
+                    name: DateUtils.getNameMonthDate(item.date),
+                    y: Number(item.value)
+                }
+            );
         });
         return result;
     }

@@ -19,17 +19,11 @@ import {AdviceTemplate} from "./adviceTemplate";
                 Небольшое количество советов, означает что ваш портфель близок к оптимальному и вы выбрали хорошую стратегию инвестирования.
             </div>
             <div>
-                <v-layout column class="margB64">
+                <v-layout column>
                     <div class="fs12-non-opacity margT30">
                         Анализ Intelinvest
                     </div>
                     <advice-template v-for="advice in advices" :key="advice.problem" :advice="advice"></advice-template>
-                </v-layout>
-                <v-layout column>
-                    <div class="fs12-non-opacity">
-                        Анализ от Дмитрия Толстякова <a href="https://fin-ra.ru/" target="_blank" class="decorationNone">“Блог Разумные Инвестиции”</a>
-                    </div>
-                    <!-- <advice-template v-for="advice in advices" :key="advice.problem" :advice="advice"></advice-template> -->
                 </v-layout>
             </div>
         </v-layout>
