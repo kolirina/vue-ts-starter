@@ -34,6 +34,13 @@ export class AverageAnnualYieldChart extends UI {
     @Prop({required: true})
     private data: YieldCompareData;
 
+    private categoryNames: string[] = [
+        "Портфель",
+        "Индекс",
+        "Инфляция",
+        "Депозит"
+    ];
+
     async mounted(): Promise<void> {
         await this.draw();
     }
@@ -53,7 +60,7 @@ export class AverageAnnualYieldChart extends UI {
                 text: ""
             },
             xAxis: {
-                type: "category"
+                categories: this.categoryNames
             },
             yAxis: {
                 title: {
@@ -82,9 +89,14 @@ export class AverageAnnualYieldChart extends UI {
                 {
                     data: [
                         {
-                            name: "Депозит",
-                            color: "#84b761",
-                            y: Number(this.data.depositYearYield)
+                            name: "Доходность портфеля",
+                            color: "#b294ff",
+                            y: Number(this.data.portfolioYearYield)
+                        },
+                        {
+                            name: "Доходность индекса",
+                            color: "#fdd400",
+                            y: Number(this.data.micexYearYield)
                         },
                         {
                             name: "Инфляция",
@@ -92,14 +104,9 @@ export class AverageAnnualYieldChart extends UI {
                             y: Number(this.data.inflationYearYield)
                         },
                         {
-                            name: "Индекс",
-                            color: "#fdd400",
-                            y: Number(this.data.micexYearYield)
-                        },
-                        {
-                            name: "Портфель",
-                            color: "#b294ff",
-                            y: Number(this.data.portfolioYearYield)
+                            name: "Доходность депозита",
+                            color: "#84b761",
+                            y: Number(this.data.depositYearYield)
                         }
                     ]
                 }
