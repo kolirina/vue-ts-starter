@@ -14,8 +14,6 @@ import {DividendsPage} from "../pages/dividendsPage";
 import {EventsPage} from "../pages/eventsPage";
 import {HelpPage} from "../pages/helpPage";
 import {PortfolioPage} from "../pages/portfolioPage";
-import {PublicDividendsPage} from "../pages/public/publicDividendsPage";
-import {PublicPortfolioPage} from "../pages/public/publicPortfolioPage";
 import {QuotesPage} from "../pages/quotes/quotesPage";
 import {ExportPage} from "../pages/settings/exportPage";
 import {ImportPage} from "../pages/settings/importPage";
@@ -33,6 +31,8 @@ import {LogoutService} from "../services/logoutService";
 import {StoreKeys} from "../types/storeKeys";
 import {Tariff} from "../types/tariff";
 import {DateUtils} from "../utils/dateUtils";
+import {VuexConfiguration} from "../vuex/vuexConfiguration";
+import {CommonUtils} from "../utils/commonUtils";
 
 Vue.use(VueRouter);
 
@@ -40,6 +40,8 @@ Vue.use(VueRouter);
 const clientService: ClientService = Container.get(ClientService);
 /** Сервис работы с localStorage */
 const localStorage: Storage = Container.get(Storage);
+/** Стор приложения */
+const store = VuexConfiguration.getStore();
 
 /**
  * Класс отвечающий за создание роутингов и инициализацию роутера
@@ -61,18 +63,24 @@ export class RouterConfiguration {
                 scrollBehavior: ((): any => ({x: 0, y: 0}))
             });
             RouterConfiguration.router.beforeEach(async (to: Route, from: Route, next: Resolver): Promise<void> => {
+                // добавляем meta-тэги
                 RouterConfiguration.renderMetaTags(to);
                 const authorized = !!localStorage.get(StoreKeys.TOKEN_KEY, null);
                 if (!to.meta.public && !authorized) {
                     next(false);
                     return;
                 }
+                const client = await clientService.getClientInfo();
                 next();
+                // скрываем меню в мобильном виде при переходе
+                if (CommonUtils.isMobile()) {
+                    (store as any).state.MAIN.sideBarOpened = true;
+                }
                 // осуществляем переход по роуту и если пользователь залогинен отображаем диалог об истечении тарифа при соблюдении условий
                 const tariffAllowed = (to.meta as RouteMeta).tariffAllowed;
                 if (!tariffAllowed && authorized) {
-                    const client = await clientService.getClientInfo();
                     const tariffExpired = client.tariff !== Tariff.FREE && DateUtils.parseDate(client.paidTill).isBefore(dayjs());
+
                     if (tariffExpired) {
                         await new TariffExpiredDialog().show(RouterConfiguration.router);
                     }

@@ -8,16 +8,16 @@ import {PortfolioSwitcher} from "../portfolioSwitcher";
 @Component({
     // language=Vue
     template: `
-        <v-layout :class="['pt-3', 'overflow-hidden', mini && !isMobile ? 'column' : '']" align-center>
+        <v-layout :class="['pt-3', 'overflow-hidden', sideBarOpened && !isMobile ? 'column' : '']" align-center>
             <v-layout class="mini-menu-width sidebar-item-action" justify-center>
-                <v-btn @click="togglePanel" v-if="mini" flat icon dark>
+                <v-btn @click="togglePanel" v-if="sideBarOpened" flat icon dark>
                     <span class="hamburger-icon"></span>
                 </v-btn>
                 <span v-else class="sidebar-icon sidebar-logo"></span>
             </v-layout>
-            <portfolio-switcher v-if="clientInfo && portfolio" :mini="mini" :isMobile="isMobile"></portfolio-switcher>
+            <portfolio-switcher v-if="clientInfo && portfolio" :side-bar-opened="sideBarOpened" :isMobile="isMobile"></portfolio-switcher>
             <v-layout v-if="isMobile" justify-end class="w100pc">
-                <v-btn @click="togglePanel" v-if="!mini && isMobile" flat icon dark class="mobile-menu-close-btn">
+                <v-btn @click="togglePanel" v-if="!sideBarOpened && isMobile" flat icon dark class="mobile-menu-close-btn">
                     <v-icon>close</v-icon>
                 </v-btn>
             </v-layout>
@@ -28,7 +28,7 @@ import {PortfolioSwitcher} from "../portfolioSwitcher";
 export class MenuHeader extends UI {
 
     @Prop({type: Boolean, required: true})
-    private mini: boolean;
+    private sideBarOpened: boolean;
 
     @Prop({type: Boolean, required: false, default: false})
     private isMobile: boolean;
