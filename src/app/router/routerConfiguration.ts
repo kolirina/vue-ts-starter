@@ -30,9 +30,9 @@ import {ClientService} from "../services/clientService";
 import {LogoutService} from "../services/logoutService";
 import {StoreKeys} from "../types/storeKeys";
 import {Tariff} from "../types/tariff";
+import {CommonUtils} from "../utils/commonUtils";
 import {DateUtils} from "../utils/dateUtils";
 import {VuexConfiguration} from "../vuex/vuexConfiguration";
-import {CommonUtils} from "../utils/commonUtils";
 
 Vue.use(VueRouter);
 
