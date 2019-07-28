@@ -15,7 +15,7 @@ import {PortfolioSwitcher} from "../portfolioSwitcher";
                     </v-btn>
                 </div>
             </v-layout>
-            <v-layout v-if="!mini" column class="wrap-list-menu">
+            <v-layout v-if="!sideBarOpened" column class="wrap-list-menu">
                 <div v-for="item in mainSection">
                     <template v-if="item.subMenu">
                         <v-menu transition="slide-y-transition" bottom left class="submenu-item-list" content-class="submenu-v-menu" nudge-bottom="47">
@@ -26,7 +26,7 @@ import {PortfolioSwitcher} from "../portfolioSwitcher";
                                 </v-list-tile-action>
                             </v-list-tile>
                             <v-list-tile active-class="active-link" v-for="subItem in item.subMenu" :key="subItem.action"
-                                            :to="{name: subItem.action, params: item.params}">
+                                         :to="{name: subItem.action, params: item.params}">
                                 <v-list-tile-content>
                                     <v-list-tile-title>{{ subItem.title }}</v-list-tile-title>
                                 </v-list-tile-content>
@@ -34,7 +34,7 @@ import {PortfolioSwitcher} from "../portfolioSwitcher";
                         </v-menu>
                     </template>
                     <v-list-tile v-else :key="item.action" active-class="active-link"
-                                    :to="{path: item.path, name: item.action, params: item.params}">
+                                 :to="{path: item.path, name: item.action, params: item.params}">
                         <v-list-tile-content>
                             <v-list-tile-title>{{ item.title }}</v-list-tile-title>
                         </v-list-tile-content>
@@ -53,7 +53,7 @@ import {PortfolioSwitcher} from "../portfolioSwitcher";
 export class NavigationList extends UI {
 
     @Prop({type: Boolean, required: true})
-    private mini: boolean;
+    private sideBarOpened: boolean;
 
     @Prop({type: Boolean, required: true})
     private settingsSelected: boolean;
