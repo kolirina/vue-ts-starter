@@ -24,8 +24,7 @@ import {TableFilterBase} from "./tableFilterBase";
     // language=Vue
     template: `
         <v-layout align-center>
-            <table-filter-base @search="onSearch" :search-query="filter.search" :search-label="searchLabel" :min-length="2" :is-default="isDefault"
-                            :startDate="filter.startDate" :endDate="filter.endDate">
+            <table-filter-base @search="onSearch" :search-query="filter.search" :search-label="searchLabel" :min-length="2" :is-default="isDefault">
                 <v-switch v-model="filter.showLinkedMoneyTrades" @change="onChange" class="margT0">
                     <template #label>
                         <span>Связанные сделки</span>
