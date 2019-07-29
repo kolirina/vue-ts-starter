@@ -17,7 +17,6 @@
 import Component from "vue-class-component";
 import {Watch} from "vue-property-decorator";
 import {Prop, UI} from "../app/ui";
-import {DateUtils} from "../utils/dateUtils";
 
 @Component({
     // language=Vue
