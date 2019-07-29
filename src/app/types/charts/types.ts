@@ -7,12 +7,12 @@ export type YieldCompareData = {
     portfolioYearYield: string
 };
 
-export type AdviserSchedule = {
+export type AdviserLineChart = {
     categoryNames: string[],
-    values: PointAdviserSchedule[]
+    values: ChartPoint[]
 };
 
-export type PointAdviserSchedule = {
+export type ChartPoint = {
     name: string,
     y: number
 };

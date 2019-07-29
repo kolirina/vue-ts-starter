@@ -2,7 +2,7 @@ import Highcharts, {ChartObject} from "highcharts";
 import Component from "vue-class-component";
 import {Prop, Watch} from "vue-property-decorator";
 import {UI} from "../../app/ui";
-import {AdviserSchedule} from "../../types/charts/types";
+import {AdviserLineChart} from "../../types/charts/types";
 
 @Component({
     // language=Vue
@@ -32,7 +32,7 @@ export class SimpleLineChart extends UI {
     private title: string;
 
     @Prop({required: true})
-    private data: AdviserSchedule;
+    private data: AdviserLineChart;
 
     @Prop({required: true})
     private tooltip: string;
@@ -49,7 +49,8 @@ export class SimpleLineChart extends UI {
     private async draw(): Promise<void> {
         this.chart = Highcharts.chart(this.$refs.container, {
             chart: {
-                backgroundColor: "#F7F9FB"
+                backgroundColor: "#F7F9FB",
+                type: "spline"
             },
             title: {
                 text: ""
@@ -92,7 +93,7 @@ export class SimpleLineChart extends UI {
             },
             series: [
                 {
-                    data: [...this.data.values]
+                    data: this.data.values
                 },
             ]
         });

@@ -4,7 +4,7 @@ import Highcharts, {AreaChart, ChartObject, DataPoint, Gradient, IndividualSerie
 import Highstock from "highcharts/highstock";
 import {Filters} from "../platform/filters/Filters";
 import {BigMoney} from "../types/bigMoney";
-import {AdviserSchedule, DepositRate, Inflation} from "../types/charts/types";
+import {AdviserLineChart, DepositRate, Inflation} from "../types/charts/types";
 import {
     BasePriceDot,
     ColumnChartData,
@@ -204,8 +204,8 @@ export class ChartUtils {
         threshold: null
     };
 
-    static convertInflationData(data: Inflation[]): AdviserSchedule {
-        const result: AdviserSchedule = {
+    static convertInflationData(data: Inflation[]): AdviserLineChart {
+        const result: AdviserLineChart = {
             categoryNames: [],
             values: []
         };
@@ -221,8 +221,8 @@ export class ChartUtils {
         return result;
     }
 
-    static convertRatesData(data: DepositRate[]): AdviserSchedule {
-        const result: AdviserSchedule = {
+    static convertRatesData(data: DepositRate[]): AdviserLineChart {
+        const result: AdviserLineChart = {
             categoryNames: [],
             values: []
         };

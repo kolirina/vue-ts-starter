@@ -10,7 +10,7 @@ import {Storage} from "../../platform/services/storage";
 import {AdviceService, AdviceUnicCode} from "../../services/adviceService";
 import {AnalyticsService} from "../../services/analyticsService";
 import {ClientInfo, ClientService} from "../../services/clientService";
-import {AdviserSchedule, YieldCompareData} from "../../types/charts/types";
+import {AdviserLineChart, YieldCompareData} from "../../types/charts/types";
 import {EventType} from "../../types/eventType";
 import {StoreKeys} from "../../types/storeKeys";
 import {Portfolio, RiskType} from "../../types/types";
@@ -57,7 +57,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-layout>
                 </v-card-title>
             </v-card>
-            <v-layout v-if="isDiagramsBlockShow" wrap class="adviser-diagram-section">
+            <v-layout v-if="isDiagramsBlockShow" wrap class="adviser-diagram-section mt-3">
                 <v-flex xs12 sm12 md12 lg6 class="pr-2 left-section">
                     <v-flex v-if="yieldCompareData" class="margT30 pa-2">
                         <v-layout class="item-header">
@@ -132,9 +132,9 @@ export class AdviserPage extends UI {
 
     private yieldCompareData: YieldCompareData = null;
 
-    private monthlyInflationData: AdviserSchedule = null;
+    private monthlyInflationData: AdviserLineChart = null;
 
-    private depositeRatesData: AdviserSchedule = null;
+    private depositeRatesData: AdviserLineChart = null;
 
     async created(): Promise<void> {
         this.isShowAnalytics = this.localStorage.get(StoreKeys.ANALYTICS_STATE_KEY, true);
