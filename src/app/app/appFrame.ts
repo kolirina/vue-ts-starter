@@ -39,15 +39,15 @@ const MainStore = namespace(StoreType.MAIN);
             </template>
 
             <template v-if="!loading && loggedIn">
-                <v-navigation-drawer disable-resize-watcher fixed stateless app class="sidebar" v-model="drawer" :mini-variant="mini" width="320">
+                <v-navigation-drawer disable-resize-watcher fixed stateless app class="sidebar" v-model="drawer" :mini-variant="sideBarOpened" width="320">
                     <div>
-                        <menu-header :mini="mini" :portfolio="portfolio" :clientInfo="clientInfo" @togglePanel="togglePanel"></menu-header>
-                        <div v-if="!mini" :class="['wrap-toogle-menu-btn', 'small-screen-hide-toogle-menu-btn']">
+                        <menu-header :side-bar-opened="sideBarOpened" :portfolio="portfolio" :clientInfo="clientInfo" @togglePanel="togglePanel"></menu-header>
+                        <div v-if="!sideBarOpened" :class="['wrap-toogle-menu-btn', 'small-screen-hide-toogle-menu-btn']">
                             <v-btn @click="togglePanel" fab dark small depressed color="#F0F3F8" class="toogle-menu-btn">
                                 <v-icon dark>keyboard_arrow_left</v-icon>
                             </v-btn>
                         </div>
-                        <navigation-list :mainSection="mainSection" :mini="mini" :settingsSelected="settingsSelected"
+                        <navigation-list :mainSection="mainSection" :side-bar-opened="sideBarOpened" :settingsSelected="settingsSelected"
                                          :show-link-to-old-version="showLinkToOldVersion"
                                          @openDialog="openDialog" @goToOldVersion="goToOldVersion"></navigation-list>
                     </div>
@@ -55,20 +55,20 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-navigation-drawer>
                 <v-content>
                     <div class="mobile-wrapper-menu">
-                        <menu-header :mini="mini" :isMobile="true" :portfolio="portfolio" :clientInfo="clientInfo" @togglePanel="togglePanel"></menu-header>
-                        <navigation-list :mainSection="mainSection" :mini="mini" :settingsSelected="settingsSelected"
+                        <menu-header :side-bar-opened="sideBarOpened" :isMobile="true" :portfolio="portfolio" :clientInfo="clientInfo" @togglePanel="togglePanel"></menu-header>
+                        <navigation-list :mainSection="mainSection" :sideBarOpened="sideBarOpened" :settingsSelected="settingsSelected"
                                          :show-link-to-old-version="showLinkToOldVersion"
-                                         @openDialog="openDialog" @goToOldVersion="goToOldVersion" :class="mini ? 'part-mobile-menu' : ''"></navigation-list>
-                        <menu-bottom-navigation :class="mini ? 'part-mobile-menu' : ''"></menu-bottom-navigation>
+                                         @openDialog="openDialog" @goToOldVersion="goToOldVersion" :class="sideBarOpened ? 'part-mobile-menu' : ''"></navigation-list>
+                        <menu-bottom-navigation :class="sideBarOpened ? 'part-mobile-menu' : ''"></menu-bottom-navigation>
                     </div>
-                    <v-container fluid :class="['paddT0', 'fb-0', mini ? '' : 'hide-main-content']">
+                    <v-container fluid :class="['paddT0', 'fb-0', sideBarOpened ? '' : 'hide-main-content']">
                         <v-slide-y-transition mode="out-in">
                             <!--<keep-alive :include="cachedPages">-->
                             <router-view></router-view>
                             <!--</keep-alive>-->
                         </v-slide-y-transition>
                     </v-container>
-                    <v-footer color="#f7f9fb" :class="['footer-app', mini ? '' : 'hide-main-content']">
+                    <v-footer color="#f7f9fb" :class="['footer-app', sideBarOpened ? '' : 'hide-main-content']">
                         <footer-content :clientInfo="clientInfo"></footer-content>
                     </v-footer>
                 </v-content>
@@ -79,7 +79,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <div class="mobile-wrapper-menu">
 
                     </div>
-                    <v-container fluid :class="['paddT0', 'fb-0', mini ? '' : 'hide-main-content']">
+                    <v-container fluid :class="['paddT0', 'fb-0', sideBarOpened ? '' : 'hide-main-content']">
                         <content-loader :height="800" :width="800" :speed="1" primaryColor="#f3f3f3" secondaryColor="#ecebeb">
                             <rect x="0" y="20" rx="5" ry="5" width="801.11" height="80"/>
                             <rect x="0" y="120" rx="5" ry="5" width="801.11" height="30"/>
@@ -88,7 +88,7 @@ const MainStore = namespace(StoreType.MAIN);
                             <rect x="0" y="570" rx="5" ry="5" width="801.11" height="180"/>
                         </content-loader>
                     </v-container>
-                    <v-footer color="#f7f9fb" :class="['footer-app', mini ? '' : 'hide-main-content']">
+                    <v-footer color="#f7f9fb" :class="['footer-app', sideBarOpened ? '' : 'hide-main-content']">
 
                     </v-footer>
                 </v-content>
@@ -109,6 +109,8 @@ export class AppFrame extends UI {
     private clientInfo: ClientInfo;
     @MainStore.Getter
     private portfolio: Portfolio;
+    @MainStore.Getter
+    private sideBarOpened: boolean;
 
     @MainStore.Action(MutationType.SET_CLIENT_INFO)
     private loadUser: (clientInfo: ClientInfo) => Promise<void>;
@@ -137,18 +139,15 @@ export class AppFrame extends UI {
     private cachedPages = ["PortfolioPage"];
 
     private drawer = true;
-
-    private mini = true;
     private loading = false;
 
     private mainSection: NavBarItem[] = [
         {title: "Портфель", action: "portfolio", icon: "fas fa-briefcase"},
-        // {title: "Аналитика", action: "adviser"},
+        {title: "Аналитика", action: "adviser"},
         {title: "Сделки", action: "trades", icon: "fas fa-list-alt"},
         {title: "События", action: "events", icon: "far fa-calendar-check"},
         {title: "Дивиденды", action: "dividends", icon: "far fa-calendar-plus"},
         {title: "Составной портфель", action: "combined-portfolio", icon: "fas fa-object-group"},
-        // Закомментировано для первого релиза
         {title: "Котировки", action: "quotes", icon: "fas fa-chart-area"},
         {title: "Информация", path: "/share-info", icon: "fas fa-info"},
         {
@@ -167,8 +166,7 @@ export class AppFrame extends UI {
 
     @ShowProgress
     async created(): Promise<void> {
-        this.mini = this.localStorage.get(StoreKeys.MENU_STATE_KEY, true);
-        this.changeSideBarState(this.mini);
+        this.changeSideBarState(this.localStorage.get(StoreKeys.MENU_STATE_KEY, true));
         await this.checkAuthorized();
         // если удалось восстановить state, значит все уже загружено
         if (this.$store.state[StoreType.MAIN].clientInfo) {
@@ -264,9 +262,8 @@ export class AppFrame extends UI {
     }
 
     private togglePanel(): void {
-        this.mini = !this.mini;
-        this.changeSideBarState(this.mini);
-        this.localStorage.set(StoreKeys.MENU_STATE_KEY, this.mini);
+        this.changeSideBarState(!this.sideBarOpened);
+        this.localStorage.set(StoreKeys.MENU_STATE_KEY, !this.sideBarOpened);
     }
 
     private get settingsSelected(): boolean {

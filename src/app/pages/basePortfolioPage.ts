@@ -197,7 +197,7 @@ export class BasePortfolioPage extends UI {
     @Prop({required: true, type: Boolean, default: true})
     private sideBarOpened: boolean;
     /** Признак проф. режима */
-    @Prop({required: true, type: Boolean, default: false})
+    @Prop({type: Boolean, default: null})
     private professionalMode: boolean;
     @Inject
     private tablesService: TablesService;
@@ -259,7 +259,9 @@ export class BasePortfolioPage extends UI {
     }
 
     private async getCurrentMoneyRemainder(): Promise<void> {
-        this.currentMoneyRemainder = await this.overviewService.getCurrentMoney(Number(this.portfolioId));
+        if (this.portfolioId) {
+            this.currentMoneyRemainder = await this.overviewService.getCurrentMoney(Number(this.portfolioId));
+        }
     }
 
     private blockNotEmpty(type: EmptyBlockType): boolean {
