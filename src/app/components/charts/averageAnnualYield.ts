@@ -16,7 +16,7 @@ import {YieldCompareData} from "../../types/types";
                 </v-layout>
             </v-container>
 
-            <div v-show="chart" ref="container" style="min-width: 500px; width: 100%; height: 400px; margin: 0 auto"></div>
+            <div v-show="chart" ref="container" style="width: 100%; height: 300px; margin: 0 auto"></div>
         </div>
     `
 })
@@ -54,17 +54,35 @@ export class AverageAnnualYieldChart extends UI {
         this.chart = Highcharts.chart(this.$refs.container, {
             chart: {
                 backgroundColor: "#F7F9FB",
-                type: "column"
+                type: "column",
+                style: {
+                    fontFamily: "\"Open Sans\" sans-serif",
+                    fontSize: "13px"
+                }
             },
             title: {
                 text: ""
             },
             xAxis: {
-                categories: this.categoryNames
+                categories: this.categoryNames,
+                labels: {
+                    style: {
+                        fontFamily: "\Open Sans\" sans-serif",
+                        fontSize: "13px",
+                        color: "#040427"
+                    }
+                }
             },
             yAxis: {
                 title: {
                     text: ""
+                },
+                labels: {
+                    style: {
+                        fontFamily: "\Open Sans\" sans-serif",
+                        fontSize: "13px",
+                        color: "#040427"
+                    }
                 }
             },
             exporting: {

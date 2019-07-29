@@ -61,7 +61,7 @@ const MainStore = namespace(StoreType.MAIN);
                 <v-flex xs12 sm12 md12 lg6 class="pr-2 left-section">
                     <v-flex v-if="yieldCompareData" class="margT30 pa-2">
                         <v-layout class="item-header">
-                            <span class="fs14">Сравнение среднегодовой доходности</span>
+                            <span class="fs13">Сравнение среднегодовой доходности</span>
                         </v-layout>
                         <average-annual-yield-chart :data="yieldCompareData"></average-annual-yield-chart>
                     </v-flex>
@@ -69,7 +69,7 @@ const MainStore = namespace(StoreType.MAIN);
                 <v-flex xs12 sm12 md12 lg6 class="pl-2 right-section">
                     <v-flex v-if="monthlyInflationData" class="margT30 pa-2">
                         <v-layout class="item-header" align-center>
-                            <span class="fs14">Инфляция по месяцам</span>
+                            <span class="fs13">Инфляция по месяцам</span>
                             <v-tooltip content-class="custom-tooltip-wrap" bottom>
                                 <template #activator="{ on }">
                                     <v-icon v-on="on" class="ml-2">far fa-question-circle</v-icon>
@@ -81,9 +81,9 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-layout>
                         <monthly-inflation-chart :data="monthlyInflationData"></monthly-inflation-chart>
                     </v-flex>
-                    <v-flex v-if="depositeRatesData" class="margT30 pa-2">
+                    <v-flex v-if="depositeRatesData" class="mt-3 pa-2">
                         <v-layout class="item-header">
-                            <span class="fs14">Ставки по депозитам</span>
+                            <span class="fs13">Ставки по депозитам</span>
                             <v-tooltip content-class="custom-tooltip-wrap" bottom>
                                 <template #activator="{ on }">
                                     <v-icon v-on="on" class="ml-2">far fa-question-circle</v-icon>

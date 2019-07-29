@@ -16,7 +16,7 @@ import {AdviserSchedule} from "../../types/types";
                 </v-layout>
             </v-container>
 
-            <div v-show="chart" ref="container" style="min-width: 500px; width: 100%; height: 192px; margin: 0 auto"></div>
+            <div v-show="chart" ref="container" style="width: 100%; height: 117px; margin: 0 auto"></div>
         </div>
     `
 })
@@ -46,7 +46,11 @@ export class MonthlyInflationChart extends UI {
     private async draw(): Promise<void> {
         this.chart = Highcharts.chart(this.$refs.container, {
             chart: {
-                backgroundColor: "#F7F9FB"
+                backgroundColor: "#F7F9FB",
+                style: {
+                    fontFamily: "\"Open Sans\" sans-serif",
+                    fontSize: "13px"
+                }
             },
             title: {
                 text: ""
@@ -54,13 +58,27 @@ export class MonthlyInflationChart extends UI {
             yAxis: {
                 title: {
                     text: ""
+                },
+                labels: {
+                    style: {
+                        fontFamily: "\Open Sans\" sans-serif",
+                        fontSize: "13px",
+                        color: "#040427"
+                    }
                 }
             },
             legend: {
                 enabled: false
             },
             xAxis: {
-                categories: this.data.categoryNames
+                categories: this.data.categoryNames,
+                labels: {
+                    style: {
+                        fontFamily: "\Open Sans\" sans-serif",
+                        fontSize: "13px",
+                        color: "#040427"
+                    }
+                }
             },
             exporting: {
                 enabled: false
