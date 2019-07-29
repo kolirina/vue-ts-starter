@@ -1,4 +1,5 @@
 import * as chroma from "chroma-js";
+import dayjs from "dayjs";
 import {Decimal} from "decimal.js";
 import Highcharts, {AreaChart, ChartObject, DataPoint, Gradient, IndividualSeriesOptions, PlotLines, SeriesChart} from "highcharts";
 import Highstock from "highcharts/highstock";
@@ -19,6 +20,7 @@ import {
 import {Operation} from "../types/operation";
 import {Overview, StockPortfolioRow} from "../types/types";
 import {CommonUtils} from "./commonUtils";
+import {DateUtils} from "./dateUtils";
 import {TradeUtils} from "./tradeUtils";
 
 export class ChartUtils {
@@ -75,7 +77,7 @@ export class ChartUtils {
         return {data, categories: categoryNames};
     }
 
-    static processEventsChartData(data: EventChartData[], flags: string = "flags", onSeries: string = "dataseries",
+    static processEventsChartData(data: EventChartData[], flags: string = "flags", onSeries: string = "totalChart",
                                   shape: string = "circlepin", width: number = 10): HighStockEventsGroup[] {
         const eventsGroups: HighStockEventsGroup[] = [];
         const events: HighStockEventData[] = [];
@@ -217,17 +219,18 @@ export class ChartUtils {
      * @param yAxisTitle заголовок для оси y
      * @param callback callback вызваемый после загрузки
      * @param portfolioAvg средняя цена бумаги в портфеле (для рисования горизонтальной линии)
-     * @param compareData
+     * @param compareData данные графика
+     * @param compare тип сравнения графиков percent или ""
      */
     static drawLineChart(container: HTMLElement, eventsChartData: HighStockEventsGroup[], ranges: Highstock.RangeSelectorButton[],
                          selectedRangeIndex: number, decimals: number, title: string = "", yAxisTitle: string = "",
-                         callback: () => void = null, portfolioAvg: number = null, compareData: LineChartSeries[] = []): ChartObject {
+                         callback: () => void = null, portfolioAvg: number = null, compareData: LineChartSeries[] = [], compare: boolean = false): ChartObject {
         const compareSeries: IndividualSeriesOptions[] = compareData.map(series => {
             return {
                 type: "area",
                 name: series.balloonTitle,
                 data: series.data,
-                id: "dataseries"
+                id: series.id
             };
         });
         return Highstock.stockChart(container, {
@@ -287,15 +290,33 @@ export class ChartUtils {
             plotOptions: {
                 area: ChartUtils.areaChart,
                 series: {
-                    compare: compareSeries.length > 1 ? "percent" : "",
+                    compare: compare ? "percent" : "",
                     showInNavigator: true
                 } as any
             },
             tooltip: {
-                pointFormat: compareSeries.length > 0 ? "<span style=\"color:{series.color}\">{series.name}</span>: <b>{point.y}</b> ({point.change}%)<br/>" :
-                    "<span style=\"color:{series.color}\">{series.name}</span>: <b>{point.y}</b><br/>",
                 valueDecimals: decimals,
-                split: true
+                split: true,
+                shared: CommonUtils.isMobile(),
+                // @ts-ignore
+                formatter: function(): string {
+                    // @ts-ignore
+                    if (this.points) {
+                        // The first returned item is the header, subsequent items are the points
+                        // @ts-ignore
+                        return ["<b>" + DateUtils.formatDate(dayjs(this.x)) + "</b>"].concat(
+                            // @ts-ignore
+                            this.points.map((point): string => {
+                                return compare ? `<span style=\"color:${point.series.color}\">${point.series.name}</span>: <b>${point.y}</b> (${point.change}%)<br/>` :
+                                    `<span style=\"color:${point.series.color}\">${point.series.name}</span>: <b>${point.y}</b><br/>`;
+                            })
+                        );
+                        // @ts-ignore
+                    } else if (this.point) {
+                        // @ts-ignore
+                        return this.point.text;
+                    }
+                }
             },
             exporting: {
                 enabled: false

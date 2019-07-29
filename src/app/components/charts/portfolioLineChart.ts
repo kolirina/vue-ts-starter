@@ -112,6 +112,19 @@ import {ChartUtils} from "../../utils/chartUtils";
                             </v-tooltip>
                         </template>
                     </v-switch>
+                    <v-switch v-model="compare" @change="toggleCompareOption" class="mt-3" hide-details>
+                        <template #label>
+                            <span>Процентное сравнение</span>
+                            <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                                <sup class="custom-tooltip" slot="activator">
+                                    <v-icon>fas fa-info-circle</v-icon>
+                                </sup>
+                                <span>
+                                    Включите, если хотите чтобы графики сравнивались по относительной шкале
+                                </span>
+                            </v-tooltip>
+                        </template>
+                    </v-switch>
                 </v-card>
             </v-menu>
             <div v-show="chartShowed()">
@@ -182,6 +195,8 @@ export class PortfolioLineChart extends UI {
         /** Признак отображения графика стоимости Облигаций */
         bondChart: false,
     };
+    /** Сравнение графиков. Для отображения процентов */
+    private compare: boolean = false;
 
     /** Префиксы */
     private ChartSeries = ChartSeries;
@@ -189,7 +204,7 @@ export class PortfolioLineChart extends UI {
     private lineChartSeries: { [key: string]: LineChartSeries } = {};
 
     async mounted(): Promise<void> {
-        this.restoreRangeState();
+        this.restoreState();
         ChartSeries.values().forEach(series => {
             (this.seriesFilter as any)[series.code] = this.getStorageValue(series, [ChartSeries.EVENTS, ChartSeries.TOTAL].includes(series));
         });
@@ -198,15 +213,17 @@ export class PortfolioLineChart extends UI {
             this.lineChartSeries[series.code] = {
                 data: ChartUtils.convertToDots(this.data, series.fieldName),
                 balloonTitle: series === ChartSeries.TOTAL ? this.balloonTitle : series.description,
-                enabled: (this.seriesFilter as any)[series.code]
+                enabled: (this.seriesFilter as any)[series.code],
+                id: series.code
             };
         });
         this.lineChartSeries[ChartSeries.INDEX_STOCK_EXCHANGE.code] = {
             data: this.moexIndexData,
             balloonTitle: ChartSeries.INDEX_STOCK_EXCHANGE.description,
-            enabled: (this.seriesFilter as any)[ChartSeries.INDEX_STOCK_EXCHANGE.code]
+            enabled: (this.seriesFilter as any)[ChartSeries.INDEX_STOCK_EXCHANGE.code],
+            id: ChartSeries.INDEX_STOCK_EXCHANGE.code
         };
-        await this.draw();
+        setTimeout(async () => await this.draw(), 0);
     }
 
     @Watch("eventsChartData")
@@ -236,15 +253,28 @@ export class PortfolioLineChart extends UI {
         this.localStorage.set<boolean>(`${this.stateKeyPrefix}_SHOW_EVENTS`, this.seriesFilter.showTrades);
     }
 
+    async toggleCompareOption(): Promise<void> {
+        this.localStorage.set<boolean>(`${this.stateKeyPrefix}_COMPARE`, this.compare);
+        await this.draw();
+    }
+
     async toggleChartOption(series: ChartSeries): Promise<void> {
         this.toggleChartSeries(series);
-        await this.draw();
+        if (series === ChartSeries.TOTAL) {
+            this.seriesFilter.showTrades = this.seriesFilter.totalChart;
+        }
+        setTimeout(async () => await this.draw(), 0);
+        if (series === ChartSeries.TOTAL && this.seriesFilter.totalChart) {
+            await this.onShowTradesChange();
+        }
     }
 
     async resetFilter(): Promise<void> {
         this.seriesFilter.totalChart = true;
+        this.seriesFilter.showTrades = true;
+        await this.onShowTradesChange();
         this.toggleChartSeries(ChartSeries.TOTAL);
-        await this.draw();
+        setTimeout(async () => await this.draw(), 0);
     }
 
     private toggleChartSeries(series: ChartSeries): void {
@@ -266,14 +296,16 @@ export class PortfolioLineChart extends UI {
             "Стоимость портфеля",
             this.changeLoadState,
             null,
-            Object.keys(this.lineChartSeries).map(key => this.lineChartSeries[key]).filter(series => series.enabled)
+            Object.keys(this.lineChartSeries).map(key => this.lineChartSeries[key]).filter(series => series.enabled),
+            this.compare
         );
     }
 
     private changeLoadState(): void {
     }
 
-    private restoreRangeState(): void {
+    private restoreState(): void {
+        this.compare = this.localStorage.get<boolean>(`${this.stateKeyPrefix}_COMPARE`, false);
         this.ranges = [...ChartUtils.getChartRanges()];
         this.ranges.forEach(range => {
             range.events = {

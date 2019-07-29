@@ -40,7 +40,6 @@
     font-family: $dashbord--num--font-family !important;
     font-size: $dashbord--num--font-size !important;
     font-weight: $dashbord--num--font-weight !important;
-    color: $dashbord--num--font-color !important;
   }
 
   &-second-value-desc {
@@ -125,6 +124,19 @@
       .v-card__title--primary {padding-top: 16px}
 
       .container {padding: 0}
+    }
+  }
+}
+.negative-balance-notification {
+  background: #FFFFFF;
+  padding: 12px 35px 19px;
+  .description {
+    margin-top: 7px;
+  }
+  .btn-action-section {
+    max-width: 321px;
+    button {
+      margin-top: 7px !important;
     }
   }
 }

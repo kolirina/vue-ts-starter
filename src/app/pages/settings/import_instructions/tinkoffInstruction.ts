@@ -5,35 +5,37 @@ import {UI} from "../../../app/ui";
     // language=Vue
     template: `
         <div class="tinkoff-instruction">
-            <div class="import-default-text">
-                <div>
-                    Перейдите на сайт <a href="https://www.tinkoff.ru/" target="_blank">https://www.tinkoff.ru</a>,
-                    <div>
-                        в правой панели выберите Брокерский счет.
-                    </div>
-                    <div>
-                        Выберите в меню пункт О счете.
-                    </div>
-                </div>
-                <v-img :src="IMAGES[0]" height="235" width="582" class="grey darken-4 image"></v-img>
-            </div>
             <div class="import-format-requirements-ul">
-                <div>
-                    Убедитесь что подготавливаете отчет в формате Тинькофф банка.
-                </div>
                 <div class="import-default-text-margin-t">
-                    Настройте параметры отчета:
+                    Получить отчет в формате xls/xlsx можно двумя способами:
                 </div>
                 <ul>
-                    <li>Укажите месяц</li>
-                    <li>Год</li>
-                    <li>Нажмите кнопку Скачать</li>
+                    <li>Запросить отчет в чате техподдержки через личный кабинет</li>
+                    <li>Сформировать отчет в мобильном приложении</li>
                 </ul>
                 <div>
                     Полученный файл используйте для импорта.
                 </div>
             </div>
-            <v-img :src="IMAGES[1]" height="528" width="536" class="grey darken-4 image"></v-img>
+            <div class="import-default-text import-default-text-margin-t">
+                Для получения файла импорта в мобильном приложении:
+            </div>
+            <div class="import-default-text">
+                <div>
+                    Зайдите в мобильное приложение,
+                    <div>
+                        в нижей панели выберите пункт "Еще".
+                    </div>
+                    <div>
+                        Выберите в меню пункт Профиль.
+                    </div>
+                    <v-img :src="IMAGES[0]" height="600" width="300" class="grey darken-4 image"></v-img>
+                    <div>
+                        Перейдите в раздел Отчеты и сформируейте Брокерский отчет Тинькофф за желаемый период.
+                    </div>
+                    <v-img :src="IMAGES[1]" height="600" width="300" class="grey darken-4 image"></v-img>
+                </div>
+            </div>
         </div>
     `
 })
@@ -43,5 +45,4 @@ export class TinkoffInstruction extends UI {
         "./img/import_instructions/tinkoff/1.png",
         "./img/import_instructions/tinkoff/2.png"
     ];
-
 }

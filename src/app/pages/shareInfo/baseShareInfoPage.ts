@@ -73,7 +73,7 @@ import {StoreType} from "../../vuex/storeType";
                                 </div>
                             </div>
                         </div>
-                        <div v-if="!publicZone">
+                        <div>
                             <v-btn class="btn mt-1" @click.stop="openDialog">
                                 Добавить в портфель
                             </v-btn>
@@ -117,7 +117,7 @@ import {StoreType} from "../../vuex/storeType";
                                     <td class="info-about-stock__content-title">Последняя цена</td>
                                     <td>
                                         <span class="info-about-stock__content-value" :title="'Время последнего обновления ' + share.lastUpdateTime">
-                                            {{ share.price | amount }}
+                                            {{ share.price | amount(false, null, false, false) }}
                                         </span>
                                         <span class="info-about-stock__content-legend">{{ currencySymbol }}</span>
                                     </td>
@@ -331,8 +331,6 @@ export class BaseShareInfoPage extends UI {
     @Prop({type: Number, default: null, required: false})
     private portfolioAvgPrice: number;
 
-    @Prop({type: Boolean, default: false, required: false})
-    private publicZone: boolean;
     @Inject
     private marketService: MarketService;
     /** Типы активов */

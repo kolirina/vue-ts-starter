@@ -22,10 +22,12 @@ import {BondTable} from "../components/bondTable";
 import {PieChart} from "../components/charts/pieChart";
 import {PortfolioLineChart} from "../components/charts/portfolioLineChart";
 import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog";
+import {NegativeBalanceNotification} from "../components/negativeBalanceNotification";
 import {PortfolioRowFilter, PortfolioRowsTableFilter} from "../components/portfolioRowsTableFilter";
 import {StockTable} from "../components/stockTable";
 import {Storage} from "../platform/services/storage";
 import {ExportType} from "../services/exportService";
+import {OverviewService} from "../services/overviewService";
 import {TableHeaders, TABLES_NAME, TablesService} from "../services/tablesService";
 import {HighStockEventsGroup, SectorChartData} from "../types/charts/types";
 import {StoreKeys} from "../types/storeKeys";
@@ -39,6 +41,8 @@ import {UiStateHelper} from "../utils/uiStateHelper";
         <v-container v-if="overview" fluid class="paddT0">
             <v-layout column>
                 <dashboard :data="overview.dashboardData" :view-currency="viewCurrency" :side-bar-opened="sideBarOpened"></dashboard>
+
+                <negative-balance-notification v-if="showNegativeBalance"></negative-balance-notification>
 
                 <slot name="afterDashboard"></slot>
 
@@ -140,13 +144,14 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                         <chart-export-menu @print="print('sectorsChart')" @exportTo="exportTo('sectorsChart', $event)" class="exp-panel-menu"></chart-export-menu>
                     </template>
                     <v-card-text>
-                        <pie-chart ref="sectorsChart" :data="sectorsChartData.data" :balloon-title="portfolioName" :view-currency="viewCurrency"></pie-chart>
+                        <pie-chart v-if="sectorsChartData" ref="sectorsChart"
+                                   :data="sectorsChartData.data" :balloon-title="portfolioName" :view-currency="viewCurrency"></pie-chart>
                     </v-card-text>
                 </expanded-panel>
             </v-layout>
         </v-container>
     `,
-    components: {AssetTable, StockTable, BondTable, PortfolioLineChart, PortfolioRowsTableFilter}
+    components: {AssetTable, StockTable, BondTable, PortfolioLineChart, PortfolioRowsTableFilter, NegativeBalanceNotification}
 })
 export class BasePortfolioPage extends UI {
 
@@ -188,16 +193,18 @@ export class BasePortfolioPage extends UI {
     /** Префикс ключа под которым будет хранится состояние */
     @Prop({type: String, required: true})
     private stateKeyPrefix: string;
-    /** Признак публичной зоны */
-    @Prop({type: Boolean, default: false, required: false})
-    private publicZone: boolean;
     /** Признак открытой боковой панели */
     @Prop({required: true, type: Boolean, default: true})
     private sideBarOpened: boolean;
+    /** Признак проф. режима */
+    @Prop({type: Boolean, default: null})
+    private professionalMode: boolean;
     @Inject
     private tablesService: TablesService;
     @Inject
     private storageService: Storage;
+    @Inject
+    private overviewService: OverviewService;
     /** Список заголовков таблиц */
     private headers: TableHeaders = this.tablesService.headers;
     /** Названия таблиц с заголовками */
@@ -224,6 +231,7 @@ export class BasePortfolioPage extends UI {
     private bondFilter: PortfolioRowFilter = {};
     /** Типы возможных пустых блоков */
     private emptyBlockType = EmptyBlockType;
+    private currentMoneyRemainder: string = null;
 
     /**
      * Инициализация данных компонента
@@ -232,6 +240,7 @@ export class BasePortfolioPage extends UI {
     async created(): Promise<void> {
         this.stockTablePanelClosed = UiStateHelper.stocksTablePanel[0] === 0;
         this.bondTablePanelClosed = UiStateHelper.bondsTablePanel[0] === 0;
+        await this.getCurrentMoneyRemainder();
         this.assetsPieChartData = this.doAssetsPieChartData();
         this.stockPieChartData = this.doStockPieChartData();
         this.bondPieChartData = this.doBondPieChartData();
@@ -242,10 +251,17 @@ export class BasePortfolioPage extends UI {
 
     @Watch("overview")
     private async onPortfolioChange(): Promise<void> {
+        await this.getCurrentMoneyRemainder();
         this.assetsPieChartData = this.doAssetsPieChartData();
         this.stockPieChartData = this.doStockPieChartData();
         this.bondPieChartData = this.doBondPieChartData();
         this.sectorsChartData = this.doSectorsChartData();
+    }
+
+    private async getCurrentMoneyRemainder(): Promise<void> {
+        if (this.portfolioId) {
+            this.currentMoneyRemainder = await this.overviewService.getCurrentMoney(Number(this.portfolioId));
+        }
     }
 
     private blockNotEmpty(type: EmptyBlockType): boolean {
@@ -316,6 +332,10 @@ export class BasePortfolioPage extends UI {
 
     private get bondRows(): BondPortfolioRow[] {
         return [...this.overview.bondPortfolio.rows, this.overview.bondPortfolio.sumRow as BondPortfolioRow];
+    }
+
+    private get showNegativeBalance(): boolean {
+        return Number(this.currentMoneyRemainder) < 0 && !this.professionalMode;
     }
 
 }

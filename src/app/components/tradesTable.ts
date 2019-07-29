@@ -255,7 +255,8 @@ export class TradesTable extends UI {
             operation: Operation.valueByName(trade.operation),
             tradeFields: tradeFields,
             tradeId: trade.id,
-            editedMoneyTradeId: trade.moneyTradeId
+            editedMoneyTradeId: trade.moneyTradeId,
+            moneyCurrency: trade.currency
         });
         if (result) {
             await this.reloadPortfolio(this.portfolio.id);

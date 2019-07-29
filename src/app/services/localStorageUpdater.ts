@@ -44,6 +44,8 @@ export class LocalStorageUpdater {
     updateLocalStorage(): void {
         this.updateCalendarEventTypes();
         this.updateTableColumns();
+        this.updateChartsStorage();
+        this.localStorage.set<string>(StoreKeys.LOCAL_STORAGE_LAST_UPDATE_DATE_KEY, versionConfig.date);
     }
 
     /**
@@ -70,7 +72,17 @@ export class LocalStorageUpdater {
         const headersFromStorage = this.localStorage.get<TableHeaders>("tableHeadersParams", null);
         if (needUpdate) {
             this.localStorage.set<TableHeaders>("tableHeadersParams", {...this.tableService.HEADERS});
-            this.localStorage.set<string>(StoreKeys.LOCAL_STORAGE_LAST_UPDATE_DATE_KEY, versionConfig.date);
+        }
+    }
+
+    /**
+     * Обновляет настройки графиков
+     */
+    private updateChartsStorage(): void {
+        const needUpdate = this.needUpdate();
+        if (needUpdate) {
+            this.localStorage.delete(`${StoreKeys.PORTFOLIO_CHART}_SHOW_EVENTS`);
+            this.localStorage.delete(`${StoreKeys.PORTFOLIO_CHART}_SHOW_INDEX_STOCK_EXCHANGE`);
         }
     }
 

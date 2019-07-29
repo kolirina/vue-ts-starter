@@ -24,7 +24,7 @@ const MainStore = namespace(StoreType.MAIN);
             <div class="additional-pagination-quotes-table">
                 <additional-pagination :pagination="pagination" @update:pagination="onTablePaginationChange"></additional-pagination>
             </div>
-            <quotes-filter-table :filter="filter" @input="tableSearch" @changeShowUserShares="changeShowUserShares"
+            <quotes-filter-table :filter="filter" @input="tableSearch" @changeShowUserShares="changeShowUserShares" :min-length="1"
                                  placeholder="Поиск"></quotes-filter-table>
             <empty-search-result v-if="isEmptySearchResult" @resetFilter="resetFilter"></empty-search-result>
             <v-data-table v-else
@@ -37,7 +37,7 @@ const MainStore = namespace(StoreType.MAIN);
                             <stock-link :ticker="props.item.ticker"></stock-link>
                         </td>
                         <td class="text-xs-left">{{ props.item.shortname }}</td>
-                        <td class="text-xs-center ii-number-cell">{{ props.item.price | amount(true) }}</td>
+                        <td class="text-xs-center ii-number-cell">{{ props.item.price | amount(false, null, false, false) }}</td>
                         <td :class="[( Number(props.item.change) >= 0 ) ? 'ii--green-markup' : 'ii--red-markup', 'ii-number-cell', 'text-xs-center']">
                             {{ props.item.change }}&nbsp;%
                         </td>
