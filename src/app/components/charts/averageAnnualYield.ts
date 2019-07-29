@@ -16,7 +16,7 @@ import {YieldCompareData} from "../../types/types";
                 </v-layout>
             </v-container>
 
-            <div v-show="chart" ref="container" style="width: 100%; height: 300px; margin: 0 auto"></div>
+            <div v-show="chart" ref="container" style="width: 100%; height: 400px; margin: 0 auto"></div>
         </div>
     `
 })
