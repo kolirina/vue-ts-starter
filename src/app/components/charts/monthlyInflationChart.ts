@@ -46,11 +46,7 @@ export class MonthlyInflationChart extends UI {
     private async draw(): Promise<void> {
         this.chart = Highcharts.chart(this.$refs.container, {
             chart: {
-                backgroundColor: "#F7F9FB",
-                style: {
-                    fontFamily: "\"Open Sans\" sans-serif",
-                    fontSize: "13px"
-                }
+                backgroundColor: "#F7F9FB"
             },
             title: {
                 text: ""
@@ -61,7 +57,6 @@ export class MonthlyInflationChart extends UI {
                 },
                 labels: {
                     style: {
-                        fontFamily: "\Open Sans\" sans-serif",
                         fontSize: "13px",
                         color: "#040427"
                     }
@@ -74,11 +69,11 @@ export class MonthlyInflationChart extends UI {
                 categories: this.data.categoryNames,
                 labels: {
                     style: {
-                        fontFamily: "\Open Sans\" sans-serif",
                         fontSize: "13px",
                         color: "#040427"
                     }
-                }
+                },
+                gridLineWidth: 1
             },
             exporting: {
                 enabled: false
@@ -86,6 +81,11 @@ export class MonthlyInflationChart extends UI {
             tooltip: {
                 headerFormat: "",
                 pointFormat: "<span>Инфляция за {point.name}</span>: <b>{point.y:.2f}%</b>"
+            },
+            plotOptions: {
+                series: {
+                    color: "#FF3E70"
+                }
             },
             series: [
                 {

@@ -58,11 +58,11 @@ export class DepositeRatesChart extends UI {
                 categories: this.data.categoryNames,
                 labels: {
                     style: {
-                        fontFamily: "\Open Sans\" sans-serif",
                         fontSize: "13px",
                         color: "#040427"
                     }
-                }
+                },
+                gridLineWidth: 1
             },
             yAxis: {
                 title: {
@@ -70,10 +70,14 @@ export class DepositeRatesChart extends UI {
                 },
                 labels: {
                     style: {
-                        fontFamily: "\Open Sans\" sans-serif",
                         fontSize: "13px",
                         color: "#040427"
                     }
+                }
+            },
+            plotOptions: {
+                series: {
+                    color: "#FF3E70"
                 }
             },
             exporting: {

@@ -54,11 +54,7 @@ export class AverageAnnualYieldChart extends UI {
         this.chart = Highcharts.chart(this.$refs.container, {
             chart: {
                 backgroundColor: "#F7F9FB",
-                type: "column",
-                style: {
-                    fontFamily: "\"Open Sans\" sans-serif",
-                    fontSize: "13px"
-                }
+                type: "column"
             },
             title: {
                 text: ""
@@ -67,11 +63,11 @@ export class AverageAnnualYieldChart extends UI {
                 categories: this.categoryNames,
                 labels: {
                     style: {
-                        fontFamily: "\Open Sans\" sans-serif",
                         fontSize: "13px",
                         color: "#040427"
                     }
-                }
+                },
+                gridLineWidth: 1
             },
             yAxis: {
                 title: {
@@ -79,7 +75,6 @@ export class AverageAnnualYieldChart extends UI {
                 },
                 labels: {
                     style: {
-                        fontFamily: "\Open Sans\" sans-serif",
                         fontSize: "13px",
                         color: "#040427"
                     }
