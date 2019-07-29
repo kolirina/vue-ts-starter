@@ -140,7 +140,7 @@ export class TradesPage extends UI {
     }
 
     @Watch("portfolio")
-    private async onPortfolioChange(): Promise<void> {
+    private onPortfolioChange(): void {
         this.tradesFilter = this.filterService.getFilter(StoreKeys.TRADES_FILTER_SETTINGS_KEY, this.portfolio.portfolioParams.openDate);
         this.onFilterChange();
     }
