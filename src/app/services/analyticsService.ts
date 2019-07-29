@@ -17,7 +17,7 @@
 import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {Http} from "../platform/services/http";
-import {DepositRate, Inflation, YieldCompareData} from "../types/types";
+import {DepositRate, Inflation, YieldCompareData} from "../types/charts/types";
 
 @Service("AnalyticsService")
 @Singleton

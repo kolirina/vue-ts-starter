@@ -2,7 +2,7 @@ import Highcharts, {ChartObject} from "highcharts";
 import Component from "vue-class-component";
 import {Prop, Watch} from "vue-property-decorator";
 import {UI} from "../../app/ui";
-import {YieldCompareData} from "../../types/types";
+import {YieldCompareData} from "../../types/charts/types";
 
 @Component({
     // language=Vue

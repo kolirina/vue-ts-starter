@@ -2,7 +2,7 @@ import Highcharts, {ChartObject} from "highcharts";
 import Component from "vue-class-component";
 import {Prop, Watch} from "vue-property-decorator";
 import {UI} from "../../app/ui";
-import {AdviserSchedule} from "../../types/types";
+import {AdviserSchedule} from "../../types/charts/types";
 
 @Component({
     // language=Vue
@@ -20,7 +20,7 @@ import {AdviserSchedule} from "../../types/types";
         </div>
     `
 })
-export class DepositeRatesChart extends UI {
+export class SimpleLineChart extends UI {
 
     $refs: {
         container: HTMLElement
@@ -33,6 +33,9 @@ export class DepositeRatesChart extends UI {
 
     @Prop({required: true})
     private data: AdviserSchedule;
+
+    @Prop({required: true})
+    private tooltip: string;
 
     async mounted(): Promise<void> {
         await this.draw();
@@ -51,6 +54,17 @@ export class DepositeRatesChart extends UI {
             title: {
                 text: ""
             },
+            yAxis: {
+                title: {
+                    text: ""
+                },
+                labels: {
+                    style: {
+                        fontSize: "13px",
+                        color: "#040427"
+                    }
+                }
+            },
             legend: {
                 enabled: false
             },
@@ -64,28 +78,17 @@ export class DepositeRatesChart extends UI {
                 },
                 gridLineWidth: 1
             },
-            yAxis: {
-                title: {
-                    text: ""
-                },
-                labels: {
-                    style: {
-                        fontSize: "13px",
-                        color: "#040427"
-                    }
-                }
-            },
-            plotOptions: {
-                series: {
-                    color: "#FF3E70"
-                }
-            },
             exporting: {
                 enabled: false
             },
             tooltip: {
                 headerFormat: "",
-                pointFormat: "<span>Ставка по депозитам за {point.name}</span>: <b>{point.y:.2f}%</b>"
+                pointFormat: `<span>${this.tooltip} {point.name}</span>: <b>{point.y:.2f}%</b>`
+            },
+            plotOptions: {
+                series: {
+                    color: "#FF3E70"
+                }
             },
             series: [
                 {

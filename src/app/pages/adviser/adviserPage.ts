@@ -3,17 +3,17 @@ import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI, Watch} from "../../app/ui";
 import {AverageAnnualYieldChart} from "../../components/charts/averageAnnualYield";
-import {DepositeRatesChart} from "../../components/charts/depositeRatesChart";
-import {MonthlyInflationChart} from "../../components/charts/monthlyInflationChart";
+import {SimpleLineChart} from "../../components/charts/simpleLineChart";
 import {ConfirmDialog} from "../../components/dialogs/confirmDialog";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {Storage} from "../../platform/services/storage";
 import {AdviceService, AdviceUnicCode} from "../../services/adviceService";
 import {AnalyticsService} from "../../services/analyticsService";
 import {ClientInfo, ClientService} from "../../services/clientService";
+import {AdviserSchedule, YieldCompareData} from "../../types/charts/types";
 import {EventType} from "../../types/eventType";
 import {StoreKeys} from "../../types/storeKeys";
-import {AdviserSchedule, Portfolio, RiskType, YieldCompareData} from "../../types/types";
+import {Portfolio, RiskType} from "../../types/types";
 import {ChartUtils} from "../../utils/chartUtils";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
@@ -79,7 +79,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 </span>
                             </v-tooltip>
                         </v-layout>
-                        <monthly-inflation-chart :data="monthlyInflationData"></monthly-inflation-chart>
+                        <simple-line-chart :data="monthlyInflationData" :tooltip="'Инфляция за'"></simple-line-chart>
                     </v-flex>
                     <v-flex v-if="depositeRatesData" class="mt-3 pa-2">
                         <v-layout class="item-header">
@@ -93,13 +93,13 @@ const MainStore = namespace(StoreType.MAIN);
                                 </span>
                             </v-tooltip>
                         </v-layout>
-                        <deposite-rates-chart :data="depositeRatesData"></deposite-rates-chart>
+                        <simple-line-chart :data="depositeRatesData" :tooltip="'Ставка по депозитам за'"></simple-line-chart>
                     </v-flex>
                 </v-flex>
             </v-layout>
         </v-container>
     `,
-    components: {ChooseRisk, Preloader, AnalysisResult, EmptyAdvice, AverageAnnualYieldChart, MonthlyInflationChart, DepositeRatesChart}
+    components: {ChooseRisk, Preloader, AnalysisResult, EmptyAdvice, AverageAnnualYieldChart, SimpleLineChart}
 })
 export class AdviserPage extends UI {
 

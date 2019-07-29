@@ -4,6 +4,7 @@ import Highcharts, {AreaChart, ChartObject, DataPoint, Gradient, IndividualSerie
 import Highstock from "highcharts/highstock";
 import {Filters} from "../platform/filters/Filters";
 import {BigMoney} from "../types/bigMoney";
+import {AdviserSchedule, DepositRate, Inflation} from "../types/charts/types";
 import {
     BasePriceDot,
     ColumnChartData,
@@ -17,7 +18,7 @@ import {
     SectorChartData
 } from "../types/charts/types";
 import {Operation} from "../types/operation";
-import {AdviserSchedule, DepositRate, Inflation, Overview, StockPortfolioRow} from "../types/types";
+import {Overview, StockPortfolioRow} from "../types/types";
 import {CommonUtils} from "./commonUtils";
 import {DateUtils} from "./dateUtils";
 import {TradeUtils} from "./tradeUtils";

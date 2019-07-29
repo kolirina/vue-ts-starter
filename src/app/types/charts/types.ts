@@ -1,15 +1,52 @@
 import {Enum, EnumType, IStaticEnum} from "../../platform/enum";
 
+export type YieldCompareData = {
+    depositYearYield: string,
+    inflationYearYield: string,
+    micexYearYield: string,
+    portfolioYearYield: string
+};
+
+export type AdviserSchedule = {
+    categoryNames: string[],
+    values: PointAdviserSchedule[]
+};
+
+export type PointAdviserSchedule = {
+    name: string,
+    y: number
+};
+
+/** Сущность ставки по депоизиту */
+export type DepositRate = {
+    /** Дата */
+    date: string,
+    /** Ставка */
+    value: string,
+};
+
+/** Сущность записи по инфляции */
+export type Inflation = {
+    /** Дата */
+    date: string,
+    /** Значение */
+    value: string,
+    /** Тип (0 - в годовом выражении, 1 - помесячная) */
+    type: string
+};
+
 export type BaseChartDot = {
     /** Дата точки графика */
     date: string,
     /** Сумма */
     amount: string
 };
+
 export type BasePriceDot = {
     date: string,
     price: string
 };
+
 export type Dot = [number, number];
 
 export type LineChartItem = BaseChartDot & {

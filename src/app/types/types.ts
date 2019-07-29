@@ -2,41 +2,6 @@ import {Enum, EnumType, IStaticEnum} from "../platform/enum";
 import {PortfolioParams} from "../services/portfolioService";
 import {BaseChartDot, BasePriceDot, ColumnChartData, Dot, HighStockEventsGroup} from "./charts/types";
 
-export type YieldCompareData = {
-    depositYearYield: string,
-    inflationYearYield: string,
-    micexYearYield: string,
-    portfolioYearYield: string
-};
-
-export type AdviserSchedule = {
-    categoryNames: string[],
-    values: PointAdviserSchedule[]
-};
-
-export type PointAdviserSchedule = {
-    name: string,
-    y: number
-};
-
-/** Сущность ставки по депоизиту */
-export type DepositRate = {
-    /** Дата */
-    date: string,
-    /** Ставка */
-    value: string,
-};
-
-/** Сущность записи по инфляции */
-export type Inflation = {
-    /** Дата */
-    date: string,
-    /** Значение */
-    value: string,
-    /** Тип (0 - в годовом выражении, 1 - помесячная) */
-    type: string
-};
-
 export type _portfolioRow = {
     /** Прибыль */
     profit: string,
