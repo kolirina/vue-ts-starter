@@ -19,7 +19,6 @@ import {Service} from "../platform/decorators/service";
 import {Storage} from "../platform/services/storage";
 import {Operation} from "../types/operation";
 import {TradeListType} from "../types/tradeListType";
-import {DateUtils} from "../utils/dateUtils";
 import {TradesFilter, TradesFilterRequest} from "./tradeService";
 
 /**
