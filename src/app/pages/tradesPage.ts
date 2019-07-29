@@ -104,7 +104,7 @@ export class TradesPage extends UI {
      * @inheritDoc
      */
     async created(): Promise<void> {
-        this.tradesFilter = this.filterService.getFilter(StoreKeys.TRADES_FILTER_SETTINGS_KEY, this.portfolio.portfolioParams.openDate);
+        this.tradesFilter = this.filterService.getFilter(StoreKeys.TRADES_FILTER_SETTINGS_KEY);
     }
 
     getHeaders(name: string): TableHeader[] {
@@ -131,7 +131,7 @@ export class TradesPage extends UI {
     }
 
     private async resetFilter(): Promise<void> {
-        this.tradesFilter = this.filterService.getDefaultFilter(this.portfolio.portfolioParams.openDate);
+        this.tradesFilter = this.filterService.getDefaultFilter();
         await this.onFilterChange();
     }
 
@@ -140,9 +140,8 @@ export class TradesPage extends UI {
     }
 
     @Watch("portfolio")
-    private onPortfolioChange(): void {
-        this.tradesFilter = this.filterService.getFilter(StoreKeys.TRADES_FILTER_SETTINGS_KEY, this.portfolio.portfolioParams.openDate);
-        this.onFilterChange();
+    private async onPortfolioChange(): Promise<void> {
+        await this.onFilterChange();
     }
 
     @ShowProgress
@@ -190,7 +189,7 @@ export class TradesPage extends UI {
     }
 
     private get isDefaultFilter(): boolean {
-        return this.filterService.isDefaultFilter(this.tradesFilter, this.portfolio.portfolioParams.openDate);
+        return this.filterService.isDefaultFilter(this.tradesFilter);
     }
 
     /**

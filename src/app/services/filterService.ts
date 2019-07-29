@@ -36,17 +36,16 @@ export class FilterService {
      * Возвращает данные фильтра из хранилища
      * @return данные фильтра
      */
-    getFilter(stateKey: string, registrationDate: string): TradesFilter {
+    getFilter(stateKey: string): TradesFilter {
         const filterString = this.storageService.get(stateKey, null);
         if (filterString) {
             const filter: TradesFilter = this.getTradeFilterFromPlainObject(JSON.parse(filterString) as TradesFilterRequest);
             return {
-                ...this.getDefaultFilter(registrationDate),
-                ...filter,
-                start: registrationDate
+                ...this.getDefaultFilter(),
+                ...filter
             };
         }
-        return this.getDefaultFilter(registrationDate);
+        return this.getDefaultFilter();
     }
 
     getTradesFilterRequest(filter: TradesFilter): TradesFilterRequest {
@@ -56,8 +55,8 @@ export class FilterService {
             showLinkedMoneyTrades: filter.showLinkedMoneyTrades,
             showMoneyTrades: filter.showMoneyTrades,
             search: filter.search || "",
-            start: filter.start,
-            end: filter.end
+            start: filter.start ? filter.start : "",
+            end: filter.end ? filter.end : ""
         } as TradesFilterRequest;
     }
 
@@ -73,15 +72,15 @@ export class FilterService {
     /**
      * Возвращает состояние фильтра по умолчанию
      */
-    getDefaultFilter(registrationDate: string): TradesFilter {
+    getDefaultFilter(): TradesFilter {
         return {
             operation: TradesTableFilter.DEFAULT_OPERATIONS,
             listType: TradeListType.FULL,
             showMoneyTrades: true,
             showLinkedMoneyTrades: true,
             search: "",
-            start: registrationDate,
-            end: DateUtils.currentDate()
+            start: "",
+            end: ""
         };
     }
 
@@ -89,23 +88,21 @@ export class FilterService {
      * Возвращает признак установленного дефолтного фильтра
      * @param filter
      */
-    isDefaultFilter(filter: TradesFilter, registrationDate: string): boolean {
-        const defaultFilter = this.getDefaultFilter(registrationDate);
+    isDefaultFilter(filter: TradesFilter): boolean {
+        const defaultFilter = this.getDefaultFilter();
         return filter.listType === defaultFilter.listType && filter.showLinkedMoneyTrades === defaultFilter.showLinkedMoneyTrades &&
             filter.showMoneyTrades === defaultFilter.showMoneyTrades && filter.search === defaultFilter.search &&
-            filter.operation.every(operation => this.getDefaultFilter(registrationDate).operation.includes(operation));
+            filter.operation.every(operation => this.getDefaultFilter().operation.includes(operation));
     }
 
     private getTradeFilterFromPlainObject(filter: TradesFilterRequest): TradesFilter {
-        if (!filter.end) {
-            const end = DateUtils.currentDate();
-        }
         return {
             operation: filter.operation.map(operation => Operation.valueByName(operation)),
             listType: TradeListType.valueByName(filter.listType),
             showLinkedMoneyTrades: filter.showLinkedMoneyTrades,
             showMoneyTrades: filter.showMoneyTrades,
             search: filter.search,
+            start: filter.start,
             end: filter.end
         } as TradesFilter;
     }
