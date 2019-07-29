@@ -104,7 +104,7 @@ export class TradesPage extends UI {
      * @inheritDoc
      */
     async created(): Promise<void> {
-        this.tradesFilter = this.filterService.getFilter(StoreKeys.TRADES_FILTER_SETTINGS_KEY);
+        this.tradesFilter = this.filterService.getFilter(StoreKeys.TRADES_FILTER_SETTINGS_KEY, this.portfolio.portfolioParams.openDate);
     }
 
     getHeaders(name: string): TableHeader[] {
@@ -131,7 +131,7 @@ export class TradesPage extends UI {
     }
 
     private async resetFilter(): Promise<void> {
-        this.tradesFilter = this.filterService.getDefaultFilter();
+        this.tradesFilter = this.filterService.getDefaultFilter(this.portfolio.portfolioParams.openDate);
         await this.onFilterChange();
     }
 
@@ -141,7 +141,8 @@ export class TradesPage extends UI {
 
     @Watch("portfolio")
     private async onPortfolioChange(): Promise<void> {
-        await this.loadTrades();
+        this.tradesFilter = this.filterService.getFilter(StoreKeys.TRADES_FILTER_SETTINGS_KEY, this.portfolio.portfolioParams.openDate);
+        this.onFilterChange();
     }
 
     @ShowProgress
@@ -182,14 +183,14 @@ export class TradesPage extends UI {
     }
 
     private async onFilterChange(): Promise<void> {
+        this.filterService.saveFilter(StoreKeys.TRADES_FILTER_SETTINGS_KEY, this.tradesFilter);
         await this.loadTrades();
         // при смене фильтра сбрасываем паджинацию чтобы не остаться на несуществующей странице
         this.pagination.page = 1;
-        this.filterService.saveFilter(StoreKeys.TRADES_FILTER_SETTINGS_KEY, this.tradesFilter);
     }
 
     private get isDefaultFilter(): boolean {
-        return this.filterService.isDefaultFilter(this.tradesFilter);
+        return this.filterService.isDefaultFilter(this.tradesFilter, this.portfolio.portfolioParams.openDate);
     }
 
     /**

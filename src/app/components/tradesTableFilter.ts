@@ -14,9 +14,7 @@
  * (c) ООО "Интеллектуальные инвестиции", 2019
  */
 
-import {Inject} from "typescript-ioc";
 import {Component, Prop, UI} from "../app/ui";
-import {Storage} from "../platform/services/storage";
 import {TradesFilter} from "../services/tradeService";
 import {Operation} from "../types/operation";
 import {TradeListType} from "../types/tradeListType";
@@ -25,27 +23,42 @@ import {TableFilterBase} from "./tableFilterBase";
 @Component({
     // language=Vue
     template: `
-        <table-filter-base @search="onSearch" :search-query="filter.search" :search-label="searchLabel" :min-length="2" :is-default="isDefault">
-            <v-switch v-model="filter.showLinkedMoneyTrades" @change="onChange" class="margT0">
-                <template #label>
-                    <span>Связанные сделки</span>
-                </template>
-            </v-switch>
+        <v-layout align-center>
+            <table-filter-base @search="onSearch" :search-query="filter.search" :search-label="searchLabel" :min-length="2" :is-default="isDefault"
+                            :startDate="filter.startDate" :endDate="filter.endDate">
+                <v-switch v-model="filter.showLinkedMoneyTrades" @change="onChange" class="margT0">
+                    <template #label>
+                        <span>Связанные сделки</span>
+                    </template>
+                </v-switch>
 
-            <div class="trades-filter">
-                <div class="trades-filter__label">Тип списка</div>
-                <v-radio-group v-model="filter.listType" @change="onListTypeChange" style="margin-top: 15px !important;" column>
-                    <v-radio v-for="listType in listTypes" :label="listType.description" :value="listType" :key="listType.enumName"></v-radio>
-                </v-radio-group>
+                <div class="trades-filter">
+                    <div class="trades-filter__label">Тип списка</div>
+                    <v-radio-group v-model="filter.listType" @change="onListTypeChange" style="margin-top: 15px !important;" column>
+                        <v-radio v-for="listType in listTypes" :label="listType.description" :value="listType" :key="listType.enumName"></v-radio>
+                    </v-radio-group>
 
-                <div class="trades-filter__label">Тип операции сделок</div>
-                <div class="trades-filter__operations">
-                    <v-switch v-for="op in operations" @change="onOperationChange($event, op)" :disabled="!operationEnabled(op)" :label="operationLabel(op)"
-                              v-model="filter.operation.includes(op)" :key="op.enumName">
-                    </v-switch>
+                    <div class="trades-filter__label">Тип операции сделок</div>
+                    <div class="trades-filter__operations">
+                        <v-switch v-for="op in operations" @change="onOperationChange($event, op)" :disabled="!operationEnabled(op)" :label="operationLabel(op)"
+                                v-model="filter.operation.includes(op)" :key="op.enumName">
+                        </v-switch>
+                    </div>
                 </div>
-            </div>
-        </table-filter-base>
+            </table-filter-base>
+            <v-layout>
+                <v-menu ref="startDateMenuValue" :close-on-content-click="true" v-model="startDateMenuValue" :nudge-right="40"
+                        lazy transition="scale-transition" offset-y full-width min-width="290px">
+                    <v-text-field slot="activator" v-model="filter.start" label="Начальная дата" readonly class="mr-3"></v-text-field>
+                    <v-date-picker v-model="filter.start" :no-title="true" locale="ru" :first-day-of-week="1" @input="onStartDateSelected"></v-date-picker>
+                </v-menu>
+                <v-menu ref="endDateMenuValue" :close-on-content-click="true" v-model="endDateMenuValue" :nudge-right="40"
+                        lazy transition="scale-transition" offset-y full-width min-width="290px">
+                    <v-text-field slot="activator" v-model="filter.end" label="Конечная дата" readonly></v-text-field>
+                    <v-date-picker v-model="filter.end" :no-title="true" locale="ru" :first-day-of-week="1" @input="onEndDateSelected"></v-date-picker>
+                </v-menu>
+            </v-layout>
+        </v-layout>
     `,
     components: {TableFilterBase}
 })
@@ -65,6 +78,18 @@ export class TradesTableFilter extends UI {
     private listTypes = [TradeListType.FULL, TradeListType.STOCK, TradeListType.BOND, TradeListType.MONEY];
     /** Список операций */
     private operations: Operation[] = TradesTableFilter.DEFAULT_OPERATIONS;
+    private startDateMenuValue = false;
+    private endDateMenuValue = false;
+
+    private onStartDateSelected(date: string): void {
+        this.filter.start = date;
+        this.emitFilterChange();
+    }
+
+    private onEndDateSelected(date: string): void {
+        this.filter.end = date;
+        this.emitFilterChange();
+    }
 
     private onChange(): void {
         this.emitFilterChange();
