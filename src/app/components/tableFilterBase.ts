@@ -37,13 +37,13 @@ import {Prop, UI} from "../app/ui";
                 <v-menu :close-on-content-click="true" v-model="startMenuValue"
                         lazy transition="scale-transition" offset-y full-width min-width="290px">
                     <v-text-field slot="activator" v-model="start" label="Начальная дата" readonly class="mr-3" clearable
-                                  @click:clear="startClear"></v-text-field>
+                                  @click:clear="startChanged('')"></v-text-field>
                     <v-date-picker v-model="start" :no-title="true" locale="ru" :first-day-of-week="1" @input="startChanged"></v-date-picker>
                 </v-menu>
                 <v-menu :close-on-content-click="true" v-model="endMenuValue"
                         lazy transition="scale-transition" offset-y full-width min-width="290px">
                     <v-text-field slot="activator" v-model="end" label="Конечная дата" readonly clearable
-                                  @click:clear="endClear"></v-text-field>
+                                  @click:clear="endChanged('')"></v-text-field>
                     <v-date-picker v-model="end" :no-title="true" locale="ru" :first-day-of-week="1" @input="endChanged"></v-date-picker>
                 </v-menu>
             </v-layout>
@@ -113,17 +113,9 @@ export class TableFilterBase extends UI {
         this.$emit("startDateChanged", this.start);
     }
 
-    private startClear(): void {
-        this.startChanged("");
-    }
-
     private endChanged(date: string): void {
         this.end = date;
         this.$emit("endDateChanged", this.end);
-    }
-
-    private endClear(): void {
-        this.endChanged("");
     }
 
     @Watch("searchQuery")
