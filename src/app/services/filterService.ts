@@ -53,7 +53,9 @@ export class FilterService {
             listType: filter.listType.enumName,
             showLinkedMoneyTrades: filter.showLinkedMoneyTrades,
             showMoneyTrades: filter.showMoneyTrades,
-            search: filter.search || ""
+            search: filter.search || "",
+            start: filter.start || "",
+            end: filter.end || ""
         } as TradesFilterRequest;
     }
 
@@ -75,7 +77,9 @@ export class FilterService {
             listType: TradeListType.FULL,
             showMoneyTrades: true,
             showLinkedMoneyTrades: true,
-            search: ""
+            search: "",
+            start: "",
+            end: ""
         };
     }
 
@@ -87,7 +91,7 @@ export class FilterService {
         const defaultFilter = this.getDefaultFilter();
         return filter.listType === defaultFilter.listType && filter.showLinkedMoneyTrades === defaultFilter.showLinkedMoneyTrades &&
             filter.showMoneyTrades === defaultFilter.showMoneyTrades && filter.search === defaultFilter.search &&
-            filter.operation.every(operation => this.getDefaultFilter().operation.includes(operation));
+            filter.operation.every(operation => this.getDefaultFilter().operation.includes(operation)) && filter.start === defaultFilter.start && filter.end === defaultFilter.end;
     }
 
     private getTradeFilterFromPlainObject(filter: TradesFilterRequest): TradesFilter {
@@ -96,7 +100,9 @@ export class FilterService {
             listType: TradeListType.valueByName(filter.listType),
             showLinkedMoneyTrades: filter.showLinkedMoneyTrades,
             showMoneyTrades: filter.showMoneyTrades,
-            search: filter.search
+            search: filter.search,
+            start: filter.start,
+            end: filter.end
         } as TradesFilter;
     }
 }
