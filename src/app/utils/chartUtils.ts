@@ -5,6 +5,7 @@ import Highcharts, {AreaChart, ChartObject, DataPoint, Gradient, IndividualSerie
 import Highstock from "highcharts/highstock";
 import {Filters} from "../platform/filters/Filters";
 import {BigMoney} from "../types/bigMoney";
+import {AdviserLineChart, RequestDataAdviserLineChart} from "../types/charts/types";
 import {
     BasePriceDot,
     ColumnChartData,
@@ -203,6 +204,24 @@ export class ChartUtils {
         },
         threshold: null
     };
+
+    static convertDiagramData(data: RequestDataAdviserLineChart[]): AdviserLineChart {
+        const result: AdviserLineChart = {
+            categoryNames: [],
+            values: []
+        };
+        data.forEach((item: RequestDataAdviserLineChart) => {
+            const month = DateUtils.getNameMonthDate(item.date);
+            result.categoryNames.push(month);
+            result.values.push(
+                {
+                    name: month,
+                    y: Number(item.value)
+                }
+            );
+        });
+        return result;
+    }
 
     static getChartRanges(): Highstock.RangeSelectorButton[] {
         return this.ranges;
