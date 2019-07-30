@@ -128,7 +128,7 @@ export class AdviserPage extends UI {
         } else {
             this.currentRiskLevel = RiskType.LOW.code;
         }
-        await this.getDiagramData();
+        await this.loadDiagramData();
         UI.on(EventType.TRADE_CREATED, async () => await this.analysisPortfolio());
         UI.on(EventType.TRADE_UPDATED, async () => await this.analysisPortfolio());
     }
@@ -143,10 +143,10 @@ export class AdviserPage extends UI {
         if (this.isAnalys) {
             await this.analysisPortfolio();
         }
-        await this.getDiagramData();
+        await this.loadDiagramData();
     }
 
-    private async getDiagramData(): Promise<void> {
+    private async loadDiagramData(): Promise<void> {
         this.yieldCompareData = await this.analyticsService.getComparedYields(this.portfolio.id.toString());
         this.monthlyInflationData = ChartUtils.convertInflationData(await this.analyticsService.getInflationForLastSixMonths());
         this.depositeRatesData = ChartUtils.convertRatesData(await this.analyticsService.getRatesForLastSixMonths());
