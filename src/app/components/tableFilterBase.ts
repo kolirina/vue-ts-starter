@@ -24,7 +24,7 @@ import {Prop, UI} from "../app/ui";
         <div :class="['portfolio-rows-filter', isDateFilterShow ? 'section-with-pickers' : '']">
             <span v-if="!isDefault" class="custom-filter" title="Настроен фильтр"></span>
             <v-menu v-model="menu" :close-on-content-click="false" :nudge-width="294" :nudge-bottom="40" bottom>
-                <v-btn slot="activator" round class="portfolio-rows-filter__button mr-3">
+                <v-btn slot="activator" round :class="['portfolio-rows-filter__button', isDateFilterShow ? 'mr-3' : '']">
                     Фильтры
                     <span class="portfolio-rows-filter__button__icon"></span>
                 </v-btn>
@@ -34,17 +34,17 @@ import {Prop, UI} from "../app/ui";
                 </v-card>
             </v-menu>
             <v-layout v-if="isDateFilterShow" class="picker-section">
-                <v-menu :close-on-content-click="true" v-model="startDateMenuValue"
+                <v-menu :close-on-content-click="true" v-model="startMenuValue"
                         lazy transition="scale-transition" offset-y full-width min-width="290px">
-                    <v-text-field ref="startDateValue" slot="activator" v-model="startDateMutable" label="Начальная дата" readonly class="mr-3" clearable
-                                  @click:clear="onStartDateClear"></v-text-field>
-                    <v-date-picker v-model="startDateMutable" :no-title="true" locale="ru" :first-day-of-week="1" @input="mutableStartDateChanged"></v-date-picker>
+                    <v-text-field slot="activator" v-model="start" label="Начальная дата" readonly class="mr-3" clearable
+                                  @click:clear="startClear"></v-text-field>
+                    <v-date-picker v-model="start" :no-title="true" locale="ru" :first-day-of-week="1" @input="startChanged"></v-date-picker>
                 </v-menu>
-                <v-menu :close-on-content-click="true" v-model="endDateMenuValue"
+                <v-menu :close-on-content-click="true" v-model="endMenuValue"
                         lazy transition="scale-transition" offset-y full-width min-width="290px">
-                    <v-text-field ref="endDateValue" slot="activator" v-model="endDateMutable" label="Конечная дата" readonly clearable
-                                  @click:clear="onEndDateClear"></v-text-field>
-                    <v-date-picker v-model="endDateMutable" :no-title="true" locale="ru" :first-day-of-week="1" @input="mutableEndDateChanged"></v-date-picker>
+                    <v-text-field slot="activator" v-model="end" label="Конечная дата" readonly clearable
+                                  @click:clear="endClear"></v-text-field>
+                    <v-date-picker v-model="end" :no-title="true" locale="ru" :first-day-of-week="1" @input="endChanged"></v-date-picker>
                 </v-menu>
             </v-layout>
             <v-layout class="search-section" align-center>
@@ -86,46 +86,44 @@ export class TableFilterBase extends UI {
     private showSearch = false;
     /** Текущий объект таймера */
     private currentTimer: number = null;
-    private startDateMutable: string = null;
-    private endDateMutable: string = null;
-    private startDateMenuValue: boolean = false;
-    private endDateMenuValue: boolean = false;
+    private start: string = null;
+    private end: string = null;
+    private startMenuValue: boolean = false;
+    private endMenuValue: boolean = false;
 
     created(): void {
         this.searchQueryMutated = this.searchQuery;
         this.showSearch = !!this.searchQueryMutated;
-        this.startDateMutable = this.startDate;
-        this.endDateMutable = this.endDate;
+        this.start = this.startDate;
+        this.end = this.endDate;
     }
 
     @Watch("startDate")
     private startDateChanged(): void {
-        this.startDateMutable = this.startDate;
+        this.start = this.startDate;
     }
 
     @Watch("endDate")
     private endDateChanged(): void {
-        this.endDateMutable = this.endDate;
+        this.end = this.endDate;
     }
 
-    private mutableStartDateChanged(date: string): void {
-        this.startDateMutable = date;
-        this.$emit("startDateChanged", this.startDateMutable);
+    private startChanged(date: string): void {
+        this.start = date;
+        this.$emit("startDateChanged", this.start);
     }
 
-    private onStartDateClear(): void {
-        this.startDateMutable = "";
-        this.$emit("startDateChanged", this.startDateMutable);
+    private startClear(): void {
+        this.startChanged("");
     }
 
-    private mutableEndDateChanged(date: string): void {
-        this.endDateMutable = date;
-        this.$emit("endDateChanged", this.endDateMutable);
+    private endChanged(date: string): void {
+        this.end = date;
+        this.$emit("endDateChanged", this.end);
     }
 
-    private onEndDateClear(): void {
-        this.endDateMutable = "";
-        this.$emit("endDateChanged", this.endDateMutable);
+    private endClear(): void {
+        this.endChanged("");
     }
 
     @Watch("searchQuery")
