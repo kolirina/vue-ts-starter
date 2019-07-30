@@ -71,7 +71,7 @@ export class UiStateHelper {
     }
 
     static get adviserDiagramPanel(): number[] {
-        return [localStorage.get(UiStateHelper.ADVISER_DIAGRAM_PANEL, 0)];
+        return [localStorage.get(UiStateHelper.ADVISER_DIAGRAM_PANEL, 1)];
     }
 
     static set adviserAnalyticsPanel(value: number[]) {
