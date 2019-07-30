@@ -23,8 +23,10 @@ import {TableFilterBase} from "./tableFilterBase";
 @Component({
     // language=Vue
     template: `
-        <v-layout align-center>
-            <table-filter-base @search="onSearch" :search-query="filter.search" :search-label="searchLabel" :min-length="2" :is-default="isDefault">
+        <v-layout align-center wrap>
+            <table-filter-base @search="onSearch" :search-query="filter.search" :search-label="searchLabel" :min-length="2" :is-default="isDefault"
+                               :start-date="filter.start" :end-date="filter.end" @startDateChanged="onStartDateChanged" @endDateChanged="onEndDateChanged"
+                               :is-date-filter-show="true">
                 <v-switch v-model="filter.showLinkedMoneyTrades" @change="onChange" class="margT0">
                     <template #label>
                         <span>Связанные сделки</span>
@@ -45,18 +47,6 @@ import {TableFilterBase} from "./tableFilterBase";
                     </div>
                 </div>
             </table-filter-base>
-            <v-layout>
-                <v-menu ref="startDateMenuValue" :close-on-content-click="true" v-model="startDateMenuValue" :nudge-right="40"
-                        lazy transition="scale-transition" offset-y full-width min-width="290px">
-                    <v-text-field slot="activator" v-model="filter.start" label="Начальная дата" readonly class="mr-3"></v-text-field>
-                    <v-date-picker v-model="filter.start" :no-title="true" locale="ru" :first-day-of-week="1" @input="onStartDateSelected"></v-date-picker>
-                </v-menu>
-                <v-menu ref="endDateMenuValue" :close-on-content-click="true" v-model="endDateMenuValue" :nudge-right="40"
-                        lazy transition="scale-transition" offset-y full-width min-width="290px">
-                    <v-text-field slot="activator" v-model="filter.end" label="Конечная дата" readonly></v-text-field>
-                    <v-date-picker v-model="filter.end" :no-title="true" locale="ru" :first-day-of-week="1" @input="onEndDateSelected"></v-date-picker>
-                </v-menu>
-            </v-layout>
         </v-layout>
     `,
     components: {TableFilterBase}
@@ -65,6 +55,7 @@ export class TradesTableFilter extends UI {
 
     /** Операции загружаемые по умполчанию */
     static readonly DEFAULT_OPERATIONS = [Operation.BUY, Operation.DIVIDEND, Operation.SELL, Operation.INCOME, Operation.COUPON, Operation.LOSS, Operation.AMORTIZATION];
+
     /** Фильтр */
     @Prop({required: true, type: Object})
     private filter: TradesFilter;
@@ -77,20 +68,18 @@ export class TradesTableFilter extends UI {
     private listTypes = [TradeListType.FULL, TradeListType.STOCK, TradeListType.BOND, TradeListType.MONEY];
     /** Список операций */
     private operations: Operation[] = TradesTableFilter.DEFAULT_OPERATIONS;
-    private startDateMenuValue = false;
-    private endDateMenuValue = false;
 
-    private onStartDateSelected(date: string): void {
+    private onChange(): void {
+        this.emitFilterChange();
+    }
+
+    private onStartDateChanged(date: string): void {
         this.filter.start = date;
         this.emitFilterChange();
     }
 
-    private onEndDateSelected(date: string): void {
+    private onEndDateChanged(date: string): void {
         this.filter.end = date;
-        this.emitFilterChange();
-    }
-
-    private onChange(): void {
         this.emitFilterChange();
     }
 

@@ -41,10 +41,9 @@ const MainStore = namespace(StoreType.MAIN);
                         <v-list-tile-title @click="exportTable(ExportType.TRADES)">Экспорт в xlsx</v-list-tile-title>
                         <v-list-tile-title :disabled="isDownloadNotAllowed()" @click="downloadFile">Экспорт в csv</v-list-tile-title>
                     </template>
-                    <v-layout>
+                    <v-layout justify-space-between wrap class="trades-filter-section">
                         <trades-table-filter v-if="tradesFilter" :store-key="StoreKeys.TRADES_FILTER_SETTINGS_KEY" @filter="onFilterChange" :filter="tradesFilter"
                                             :is-default="isDefaultFilter"></trades-table-filter>
-                        <v-spacer></v-spacer>
                         <additional-pagination :pagination="pagination" @update:pagination="onTablePaginationChange"></additional-pagination>
                     </v-layout>
                     <empty-search-result v-if="isEmptySearchResult" @resetFilter="resetFilter"></empty-search-result>
