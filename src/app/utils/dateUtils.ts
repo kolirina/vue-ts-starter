@@ -127,6 +127,15 @@ export class DateUtils {
     static getMonthDate(date: string): number {
         return dayjs(date).month();
     }
+
+    /**
+     * Возвращает месяц даты
+     * @param {date} дата
+     * @return {string} месяц даты в формате строки
+     */
+    static getNameMonthDate(date: string): string {
+        return dayjs(date).format("MMMM");
+    }
 }
 
 /**

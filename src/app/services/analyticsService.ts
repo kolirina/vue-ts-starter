@@ -17,6 +17,7 @@
 import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {Http} from "../platform/services/http";
+import {DepositRate, Inflation, YieldCompareData} from "../types/charts/types";
 
 @Service("AnalyticsService")
 @Singleton
@@ -46,34 +47,4 @@ export class AnalyticsService {
     async getInflationForLastSixMonths(): Promise<Inflation[]> {
         return this.http.get<Inflation[]>("/analytics/inflation");
     }
-}
-
-/** Информация по доходностям */
-export interface YieldCompareData {
-    /** Среднегодовая доходность портфеля */
-    portfolioYearYield: string;
-    /** Среднегодовая доходность индекса МосБиржи */
-    micexYearYield: string;
-    /** Среднегодовая доходность депозита */
-    depositYearYield: string;
-    /** Среднегодовая инляция */
-    inflationYearYield: string;
-}
-
-/** Сущность ставки по депоизиту */
-export interface DepositRate {
-    /** Дата */
-    date: string;
-    /** Ставка */
-    value: string;
-}
-
-/** Сущность записи по инфляции */
-export interface Inflation {
-    /** Дата */
-    date: string;
-    /** Значение */
-    value: string;
-    /** Тип (0 - в годовом выражении, 1 - помесячная) */
-    type: string;
 }

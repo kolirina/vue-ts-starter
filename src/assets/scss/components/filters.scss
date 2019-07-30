@@ -33,7 +33,7 @@
 
   &__button {
     width: 122px;
-    height: 36px;
+    height: 40px !important;
     border: 1px solid #caced5 !important;
     border-radius: 30px !important;
     background-color: #fff !important;
@@ -58,38 +58,40 @@
     }
   }
 
-  .v-icon {
-    margin-left: 20px;
-    align-items: center!important;
-    height: 38px;
-    line-height: 38px;
-    cursor: pointer;
-  }
-
-  .v-text-field {
-
-    .v-input {
-
-      &__slot {
-        height: auto;
-        background: none;
-        align-items: center;
-
-        &:before,
-        &:after {content: none !important}
-
-        .v-label {
-          font-size: 14px;
-          left: 8px !important;
-        }
-      }
-
-      &__prepend-outer {margin: 0 !important;}
+  .search-section {
+    .v-icon {
+      margin-left: 20px;
+      align-items: center!important;
+      height: 38px;
+      line-height: 38px;
+      cursor: pointer;
     }
-
-    input {
-      padding: 0 8px !important;
-      height: auto;
+  
+    .v-text-field {
+  
+      .v-input {
+  
+        &__slot {
+          height: auto;
+          background: none;
+          align-items: center;
+  
+          &:before,
+          &:after {content: none !important}
+  
+          .v-label {
+            font-size: 14px;
+            left: 8px !important;
+          }
+        }
+  
+        &__prepend-outer {margin: 0 !important;}
+      }
+  
+      input {
+        padding: 0 8px !important;
+        height: auto;
+      }
     }
   }
 
@@ -105,6 +107,48 @@
   }
 }
 
+.trades-filter-section {
+  .up-pagination {
+    flex: 0.2 1 auto;
+    @media screen and (max-width: 1157px) {
+      flex: 1 1 auto;
+    }
+  }
+}
+
+.section-with-pickers {
+  width: 100%;
+  .picker-section {
+    flex: initial;
+    .input {
+      .v-input__slot {
+        background: initial !important;
+        height: 40px;
+        label {
+          left: 0px !important;
+        }
+        input {
+          padding-left: 0px !important;
+        }
+        .v-input__append-inner {
+          margin-top: 4px !important;
+        }
+      }
+    }
+  }
+  @media screen and (max-width: 1000px) {
+    flex-direction: column;
+    align-items: initial;
+    .picker-section {
+      margin-top: 16px;
+    }
+    .search-section {
+      .v-icon {
+        margin-left: 0px;
+      }
+    }
+  }
+}
 
 .portfolio-rows-filter__settings {
   padding: 24px 20px;

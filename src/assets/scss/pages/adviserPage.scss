@@ -1,20 +1,58 @@
-.info-about-portfolio {
-    border-left: 3px solid #3B6EC9;
-    border-radius: 4px 0px 0px 4px;
-    background: #F7F9FB;
-}
-.non-sovet-block {
-    max-width: 460px;
-}
-.choose-risk-wrap {
-    .v-input__control {
-        width: 100%;
+.adviser-wrap {
+    .info-about-portfolio {
+        border-left: 3px solid #3B6EC9;
+        border-radius: 4px 0px 0px 4px;
+        background: #F7F9FB;
     }
-}
-.advice-item{
-    background: #F7F9FB;
-    border-radius: 6px;
-    &__header {
-        cursor: pointer;
+    .empty-advice-block {
+        max-width: 460px;
+    }
+    .choose-risk-wrap {
+        .v-input__control {
+            width: 100%;
+        }
+    }
+    .advice-item{
+        background: #F7F9FB;
+        border-radius: 6px;
+        &__header {
+            cursor: pointer;
+        }
+    }
+    .adviser-diagram-section {
+        background: #ffffff;
+        padding: 0px 26px 30px;
+        .item-header {
+            padding: 0px 10px 10px;
+            i {
+                font-size: 12px !important;
+            }
+        }
+        .left-section {
+            .flex {
+                background: #F7F9FB;
+                border-radius: 8px;
+            }
+        }
+        .right-section {
+            .flex {
+                background: #F7F9FB;
+                border-radius: 8px;
+            }
+        }
+        @media (max-width: 1263px){
+            .left-section {
+                padding-right: 0px !important;
+            }
+            .right-section {
+                padding-left: 0px !important;
+            }
+        }
+        .highcharts-axis-labels {
+            text-transform: capitalize;
+        }
+    }
+    .v-expansion-panel__header {
+        padding-right: 0px !important;
     }
 }

@@ -11,7 +11,7 @@ import {UI} from "../../app/ui";
             </v-layout>
             <v-layout justify-center align-center column class="py-5">
                 <img src="./img/adviser/goodPortfolio.svg" alt="pic">
-                <div class="alignC mt-3 fs12-non-opacity non-sovet-block">
+                <div class="alignC mt-3 fs12-non-opacity empty-advice-block">
                     Советов для вас нет, а это значит вы хорошо справляетесь с портфелем. Отличная работа!
                 </div>
             </v-layout>

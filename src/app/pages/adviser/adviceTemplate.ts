@@ -15,15 +15,6 @@ import {Advice} from "../../services/adviceService";
                     <div class="fs13">
                         {{ advice.description }}
                     </div>
-                    <div v-if="advice.decisionTitle" class="fs13 mt-3">
-                        {{ advice.decisionTitle }}
-                    </div>
-                    <div :class="!advice.decisionTitle ? 'mt-3' : 'mt-1'">
-                        <div v-for="decision in advice.decisions" class="fs14">
-                            <v-icon>done</v-icon>
-                            Решение: {{ decision }}
-                        </div>
-                    </div>
                 </div>
             </v-expand-transition>
         </v-layout>
