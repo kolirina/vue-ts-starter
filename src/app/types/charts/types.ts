@@ -17,7 +17,6 @@ export type ChartPoint = {
     y: number
 };
 
-/** Сущность графиков на странице советчика */
 export type RequestDataAdviserLineChart = {
     /** Дата */
     date: string,
