@@ -12,7 +12,6 @@ import {AnalyticsService} from "../../services/analyticsService";
 import {ClientInfo, ClientService} from "../../services/clientService";
 import {AdviserLineChart, YieldCompareData} from "../../types/charts/types";
 import {EventType} from "../../types/eventType";
-import {StoreKeys} from "../../types/storeKeys";
 import {Portfolio, RiskType} from "../../types/types";
 import {ChartUtils} from "../../utils/chartUtils";
 import {MutationType} from "../../vuex/mutationType";
@@ -27,76 +26,66 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-container>
-            <v-card flat class="header-first-card">
-                <v-card-title @click="toggleAnalyticsBlock" class="header-first-card__wrapper-title">
-                    <v-layout justify-space-between align-center class="pointer-cursor pr-3">
-                        <div class="section-title header-first-card__title-text">Аналитика</div>
-                        <v-icon :class="['', isShowAnalytics ? 'rotate-icons' : '']" >keyboard_arrow_right</v-icon>
-                    </v-layout>
-                </v-card-title>
-            </v-card>
-            <v-card v-if="tradesCount && isShowAnalytics" flat class="pa-0">
-                <choose-risk v-if="!activePreloader && !isAnalys" @setRiskLevel="setRiskLevel"
-                             @analysisPortfolio="analysisPortfolio" :currentRiskLevel="currentRiskLevel"></choose-risk>
-                <preloader v-if="activePreloader"></preloader>
-                <analysis-result v-if="!activePreloader && isAnalys && advicesUnicCode.length !== 0"
-                                 @goToChooseRiskType="goToChooseRiskType" :advicesUnicCode="advicesUnicCode"></analysis-result>
-                <empty-advice v-if="!activePreloader && isAnalys && advicesUnicCode.length === 0" @goToChooseRiskType="goToChooseRiskType"></empty-advice>
-            </v-card>
-            <v-card v-if="!tradesCount && isShowAnalytics" flat class="py-5">
-                <div class="alignC fs16">
-                    В вашем портфеле не обнаружено сделок для анализа
-                </div>
-            </v-card>
-            <v-card flat class="header-first-card margT30">
-                <v-card-title @click="toggleDiagramsBlock" class="header-first-card__wrapper-title pb-2">
-                    <v-layout justify-space-between align-center class="pointer-cursor pr-3">
-                        <div class="section-title header-first-card__title-text">Аналитическая сводка по портфелю</div>
-                        <v-icon :class="['', isDiagramsBlockShow ? 'rotate-icons' : '']" >keyboard_arrow_right</v-icon>
-                    </v-layout>
-                </v-card-title>
-            </v-card>
-            <v-layout v-if="isDiagramsBlockShow" wrap class="adviser-diagram-section mt-3">
-                <v-flex xs12 sm12 md12 lg6 class="pr-2 left-section">
-                    <v-flex v-if="yieldCompareData" class="margT30 pa-2">
-                        <v-layout class="item-header">
-                            <span class="fs13">Сравнение среднегодовой доходности</span>
-                        </v-layout>
-                        <average-annual-yield-chart :data="yieldCompareData"></average-annual-yield-chart>
+        <v-container class="adviser-wrap">
+            <expanded-panel :value="$uistate.adviserDiagramPanel" :withMenu="false" :state="$uistate.ADVISER_DIAGRAM_PANEL">
+                <template #header>Аналитика</template>
+                <v-card v-if="hasTrades" flat class="pa-0">
+                    <choose-risk v-if="!activePreloader && !isAnalys" @setRiskLevel="setRiskLevel"
+                                @analysisPortfolio="analysisPortfolio" :currentRiskLevel="currentRiskLevel"></choose-risk>
+                    <preloader v-if="activePreloader"></preloader>
+                    <analysis-result v-if="!activePreloader && isAnalys && advicesUnicCode.length !== 0"
+                                    @goToChooseRiskType="goToChooseRiskType" :advicesUnicCode="advicesUnicCode"></analysis-result>
+                    <empty-advice v-if="!activePreloader && isAnalys && advicesUnicCode.length === 0" @goToChooseRiskType="goToChooseRiskType"></empty-advice>
+                </v-card>
+                <v-card v-if="!hasTrades" flat class="py-5">
+                    <div class="alignC fs16">
+                        В вашем портфеле не обнаружено сделок для анализа
+                    </div>
+                </v-card>
+            </expanded-panel>
+            <expanded-panel :value="$uistate.adviserDiagramPanel" :withMenu="false" :state="$uistate.ADVISER_DIAGRAM_PANEL">
+                <template #header>Аналитическая сводка по портфелю</template>
+                <v-layout wrap class="adviser-diagram-section mt-3">
+                    <v-flex xs12 sm12 md12 lg6 class="pr-2 left-section">
+                        <v-flex v-if="yieldCompareData" class="margT30 pa-2">
+                            <v-layout class="item-header">
+                                <span class="fs13">Сравнение среднегодовой доходности</span>
+                            </v-layout>
+                            <average-annual-yield-chart :data="yieldCompareData"></average-annual-yield-chart>
+                        </v-flex>
                     </v-flex>
-                </v-flex>
-                <v-flex xs12 sm12 md12 lg6 class="pl-2 right-section">
-                    <v-flex v-if="monthlyInflationData" class="margT30 pa-2">
-                        <v-layout class="item-header" align-center>
-                            <span class="fs13">Инфляция по месяцам</span>
-                            <v-tooltip content-class="custom-tooltip-wrap" bottom>
-                                <template #activator="{ on }">
-                                    <v-icon v-on="on" class="ml-2">far fa-question-circle</v-icon>
-                                </template>
-                                <span>
-                                    Официальная инфляция по данным открытых источников.
-                                </span>
-                            </v-tooltip>
-                        </v-layout>
-                        <simple-line-chart :data="monthlyInflationData" :tooltip="'Инфляция за'"></simple-line-chart>
+                    <v-flex xs12 sm12 md12 lg6 class="pl-2 right-section">
+                        <v-flex v-if="monthlyInflationData" class="margT30 pa-2">
+                            <v-layout class="item-header" align-center>
+                                <span class="fs13">Инфляция по месяцам</span>
+                                <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                                    <template #activator="{ on }">
+                                        <v-icon v-on="on" class="ml-2">far fa-question-circle</v-icon>
+                                    </template>
+                                    <span>
+                                        Официальная инфляция по данным открытых источников.
+                                    </span>
+                                </v-tooltip>
+                            </v-layout>
+                            <simple-line-chart :data="monthlyInflationData" :tooltip="'Инфляция за'"></simple-line-chart>
+                        </v-flex>
+                        <v-flex v-if="depositeRatesData" class="mt-3 pa-2">
+                            <v-layout class="item-header">
+                                <span class="fs13">Ставки по депозитам</span>
+                                <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                                    <template #activator="{ on }">
+                                        <v-icon v-on="on" class="ml-2">far fa-question-circle</v-icon>
+                                    </template>
+                                    <span>
+                                        Информация по ставкам депозитов официальная с ЦБР.
+                                    </span>
+                                </v-tooltip>
+                            </v-layout>
+                            <simple-line-chart :data="depositeRatesData" :tooltip="'Ставка по депозитам за'"></simple-line-chart>
+                        </v-flex>
                     </v-flex>
-                    <v-flex v-if="depositeRatesData" class="mt-3 pa-2">
-                        <v-layout class="item-header">
-                            <span class="fs13">Ставки по депозитам</span>
-                            <v-tooltip content-class="custom-tooltip-wrap" bottom>
-                                <template #activator="{ on }">
-                                    <v-icon v-on="on" class="ml-2">far fa-question-circle</v-icon>
-                                </template>
-                                <span>
-                                    Информация по ставкам депозитов официальная с ЦБР.
-                                </span>
-                            </v-tooltip>
-                        </v-layout>
-                        <simple-line-chart :data="depositeRatesData" :tooltip="'Ставка по депозитам за'"></simple-line-chart>
-                    </v-flex>
-                </v-flex>
-            </v-layout>
+                </v-layout>
+            </expanded-panel>
         </v-container>
     `,
     components: {ChooseRisk, Preloader, AnalysisResult, EmptyAdvice, AverageAnnualYieldChart, SimpleLineChart}
@@ -126,10 +115,6 @@ export class AdviserPage extends UI {
 
     private advicesUnicCode: AdviceUnicCode[] = [];
 
-    private isShowAnalytics: boolean = true;
-
-    private isDiagramsBlockShow: boolean = true;
-
     private yieldCompareData: YieldCompareData = null;
 
     private monthlyInflationData: AdviserLineChart = null;
@@ -137,21 +122,13 @@ export class AdviserPage extends UI {
     private depositeRatesData: AdviserLineChart = null;
 
     async created(): Promise<void> {
-        this.isShowAnalytics = this.localStorage.get(StoreKeys.ANALYTICS_STATE_KEY, true);
-        this.isDiagramsBlockShow = this.localStorage.get(StoreKeys.DIAGRAM_BLOCK_STATE_KEY, true);
         if (this.clientInfo.user.riskLevel) {
             this.currentRiskLevel = this.clientInfo.user.riskLevel.toLowerCase();
             await this.analysisPortfolio();
         } else {
             this.currentRiskLevel = RiskType.LOW.code;
         }
-        const diagramData = {
-            monthlyInflationData: await this.analyticsService.getInflationForLastSixMonths(),
-            depositeRatesData: await this.analyticsService.getRatesForLastSixMonths()
-        };
-        this.getYieldCompareData();
-        this.monthlyInflationData = ChartUtils.convertInflationData(diagramData.monthlyInflationData);
-        this.depositeRatesData = ChartUtils.convertRatesData(diagramData.depositeRatesData);
+        await this.getDiagramData();
         UI.on(EventType.TRADE_CREATED, async () => await this.analysisPortfolio());
         UI.on(EventType.TRADE_UPDATED, async () => await this.analysisPortfolio());
     }
@@ -166,12 +143,13 @@ export class AdviserPage extends UI {
         if (this.isAnalys) {
             await this.analysisPortfolio();
         }
-        this.getYieldCompareData();
+        await this.getDiagramData();
     }
 
-    private async getYieldCompareData(): Promise<void> {
-        const result = await this.analyticsService.getComparedYields(this.portfolio.id.toString());
-        this.yieldCompareData = result;
+    private async getDiagramData(): Promise<void> {
+        this.yieldCompareData = await this.analyticsService.getComparedYields(this.portfolio.id.toString());
+        this.monthlyInflationData = ChartUtils.convertInflationData(await this.analyticsService.getInflationForLastSixMonths());
+        this.depositeRatesData = ChartUtils.convertRatesData(await this.analyticsService.getRatesForLastSixMonths());
     }
 
     private async analysisPortfolio(): Promise<void> {
@@ -204,17 +182,7 @@ export class AdviserPage extends UI {
         this.currentRiskLevel = this.clientInfo.user.riskLevel.toLowerCase() || RiskType.LOW.code;
     }
 
-    private get tradesCount(): boolean {
+    private get hasTrades(): boolean {
         return this.portfolio.overview.totalTradesCount > 0;
-    }
-
-    private toggleAnalyticsBlock(): void {
-        this.isShowAnalytics = !this.isShowAnalytics;
-        this.localStorage.set(StoreKeys.ANALYTICS_STATE_KEY, this.isShowAnalytics);
-    }
-
-    private toggleDiagramsBlock(): void {
-        this.isDiagramsBlockShow = !this.isDiagramsBlockShow;
-        this.localStorage.set(StoreKeys.DIAGRAM_BLOCK_STATE_KEY, this.isDiagramsBlockShow);
     }
 }

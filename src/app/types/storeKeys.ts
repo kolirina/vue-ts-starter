@@ -22,9 +22,5 @@ export enum StoreKeys {
     /** Ключ с датой последнего обновления данных хранящихся в localStorage */
     LOCAL_STORAGE_LAST_UPDATE_DATE_KEY = "local_storage_last_update_date",
     /** Ключ под которым хранится признак развернутого меню */
-    MENU_STATE_KEY = "MENU_STATE",
-    /** Ключ под которым хранится признак развернутого блока аналитики на странице советчика */
-    ANALYTICS_STATE_KEY = "ANALYTICS_STATE",
-    /** Ключ под которым хранится признак развернутого блока с графиками на странице советчика */
-    DIAGRAM_BLOCK_STATE_KEY = "DIAGRAM_BLOCK_STATE",
+    MENU_STATE_KEY = "MENU_STATE"
 }

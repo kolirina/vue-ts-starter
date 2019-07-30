@@ -23,6 +23,8 @@ export class UiStateHelper {
     static readonly LAST_UPDATE_NOTIFICATION = "last_update_notification";
     static readonly TRADES_FILTER = "trades_filter";
     static readonly IMPORT_SETTINGS = "import_settings";
+    static readonly ADVISER_ANALYTICS_PANEL = "adviser_analytics_panel";
+    static readonly ADVISER_DIAGRAM_PANEL = "adviser_diagram_panel";
 
     static set stocksTablePanel(value: number[]) {
         localStorage.set(UiStateHelper.STOCKS, value);
@@ -62,6 +64,22 @@ export class UiStateHelper {
 
     static get sumYearDivsTablePanel(): number[] {
         return [localStorage.get(UiStateHelper.SUM_YEAR_DIVIDENDS, 0)];
+    }
+
+    static set adviserDiagramPanel(value: number[]) {
+        localStorage.set(UiStateHelper.ADVISER_DIAGRAM_PANEL, value);
+    }
+
+    static get adviserDiagramPanel(): number[] {
+        return [localStorage.get(UiStateHelper.ADVISER_DIAGRAM_PANEL, 0)];
+    }
+
+    static set adviserAnalyticsPanel(value: number[]) {
+        localStorage.set(UiStateHelper.ADVISER_ANALYTICS_PANEL, value);
+    }
+
+    static get adviserAnalyticsPanel(): number[] {
+        return [localStorage.get(UiStateHelper.ADVISER_ANALYTICS_PANEL, 0)];
     }
 
     static set sumDivsTablePanel(value: number[]) {
