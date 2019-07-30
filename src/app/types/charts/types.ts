@@ -17,22 +17,12 @@ export type ChartPoint = {
     y: number
 };
 
-/** Сущность ставки по депоизиту */
-export type DepositRate = {
-    /** Дата */
-    date: string,
-    /** Ставка */
-    value: string,
-};
-
-/** Сущность записи по инфляции */
-export type Inflation = {
+/** Сущность графиков на странице советчика */
+export type RequestDataAdviserLineChart = {
     /** Дата */
     date: string,
     /** Значение */
     value: string,
-    /** Тип (0 - в годовом выражении, 1 - помесячная) */
-    type: string
 };
 
 export type BaseChartDot = {

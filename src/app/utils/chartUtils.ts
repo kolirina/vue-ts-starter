@@ -4,7 +4,7 @@ import Highcharts, {AreaChart, ChartObject, DataPoint, Gradient, IndividualSerie
 import Highstock from "highcharts/highstock";
 import {Filters} from "../platform/filters/Filters";
 import {BigMoney} from "../types/bigMoney";
-import {AdviserLineChart, DepositRate, Inflation} from "../types/charts/types";
+import {AdviserLineChart, RequestDataAdviserLineChart} from "../types/charts/types";
 import {
     BasePriceDot,
     ColumnChartData,
@@ -204,33 +204,17 @@ export class ChartUtils {
         threshold: null
     };
 
-    static convertInflationData(data: Inflation[]): AdviserLineChart {
+    static convertDiagramData(data: RequestDataAdviserLineChart[]): AdviserLineChart {
         const result: AdviserLineChart = {
             categoryNames: [],
             values: []
         };
-        data.forEach((item: Inflation) => {
-            result.categoryNames.push(DateUtils.getNameMonthDate(item.date));
+        data.forEach((item: RequestDataAdviserLineChart) => {
+            const month = DateUtils.getNameMonthDate(item.date);
+            result.categoryNames.push(month);
             result.values.push(
                 {
-                    name: DateUtils.getNameMonthDate(item.date),
-                    y: Number(item.value)
-                }
-            );
-        });
-        return result;
-    }
-
-    static convertRatesData(data: DepositRate[]): AdviserLineChart {
-        const result: AdviserLineChart = {
-            categoryNames: [],
-            values: []
-        };
-        data.forEach((item: DepositRate) => {
-            result.categoryNames.push(DateUtils.getNameMonthDate(item.date));
-            result.values.push(
-                {
-                    name: DateUtils.getNameMonthDate(item.date),
+                    name: month,
                     y: Number(item.value)
                 }
             );

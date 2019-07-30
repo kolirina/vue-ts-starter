@@ -148,8 +148,8 @@ export class AdviserPage extends UI {
 
     private async loadDiagramData(): Promise<void> {
         this.yieldCompareData = await this.analyticsService.getComparedYields(this.portfolio.id.toString());
-        this.monthlyInflationData = ChartUtils.convertInflationData(await this.analyticsService.getInflationForLastSixMonths());
-        this.depositeRatesData = ChartUtils.convertRatesData(await this.analyticsService.getRatesForLastSixMonths());
+        this.monthlyInflationData = ChartUtils.convertDiagramData(await this.analyticsService.getInflationForLastSixMonths());
+        this.depositeRatesData = ChartUtils.convertDiagramData(await this.analyticsService.getRatesForLastSixMonths());
     }
 
     private async analysisPortfolio(): Promise<void> {
