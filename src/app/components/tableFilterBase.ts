@@ -34,16 +34,16 @@ import {Prop, UI} from "../app/ui";
                 </v-card>
             </v-menu>
             <v-layout v-if="isDateFilterShow" class="picker-section">
-                <v-menu :close-on-content-click="true" v-model="startMenuValue"
+                <v-menu :close-on-content-click="false" v-model="startMenuValue"
                         lazy transition="scale-transition" offset-y full-width min-width="290px">
-                    <v-text-field slot="activator" v-model="start" label="Начальная дата" readonly class="mr-3" clearable
+                    <v-text-field slot="activator" v-model="start" label="Начальная дата" readonly class="mr-3 input" clearable
                                   @click:clear="startChanged('')"></v-text-field>
                     <v-date-picker v-model="start" :no-title="true" locale="ru" :first-day-of-week="1" @input="startChanged"></v-date-picker>
                 </v-menu>
-                <v-menu :close-on-content-click="true" v-model="endMenuValue"
+                <v-menu :close-on-content-click="false" v-model="endMenuValue"
                         lazy transition="scale-transition" offset-y full-width min-width="290px">
                     <v-text-field slot="activator" v-model="end" label="Конечная дата" readonly clearable
-                                  @click:clear="endChanged('')"></v-text-field>
+                                  @click:clear="endChanged('')" class="input"></v-text-field>
                     <v-date-picker v-model="end" :no-title="true" locale="ru" :first-day-of-week="1" @input="endChanged"></v-date-picker>
                 </v-menu>
             </v-layout>
@@ -110,11 +110,13 @@ export class TableFilterBase extends UI {
 
     private startChanged(date: string): void {
         this.start = date;
+        this.startMenuValue = false;
         this.$emit("startDateChanged", this.start);
     }
 
     private endChanged(date: string): void {
         this.end = date;
+        this.endMenuValue = false;
         this.$emit("endDateChanged", this.end);
     }
 
