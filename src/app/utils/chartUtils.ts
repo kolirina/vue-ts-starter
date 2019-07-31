@@ -5,7 +5,7 @@ import Highcharts, {AreaChart, ChartObject, DataPoint, Gradient, IndividualSerie
 import Highstock from "highcharts/highstock";
 import {Filters} from "../platform/filters/Filters";
 import {BigMoney} from "../types/bigMoney";
-import {SimpleChartData, AnalyticsChartPoint} from "../types/charts/types";
+import {AnalyticsChartPoint, SimpleChartData} from "../types/charts/types";
 import {
     BasePriceDot,
     ColumnChartData,
