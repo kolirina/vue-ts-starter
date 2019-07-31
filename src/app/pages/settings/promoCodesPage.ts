@@ -19,7 +19,7 @@ const MainStore = namespace(StoreType.MAIN);
                 <v-flex>
                     <v-card flat class="header-first-card">
                         <v-card-title class="header-first-card__wrapper-title">
-                            <div class="section-title header-first-card__title-text">Промокоды</div>
+                            <div class="section-title header-first-card__title-text">Партнерская программа</div>
                         </v-card-title>
                     </v-card>
                     <v-card class="overflowXA" flat>
