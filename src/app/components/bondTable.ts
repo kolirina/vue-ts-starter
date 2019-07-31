@@ -355,7 +355,7 @@ export class BondTable extends UI {
     }
 
     private async deleteAllTrades(bondRow: BondPortfolioRow): Promise<void> {
-        const result = await new ConfirmDialog().show(`Вы уверены, что хотите удалить все сделки по ценной бумаге ${bondRow.bond.ticker}?`);
+        const result = await new ConfirmDialog().show(`Вы уверены, что хотите удалить все сделки по ценной бумаге ${bondRow.bond.ticker} (${bondRow.quantity} шт.)?`);
         if (result === BtnReturn.YES) {
             await this.deleteAllTradesAndReloadData(bondRow);
         }
