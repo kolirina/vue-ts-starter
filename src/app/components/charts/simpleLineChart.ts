@@ -2,7 +2,7 @@ import Highcharts, {ChartObject} from "highcharts";
 import Component from "vue-class-component";
 import {Prop, Watch} from "vue-property-decorator";
 import {UI} from "../../app/ui";
-import {AdviserLineChart} from "../../types/charts/types";
+import {SimpleChartData} from "../../types/charts/types";
 
 @Component({
     // language=Vue
@@ -32,7 +32,7 @@ export class SimpleLineChart extends UI {
     private title: string;
 
     @Prop({required: true})
-    private data: AdviserLineChart;
+    private data: SimpleChartData;
 
     @Prop({required: true})
     private tooltip: string;
