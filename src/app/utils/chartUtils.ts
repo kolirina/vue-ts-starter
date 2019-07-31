@@ -5,7 +5,7 @@ import Highcharts, {AreaChart, ChartObject, DataPoint, Gradient, IndividualSerie
 import Highstock from "highcharts/highstock";
 import {Filters} from "../platform/filters/Filters";
 import {BigMoney} from "../types/bigMoney";
-import {AdviserLineChart, RequestDataAdviserLineChart} from "../types/charts/types";
+import {SimpleChartData, AnalyticsChartPoint} from "../types/charts/types";
 import {
     BasePriceDot,
     ColumnChartData,
@@ -205,12 +205,12 @@ export class ChartUtils {
         threshold: null
     };
 
-    static convertDiagramData(data: RequestDataAdviserLineChart[]): AdviserLineChart {
-        const result: AdviserLineChart = {
+    static convertDiagramData(data: AnalyticsChartPoint[]): SimpleChartData {
+        const result: SimpleChartData = {
             categoryNames: [],
             values: []
         };
-        data.forEach((item: RequestDataAdviserLineChart) => {
+        data.forEach((item: AnalyticsChartPoint) => {
             const month = DateUtils.getNameMonthDate(item.date);
             result.categoryNames.push(month);
             result.values.push(

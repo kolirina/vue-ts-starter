@@ -10,7 +10,7 @@ import {Storage} from "../../platform/services/storage";
 import {AdviceService, AdviceUnicCode} from "../../services/adviceService";
 import {AnalyticsService} from "../../services/analyticsService";
 import {ClientInfo, ClientService} from "../../services/clientService";
-import {AdviserLineChart, YieldCompareData} from "../../types/charts/types";
+import {SimpleChartData, YieldCompareData} from "../../types/charts/types";
 import {EventType} from "../../types/eventType";
 import {Portfolio, RiskType} from "../../types/types";
 import {ChartUtils} from "../../utils/chartUtils";
@@ -117,9 +117,9 @@ export class AdviserPage extends UI {
 
     private yieldCompareData: YieldCompareData = null;
 
-    private monthlyInflationData: AdviserLineChart = null;
+    private monthlyInflationData: SimpleChartData = null;
 
-    private depositeRatesData: AdviserLineChart = null;
+    private depositeRatesData: SimpleChartData = null;
 
     async created(): Promise<void> {
         if (this.clientInfo.user.riskLevel) {
