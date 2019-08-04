@@ -226,6 +226,8 @@ export interface TradesFilter {
     showMoneyTrades?: boolean;
     showLinkedMoneyTrades?: boolean;
     search?: string;
+    start?: string;
+    end?: string;
 }
 
 export interface TradesFilterRequest {
@@ -234,6 +236,8 @@ export interface TradesFilterRequest {
     showMoneyTrades?: boolean;
     showLinkedMoneyTrades?: boolean;
     search?: string;
+    start?: string;
+    end?: string;
 }
 
 /** Сущность запроса количества бумаг и начисления в портфеле для опереденного актива на дату */

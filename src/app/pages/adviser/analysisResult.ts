@@ -18,9 +18,14 @@ import {AdviceTemplate} from "./adviceTemplate";
             <div class="fs12-non-opacity info-about-portfolio pa-3 mt-4">
                 Небольшое количество советов, означает что ваш портфель близок к оптимальному и вы выбрали хорошую стратегию инвестирования.
             </div>
-            <v-layout column>
-                <advice-template v-for="advice in advices" :key="advice.problem" :advice="advice"></advice-template>
-            </v-layout>
+            <div>
+                <v-layout column>
+                    <div class="fs12-non-opacity margT30">
+                        Анализ Intelinvest
+                    </div>
+                    <advice-template v-for="advice in advices" :key="advice.problem" :advice="advice"></advice-template>
+                </v-layout>
+            </div>
         </v-layout>
     `,
     components: {AdviceTemplate}
