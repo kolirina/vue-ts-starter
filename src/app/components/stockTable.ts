@@ -326,7 +326,7 @@ export class StockTable extends UI {
     }
 
     private async deleteAllTrades(stockRow: StockPortfolioRow): Promise<void> {
-        const result = await new ConfirmDialog().show(`Вы уверены, что хотите удалить все сделки по ценной бумаге ${stockRow.stock.ticker}?`);
+        const result = await new ConfirmDialog().show(`Вы уверены, что хотите удалить все сделки по ценной бумаге ${stockRow.stock.ticker} (${stockRow.quantity} шт.)?`);
         if (result === BtnReturn.YES) {
             await this.deleteAllTradesAndReloadData(stockRow);
         }

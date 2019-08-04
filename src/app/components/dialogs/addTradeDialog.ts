@@ -103,7 +103,8 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                             <!-- Цена -->
                             <v-flex v-if="shareAssetType" xs12 sm6>
                                 <ii-number-field :label="priceLabel" v-model="price" class="required" name="price" v-validate="'required|min_value:0.000001'"
-                                                 :error-messages="errors.collect('price')" @keyup="calculateFee">
+                                                 :error-messages="errors.collect('price')" @keyup="calculateFee" persistent-hint
+                                                 :hint="bondTrade ? 'Указывается в процентах, например, 101.59' : ''">
                                 </ii-number-field>
                             </v-flex>
 

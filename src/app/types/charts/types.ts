@@ -1,15 +1,42 @@
 import {Enum, EnumType, IStaticEnum} from "../../platform/enum";
 
+export interface YieldCompareData {
+    depositYearYield: string;
+    inflationYearYield: string;
+    micexYearYield: string;
+    portfolioYearYield: string;
+}
+
+export interface SimpleChartData {
+    categoryNames: string[];
+    values: ChartPoint[];
+}
+
+export interface ChartPoint {
+    name: string;
+    y: number;
+}
+
+/** TODO заменить на BaseChartDot */
+export interface AnalyticsChartPoint {
+    /** Дата */
+    date: string;
+    /** Значение */
+    value: string;
+}
+
 export type BaseChartDot = {
     /** Дата точки графика */
     date: string,
     /** Сумма */
     amount: string
 };
+
 export type BasePriceDot = {
     date: string,
     price: string
 };
+
 export type Dot = [number, number];
 
 export type LineChartItem = BaseChartDot & {
