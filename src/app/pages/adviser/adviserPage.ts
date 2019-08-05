@@ -14,6 +14,7 @@ import {SimpleChartData, YieldCompareData} from "../../types/charts/types";
 import {EventType} from "../../types/eventType";
 import {Portfolio, RiskType} from "../../types/types";
 import {ChartUtils} from "../../utils/chartUtils";
+import {DateFormat, DateUtils} from "../../utils/dateUtils";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 import {AnalysisResult} from "./analysisResult";
@@ -31,10 +32,10 @@ const MainStore = namespace(StoreType.MAIN);
                 <template #header>Аналитика</template>
                 <v-card v-if="hasTrades" flat class="pa-0">
                     <choose-risk v-if="!activePreloader && !isAnalys" @setRiskLevel="setRiskLevel"
-                                @analysisPortfolio="analysisPortfolio" :currentRiskLevel="currentRiskLevel"></choose-risk>
+                                 @analysisPortfolio="analysisPortfolio" :currentRiskLevel="currentRiskLevel"></choose-risk>
                     <preloader v-if="activePreloader"></preloader>
                     <analysis-result v-if="!activePreloader && isAnalys && advicesUnicCode.length !== 0"
-                                    @goToChooseRiskType="goToChooseRiskType" :advicesUnicCode="advicesUnicCode"></analysis-result>
+                                     @goToChooseRiskType="goToChooseRiskType" :advicesUnicCode="advicesUnicCode"></analysis-result>
                     <empty-advice v-if="!activePreloader && isAnalys && advicesUnicCode.length === 0" @goToChooseRiskType="goToChooseRiskType"></empty-advice>
                 </v-card>
                 <v-card v-if="!hasTrades" flat class="py-5">
@@ -149,7 +150,17 @@ export class AdviserPage extends UI {
     private async loadDiagramData(): Promise<void> {
         this.yieldCompareData = await this.analyticsService.getComparedYields(this.portfolio.id.toString());
         this.monthlyInflationData = ChartUtils.convertDiagramData(await this.analyticsService.getInflationForLastSixMonths());
-        this.depositeRatesData = ChartUtils.convertDiagramData(await this.analyticsService.getRatesForLastSixMonths());
+        // TODO удалить после выкатки исправления дат на прод
+        const data = await this.analyticsService.getRatesForLastSixMonths();
+        data.forEach(item => {
+            const timeZoneIndex = item.date.indexOf("T");
+            if (timeZoneIndex !== -1) {
+                const date = DateUtils.parseDate(item.date.substring(0, timeZoneIndex));
+                item.date = DateUtils.formatDate(date.add(1, "day"), DateFormat.DATE2);
+            }
+        });
+        this.depositeRatesData = ChartUtils.convertDiagramData(data);
+        // this.depositeRatesData = ChartUtils.convertDiagramData(await this.analyticsService.getRatesForLastSixMonths());
     }
 
     private async analysisPortfolio(): Promise<void> {
