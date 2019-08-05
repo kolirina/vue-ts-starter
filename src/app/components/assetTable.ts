@@ -18,74 +18,77 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-data-table :headers="headers" :items="assets" :custom-sort="customSort" :pagination.sync="pagination" hide-actions must-sort>
-            <template #headerCell="props">
-                <v-tooltip v-if="props.header.tooltip" content-class="custom-tooltip-wrap" bottom>
-                    <template #activator="{ on }">
-                        <span class="data-table__header-with-tooltip" v-on="on">
-                            {{ props.header.text }}
+        <div>
+            <v-data-table :headers="headers" :items="assets" :custom-sort="customSort" :pagination.sync="pagination" hide-actions must-sort>
+                <template #headerCell="props">
+                    <v-tooltip v-if="props.header.tooltip" content-class="custom-tooltip-wrap" bottom>
+                        <template #activator="{ on }">
+                            <span class="data-table__header-with-tooltip" v-on="on">
+                                {{ props.header.text }}
+                            </span>
+                        </template>
+                        <span>
+                        {{ props.header.tooltip }}
                         </span>
-                    </template>
-                    <span>
-                      {{ props.header.tooltip }}
+                    </v-tooltip>
+                    <span v-else>
+                        {{ props.header.text }}
                     </span>
-                </v-tooltip>
-                <span v-else>
-                    {{ props.header.text }}
-                </span>
-            </template>
-            <template #items="props">
-                <tr class="selectable">
-                    <td class="text-xs-left">{{ props.item.type | assetDesc }}</td>
-                    <td class="text-xs-right ii-number-cell">{{ props.item.currCost | amount(true) }}</td>
-                    <td :class="markupClasses(amount(props.item.profit))">
-                        {{ props.item.profit | amount(true) }}
-                    </td>
-                    <td :class="markupClasses(amount(props.item.dailyPl))">{{ props.item.dailyPl | amount(true) }}</td>
-                    <td :class="markupClasses(Number(props.item.dailyPlPercent))">{{ props.item.dailyPlPercent | number }}</td>
-                    <td class="text-xs-right ii-number-cell">{{ props.item.percCurrShare | number }}</td>
-                    <td class="justify-center layout px-0" @click.stop>
-                        <v-menu transition="slide-y-transition" bottom left>
-                            <v-btn slot="activator" flat icon dark>
-                                <span class="menuDots"></span>
-                            </v-btn>
-                            <v-list dense>
-                                <v-list-tile v-if="!isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.BUY)">
-                                    <v-list-tile-title>
-                                        Купить
-                                    </v-list-tile-title>
-                                </v-list-tile>
-                                <v-list-tile v-if="!isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.SELL)">
-                                    <v-list-tile-title>
-                                        Продать
-                                    </v-list-tile-title>
-                                </v-list-tile>
-                                <v-list-tile v-if="isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.DEPOSIT)">
-                                    <v-list-tile-title>
-                                        Внести
-                                    </v-list-tile-title>
-                                </v-list-tile>
-                                <v-list-tile v-if="isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.WITHDRAW)">
-                                    <v-list-tile-title>
-                                        Вывести
-                                    </v-list-tile-title>
-                                </v-list-tile>
-                                <v-list-tile v-if="isStockTrade(props.item)" @click="openTradeDialog(props.item, operation.DIVIDEND)">
-                                    <v-list-tile-title>
-                                        Дивиденд
-                                    </v-list-tile-title>
-                                </v-list-tile>
-                                <v-list-tile v-if="isBondTrade(props.item)" @click="openTradeDialog(props.item, operation.COUPON)">
-                                    <v-list-tile-title>
-                                        Купон
-                                    </v-list-tile-title>
-                                </v-list-tile>
-                            </v-list>
-                        </v-menu>
-                    </td>
-                </tr>
-            </template>
-        </v-data-table>
+                </template>
+                <template #items="props">
+                    <tr class="selectable">
+                        <td class="text-xs-left">{{ props.item.type | assetDesc }}</td>
+                        <td class="text-xs-right ii-number-cell" @mouseover="showMenu" @mouseleave="removeShowMenu">{{ props.item.currCost | amount(true) }}</td>
+                        <td :class="markupClasses(amount(props.item.profit))" @mouseover="showMenu" @mouseleave="removeShowMenu">
+                            {{ props.item.profit | amount(true) }}
+                        </td>
+                        <td :class="markupClasses(amount(props.item.dailyPl))" @mouseover="showMenu" @mouseleave="removeShowMenu">{{ props.item.dailyPl | amount(true) }}</td>
+                        <td :class="markupClasses(Number(props.item.dailyPlPercent))" @mouseover="showMenu" @mouseleave="removeShowMenu">{{ props.item.dailyPlPercent | number }}</td>
+                        <td class="text-xs-right ii-number-cell">{{ props.item.percCurrShare | number }}</td>
+                        <td class="justify-center layout px-0" @click.stop>
+                            <v-menu transition="slide-y-transition" bottom left>
+                                <v-btn slot="activator" flat icon dark>
+                                    <span class="menuDots"></span>
+                                </v-btn>
+                                <v-list dense>
+                                    <v-list-tile v-if="!isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.BUY)">
+                                        <v-list-tile-title>
+                                            Купить
+                                        </v-list-tile-title>
+                                    </v-list-tile>
+                                    <v-list-tile v-if="!isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.SELL)">
+                                        <v-list-tile-title>
+                                            Продать
+                                        </v-list-tile-title>
+                                    </v-list-tile>
+                                    <v-list-tile v-if="isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.DEPOSIT)">
+                                        <v-list-tile-title>
+                                            Внести
+                                        </v-list-tile-title>
+                                    </v-list-tile>
+                                    <v-list-tile v-if="isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.WITHDRAW)">
+                                        <v-list-tile-title>
+                                            Вывести
+                                        </v-list-tile-title>
+                                    </v-list-tile>
+                                    <v-list-tile v-if="isStockTrade(props.item)" @click="openTradeDialog(props.item, operation.DIVIDEND)">
+                                        <v-list-tile-title>
+                                            Дивиденд
+                                        </v-list-tile-title>
+                                    </v-list-tile>
+                                    <v-list-tile v-if="isBondTrade(props.item)" @click="openTradeDialog(props.item, operation.COUPON)">
+                                        <v-list-tile-title>
+                                            Купон
+                                        </v-list-tile-title>
+                                    </v-list-tile>
+                                </v-list>
+                            </v-menu>
+                        </td>
+                    </tr>
+                </template>
+            </v-data-table>
+            <tariff-expired :data="data"></tariff-expired>
+        </div>
     `
 })
 export class AssetTable extends UI {
@@ -118,10 +121,28 @@ export class AssetTable extends UI {
         rowsPerPage: -1
     };
 
+    private data: any = {
+        showMenu: false,
+        x: 0,
+        y: 0
+    };
+
     @Prop({default: [], required: true})
     private assets: AssetRow[];
 
     private operation = Operation;
+
+    private showMenu(e: any): void {
+        e.preventDefault();
+        this.data.showMenu = false;
+        this.data.x = e.clientX;
+        this.data.y = e.clientY;
+        this.data.showMenu = true;
+    }
+
+    private removeShowMenu(): void {
+        this.data.showMenu = false;
+    }
 
     private async openTradeDialog(assetRow: AssetRow, operation: Operation): Promise<void> {
         const assetType = PortfolioAssetType.valueByName(assetRow.type);
