@@ -84,7 +84,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                     </template>
                     <portfolio-rows-table-filter :filter.sync="bondFilter" :store-key="StoreKeys.BONDS_TABLE_FILTER_KEY"></portfolio-rows-table-filter>
                     <bond-table :rows="bondRows" :headers="getHeaders(TABLES_NAME.BOND)" :search="bondFilter.search" :filter="bondFilter"
-                                :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes"></bond-table>
+                                :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes" v-hover></bond-table>
                 </expanded-panel>
 
                 <expanded-panel v-if="blockNotEmpty(emptyBlockType.DEFAULT)" :value="$uistate.historyPanel"
@@ -96,7 +96,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                     </template>
                     <v-card-text>
                         <portfolio-line-chart v-if="lineChartData && lineChartEvents" ref="portfolioLineChart" :data="lineChartData" :moex-index-data="indexLineChartData"
-                                              :state-key-prefix="stateKeyPrefix"
+                                              :state-key-prefix="stateKeyPrefix" v-hover
                                               :events-chart-data="lineChartEvents" :balloon-title="portfolioName"></portfolio-line-chart>
                         <v-container v-else grid-list-md text-xs-center>
                             <v-layout row wrap>
@@ -115,7 +115,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                     </template>
                     <v-card-text>
                         <!-- Валюта тут не нужна так как валюта будет браться из каждого актива в отдельности -->
-                        <pie-chart ref="assetsPieChart" :data="assetsPieChartData" :balloon-title="portfolioName" tooltip-format="ASSETS"></pie-chart>
+                        <pie-chart ref="assetsPieChart" :data="assetsPieChartData" :balloon-title="portfolioName" tooltip-format="ASSETS" v-hover></pie-chart>
                     </v-card-text>
                 </expanded-panel>
 
@@ -125,7 +125,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                         <chart-export-menu @print="print('stockPieChart')" @exportTo="exportTo('stockPieChart', $event)" class="exp-panel-menu"></chart-export-menu>
                     </template>
                     <v-card-text>
-                        <pie-chart ref="stockPieChart" :data="stockPieChartData" :view-currency="viewCurrency"></pie-chart>
+                        <pie-chart ref="stockPieChart" :data="stockPieChartData" :view-currency="viewCurrency" v-hover></pie-chart>
                     </v-card-text>
                 </expanded-panel>
 
@@ -135,7 +135,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                         <chart-export-menu @print="print('bondPieChart')" @exportTo="exportTo('bondPieChart', $event)" class="exp-panel-menu"></chart-export-menu>
                     </template>
                     <v-card-text>
-                        <pie-chart ref="bondPieChart" :data="bondPieChartData" :view-currency="viewCurrency"></pie-chart>
+                        <pie-chart ref="bondPieChart" :data="bondPieChartData" :view-currency="viewCurrency" v-hover></pie-chart>
                     </v-card-text>
                 </expanded-panel>
                 <expanded-panel v-if="blockNotEmpty(emptyBlockType.STOCK_PORTFOLIO)" :value="$uistate.sectorsGraph" :state="$uistate.SECTORS_PANEL" customMenu class="mt-3">
@@ -144,7 +144,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                         <chart-export-menu @print="print('sectorsChart')" @exportTo="exportTo('sectorsChart', $event)" class="exp-panel-menu"></chart-export-menu>
                     </template>
                     <v-card-text>
-                        <pie-chart v-if="sectorsChartData" ref="sectorsChart"
+                        <pie-chart v-if="sectorsChartData" ref="sectorsChart" v-hover
                                    :data="sectorsChartData.data" :balloon-title="portfolioName" :view-currency="viewCurrency"></pie-chart>
                     </v-card-text>
                 </expanded-panel>

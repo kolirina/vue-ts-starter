@@ -29,11 +29,22 @@ import {BtnReturn, CustomDialog} from "../../platform/dialogs/customDialog";
                 <v-icon v-if="allowClose" class="closeDialog" @click.native="closeDialog">close</v-icon>
                 <span v-else class="closeDialog">{{ count }}</span>
 
-                <v-card-title class="bold fs16 margB64">Закончилась подписка на тарифный план</v-card-title>
+                <v-card-title class="bold fs16 margB64">Оформите подписку на тарифный план</v-card-title>
                 <v-card-text class="paddB128">
                     <v-layout align-center column>
                         <v-img src="./img/tariffs/update_tariff.svg" width="100%" height="100%" max-width="346" max-height="131"></v-img>
-                        <div class="fs14 mw320 alignC mt-2">Срок действия вашего тарифного плана истек, рекомендуем обновить тарифный план</div>
+                        <div v-if="data.isFreeTariff || data.isExpiredTrial" class="fs14 mw320 alignC mt-2">
+                            Подключите любой платный тарифный план (Профессионал или Стандарт) для получения доступа ко всем возможностям сервиса.
+                            Подробнее узнать о тарифных планах Intelinvest, вы можете по ссылке ниже:
+                        </div>
+                        <div v-else-if="data.isExpiredStandart" class="fs14 mw320 alignC mt-2">
+                            Продлите вашу подписку на тарифный план Стандарт или подключите тарифный план Профессионал для получения доступа ко всем возможностям сервиса.
+                            Подробнее узнать о тарифных планах Intelinvest, вы можете по ссылке ниже:
+                        </div>
+                        <div v-else class="fs14 mw320 alignC mt-2">
+                            Продлите вашу подписку на тарифный план Профессионал для получения доступа ко всем возможностям сервиса.
+                            Подробнее узнать о тарифных планах Intelinvest, вы можете по ссылке ниже:
+                        </div>
                         <div class="margT24">
                             <v-btn @click="tariffs" color="primary">
                                 Обновить подписку
@@ -45,7 +56,7 @@ import {BtnReturn, CustomDialog} from "../../platform/dialogs/customDialog";
         </v-dialog>
     `
 })
-export class TariffExpiredDialog extends CustomDialog<VueRouter, BtnReturn> {
+export class TariffExpiredDialog extends CustomDialog<ExpiredTariffDialogData, BtnReturn> {
 
     /** Признак возможности закрыть диалог */
     private allowClose = false;
@@ -85,7 +96,15 @@ export class TariffExpiredDialog extends CustomDialog<VueRouter, BtnReturn> {
     }
 
     private tariffs(): void {
-        this.data.push({path: "/settings/tariffs"});
+        this.data.router.push({path: "/settings/tariffs"});
         this.close();
     }
 }
+
+export type ExpiredTariffDialogData = {
+    isFreeTariff: boolean,
+    isExpiredTrial: boolean,
+    isExpiredStandart: boolean,
+    isExpiredPro: boolean,
+    router: VueRouter
+};

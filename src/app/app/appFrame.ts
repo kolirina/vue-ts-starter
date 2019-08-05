@@ -32,6 +32,7 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-app id="inspire" light>
+            <tariff-expired></tariff-expired>
             <vue-snotify></vue-snotify>
             <error-handler></error-handler>
             <template v-if="!loading && !loggedIn">

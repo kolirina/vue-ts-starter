@@ -1,40 +1,30 @@
+import {Container, Inject} from "typescript-ioc";
 import Component from "vue-class-component";
-import {Prop, Watch} from "vue-property-decorator";
 import {UI} from "../app/ui";
+import {VMenu} from "../services/vMenu";
 
 @Component({
     // language=Vue
     template: `
-        <v-menu v-model="showMenu" :position-x="x" :position-y="y" absolute offset-y z-index="200" max-width="433px">
-            <div class="fs12-non-opacity pa-3 bg-white">
+        <div :style="{ left: getLeftOffset(), top: getTopOffset() }" class="custom-v-menu">
+            <div class="content">
                 Подключите тарифный план “Профессионал”, чтобы открыть доступ ко всем возможностям сервиса.
                 Подробнее узнать про тарифные планы Intelinvest вы можете пройдя по ссылке.
             </div>
-        </v-menu>
+        </div>
     `
 })
 export class TariffExpiredHover extends UI {
-    @Prop({required: true})
-    private data: any;
 
-    private showMenu: boolean = false;
-    private x: number = 0;
-    private y: number = 0;
+    @Inject
+    private vMenu: VMenu;
 
-    created(): void {
-        this.showMenu = this.data.showMenu || false;
-        this.x = this.data.x || 0;
-        this.y = this.data.y || 0;
+    private getLeftOffset(): string {
+        return this.vMenu.offsetX + "px" || "0px";
     }
 
-    @Watch("data")
-    private changeData(): void {
-        console.log(4);
-        this.$nextTick(() => {
-            console.log(2);
-            this.showMenu = this.data.showMenu || false;
-            this.x = this.data.x || 0;
-            this.y = this.data.y || 0;
-        });
+    private getTopOffset(): string {
+        return this.vMenu.offsetY  || "0px";
     }
+
 }

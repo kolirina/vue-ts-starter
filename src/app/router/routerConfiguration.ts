@@ -5,7 +5,7 @@ import VueRouter, {Route} from "vue-router";
 import {RouteConfig} from "vue-router/types/router";
 import {Resolver} from "../../../typings/vue";
 import {AuthComponent} from "../app/authComponent";
-import {TariffExpiredDialog} from "../components/dialogs/tariffExpiredDialog";
+import {ExpiredTariffDialogData, TariffExpiredDialog} from "../components/dialogs/tariffExpiredDialog";
 import {AdviserPage} from "../pages/adviser/adviserPage";
 import {BalancesPage} from "../pages/balancesPage";
 import {BondInfoPage} from "../pages/bondInfoPage";
@@ -71,20 +71,29 @@ export class RouterConfiguration {
                     return;
                 }
                 const client = await clientService.getClientInfo();
-                next();
+                const tariffExpired = client.tariff === Tariff.FREE || DateUtils.parseDate(client.paidTill).isBefore(dayjs());
                 // скрываем меню в мобильном виде при переходе
                 if (CommonUtils.isMobile()) {
                     (store as any).state.MAIN.sideBarOpened = true;
                 }
-                // осуществляем переход по роуту и если пользователь залогинен отображаем диалог об истечении тарифа при соблюдении условий
-                const tariffAllowed = (to.meta as RouteMeta).tariffAllowed;
-                if (!tariffAllowed && authorized) {
-                    const tariffExpired = client.tariff !== Tariff.FREE && DateUtils.parseDate(client.paidTill).isBefore(dayjs());
-
-                    if (tariffExpired) {
-                        await new TariffExpiredDialog().show(RouterConfiguration.router);
+                const data: ExpiredTariffDialogData = {
+                    router: RouterConfiguration.router,
+                    isFreeTariff: client.tariff === Tariff.FREE,
+                    isExpiredTrial: client.tariff === Tariff.TRIAL,
+                    isExpiredStandart: client.tariff === Tariff.STANDARD,
+                    isExpiredPro: client.tariff === Tariff.PRO
+                };
+                if (Object.values(BanListTariffExpired).includes(to.name) && tariffExpired) {
+                    next(false);
+                    await new TariffExpiredDialog().show(data);
+                    // если переход по ссылке или закладке что бы не отображать пустую страницу делаем редирект в портфель
+                    if (!from.name) {
+                        RouterConfiguration.router.push({path: "/portfolio"});
+                    } else {
+                        return;
                     }
                 }
+                next();
             });
         }
         return RouterConfiguration.router;
@@ -305,4 +314,10 @@ interface RouteMeta {
     tariffAllowed: boolean;
     title?: string;
     public?: boolean;
+}
+
+export enum BanListTariffExpired {
+    EVENTS = "events",
+    DIVIDENDS = "dividends",
+    COMBINED_PORTFOLIO = "combined-portfolio"
 }

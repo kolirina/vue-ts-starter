@@ -16,11 +16,10 @@ import {DashboardBrick, DashboardData} from "../types/types";
                     <span v-html="block.tooltip"></span>
                 </v-tooltip>
             </v-card-title>
-            <v-container fluid pl-3 pt-0>
-                <v-layout row class="mx-0 py-2" @mouseover="showMenu" @mouseleave="removeShowMenu">
+            <v-container fluid pl-3 pt-0 v-hover>
+                <v-layout row class="mx-0 py-2 ">
                     <span class="dashboard-currency dashboard-card-big-nums" :class="block.mainCurrency">{{ block.mainValue }} </span>
                 </v-layout>
-
                 <v-layout row class="mx-0 dashboard-card-small-nums">
                     <div>
                         <template v-if="block.isSummaryIncome">
@@ -47,7 +46,6 @@ import {DashboardBrick, DashboardData} from "../types/types";
                     </div>
                 </v-layout>
             </v-container>
-            <tariff-expired :data="data"></tariff-expired>
         </v-card>
     `
 })
@@ -55,24 +53,6 @@ export class DashboardBrickComponent extends UI {
 
     @Prop({required: true})
     private block: DashboardBrick;
-
-    private data: any = {
-        showMenu: false,
-        x: 0,
-        y: 0
-    };
-
-    private showMenu(e: any): void {
-        e.preventDefault();
-        this.data.showMenu = false;
-        this.data.x = e.clientX;
-        this.data.y = e.clientY;
-        this.data.showMenu = true;
-    }
-
-    private removeShowMenu(): void {
-        this.data.showMenu = false;
-    }
 }
 
 @Component({

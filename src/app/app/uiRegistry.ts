@@ -30,6 +30,7 @@ import {InplaceInput} from "../components/inplaceInput";
 import {ShareSearchComponent} from "../components/shareSearchComponent";
 import {StockLink} from "../components/stockLink";
 import {TariffExpiredHover} from "../components/tariffExpiredHover";
+import {HoverTooltip} from "../platform/directives/hoverTooltip";
 import {StateDirective} from "../platform/directives/stateDirective";
 import {Filters} from "../platform/filters/Filters";
 import {highchartsRu} from "../platform/locale/highchartsRu";
@@ -134,6 +135,7 @@ export class UIRegistry {
 
         // директивы
         UI.directive(StateDirective.NAME, new StateDirective());
+        UI.directive(HoverTooltip.NAME, new HoverTooltip());
 
         UI.mixin({
             beforeCreate(): void {
