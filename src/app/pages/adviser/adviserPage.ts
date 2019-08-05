@@ -149,7 +149,7 @@ export class AdviserPage extends UI {
 
     private async loadDiagramData(): Promise<void> {
         this.yieldCompareData = await this.analyticsService.getComparedYields(this.portfolio.id.toString());
-        this.monthlyInflationData = ChartUtils.convertDiagramData(await this.analyticsService.getInflationForLastSixMonths());
+        this.monthlyInflationData = ChartUtils.makeSimpleChartData(await this.analyticsService.getInflationForLastSixMonths());
         // TODO удалить после выкатки исправления дат на прод
         const data = await this.analyticsService.getRatesForLastSixMonths();
         data.forEach(item => {
@@ -159,8 +159,8 @@ export class AdviserPage extends UI {
                 item.date = DateUtils.formatDate(date.add(1, "day"), DateFormat.DATE2);
             }
         });
-        this.depositeRatesData = ChartUtils.convertDiagramData(data);
-        // this.depositeRatesData = ChartUtils.convertDiagramData(await this.analyticsService.getRatesForLastSixMonths());
+        this.depositeRatesData = ChartUtils.makeSimpleChartData(data);
+        // this.depositeRatesData = ChartUtils.makeSimpleChartData(await this.analyticsService.getRatesForLastSixMonths());
     }
 
     private async analysisPortfolio(): Promise<void> {
