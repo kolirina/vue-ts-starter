@@ -167,6 +167,9 @@ export class AdviserPage extends UI {
         this.activePreloader = true;
         this.isAnalys = true;
         const start = new Date().getTime();
+        if (!this.clientInfo.user.riskLevel) {
+            await this.setRiskLevel(this.currentRiskLevel);
+        }
         this.advicesUnicCode = await this.adviceService.loadAdvices(this.portfolio.id.toString());
         const end = new Date().getTime();
         if (end - start >= 5000) {
