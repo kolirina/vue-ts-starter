@@ -58,7 +58,7 @@ export class DateUtils {
     /**
      * Форматирование даты для отображения
      * @param date дата
-     * @param {format} формат
+     * @param format формат
      * @return {string} отформатированная дата
      */
     static formatDate(date: dayjs.Dayjs, format: string = DateFormat.DATE): string {
@@ -83,8 +83,8 @@ export class DateUtils {
 
     /**
      * Возвращает дату начала месяца
-     * @param {year} год
-     * @param {month} месяц
+     * @param year год
+     * @param month месяц
      * @return {string} дата начала месяца в виде строки
      */
     static startMonthDate(year: number, month: number): string {
@@ -93,8 +93,8 @@ export class DateUtils {
 
     /**
      * Возвращает дату конца месяца
-     * @param {year} год
-     * @param {month} месяц
+     * @param year год
+     * @param month месяц
      * @return {string} дата конца месяца в виде строки
      */
     static endMonthDate(year: number, month: number): string {
@@ -103,7 +103,7 @@ export class DateUtils {
 
     /**
      * Форматирование даты для отображения на странице
-     * @param {date} дата для форматирования
+     * @param date дата для форматирования
      * @return {string} дата для отображения на странице
      */
     static formatMonthYear(date: string): string {
@@ -112,7 +112,7 @@ export class DateUtils {
 
     /**
      * Возвращает год даты
-     * @param {date} дата
+     * @param date дата
      * @return {number} год даты в формате числа
      */
     static getYearDate(date: string): number {
@@ -121,7 +121,7 @@ export class DateUtils {
 
     /**
      * Возвращает месяц даты
-     * @param {date} дата
+     * @param date дата
      * @return {number} месяц даты в формате числа
      */
     static getMonthDate(date: string): number {
@@ -130,7 +130,7 @@ export class DateUtils {
 
     /**
      * Возвращает месяц даты
-     * @param {date} дата
+     * @param date дата
      * @return {string} месяц даты в формате строки
      */
     static getNameMonthDate(date: string): string {
