@@ -210,7 +210,8 @@ export class ChartUtils {
             categoryNames: [],
             values: []
         };
-        data.forEach((item: AnalyticsChartPoint) => {
+        // для вывода от меньшего к большему
+        data.reverse().forEach((item: AnalyticsChartPoint) => {
             const month = DateUtils.getNameMonthDate(item.date);
             result.categoryNames.push(month);
             result.values.push(
