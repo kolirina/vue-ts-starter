@@ -76,6 +76,12 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                 <share-search :asset-type="assetType" :filtered-shares="filteredShares"
                                               placeholder="Тикер или название компании" class="required"
                                               @change="onShareSelect" @clear="onShareClear" autofocus></share-search>
+                                <div v-if="portfolio && stockTrade" class="fs12-dark-semi-bold margT10">
+                                    Текущее количество акций {{ getStockCount }}
+                                </div>
+                                <div v-if="portfolio && bondTrade" class="fs12-dark-semi-bold margT10">
+                                    Текущее количество облигаций {{ getBondCount }}
+                                </div>
                             </v-flex>
 
                             <!-- Дата сделки -->
@@ -629,6 +635,10 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         return this.assetType === AssetType.STOCK || this.assetType === AssetType.BOND;
     }
 
+    private get stockTrade(): boolean {
+        return this.assetType === AssetType.STOCK;
+    }
+
     private get bondTrade(): boolean {
         return this.assetType === AssetType.BOND && this.operation !== Operation.COUPON && this.operation !== Operation.AMORTIZATION;
     }
@@ -711,6 +721,14 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     private get dialogTitle(): string {
         return `${this.editMode ? "Редактирование" : "Добавление"} сделки${this.editMode ? "" : " в"}`;
+    }
+
+    private get getStockCount(): string {
+        return this.portfolio.overview.stockPortfolio.rows.length.toString();
+    }
+
+    private get getBondCount(): string {
+        return this.portfolio.overview.bondPortfolio.rows.length.toString();
     }
 
     /**
