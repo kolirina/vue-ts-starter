@@ -45,7 +45,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <div class="profile__subtitle mt-2">Имя пользователя</div>
                     <inplace-input name="username" :value="username" @input="onUserNameChange"></inplace-input>
                 </v-card>
-                <v-layout class="wrapper-payment-info mt-5" wrap>
+                <v-layout class="wrapper-payment-info mt-5 margB20" wrap>
                     <v-card flat class="mr-5">
                         <span class="profile__subtitle">
                             Информация по тарифному плану
@@ -80,6 +80,24 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-layout>
                     </v-card>
                 </v-layout>
+                <v-layout wrap align-center>
+                    <v-card flat>
+                        <span class="profile__subtitle">
+                            Информационная рассылка
+                        </span>
+                        <v-layout wrap>
+                            <div v-if="hasEmailSubscription" class="fs13 maxW778 mr-4 mt-3">
+                                Вы подписаны на письма по рассылкам. Отписавшись вы перестанете получать сообщения о новом функционале, акциях и других важных новостях.
+                            </div>
+                            <div v-else class="fs13 maxW778 mr-4 mt-3">
+                                Вы одписаны на письма по рассылкам. Подписавшись вы будете получать сообщения о новом функционале, акциях и других важных новостях.
+                            </div>
+                            <v-btn @click.stop="changeMailSubscription" class="mt-3" color="#EBEFF7">
+                                {{ hasEmailSubscription ? 'Отписаться' : 'Подписаться'}}
+                            </v-btn>
+                        </v-layout>
+                    </v-card>
+                </v-layout>
             </v-layout>
         </v-container>
     `
@@ -100,6 +118,7 @@ export class ProfilePage extends UI {
     private email = "";
     /** Платежная информация пользователя */
     private paymentInfo: UserPaymentInfo = null;
+    private hasEmailSubscription: boolean = true;
 
     /**
      * Инициализирует данные компонента
@@ -112,6 +131,22 @@ export class ProfilePage extends UI {
         if (![Tariff.FREE, Tariff.TRIAL].includes(this.clientInfo.user.tariff)) {
             this.paymentInfo = await this.tariffService.getPaymentInfo();
         }
+    }
+
+    private async changeMailSubscription(): Promise<void> {
+        if (!this.hasEmailSubscription) {
+            const result = await new ConfirmDialog().show(
+                "Вы действительно хотите отписаться от всех рассылок?" +
+                " В этом случае Вы перестанете получать важные сообщения о новом функционале сервиса, акциях и других важных новостях." +
+                " Письма согласно вашим настройкам уведомлений продолжат приходить вам в штатном режиме. Их можно будет отключить в меню Настройки - Уведомления.");
+            if (result !== BtnReturn.YES) {
+                return;
+            }
+            await this.clientService.unsubscribeMailSubscription();
+            this.$snotify.info("Вы успешно отписались от рассылок");
+        }
+        await this.clientService.subscribeMailSubscription();
+        this.$snotify.info("Вы успешно подписались на рассылки");
     }
 
     /**
