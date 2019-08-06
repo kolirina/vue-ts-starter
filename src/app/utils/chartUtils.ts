@@ -326,7 +326,8 @@ export class ChartUtils {
                         return ["<b>" + DateUtils.formatDate(dayjs(this.x)) + "</b>"].concat(
                             // @ts-ignore
                             this.points.map((point): string => {
-                                return compare ? `<span style=\"color:${point.series.color}\">${point.series.name}</span>: <b>${point.y}</b> (${point.change}%)<br/>` :
+                                return compare ? `<span style=\"color:${point.series.color}\">${point.series.name}</span>: <b>${point.y}</b>
+(${Math.round(point.point.change * 100) / 100}%)<br/>` :
                                     `<span style=\"color:${point.series.color}\">${point.series.name}</span>: <b>${point.y}</b><br/>`;
                             })
                         );
