@@ -12,6 +12,7 @@ export class Operation extends (EnumType as IStaticEnum<Operation>) {
     static readonly WITHDRAW = new Operation("Вывести", 0);
     static readonly INCOME = new Operation("Доход", 5);
     static readonly LOSS = new Operation("Расход", 6);
+    static readonly EXCHANGE = new Operation("Конвертация", 7);
 
     private constructor(public description: string, public code: number) {
         super();

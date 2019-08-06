@@ -42,7 +42,7 @@ import {TableFilterBase} from "./tableFilterBase";
                     <div class="trades-filter__label">Тип операции сделок</div>
                     <div class="trades-filter__operations">
                         <v-switch v-for="op in operations" @change="onOperationChange($event, op)" :disabled="!operationEnabled(op)" :label="operationLabel(op)"
-                                v-model="filter.operation.includes(op)" :key="op.enumName">
+                                  v-model="filter.operation.includes(op)" :key="op.enumName">
                         </v-switch>
                     </div>
                 </div>
@@ -54,7 +54,8 @@ import {TableFilterBase} from "./tableFilterBase";
 export class TradesTableFilter extends UI {
 
     /** Операции загружаемые по умполчанию */
-    static readonly DEFAULT_OPERATIONS = [Operation.BUY, Operation.DIVIDEND, Operation.SELL, Operation.INCOME, Operation.COUPON, Operation.LOSS, Operation.AMORTIZATION];
+    static readonly DEFAULT_OPERATIONS = [Operation.BUY, Operation.DIVIDEND, Operation.SELL, Operation.INCOME, Operation.COUPON, Operation.LOSS, Operation.AMORTIZATION,
+        Operation.EXCHANGE];
 
     /** Фильтр */
     @Prop({required: true, type: Object})
