@@ -177,6 +177,8 @@ export type CreateTradeRequest = {
     operation: string,
     /** Поля, содержащию все необходимую информацию по сделке данного типа */
     fields: TradeFields,
+    /** Поля, содержащию все необходимую информацию по связанной сделке */
+    linkedTradeRequest?: CreateTradeRequest,
     /** Признак необходимости исполнить событие по которому добавлется сделка */
     processShareEvent?: boolean;
     /**
@@ -206,6 +208,8 @@ export interface EditTradeRequest {
     editedMoneyTradeId: string;
     /** Поля, содержащию все необходимую информацию по сделке данного типа */
     fields: TradeFields;
+    /** Поля, содержащию все необходимую информацию по связанной сделке */
+    linkedTradeRequest?: EditTradeRequest;
 }
 
 /**
