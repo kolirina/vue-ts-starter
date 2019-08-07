@@ -72,13 +72,13 @@ export class RouterConfiguration {
                 }
                 const client = await clientService.getClientInfo();
                 next();
-                const tariffExpired = client.tariff === Tariff.FREE || DateUtils.parseDate(client.paidTill).isBefore(dayjs());
                 // скрываем меню в мобильном виде при переходе
                 if (CommonUtils.isMobile()) {
                     (store as any).state.MAIN.sideBarOpened = true;
                 }
                 const tariffAllowed = (to.meta as RouteMeta).tariffAllowed;
                 if (!tariffAllowed && authorized) {
+                    const tariffExpired = client.tariff === Tariff.FREE || DateUtils.parseDate(client.paidTill).isBefore(dayjs());
                     if (tariffExpired) {
                         await new TariffExpiredDialog().show(RouterConfiguration.router);
                     }
@@ -136,7 +136,6 @@ export class RouterConfiguration {
                 path: "/dividends",
                 component: DividendsPage,
                 meta: {
-                    tariffAllowed: false,
                     title: "Дивиденды"
                 }
             },
@@ -153,7 +152,6 @@ export class RouterConfiguration {
                 path: "/combined-portfolio",
                 component: CombinedPortfolioPage,
                 meta: {
-                    tariffAllowed: false,
                     title: "Составной портфель"
                 }
             },
@@ -161,7 +159,6 @@ export class RouterConfiguration {
                 name: "quotes",
                 path: "/quotes",
                 meta: {
-                    tariffAllowed: true,
                     title: "Котировки"
                 },
                 component: QuotesPage,
