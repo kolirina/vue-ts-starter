@@ -37,8 +37,6 @@ export class UiStateHelper {
     static investmentsSettingsPanel: number[];
     static referralStatisticsPanel: number[];
     static eventsCalendarPanel: number[];
-    static offsetX: string;
-    static offsetY: string;
 
     static toggleState(type: string): void;
 }

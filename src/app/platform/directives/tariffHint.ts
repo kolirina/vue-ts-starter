@@ -4,7 +4,7 @@ import {VuexConfiguration} from "../../vuex/vuexConfiguration";
 const store = VuexConfiguration.getStore();
 
 /**
- * Директива для показа
+ * Директива для показа подсказки и истекшем тарифе
  */
 export class TariffHint implements DirectiveOptions {
 
@@ -15,7 +15,7 @@ export class TariffHint implements DirectiveOptions {
      * @param {HTMLElement} el html элемент
      */
     bind(el: HTMLElement): void {
-        if (!(store as any).state.MAIN.isTariffExpired) {
+        if ((store as any).state.MAIN.isTariffExpired) {
             if (!el.classList.contains("custom-v-menu")) {
                 el.addEventListener("mouseover", (event) => {
                     (store as any).state.MAIN.tariffExpiredHintCoords = {

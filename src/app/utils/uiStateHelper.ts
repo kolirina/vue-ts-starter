@@ -25,24 +25,6 @@ export class UiStateHelper {
     static readonly IMPORT_SETTINGS = "import_settings";
     static readonly ADVISER_ANALYTICS_PANEL = "adviser_analytics_panel";
     static readonly ADVISER_DIAGRAM_PANEL = "adviser_diagram_panel";
-    static readonly V_MENU_OFFSET_X = "v_menu_offset_x";
-    static readonly V_MENU_OFFSET_Y = "v_menu_offset_y";
-
-    static set offsetX(value: string) {
-        localStorage.set(UiStateHelper.V_MENU_OFFSET_X, value);
-    }
-
-    static get offsetX(): string {
-        return localStorage.get(UiStateHelper.V_MENU_OFFSET_X, "");
-    }
-
-    static set offsetY(value: string) {
-        localStorage.set(UiStateHelper.V_MENU_OFFSET_Y, value);
-    }
-
-    static get offsetY(): string {
-        return localStorage.get(UiStateHelper.V_MENU_OFFSET_Y, "");
-    }
 
     static set stocksTablePanel(value: number[]) {
         localStorage.set(UiStateHelper.STOCKS, value);

@@ -1,7 +1,7 @@
-import {Container, Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
-import {UI, Watch} from "../app/ui";
+import {UI} from "../app/ui";
+import {TariffHint} from "../types/types";
 import {StoreType} from "../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -20,7 +20,7 @@ const MainStore = namespace(StoreType.MAIN);
 export class TariffExpiredHint extends UI {
 
     @MainStore.Getter
-    private hintCoords: any;
+    private hintCoords: TariffHint;
 
     private goToTariff(): void {
         this.$router.push({path: "/settings/tariffs"});

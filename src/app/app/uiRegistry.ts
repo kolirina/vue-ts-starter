@@ -29,7 +29,6 @@ import {IINumberField} from "../components/iiNumberField";
 import {InplaceInput} from "../components/inplaceInput";
 import {ShareSearchComponent} from "../components/shareSearchComponent";
 import {StockLink} from "../components/stockLink";
-import {TariffExpiredHint} from "../components/tariffExpiredHint";
 import {StateDirective} from "../platform/directives/stateDirective";
 import {TariffHint} from "../platform/directives/tariffHint";
 import {Filters} from "../platform/filters/Filters";
@@ -114,7 +113,6 @@ export class UIRegistry {
         UI.component("inplace-input", InplaceInput);
         UI.component("stock-link", StockLink);
         UI.component("bond-link", BondLink);
-        UI.component("menu-tariff-expired", TariffExpiredHint);
         /* Компонент с маской для десятичных дробей */
         UI.component("ii-number-field", IINumberField);
         UI.component("share-search", ShareSearchComponent);
