@@ -127,7 +127,6 @@ export class RouterConfiguration {
                 path: "/events",
                 component: EventsPage,
                 meta: {
-                    tariffAllowed: false,
                     title: "События"
                 }
             },
