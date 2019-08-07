@@ -316,7 +316,7 @@ export class StockTable extends UI {
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
             share: stockRow.stock,
-            quantity: operation === Operation.DIVIDEND ? stockRow.quantity : null,
+            quantity: Math.abs(stockRow.quantity),
             operation,
             assetType: AssetType.STOCK
         });

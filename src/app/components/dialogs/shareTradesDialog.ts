@@ -33,7 +33,8 @@ import {TradeUtils} from "../../utils/tradeUtils";
                         </template>
 
                         <template #expand="props">
-                            <v-card flat>
+                            <v-card flat class="mt-2">
+                                <span class="bold">Заметка:</span>
                                 <v-card-text>{{ props.item.comment }}</v-card-text>
                             </v-card>
                         </template>

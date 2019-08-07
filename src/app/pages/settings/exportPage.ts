@@ -1,4 +1,3 @@
-import dayjs from "dayjs";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
@@ -8,9 +7,8 @@ import {ShowProgress} from "../../platform/decorators/showProgress";
 import {ClientInfo} from "../../services/clientService";
 import {ExportService, ExportType} from "../../services/exportService";
 import {PortfolioParams, PortfolioService} from "../../services/portfolioService";
-import {Tariff} from "../../types/tariff";
 import {Portfolio, PortfolioBackup} from "../../types/types";
-import {DateUtils} from "../../utils/dateUtils";
+import {ExportUtils} from "../../utils/exportUtils";
 import {StoreType} from "../../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -107,11 +105,9 @@ export class ExportPage extends UI {
     /** Сервис для экспорта портфеля */
     @Inject
     private exportService: ExportService;
-    /** Сервис для экспорта портфеля */
+    /** Сервис по работе с портфелями */
     @Inject
     private portfolioService: PortfolioService;
-    /** Поисковый запрос для поиска по портфелям */
-    private search = "";
     /** Портфели пользователя */
     private portfolios: PortfolioParams[] = null;
     /** Информация о бэкапе портфеля */
@@ -162,8 +158,7 @@ export class ExportPage extends UI {
      * Возвращает признак доступности для загрузки файла со сделками
      */
     private isDownloadNotAllowed(): boolean {
-        const userTariff = this.clientInfo.user.tariff;
-        return userTariff === Tariff.TRIAL || (dayjs().isAfter(DateUtils.parseDate(this.clientInfo.user.paidTill)) && userTariff !== Tariff.FREE);
+        return ExportUtils.isDownloadNotAllowed(this.clientInfo);
     }
 
     /**

@@ -7,10 +7,12 @@ import {DisableConcurrentExecution} from "../platform/decorators/disableConcurre
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {BtnReturn} from "../platform/dialogs/customDialog";
 import {ClientInfo} from "../services/clientService";
+import {ExportService, ExportType} from "../services/exportService";
 import {PortfolioParams, PortfoliosDialogType, PortfolioService} from "../services/portfolioService";
 import {EventType} from "../types/eventType";
 import {Portfolio, TableHeader} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
+import {ExportUtils} from "../utils/exportUtils";
 import {SortUtils} from "../utils/sortUtils";
 import {TradeUtils} from "../utils/tradeUtils";
 import {MutationType} from "../vuex/mutationType";
@@ -73,6 +75,16 @@ const MainStore = namespace(StoreType.MAIN);
                                 <v-list-tile @click="clonePortfolio(props.item.id)">
                                     <v-list-tile-title>
                                         Копировать
+                                    </v-list-tile-title>
+                                </v-list-tile>
+                                <v-list-tile @click="downloadFile(props.item.id)" :disabled="downloadNotAllowed">
+                                    <v-list-tile-title>
+                                        Экспорт в csv
+                                    </v-list-tile-title>
+                                </v-list-tile>
+                                <v-list-tile @click="exportPortfolio(props.item.id)">
+                                    <v-list-tile-title>
+                                        Экспорт в xlsx
                                     </v-list-tile-title>
                                 </v-list-tile>
                                 <v-list-tile @click="deletePortfolio(props.item)">
@@ -166,8 +178,13 @@ export class PortfoliosTable extends UI {
     private reloadPortfolios: () => Promise<void>;
     @MainStore.Action(MutationType.SET_CURRENT_PORTFOLIO)
     private setCurrentPortfolio: (id: number) => Promise<Portfolio>;
+    /** Сервис по работе с портфелями */
     @Inject
     private portfolioService: PortfolioService;
+    /** Сервис для экспорта портфеля */
+    @Inject
+    private exportService: ExportService;
+    /** Типы диалогов */
     private dialogTypes = PortfoliosDialogType;
 
     private headers: TableHeader[] = [
@@ -265,11 +282,31 @@ export class PortfoliosTable extends UI {
         return items;
     }
 
+    /**
+     * Отправляет запрос на скачивание файла со сделками в формате csv
+     */
+    @ShowProgress
+    private async downloadFile(id: number): Promise<void> {
+        await this.exportService.exportTrades(id);
+    }
+
+    @ShowProgress
+    private async exportPortfolio(id: number): Promise<void> {
+        await this.exportService.exportReport(id, ExportType.COMPLEX);
+    }
+
     private copyPortfolioLink(): void {
         this.$snotify.info("Ссылка скопирована");
     }
 
     private showNoteLink(note: string): boolean {
         return !CommonUtils.isBlank(note);
+    }
+
+    /**
+     * Возвращает признак доступности для загрузки файла со сделками
+     */
+    private get downloadNotAllowed(): boolean {
+        return ExportUtils.isDownloadNotAllowed(this.clientInfo);
     }
 }

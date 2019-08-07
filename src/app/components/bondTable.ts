@@ -328,7 +328,7 @@ export class BondTable extends UI {
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
             share: bondRow.bond,
-            quantity: [Operation.COUPON, Operation.AMORTIZATION, Operation.REPAYMENT].indexOf(operation) !== -1 ? bondRow.quantity : null,
+            quantity: Math.abs(bondRow.quantity),
             operation,
             assetType: AssetType.BOND
         });
