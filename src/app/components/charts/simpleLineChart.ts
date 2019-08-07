@@ -3,6 +3,7 @@ import Component from "vue-class-component";
 import {Prop, Watch} from "vue-property-decorator";
 import {UI} from "../../app/ui";
 import {SimpleChartData} from "../../types/charts/types";
+import {ChartUtils} from "../../utils/chartUtils";
 
 @Component({
     // language=Vue
@@ -47,55 +48,6 @@ export class SimpleLineChart extends UI {
     }
 
     private async draw(): Promise<void> {
-        this.chart = Highcharts.chart(this.$refs.container, {
-            chart: {
-                backgroundColor: "#F7F9FB",
-                type: "spline"
-            },
-            title: {
-                text: ""
-            },
-            yAxis: {
-                title: {
-                    text: ""
-                },
-                labels: {
-                    style: {
-                        fontSize: "13px",
-                        color: "#040427"
-                    }
-                }
-            },
-            legend: {
-                enabled: false
-            },
-            xAxis: {
-                categories: this.data.categoryNames,
-                labels: {
-                    style: {
-                        fontSize: "13px",
-                        color: "#040427"
-                    }
-                },
-                gridLineWidth: 1
-            },
-            exporting: {
-                enabled: false
-            },
-            tooltip: {
-                headerFormat: "",
-                pointFormat: `<span>${this.tooltip} {point.name}</span>: <b>{point.y:.2f}%</b>`
-            },
-            plotOptions: {
-                series: {
-                    color: "#FF3E70"
-                }
-            },
-            series: [
-                {
-                    data: this.data.values
-                },
-            ]
-        });
+        this.chart = ChartUtils.drawSimpleLineChart(this.$refs.container, this.data, this.tooltip);
     }
 }

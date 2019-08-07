@@ -205,17 +205,21 @@ export class ChartUtils {
         threshold: null
     };
 
-    static convertDiagramData(data: AnalyticsChartPoint[]): SimpleChartData {
+    static makeSimpleChartData(data: AnalyticsChartPoint[]): SimpleChartData {
         const result: SimpleChartData = {
             categoryNames: [],
             values: []
         };
-        data.forEach((item: AnalyticsChartPoint) => {
-            const month = DateUtils.getNameMonthDate(item.date);
+        const sorted: Array<{ date?: dayjs.Dayjs, value?: string }> = data.map(item => {
+            return {date: DateUtils.parseDate(item.date), value: item.value};
+        }).sort((a, b) => a.date.isAfter(b.date) ? 1 : a.date.isSame(b.date) ? 0 : -1);
+        // для вывода от меньшего к большему
+        sorted.forEach((item: { date?: dayjs.Dayjs, value?: string }) => {
+            const month = item.date.format("MMMM");
             result.categoryNames.push(month);
             result.values.push(
                 {
-                    name: month,
+                    name: `${month} ${item.date.year()}`,
                     y: Number(item.value)
                 }
             );
@@ -349,6 +353,59 @@ export class ChartUtils {
                 // @ts-ignore
                 ...eventsChartData || []
             ],
+        });
+    }
+
+    static drawSimpleLineChart(container: HTMLElement, data: SimpleChartData, tooltip: string): ChartObject {
+        return Highcharts.chart(container, {
+            chart: {
+                backgroundColor: "#F7F9FB",
+                type: "spline"
+            },
+            title: {
+                text: ""
+            },
+            yAxis: {
+                title: {
+                    text: ""
+                },
+                labels: {
+                    style: {
+                        fontSize: "13px",
+                        color: "#040427"
+                    }
+                }
+            },
+            legend: {
+                enabled: false
+            },
+            xAxis: {
+                categories: data.categoryNames,
+                labels: {
+                    style: {
+                        fontSize: "13px",
+                        color: "#040427"
+                    }
+                },
+                gridLineWidth: 1
+            },
+            exporting: {
+                enabled: false
+            },
+            tooltip: {
+                headerFormat: "",
+                pointFormat: `<span>${tooltip} {point.name} </span>: <b>{point.y:.2f}%</b> `
+            },
+            plotOptions: {
+                series: {
+                    color: "#FF3E70"
+                }
+            },
+            series: [
+                {
+                    data: data.values
+                },
+            ]
         });
     }
 

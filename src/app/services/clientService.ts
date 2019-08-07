@@ -14,6 +14,14 @@ export class ClientService {
 
     private clientInfoCache: Client = null;
 
+    async subscribeMailSubscription(): Promise<void> {
+        return this.http.post("/user/subscribe");
+    }
+
+    async unsubscribeMailSubscription(): Promise<void> {
+        return this.http.post("/user/unsubscribe");
+    }
+
     async signUp(registrationRequest: RegistrationRequest): Promise<ClientInfoResponse> {
         return this.http.post("/user/register", registrationRequest);
     }
@@ -171,6 +179,8 @@ export interface BaseClient {
     referrerRepaidTotalAmount: string;
     /** Сумма причитаемого вознаграждения реферреру за партнерскую программу */
     referrerEarnedTotalAmount: string;
+    /** Подписан ли пользователь на emeil рассылку */
+    unsubscribed: boolean;
 }
 
 export interface ClientResponse extends BaseClient {
