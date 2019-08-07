@@ -158,6 +158,7 @@ export class RouterConfiguration {
                 name: "quotes",
                 path: "/quotes",
                 meta: {
+                    tariffAllowed: true,
                     title: "Котировки"
                 },
                 component: QuotesPage,
