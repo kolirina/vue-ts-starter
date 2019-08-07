@@ -113,6 +113,7 @@ export class RouterConfiguration {
                 path: "/portfolio",
                 component: PortfolioPage,
                 meta: {
+                    tariffAllowed: true,
                     title: "Портфель"
                 }
             },
@@ -120,6 +121,7 @@ export class RouterConfiguration {
                 name: "adviser",
                 path: "/adviser",
                 meta: {
+                    tariffAllowed: true,
                     title: "Аналитика"
                 },
                 component: AdviserPage,
@@ -145,6 +147,7 @@ export class RouterConfiguration {
                 path: "/trades",
                 component: TradesPage,
                 meta: {
+                    tariffAllowed: true,
                     title: "Сделки"
                 }
             },
@@ -153,6 +156,7 @@ export class RouterConfiguration {
                 path: "/combined-portfolio",
                 component: CombinedPortfolioPage,
                 meta: {
+                    tariffAllowed: true,
                     title: "Составной портфель"
                 }
             },
