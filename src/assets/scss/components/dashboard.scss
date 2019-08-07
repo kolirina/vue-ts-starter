@@ -109,6 +109,13 @@
       z-index: 98;
       margin: 0 !important;
       left: 80px;
+      .flex {
+        &:first-child {
+          .dashboard-card {
+            filter: blur(0px) !important;
+          }
+        }
+      }
 
       &.menu-open {
         left: 320px;

@@ -77,11 +77,14 @@ const MainStore = namespace(StoreType.MAIN);
                     <td v-if="tableHeadersState.profitFromCouponsPercent" :class="markupClasses(Number(props.item.profitFromCouponsPercent))" v-tariff-expired-hint>
                         {{ props.item.profitFromCouponsPercent }}
                     </td>
-                    <td v-if="tableHeadersState.exchangeProfit" :class="markupClasses(amount(props.item.exchangeProfit))" v-tariff-expired-hint>{{props.item.exchangeProfit | amount(true) }}</td>
+                    <td v-if="tableHeadersState.exchangeProfit" :class="markupClasses(amount(props.item.exchangeProfit))"
+                        v-tariff-expired-hint>{{props.item.exchangeProfit | amount(true) }}</td>
                     <td v-if="tableHeadersState.exchangeProfitPercent" :class="markupClasses(Number(props.item.exchangeProfitPercent))"
                         v-tariff-expired-hint>{{ props.item.exchangeProfitPercent }}</td>
-                    <td v-if="tableHeadersState.rateProfit" :class="markupClasses(amount(props.item.rateProfit))" v-tariff-expired-hint>{{ props.item.rateProfit | amount(true) }}</td>
-                    <td v-if="tableHeadersState.rateProfitPercent" :class="markupClasses(Number(props.item.rateProfitPercent))" v-tariff-expired-hint>{{ props.item.rateProfitPercent }}</td>
+                    <td v-if="tableHeadersState.rateProfit" :class="markupClasses(amount(props.item.rateProfit))"
+                        v-tariff-expired-hint>{{ props.item.rateProfit | amount(true) }}</td>
+                    <td v-if="tableHeadersState.rateProfitPercent" :class="markupClasses(Number(props.item.rateProfitPercent))"
+                        v-tariff-expired-hint>{{ props.item.rateProfitPercent }}</td>
                     <td v-if="tableHeadersState.buyNkd" :class="markupClasses(amount(props.item.buyNkd))" v-tariff-expired-hint>{{ props.item.buyNkd | amount(true) }}</td>
                     <td v-if="tableHeadersState.sellNkd" :class="markupClasses(amount(props.item.sellNkd))" v-tariff-expired-hint>{{ props.item.sellNkd | amount(true) }}</td>
                     <td v-if="tableHeadersState.profit" :class="markupClasses(amount(props.item.profit))" v-tariff-expired-hint>{{ props.item.profit | amount(true) }}</td>

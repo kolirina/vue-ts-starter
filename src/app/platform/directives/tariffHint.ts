@@ -15,7 +15,7 @@ export class TariffHint implements DirectiveOptions {
      * @param {HTMLElement} el html элемент
      */
     bind(el: HTMLElement): void {
-        if ((store as any).state.MAIN.isTariffExpired) {
+        if (!(store as any).state.MAIN.isTariffExpired) {
             if (!el.classList.contains("custom-v-menu")) {
                 el.addEventListener("mouseover", (event) => {
                     (store as any).state.MAIN.tariffExpiredHintCoords = {
