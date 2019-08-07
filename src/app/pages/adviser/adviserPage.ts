@@ -14,6 +14,7 @@ import {SimpleChartData, YieldCompareData} from "../../types/charts/types";
 import {EventType} from "../../types/eventType";
 import {Portfolio, RiskType} from "../../types/types";
 import {ChartUtils} from "../../utils/chartUtils";
+import {DateFormat, DateUtils} from "../../utils/dateUtils";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 import {AnalysisResult} from "./analysisResult";
@@ -31,8 +32,9 @@ const MainStore = namespace(StoreType.MAIN);
                 <template #header>Аналитика</template>
                 <v-card v-if="hasTrades" flat class="pa-0">
                     <choose-risk v-if="!activePreloader && !isAnalys" @setRiskLevel="setRiskLevel"
-                                @analysisPortfolio="analysisPortfolio" :currentRiskLevel="currentRiskLevel"></choose-risk>
+                                 @analysisPortfolio="analysisPortfolio" :currentRiskLevel="currentRiskLevel"></choose-risk>
                     <preloader v-if="activePreloader"></preloader>
+
                     <analysis-result v-if="!activePreloader && isAnalys && advicesUnicCode.length !== 0" v-tariff-expired-hint
                                      @goToChooseRiskType="goToChooseRiskType" :advicesUnicCode="advicesUnicCode"></analysis-result>
                     <empty-advice v-if="!activePreloader && isAnalys && advicesUnicCode.length === 0" @goToChooseRiskType="goToChooseRiskType"></empty-advice>
@@ -148,14 +150,27 @@ export class AdviserPage extends UI {
 
     private async loadDiagramData(): Promise<void> {
         this.yieldCompareData = await this.analyticsService.getComparedYields(this.portfolio.id.toString());
-        this.monthlyInflationData = ChartUtils.convertDiagramData(await this.analyticsService.getInflationForLastSixMonths());
-        this.depositeRatesData = ChartUtils.convertDiagramData(await this.analyticsService.getRatesForLastSixMonths());
+        this.monthlyInflationData = ChartUtils.makeSimpleChartData(await this.analyticsService.getInflationForLastSixMonths());
+        // TODO удалить после выкатки исправления дат на прод
+        const data = await this.analyticsService.getRatesForLastSixMonths();
+        data.forEach(item => {
+            const timeZoneIndex = item.date.indexOf("T");
+            if (timeZoneIndex !== -1) {
+                const date = DateUtils.parseDate(item.date.substring(0, timeZoneIndex));
+                item.date = DateUtils.formatDate(date.add(1, "day"), DateFormat.DATE2);
+            }
+        });
+        this.depositeRatesData = ChartUtils.makeSimpleChartData(data);
+        // this.depositeRatesData = ChartUtils.makeSimpleChartData(await this.analyticsService.getRatesForLastSixMonths());
     }
 
     private async analysisPortfolio(): Promise<void> {
         this.activePreloader = true;
         this.isAnalys = true;
         const start = new Date().getTime();
+        if (!this.clientInfo.user.riskLevel) {
+            await this.setRiskLevel(this.currentRiskLevel);
+        }
         this.advicesUnicCode = await this.adviceService.loadAdvices(this.portfolio.id.toString());
         const end = new Date().getTime();
         if (end - start >= 5000) {
