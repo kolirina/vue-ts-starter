@@ -4,7 +4,7 @@ import {VuexConfiguration} from "../../vuex/vuexConfiguration";
 const store = VuexConfiguration.getStore();
 
 /**
- * Директива для показа подсказки и истекшем тарифе
+ * Директива для показа подсказки о истекшем тарифе
  */
 export class TariffHint implements DirectiveOptions {
 
@@ -25,7 +25,7 @@ export class TariffHint implements DirectiveOptions {
                 };
             });
             el.addEventListener("mouseleave", (event) => {
-                /** Условие что бы при ховере на подсказку курсор не уезжал */
+                /** Условие что бы при ховере на подсказку она не уезжала */
                 if (!(event.toElement.className === "custom-v-menu" || event.toElement.className === "v-menu-content")) {
                     (store as any).state.MAIN.tariffExpiredHintCoords = {
                         x: "0px",
