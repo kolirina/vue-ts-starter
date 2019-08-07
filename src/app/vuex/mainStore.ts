@@ -1,11 +1,14 @@
+import dayjs from "dayjs";
 import {Container} from "typescript-ioc";
 import {ActionContext, Module} from "vuex";
+import {Tariff} from "../types/tariff";
 import {Storage} from "../platform/services/storage";
 import {Client, ClientInfo, ClientService} from "../services/clientService";
 import {OverviewService} from "../services/overviewService";
 import {PortfolioParams, PortfolioService} from "../services/portfolioService";
 import {StoreKeys} from "../types/storeKeys";
 import {Portfolio, TariffHint} from "../types/types";
+import {DateUtils} from "../utils/dateUtils";
 import {GetterType} from "./getterType";
 import {MutationType} from "./mutationType";
 
@@ -47,8 +50,11 @@ const Getters = {
     [GetterType.SIDEBAR_OPENED](state: StateHolder): boolean {
         return state.sideBarOpened;
     },
-    [GetterType.HINT_COORDS](state: StateHolder): any {
+    [GetterType.HINT_COORDS](state: StateHolder): TariffHint {
         return state.tariffExpiredHintCoords;
+    },
+    [GetterType.EXPIRED_TARIFF](state: StateHolder): boolean {
+        return DateUtils.parseDate(state.clientInfo.user.paidTill).isBefore(dayjs());
     }
 };
 

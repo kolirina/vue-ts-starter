@@ -96,7 +96,15 @@
     }
   }
 }
-
+.dashboard-wrap {
+  .dashboard-item {
+    &:first-child {
+      .dashboard-card {
+        filter: blur(0px) !important;
+      }
+    }
+  }
+}
 // Fixed dashboard
 .fixed-dashboard {
   @media screen and (min-width: 1024px) {
@@ -109,13 +117,6 @@
       z-index: 98;
       margin: 0 !important;
       left: 80px;
-      .flex {
-        &:first-child {
-          .dashboard-card {
-            filter: blur(0px) !important;
-          }
-        }
-      }
 
       &.menu-open {
         left: 320px;

@@ -16,7 +16,7 @@ export class TariffHint implements DirectiveOptions {
      */
     bind(el: HTMLElement): void {
         /** Проверяем истек ли тариф */
-        if ((store as any).state.MAIN.isTariffExpired) {
+        if ((store as any).getters["MAIN/expiredTariff"]) {
             el.addEventListener("mouseover", (event) => {
                 (store as any).state.MAIN.tariffExpiredHintCoords = {
                     x: event.pageX.toString() + "px",

@@ -5,7 +5,7 @@ import VueRouter, {Route} from "vue-router";
 import {RouteConfig} from "vue-router/types/router";
 import {Resolver} from "../../../typings/vue";
 import {AuthComponent} from "../app/authComponent";
-import {ExpiredTariffDialogData, TariffExpiredDialog} from "../components/dialogs/tariffExpiredDialog";
+import {TariffExpiredDialog} from "../components/dialogs/tariffExpiredDialog";
 import {AdviserPage} from "../pages/adviser/adviserPage";
 import {BalancesPage} from "../pages/balancesPage";
 import {BondInfoPage} from "../pages/bondInfoPage";
@@ -70,36 +70,19 @@ export class RouterConfiguration {
                     next(false);
                     return;
                 }
-                (store as any).state.MAIN.tariffExpiredHintCoords = {
-                    x: "0px",
-                    y: "0px",
-                    display: "none"
-                };
                 const client = await clientService.getClientInfo();
+                next();
                 const tariffExpired = client.tariff === Tariff.FREE || DateUtils.parseDate(client.paidTill).isBefore(dayjs());
-                (store as any).state.MAIN.isTariffExpired = tariffExpired;
                 // скрываем меню в мобильном виде при переходе
                 if (CommonUtils.isMobile()) {
                     (store as any).state.MAIN.sideBarOpened = true;
                 }
-                const data: ExpiredTariffDialogData = {
-                    router: RouterConfiguration.router,
-                    isFreeTariff: client.tariff === Tariff.FREE,
-                    isExpiredTrial: client.tariff === Tariff.TRIAL,
-                    isExpiredStandart: client.tariff === Tariff.STANDARD,
-                    isExpiredPro: client.tariff === Tariff.PRO
-                };
-                if (Object.values(BanListTariffExpired).includes(to.name) && tariffExpired) {
-                    next(false);
-                    await new TariffExpiredDialog().show(data);
-                    // если переход по ссылке или закладке что бы не отображать пустую страницу делаем редирект в портфель
-                    if (!from.name) {
-                        RouterConfiguration.router.push({path: "/portfolio"});
-                    } else {
-                        return;
+                const tariffAllowed = (to.meta as RouteMeta).tariffAllowed;
+                if (!tariffAllowed && authorized) {
+                    if (tariffExpired) {
+                        await new TariffExpiredDialog().show(RouterConfiguration.router);
                     }
                 }
-                next();
             });
         }
         return RouterConfiguration.router;
@@ -144,6 +127,7 @@ export class RouterConfiguration {
                 path: "/events",
                 component: EventsPage,
                 meta: {
+                    tariffAllowed: false,
                     title: "События"
                 }
             },
@@ -152,6 +136,7 @@ export class RouterConfiguration {
                 path: "/dividends",
                 component: DividendsPage,
                 meta: {
+                    tariffAllowed: false,
                     title: "Дивиденды"
                 }
             },
@@ -168,6 +153,7 @@ export class RouterConfiguration {
                 path: "/combined-portfolio",
                 component: CombinedPortfolioPage,
                 meta: {
+                    tariffAllowed: false,
                     title: "Составной портфель"
                 }
             },
@@ -320,10 +306,4 @@ interface RouteMeta {
     tariffAllowed: boolean;
     title?: string;
     public?: boolean;
-}
-
-export enum BanListTariffExpired {
-    EVENTS = "events",
-    DIVIDENDS = "dividends",
-    COMBINED_PORTFOLIO = "combined-portfolio"
 }
