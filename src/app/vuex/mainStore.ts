@@ -33,6 +33,8 @@ export class StateHolder {
         y: "0px",
         display: "none"
     };
+    /** Признак неоплаченого тарифа */
+    isTariffExpired: boolean = true;
 }
 
 const Getters = {

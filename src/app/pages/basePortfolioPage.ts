@@ -84,7 +84,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                     </template>
                     <portfolio-rows-table-filter :filter.sync="bondFilter" :store-key="StoreKeys.BONDS_TABLE_FILTER_KEY"></portfolio-rows-table-filter>
                     <bond-table :rows="bondRows" :headers="getHeaders(TABLES_NAME.BOND)" :search="bondFilter.search" :filter="bondFilter"
-                                :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes" v-hover></bond-table>
+                                :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes"></bond-table>
                 </expanded-panel>
 
                 <expanded-panel v-if="blockNotEmpty(emptyBlockType.DEFAULT)" :value="$uistate.historyPanel"
@@ -96,7 +96,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                     </template>
                     <v-card-text>
                         <portfolio-line-chart v-if="lineChartData && lineChartEvents" ref="portfolioLineChart" :data="lineChartData" :moex-index-data="indexLineChartData"
-                                              :state-key-prefix="stateKeyPrefix" v-hover
+                                              :state-key-prefix="stateKeyPrefix"
                                               :events-chart-data="lineChartEvents" :balloon-title="portfolioName"></portfolio-line-chart>
                         <v-container v-else grid-list-md text-xs-center>
                             <v-layout row wrap>

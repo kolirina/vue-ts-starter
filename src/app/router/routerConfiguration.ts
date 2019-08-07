@@ -75,6 +75,7 @@ export class RouterConfiguration {
                 (store as any).state.MAIN.customVMenu.display = "none";
                 const client = await clientService.getClientInfo();
                 const tariffExpired = client.tariff === Tariff.FREE || DateUtils.parseDate(client.paidTill).isBefore(dayjs());
+                (store as any).state.MAIN.isTariffExpired = tariffExpired;
                 // скрываем меню в мобильном виде при переходе
                 if (CommonUtils.isMobile()) {
                     (store as any).state.MAIN.sideBarOpened = true;

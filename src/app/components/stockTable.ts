@@ -149,7 +149,7 @@ const MainStore = namespace(StoreType.MAIN);
             </template>
 
             <template #expand="props">
-                <table class="ext-info" @click.stop>
+                <table class="ext-info" @click.stop v-hover>
                     <tr>
                         <td>
                             <div class="ext-info__item">

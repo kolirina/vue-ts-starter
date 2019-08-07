@@ -37,12 +37,12 @@ const MainStore = namespace(StoreType.MAIN);
             <template #items="props">
                 <tr class="selectable">
                     <td class="text-xs-left">{{ props.item.type | assetDesc }}</td>
-                    <td class="text-xs-right ii-number-cell">{{ props.item.currCost | amount(true) }}</td>
-                    <td :class="markupClasses(amount(props.item.profit))">
+                    <td class="text-xs-right ii-number-cell" v-hover>{{ props.item.currCost | amount(true) }}</td>
+                    <td :class="markupClasses(amount(props.item.profit))" v-hover>
                         {{ props.item.profit | amount(true) }}
                     </td>
-                    <td :class="markupClasses(amount(props.item.dailyPl))">{{ props.item.dailyPl | amount(true) }}</td>
-                    <td :class="markupClasses(Number(props.item.dailyPlPercent))">{{ props.item.dailyPlPercent | number }}</td>
+                    <td :class="markupClasses(amount(props.item.dailyPl))" v-hover>{{ props.item.dailyPl | amount(true) }}</td>
+                    <td :class="markupClasses(Number(props.item.dailyPlPercent))" v-hover>{{ props.item.dailyPlPercent | number }}</td>
                     <td class="text-xs-right ii-number-cell">{{ props.item.percCurrShare | number }}</td>
                     <td class="justify-center layout px-0" @click.stop>
                         <v-menu transition="slide-y-transition" bottom left>
