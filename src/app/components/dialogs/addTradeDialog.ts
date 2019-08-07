@@ -283,7 +283,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private moneyResiduals: MoneyResiduals = null;
     /** Признак доступности профессионального режима */
     private portfolioProModeEnabled = false;
-    /** Текущее количество бумаг по которой идёт поиск */
+    /** Текущее количество бумаг по которой идёт добавление сделки */
     private currentCountShareSearch: number = null;
 
     async mounted(): Promise<void> {
