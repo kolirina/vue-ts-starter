@@ -179,6 +179,8 @@ export interface BaseClient {
     referrerRepaidTotalAmount: string;
     /** Сумма причитаемого вознаграждения реферреру за партнерскую программу */
     referrerEarnedTotalAmount: string;
+    /** Подписан ли пользователь на emeil рассылку */
+    unsubscribed: boolean;
 }
 
 export interface ClientResponse extends BaseClient {

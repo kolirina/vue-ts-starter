@@ -126,6 +126,7 @@ export class ProfilePage extends UI {
      */
     @ShowProgress
     async created(): Promise<void> {
+        this.hasEmailSubscription = this.clientInfo.user.unsubscribed;
         this.username = this.clientInfo.user.username;
         this.email = this.clientInfo.user.email;
         if (![Tariff.FREE, Tariff.TRIAL].includes(this.clientInfo.user.tariff)) {
@@ -134,7 +135,7 @@ export class ProfilePage extends UI {
     }
 
     private async changeMailSubscription(): Promise<void> {
-        if (!this.hasEmailSubscription) {
+        if (this.hasEmailSubscription) {
             const result = await new ConfirmDialog().show(
                 "Вы действительно хотите отписаться от всех рассылок?" +
                 " В этом случае Вы перестанете получать важные сообщения о новом функционале сервиса, акциях и других важных новостях." +
@@ -143,10 +144,13 @@ export class ProfilePage extends UI {
                 return;
             }
             await this.clientService.unsubscribeMailSubscription();
+            this.hasEmailSubscription = false;
             this.$snotify.info("Вы успешно отписались от рассылок");
+        } else {
+            await this.clientService.subscribeMailSubscription();
+            this.hasEmailSubscription = true;
+            this.$snotify.info("Вы успешно подписались на рассылки");
         }
-        await this.clientService.subscribeMailSubscription();
-        this.$snotify.info("Вы успешно подписались на рассылки");
     }
 
     /**
