@@ -5,7 +5,7 @@ import {Client, ClientInfo, ClientService} from "../services/clientService";
 import {OverviewService} from "../services/overviewService";
 import {PortfolioParams, PortfolioService} from "../services/portfolioService";
 import {StoreKeys} from "../types/storeKeys";
-import {Portfolio} from "../types/types";
+import {Portfolio, TariffHint} from "../types/types";
 import {GetterType} from "./getterType";
 import {MutationType} from "./mutationType";
 
@@ -28,7 +28,7 @@ export class StateHolder {
     version = "1.0";
     /** Признак открытого меню */
     sideBarOpened: boolean = true;
-    tariffExpiredHintCoords: any = {
+    tariffExpiredHintCoords: TariffHint = {
         x: "0px",
         y: "0px",
         display: "none"
