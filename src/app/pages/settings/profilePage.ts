@@ -13,6 +13,7 @@ import {CancelOrderRequest, TariffService, UserPaymentInfo} from "../../services
 import {Tariff} from "../../types/tariff";
 import {CommonUtils} from "../../utils/commonUtils";
 import {DateUtils} from "../../utils/dateUtils";
+import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -86,14 +87,14 @@ const MainStore = namespace(StoreType.MAIN);
                             Информационная рассылка
                         </span>
                         <v-layout wrap>
-                            <div v-if="hasEmailSubscription" class="fs13 maxW778 mr-4 mt-3">
-                                Вы подписаны на письма по рассылкам. Отписавшись вы перестанете получать сообщения о новом функционале, акциях и других важных новостях.
-                            </div>
-                            <div v-else class="fs13 maxW778 mr-4 mt-3">
+                            <div v-if="clientInfo.user.unsubscribed" class="fs13 maxW778 mr-4 mt-3">
                                 Вы одписаны на письма по рассылкам. Подписавшись вы будете получать сообщения о новом функционале, акциях и других важных новостях.
                             </div>
+                            <div v-else class="fs13 maxW778 mr-4 mt-3">
+                                Вы подписаны на письма по рассылкам. Отписавшись вы перестанете получать сообщения о новом функционале, акциях и других важных новостях.
+                            </div>
                             <v-btn @click.stop="changeMailSubscription" class="mt-3" color="#EBEFF7">
-                                {{ hasEmailSubscription ? 'Отписаться' : 'Подписаться'}}
+                                {{ clientInfo.user.unsubscribed ? 'Подписаться' : 'Отписаться'}}
                             </v-btn>
                         </v-layout>
                     </v-card>
@@ -106,6 +107,8 @@ export class ProfilePage extends UI {
 
     @MainStore.Getter
     private clientInfo: ClientInfo;
+    @MainStore.Action(MutationType.RELOAD_CLIENT_INFO)
+    private reloadUser: () => Promise<void>;
     /** Сервис для работы с данными клиента */
     @Inject
     private clientService: ClientService;
@@ -135,7 +138,10 @@ export class ProfilePage extends UI {
     }
 
     private async changeMailSubscription(): Promise<void> {
-        if (this.hasEmailSubscription) {
+        if (this.clientInfo.user.unsubscribed) {
+            await this.clientService.subscribeMailSubscription();
+            this.$snotify.info("Вы успешно подписались на рассылки");
+        } else {
             const result = await new ConfirmDialog().show(
                 "Вы действительно хотите отписаться от всех рассылок?" +
                 " В этом случае Вы перестанете получать важные сообщения о новом функционале сервиса, акциях и других важных новостях." +
@@ -144,13 +150,10 @@ export class ProfilePage extends UI {
                 return;
             }
             await this.clientService.unsubscribeMailSubscription();
-            this.hasEmailSubscription = false;
             this.$snotify.info("Вы успешно отписались от рассылок");
-        } else {
-            await this.clientService.subscribeMailSubscription();
-            this.hasEmailSubscription = true;
-            this.$snotify.info("Вы успешно подписались на рассылки");
         }
+        this.clientService.resetClientInfo();
+        await this.reloadUser();
     }
 
     /**

@@ -38,6 +38,7 @@ export class ClientService {
     async getClientInfo(): Promise<Client> {
         if (!this.clientInfoCache) {
             const clientInfo = await this.http.get<ClientResponse>("/user/info");
+            console.log(clientInfo);
             this.clientInfoCache = await this.mapClientResponse(clientInfo);
         }
         return this.clientInfoCache;
