@@ -294,7 +294,6 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private onAssetTypeChange(): void {
-        this.clearFields();
         if (this.data.operation === undefined) {
             this.operation = this.assetType.operations[0];
         } else {
@@ -414,7 +413,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         await this.onTickerOrDateChange();
     }
 
-    private async calculateCurrentShareQuantity(): Promise<void> {
+    private calculateCurrentShareQuantity(): void {
         this.currentCountShareSearch = null;
         if (this.share) {
             if (this.isStockTrade) {
@@ -423,8 +422,6 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             } else if (this.isBondTrade) {
                 const row = this.portfolio.overview.bondPortfolio.rows.find(item => item.bond.ticker === this.share.ticker);
                 this.currentCountShareSearch = row ? row.quantity : null;
-            } else {
-                this.currentCountShareSearch = null;
             }
         }
     }
@@ -566,6 +563,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private clearFields(): void {
+        this.currentCountShareSearch = null;
         this.share = null;
         this.filteredShares = [];
         this.date = DateUtils.currentDate();
