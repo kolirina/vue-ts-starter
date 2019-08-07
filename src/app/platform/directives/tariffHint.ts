@@ -15,26 +15,27 @@ export class TariffHint implements DirectiveOptions {
      * @param {HTMLElement} el html элемент
      */
     bind(el: HTMLElement): void {
+        /** Проверяем истек ли тариф */
         if ((store as any).state.MAIN.isTariffExpired) {
-            if (!el.classList.contains("custom-v-menu")) {
-                el.addEventListener("mouseover", (event) => {
+            el.addEventListener("mouseover", (event) => {
+                (store as any).state.MAIN.tariffExpiredHintCoords = {
+                    x: event.pageX.toString() + "px",
+                    y: event.pageY.toString() + "px",
+                    display: "block"
+                };
+            });
+            el.addEventListener("mouseleave", (event) => {
+                /** Условие что бы при ховере на подсказку курсор не уезжал */
+                if (!(event.toElement.className === "custom-v-menu" || event.toElement.className === "v-menu-content")) {
                     (store as any).state.MAIN.tariffExpiredHintCoords = {
-                        x: event.pageX.toString() + "px",
-                        y: event.pageY.toString() + "px",
-                        display: "block"
+                        x: "0px",
+                        y: "0px",
+                        display: "none"
                     };
-                });
-                el.addEventListener("mouseleave", (event) => {
-                    if (!(event.toElement.className === "custom-v-menu" || event.toElement.className === "v-menu-content")) {
-                        (store as any).state.MAIN.tariffExpiredHintCoords = {
-                            x: "0px",
-                            y: "0px",
-                            display: "none"
-                        };
-                    }
-                });
-                el.classList.toggle("blur", true);
-            }
+                }
+            });
+            /** Добавляем класс для блюринга блока */
+            el.classList.toggle("blur", true);
         }
     }
 }
