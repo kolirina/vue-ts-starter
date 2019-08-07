@@ -76,11 +76,8 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                 <share-search :asset-type="assetType" :filtered-shares="filteredShares"
                                               placeholder="Тикер или название компании" class="required"
                                               @change="onShareSelect" @clear="onShareClear" autofocus></share-search>
-                                <div v-if="portfolio && stockTrade" class="fs12-dark-semi-bold margT10">
-                                    Текущее количество акций {{ getStockCount }}
-                                </div>
-                                <div v-if="portfolio && bondTrade" class="fs12-dark-semi-bold margT10">
-                                    Текущее количество облигаций {{ getBondCount }}
+                                <div v-if="currentCountShareSearch && (stockTrade || bondTrade)" class="fs12-dark-semi-bold margT10">
+                                    Текущее количество {{ stockTrade ? "акций" : "облигаций" }} {{ currentCountShareSearch }}
                                 </div>
                             </v-flex>
 
@@ -286,6 +283,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private moneyResiduals: MoneyResiduals = null;
     /** Признак доступности профессионального режима */
     private portfolioProModeEnabled = false;
+    private currentCountShareSearch: number = null;
 
     async mounted(): Promise<void> {
         this.clientInfo = await this.clientService.getClientInfo();
@@ -295,6 +293,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private onAssetTypeChange(): void {
+        this.currentCountShareSearch = null;
         if (this.data.operation === undefined) {
             this.operation = this.assetType.operations[0];
         } else {
@@ -409,8 +408,27 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     private async onShareSelect(share: Share): Promise<void> {
         this.share = share;
+        if (this.share && (this.bondTrade || this.stockTrade)) {
+            this.currentCountSearchShare();
+        }
         this.fillFieldsFromShare();
         await this.onTickerOrDateChange();
+    }
+
+    private async currentCountSearchShare(): Promise<void> {
+        if (this.stockTrade) {
+           this.portfolio.overview.stockPortfolio.rows.find(item => {
+                if (item.stock.ticker === this.share.ticker) {
+                    this.currentCountShareSearch = item.quantity || null;
+                }
+            });
+        } else {
+            this.portfolio.overview.bondPortfolio.rows.forEach(item => {
+                if (item.bond.ticker === this.share.ticker) {
+                    this.currentCountShareSearch = item.quantity || null;
+                }
+            });
+        }
     }
 
     private fillFieldsFromShare(): void {
@@ -721,14 +739,6 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     private get dialogTitle(): string {
         return `${this.editMode ? "Редактирование" : "Добавление"} сделки${this.editMode ? "" : " в"}`;
-    }
-
-    private get getStockCount(): string {
-        return this.portfolio.overview.stockPortfolio.rows.length.toString();
-    }
-
-    private get getBondCount(): string {
-        return this.portfolio.overview.bondPortfolio.rows.length.toString();
     }
 
     /**
