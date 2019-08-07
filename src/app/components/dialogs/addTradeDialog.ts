@@ -283,6 +283,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private moneyResiduals: MoneyResiduals = null;
     /** Признак доступности профессионального режима */
     private portfolioProModeEnabled = false;
+    /** Текущее количество бумаг по которой идёт поиск */
     private currentCountShareSearch: number = null;
 
     async mounted(): Promise<void> {
@@ -293,7 +294,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private onAssetTypeChange(): void {
-        this.currentCountShareSearch = null;
+        this.clearFields();
         if (this.data.operation === undefined) {
             this.operation = this.assetType.operations[0];
         } else {
@@ -408,26 +409,23 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     private async onShareSelect(share: Share): Promise<void> {
         this.share = share;
-        if (this.share && (this.isBondTrade || this.isStockTrade)) {
-            this.currentCountSearchShare();
-        }
+        this.calculateCurrentShareQuantity();
         this.fillFieldsFromShare();
         await this.onTickerOrDateChange();
     }
 
-    private async currentCountSearchShare(): Promise<void> {
-        if (this.isStockTrade) {
-           this.portfolio.overview.stockPortfolio.rows.find(item => {
-                if (item.stock.ticker === this.share.ticker) {
-                    this.currentCountShareSearch = item.quantity;
-                }
-            });
-        } else {
-            this.portfolio.overview.bondPortfolio.rows.find(item => {
-                if (item.bond.ticker === this.share.ticker) {
-                    this.currentCountShareSearch = item.quantity;
-                }
-            });
+    private async calculateCurrentShareQuantity(): Promise<void> {
+        this.currentCountShareSearch = null;
+        if (this.share) {
+            if (this.isStockTrade) {
+                const row = this.portfolio.overview.stockPortfolio.rows.find(item => item.stock.ticker === this.share.ticker);
+                this.currentCountShareSearch = row ? row.quantity : null;
+            } else if (this.isBondTrade) {
+                const row = this.portfolio.overview.bondPortfolio.rows.find(item => item.bond.ticker === this.share.ticker);
+                this.currentCountShareSearch = row ? row.quantity : null;
+            } else {
+                this.currentCountShareSearch = null;
+            }
         }
     }
 
