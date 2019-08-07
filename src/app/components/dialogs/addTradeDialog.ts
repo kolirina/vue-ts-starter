@@ -76,9 +76,6 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                 <share-search :asset-type="assetType" :filtered-shares="filteredShares"
                                               placeholder="Тикер или название компании" class="required"
                                               @change="onShareSelect" @clear="onShareClear" autofocus></share-search>
-                                <div v-if="currentCountShareSearch && (isStockTrade || isBondTrade)" class="fs12-dark-semi-bold margT10">
-                                    Текущее количество {{ isStockTrade ? "акций" : "облигаций" }} {{ currentCountShareSearch }}
-                                </div>
                             </v-flex>
 
                             <!-- Дата сделки -->
@@ -113,10 +110,16 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
 
                             <!-- Количество -->
                             <v-flex v-if="shareAssetType" xs12 sm6>
-                                <ii-number-field label="Количество" v-model="quantity" @keyup="calculateFee" :hint="lotSizeHint"
-                                                 persistent-hint name="quantity" :decimals="0"
+                                <ii-number-field label="Количество" v-model="quantity" @keyup="calculateFee" name="quantity" :decimals="0"
                                                  v-validate="'required|min_value:1'" :error-messages="errors.collect('quantity')" class="required" browser-autocomplete="false">
                                 </ii-number-field>
+                                <div class="fs12 mt-1">
+                                    <span v-if="showCurrentQuantityLabel">
+                                        Текущее количество {{ isStockTrade ? "акций" : "облигаций" }}
+                                        <a @click="setToQuantity" title="Подставить в Количество">{{ currentCountShareSearch }} шт.</a>
+                                    </span>
+                                    <span v-else>{{ lotSizeHint }}</span>
+                                </div>
                             </v-flex>
 
                             <!-- Номинал -->
@@ -635,6 +638,11 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         this.processShareEvent = true;
     }
 
+    private setToQuantity(): void {
+        this.quantity = this.currentCountShareSearch;
+        this.calculateFee();
+    }
+
     private get shareTicker(): string {
         switch (this.assetType) {
             case AssetType.STOCK:
@@ -735,6 +743,10 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     private get dialogTitle(): string {
         return `${this.editMode ? "Редактирование" : "Добавление"} сделки${this.editMode ? "" : " в"}`;
+    }
+
+    private get showCurrentQuantityLabel(): boolean {
+        return this.currentCountShareSearch && (this.isStockTrade || this.isBondTrade);
     }
 
     /**
