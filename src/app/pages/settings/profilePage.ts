@@ -121,7 +121,6 @@ export class ProfilePage extends UI {
     private email = "";
     /** Платежная информация пользователя */
     private paymentInfo: UserPaymentInfo = null;
-    private hasEmailSubscription: boolean = true;
 
     /**
      * Инициализирует данные компонента
@@ -129,7 +128,6 @@ export class ProfilePage extends UI {
      */
     @ShowProgress
     async created(): Promise<void> {
-        this.hasEmailSubscription = this.clientInfo.user.unsubscribed;
         this.username = this.clientInfo.user.username;
         this.email = this.clientInfo.user.email;
         if (![Tariff.FREE, Tariff.TRIAL].includes(this.clientInfo.user.tariff)) {
