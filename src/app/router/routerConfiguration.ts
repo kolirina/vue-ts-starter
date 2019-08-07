@@ -78,7 +78,7 @@ export class RouterConfiguration {
                 }
                 const tariffAllowed = (to.meta as RouteMeta).tariffAllowed;
                 if (!tariffAllowed && authorized) {
-                    const tariffExpired = client.tariff === Tariff.FREE || DateUtils.parseDate(client.paidTill).isBefore(dayjs());
+                    const tariffExpired = client.tariff !== Tariff.FREE && DateUtils.parseDate(client.paidTill).isBefore(dayjs());
                     if (tariffExpired) {
                         await new TariffExpiredDialog().show(RouterConfiguration.router);
                     }
