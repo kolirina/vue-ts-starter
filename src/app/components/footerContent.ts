@@ -12,9 +12,9 @@ import {FeedbackDialog} from "./dialogs/feedbackDialog";
             <div class="fs14"><i class="far fa-copyright"></i> {{ copyrightInfo }}</div>
 
             <div>
-<!--                <a v-if="clientInfo" @click.stop="openFeedBackDialog" class="fs14 mr-3 decorationNone">-->
-<!--                    <span>Напишите нам</span> <i class="fas fa-envelope"></i>-->
-<!--                </a>-->
+                <a v-if="clientInfo" href="mailto:web@intelinvest.ru" class="fs14 mr-3 decorationNone">
+                    <span>Напишите нам</span> <i class="fas fa-envelope"></i>
+                </a>
 
                 <a class="fs14 decorationNone" href="https://telegram.me/intelinvestSupportBot">
                     <span>Telegram</span> <i class="fab fa-telegram"></i>
