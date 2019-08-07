@@ -1,24 +1,21 @@
 import {DirectiveOptions} from "vue/types/options";
-import {VNodeDirective} from "vue/types/vnode";
 import {VuexConfiguration} from "../../vuex/vuexConfiguration";
 
 const store = VuexConfiguration.getStore();
 
 /**
- * Директива для показа ховер тултипа
+ * Директива для показа
  */
-export class HoverTooltip implements DirectiveOptions {
+export class TariffHint implements DirectiveOptions {
 
     /** Имя директивы */
-    static NAME = "hover";
+    static NAME = "tariffExpiredHint";
 
     /**
-     * Биндит событие для сохранения состояния UI-элементов
-     * @param {HTMLElement} el          html элемент
-     * @param {VNodeDirective} binding  контекст связывания
+     * @param {HTMLElement} el html элемент
      */
-    bind(el: HTMLElement, binding: VNodeDirective): void {
-        if (!(store as any).state.MAIN.isTariffExpired) {
+    bind(el: HTMLElement): void {
+        if ((store as any).state.MAIN.isTariffExpired) {
             if (!el.classList.contains("custom-v-menu")) {
                 el.addEventListener("mouseover", (event) => {
                     (store as any).state.MAIN.tariffExpiredHintCoords = {
@@ -28,10 +25,10 @@ export class HoverTooltip implements DirectiveOptions {
                     };
                 });
                 el.addEventListener("mouseleave", (event) => {
-                    if (event.toElement.className !== "v-menu-content") {
+                    if (!(event.toElement.className === "custom-v-menu" || event.toElement.className === "v-menu-content")) {
                         (store as any).state.MAIN.tariffExpiredHintCoords = {
-                            x: event.pageX.toString() + "0px",
-                            y: event.pageY.toString() + "0px",
+                            x: "0px",
+                            y: "0px",
                             display: "none"
                         };
                     }

@@ -16,7 +16,7 @@ import {DashboardBrick, DashboardData} from "../types/types";
                     <span v-html="block.tooltip"></span>
                 </v-tooltip>
             </v-card-title>
-            <v-container fluid pl-3 pt-0 v-hover>
+            <v-container fluid pl-3 pt-0 v-tariff-expired-hint>
                 <v-layout row class="mx-0 py-2 ">
                     <span class="dashboard-currency dashboard-card-big-nums" :class="block.mainCurrency">{{ block.mainValue }} </span>
                 </v-layout>

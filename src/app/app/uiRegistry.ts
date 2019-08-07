@@ -29,9 +29,9 @@ import {IINumberField} from "../components/iiNumberField";
 import {InplaceInput} from "../components/inplaceInput";
 import {ShareSearchComponent} from "../components/shareSearchComponent";
 import {StockLink} from "../components/stockLink";
-import {TariffExpiredHint} from "../components/tariffExpiredHover";
-import {HoverTooltip} from "../platform/directives/hoverTooltip";
+import {TariffExpiredHint} from "../components/tariffExpiredHint";
 import {StateDirective} from "../platform/directives/stateDirective";
+import {TariffHint} from "../platform/directives/tariffHint";
 import {Filters} from "../platform/filters/Filters";
 import {highchartsRu} from "../platform/locale/highchartsRu";
 import {RU} from "../platform/locale/ru";
@@ -135,7 +135,7 @@ export class UIRegistry {
 
         // директивы
         UI.directive(StateDirective.NAME, new StateDirective());
-        UI.directive(HoverTooltip.NAME, new HoverTooltip());
+        UI.directive(TariffHint.NAME, new TariffHint());
 
         UI.mixin({
             beforeCreate(): void {

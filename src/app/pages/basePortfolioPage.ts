@@ -115,7 +115,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                     </template>
                     <v-card-text>
                         <!-- Валюта тут не нужна так как валюта будет браться из каждого актива в отдельности -->
-                        <pie-chart ref="assetsPieChart" :data="assetsPieChartData" :balloon-title="portfolioName" tooltip-format="ASSETS" v-hover></pie-chart>
+                        <pie-chart ref="assetsPieChart" :data="assetsPieChartData" :balloon-title="portfolioName" tooltip-format="ASSETS" v-tariff-expired-hint></pie-chart>
                     </v-card-text>
                 </expanded-panel>
 
@@ -125,7 +125,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                         <chart-export-menu @print="print('stockPieChart')" @exportTo="exportTo('stockPieChart', $event)" class="exp-panel-menu"></chart-export-menu>
                     </template>
                     <v-card-text>
-                        <pie-chart ref="stockPieChart" :data="stockPieChartData" :view-currency="viewCurrency" v-hover></pie-chart>
+                        <pie-chart ref="stockPieChart" :data="stockPieChartData" :view-currency="viewCurrency" v-tariff-expired-hint></pie-chart>
                     </v-card-text>
                 </expanded-panel>
 
@@ -135,7 +135,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                         <chart-export-menu @print="print('bondPieChart')" @exportTo="exportTo('bondPieChart', $event)" class="exp-panel-menu"></chart-export-menu>
                     </template>
                     <v-card-text>
-                        <pie-chart ref="bondPieChart" :data="bondPieChartData" :view-currency="viewCurrency" v-hover></pie-chart>
+                        <pie-chart ref="bondPieChart" :data="bondPieChartData" :view-currency="viewCurrency" v-tariff-expired-hint></pie-chart>
                     </v-card-text>
                 </expanded-panel>
                 <expanded-panel v-if="blockNotEmpty(emptyBlockType.STOCK_PORTFOLIO)" :value="$uistate.sectorsGraph" :state="$uistate.SECTORS_PANEL" customMenu class="mt-3">
@@ -144,7 +144,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                         <chart-export-menu @print="print('sectorsChart')" @exportTo="exportTo('sectorsChart', $event)" class="exp-panel-menu"></chart-export-menu>
                     </template>
                     <v-card-text>
-                        <pie-chart v-if="sectorsChartData" ref="sectorsChart" v-hover
+                        <pie-chart v-if="sectorsChartData" ref="sectorsChart" v-tariff-expired-hint
                                    :data="sectorsChartData.data" :balloon-title="portfolioName" :view-currency="viewCurrency"></pie-chart>
                     </v-card-text>
                 </expanded-panel>

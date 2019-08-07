@@ -33,7 +33,7 @@ export class StateHolder {
         y: "0px",
         display: "none"
     };
-    /** Признак неоплаченого тарифа */
+    /** Признак истекшего тарифа */
     isTariffExpired: boolean = true;
 }
 

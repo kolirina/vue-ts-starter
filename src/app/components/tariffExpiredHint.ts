@@ -9,7 +9,7 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <div :style="{ left: hintCoords.x, top: hintCoords.y, display: hintCoords.display }" class="custom-v-menu" v-hover>
+        <div :style="{ left: hintCoords.x, top: hintCoords.y, display: hintCoords.display }" class="custom-v-menu" v-tariff-expired-hint>
             <div class="v-menu-content">
                 Подключите тарифный план “Профессионал”, чтобы открыть доступ ко всем возможностям сервиса.
                 Подробнее узнать про тарифные планы Intelinvest вы можете пройдя по <span @click.stop="goToTariff" class="link">ссылке</span>.
