@@ -1,30 +1,28 @@
 import {Container, Inject} from "typescript-ioc";
 import Component from "vue-class-component";
-import {UI} from "../app/ui";
-import {VMenu} from "../services/vMenu";
+import {namespace} from "vuex-class/lib/bindings";
+import {UI, Watch} from "../app/ui";
+import {StoreType} from "../vuex/storeType";
+
+const MainStore = namespace(StoreType.MAIN);
 
 @Component({
     // language=Vue
     template: `
-        <div :style="{ left: getLeftOffset(), top: getTopOffset() }" class="custom-v-menu">
-            <div class="content">
+        <div :style="{ left: coordsMenu.x, top: coordsMenu.y, display: coordsMenu.display }" class="custom-v-menu" v-hover>
+            <div class="v-menu-content">
                 Подключите тарифный план “Профессионал”, чтобы открыть доступ ко всем возможностям сервиса.
-                Подробнее узнать про тарифные планы Intelinvest вы можете пройдя по ссылке.
+                Подробнее узнать про тарифные планы Intelinvest вы можете пройдя по <span @click.stop="goToTariff" class="link">ссылке</span>.
             </div>
         </div>
     `
 })
 export class TariffExpiredHover extends UI {
 
-    @Inject
-    private vMenu: VMenu;
+    @MainStore.Getter
+    private coordsMenu: any;
 
-    private getLeftOffset(): string {
-        return this.vMenu.offsetX + "px" || "0px";
+    private goToTariff(): void {
+        this.$router.push({path: "/settings/tariffs"});
     }
-
-    private getTopOffset(): string {
-        return this.vMenu.offsetY  || "0px";
-    }
-
 }

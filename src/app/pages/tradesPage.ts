@@ -140,6 +140,7 @@ export class TradesPage extends UI {
 
     @Watch("portfolio")
     private async onPortfolioChange(): Promise<void> {
+        console.log(123);
         await this.loadTrades();
     }
 

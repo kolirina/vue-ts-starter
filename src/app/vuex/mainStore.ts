@@ -28,6 +28,11 @@ export class StateHolder {
     version = "1.0";
     /** Признак открытого меню */
     sideBarOpened: boolean = true;
+    customVMenu: any = {
+        x: "0px",
+        y: "0px",
+        display: "none"
+    };
 }
 
 const Getters = {
@@ -39,6 +44,9 @@ const Getters = {
     },
     [GetterType.SIDEBAR_OPENED](state: StateHolder): boolean {
         return state.sideBarOpened;
+    },
+    [GetterType.CHANGE_V_MENU_COORDS](state: StateHolder): any {
+        return state.customVMenu;
     }
 };
 
@@ -73,7 +81,7 @@ const Mutations = {
     },
     [MutationType.CHANGE_SIDEBAR_STATE](state: StateHolder, sideBarState: boolean): void {
         state.sideBarOpened = sideBarState;
-    },
+    }
 };
 
 /** Действия хранилища */

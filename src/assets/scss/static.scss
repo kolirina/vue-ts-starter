@@ -301,8 +301,7 @@ input[type="search"] {
   top: 0px;
   max-width: 433px;
   z-index: 200;
-  display: none;
-  .content {
+  .v-menu-content {
     font-size: 12px;
     line-height: 18px;
     color: #040427;
@@ -310,5 +309,9 @@ input[type="search"] {
     box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
     border-radius: 4px;
     padding: 13px;
+    .link {
+      color: red;
+      cursor: pointer;
+    }
   }
 }

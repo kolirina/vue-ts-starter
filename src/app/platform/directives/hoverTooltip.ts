@@ -1,6 +1,8 @@
 import {DirectiveOptions} from "vue/types/options";
 import {VNodeDirective} from "vue/types/vnode";
-import {UiStateHelper} from "../../utils/uiStateHelper";
+import {VuexConfiguration} from "../../vuex/vuexConfiguration";
+
+const store = VuexConfiguration.getStore();
 
 /**
  * Директива для показа ховер тултипа
@@ -15,13 +17,34 @@ export class HoverTooltip implements DirectiveOptions {
      * @param {HTMLElement} el          html элемент
      * @param {VNodeDirective} binding  контекст связывания
      */
-    bind(el: HTMLElement, binding: VNodeDirective): void {
-        el.addEventListener("mouseover", (event) => {
-            UiStateHelper.offsetX(event.clientX.toString());
-            UiStateHelper.offsetY(event.clientY.toString());
+    bind(el: HTMLElement, binding: VNodeDirective, vnode: any): void {
+        let test = false;
+        el.classList.forEach((elem: any) => {
+            if (elem === "custom-v-menu") {
+                test = true;
+                return;
+            }
         });
-        // el.addEventListener("mouseleave", () => {
-        // });
-        el.classList.add("blur");
+        if (!test) {
+            el.addEventListener("mouseover", (event) => {
+                (store as any).state.MAIN.customVMenu.x = event.pageX.toString() + "px";
+                (store as any).state.MAIN.customVMenu.y = event.pageY.toString() + "px";
+                (store as any).state.MAIN.customVMenu.display = "block";
+            });
+            el.addEventListener("mouseleave", (event) => {
+                if (typeof event.toElement.className !== "undefined") {
+                    if (event.toElement.className !== "v-menu-content") {
+                        (store as any).state.MAIN.customVMenu.x = "0px";
+                        (store as any).state.MAIN.customVMenu.y = "0px";
+                        (store as any).state.MAIN.customVMenu.display = "none";
+                    }
+                } else {
+                    (store as any).state.MAIN.customVMenu.x = "0px";
+                    (store as any).state.MAIN.customVMenu.y = "0px";
+                    (store as any).state.MAIN.customVMenu.display = "none";
+                }
+            });
+            el.classList.add("blur");
+        }
     }
 }

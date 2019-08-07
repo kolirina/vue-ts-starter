@@ -33,8 +33,8 @@ const MainStore = namespace(StoreType.MAIN);
                     <choose-risk v-if="!activePreloader && !isAnalys" @setRiskLevel="setRiskLevel"
                                 @analysisPortfolio="analysisPortfolio" :currentRiskLevel="currentRiskLevel"></choose-risk>
                     <preloader v-if="activePreloader"></preloader>
-                    <analysis-result v-if="!activePreloader && isAnalys && advicesUnicCode.length !== 0"
-                                    @goToChooseRiskType="goToChooseRiskType" :advicesUnicCode="advicesUnicCode"></analysis-result>
+                    <analysis-result v-if="!activePreloader && isAnalys && advicesUnicCode.length !== 0" v-hover
+                                     @goToChooseRiskType="goToChooseRiskType" :advicesUnicCode="advicesUnicCode"></analysis-result>
                     <empty-advice v-if="!activePreloader && isAnalys && advicesUnicCode.length === 0" @goToChooseRiskType="goToChooseRiskType"></empty-advice>
                 </v-card>
                 <v-card v-if="!hasTrades" flat class="py-5">
