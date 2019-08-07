@@ -36,8 +36,6 @@ export class StateHolder {
         y: "0px",
         display: "none"
     };
-    /** Признак истекшего тарифа */
-    isTariffExpired: boolean = true;
 }
 
 const Getters = {

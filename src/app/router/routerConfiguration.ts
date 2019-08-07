@@ -76,6 +76,7 @@ export class RouterConfiguration {
                 if (CommonUtils.isMobile()) {
                     (store as any).state.MAIN.sideBarOpened = true;
                 }
+                // осуществляем переход по роуту и если пользователь залогинен отображаем диалог об истечении тарифа при соблюдении условий
                 const tariffAllowed = (to.meta as RouteMeta).tariffAllowed;
                 if (!tariffAllowed && authorized) {
                     const tariffExpired = client.tariff !== Tariff.FREE && DateUtils.parseDate(client.paidTill).isBefore(dayjs());
