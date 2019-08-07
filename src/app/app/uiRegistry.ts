@@ -29,7 +29,7 @@ import {IINumberField} from "../components/iiNumberField";
 import {InplaceInput} from "../components/inplaceInput";
 import {ShareSearchComponent} from "../components/shareSearchComponent";
 import {StockLink} from "../components/stockLink";
-import {TariffExpiredHover} from "../components/tariffExpiredHover";
+import {TariffExpiredHint} from "../components/tariffExpiredHover";
 import {HoverTooltip} from "../platform/directives/hoverTooltip";
 import {StateDirective} from "../platform/directives/stateDirective";
 import {Filters} from "../platform/filters/Filters";
@@ -114,7 +114,7 @@ export class UIRegistry {
         UI.component("inplace-input", InplaceInput);
         UI.component("stock-link", StockLink);
         UI.component("bond-link", BondLink);
-        UI.component("tariff-expired", TariffExpiredHover);
+        UI.component("menu-tariff-expired", TariffExpiredHint);
         /* Компонент с маской для десятичных дробей */
         UI.component("ii-number-field", IINumberField);
         UI.component("share-search", ShareSearchComponent);

@@ -70,9 +70,9 @@ export class RouterConfiguration {
                     next(false);
                     return;
                 }
-                (store as any).state.MAIN.customVMenu.x = "0px";
-                (store as any).state.MAIN.customVMenu.y = "0px";
-                (store as any).state.MAIN.customVMenu.display = "none";
+                (store as any).state.MAIN.tariffExpiredHintCoords.x = "0px";
+                (store as any).state.MAIN.tariffExpiredHintCoords.y = "0px";
+                (store as any).state.MAIN.tariffExpiredHintCoords.display = "none";
                 const client = await clientService.getClientInfo();
                 const tariffExpired = client.tariff === Tariff.FREE || DateUtils.parseDate(client.paidTill).isBefore(dayjs());
                 (store as any).state.MAIN.isTariffExpired = tariffExpired;

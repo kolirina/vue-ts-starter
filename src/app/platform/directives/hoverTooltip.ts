@@ -19,26 +19,24 @@ export class HoverTooltip implements DirectiveOptions {
      */
     bind(el: HTMLElement, binding: VNodeDirective): void {
         if (!(store as any).state.MAIN.isTariffExpired) {
-            if (el.classList.length && !el.classList.contains("custom-v-menu")) {
+            if (!el.classList.contains("custom-v-menu")) {
                 el.addEventListener("mouseover", (event) => {
-                    (store as any).state.MAIN.customVMenu.x = event.pageX.toString() + "px";
-                    (store as any).state.MAIN.customVMenu.y = event.pageY.toString() + "px";
-                    (store as any).state.MAIN.customVMenu.display = "block";
+                    (store as any).state.MAIN.tariffExpiredHintCoords = {
+                        x: event.pageX.toString() + "px",
+                        y: event.pageY.toString() + "px",
+                        display: "block"
+                    };
                 });
                 el.addEventListener("mouseleave", (event) => {
-                    if (typeof event.toElement.className !== "undefined") {
-                        if (event.toElement.className !== "v-menu-content") {
-                            (store as any).state.MAIN.customVMenu.x = "0px";
-                            (store as any).state.MAIN.customVMenu.y = "0px";
-                            (store as any).state.MAIN.customVMenu.display = "none";
-                        }
-                    } else {
-                        (store as any).state.MAIN.customVMenu.x = "0px";
-                        (store as any).state.MAIN.customVMenu.y = "0px";
-                        (store as any).state.MAIN.customVMenu.display = "none";
+                    if (event.toElement.className !== "v-menu-content") {
+                        (store as any).state.MAIN.tariffExpiredHintCoords = {
+                            x: event.pageX.toString() + "0px",
+                            y: event.pageY.toString() + "0px",
+                            display: "none"
+                        };
                     }
                 });
-                el.classList.add("blur");
+                el.classList.toggle("blur", true);
             }
         }
     }
