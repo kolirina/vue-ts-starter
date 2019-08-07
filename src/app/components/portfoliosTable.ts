@@ -92,6 +92,11 @@ const MainStore = namespace(StoreType.MAIN);
                                         Удалить
                                     </v-list-tile-title>
                                 </v-list-tile>
+                                <v-list-tile @click="clearPortfolio(props.item.id)">
+                                    <v-list-tile-title class="delete-btn">
+                                        Очистить
+                                    </v-list-tile-title>
+                                </v-list-tile>
                             </v-list>
                         </v-menu>
                     </td>
@@ -234,6 +239,13 @@ export class PortfoliosTable extends UI {
         await this.portfolioService.createPortfolioCopy(id);
         this.$snotify.info("Копия портфеля успешно создана");
         UI.emit(EventType.PORTFOLIO_CREATED);
+    }
+
+    private async clearPortfolio(porfolioId: number): Promise<void> {
+        const result = await new ConfirmDialog().show(`Вы уверены, что хотите удалить все сделки в портфеле`);
+        if (result === BtnReturn.YES) {
+            await this.portfolioService.clearPortfolio(porfolioId);
+        }
     }
 
     private publicLink(id: string): string {
