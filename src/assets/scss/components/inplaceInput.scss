@@ -6,8 +6,9 @@
   padding: 5px 5px 5px 20px;
   height: 60px;
   width: 247px;
-  cursor: text;
+  cursor: default;
   input {
+    cursor: default;
     outline: none;
     font-size: 14px !important;
     color: #3D4656 !important;
@@ -16,6 +17,10 @@
 .active-inplace-custom-input {
   border-bottom: 2px solid #3B6EC9;
   cursor: initial !important;
+  cursor: text !important;
+  input {
+    cursor: text;
+  }
 }
 .btn-action-section {
   button {
