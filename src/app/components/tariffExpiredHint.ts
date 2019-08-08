@@ -16,7 +16,7 @@ const MainStore = namespace(StoreType.MAIN);
                 Подключите любой платный тарифный план (Профессионал или Стандарт) для получения доступа ко всем возможностям сервиса.
                 Подробнее узнать о тарифных планах Intelinvest, вы можете по <span @click.stop="goToTariff" class="link">ссылке</span>.
             </div>
-            <div v-else-if="isExpiredStandart" class="v-menu-content">
+            <div v-else-if="isExpiredStandard" class="v-menu-content">
                 Продлите вашу подписку на тарифный план Стандарт или подключите тарифный план Профессионал для получения доступа ко всем возможностям сервиса.
                 Подробнее узнать о тарифных планах Intelinvest, вы можете по <span @click.stop="goToTariff" class="link">ссылке</span>.
             </div>
@@ -39,11 +39,6 @@ export class TariffExpiredHint extends UI {
     private tariff = Tariff;
 
     private goToTariff(): void {
-        this.$store.state.MAIN.tariffExpiredHintCoords = {
-            x: "0px",
-            y: "0px",
-            display: "none"
-        };
         this.$router.push({path: "/settings/tariffs"});
     }
 
@@ -55,7 +50,7 @@ export class TariffExpiredHint extends UI {
         return this.clientInfo.user.tariff === this.tariff.TRIAL && this.expiredTariff;
     }
 
-    private get isExpiredStandart(): boolean {
+    private get isExpiredStandard(): boolean {
         return this.clientInfo.user.tariff === this.tariff.STANDARD && this.expiredTariff;
     }
 
