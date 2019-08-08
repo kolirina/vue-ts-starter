@@ -8,7 +8,7 @@ import {UI} from "../app/ui";
 @Component({
     // language=Vue
     template: `
-        <v-layout :class="['inplace-custom-input', isEditMode ? 'active-inplace-custom-input' : '']" justify-space-between>
+        <v-layout @click="focus" :class="['inplace-custom-input', isEditMode ? 'active-inplace-custom-input' : '']" justify-space-between>
             <input ref="inplaceInput" v-model.trim="editableValue" @keyup.enter="emitCompleteEvent"
                    @keyup.esc="closeInput" :maxlength="maxLength" :placeholder="placeholder">
             <v-btn v-show="!isEditMode" @click="setEditMode" ref="editBtn" flat icon color="indigo">
@@ -56,6 +56,9 @@ export class InplaceInput extends UI {
     mounted(): void {
         this.updateEditableValue();
         window.addEventListener("click", (event: any) => {
+            if (this.isEditMode && event.target === this.$refs.inplaceInput) {
+                return;
+            }
             if (event.path.find((element: object) => element === this.$refs.editBtn.$vnode.elm)) {
                 this.$refs.inplaceInput.focus();
                 this.isEditMode = true;
@@ -77,6 +80,10 @@ export class InplaceInput extends UI {
             this.$emit("input", this.editableValue);
             this.closeInput();
         }
+    }
+
+    private focus(): void {
+        this.$refs.inplaceInput.focus();
     }
 
     private updateEditableValue(): void {
