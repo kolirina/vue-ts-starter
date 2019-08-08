@@ -1,4 +1,3 @@
-import dayjs from "dayjs";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";

@@ -61,7 +61,6 @@ export class DealsImportProvider extends (EnumType as IStaticEnum<DealsImportPro
     static readonly ZERICH = new DealsImportProvider("ZERICH", "Церих");
     static readonly BCS_CYPRUS = new DealsImportProvider("BCS_CYPRUS", "BCScyprus");
     static readonly FREEDOM_FINANCE = new DealsImportProvider("FREEDOM_FINANCE", "Freedom Finance");
-    static readonly NETTRADER = new DealsImportProvider("NETTRADER", "Nettrader");
     static readonly ITINVEST = new DealsImportProvider("ITINVEST", "ITIcapital");
     static readonly ATON = new DealsImportProvider("ATON", "Атон");
     static readonly ALFACAPITAL = new DealsImportProvider("ALFACAPITAL", "Альфа-Капитал");
