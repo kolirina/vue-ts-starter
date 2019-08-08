@@ -12,6 +12,7 @@ import {MenuBottomNavigation} from "../components/menu/menuBottomNavigation";
 import {MenuHeader} from "../components/menu/menuHeader";
 import {NavigationList} from "../components/menu/navigationList";
 import {SignIn} from "../components/signIn";
+import {TariffExpiredHint} from "../components/tariffExpiredHint";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {BtnReturn} from "../platform/dialogs/customDialog";
 import {Storage} from "../platform/services/storage";
@@ -32,6 +33,7 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-app id="inspire" light>
+            <tariff-expired-hint></tariff-expired-hint>
             <vue-snotify></vue-snotify>
             <error-handler></error-handler>
             <template v-if="!loading && !loggedIn">
@@ -94,7 +96,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-content>
             </template>
         </v-app>`,
-    components: {ContentLoader, ErrorHandler, FeedbackDialog, SignIn, FooterContent, MenuHeader, NavigationList, MenuBottomNavigation}
+    components: {ContentLoader, ErrorHandler, FeedbackDialog, SignIn, FooterContent, MenuHeader, NavigationList, MenuBottomNavigation, TariffExpiredHint}
 })
 export class AppFrame extends UI {
 
