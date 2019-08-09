@@ -10,7 +10,7 @@ import {UI} from "../app/ui";
     template: `
         <v-layout @dblclick="onEdit" :class="['inplace-custom-input', editMode ? 'active-inplace-custom-input' : '']" justify-space-between>
             <input ref="inplaceInput" v-model.trim="editableValue" @keyup.enter="emitCompleteEvent"
-                   :readonly="!editMode" @dblclick="onEdit"
+                   :readonly="!editMode"
                    @keyup.esc="dismissChanges" :maxlength="maxLength" :placeholder="placeholder"
                    v-click-outside="dismissChanges">
             <v-btn v-show="!editMode" @click.stop="onEdit" flat icon color="indigo">
@@ -85,6 +85,7 @@ export class InplaceInput extends UI {
 
     private closeInput(): void {
         this.editMode = false;
+        this.$refs.inplaceInput.setSelectionRange(0, 0);
     }
 
     private dismissChanges(): void {
