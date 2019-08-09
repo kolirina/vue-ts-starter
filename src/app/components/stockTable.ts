@@ -77,7 +77,16 @@ const MainStore = namespace(StoreType.MAIN);
                     </td>
                     <td v-if="tableHeadersState.quantity" class="text-xs-right ii-number-cell">{{props.item.quantity}}</td>
                     <td v-if="tableHeadersState.avgBuy" class="text-xs-right ii-number-cell">
-                        <template>{{ props.item.avgBuy | amount(false, null, false, false) }}</template>
+                        <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                            <template #activator="{ on }">
+                                <span class="data-table__header-with-tooltip" v-on="on">
+                                    {{ props.item.avgBuy | amount(false, null, false, false) }}
+                                </span>
+                            </template>
+                            <span>
+                                Комисси суммарные {{ props.item.summFee }} Средняя без учета комиссий {{ props.item.avgBuyClean }}
+                            </span>
+                        </v-tooltip>
                     </td>
                     <td v-if="tableHeadersState.currPrice" class="text-xs-right ii-number-cell">
                         <template>{{ props.item.currPrice | amount(false, null, false, false) }}</template>
