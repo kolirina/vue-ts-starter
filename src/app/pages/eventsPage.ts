@@ -75,23 +75,19 @@ const MainStore = namespace(StoreType.MAIN);
 
                 <v-card-text>
                     <div class="eventsAggregateInfo" v-if="eventsAggregateInfo">
-                        <span class="item-block">
-                            <span class="item-block__eventLegend dividend"/>
+                        <span class="item-block dividend_news">
                             <span :class="['item-block__amount', currency]">Дивиденды {{ eventsAggregateInfo.totalDividendsAmount | number }} </span>
                         </span>
 
-                        <span class="item-block">
-                            <span class="item-block__eventLegend coupon"/>
+                        <span class="item-block coupon">
                             <span :class="['item-block__amount', currency]">Купоны {{ eventsAggregateInfo.totalCouponsAmount | number }} </span>
                         </span>
 
-                        <span class="item-block">
-                            <span class="item-block__eventLegend amortization"/>
+                        <span class="item-block amortization">
                             <span :class="['item-block__amount', currency]">Амортизация {{ eventsAggregateInfo.totalAmortizationsAmount | number }} </span>
                         </span>
 
-                        <span class="item-block">
-                            <span class="item-block__eventLegend repayment"/>
+                        <span class="item-block repayment">
                             <span :class="['item-block__amount', currency]">Погашения {{ eventsAggregateInfo.totalRepaymentsAmount | number }} </span>
                         </span>
 
