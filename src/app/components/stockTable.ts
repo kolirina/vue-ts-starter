@@ -84,7 +84,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 </span>
                             </template>
                             <span>
-                                Комисси суммарные {{ props.item.summFee | amount(true) }} <br>
+                                Комиссии суммарные {{ props.item.summFee | amount(true) }} <br>
                                 Средняя без учета комиссий {{ props.item.avgBuyClean | amount(false, null, false, false) }}
                             </span>
                         </v-tooltip>
