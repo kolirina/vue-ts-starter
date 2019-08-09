@@ -8,17 +8,18 @@ import {UI} from "../app/ui";
 @Component({
     // language=Vue
     template: `
-        <v-layout :class="['inplace-custom-input', isEditMode ? 'active-inplace-custom-input' : '']" justify-space-between>
+        <v-layout :class="['inplace-custom-input', editMode ? 'active-inplace-custom-input' : '']" justify-space-between>
             <input ref="inplaceInput" v-model.trim="editableValue" @keyup.enter="emitCompleteEvent"
-                   @keyup.esc="closeInput" :maxlength="maxLength" :placeholder="placeholder">
-            <v-btn v-show="!isEditMode" @click="setEditMode" ref="editBtn" flat icon color="indigo">
+                   @keyup.esc="dismissChanges" :maxlength="maxLength" :placeholder="placeholder"
+                   v-click-outside="dismissChanges">
+            <v-btn v-show="!editMode" @click.stop="onEdit" ref="editBtn" flat icon color="indigo">
                 <i class="profile-edit"></i>
             </v-btn>
-            <v-layout v-if="isEditMode" class="initial-flex btn-action-section" align-center>
-                <v-btn @click="emitCompleteEvent()" small flat icon color="indigo">
+            <v-layout v-if="editMode" class="initial-flex btn-action-section" align-center>
+                <v-btn @click="emitCompleteEvent" title="Сохранить" small flat icon color="indigo">
                     <v-icon>done</v-icon>
                 </v-btn>
-                <v-btn @click="closeInput()" small flat icon color="indigo">
+                <v-btn @click="dismissChanges" title="Отменить" small flat icon color="indigo">
                     <v-icon>clear</v-icon>
                 </v-btn>
             </v-layout>
@@ -47,26 +48,17 @@ export class InplaceInput extends UI {
     /** Значение введенное пользователем */
     private editableValue: string = null;
     /** Режим редактирования */
-    private isEditMode: boolean = false;
+    private editMode: boolean = false;
+    /** Первоначальное значение */
+    private oldValue = "";
 
     /**
      * Инициализирует данные компонента
      * @inheritDoc
      */
-    mounted(): void {
-        this.updateEditableValue();
-        window.addEventListener("click", (event: any) => {
-            if (this.isEditMode && (event.target === this.$refs.inplaceInput || event.target.classList.contains("inplace-custom-input"))) {
-                return;
-            }
-            if (event.path.find((element: object) => element === this.$refs.editBtn.$vnode.elm)) {
-                this.$refs.inplaceInput.focus();
-                this.isEditMode = true;
-            } else {
-                this.$refs.inplaceInput.blur();
-                this.isEditMode = false;
-            }
-        });
+    created(): void {
+        this.editableValue = this.value;
+        this.oldValue = this.editableValue;
     }
 
     /**
@@ -76,26 +68,29 @@ export class InplaceInput extends UI {
         if (this.editableValue.length > this.maxLength) {
             throw new Error("Размер вводимого значения не должен превышать " + this.maxLength);
         }
+        this.oldValue = this.editableValue;
         if (this.editableValue !== this.value) {
             this.$emit("input", this.editableValue);
-            this.closeInput();
         }
+        this.closeInput();
     }
 
-    private updateEditableValue(): void {
+    private onEdit(): void {
+        this.editMode = true;
+        // если старого значения нет, значит оно было очищено, подставляем снова значение отображаемое в режиме просмотра
+        this.editableValue = this.oldValue || this.value || "";
         this.$nextTick(() => {
-            this.editableValue = this.value;
+            this.$refs.inplaceInput.setSelectionRange(0, this.editableValue.length);
+            this.$refs.inplaceInput.focus();
         });
     }
 
-    private setEditMode(): void {
-        this.isEditMode = true;
-    }
-
     private closeInput(): void {
-        this.updateEditableValue();
-        this.$refs.inplaceInput.blur();
-        this.isEditMode = false;
+        this.editMode = false;
     }
 
+    private dismissChanges(): void {
+        this.closeInput();
+        this.editableValue = this.oldValue;
+    }
 }

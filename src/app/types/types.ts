@@ -13,11 +13,11 @@ export type _portfolioRow = {
     assetType: string
 };
 
-export type TariffHint = {
-    x: string,
-    y: string,
-    display: string
-};
+export interface TariffHint {
+    x: string;
+    y: string;
+    display: string;
+}
 
 export type NavBarItem = {
     title: string,
