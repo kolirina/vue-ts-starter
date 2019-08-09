@@ -8,15 +8,15 @@ import {UI} from "../app/ui";
 @Component({
     // language=Vue
     template: `
-        <v-layout :class="['inplace-custom-input', editMode ? 'active-inplace-custom-input' : '']" justify-space-between>
+        <v-layout @dblclick="onEdit" :class="['inplace-custom-input', editMode ? 'active-inplace-custom-input' : '']" justify-space-between>
             <input ref="inplaceInput" v-model.trim="editableValue" @keyup.enter="emitCompleteEvent"
                    :readonly="!editMode" @dblclick="onEdit"
                    @keyup.esc="dismissChanges" :maxlength="maxLength" :placeholder="placeholder"
                    v-click-outside="dismissChanges">
-            <v-btn v-show="!editMode" @click.stop="onEdit" ref="editBtn" flat icon color="indigo">
+            <v-btn v-show="!editMode" @click.stop="onEdit" flat icon color="indigo">
                 <i class="profile-edit"></i>
             </v-btn>
-            <v-layout v-if="editMode" class="initial-flex btn-action-section" align-center>
+            <v-layout v-show="editMode" class="initial-flex btn-action-section" align-center>
                 <v-btn @click="emitCompleteEvent" title="Сохранить" small flat icon color="indigo">
                     <v-icon>done</v-icon>
                 </v-btn>
@@ -30,7 +30,6 @@ import {UI} from "../app/ui";
 export class InplaceInput extends UI {
 
     $refs: {
-        editBtn: any,
         inplaceInput: HTMLInputElement
     };
 
@@ -80,10 +79,8 @@ export class InplaceInput extends UI {
         this.editMode = true;
         // если старого значения нет, значит оно было очищено, подставляем снова значение отображаемое в режиме просмотра
         this.editableValue = this.oldValue || this.value || "";
-        this.$nextTick(() => {
-            this.$refs.inplaceInput.setSelectionRange(0, this.editableValue.length);
-            this.$refs.inplaceInput.focus();
-        });
+        this.$refs.inplaceInput.select();
+        this.$refs.inplaceInput.focus();
     }
 
     private closeInput(): void {
