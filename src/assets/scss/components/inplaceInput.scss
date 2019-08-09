@@ -8,6 +8,7 @@
   width: 247px;
   cursor: default;
   input {
+    max-width: 160px;
     cursor: default;
     outline: none;
     font-size: 14px !important;
@@ -23,13 +24,9 @@
   }
 }
 .btn-action-section {
+  min-width: 58px;
   button {
-    &:first-child {
-      margin-right: 0px !important;
-    }
-    &:last-child {
-      margin-left: 0px !important;
-    }
+    margin: 0px !important;
     i {
       font-size: 18px !important;
     }

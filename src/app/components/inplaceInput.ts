@@ -13,10 +13,12 @@ import {UI} from "../app/ui";
                    :readonly="!editMode"
                    @keyup.esc="dismissChanges" :maxlength="maxLength" :placeholder="placeholder"
                    v-click-outside="dismissChanges">
-            <v-btn v-show="!editMode" @click.stop="onEdit" flat icon color="indigo">
-                <i class="profile-edit"></i>
-            </v-btn>
-            <v-layout v-show="editMode" class="initial-flex btn-action-section" align-center>
+            <v-layout v-if="!editMode" class="initial-flex btn-action-section" align-center justify-end>
+                <v-btn @click.stop="onEdit" flat icon color="indigo">
+                    <i class="profile-edit"></i>
+                </v-btn>
+            </v-layout>
+            <v-layout v-if="editMode" class="initial-flex btn-action-section" align-center justify-end>
                 <v-btn @click="emitCompleteEvent" title="Сохранить" small flat icon color="indigo">
                     <v-icon>done</v-icon>
                 </v-btn>
