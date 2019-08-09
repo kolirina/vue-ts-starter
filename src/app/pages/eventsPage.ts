@@ -76,23 +76,23 @@ const MainStore = namespace(StoreType.MAIN);
                 <v-card-text>
                     <div class="eventsAggregateInfo" v-if="eventsAggregateInfo">
                         <span class="item-block dividend_news">
-                            <span class="item-block__amount ">Дивиденды {{ eventsAggregateInfo.totalDividendsAmount | number }} </span>
+                            <span :class="['item-block__amount', currency]">Дивиденды {{ eventsAggregateInfo.totalDividendsAmount | number }} </span>
                         </span>
 
                         <span class="item-block coupon">
-                            <span class="item-block__amount">Купоны {{ eventsAggregateInfo.totalCouponsAmount | number }} </span>
+                            <span :class="['item-block__amount', currency]">Купоны {{ eventsAggregateInfo.totalCouponsAmount | number }} </span>
                         </span>
 
                         <span class="item-block amortization">
-                            <span class="item-block__amount">Амортизация {{ eventsAggregateInfo.totalAmortizationsAmount | number }} </span>
+                            <span :class="['item-block__amount', currency]">Амортизация {{ eventsAggregateInfo.totalAmortizationsAmount | number }} </span>
                         </span>
 
                         <span class="item-block repayment">
-                            <span class="item-block__amount">Погашения {{ eventsAggregateInfo.totalRepaymentsAmount | number }} </span>
+                            <span :class="['item-block__amount', currency]">Погашения {{ eventsAggregateInfo.totalRepaymentsAmount | number }} </span>
                         </span>
 
                         <span class="item-block total">
-                            <span class="item-block__amount">Всего выплат {{ eventsAggregateInfo.totalAmount | number }} </span>
+                            <span :class="['item-block__amount', currency]">Всего выплат {{ eventsAggregateInfo.totalAmount | number }} </span>
                         </span>
                     </div>
 
