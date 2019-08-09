@@ -46,27 +46,27 @@ export class ImportService {
 @Enum("code")
 export class DealsImportProvider extends (EnumType as IStaticEnum<DealsImportProvider>) {
 
-    static readonly SBERBANK = new DealsImportProvider("SBERBANK", "Сбербанк");
-    static readonly BCS = new DealsImportProvider("BCS", "БКС");
-    static readonly TINKOFF = new DealsImportProvider("TINKOFF", "Тинькофф");
-    static readonly PSBANK = new DealsImportProvider("PSBANK", "ПромСвязьБанк");
-    static readonly VTB24 = new DealsImportProvider("VTB24", "ВТБ 24");
-    static readonly OTKRYTIE = new DealsImportProvider("OTKRYTIE", "Открытие");
-    static readonly QUIK = new DealsImportProvider("QUIK", "QUIK");
-    static readonly FINAM = new DealsImportProvider("FINAM", "Финам");
-    static readonly ALFADIRECT = new DealsImportProvider("ALFADIRECT", "Альфа-директ");
-    static readonly URALSIB = new DealsImportProvider("URALSIB", "Уралсиб");
-    static readonly KITFINANCE = new DealsImportProvider("KITFINANCE", "КИТфинанс");
-    static readonly INTERACTIVE_BROKERS = new DealsImportProvider("INTERACTIVE_BROKERS", "Interactive brokers");
-    static readonly ZERICH = new DealsImportProvider("ZERICH", "Церих");
-    static readonly BCS_CYPRUS = new DealsImportProvider("BCS_CYPRUS", "BCScyprus");
-    static readonly FREEDOM_FINANCE = new DealsImportProvider("FREEDOM_FINANCE", "Freedom Finance");
-    static readonly ITINVEST = new DealsImportProvider("ITINVEST", "ITIcapital");
-    static readonly ATON = new DealsImportProvider("ATON", "Атон");
-    static readonly ALFACAPITAL = new DealsImportProvider("ALFACAPITAL", "Альфа-Капитал");
-    static readonly INTELINVEST = new DealsImportProvider("INTELINVEST", "Intelinvest");
+    static readonly SBERBANK = new DealsImportProvider("SBERBANK", "Сбербанк", 400);
+    static readonly BCS = new DealsImportProvider("BCS", "БКС", 193);
+    static readonly TINKOFF = new DealsImportProvider("TINKOFF", "Тинькофф", 585);
+    static readonly PSBANK = new DealsImportProvider("PSBANK", "ПромСвязьБанк", 337);
+    static readonly VTB24 = new DealsImportProvider("VTB24", "ВТБ 24", 103);
+    static readonly OTKRYTIE = new DealsImportProvider("OTKRYTIE", "Открытие", 304);
+    static readonly QUIK = new DealsImportProvider("QUIK", "QUIK", -2);
+    static readonly FINAM = new DealsImportProvider("FINAM", "Финам", 487);
+    static readonly ALFADIRECT = new DealsImportProvider("ALFADIRECT", "Альфа-директ", 34);
+    static readonly URALSIB = new DealsImportProvider("URALSIB", "Уралсиб", 480);
+    static readonly KITFINANCE = new DealsImportProvider("KITFINANCE", "КИТфинанс", 189);
+    static readonly INTERACTIVE_BROKERS = new DealsImportProvider("INTERACTIVE_BROKERS", "Interactive brokers", 544);
+    static readonly ZERICH = new DealsImportProvider("ZERICH", "Церих", 513);
+    static readonly BCS_CYPRUS = new DealsImportProvider("BCS_CYPRUS", "BCScyprus", 193);
+    static readonly FREEDOM_FINANCE = new DealsImportProvider("FREEDOM_FINANCE", "Freedom Finance", 501);
+    static readonly ITINVEST = new DealsImportProvider("ITINVEST", "ITIcapital", 15);
+    static readonly ATON = new DealsImportProvider("ATON", "Атон", 45);
+    static readonly ALFACAPITAL = new DealsImportProvider("ALFACAPITAL", "Альфа-Капитал", 474);
+    static readonly INTELINVEST = new DealsImportProvider("INTELINVEST", "Intelinvest", -1);
 
-    private constructor(public code: string, public description: string) {
+    private constructor(public code: string, public description: string, public id: number) {
         super();
     }
 }
