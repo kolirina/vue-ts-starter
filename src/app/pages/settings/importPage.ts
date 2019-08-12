@@ -309,7 +309,7 @@ export class ImportPage extends UI {
         if (this.files && this.files.length && this.selectedProvider) {
             if (this.portfolio.portfolioParams.brokerId && this.portfolio.portfolioParams.brokerId !== this.selectedProvider.id) {
                 const result = await new ConfirmDialog().show(`Внимание! Вы загружаете отчет брокера ${this.selectedProvider.description} в портфель,
-                    где ранее были загрузки отчетов брокера ${this.getNameCurrentBroker}.
+                    в который ранее были загружены отчеты брокера ${this.getNameCurrentBroker}.
                     При продолжении импорта, могут возникнуть дубли существующих в вашем портфеле сделок.
                     Мы рекомендуем загружать отчеты разных брокеров в разные портфели и объединять их в составной портфель.`);
                 if (result !== BtnReturn.YES) {
