@@ -23,7 +23,7 @@ import {DisableConcurrentExecution} from "../../platform/decorators/disableConcu
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {DividendInfo, DividendService} from "../../services/dividendService";
-import {TradeFields} from "../../services/tradeService";
+import {TradeFields, TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
 import {BigMoney} from "../../types/bigMoney";
 import {Operation} from "../../types/operation";
@@ -109,6 +109,8 @@ export class DividendTradesTable extends UI {
     private reloadPortfolio: (id: number) => Promise<void>;
     @Inject
     private dividendService: DividendService;
+    @Inject
+    private tradesService: TradeService;
 
     private headers: TableHeader[] = [
         {text: "Тикер", align: "left", value: "ticker", width: "45"},
@@ -167,7 +169,7 @@ export class DividendTradesTable extends UI {
     @ShowProgress
     @DisableConcurrentExecution
     private async deleteDividendTradeAndShowMessage(dividendTrade: DividendInfo): Promise<void> {
-        await this.dividendService.deleteTrade({tradeId: dividendTrade.id, portfolioId: this.portfolio.id});
+        await this.tradesService.deleteTrade({tradeId: dividendTrade.id, portfolioId: this.portfolio.id});
         await this.reloadPortfolio(this.portfolio.id);
         this.$snotify.info("Сделка успешно удалена");
     }
