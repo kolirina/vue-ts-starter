@@ -308,7 +308,10 @@ export class ImportPage extends UI {
     private async uploadFile(): Promise<void> {
         if (this.files && this.files.length && this.selectedProvider) {
             if (this.portfolio.portfolioParams.brokerId && (this.portfolio.portfolioParams.brokerId !== this.selectedProvider.id)) {
-                const result = await new ConfirmDialog().show(`Брокер не совпадает с тем что был выбран по умолчанию. Хотите продолжить?`);
+                const result = await new ConfirmDialog().show(`Внимание! Вы загружаете отчет брокера ${this.selectedProvider.description} в портфель,
+                    где ранее были загрузки отчетов брокера ${this.getNameCurrentBroker}.
+                    При продолжении импорта, могут возникнуть дубли существующих в вашем портфеле сделок.
+                    Мы рекомендуем загружать отчеты разных брокеров в разные портфели и объединять их в составной портфель.`);
                 if (result !== BtnReturn.YES) {
                     return;
                 }
@@ -317,6 +320,11 @@ export class ImportPage extends UI {
             await this.handleUploadResponse(response);
             this.clearFiles();
         }
+    }
+
+    private get getNameCurrentBroker(): string {
+        const name = this.providers.values().find(item => item.id === this.portfolio.portfolioParams.brokerId);
+        return name.description;
     }
 
     /**
