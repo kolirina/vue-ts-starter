@@ -124,7 +124,7 @@ export class AdviceService {
             case AdviceCodeIntelinvest.SHARE_ABOVE_40:
                 return `В вашем портфеле есть акция ${adviceUnicCode.param}, занимающая более 40% всех ваших инвестиций`;
             case AdviceCodeIntelinvest.AVG_BOND_YIELD_BELOW_DEPOSIT:
-                return `Среднегодовая доходность вашего портфеля меньше ставки по депозитам`;
+                return `Среднегодовая доходность облигаций в вашем портфеле меньше ставки по депозитам`;
         }
         throw new Error(`Неизвестный тип проблемы`);
     }

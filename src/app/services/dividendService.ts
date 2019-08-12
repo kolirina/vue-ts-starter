@@ -16,15 +16,7 @@ export class DividendService {
      * @returns {Promise<DividendAggregateInfo>}
      */
     async getDividendAggregateInfo(id: number): Promise<DividendAggregateInfo> {
-        return this.http.get<DividendAggregateInfo>(`/dividends/${id}/`);
-    }
-
-    /**
-     * Отправляет запрос на удаление сделки
-     * @param deleteTradeRequest запрос на удаление сделки
-     */
-    async deleteTrade(deleteTradeRequest: DeleteTradeRequest): Promise<void> {
-        await this.http.post("/dividends/delete", deleteTradeRequest);
+        return this.http.get<DividendAggregateInfo>(`/dividends/${id}`);
     }
 
     /**
