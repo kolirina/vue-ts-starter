@@ -307,8 +307,8 @@ export class ImportPage extends UI {
      */
     private async uploadFile(): Promise<void> {
         if (this.files && this.files.length && this.selectedProvider) {
-            if (this.portfolio.portfolioParams.brokerId && (this.portfolio.portfolioParams.brokerId !== this.selectedProvider.id)) {
-                const result = await new ConfirmDialog().show(`Брокер не совпадает с тем что был выбран по умолчанию. Хотите продолжить?`);
+            if (this.portfolio.portfolioParams.brokerId !== this.selectedProvider.id) {
+                const result = await new ConfirmDialog().show(`Выбранный брокер не совпадает с тем что был установлен для портфеля по умолчанию. Хотите продолжить?`);
                 if (result !== BtnReturn.YES) {
                     return;
                 }
