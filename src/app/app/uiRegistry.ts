@@ -29,7 +29,9 @@ import {IINumberField} from "../components/iiNumberField";
 import {InplaceInput} from "../components/inplaceInput";
 import {ShareSearchComponent} from "../components/shareSearchComponent";
 import {StockLink} from "../components/stockLink";
+import {ClickOutsideDirective} from "../platform/directives/clickOutsideDirective";
 import {StateDirective} from "../platform/directives/stateDirective";
+import {TariffHint} from "../platform/directives/tariffHint";
 import {Filters} from "../platform/filters/Filters";
 import {highchartsRu} from "../platform/locale/highchartsRu";
 import {RU} from "../platform/locale/ru";
@@ -132,6 +134,8 @@ export class UIRegistry {
 
         // директивы
         UI.directive(StateDirective.NAME, new StateDirective());
+        UI.directive(TariffHint.NAME, new TariffHint());
+        UI.directive(ClickOutsideDirective.NAME, new ClickOutsideDirective());
 
         UI.mixin({
             beforeCreate(): void {

@@ -8,7 +8,7 @@ import {DashboardBrick, DashboardData} from "../types/types";
 @Component({
     // language=Vue
     template: `
-        <v-card dark class="dashboard-card" :class="{ 'dashboard-border': !block.hasNotBorderLeft }">
+        <v-card dark class="dashboard-card" :class="{ 'dashboard-border': !block.hasNotBorderLeft }" v-tariff-expired-hint>
             <v-card-title primary-title class="pb-2 dashboard-card-string">
                 <span>{{ block.name }}</span>
                 <v-tooltip content-class="custom-tooltip-wrap dashboard-tooltip" :max-width="450" bottom right>
@@ -60,16 +60,16 @@ export class DashboardBrickComponent extends UI {
     template: `
         <v-container v-if="data" px-0 grid-list-md text-xs-center fluid :class="{'fixed-dashboard': fixedDashboard}" v-scroll="setDashboardPosition">
             <v-layout class="dashboard-wrap px-4 selectable" row wrap :class="{'menu-open': !sideBarOpened}">
-                <v-flex xl3 lg3 md6 sm12 xs12>
+                <v-flex class="dashboard-item" xl3 lg3 md6 sm12 xs12>
                     <dashboard-brick-component :block="blocks[0]"></dashboard-brick-component>
                 </v-flex>
-                <v-flex xl3 lg3 md6 sm12 xs12 :align-content-start="true">
+                <v-flex class="dashboard-item" xl3 lg3 md6 sm12 xs12 :align-content-start="true">
                     <dashboard-brick-component :block="blocks[1]"></dashboard-brick-component>
                 </v-flex>
-                <v-flex xl3 lg3 md6 sm12 xs12>
+                <v-flex class="dashboard-item" xl3 lg3 md6 sm12 xs12>
                     <dashboard-brick-component :block="blocks[2]"></dashboard-brick-component>
                 </v-flex>
-                <v-flex xl3 lg3 md6 sm12 xs12>
+                <v-flex class="dashboard-item" xl3 lg3 md6 sm12 xs12>
                     <dashboard-brick-component :block="blocks[3]"></dashboard-brick-component>
                 </v-flex>
             </v-layout>

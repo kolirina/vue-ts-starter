@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import {Container} from "typescript-ioc";
 import {ActionContext, Module} from "vuex";
 import {Storage} from "../platform/services/storage";
@@ -5,7 +6,9 @@ import {Client, ClientInfo, ClientService} from "../services/clientService";
 import {OverviewService} from "../services/overviewService";
 import {PortfolioParams, PortfolioService} from "../services/portfolioService";
 import {StoreKeys} from "../types/storeKeys";
-import {Portfolio} from "../types/types";
+import {Tariff} from "../types/tariff";
+import {Portfolio, TariffHint} from "../types/types";
+import {DateUtils} from "../utils/dateUtils";
 import {GetterType} from "./getterType";
 import {MutationType} from "./mutationType";
 
@@ -28,6 +31,11 @@ export class StateHolder {
     version = "1.0";
     /** Признак открытого меню */
     sideBarOpened: boolean = true;
+    tariffExpiredHintCoords: TariffHint = {
+        x: "0px",
+        y: "0px",
+        display: "none"
+    };
 }
 
 const Getters = {
@@ -39,6 +47,12 @@ const Getters = {
     },
     [GetterType.SIDEBAR_OPENED](state: StateHolder): boolean {
         return state.sideBarOpened;
+    },
+    [GetterType.HINT_COORDS](state: StateHolder): TariffHint {
+        return state.tariffExpiredHintCoords;
+    },
+    [GetterType.EXPIRED_TARIFF](state: StateHolder): boolean {
+        return state.clientInfo.user.tariff !== Tariff.FREE && DateUtils.parseDate(state.clientInfo.user.paidTill).isBefore(dayjs());
     }
 };
 
@@ -73,7 +87,7 @@ const Mutations = {
     },
     [MutationType.CHANGE_SIDEBAR_STATE](state: StateHolder, sideBarState: boolean): void {
         state.sideBarOpened = sideBarState;
-    },
+    }
 };
 
 /** Действия хранилища */

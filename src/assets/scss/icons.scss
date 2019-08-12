@@ -170,3 +170,7 @@
   background: url('../img/common/dashboard-info.svg') no-repeat center;
   margin-left: 0px !important;
 }
+.profile-edit {
+  @extend .icon;
+  background: url('../img/profile/edit.svg') no-repeat center;
+}

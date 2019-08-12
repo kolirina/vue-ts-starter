@@ -8,24 +8,25 @@ import {UI} from "../app/ui";
 @Component({
     // language=Vue
     template: `
-        <div class="inplace-input">
-            <v-layout>
-                <v-text-field
-                        v-model.trim="editableValue"
-                        @keyup.enter="emitCompleteEvent"
-                        @click:append="emitCompleteEvent"
-                        @keyup.esc="closeInput"
-                        @focus="setEditMode(true)"
-                        @blur="setEditMode(false)"
-                        append-icon="done"
-                        type="text"
-                        ref="inplaceInput"
-                        :placeholder="placeholder"
-                        :maxlength="maxLength"
-                        :class="['inplace-input-field', isEditMode ? '' : 'focus-content-input']">
-                </v-text-field>
+        <v-layout @dblclick="onEdit" :class="['inplace-custom-input', editMode ? 'active-inplace-custom-input' : '']" justify-space-between>
+            <input ref="inplaceInput" v-model.trim="editableValue" @keyup.enter="emitCompleteEvent"
+                   :readonly="!editMode"
+                   @keyup.esc="dismissChanges" :maxlength="maxLength" :placeholder="placeholder"
+                   v-click-outside="dismissChanges">
+            <v-layout v-show="!editMode" class="initial-flex btn-action-section" align-center justify-end>
+                <v-btn @click.stop="onEdit" flat icon color="indigo">
+                    <i class="profile-edit"></i>
+                </v-btn>
             </v-layout>
-        </div>
+            <v-layout v-show="editMode" class="initial-flex btn-action-section" align-center justify-end>
+                <v-btn @click="emitCompleteEvent" title="Сохранить" small flat icon color="indigo">
+                    <v-icon>done</v-icon>
+                </v-btn>
+                <v-btn @click="dismissChanges" title="Отменить" small flat icon color="indigo">
+                    <v-icon>clear</v-icon>
+                </v-btn>
+            </v-layout>
+        </v-layout>
     `
 })
 export class InplaceInput extends UI {
@@ -49,14 +50,17 @@ export class InplaceInput extends UI {
     /** Значение введенное пользователем */
     private editableValue: string = null;
     /** Режим редактирования */
-    private isEditMode: boolean = false;
+    private editMode: boolean = false;
+    /** Первоначальное значение */
+    private oldValue = "";
 
     /**
      * Инициализирует данные компонента
      * @inheritDoc
      */
     created(): void {
-        this.updateEditableValue();
+        this.editableValue = this.value;
+        this.oldValue = this.editableValue;
     }
 
     /**
@@ -66,26 +70,28 @@ export class InplaceInput extends UI {
         if (this.editableValue.length > this.maxLength) {
             throw new Error("Размер вводимого значения не должен превышать " + this.maxLength);
         }
+        this.oldValue = this.editableValue;
         if (this.editableValue !== this.value) {
             this.$emit("input", this.editableValue);
-            this.closeInput();
         }
+        this.closeInput();
     }
 
-    private updateEditableValue(): void {
-        this.$nextTick(() => {
-            this.editableValue = this.value;
-        });
-    }
-
-    private setEditMode(editMode: boolean): void {
-        this.updateEditableValue();
-        this.isEditMode = editMode;
+    private onEdit(): void {
+        this.editMode = true;
+        // если старого значения нет, значит оно было очищено, подставляем снова значение отображаемое в режиме просмотра
+        this.editableValue = this.oldValue || this.value || "";
+        this.$refs.inplaceInput.select();
+        this.$refs.inplaceInput.focus();
     }
 
     private closeInput(): void {
-        this.updateEditableValue();
-        this.$refs.inplaceInput.blur();
+        this.editMode = false;
+        this.$refs.inplaceInput.setSelectionRange(0, 0);
     }
 
+    private dismissChanges(): void {
+        this.closeInput();
+        this.editableValue = this.oldValue;
+    }
 }

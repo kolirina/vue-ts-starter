@@ -114,13 +114,6 @@ const MainStore = namespace(StoreType.MAIN);
                     <TinkoffInstruction></TinkoffInstruction>
                 </div>
 
-                <!-- Nettrader -->
-                <div v-if="provider === providers.NETTRADER">
-                    <p class="import-default-text">
-                        Используйте для импорта отчеты в формате csv или txt. Убедитесь что загружаемый файл имеет кодировку UTF-8
-                    </p>
-                </div>
-
                 <!-- ATON -->
                 <div v-if="provider === providers.ATON">
                     <p class="import-default-text">
