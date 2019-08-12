@@ -323,12 +323,8 @@ export class ImportPage extends UI {
     }
 
     private get getNameCurrentBroker(): string {
-        const name = this.providers.values().find(item => item.id === this.portfolio.portfolioParams.brokerId);
-        if (name) {
-            return name.description;
-        } else {
-            throw new Error("Брокер для портфеля еще не задан");
-        }
+        const provider = this.providers.values().find(item => item.id === this.portfolio.portfolioParams.brokerId);
+        return provider ? provider.description : "";
     }
 
     /**
