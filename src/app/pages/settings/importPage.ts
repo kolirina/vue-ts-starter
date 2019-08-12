@@ -1,8 +1,8 @@
-import dayjs from "dayjs";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
+import {ConfirmDialog} from "../../components/dialogs/confirmDialog";
 import {ImportErrorsDialog} from "../../components/dialogs/import/importErrorsDialog";
 import {ImportGeneralErrorDialog} from "../../components/dialogs/import/importGeneralErrorDialog";
 import {ImportSuccessDialog} from "../../components/dialogs/import/importSuccessDialog";
@@ -200,7 +200,7 @@ const MainStore = namespace(StoreType.MAIN);
 
                     <v-layout align-center class="section-upload-file" wrap pb-3>
                         <div class="margT20">
-                            <v-btn v-if="importProviderFeatures && files.length" color="primary" class="big_btn mr-3" @click="uploadFile">Загрузить</v-btn>
+                            <v-btn v-if="importProviderFeatures && files.length" color="primary" class="big_btn mr-3" @click.stop="uploadFile">Загрузить</v-btn>
                         </div>
                         <div class="margT20">
                             <file-link @select="onFileAdd" :accept="allowedExtensions"
@@ -307,6 +307,12 @@ export class ImportPage extends UI {
      */
     private async uploadFile(): Promise<void> {
         if (this.files && this.files.length && this.selectedProvider) {
+            if (this.portfolio.portfolioParams.brokerId && this.portfolio.portfolioParams.brokerId !== this.selectedProvider.id) {
+                const result = await new ConfirmDialog().show(`Выбранный брокер не совпадает с тем что был установлен для портфеля по умолчанию. Хотите продолжить?`);
+                if (result !== BtnReturn.YES) {
+                    return;
+                }
+            }
             const response = await this.importReport();
             await this.handleUploadResponse(response);
             this.clearFiles();
