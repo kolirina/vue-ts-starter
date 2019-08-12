@@ -307,7 +307,7 @@ export class ImportPage extends UI {
      */
     private async uploadFile(): Promise<void> {
         if (this.files && this.files.length && this.selectedProvider) {
-            if (this.portfolio.portfolioParams.brokerId && (this.portfolio.portfolioParams.brokerId !== this.selectedProvider.id)) {
+            if (this.portfolio.portfolioParams.brokerId && this.portfolio.portfolioParams.brokerId !== this.selectedProvider.id) {
                 const result = await new ConfirmDialog().show(`Внимание! Вы загружаете отчет брокера ${this.selectedProvider.description} в портфель,
                     где ранее были загрузки отчетов брокера ${this.getNameCurrentBroker}.
                     При продолжении импорта, могут возникнуть дубли существующих в вашем портфеле сделок.
