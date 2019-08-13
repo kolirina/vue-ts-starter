@@ -10,7 +10,7 @@ import {ChartUtils} from "../../utils/chartUtils";
 @Component({
     // language=Vue
     template: `
-        <div>
+        <div v-tariff-expired-hint>
             <span v-if="!isDefault" class="chart-custom-filter" title="Настроен фильтр"></span>
             <v-menu :close-on-content-click="false" :nudge-width="294" :nudge-bottom="40" bottom>
                 <div class="pl-3" slot="activator">

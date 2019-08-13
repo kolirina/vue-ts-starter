@@ -11,6 +11,7 @@ import {AlfadirectInstruction} from "./import_instructions/alfadirectInstruction
 import {BcsCyprusInstruction} from "./import_instructions/bcsCyprusInstruction";
 import {BcsInstruction} from "./import_instructions/bcsInstruction";
 import {FinamInstruction} from "./import_instructions/finamInstruction";
+import {FreedomFinanceInstruction} from "./import_instructions/freedomFinanceInstruction";
 import {IntelinvestInstruction} from "./import_instructions/intelinvestInstruction";
 import {ItInvestInstruction} from "./import_instructions/itInvestInstruction";
 import {OtkrytieInstruction} from "./import_instructions/otkrytieInstruction";
@@ -70,9 +71,7 @@ const MainStore = namespace(StoreType.MAIN);
 
                 <!-- FREEDOM_FINANCE -->
                 <div v-if="provider === providers.FREEDOM_FINANCE">
-                    <p class="import-default-text">
-                        Для импорта вы можете использовать отчеты, присылаемые брокером вам на электронную почту в формате xls.
-                    </p>
+                    <FreedomFinanceInstruction></FreedomFinanceInstruction>
                 </div>
 
                 <!-- KITFINANCE -->
@@ -115,13 +114,6 @@ const MainStore = namespace(StoreType.MAIN);
                     <TinkoffInstruction></TinkoffInstruction>
                 </div>
 
-                <!-- Nettrader -->
-                <div v-if="provider === providers.NETTRADER">
-                    <p class="import-default-text">
-                        Используйте для импорта отчеты в формате csv или txt. Убедитесь что загружаемый файл имеет кодировку UTF-8
-                    </p>
-                </div>
-
                 <!-- ATON -->
                 <div v-if="provider === providers.ATON">
                     <p class="import-default-text">
@@ -158,7 +150,7 @@ const MainStore = namespace(StoreType.MAIN);
     `,
     components: {
         AlfadirectInstruction, ItInvestInstruction, OtkrytieInstruction, PsbInstruction, BcsInstruction, BcsCyprusInstruction, ZerichInstruction, FinamInstruction,
-        UralsibInstruction, TinkoffInstruction, QuikInstruction, IntelinvestInstruction, VtbInstruction, AlfaCapitalInstruction
+        UralsibInstruction, TinkoffInstruction, QuikInstruction, IntelinvestInstruction, VtbInstruction, AlfaCapitalInstruction, FreedomFinanceInstruction
     }
 })
 export class ImportInstructions extends UI {

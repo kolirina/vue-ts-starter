@@ -79,7 +79,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                             </v-flex>
 
                             <!-- Дата сделки -->
-                            <v-flex xs12 :class="moneyTrade ? portfolioProModeEnabled ? 'sm6' : '' : 'sm3'">
+                            <v-flex xs12 :class="isMoneyTrade ? portfolioProModeEnabled ? 'sm6' : '' : 'sm3'">
                                 <v-menu ref="dateMenu" :close-on-content-click="false" v-model="dateMenuValue" :nudge-right="40" :return-value.sync="date"
                                         lazy transition="scale-transition" offset-y full-width min-width="290px">
                                     <v-text-field name="date" slot="activator" v-model="date" label="Дата" v-validate="'required'"
@@ -89,7 +89,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                             </v-flex>
 
                             <!-- Время сделки -->
-                            <v-flex v-if="portfolioProModeEnabled" xs12 :class="moneyTrade ? 'sm6' : 'sm3'">
+                            <v-flex v-if="portfolioProModeEnabled" xs12 :class="isMoneyTrade ? 'sm6' : 'sm3'">
                                 <v-dialog ref="timeMenu" v-model="timeMenuValue" :return-value.sync="time" persistent lazy full-width width="290px">
                                     <v-text-field slot="activator" v-model="time" label="Время" readonly></v-text-field>
                                     <v-time-picker v-if="timeMenuValue" v-model="time" format="24hr" full-width>
@@ -104,20 +104,26 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                             <v-flex v-if="shareAssetType" xs12 sm6>
                                 <ii-number-field :label="priceLabel" v-model="price" class="required" name="price" v-validate="'required|min_value:0.000001'"
                                                  :error-messages="errors.collect('price')" @keyup="calculateFee" persistent-hint
-                                                 :hint="bondTrade ? 'Указывается в процентах, например, 101.59' : ''">
+                                                 :hint="isBondTrade ? 'Указывается в процентах, например, 101.59' : ''">
                                 </ii-number-field>
                             </v-flex>
 
                             <!-- Количество -->
                             <v-flex v-if="shareAssetType" xs12 sm6>
-                                <ii-number-field label="Количество" v-model="quantity" @keyup="calculateFee" :hint="lotSizeHint"
-                                                 persistent-hint name="quantity" :decimals="0"
+                                <ii-number-field label="Количество" v-model="quantity" @keyup="calculateFee" name="quantity" :decimals="0"
                                                  v-validate="'required|min_value:1'" :error-messages="errors.collect('quantity')" class="required" browser-autocomplete="false">
                                 </ii-number-field>
+                                <div class="fs12-opacity mt-1">
+                                    <span v-if="showCurrentQuantityLabel">
+                                        Текущее количество {{ isStockTrade ? "акций" : "облигаций" }}
+                                        <a @click="setToQuantity" title="Подставить в Количество">{{ currentCountShareSearch }} шт.</a>
+                                    </span>
+                                    <span v-else>{{ lotSizeHint }}</span>
+                                </div>
                             </v-flex>
 
                             <!-- Номинал -->
-                            <v-flex v-if="bondTrade" xs12 sm3>
+                            <v-flex v-if="isBondTrade" xs12 sm3>
                                 <ii-number-field label="Номинал" v-model="facevalue" @keyup="calculateFee" :decimals="2" name="facevalue"
                                                  v-validate="'required|min_value:0.01'" :error-messages="errors.collect('facevalue')" class="required">
                                 </ii-number-field>
@@ -126,12 +132,12 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                             <!-- НКД -->
                             <v-flex xs12 sm9>
                                 <v-layout wrap>
-                                    <v-flex v-if="bondTrade" xs12 lg6>
+                                    <v-flex v-if="isBondTrade" xs12 lg6>
                                         <ii-number-field label="НКД" v-model="nkd" @keyup="calculateFee" :decimals="2" name="nkd"
                                                          v-validate="nkdValidationString" :error-messages="errors.collect('nkd')" class="required">
                                         </ii-number-field>
                                     </v-flex>
-                                    <v-flex v-if="calculationAssetType || bondTrade" xs12 lg6>
+                                    <v-flex v-if="calculationAssetType || isBondTrade" xs12 lg6>
                                         <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" top>
                                             <v-checkbox slot="activator" label="Начисление на одну бумагу" v-model="perOne"></v-checkbox>
                                             <span>Отключите если вносите сумму начисления</span>
@@ -148,7 +154,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                             </v-flex>
 
                             <!-- Сумма денег (для денежной сделки) -->
-                            <v-flex v-if="moneyTrade" xs12>
+                            <v-flex v-if="isMoneyTrade" xs12>
                                 <v-layout wrap>
                                     <v-flex xs12 lg8>
                                         <ii-number-field label="Сумма" v-model="moneyAmount" :decimals="2" name="money_amount" v-validate="'required|min_value:0.01'"
@@ -179,8 +185,8 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                 <v-checkbox :disabled="keepMoneyDisabled" :label="keepMoneyLabel" v-model="keepMoney" hide-details></v-checkbox>
                             </v-flex>
                         </v-layout>
+                        <small class="fs12-opacity">* обозначает обязательные поля</small>
                     </v-container>
-                    <small class="fs12">* обозначает обязательные поля</small>
                 </v-card-text>
 
                 <v-card-actions>
@@ -280,6 +286,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private moneyResiduals: MoneyResiduals = null;
     /** Признак доступности профессионального режима */
     private portfolioProModeEnabled = false;
+    /** Текущее количество бумаг по которой идёт добавление сделки */
+    private currentCountShareSearch: number = null;
 
     async mounted(): Promise<void> {
         this.clientInfo = await this.clientService.getClientInfo();
@@ -403,8 +411,22 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     private async onShareSelect(share: Share): Promise<void> {
         this.share = share;
+        this.calculateCurrentShareQuantity();
         this.fillFieldsFromShare();
         await this.onTickerOrDateChange();
+    }
+
+    private calculateCurrentShareQuantity(): void {
+        this.currentCountShareSearch = null;
+        if (this.share) {
+            if (this.isStockTrade) {
+                const row = this.portfolio.overview.stockPortfolio.rows.find(item => item.stock.ticker === this.share.ticker);
+                this.currentCountShareSearch = row ? row.quantity : null;
+            } else if (this.isBondTrade) {
+                const row = this.portfolio.overview.bondPortfolio.rows.find(item => item.bond.ticker === this.share.ticker);
+                this.currentCountShareSearch = row ? row.quantity : null;
+            }
+        }
     }
 
     private fillFieldsFromShare(): void {
@@ -544,6 +566,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private clearFields(): void {
+        this.currentCountShareSearch = null;
         this.share = null;
         this.filteredShares = [];
         this.date = DateUtils.currentDate();
@@ -615,6 +638,11 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         this.processShareEvent = true;
     }
 
+    private setToQuantity(): void {
+        this.quantity = this.currentCountShareSearch;
+        this.calculateFee();
+    }
+
     private get shareTicker(): string {
         switch (this.assetType) {
             case AssetType.STOCK:
@@ -629,11 +657,15 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         return this.assetType === AssetType.STOCK || this.assetType === AssetType.BOND;
     }
 
-    private get bondTrade(): boolean {
+    private get isStockTrade(): boolean {
+        return this.assetType === AssetType.STOCK;
+    }
+
+    private get isBondTrade(): boolean {
         return this.assetType === AssetType.BOND && this.operation !== Operation.COUPON && this.operation !== Operation.AMORTIZATION;
     }
 
-    private get moneyTrade(): boolean {
+    private get isMoneyTrade(): boolean {
         return this.assetType === AssetType.MONEY;
     }
 
@@ -711,6 +743,10 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     private get dialogTitle(): string {
         return `${this.editMode ? "Редактирование" : "Добавление"} сделки${this.editMode ? "" : " в"}`;
+    }
+
+    private get showCurrentQuantityLabel(): boolean {
+        return this.currentCountShareSearch && (this.isStockTrade || this.isBondTrade);
     }
 
     /**

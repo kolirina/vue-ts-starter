@@ -13,6 +13,12 @@ export type _portfolioRow = {
     assetType: string
 };
 
+export interface TariffHint {
+    x: string;
+    y: string;
+    display: string;
+}
+
 export type NavBarItem = {
     title: string,
     /** routing, для корневых элементов может не заполнен */

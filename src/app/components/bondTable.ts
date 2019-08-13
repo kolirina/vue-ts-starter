@@ -60,35 +60,39 @@ const MainStore = namespace(StoreType.MAIN);
                     <td v-if="tableHeadersState.ticker" class="text-xs-left">
                         <bond-link v-if="props.item.bond" :ticker="props.item.bond.ticker"></bond-link>
                     </td>
-                    <td v-if="tableHeadersState.quantity" class="text-xs-right ii-number-cell">{{ props.item.quantity }}</td>
-                    <td v-if="tableHeadersState.avgBuy" class="text-xs-right ii-number-cell">
+                    <td v-if="tableHeadersState.quantity" class="text-xs-right ii-number-cell" v-tariff-expired-hint>{{ props.item.quantity }}</td>
+                    <td v-if="tableHeadersState.avgBuy" class="text-xs-right ii-number-cell" v-tariff-expired-hint>
                         <template>{{ props.item.avgBuy | number(false) }}</template>
                     </td>
-                    <td v-if="tableHeadersState.currPrice" class="text-xs-right ii-number-cell">
+                    <td v-if="tableHeadersState.currPrice" class="text-xs-right ii-number-cell" v-tariff-expired-hint>
                         <template>{{ props.item.currPrice | number(false) }}</template>
                     </td>
-                    <td v-if="tableHeadersState.bcost" class="text-xs-right ii-number-cell">{{ props.item.bcost | amount(true) }}</td>
-                    <td v-if="tableHeadersState.scost" class="text-xs-right ii-number-cell">{{ props.item.scost | amount(true) }}</td>
-                    <td v-if="tableHeadersState.currCost" class="text-xs-right ii-number-cell">{{ props.item.currCost | amount(true) }}</td>
-                    <td v-if="tableHeadersState.nominal" class="text-xs-right ii-number-cell">{{ props.item.nominal | amount(false, null, false) }}</td>
-                    <td v-if="tableHeadersState.profitFromCoupons" :class="markupClasses(amount(props.item.profitFromCoupons))">
+                    <td v-if="tableHeadersState.bcost" class="text-xs-right ii-number-cell" v-tariff-expired-hint>{{ props.item.bcost | amount(true) }}</td>
+                    <td v-if="tableHeadersState.scost" class="text-xs-right ii-number-cell" v-tariff-expired-hint>{{ props.item.scost | amount(true) }}</td>
+                    <td v-if="tableHeadersState.currCost" class="text-xs-right ii-number-cell" v-tariff-expired-hint>{{ props.item.currCost | amount(true) }}</td>
+                    <td v-if="tableHeadersState.nominal" class="text-xs-right ii-number-cell" v-tariff-expired-hint>{{ props.item.nominal | amount(false, null, false) }}</td>
+                    <td v-if="tableHeadersState.profitFromCoupons" :class="markupClasses(amount(props.item.profitFromCoupons))" v-tariff-expired-hint>
                         {{ props.item.profitFromCoupons | amount(true) }}
                     </td>
-                    <td v-if="tableHeadersState.profitFromCouponsPercent" :class="markupClasses(Number(props.item.profitFromCouponsPercent))">
+                    <td v-if="tableHeadersState.profitFromCouponsPercent" :class="markupClasses(Number(props.item.profitFromCouponsPercent))" v-tariff-expired-hint>
                         {{ props.item.profitFromCouponsPercent }}
                     </td>
-                    <td v-if="tableHeadersState.exchangeProfit" :class="markupClasses(amount(props.item.exchangeProfit))">{{props.item.exchangeProfit | amount(true) }}</td>
-                    <td v-if="tableHeadersState.exchangeProfitPercent" :class="markupClasses(Number(props.item.exchangeProfitPercent))">{{ props.item.exchangeProfitPercent }}</td>
-                    <td v-if="tableHeadersState.rateProfit" :class="markupClasses(amount(props.item.rateProfit))">{{ props.item.rateProfit | amount(true) }}</td>
-                    <td v-if="tableHeadersState.rateProfitPercent" :class="markupClasses(Number(props.item.rateProfitPercent))">{{ props.item.rateProfitPercent }}</td>
-                    <td v-if="tableHeadersState.buyNkd" :class="markupClasses(amount(props.item.buyNkd))">{{ props.item.buyNkd | amount(true) }}</td>
-                    <td v-if="tableHeadersState.sellNkd" :class="markupClasses(amount(props.item.sellNkd))">{{ props.item.sellNkd | amount(true) }}</td>
-                    <td v-if="tableHeadersState.profit" :class="markupClasses(amount(props.item.profit))">{{ props.item.profit | amount(true) }}</td>
-                    <td v-if="tableHeadersState.percProfit" :class="markupClasses(Number(props.item.percProfit))">{{ props.item.percProfit | number }}</td>
-                    <td v-if="tableHeadersState.yearYield" :class="markupClasses(Number(props.item.yearYield))">{{ props.item.yearYield }}</td>
-                    <td v-if="tableHeadersState.dailyPl" :class="markupClasses(amount(props.item.dailyPl))">{{ props.item.dailyPl | amount(true) }}</td>
-                    <td v-if="tableHeadersState.dailyPlPercent" :class="markupClasses(Number(props.item.dailyPlPercent))">{{ props.item.dailyPlPercent }}</td>
-                    <td v-if="tableHeadersState.summFee" class="text-xs-right ii-number-cell">{{ props.item.summFee | amount(true) }}</td>
+                    <td v-if="tableHeadersState.exchangeProfit" :class="markupClasses(amount(props.item.exchangeProfit))"
+                        v-tariff-expired-hint>{{props.item.exchangeProfit | amount(true) }}</td>
+                    <td v-if="tableHeadersState.exchangeProfitPercent" :class="markupClasses(Number(props.item.exchangeProfitPercent))"
+                        v-tariff-expired-hint>{{ props.item.exchangeProfitPercent }}</td>
+                    <td v-if="tableHeadersState.rateProfit" :class="markupClasses(amount(props.item.rateProfit))"
+                        v-tariff-expired-hint>{{ props.item.rateProfit | amount(true) }}</td>
+                    <td v-if="tableHeadersState.rateProfitPercent" :class="markupClasses(Number(props.item.rateProfitPercent))"
+                        v-tariff-expired-hint>{{ props.item.rateProfitPercent }}</td>
+                    <td v-if="tableHeadersState.buyNkd" :class="markupClasses(amount(props.item.buyNkd))" v-tariff-expired-hint>{{ props.item.buyNkd | amount(true) }}</td>
+                    <td v-if="tableHeadersState.sellNkd" :class="markupClasses(amount(props.item.sellNkd))" v-tariff-expired-hint>{{ props.item.sellNkd | amount(true) }}</td>
+                    <td v-if="tableHeadersState.profit" :class="markupClasses(amount(props.item.profit))" v-tariff-expired-hint>{{ props.item.profit | amount(true) }}</td>
+                    <td v-if="tableHeadersState.percProfit" :class="markupClasses(Number(props.item.percProfit))" v-tariff-expired-hint>{{ props.item.percProfit | number }}</td>
+                    <td v-if="tableHeadersState.yearYield" :class="markupClasses(Number(props.item.yearYield))" v-tariff-expired-hint>{{ props.item.yearYield }}</td>
+                    <td v-if="tableHeadersState.dailyPl" :class="markupClasses(amount(props.item.dailyPl))" v-tariff-expired-hint>{{ props.item.dailyPl | amount(true) }}</td>
+                    <td v-if="tableHeadersState.dailyPlPercent" :class="markupClasses(Number(props.item.dailyPlPercent))" v-tariff-expired-hint>{{ props.item.dailyPlPercent }}</td>
+                    <td v-if="tableHeadersState.summFee" class="text-xs-right ii-number-cell" v-tariff-expired-hint>{{ props.item.summFee | amount(true) }}</td>
                     <td v-if="tableHeadersState.percCurrShare" class="text-xs-right ii-number-cell">{{ props.item.percCurrShare | number }}</td>
                     <td class="justify-center layout px-0" @click.stop>
                         <v-menu v-if="props.item.bond" transition="slide-y-transition" bottom left>
@@ -145,7 +149,7 @@ const MainStore = namespace(StoreType.MAIN);
             </template>
 
             <template #expand="props">
-                <table class="ext-info" @click.stop>
+                <table class="ext-info" @click.stop v-tariff-expired-hint>
                     <tr>
                         <td>
                             <div class="ext-info__item">
@@ -328,7 +332,7 @@ export class BondTable extends UI {
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
             share: bondRow.bond,
-            quantity: [Operation.COUPON, Operation.AMORTIZATION, Operation.REPAYMENT].indexOf(operation) !== -1 ? bondRow.quantity : null,
+            quantity: Math.abs(bondRow.quantity),
             operation,
             assetType: AssetType.BOND
         });

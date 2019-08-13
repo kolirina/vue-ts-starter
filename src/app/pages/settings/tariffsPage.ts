@@ -154,7 +154,7 @@ export class TariffAgreement extends UI {
                         </div>
                     </div>
                 </div>
-                <v-tooltip v-if="!available || !payAllowed" content-class="custom-tooltip-wrap" bottom>
+                <v-tooltip v-if="!available" content-class="custom-tooltip-wrap" bottom>
                     <v-btn slot="activator" @click.stop="makePayment(tariff)"
                            :class="{'big_btn': true, 'selected': selected || agreementState[tariff.name]}"
                            :disabled="disabled">
@@ -164,10 +164,6 @@ export class TariffAgreement extends UI {
                     <tariff-limit-exceed-info v-if="!available" :portfolios-count="clientInfo.user.portfoliosCount" :tariff="tariff"
                                               :shares-count="clientInfo.user.sharesCount" :foreign-shares="clientInfo.user.foreignShares">
                     </tariff-limit-exceed-info>
-                    <span v-if="!payAllowed">
-                        У вас уже действует активная подписка<br>
-                        Для управления подпиской перейдите в Профиль
-                    </span>
                 </v-tooltip>
                 <v-btn v-else @click.stop="makePayment(tariff)"
                        :class="{'big_btn': true, 'selected': selected || agreementState[tariff.name]}"
@@ -393,14 +389,6 @@ export class PayButton extends UI {
     }
 
     /**
-     * Возвращает признак возможности оплаты выбранного тарифа.
-     * Оплата возможна если нет активной подписки и выбранный тариф совпадает с пользовательским
-     */
-    private get payAllowed(): boolean {
-        return !this.activeSubscription || this.selected;
-    }
-
-    /**
      * Возвращает признак наличия информации о периодической подписке
      */
     private get activeSubscription(): boolean {
@@ -411,7 +399,7 @@ export class PayButton extends UI {
      * Возвращает true если кнопка недоступна для нажатия
      */
     private get disabled(): boolean {
-        return !this.available || this.isProgress || !this.agreementState[this.tariff.name] || !this.payAllowed;
+        return !this.available || this.isProgress || !this.agreementState[this.tariff.name];
     }
 }
 

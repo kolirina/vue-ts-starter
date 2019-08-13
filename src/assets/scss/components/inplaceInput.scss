@@ -1,38 +1,33 @@
-.inplace-input {
-  line-height: 1;
-  position: relative;
-  display: inline-block;
-  width: 100%;
-  font-family: $main--font-family;
-
-  .inplace-out {
-    vertical-align: middle;
-    line-height: 24px;
-  }
-
+.inplace-custom-input {
+  background: rgba(240, 243, 248, 0.5);
+  border-radius: 4px;
+  border-bottom: 2px solid #344155;
+  display: flex;
+  padding: 5px 5px 5px 20px;
+  height: 60px;
+  width: 247px;
+  cursor: default;
   input {
-    border-radius: 0;
-    padding: 0 56px 0 0;
-    width: 100%;
-    height: 24px;
-    border-width: 0 0 2px 0;
-
-    &:focus {
-      border-color: $main-color-2;
-      box-shadow: none;
+    max-width: 160px;
+    cursor: default;
+    outline: none;
+    font-size: 14px !important;
+    color: #3D4656 !important;
+  }
+}
+.active-inplace-custom-input {
+  border-bottom: 2px solid #3B6EC9;
+  cursor: initial !important;
+  cursor: text !important;
+  input {
+    cursor: text;
+  }
+}
+.btn-action-section {
+  button {
+    margin: 0px !important;
+    i {
+      font-size: 18px !important;
     }
-  }
-
-  input {
-    font-size: 13px;
-  }
-
-  &-field {
-    padding-top: 0 !important;
-    margin-top: 0 !important;
-  }
-
-  .v-messages {
-    min-height: 0 !important;
   }
 }

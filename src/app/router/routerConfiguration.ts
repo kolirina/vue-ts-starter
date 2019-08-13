@@ -72,6 +72,9 @@ export class RouterConfiguration {
                 }
                 const client = await clientService.getClientInfo();
                 next();
+                // сбрасываем состояние хинта уже после перехода, чтобы повторно не всплыл хинт
+                // TODO возможно не хватит задержки, надо подумать как сделать лучше
+                setTimeout(() => this.resetTariffHint(), 500);
                 // скрываем меню в мобильном виде при переходе
                 if (CommonUtils.isMobile()) {
                     (store as any).state.MAIN.sideBarOpened = true;
@@ -113,6 +116,7 @@ export class RouterConfiguration {
                 path: "/portfolio",
                 component: PortfolioPage,
                 meta: {
+                    tariffAllowed: true,
                     title: "Портфель"
                 }
             },
@@ -120,6 +124,7 @@ export class RouterConfiguration {
                 name: "adviser",
                 path: "/adviser",
                 meta: {
+                    tariffAllowed: true,
                     title: "Аналитика"
                 },
                 component: AdviserPage,
@@ -145,6 +150,7 @@ export class RouterConfiguration {
                 path: "/trades",
                 component: TradesPage,
                 meta: {
+                    tariffAllowed: true,
                     title: "Сделки"
                 }
             },
@@ -153,6 +159,7 @@ export class RouterConfiguration {
                 path: "/combined-portfolio",
                 component: CombinedPortfolioPage,
                 meta: {
+                    tariffAllowed: true,
                     title: "Составной портфель"
                 }
             },
@@ -298,6 +305,17 @@ export class RouterConfiguration {
     private static renderMetaTags(to: Route): void {
         const title = (to.meta as RouteMeta).title;
         document.title = title || "Intelinvest";
+    }
+
+    /**
+     * Сбрасывает состояние хинта об истекшем тарифе в сторе
+     */
+    private static resetTariffHint(): void {
+        (store as any).state.MAIN.tariffExpiredHintCoords = {
+            x: "0px",
+            y: "0px",
+            display: "none"
+        };
     }
 }
 

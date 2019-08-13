@@ -1,4 +1,3 @@
-import dayjs from "dayjs";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {Watch} from "vue-property-decorator";
@@ -19,9 +18,8 @@ import {TableHeaders, TABLES_NAME, TablesService} from "../services/tablesServic
 import {TradeService, TradesFilter} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
 import {StoreKeys} from "../types/storeKeys";
-import {Tariff} from "../types/tariff";
 import {Pagination, Portfolio, TableHeader, TradeRow} from "../types/types";
-import {DateUtils} from "../utils/dateUtils";
+import {ExportUtils} from "../utils/exportUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 
@@ -195,7 +193,6 @@ export class TradesPage extends UI {
      * Возвращает признак доступности для загрузки файла со сделками
      */
     private isDownloadNotAllowed(): boolean {
-        const userTariff = this.clientInfo.user.tariff;
-        return userTariff === Tariff.TRIAL || (dayjs().isAfter(DateUtils.parseDate(this.clientInfo.user.paidTill)) && userTariff !== Tariff.FREE);
+        return ExportUtils.isDownloadNotAllowed(this.clientInfo);
     }
 }
