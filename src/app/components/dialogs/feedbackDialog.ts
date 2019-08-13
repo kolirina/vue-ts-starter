@@ -38,10 +38,12 @@ import {FeedbackService, FeedbackType} from "../../services/feedbackService";
                                 <v-textarea label="Сообщение" v-model.trim="message" :counter="5000" :rows="3"></v-textarea>
                             </v-flex>
                         </v-layout>
-                    </v-container>
-                    <span>Для более оперативной связи, пожалуйста, напишите нам в
+                        <span class="fs12">
+                            Для более оперативной связи, пожалуйста, напишите нам в
                         <a href="https://telegram.me/intelinvestSupportBot">Telegram</a>
-                        <i class="fab fa-telegram"></i></span>
+                        <i class="fab fa-telegram"></i>
+                    </span>
+                    </v-container>
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
