@@ -6,7 +6,7 @@ import {TableHeader} from "../../types/types";
 @Component({
     // language=Vue
     template: `
-        <v-dialog v-model="showed" max-width="700px">
+        <v-dialog v-model="showed" max-width="600px">
             <v-card class="dialog-wrap composite-dialog">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
                 <v-card-title class="pb-3">

@@ -43,10 +43,6 @@ export class PortfolioService {
         await this.http.post(`/portfolio-info/clear/${portfolioId}`);
     }
 
-    async copyPortfolio(portfolioId: number): Promise<void> {
-        await this.http.post(`/portfolio-info/copy/${portfolioId}`);
-    }
-
     /**
      * Отправляет запрос на создание/обновление данных бэкапа портфеля
      * @param userId идентификатор пользователя

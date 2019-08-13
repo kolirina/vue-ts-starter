@@ -213,10 +213,6 @@ export class TradesTable extends UI {
         this.tableHeadersState = this.tablesService.getHeadersState(this.headers);
     }
 
-    getHeaders(name: string): TableHeader[] {
-        return this.tablesService.getFilterHeaders(name);
-    }
-
     @Watch("headers")
     onHeadersChange(): void {
         this.setHeadersState();

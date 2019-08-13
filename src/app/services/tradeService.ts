@@ -131,6 +131,7 @@ export interface CopyTradeRequest {
     tradeId: string;
     /** Идентификатор портфеля в который будет скопирована сделка */
     toPortfolioId: number;
+    /** Идентификатор портфеля с которого происходит копирование */
     fromPortfolioId: number;
 }
 

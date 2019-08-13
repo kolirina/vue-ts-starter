@@ -251,7 +251,7 @@ export class PortfoliosTable extends UI {
         if (result === BtnReturn.YES) {
             await this.portfolioService.clearPortfolio(porfolioId);
             this.overviewService.resetCacheForId(porfolioId);
-            this.reloadPortfolio(porfolioId);
+            await this.reloadPortfolio(porfolioId);
             this.$snotify.info("Портфель успешно очищен");
         }
     }
