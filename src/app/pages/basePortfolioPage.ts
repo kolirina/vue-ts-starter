@@ -25,6 +25,7 @@ import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog";
 import {NegativeBalanceNotification} from "../components/negativeBalanceNotification";
 import {PortfolioRowFilter, PortfolioRowsTableFilter} from "../components/portfolioRowsTableFilter";
 import {StockTable} from "../components/stockTable";
+import {Filters} from "../platform/filters/Filters";
 import {Storage} from "../platform/services/storage";
 import {ExportType} from "../services/exportService";
 import {OverviewService} from "../services/overviewService";
@@ -54,7 +55,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                         <span>Акции</span>
                         <v-fade-transition mode="out-in">
                             <span v-if="stockTablePanelClosed" class="v-expansion-panel__header-info">
-                                {{ overview.stockPortfolio.rows.length }} {{ overview.stockPortfolio.rows.length | declension("акция", "акции", "акций") }}
+                                {{ stockRowsCountLabel }}
                             </span>
                         </v-fade-transition>
                     </template>
@@ -73,8 +74,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                         <span>Облигации</span>
                         <v-fade-transition mode="out-in">
                             <span v-if="bondTablePanelClosed" class="v-expansion-panel__header-info">
-                                {{ overview.bondPortfolio.rows.length }}
-                                {{ overview.bondPortfolio.rows.length | declension("облигация", "облигации", "облигаций") }}
+                                {{ bondRowsCountLabel }}
                             </span>
                         </v-fade-transition>
                     </template>
@@ -338,6 +338,15 @@ export class BasePortfolioPage extends UI {
         return Number(this.currentMoneyRemainder) < 0 && !this.professionalMode;
     }
 
+    private get stockRowsCountLabel(): string {
+        const count = this.overview.stockPortfolio.rows.filter(row => row.quantity !== 0).length;
+        return `${count} ${Filters.declension(count, "акция", "акции", "акций")}`;
+    }
+
+    private get bondRowsCountLabel(): string {
+        const count = this.overview.bondPortfolio.rows.filter(row => row.quantity !== 0).length;
+        return `${count} ${Filters.declension(count, "облигация", "облигации", "облигаций")}`;
+    }
 }
 
 export enum EventType {
