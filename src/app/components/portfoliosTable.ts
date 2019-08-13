@@ -8,6 +8,7 @@ import {ShowProgress} from "../platform/decorators/showProgress";
 import {BtnReturn} from "../platform/dialogs/customDialog";
 import {ClientInfo} from "../services/clientService";
 import {ExportService, ExportType} from "../services/exportService";
+import {OverviewService} from "../services/overviewService";
 import {PortfolioParams, PortfoliosDialogType, PortfolioService} from "../services/portfolioService";
 import {EventType} from "../types/eventType";
 import {Portfolio, TableHeader} from "../types/types";
@@ -183,12 +184,16 @@ export class PortfoliosTable extends UI {
     private reloadPortfolios: () => Promise<void>;
     @MainStore.Action(MutationType.SET_CURRENT_PORTFOLIO)
     private setCurrentPortfolio: (id: number) => Promise<Portfolio>;
+    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
+    private reloadPortfolio: (id: number) => Promise<void>;
     /** Сервис по работе с портфелями */
     @Inject
     private portfolioService: PortfolioService;
     /** Сервис для экспорта портфеля */
     @Inject
     private exportService: ExportService;
+    @Inject
+    private overviewService: OverviewService;
     /** Типы диалогов */
     private dialogTypes = PortfoliosDialogType;
 
@@ -245,6 +250,9 @@ export class PortfoliosTable extends UI {
         const result = await new ConfirmDialog().show(`Вы уверены, что хотите удалить все сделки в портфеле`);
         if (result === BtnReturn.YES) {
             await this.portfolioService.clearPortfolio(porfolioId);
+            this.overviewService.resetCacheForId(porfolioId);
+            this.reloadPortfolio(porfolioId);
+            this.$snotify.info("Портфель успешно очищен");
         }
     }
 

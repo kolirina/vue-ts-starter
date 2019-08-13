@@ -26,6 +26,10 @@ export class TradeService {
         await this.http.put("/trades", req);
     }
 
+    async copyTrade(copyTradeRequest: CopyTradeRequest): Promise<void> {
+        await this.http.post("/trades/copy", copyTradeRequest);
+    }
+
     /**
      * Загружает и возвращает сделки по тикеру в портфеле
      * @param {string} id идентификатор портфеля
@@ -119,6 +123,15 @@ export class TradeType extends (EnumType as IStaticEnum<TradeType>) {
     private constructor(public code: string, public description: string) {
         super();
     }
+}
+
+/** Поля, содержащие информацию для копирования сделки */
+export interface CopyTradeRequest {
+    /** Идентификатор сделки */
+    tradeId: string;
+    /** Идентификатор портфеля в который будет скопирована сделка */
+    toPortfolioId: number;
+    fromPortfolioId: number;
 }
 
 /** Поля, содержащие информацию для удаления сделки */

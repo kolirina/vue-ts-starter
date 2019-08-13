@@ -40,7 +40,11 @@ export class PortfolioService {
     }
 
     async clearPortfolio(portfolioId: number): Promise<void> {
-        alert("ne gotovo");
+        await this.http.post(`/portfolio-info/clear/${portfolioId}`);
+    }
+
+    async copyPortfolio(portfolioId: number): Promise<void> {
+        await this.http.post(`/portfolio-info/copy/${portfolioId}`);
     }
 
     /**

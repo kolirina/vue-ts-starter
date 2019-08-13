@@ -3,8 +3,9 @@ import Component from "vue-class-component";
 import {Prop, Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class";
 import {UI} from "../app/ui";
+import {ChoosePortfolioDialog} from "../components/dialogs/choosePortfolioDialog";
 import {Filters} from "../platform/filters/Filters";
-import {ClientService} from "../services/clientService";
+import {ClientInfo, ClientService} from "../services/clientService";
 import {TableHeadersState, TABLES_NAME, TablesService} from "../services/tablesService";
 import {TradeFields, TradeType} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
@@ -98,6 +99,11 @@ const MainStore = namespace(StoreType.MAIN);
                                             Продать
                                         </v-list-tile-title>
                                     </v-list-tile>
+                                    <v-list-tile @click="copyDeal(props.item)">
+                                        <v-list-tile-title>
+                                            Копировать
+                                        </v-list-tile-title>
+                                    </v-list-tile>
                                     <v-list-tile v-if="isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.DEPOSIT)">
                                         <v-list-tile-title>
                                             Внести
@@ -169,6 +175,8 @@ export class TradesTable extends UI {
     private reloadPortfolio: (id: number) => Promise<void>;
     @MainStore.Getter
     private portfolio: Portfolio;
+    @MainStore.Getter
+    private clientInfo: ClientInfo;
     /** Список заголовков таблицы */
     @Prop()
     private headers: TableHeader[];
@@ -203,6 +211,10 @@ export class TradesTable extends UI {
 
     setHeadersState(): void {
         this.tableHeadersState = this.tablesService.getHeadersState(this.headers);
+    }
+
+    getHeaders(name: string): TableHeader[] {
+        return this.tablesService.getFilterHeaders(name);
     }
 
     @Watch("headers")
@@ -265,6 +277,14 @@ export class TradesTable extends UI {
 
     private async deleteTrade(tradeRow: TradeRow): Promise<void> {
         this.$emit("delete", tradeRow);
+    }
+
+    private async copyDeal(trade: TradeRow): Promise<void> {
+        const toPortfolioId = await new ChoosePortfolioDialog().show({portfolios: this.clientInfo.user.portfolios, currentPortfolioId: this.portfolio.id});
+        if (!toPortfolioId) {
+            return;
+        }
+        this.$emit("copyTrade", {toPortfolioId, fromPortfolioId: this.portfolio.id, tradeId: trade.id});
     }
 
     private getTradeType(tradeType: string): string {
