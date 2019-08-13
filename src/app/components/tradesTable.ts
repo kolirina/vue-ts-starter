@@ -88,6 +88,16 @@ const MainStore = namespace(StoreType.MAIN);
                                             Редактировать
                                         </v-list-tile-title>
                                     </v-list-tile>
+                                    <v-list-tile v-if="!props.item.parentTradeId" @click="copyTrade(props.item)">
+                                        <v-list-tile-title>
+                                            Копировать
+                                        </v-list-tile-title>
+                                    </v-list-tile>
+                                    <v-list-tile v-if="!props.item.parentTradeId" @click="moveTrade(props.item)">
+                                        <v-list-tile-title>
+                                            Переместить
+                                        </v-list-tile-title>
+                                    </v-list-tile>
                                     <v-divider v-if="!props.item.parentTradeId"></v-divider>
                                     <v-list-tile v-if="!isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.BUY)">
                                         <v-list-tile-title>
@@ -97,11 +107,6 @@ const MainStore = namespace(StoreType.MAIN);
                                     <v-list-tile v-if="!isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.SELL)">
                                         <v-list-tile-title>
                                             Продать
-                                        </v-list-tile-title>
-                                    </v-list-tile>
-                                    <v-list-tile @click="copyDeal(props.item)">
-                                        <v-list-tile-title>
-                                            Копировать
                                         </v-list-tile-title>
                                     </v-list-tile>
                                     <v-list-tile v-if="isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.DEPOSIT)">
@@ -275,12 +280,22 @@ export class TradesTable extends UI {
         this.$emit("delete", tradeRow);
     }
 
-    private async copyDeal(trade: TradeRow): Promise<void> {
-        const toPortfolioId = await new ChoosePortfolioDialog().show({portfolios: this.clientInfo.user.portfolios, currentPortfolioId: this.portfolio.id});
+    private async copyTrade(trade: TradeRow): Promise<void> {
+        const toPortfolioId = await new ChoosePortfolioDialog().show({portfolios: this.clientInfo.user.portfolios, currentPortfolioId: this.portfolio.id,
+                                                                      titleDialog: "Копирование сделки в", buttonTitle: "Копировать"});
         if (!toPortfolioId) {
             return;
         }
         this.$emit("copyTrade", {toPortfolioId, fromPortfolioId: this.portfolio.id, tradeId: trade.id});
+    }
+
+    private async moveTrade(trade: TradeRow): Promise<void> {
+        const toPortfolioId = await new ChoosePortfolioDialog().show({portfolios: this.clientInfo.user.portfolios, currentPortfolioId: this.portfolio.id,
+                                                                      titleDialog: "Перемещение сделки в", buttonTitle: "Переместить"});
+        if (!toPortfolioId) {
+            return;
+        }
+        this.$emit("moveTrade", {toPortfolioId, fromPortfolioId: this.portfolio.id, tradeId: trade.id});
     }
 
     private getTradeType(tradeType: string): string {

@@ -10,7 +10,7 @@ import {TableHeader} from "../../types/types";
             <v-card class="dialog-wrap composite-dialog">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
                 <v-card-title class="pb-3">
-                    <span class="dialog-header-text pl-3">Копирование сделки</span>
+                    <span class="dialog-header-text pl-3">{{ data.titleDialog }}</span>
                 </v-card-title>
                 <div>
                     <v-data-table class="data-table" :headers="headers" :items="data.portfolios" item-key="id" hide-actions>
@@ -31,7 +31,7 @@ import {TableHeader} from "../../types/types";
                 <v-layout class="action-btn">
                     <v-spacer></v-spacer>
                     <v-btn @click.stop="acceptСopy()" color="primary" class="btn">
-                        Копировать
+                        {{ data.buttonTitle }}
                     </v-btn>
                 </v-layout>
             </v-card>
@@ -61,5 +61,7 @@ export class ChoosePortfolioDialog extends CustomDialog<ChoosePortfolioData, num
 }
 type ChoosePortfolioData = {
     portfolios: PortfolioParams[],
-    currentPortfolioId: number
+    currentPortfolioId: number,
+    titleDialog: string,
+    buttonTitle: string
 };
