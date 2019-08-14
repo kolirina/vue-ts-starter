@@ -26,6 +26,10 @@ export class TradeService {
         await this.http.put("/trades", req);
     }
 
+    async getCurrency(currency: string, date: string): Promise<void> {
+        await this.http.get(`/currency/${currency}`, date);
+    }
+
     /**
      * Загружает и возвращает сделки по тикеру в портфеле
      * @param {string} id идентификатор портфеля

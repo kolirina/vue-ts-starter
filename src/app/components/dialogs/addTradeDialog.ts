@@ -350,6 +350,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         await this.checkAllowedAddTrade();
         this.portfolio = (this.data.store as any).currentPortfolio;
         await this.setDialogParams();
+        console.log(this.tradeService.getCurrency("rub", "14.08.2019"));
     }
 
     private onAssetTypeChange(): void {
