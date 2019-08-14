@@ -69,6 +69,14 @@ export class DateUtils {
      * Возвращает текущую дату
      * @return {string} текущая дата в виде строки
      */
+    static currentDateFormat(): string {
+        return DateUtils.formatDate(dayjs(), DateFormat.DATE);
+    }
+
+    /**
+     * Возвращает текущую дату
+     * @return {string} текущая дата в виде строки
+     */
     static currentDate(): string {
         return DateUtils.formatDate(dayjs(), DateFormat.DATE2);
     }

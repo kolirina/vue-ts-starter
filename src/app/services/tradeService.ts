@@ -27,7 +27,11 @@ export class TradeService {
     }
 
     async getCurrency(currency: string, date: string): Promise<void> {
-        await this.http.get(`/currency/${currency}`, date);
+        await this.http.get(`/currency/${currency}`, {date});
+    }
+
+    async getCurrencyFromTo(currencyFrom: string, currencyTo: string, date: string): Promise<any> {
+        return this.http.get(`/currency/${currencyFrom}/${currencyTo}`, {date});
     }
 
     /**

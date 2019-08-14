@@ -74,6 +74,11 @@ export class TradeMap {
                 [TradeValue.TOTAL_WF]: new MoneyWithdrawTrade().totalWithoutFee,
                 [TradeValue.TOTAL_SIGN]: new MoneyWithdrawTrade().signedTotal
             },
+            [Operation.EXCHANGE.enumName]: {
+                [TradeValue.TOTAL]: new MoneyWithdrawTrade().total,
+                [TradeValue.TOTAL_WF]: new MoneyWithdrawTrade().totalWithoutFee,
+                [TradeValue.TOTAL_SIGN]: new MoneyWithdrawTrade().signedTotal
+            },
             [Operation.INCOME.enumName]: {
                 [TradeValue.TOTAL]: new MoneyIncomeTrade().total,
                 [TradeValue.TOTAL_WF]: new MoneyIncomeTrade().totalWithoutFee,

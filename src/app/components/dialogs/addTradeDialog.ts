@@ -172,21 +172,25 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                         <div class="fs14">
                                             <v-layout class="select-section" align-center>
                                                 <span class="mr-2">Покупаемая валюта</span>
-                                                <v-select :items="['RUB', 'USD', 'EUR']" v-model="purchasedCurrency" label="Валюта представления" single-line></v-select>
+                                                <v-select :items="['RUB', 'USD', 'EUR']" v-model="purchasedCurrency" label="Валюта представления" single-line
+                                                          @change="getExchangeRate"></v-select>
                                             </v-layout>
                                         </div>
-                                        <ii-number-field label="Сумма" v-model="purchasedCurrencyValue" :decimals="2" name="money_amount" v-validate="'required|min_value:0.01'"
-                                                         :error-messages="errors.collect('money_amount')" class="required" @input="changedPurchasedCurrencyValue"></ii-number-field>
+                                        <ii-number-field label="Покупаемая валюта" v-model="purchasedCurrencyValue" :decimals="2" name="money_amount"
+                                                         v-validate="'required|min_value:0.01'" :error-messages="errors.collect('money_amount')"
+                                                         class="required" @input="changedPurchasedCurrencyValue"></ii-number-field>
                                     </v-flex>
                                     <v-flex xs6>
                                         <div class="fs14">
                                             <v-layout class="select-section" align-center>
                                                 <span class="mr-2">Валюта для списания</span>
-                                                <v-select :items="['RUB', 'USD', 'EUR']" v-model="debitingCurrency" label="Валюта представления" single-line></v-select>
+                                                <v-select :items="['RUB', 'USD', 'EUR']" v-model="debitingCurrency" label="Валюта представления" single-line
+                                                          @change="getExchangeRate"></v-select>
                                             </v-layout>
                                         </div>
-                                        <ii-number-field label="Сумма" v-model="debitingCurrencyValue" :decimals="2" name="money_amount" v-validate="'required|min_value:0.01'"
-                                                         :error-messages="errors.collect('money_amount')" class="required" @input="changedDebitingCurrencyValue"></ii-number-field>
+                                        <ii-number-field label="Валюта для списания" v-model="debitingCurrencyValue" :decimals="2" name="money_amount"
+                                                         v-validate="'required|min_value:0.01'" :error-messages="errors.collect('money_amount')"
+                                                         class="required" @input="changedDebitingCurrencyValue"></ii-number-field>
                                     </v-flex>
                                 </v-layout>
                                 <v-layout wrap>
@@ -194,7 +198,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                         <div class="fs14">
                                             Курс валюты
                                         </div>
-                                        <ii-number-field label="Сумма" v-model="currencyExchangeRate" :decimals="2" name="money_amount" v-validate="'required|min_value:0.01'"
+                                        <ii-number-field label="Курс валюты" v-model="currencyExchangeRate" :decimals="2" name="money_amount" v-validate="'required|min_value:0.01'"
                                                          :error-messages="errors.collect('money_amount')" class="required"></ii-number-field>
                                     </v-flex>
                                     <v-flex xs6>
@@ -204,7 +208,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                                 <v-select :items="['RUB', 'USD', 'EUR']" v-model="commissionMoney" label="Валюта представления" single-line></v-select>
                                             </v-layout>
                                         </div>
-                                        <ii-number-field label="Сумма" v-model="moneyAmount" :decimals="2" name="money_amount" v-validate="'required|min_value:0.01'"
+                                        <ii-number-field label="Комиссия" v-model="moneyAmount" :decimals="2" name="money_amount" v-validate="'required|min_value:0.01'"
                                                          :error-messages="errors.collect('money_amount')" class="required"></ii-number-field>
                                     </v-flex>
                                 </v-layout>
@@ -280,7 +284,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     private assetType = AssetType.STOCK;
 
-    private currencyExchangeRate: string = "65";
+    private currencyExchangeRate: string = "";
 
     private purchasedCurrency: string = "USD";
 
@@ -350,7 +354,12 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         await this.checkAllowedAddTrade();
         this.portfolio = (this.data.store as any).currentPortfolio;
         await this.setDialogParams();
-        console.log(this.tradeService.getCurrency("rub", "14.08.2019"));
+        await this.getExchangeRate();
+    }
+
+    private async getExchangeRate(): Promise<void> {
+        const res = await this.tradeService.getCurrencyFromTo(this.purchasedCurrency, this.debitingCurrency, DateUtils.currentDateFormat());
+        this.currencyExchangeRate = res.rate;
     }
 
     private onAssetTypeChange(): void {
@@ -360,6 +369,14 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             this.operation = this.data.operation;
         }
         this.clearFields();
+    }
+
+    private changedPurchasedCurrencyValue(): void {
+        this.debitingCurrencyValue = (Number(this.purchasedCurrencyValue) * Number(this.currencyExchangeRate)).toString();
+    }
+
+    private changedDebitingCurrencyValue(): void {
+        this.purchasedCurrencyValue = (Number(this.debitingCurrencyValue) / Number(this.currencyExchangeRate)).toString();
     }
 
     private async setDialogParams(): Promise<void> {
@@ -385,14 +402,6 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             this.fillFieldsFromShare();
             this.filteredShares = this.share ? [this.share] : [];
         }
-    }
-
-    private changedPurchasedCurrencyValue(): void {
-        this.debitingCurrencyValue = (Number(this.purchasedCurrencyValue) * Number(this.currencyExchangeRate)).toString();
-    }
-
-    private changedDebitingCurrencyValue(): void {
-        this.purchasedCurrencyValue = (Number(this.debitingCurrencyValue) * Number(this.currencyExchangeRate)).toString();
     }
 
     /**
@@ -533,13 +542,33 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             moneyAmount: this.total,
             currency: this.getCurrency()
         };
+        const linkedTradeRequest: any = {
+            portfolioId: this.portfolio.id,
+            createLinkedTrade: false,
+            asset: this.assetType.enumName,
+            operation: this.operation.enumName,
+            fields: {
+                currency: this.debitingCurrency,
+                date: this.getDate(),
+                facevalue: null,
+                fee: this.getFee(),
+                keepMoney: true,
+                moneyAmount: this.debitingCurrencyValue,
+                nkd: this.getNkd(),
+                note: this.getNote(),
+                perOne: this.isPerOne(),
+                price: this.getPrice(),
+                quantity: this.getQuantity(),
+                ticker: this.shareTicker
+            }
+        };
         this.processState = true;
         try {
             if (this.editMode) {
-                await this.editTrade(tradeFields);
+                await this.editTrade(tradeFields, linkedTradeRequest);
                 UI.emit(EventType.TRADE_UPDATED);
             } else {
-                await this.saveTrade(tradeFields);
+                await this.saveTrade(tradeFields, linkedTradeRequest);
                 UI.emit(EventType.TRADE_CREATED);
             }
 
@@ -559,7 +588,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         }
     }
 
-    private async saveTrade(tradeFields: TradeFields): Promise<void> {
+    private async saveTrade(tradeFields: TradeFields, linkedTradeRequest: any): Promise<void> {
         return this.tradeService.saveTrade({
             portfolioId: this.portfolio.id,
             asset: this.assetType.enumName,
@@ -568,11 +597,12 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             eventDate: this.eventDate,
             eventPeriod: this.eventPeriod,
             processShareEvent: this.processShareEvent,
-            fields: tradeFields
+            fields: tradeFields,
+            linkedTradeRequest: !this.isCurrencyConversion ? linkedTradeRequest : null
         });
     }
 
-    private async editTrade(tradeFields: TradeFields): Promise<void> {
+    private async editTrade(tradeFields: TradeFields, linkedTradeRequest: any): Promise<void> {
         return this.tradeService.editTrade({
             tradeId: this.tradeId,
             tableName: TradeUtils.tradeTable(this.assetType, this.operation),
@@ -581,7 +611,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             portfolioId: this.portfolio.id,
             createLinkedTrade: this.isKeepMoney(),
             editedMoneyTradeId: this.editedMoneyTradeId,
-            fields: tradeFields
+            fields: tradeFields,
+            linkedTradeRequest: !this.isCurrencyConversion ? linkedTradeRequest : null
         });
     }
 
@@ -767,7 +798,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             case AssetType.BOND:
                 return this.share && this.date && this.price && (!!this.facevalue || [Operation.COUPON, Operation.AMORTIZATION].includes(this.operation)) && this.quantity > 0;
             case AssetType.MONEY:
-                return !!this.date && !!this.moneyAmount;
+                return !!this.date && (!this.isCurrencyConversion ? this.currencyExchangeRate.length > 0 && this.debitingCurrencyValue.length > 0 &&
+                       this.purchasedCurrencyValue.length > 0 : !!this.moneyAmount);
         }
         return false;
     }
