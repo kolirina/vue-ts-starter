@@ -13,6 +13,7 @@ import {TradesTableFilter} from "../components/tradesTableFilter";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {ClientInfo} from "../services/clientService";
 import {ExportService, ExportType} from "../services/exportService";
+import {OverviewService} from "../services/overviewService";
 import {FilterService} from "../services/filterService";
 import {TableHeaders, TABLES_NAME, TablesService} from "../services/tablesService";
 import {CopyMoveTradeRequest, TradeService, TradesFilter} from "../services/tradeService";
@@ -22,7 +23,6 @@ import {Pagination, Portfolio, TableHeader, TradeRow} from "../types/types";
 import {ExportUtils} from "../utils/exportUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
-import {OverviewService} from "../services/overviewService";
 
 const MainStore = namespace(StoreType.MAIN);
 
