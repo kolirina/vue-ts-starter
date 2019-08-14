@@ -3,8 +3,9 @@ import Component from "vue-class-component";
 import {Prop, Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class";
 import {UI} from "../app/ui";
+import {ChoosePortfolioDialog} from "../components/dialogs/choosePortfolioDialog";
 import {Filters} from "../platform/filters/Filters";
-import {ClientService} from "../services/clientService";
+import {ClientInfo, ClientService} from "../services/clientService";
 import {TableHeadersState, TABLES_NAME, TablesService} from "../services/tablesService";
 import {TradeFields, TradeType} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
@@ -88,6 +89,17 @@ const MainStore = namespace(StoreType.MAIN);
                                         </v-list-tile-title>
                                     </v-list-tile>
                                     <v-divider v-if="!props.item.parentTradeId"></v-divider>
+                                    <v-list-tile v-if="!props.item.parentTradeId" @click="copyTrade(props.item)">
+                                        <v-list-tile-title>
+                                            Копировать
+                                        </v-list-tile-title>
+                                    </v-list-tile>
+                                    <v-list-tile v-if="!props.item.parentTradeId" @click="moveTrade(props.item)">
+                                        <v-list-tile-title>
+                                            Переместить
+                                        </v-list-tile-title>
+                                    </v-list-tile>
+                                    <v-divider v-if="!props.item.parentTradeId"></v-divider>
                                     <v-list-tile v-if="!isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.BUY)">
                                         <v-list-tile-title>
                                             Купить
@@ -138,8 +150,8 @@ const MainStore = namespace(StoreType.MAIN);
                                             Погашение
                                         </v-list-tile-title>
                                     </v-list-tile>
-                                    <!-- Связанную сделку удалить можно только удалив родительскую -->
                                     <v-divider v-if="!props.item.parentTradeId"></v-divider>
+                                    <!-- Связанную сделку удалить можно только удалив родительскую -->
                                     <v-list-tile v-if="!props.item.parentTradeId" @click="deleteTrade(props.item)">
                                         <v-list-tile-title>
                                             Удалить
@@ -169,6 +181,8 @@ export class TradesTable extends UI {
     private reloadPortfolio: (id: number) => Promise<void>;
     @MainStore.Getter
     private portfolio: Portfolio;
+    @MainStore.Getter
+    private clientInfo: ClientInfo;
     /** Список заголовков таблицы */
     @Prop()
     private headers: TableHeader[];
@@ -265,6 +279,24 @@ export class TradesTable extends UI {
 
     private async deleteTrade(tradeRow: TradeRow): Promise<void> {
         this.$emit("delete", tradeRow);
+    }
+
+    private async copyTrade(trade: TradeRow): Promise<void> {
+        const toPortfolioId = await new ChoosePortfolioDialog().show({portfolios: this.clientInfo.user.portfolios, currentPortfolioId: this.portfolio.id,
+                                                                      titleDialog: "Копирование сделки в", buttonTitle: "Копировать"});
+        if (!toPortfolioId) {
+            return;
+        }
+        this.$emit("copyTrade", {toPortfolioId, fromPortfolioId: this.portfolio.id, tradeId: trade.id});
+    }
+
+    private async moveTrade(trade: TradeRow): Promise<void> {
+        const toPortfolioId = await new ChoosePortfolioDialog().show({portfolios: this.clientInfo.user.portfolios, currentPortfolioId: this.portfolio.id,
+                                                                      titleDialog: "Перемещение сделки в", buttonTitle: "Переместить"});
+        if (!toPortfolioId) {
+            return;
+        }
+        this.$emit("moveTrade", {toPortfolioId, fromPortfolioId: this.portfolio.id, tradeId: trade.id});
     }
 
     private getTradeType(tradeType: string): string {
