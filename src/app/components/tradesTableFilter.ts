@@ -55,7 +55,7 @@ export class TradesTableFilter extends UI {
 
     /** Операции загружаемые по умполчанию */
     static readonly DEFAULT_OPERATIONS = [Operation.BUY, Operation.DIVIDEND, Operation.SELL, Operation.INCOME, Operation.COUPON, Operation.LOSS, Operation.AMORTIZATION,
-        Operation.EXCHANGE];
+        Operation.CURRENCY_BUY, Operation.CURRENCY_SELL];
 
     /** Фильтр */
     @Prop({required: true, type: Object})
