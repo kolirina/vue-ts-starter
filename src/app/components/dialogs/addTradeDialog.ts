@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import Decimal from "decimal.js";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
+import {Watch} from "vue-property-decorator";
 import {VueRouter} from "vue-router/types/router";
 import {UI} from "../../app/ui";
 import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
@@ -154,7 +155,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                             </v-flex>
 
                             <!-- Сумма денег (для денежной сделки) -->
-                            <v-flex v-if="isMoneyTrade" xs12>
+                            <v-flex v-if="isCurrencyConversion" xs12>
                                 <v-layout wrap>
                                     <v-flex xs12 lg8>
                                         <ii-number-field label="Сумма" v-model="moneyAmount" :decimals="2" name="money_amount" v-validate="'required|min_value:0.01'"
@@ -162,6 +163,49 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                     </v-flex>
                                     <v-flex xs12 lg4>
                                         <v-select :items="currencyList" v-model="moneyCurrency" label="Валюта сделки"></v-select>
+                                    </v-flex>
+                                </v-layout>
+                            </v-flex>
+                            <v-flex v-else xs12>
+                                <v-layout wrap>
+                                    <v-flex xs6>
+                                        <div class="fs14">
+                                            <v-layout class="select-section" align-center>
+                                                <span class="mr-2">Покупаемая валюта</span>
+                                                <v-select :items="['RUB', 'USD', 'EUR']" v-model="purchasedCurrency" label="Валюта представления" single-line></v-select>
+                                            </v-layout>
+                                        </div>
+                                        <ii-number-field label="Сумма" v-model="purchasedCurrencyValue" :decimals="2" name="money_amount" v-validate="'required|min_value:0.01'"
+                                                         :error-messages="errors.collect('money_amount')" class="required" @input="changedPurchasedCurrencyValue"></ii-number-field>
+                                    </v-flex>
+                                    <v-flex xs6>
+                                        <div class="fs14">
+                                            <v-layout class="select-section" align-center>
+                                                <span class="mr-2">Валюта для списания</span>
+                                                <v-select :items="['RUB', 'USD', 'EUR']" v-model="debitingCurrency" label="Валюта представления" single-line></v-select>
+                                            </v-layout>
+                                        </div>
+                                        <ii-number-field label="Сумма" v-model="debitingCurrencyValue" :decimals="2" name="money_amount" v-validate="'required|min_value:0.01'"
+                                                         :error-messages="errors.collect('money_amount')" class="required" @input="changedDebitingCurrencyValue"></ii-number-field>
+                                    </v-flex>
+                                </v-layout>
+                                <v-layout wrap>
+                                    <v-flex xs6>
+                                        <div class="fs14">
+                                            Курс валюты
+                                        </div>
+                                        <ii-number-field label="Сумма" v-model="currencyExchangeRate" :decimals="2" name="money_amount" v-validate="'required|min_value:0.01'"
+                                                         :error-messages="errors.collect('money_amount')" class="required"></ii-number-field>
+                                    </v-flex>
+                                    <v-flex xs6>
+                                        <div class="fs14">
+                                            <v-layout class="select-section" align-center>
+                                                <span class="mr-2">Комиссия</span>
+                                                <v-select :items="['RUB', 'USD', 'EUR']" v-model="commissionMoney" label="Валюта представления" single-line></v-select>
+                                            </v-layout>
+                                        </div>
+                                        <ii-number-field label="Сумма" v-model="moneyAmount" :decimals="2" name="money_amount" v-validate="'required|min_value:0.01'"
+                                                         :error-messages="errors.collect('money_amount')" class="required"></ii-number-field>
                                     </v-flex>
                                 </v-layout>
                             </v-flex>
@@ -235,6 +279,18 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private Operation = Operation;
 
     private assetType = AssetType.STOCK;
+
+    private currencyExchangeRate: string = "65";
+
+    private purchasedCurrency: string = "USD";
+
+    private purchasedCurrencyValue: string = "";
+
+    private commissionMoney: string = "RUB";
+
+    private debitingCurrency: string = "RUB";
+
+    private debitingCurrencyValue: string = "";
 
     private operation = Operation.BUY;
 
@@ -330,6 +386,14 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         }
     }
 
+    private changedPurchasedCurrencyValue(): void {
+        this.debitingCurrencyValue = (Number(this.purchasedCurrencyValue) * Number(this.currencyExchangeRate)).toString();
+    }
+
+    private changedDebitingCurrencyValue(): void {
+        this.purchasedCurrencyValue = (Number(this.debitingCurrencyValue) * Number(this.currencyExchangeRate)).toString();
+    }
+
     /**
      * Загружает и устанавливает информацию о выбранном портфеле
      * @param portfolioParams
@@ -354,6 +418,10 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     private async onOperationChange(): Promise<void> {
         await this.fillFields();
+    }
+
+    private get isCurrencyConversion(): boolean {
+        return this.operation !== Operation.EXCHANGE;
     }
 
     /**
