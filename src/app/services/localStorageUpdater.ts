@@ -42,9 +42,10 @@ export class LocalStorageUpdater {
      * Централизованно изменяет данные в localStorage, которые потеряли свою актуальность изза новых версий приложения
      */
     updateLocalStorage(): void {
-        this.updateCalendarEventTypes();
-        this.updateTableColumns();
+        // this.updateCalendarEventTypes();
+        // this.updateTableColumns();
         this.updateChartsStorage();
+        this.updateTradeFilterSetting();
         this.localStorage.set<string>(StoreKeys.LOCAL_STORAGE_LAST_UPDATE_DATE_KEY, versionConfig.date);
     }
 
@@ -83,6 +84,16 @@ export class LocalStorageUpdater {
         if (needUpdate) {
             this.localStorage.delete(`${StoreKeys.PORTFOLIO_CHART}_SHOW_EVENTS`);
             this.localStorage.delete(`${StoreKeys.PORTFOLIO_CHART}_SHOW_INDEX_STOCK_EXCHANGE`);
+        }
+    }
+
+    /**
+     * Обновляет настройки фильтра сделок
+     */
+    private updateTradeFilterSetting(): void {
+        const needUpdate = this.needUpdate();
+        if (needUpdate) {
+            this.localStorage.delete(StoreKeys.TRADES_FILTER_SETTINGS_KEY);
         }
     }
 

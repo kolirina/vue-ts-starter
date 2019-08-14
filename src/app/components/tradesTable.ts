@@ -240,6 +240,7 @@ export class TradesTable extends UI {
             share: null,
             ticker: trade.ticker,
             operation,
+            quantity: this.getQuantity(trade),
             assetType: AssetType.valueByName(trade.asset)
         });
         if (result) {
@@ -282,8 +283,10 @@ export class TradesTable extends UI {
     }
 
     private async copyTrade(trade: TradeRow): Promise<void> {
-        const toPortfolioId = await new ChoosePortfolioDialog().show({portfolios: this.clientInfo.user.portfolios, currentPortfolioId: this.portfolio.id,
-                                                                      titleDialog: "Копирование сделки в", buttonTitle: "Копировать"});
+        const toPortfolioId = await new ChoosePortfolioDialog().show({
+            portfolios: this.clientInfo.user.portfolios, currentPortfolioId: this.portfolio.id,
+            titleDialog: "Копирование сделки в", buttonTitle: "Копировать"
+        });
         if (!toPortfolioId) {
             return;
         }
@@ -291,8 +294,10 @@ export class TradesTable extends UI {
     }
 
     private async moveTrade(trade: TradeRow): Promise<void> {
-        const toPortfolioId = await new ChoosePortfolioDialog().show({portfolios: this.clientInfo.user.portfolios, currentPortfolioId: this.portfolio.id,
-                                                                      titleDialog: "Перемещение сделки в", buttonTitle: "Переместить"});
+        const toPortfolioId = await new ChoosePortfolioDialog().show({
+            portfolios: this.clientInfo.user.portfolios, currentPortfolioId: this.portfolio.id,
+            titleDialog: "Перемещение сделки в", buttonTitle: "Переместить"
+        });
         if (!toPortfolioId) {
             return;
         }
@@ -343,6 +348,13 @@ export class TradesTable extends UI {
 
     private isMoneyTrade(trade: TradeRow): boolean {
         return AssetType.valueByName(trade.asset) === AssetType.MONEY;
+    }
+
+    private getQuantity(trade: TradeRow): number {
+        if (!this.isMoneyTrade(trade)) {
+            return trade.quantity;
+        }
+        return null;
     }
 
     private currencyForPrice(trade: TradeRow): string {

@@ -47,7 +47,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
 
                 <slot name="afterDashboard"></slot>
 
-                <asset-table :assets="overview.assetRows" v-if="blockNotEmpty(emptyBlockType.DEFAULT)" class="mt-3"></asset-table>
+                <asset-table v-if="blockNotEmpty(emptyBlockType.ASSETS)" :assets="overview.assetRows" class="mt-3"></asset-table>
 
                 <expanded-panel v-if="blockNotEmpty(emptyBlockType.STOCK_PORTFOLIO)" :value="$uistate.stocksTablePanel"
                                 :withMenu="true" name="stock" :state="$uistate.STOCKS" @click="onStockTablePanelClick" class="mt-3 selectable">
@@ -272,6 +272,8 @@ export class BasePortfolioPage extends UI {
                 return this.overview.bondPortfolio.rows.length > 0;
             case EmptyBlockType.STOCK_PORTFOLIO:
                 return this.overview.stockPortfolio.rows.length > 0;
+            case EmptyBlockType.ASSETS:
+                return this.overview.totalTradesCount > 0;
         }
     }
 
@@ -355,6 +357,7 @@ export enum EventType {
 }
 
 export enum EmptyBlockType {
+    ASSETS = "assets",
     DEFAULT = "default",
     STOCK_PORTFOLIO = "stockPortfolio",
     BOND_PORTFOLIO = "bondPortfolio"
