@@ -88,6 +88,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             Редактировать
                                         </v-list-tile-title>
                                     </v-list-tile>
+                                    <v-divider v-if="!props.item.parentTradeId"></v-divider>
                                     <v-list-tile v-if="!props.item.parentTradeId" @click="copyTrade(props.item)">
                                         <v-list-tile-title>
                                             Копировать
@@ -149,8 +150,8 @@ const MainStore = namespace(StoreType.MAIN);
                                             Погашение
                                         </v-list-tile-title>
                                     </v-list-tile>
-                                    <!-- Связанную сделку удалить можно только удалив родительскую -->
                                     <v-divider v-if="!props.item.parentTradeId"></v-divider>
+                                    <!-- Связанную сделку удалить можно только удалив родительскую -->
                                     <v-list-tile v-if="!props.item.parentTradeId" @click="deleteTrade(props.item)">
                                         <v-list-tile-title>
                                             Удалить

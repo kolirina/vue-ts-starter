@@ -88,14 +88,15 @@ const MainStore = namespace(StoreType.MAIN);
                                         Экспорт в xlsx
                                     </v-list-tile-title>
                                 </v-list-tile>
-                                <v-list-tile @click="deletePortfolio(props.item)">
-                                    <v-list-tile-title class="delete-btn">
-                                        Удалить
-                                    </v-list-tile-title>
-                                </v-list-tile>
+                                <v-divider v-if="!props.item.parentTradeId"></v-divider>
                                 <v-list-tile @click="clearPortfolio(props.item.id)">
                                     <v-list-tile-title class="delete-btn">
                                         Очистить
+                                    </v-list-tile-title>
+                                </v-list-tile>
+                                <v-list-tile @click="deletePortfolio(props.item)">
+                                    <v-list-tile-title class="delete-btn">
+                                        Удалить
                                     </v-list-tile-title>
                                 </v-list-tile>
                             </v-list>
