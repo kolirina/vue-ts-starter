@@ -9,8 +9,8 @@ export class MoneyTrade implements Trade {
     }
 
     totalWithoutFee(holder: TradeDataHolder): string {
-        if (holder.getMoneyAmount()) {
-            return new Decimal(holder.getMoneyAmount()).toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toString();
+        if (holder.getDebitingCurrencyValue()) {
+            return new Decimal(holder.getDebitingCurrencyValue()).toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toString();
         }
         return null;
     }

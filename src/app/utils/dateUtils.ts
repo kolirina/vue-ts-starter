@@ -66,11 +66,12 @@ export class DateUtils {
     }
 
     /**
-     * Возвращает текущую дату
-     * @return {string} текущая дата в виде строки
+     * Форматирование даты для отображения на странице
+     * @param date дата для форматирования
+     * @return {string} дата для отображения на странице
      */
-    static currentDateFormat(): string {
-        return DateUtils.formatDate(dayjs(), DateFormat.DATE);
+    static formatDayMonthYear(date: string): string {
+        return dayjs(date).format(DateFormat.DATE);
     }
 
     /**

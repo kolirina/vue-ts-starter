@@ -25,4 +25,8 @@ export interface TradeDataHolder {
     getMoneyAmount(): string;
 
     getCurrency(): string;
+
+    getPurchasedCurrencyValue(): string;
+
+    getDebitingCurrencyValue(): string;
 }

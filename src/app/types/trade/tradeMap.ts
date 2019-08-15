@@ -5,10 +5,11 @@ import {BondBuyTrade} from "./bondBuyTrade";
 import {BondSellTrade} from "./bondSellTrade";
 import {CouponTrade} from "./couponTrade";
 import {DividendTrade} from "./dividendTrade";
+import {MoneyBuyTrade} from "./MoneyBuyTrade";
 import {MoneyDepositTrade} from "./moneyDepositTrade";
 import {MoneyIncomeTrade} from "./moneyIncomeTrade";
 import {MoneyLossTrade} from "./moneyLossTrade";
-import {MoneyWithdrawTrade} from "./moneyWithdrawTrade";
+import {MoneySellTrade} from "./MoneySellTrade";
 import {StockBuyTrade} from "./stockBuyTrade";
 import {StockSellTrade} from "./stockSellTrade";
 import {TradeDataHolder} from "./tradeDataHolder";
@@ -69,15 +70,15 @@ export class TradeMap {
                 [TradeValue.TOTAL_WF]: new MoneyDepositTrade().totalWithoutFee,
                 [TradeValue.TOTAL_SIGN]: new MoneyDepositTrade().signedTotal
             },
-            [Operation.WITHDRAW.enumName]: {
-                [TradeValue.TOTAL]: new MoneyWithdrawTrade().total,
-                [TradeValue.TOTAL_WF]: new MoneyWithdrawTrade().totalWithoutFee,
-                [TradeValue.TOTAL_SIGN]: new MoneyWithdrawTrade().signedTotal
+            [Operation.CURRENCY_BUY.enumName]: {
+                [TradeValue.TOTAL]: new MoneyBuyTrade().total,
+                [TradeValue.TOTAL_WF]: new MoneyBuyTrade().totalWithoutFee,
+                [TradeValue.TOTAL_SIGN]: new MoneyBuyTrade().signedTotal
             },
-            [Operation.EXCHANGE.enumName]: {
-                [TradeValue.TOTAL]: new MoneyWithdrawTrade().total,
-                [TradeValue.TOTAL_WF]: new MoneyWithdrawTrade().totalWithoutFee,
-                [TradeValue.TOTAL_SIGN]: new MoneyWithdrawTrade().signedTotal
+            [Operation.CURRENCY_SELL.enumName]: {
+                [TradeValue.TOTAL]: new MoneySellTrade().total,
+                [TradeValue.TOTAL_WF]: new MoneySellTrade().totalWithoutFee,
+                [TradeValue.TOTAL_SIGN]: new MoneySellTrade().signedTotal
             },
             [Operation.INCOME.enumName]: {
                 [TradeValue.TOTAL]: new MoneyIncomeTrade().total,
