@@ -55,7 +55,7 @@ export class TradesTableFilter extends UI {
 
     /** Операции загружаемые по умполчанию */
     static readonly DEFAULT_OPERATIONS = [Operation.BUY, Operation.DIVIDEND, Operation.SELL, Operation.INCOME, Operation.COUPON, Operation.LOSS, Operation.AMORTIZATION,
-        Operation.EXCHANGE];
+        Operation.CURRENCY_BUY, Operation.CURRENCY_SELL];
 
     /** Фильтр */
     @Prop({required: true, type: Object})
@@ -112,7 +112,7 @@ export class TradesTableFilter extends UI {
             case TradeListType.BOND:
                 return [Operation.BUY, Operation.SELL, Operation.COUPON, Operation.AMORTIZATION];
             case TradeListType.MONEY:
-                return [Operation.BUY, Operation.SELL, Operation.INCOME, Operation.LOSS];
+                return [Operation.BUY, Operation.SELL, Operation.INCOME, Operation.LOSS, Operation.CURRENCY_BUY, Operation.CURRENCY_SELL];
         }
         return [...TradesTableFilter.DEFAULT_OPERATIONS];
     }
