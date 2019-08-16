@@ -107,8 +107,8 @@ export class OverviewService {
         return await this.http.get<string>(`/portfolios/${portfolioId}/current-money`);
     }
 
-    async saveOrUpdateCurrentMoney(portfolioId: number, currentMoneyRequest: CurrentMoneyRequest): Promise<void> {
-        await this.http.post(`/portfolios/${portfolioId}/current-money`, currentMoneyRequest);
+    async saveOrUpdateCurrentMoney(portfolioId: number, currentMoneyRequests: CurrentMoneyRequest[]): Promise<void> {
+        await this.http.post(`/portfolios/${portfolioId}/current-money`, currentMoneyRequests);
     }
 
     /**
