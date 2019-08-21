@@ -191,6 +191,14 @@ export type TradeFields = {
     currency: string
 };
 
+export type RelatedMoneyTrade = {
+    portfolioId: number,
+    createLinkedTrade: boolean,
+    asset: string,
+    operation: string,
+    fields: TradeFields
+};
+
 export type CreateTradeRequest = {
     /** Идентификатор портфеля */
     portfolioId: number,

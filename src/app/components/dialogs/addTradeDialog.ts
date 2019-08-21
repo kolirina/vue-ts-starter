@@ -2,7 +2,6 @@ import dayjs from "dayjs";
 import Decimal from "decimal.js";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
-import {Watch} from "vue-property-decorator";
 import {VueRouter} from "vue-router/types/router";
 import {UI} from "../../app/ui";
 import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
@@ -15,7 +14,7 @@ import {MarketHistoryService} from "../../services/marketHistoryService";
 import {MarketService} from "../../services/marketService";
 import {OverviewService} from "../../services/overviewService";
 import {MoneyResiduals, PortfolioParams, PortfolioService} from "../../services/portfolioService";
-import {TradeFields, TradeService} from "../../services/tradeService";
+import {RelatedMoneyTrade, TradeFields, TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
 import {EventType} from "../../types/eventType";
 import {Operation} from "../../types/operation";
@@ -204,11 +203,11 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                     </v-flex>
                                 </v-layout>
                             </v-flex>
-                            <v-flex v-else xs12>
+                            <v-flex v-if="!isCurrencyConversion && isMoneyTrade" xs12>
                                 <v-layout wrap>
                                     <v-flex xs12 lg8>
                                         <ii-number-field label="Сумма" v-model="moneyAmount" :decimals="2" name="money_amount" v-validate="'required|min_value:0.01'"
-                                                         :error-messages="errors.collect('money_amount')" class="required"></ii-number-field>
+                                                         :error-messages="errors.collect('money_amount')" class="required" key="money-amount"></ii-number-field>
                                     </v-flex>
                                     <v-flex xs12 lg4>
                                         <v-select :items="currencyList" v-model="moneyCurrency" label="Валюта сделки"></v-select>
@@ -327,8 +326,6 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private nkd: string = null;
 
     private fee: string = null;
-
-    private feeMoneyConversion: string = null;
 
     private note: string = null;
     /** Период события */
@@ -566,7 +563,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             moneyAmount: this.total,
             currency: this.getCurrency()
         };
-        let linkedTradeRequest: any = {};
+        let linkedTradeRequest: RelatedMoneyTrade = null;
         this.isCurrencyConversion ? linkedTradeRequest = {
             portfolioId: this.portfolio.id,
             createLinkedTrade: !this.isKeepMoney(),
