@@ -155,18 +155,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                             </v-flex>
 
                             <!-- Сумма денег (для денежной сделки) -->
-                            <v-flex v-if="!isCurrencyConversion" xs12>
-                                <v-layout wrap>
-                                    <v-flex xs12 lg8>
-                                        <ii-number-field label="Сумма" v-model="moneyAmount" :decimals="2" name="money_amount" v-validate="'required|min_value:0.01'"
-                                                         :error-messages="errors.collect('money_amount')" class="required"></ii-number-field>
-                                    </v-flex>
-                                    <v-flex xs12 lg4>
-                                        <v-select :items="currencyList" v-model="moneyCurrency" label="Валюта сделки"></v-select>
-                                    </v-flex>
-                                </v-layout>
-                            </v-flex>
-                            <v-flex v-else xs12>
+                            <v-flex v-if="isCurrencyConversion" xs12>
                                 <v-layout wrap class="margB16">
                                     <v-flex xs6>
                                         <div class="fs14 margB16">
@@ -212,6 +201,17 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                             </v-layout>
                                         </div>
                                         <ii-number-field label="Комиссия" v-model="fee" :decimals="2"></ii-number-field>
+                                    </v-flex>
+                                </v-layout>
+                            </v-flex>
+                            <v-flex v-else xs12>
+                                <v-layout wrap>
+                                    <v-flex xs12 lg8>
+                                        <ii-number-field label="Сумма" v-model="moneyAmount" :decimals="2" name="money_amount" v-validate="'required|min_value:0.01'"
+                                                         :error-messages="errors.collect('money_amount')" class="required"></ii-number-field>
+                                    </v-flex>
+                                    <v-flex xs12 lg4>
+                                        <v-select :items="currencyList" v-model="moneyCurrency" label="Валюта сделки"></v-select>
                                     </v-flex>
                                 </v-layout>
                             </v-flex>
@@ -635,7 +635,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             eventPeriod: this.eventPeriod,
             processShareEvent: this.processShareEvent,
             fields: tradeFields,
-            linkedTradeRequest: linkedTradeRequest
+            linkedTradeRequest: this.isCurrencyConversion ? linkedTradeRequest : null
         });
     }
 
