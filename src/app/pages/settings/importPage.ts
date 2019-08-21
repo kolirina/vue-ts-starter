@@ -57,7 +57,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <v-layout justify-space-between wrap class="intelinvest-section">
                         <div class="intelinvest-section__description">
                             Если в списке нет вашего брокера или терминала, вы всегда можете осуществить импорт через универсальный формат
-                            <a @click="showIntelinvestInstruction()">CSV</a>
+                            <a @click="showIntelinvestInstruction">CSV</a>
                             или обратиться к нам через обратную связь, по <a href="mailto:web@intelinvest.ru">почте</a> или
                             в группе <a href="http://vk.com/intelinvest" target="_blank">вконтакте</a>.
                         </div>

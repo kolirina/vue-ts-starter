@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import Component from "vue-class-component";
 import {CustomDialog} from "../../platform/dialogs/customDialog";
 import {PortfolioParams} from "../../services/portfolioService";
@@ -19,7 +20,7 @@ import {PortfolioBackup} from "../../types/types";
                     <div class="btn-days-select-wrapper pl-3 margB30">
                         <v-btn-toggle v-model="selectedDaysInner" multiple light>
                             <v-btn v-for="day in days" :value="day" :key="day" depressed class="btn-item">
-                                {{ day }}
+                                {{ getLabel(day) }}
                             </v-btn>
                         </v-btn-toggle>
                     </div>
@@ -33,12 +34,12 @@ import {PortfolioBackup} from "../../types/types";
                             <template v-slot:headers="props">
                                 <v-layout align-center>
                                     <v-checkbox
-                                        :input-value="props.all"
-                                        :indeterminate="props.indeterminate"
-                                        primary
-                                        hide-details
-                                        @click.stop="toggleAll"
-                                        class="select-all fg-0"
+                                            :input-value="props.all"
+                                            :indeterminate="props.indeterminate"
+                                            primary
+                                            hide-details
+                                            @click.stop="toggleAll"
+                                            class="select-all fg-0"
                                     ></v-checkbox>
                                     <i v-if="props.all" class="exp-panel-arrow select-all-icon"></i>
                                     <i v-else class="exp-panel-arrow none-select-all-icon"></i>
@@ -69,14 +70,14 @@ import {PortfolioBackup} from "../../types/types";
 export class BackupPortfolioDialog extends CustomDialog<BackupPortfolioData, PortfolioBackup> {
 
     /** Дни для выбора расписания */
-    private days: string[] = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
+    private days: number[] = [2, 3, 4, 5, 6, 7, 1];
     /** Выбранный день по умолчанию */
-    private selectedDaysInner: string[] = ["Сб"];
+    private selectedDaysInner: number[] = [7];
     /** Список параметров всех портфелей */
     private selectedPortfolios: PortfolioParams[] = [];
 
     mounted(): void {
-        this.selectedDaysInner = this.data.portfolioBackup.days.map(day => day - 2).map(day => this.days[day]);
+        this.selectedDaysInner = [...this.data.portfolioBackup.days];
         this.selectedPortfolios = this.data.portfolios.filter(portfolio => this.data.portfolioBackup.portfolioIds.includes(portfolio.id));
     }
 
@@ -89,10 +90,14 @@ export class BackupPortfolioDialog extends CustomDialog<BackupPortfolioData, Por
     }
 
     private applyConfig(): void {
-        const days = this.selectedDaysInner.map(day => this.days.indexOf(day) + 2);
         const portfolioIds = this.selectedPortfolios.map(portfolio => portfolio.id);
-        const portfolioBackup: PortfolioBackup = {id: this.data.portfolioBackup.id, days, portfolioIds};
+        const portfolioBackup: PortfolioBackup = {id: this.data.portfolioBackup.id, days: this.selectedDaysInner, portfolioIds};
         this.close(portfolioBackup);
+    }
+
+    private getLabel(index: number): string {
+        const chars = dayjs().day(index - 1).format("ddd").split("");
+        return `${chars[0].toUpperCase()}${chars[1]}`;
     }
 }
 
