@@ -139,7 +139,8 @@ export class UnLinkCardAnswer extends (EnumType as IStaticEnum<UnLinkCardAnswer>
     static readonly ERRORS = new UnLinkCardAnswer("ERRORS", "Ошибки в сервисе");
     static readonly SUPPORT_QUALITY = new UnLinkCardAnswer("SUPPORT_QUALITY", "Не устроило качество обратной связи от тех. поддержки");
     static readonly EXPENSIVE_TARIFFS = new UnLinkCardAnswer("EXPENSIVE_TARIFFS", "Дорогие тарифные планы");
-    static readonly OTHER = new UnLinkCardAnswer("OTHER", "Другое...");
+    static readonly STOP_AUTO_PAYMENTS = new UnLinkCardAnswer("STOP_AUTO_PAYMENTS", "Автопродление не требуется. Предпочитаю оплачивать самостоятельно.");
+    static readonly OTHER = new UnLinkCardAnswer("OTHER", "Другое");
 
     private constructor(public code: string, public description: string) {
         super();
