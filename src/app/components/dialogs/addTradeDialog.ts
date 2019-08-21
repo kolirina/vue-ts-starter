@@ -114,7 +114,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                 <ii-number-field label="Количество" v-model="quantity" @keyup="calculateFee" name="quantity" :decimals="0"
                                                  v-validate="'required|min_value:1'" :error-messages="errors.collect('quantity')" class="required" browser-autocomplete="false">
                                 </ii-number-field>
-                                <div class="fs12 mt-1">
+                                <div class="fs12-opacity mt-1">
                                     <span v-if="showCurrentQuantityLabel">
                                         Текущее количество {{ isStockTrade ? "акций" : "облигаций" }}
                                         <a @click="setToQuantity" title="Подставить в Количество">{{ currentCountShareSearch }} шт.</a>
@@ -235,8 +235,8 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                 <v-checkbox :disabled="keepMoneyDisabled" :label="keepMoneyLabel" v-model="keepMoney" hide-details></v-checkbox>
                             </v-flex>
                         </v-layout>
+                        <small class="fs12-opacity">* обозначает обязательные поля</small>
                     </v-container>
-                    <small class="fs12">* обозначает обязательные поля</small>
                 </v-card-text>
 
                 <v-card-actions>

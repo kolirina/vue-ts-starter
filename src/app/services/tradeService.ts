@@ -33,6 +33,13 @@ export class TradeService {
     async getCurrencyFromTo(currencyFrom: string, currencyTo: string, date: string): Promise<any> {
         return this.http.get(`/currency/${currencyFrom}/${currencyTo}`, {date});
     }
+    async copyTrade(copyMoveTradeRequest: CopyMoveTradeRequest): Promise<void> {
+        await this.http.post("/trades/copy", copyMoveTradeRequest);
+    }
+
+    async moveTrade(copyMoveTradeRequest: CopyMoveTradeRequest): Promise<void> {
+        await this.http.post("/trades/move", copyMoveTradeRequest);
+    }
 
     /**
      * Загружает и возвращает сделки по тикеру в портфеле
@@ -127,6 +134,16 @@ export class TradeType extends (EnumType as IStaticEnum<TradeType>) {
     private constructor(public code: string, public description: string) {
         super();
     }
+}
+
+/** Поля, содержащие информацию для копирования сделки */
+export interface CopyMoveTradeRequest {
+    /** Идентификатор сделки */
+    tradeId: string;
+    /** Идентификатор портфеля в который будет скопирована сделка */
+    toPortfolioId: number;
+    /** Идентификатор портфеля с которого происходит копирование */
+    fromPortfolioId: number;
 }
 
 /** Поля, содержащие информацию для удаления сделки */

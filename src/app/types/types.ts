@@ -473,6 +473,8 @@ export type CombinedInfoRequest = {
 export interface CurrentMoneyRequest {
     /** Текущий остаток денежных средств */
     currentMoney: string;
+    /** Валюта остатка */
+    currency: string;
     /** Признак корректировки после импорта */
     afterImport?: boolean;
 }

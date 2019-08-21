@@ -14,8 +14,9 @@ import {ShowProgress} from "../platform/decorators/showProgress";
 import {ClientInfo} from "../services/clientService";
 import {ExportService, ExportType} from "../services/exportService";
 import {FilterService} from "../services/filterService";
+import {OverviewService} from "../services/overviewService";
 import {TableHeaders, TABLES_NAME, TablesService} from "../services/tablesService";
-import {TradeService, TradesFilter} from "../services/tradeService";
+import {CopyMoveTradeRequest, TradeService, TradesFilter} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
 import {StoreKeys} from "../types/storeKeys";
 import {Pagination, Portfolio, TableHeader, TradeRow} from "../types/types";
@@ -45,7 +46,7 @@ const MainStore = namespace(StoreType.MAIN);
                         <additional-pagination :pagination="pagination" @update:pagination="onTablePaginationChange"></additional-pagination>
                     </v-layout>
                     <empty-search-result v-if="isEmptySearchResult" @resetFilter="resetFilter"></empty-search-result>
-                    <trades-table v-else :trades="trades" :pagination="pagination"
+                    <trades-table v-else :trades="trades" :pagination="pagination" @copyTrade="copyTrade" @moveTrade="moveTrade"
                                 :headers="getHeaders(TABLES_NAME.TRADE)" @delete="onDelete" @resetFilter="resetFilter" @update:pagination="onTablePaginationChange"></trades-table>
                 </expanded-panel>
             </div>
@@ -63,6 +64,8 @@ export class TradesPage extends UI {
     private filterService: FilterService;
     @Inject
     private exportService: ExportService;
+    @Inject
+    private overviewService: OverviewService;
 
     /** Инофрмация о пользователе */
     @MainStore.Getter
@@ -115,6 +118,20 @@ export class TradesPage extends UI {
     private async onTablePaginationChange(pagination: Pagination): Promise<void> {
         this.pagination = pagination;
         await this.loadTrades();
+    }
+
+    private async copyTrade(requestData: CopyMoveTradeRequest): Promise<void> {
+        await this.tradeService.copyTrade(requestData);
+        this.overviewService.resetCacheForId(requestData.toPortfolioId);
+        this.$snotify.info("Сделка успешно копирована");
+    }
+
+    private async moveTrade(requestData: CopyMoveTradeRequest): Promise<void> {
+        await this.tradeService.moveTrade(requestData);
+        this.overviewService.resetCacheForId(requestData.fromPortfolioId);
+        this.overviewService.resetCacheForId(requestData.toPortfolioId);
+        await this.loadTrades();
+        this.$snotify.info("Сделка успешно перемещена");
     }
 
     /**

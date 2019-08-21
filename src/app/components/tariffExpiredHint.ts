@@ -11,7 +11,7 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <div :style="{ left: hintCoords.x, top: hintCoords.y, display: hintCoords.display }" class="custom-v-menu" v-tariff-expired-hint>
+        <div v-if="clientInfo && hintCoords" :style="{ left: hintCoords.x, top: hintCoords.y, display: hintCoords.display }" class="custom-v-menu" v-tariff-expired-hint>
             <div v-if="isFreeTariff || isExpiredTrial" class="v-menu-content">
                 Подключите любой платный тарифный план (Профессионал или Стандарт) для получения доступа ко всем возможностям сервиса.
                 Подробнее узнать о тарифных планах Intelinvest, вы можете по <span @click.stop="goToTariff" class="link">ссылке</span>.

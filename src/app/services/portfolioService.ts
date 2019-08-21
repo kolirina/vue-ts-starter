@@ -39,6 +39,10 @@ export class PortfolioService {
         return this.http.get<PortfolioBackup>(`/portfolios/${userId}/backup`);
     }
 
+    async clearPortfolio(portfolioId: number): Promise<void> {
+        await this.http.post(`/portfolio-info/clear/${portfolioId}`);
+    }
+
     /**
      * Отправляет запрос на создание/обновление данных бэкапа портфеля
      * @param userId идентификатор пользователя
