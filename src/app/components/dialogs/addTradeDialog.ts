@@ -354,17 +354,25 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         await this.checkAllowedAddTrade();
         this.portfolio = (this.data.store as any).currentPortfolio;
         await this.setDialogParams();
+        if (this.editMode && this.isCurrencyConversion) {
+            await this.loadRate();
+            this.changedPurchasedCurrencyValue();
+        }
     }
 
     private async onChangeExchangeRate(): Promise<void> {
-        const res = await this.tradeService.getCurrencyFromTo(this.purchasedCurrency, this.debitCurrency, DateUtils.formatDayMonthYear(this.date));
-        this.currencyExchangeRate = res.rate;
-        this.commissionCurrency = this.debitCurrency;
+        await this.loadRate();
         if (this.isCurrencyBuy) {
             this.changedPurchasedCurrencyValue();
         } else {
             this.changedDebitingCurrencyValue();
         }
+    }
+
+    private async loadRate(): Promise<void> {
+        const res = await this.tradeService.getCurrencyFromTo(this.purchasedCurrency, this.debitCurrency, DateUtils.formatDayMonthYear(this.date));
+        this.currencyExchangeRate = res.rate;
+        this.commissionCurrency = this.debitCurrency;
     }
 
     private onAssetTypeChange(): void {
