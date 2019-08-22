@@ -405,10 +405,6 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         if (this.data.quantity) {
             this.quantity = this.data.quantity;
         }
-        if (this.editMode && this.isCurrencyConversion) {
-            await this.loadRate();
-            this.changedPurchasedCurrencyValue();
-        }
         if (this.data.ticker) {
             await this.setShareFromTicker(this.data.ticker);
             this.fillFieldsFromShare();
@@ -422,6 +418,10 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         } else {
             this.fillFieldsFromShare();
             this.filteredShares = this.share ? [this.share] : [];
+        }
+        if (this.editMode && this.isCurrencyConversion) {
+            await this.loadRate();
+            this.changedPurchasedCurrencyValue();
         }
     }
 
