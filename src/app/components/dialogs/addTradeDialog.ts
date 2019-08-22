@@ -358,6 +358,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     private async onChangeExchangeRate(): Promise<void> {
         await this.loadRate();
+        this.commissionCurrency = this.debitCurrency;
         if (this.isCurrencyBuy) {
             this.changedPurchasedCurrencyValue();
         } else {
@@ -368,7 +369,6 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private async loadRate(): Promise<void> {
         const res = await this.tradeService.getCurrencyFromTo(this.purchasedCurrency, this.debitCurrency, DateUtils.formatDayMonthYear(this.date));
         this.currencyExchangeRate = res.rate;
-        this.commissionCurrency = this.debitCurrency;
     }
 
     private onAssetTypeChange(): void {
