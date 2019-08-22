@@ -354,10 +354,6 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         await this.checkAllowedAddTrade();
         this.portfolio = (this.data.store as any).currentPortfolio;
         await this.setDialogParams();
-        if (this.editMode && this.isCurrencyConversion) {
-            await this.loadRate();
-            this.changedPurchasedCurrencyValue();
-        }
     }
 
     private async onChangeExchangeRate(): Promise<void> {
@@ -408,6 +404,10 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         await this.updatePortfolioInfo();
         if (this.data.quantity) {
             this.quantity = this.data.quantity;
+        }
+        if (this.editMode && this.isCurrencyConversion) {
+            await this.loadRate();
+            this.changedPurchasedCurrencyValue();
         }
         if (this.data.ticker) {
             await this.setShareFromTicker(this.data.ticker);
