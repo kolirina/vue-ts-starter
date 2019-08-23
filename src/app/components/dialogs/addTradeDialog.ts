@@ -357,18 +357,14 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private async onChangeExchangeRate(): Promise<void> {
-        await this.loadRate();
+        const res = await this.tradeService.getCurrencyFromTo(this.purchasedCurrency, this.debitCurrency, DateUtils.formatDayMonthYear(this.date));
+        this.currencyExchangeRate = res.rate;
         this.commissionCurrency = this.debitCurrency;
         if (this.isCurrencyBuy) {
             this.changedPurchasedCurrencyValue();
         } else {
             this.changedDebitingCurrencyValue();
         }
-    }
-
-    private async loadRate(): Promise<void> {
-        const res = await this.tradeService.getCurrencyFromTo(this.purchasedCurrency, this.debitCurrency, DateUtils.formatDayMonthYear(this.date));
-        this.currencyExchangeRate = res.rate;
     }
 
     private onAssetTypeChange(): void {
@@ -420,9 +416,14 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             this.filteredShares = this.share ? [this.share] : [];
         }
         if (this.editMode && this.isCurrencyConversion) {
-            await this.loadRate();
+            this.calculateExchangeRate();
             this.changedPurchasedCurrencyValue();
         }
+    }
+
+    private calculateExchangeRate(): void {
+        // tslint:disable-next-line
+        this.currencyExchangeRate = new Decimal(TradeUtils.decimal(this.data.tradeFields.linkedTrade.signedTotal, true)).div(this.moneyAmount).toDP(2).toString();
     }
 
     /**

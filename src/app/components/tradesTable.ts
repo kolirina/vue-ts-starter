@@ -261,7 +261,8 @@ export class TradesTable extends UI {
             note: trade.note,
             keepMoney: CommonUtils.exists(trade.moneyTradeId),
             moneyAmount: trade.signedTotal,
-            currency: trade.currency
+            currency: trade.currency,
+            linkedTrade: trade.linkedTrade
         };
         const result = await new AddTradeDialog().show({
             store: this.$store.state[StoreType.MAIN],
