@@ -171,7 +171,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                     <v-flex xs6>
                                         <div class="fs14 margB16">
                                             <v-layout class="select-section" align-center>
-                                                <span class="mr-2 pl-1">Валюта для списания</span>
+                                                <span class="mr-2 pl-1">Валюта списания</span>
                                                 <v-select :items="debitCurrencies" v-model="debitCurrency" label="Валюта списания" single-line
                                                           @change="onChangeExchangeRate"></v-select>
                                             </v-layout>
