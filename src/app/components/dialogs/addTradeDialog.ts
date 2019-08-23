@@ -14,7 +14,7 @@ import {MarketHistoryService} from "../../services/marketHistoryService";
 import {MarketService} from "../../services/marketService";
 import {OverviewService} from "../../services/overviewService";
 import {MoneyResiduals, PortfolioParams, PortfolioService} from "../../services/portfolioService";
-import {TradeFields, TradeService} from "../../services/tradeService";
+import {TradeFields, TradeRequest, TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
 import {EventType} from "../../types/eventType";
 import {Operation} from "../../types/operation";
@@ -154,11 +154,60 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                             </v-flex>
 
                             <!-- Сумма денег (для денежной сделки) -->
-                            <v-flex v-if="isMoneyTrade" xs12>
+                            <v-flex v-if="isCurrencyConversion" xs12>
+                                <v-layout wrap class="margB16">
+                                    <v-flex xs6>
+                                        <div class="fs14 margB16">
+                                            <v-layout class="select-section" align-center>
+                                                <span class="mr-2 pl-1">Покупаемая валюта</span>
+                                                <v-select :items="purchasedCurrencies" v-model="purchasedCurrency" label="Валюта покупки" single-line
+                                                          @change="onChangeExchangeRate"></v-select>
+                                            </v-layout>
+                                        </div>
+                                        <ii-number-field :label="'Сумма в ' +  purchasedCurrency" v-model="moneyAmount" :decimals="2" name="purchased_currency_value"
+                                                         v-validate="'required'" :error-messages="errors.collect('purchased_currency_value')"
+                                                         class="required" @input="changedPurchasedCurrencyValue"></ii-number-field>
+                                    </v-flex>
+                                    <v-flex xs6>
+                                        <div class="fs14 margB16">
+                                            <v-layout class="select-section" align-center>
+                                                <span class="mr-2 pl-1">Валюта списания</span>
+                                                <v-select :items="debitCurrencies" v-model="debitCurrency" label="Валюта списания" single-line
+                                                          @change="onChangeExchangeRate"></v-select>
+                                            </v-layout>
+                                        </div>
+                                        <ii-number-field :label="'Сумма в ' +  debitCurrency" v-model="debitCurrencyValue" :decimals="2" name="debiting_currency_value"
+                                                         v-validate="'required'" :error-messages="errors.collect('debiting_currency_value')"
+                                                         class="required" @input="changedDebitingCurrencyValue"></ii-number-field>
+                                    </v-flex>
+                                </v-layout>
+                                <v-layout wrap class="margB35">
+                                    <v-flex xs6>
+                                        <div class="fs14 margB16">
+                                            <v-layout class="select-section" align-center>
+                                                <span class="mr-2 pl-1">Курс валюты</span>
+                                            </v-layout>
+                                        </div>
+                                        <ii-number-field label="Курс валюты" v-model="currencyExchangeRate" :decimals="2" name="currency_exchange_rate"
+                                                         v-validate="'required'" :error-messages="errors.collect('currency_exchange_rate')"
+                                                         class="required" @input="changedPurchasedCurrencyValue"></ii-number-field>
+                                    </v-flex>
+                                    <v-flex xs6>
+                                        <div class="fs14 margB16">
+                                            <v-layout class="select-section" align-center>
+                                                <span class="mr-2 pl-1">Комиссия</span>
+                                                <v-select :items="[purchasedCurrency, debitCurrency]" v-model="commissionCurrency" label="Валюта комиссии" single-line></v-select>
+                                            </v-layout>
+                                        </div>
+                                        <ii-number-field label="Комиссия" v-model="fee" :decimals="2"></ii-number-field>
+                                    </v-flex>
+                                </v-layout>
+                            </v-flex>
+                            <v-flex v-if="!isCurrencyConversion && isMoneyTrade" xs12>
                                 <v-layout wrap>
                                     <v-flex xs12 lg8>
                                         <ii-number-field label="Сумма" v-model="moneyAmount" :decimals="2" name="money_amount" v-validate="'required|min_value:0.01'"
-                                                         :error-messages="errors.collect('money_amount')" class="required"></ii-number-field>
+                                                         :error-messages="errors.collect('money_amount')" class="required" key="money-amount"></ii-number-field>
                                     </v-flex>
                                     <v-flex xs12 lg4>
                                         <v-select :items="currencyList" v-model="moneyCurrency" label="Валюта сделки"></v-select>
@@ -230,20 +279,31 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private readonly CALCULATION_OPERATIONS = [Operation.COUPON, Operation.DIVIDEND, Operation.AMORTIZATION];
     /** Выбранный портфель для добавления сделки. По умолчанию текущий */
     private portfolio: Portfolio = null;
-
+    /** Типы возможных активов */
     private assetTypes = AssetType.values();
+    /** Операции */
     private Operation = Operation;
-
+    /** Тип добавляемого актива */
     private assetType = AssetType.STOCK;
-
+    /** Текущий курс для обменной сделки */
+    private currencyExchangeRate: string = "";
+    /** Покупаемая валюта */
+    private purchasedCurrency: string = "USD";
+    /** Валюта списания для валютной сделки */
+    private debitCurrency: string = "RUB";
+    /** Валюта комисии для валютной сделки */
+    private commissionCurrency: string = "RUB";
+    /** Сумма списания по валютной сделке */
+    private debitCurrencyValue: string = "";
+    /** Операция сделки */
     private operation = Operation.BUY;
-
+    /** Список валют */
     private currencyList = CurrencyUnit.values().map(c => c.code);
-
+    /** Валюта сделки по деньгам */
     private moneyCurrency = "RUB";
-
+    /** Ценная бумага сделки. Для денег может быть null */
     private share: Share = null;
-
+    /** Список найденных бумаг для добавления */
     private filteredShares: Share[] = [];
 
     private tradeId: string = null;
@@ -296,6 +356,21 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         await this.setDialogParams();
     }
 
+    private async onChangeExchangeRate(): Promise<void> {
+        await this.loadRate();
+        this.commissionCurrency = this.debitCurrency;
+        if (this.isCurrencyBuy) {
+            this.changedPurchasedCurrencyValue();
+        } else {
+            this.changedDebitingCurrencyValue();
+        }
+    }
+
+    private async loadRate(): Promise<void> {
+        const res = await this.tradeService.getCurrencyFromTo(this.purchasedCurrency, this.debitCurrency, DateUtils.formatDayMonthYear(this.date));
+        this.currencyExchangeRate = res.rate;
+    }
+
     private onAssetTypeChange(): void {
         if (this.data.operation === undefined) {
             this.operation = this.assetType.operations[0];
@@ -303,6 +378,22 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             this.operation = this.data.operation;
         }
         this.clearFields();
+    }
+
+    private changedPurchasedCurrencyValue(): void {
+        if (!this.moneyAmount || !this.currencyExchangeRate) {
+            return;
+        }
+        this.debitCurrencyValue = new Decimal(this.moneyAmount).mul(new Decimal(this.currencyExchangeRate))
+            .toDP(2, Decimal.ROUND_HALF_UP).toString();
+    }
+
+    private changedDebitingCurrencyValue(): void {
+        if (!this.debitCurrencyValue || !this.currencyExchangeRate) {
+            return;
+        }
+        this.moneyAmount = new Decimal(this.debitCurrencyValue).dividedBy(new Decimal(this.currencyExchangeRate))
+            .toDP(2, Decimal.ROUND_HALF_UP).toString();
     }
 
     private async setDialogParams(): Promise<void> {
@@ -327,6 +418,10 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         } else {
             this.fillFieldsFromShare();
             this.filteredShares = this.share ? [this.share] : [];
+        }
+        if (this.editMode && this.isCurrencyConversion) {
+            await this.loadRate();
+            this.changedPurchasedCurrencyValue();
         }
     }
 
@@ -353,7 +448,22 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private async onOperationChange(): Promise<void> {
+        if (this.isCurrencyConversion) {
+            await this.onChangeExchangeRate();
+        }
         await this.fillFields();
+    }
+
+    private get isCurrencyConversion(): boolean {
+        return this.isCurrencyBuy || this.isCurrencySell;
+    }
+
+    private get isCurrencyBuy(): boolean {
+        return this.operation === Operation.CURRENCY_BUY;
+    }
+
+    private get isCurrencySell(): boolean {
+        return this.operation === Operation.CURRENCY_SELL;
     }
 
     /**
@@ -406,6 +516,9 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     private async onDateSelected(date: string): Promise<void> {
         this.$refs.dateMenu.save(date);
+        if (this.isCurrencyConversion) {
+            await this.onChangeExchangeRate();
+        }
         await this.onTickerOrDateChange();
     }
 
@@ -458,7 +571,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             facevalue: this.getFacevalue(),
             nkd: this.getNkd(),
             perOne: this.isPerOne(),
-            fee: this.getFee(),
+            fee: this.isCurrencyConversion ? "0" : this.getFee(),
             note: this.getNote(),
             keepMoney: this.isKeepMoney(),
             moneyAmount: this.total,
@@ -499,7 +612,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             eventDate: this.eventDate,
             eventPeriod: this.eventPeriod,
             processShareEvent: this.processShareEvent,
-            fields: tradeFields
+            fields: tradeFields,
+            linkedTradeRequest: this.getConversionLinkedTrade()
         });
     }
 
@@ -512,7 +626,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             portfolioId: this.portfolio.id,
             createLinkedTrade: this.isKeepMoney(),
             editedMoneyTradeId: this.editedMoneyTradeId,
-            fields: tradeFields
+            fields: tradeFields,
+            linkedTradeRequest: this.getConversionLinkedTrade()
         });
     }
 
@@ -581,6 +696,11 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         this.eventDate = null;
         this.eventPeriod = null;
         this.processShareEvent = false;
+        this.debitCurrencyValue = null;
+        this.debitCurrency = "RUB";
+        this.currencyExchangeRate = null;
+        this.purchasedCurrency = "USD";
+        this.commissionCurrency = "RUB";
     }
 
     private onShareClear(): void {
@@ -643,6 +763,65 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         this.calculateFee();
     }
 
+    /**
+     * Возвращает сформированный объект со связанной сделкой по деньгам для валютной сделки
+     */
+    private getConversionLinkedTrade(): TradeRequest {
+        return this.isCurrencyConversion ? {
+            portfolioId: this.portfolio.id,
+            createLinkedTrade: false,
+            asset: this.assetType.enumName,
+            operation: (this.isCurrencyBuy ? Operation.WITHDRAW : Operation.DEPOSIT).enumName,
+            fields: {
+                currency: this.debitCurrency,
+                date: this.getDate(),
+                facevalue: null,
+                fee: "0",
+                keepMoney: false,
+                moneyAmount: this.getCurrencyConversionMoneyAmount(),
+                nkd: null,
+                note: null,
+                perOne: false,
+                price: this.getPrice(),
+                quantity: this.getQuantity(),
+                ticker: null
+            }
+        } : null;
+    }
+
+    /**
+     * Возвращает сумму связанной сделки по деньгам с учетом комиссии
+     */
+    private getCurrencyConversionMoneyAmount(): string {
+        const fee = this.getCurrencyConversionFee();
+        if (fee) {
+            return new Decimal(this.debitCurrencyValue).add(this.isCurrencyBuy ? fee : fee.negated()).toDP(2, Decimal.ROUND_HALF_UP).toString();
+        }
+        return this.debitCurrencyValue;
+    }
+
+    /**
+     * Возвращает комиссию для связанной сделки по валютной сделке
+     */
+    private getCurrencyConversionFee(): Decimal {
+        if (!this.fee) {
+            return null;
+        }
+        if (this.debitCurrency === this.commissionCurrency) {
+            return new Decimal(this.fee);
+        } else {
+            return new Decimal(this.fee).mul(new Decimal(this.currencyExchangeRate));
+        }
+    }
+
+    private get purchasedCurrencies(): string[] {
+        return this.currencyList.filter(currency => currency !== this.debitCurrency);
+    }
+
+    private get debitCurrencies(): string[] {
+        return this.currencyList.filter(currency => currency !== this.purchasedCurrency);
+    }
+
     private get shareTicker(): string {
         switch (this.assetType) {
             case AssetType.STOCK:
@@ -698,7 +877,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             case AssetType.BOND:
                 return this.share && this.date && this.price && (!!this.facevalue || [Operation.COUPON, Operation.AMORTIZATION].includes(this.operation)) && this.quantity > 0;
             case AssetType.MONEY:
-                return !!this.date && !!this.moneyAmount;
+                return this.date && (this.isCurrencyConversion ? !!this.currencyExchangeRate && !!this.debitCurrencyValue && !!this.moneyAmount : !!this.moneyAmount);
         }
         return false;
     }
@@ -807,6 +986,9 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     getCurrency(): string {
+        if (this.isCurrencyConversion) {
+            return this.purchasedCurrency;
+        }
         return this.assetType === AssetType.MONEY ? this.moneyCurrency : this.currency;
     }
 

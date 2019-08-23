@@ -24,7 +24,7 @@ import {CombinedPortfoliosTable} from "../combinedPortfoliosTable";
                         Выберите валюту просмотра
                     </div>
                     <v-flex class="select-section">
-                        <v-select :items="['RUB', 'USD', 'EUR']" v-model="viewCurrency" label="Валюта представления"single-line></v-select>
+                        <v-select :items="['RUB', 'USD', 'EUR']" v-model="viewCurrency" label="Валюта представления" single-line></v-select>
                     </v-flex>
                 </div>
                 <v-layout class="action-btn">
