@@ -88,30 +88,44 @@ export class ChartUtils {
             return result;
         }, {} as { [key: string]: HighStockEventData[] });
         let count = 0;
-        const eventsByCount: { [key: string]: HighStockEventData[] } = {};
-        const colors = ChartUtils.getColors();
+        //  TODO разобраться почему не отображаются все точки
+        // const eventsByCount: { [key: string]: HighStockEventData[] } = {};
+        // const colors = ChartUtils.getColors();
+        // Object.keys(temp).forEach(key => {
+        //     const grouped = ChartUtils.groupEvents(temp[key]);
+        //     grouped.forEach(point => {
+        //         const eventsKey = point.initialPoints.length ? point.initialPoints.length + 1 : point.title;
+        //         eventsByCount[String(eventsKey)] = eventsByCount[String(eventsKey)] || [];
+        //         eventsByCount[String(eventsKey)].push(point);
+        //     });
+        //
+        //     Object.keys(eventsByCount).forEach(byCountKey => {
+        //         const events = eventsByCount[byCountKey].sort((a, b) => a.x - b.x);
+        //         const color = isNaN(byCountKey as any) ? events[0] ? events[0].color : key : ChartUtils.getRandomColor(colors);
+        //         eventsGroups.push({
+        //             type: flags,
+        //             data: events,
+        //             name: `events${count++}`,
+        //             onSeries: onSeries,
+        //             shape: shape,
+        //             color: color,
+        //             fillColor: color,
+        //             stackDistance: 20,
+        //             width: width,
+        //         });
+        //     });
+        // });
         Object.keys(temp).forEach(key => {
-            const grouped = ChartUtils.groupEvents(temp[key]);
-            grouped.forEach(point => {
-                const eventsKey = point.initialPoints.length ? point.initialPoints.length + 1 : point.title;
-                eventsByCount[String(eventsKey)] = eventsByCount[String(eventsKey)] || [];
-                eventsByCount[String(eventsKey)].push(point);
-            });
-
-            Object.keys(eventsByCount).forEach(byCountKey => {
-                const events = eventsByCount[byCountKey].sort((a, b) => a.x - b.x);
-                const color = isNaN(byCountKey as any) ? events[0] ? events[0].color : key : ChartUtils.getRandomColor(colors);
-                eventsGroups.push({
-                    type: flags,
-                    data: events,
-                    name: `events${count++}`,
-                    onSeries: onSeries,
-                    shape: shape,
-                    color: color,
-                    fillColor: color,
-                    stackDistance: 20,
-                    width: width,
-                });
+            eventsGroups.push({
+                type: flags,
+                data: temp[key],
+                name: `events${count++}`,
+                onSeries: onSeries,
+                shape: shape,
+                color: key,
+                fillColor: key,
+                stackDistance: 20,
+                width: width
             });
         });
         return eventsGroups;
