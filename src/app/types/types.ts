@@ -79,6 +79,8 @@ export type TradeRow = {
     moneyTradeId?: string;
     /** Идентификатор связанной родительской сделки. Может быть null, если у сделки нет связи */
     parentTradeId?: string;
+    /** Связанная сделка */
+    linkedTrade?: TradeRow;
 };
 
 export type _shareRow = _portfolioRow & {

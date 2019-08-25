@@ -778,7 +778,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
                 facevalue: null,
                 fee: "0",
                 keepMoney: false,
-                moneyAmount: this.getCurrencyConversionMoneyAmount(),
+                moneyAmount: this.debitCurrencyValue,
                 nkd: null,
                 note: null,
                 perOne: false,
@@ -787,31 +787,6 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
                 ticker: null
             }
         } : null;
-    }
-
-    /**
-     * Возвращает сумму связанной сделки по деньгам с учетом комиссии
-     */
-    private getCurrencyConversionMoneyAmount(): string {
-        const fee = this.getCurrencyConversionFee();
-        if (fee) {
-            return new Decimal(this.debitCurrencyValue).add(this.isCurrencyBuy ? fee : fee.negated()).toDP(2, Decimal.ROUND_HALF_UP).toString();
-        }
-        return this.debitCurrencyValue;
-    }
-
-    /**
-     * Возвращает комиссию для связанной сделки по валютной сделке
-     */
-    private getCurrencyConversionFee(): Decimal {
-        if (!this.fee) {
-            return null;
-        }
-        if (this.debitCurrency === this.commissionCurrency) {
-            return new Decimal(this.fee);
-        } else {
-            return new Decimal(this.fee).mul(new Decimal(this.currencyExchangeRate));
-        }
     }
 
     private get purchasedCurrencies(): string[] {
@@ -885,7 +860,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private get keepMoneyLabel(): string {
         const toPort = "Зачислить деньги";
         const fromPort = "Списать деньги";
-        return Operation.BUY === this.operation || Operation.WITHDRAW === this.operation || Operation.LOSS === this.operation ? fromPort : toPort;
+        return [Operation.BUY, Operation.WITHDRAW, Operation.LOSS, Operation.CURRENCY_BUY].includes(this.operation) ? fromPort : toPort;
     }
 
     private get lotSizeHint(): string {
