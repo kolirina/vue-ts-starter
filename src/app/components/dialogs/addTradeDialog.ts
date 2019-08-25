@@ -192,15 +192,15 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                                          v-validate="'required'" :error-messages="errors.collect('currency_exchange_rate')"
                                                          class="required" @input="changedPurchasedCurrencyValue"></ii-number-field>
                                     </v-flex>
-                                    <v-flex xs6>
-                                        <div class="fs14 margB16">
-                                            <v-layout class="select-section" align-center>
-                                                <span class="mr-2 pl-1">Комиссия</span>
-                                                <v-select :items="[purchasedCurrency, debitCurrency]" v-model="commissionCurrency" label="Валюта комиссии" single-line></v-select>
-                                            </v-layout>
-                                        </div>
-                                        <ii-number-field label="Комиссия" v-model="fee" :decimals="2"></ii-number-field>
-                                    </v-flex>
+                                    <!--<v-flex xs6>-->
+                                        <!--<div class="fs14 margB16">-->
+                                            <!--<v-layout class="select-section" align-center>-->
+                                                <!--<span class="mr-2 pl-1">Комиссия</span>-->
+                                                <!--<v-select :items="[commissionCurrency]" v-model="commissionCurrency" label="Валюта комиссии" single-line></v-select>-->
+                                            <!--</v-layout>-->
+                                        <!--</div>-->
+                                        <!--<ii-number-field label="Комиссия" v-model="fee" :decimals="2"></ii-number-field>-->
+                                    <!--</v-flex>-->
                                 </v-layout>
                             </v-flex>
                             <v-flex v-if="!isCurrencyConversion && isMoneyTrade" xs12>
@@ -723,7 +723,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         this.facevalue = TradeUtils.decimal(this.data.tradeFields.facevalue);
         this.nkd = TradeUtils.decimal(this.data.tradeFields.nkd);
         this.perOne = true;
-        this.fee = TradeUtils.decimal(this.data.tradeFields.fee);
+        const fee = this.data.tradeFields.linkedTradeFields && this.data.tradeFields.linkedTradeFields.fee;
+        this.fee = TradeUtils.decimal(this.isCurrencyConversion ? fee : this.data.tradeFields.fee);
         this.note = this.data.tradeFields.note;
         this.keepMoney = this.data.tradeFields.keepMoney;
         this.moneyAmount = TradeUtils.decimal(this.data.tradeFields.moneyAmount, true);
@@ -776,7 +777,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
                 currency: this.debitCurrency,
                 date: this.getDate(),
                 facevalue: null,
-                fee: "0",
+                fee: this.getFee(),
                 keepMoney: false,
                 moneyAmount: this.debitCurrencyValue,
                 nkd: null,
