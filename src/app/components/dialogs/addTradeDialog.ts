@@ -16,7 +16,6 @@ import {OverviewService} from "../../services/overviewService";
 import {MoneyResiduals, PortfolioParams, PortfolioService} from "../../services/portfolioService";
 import {TradeFields, TradeRequest, TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
-import {BigMoney} from "../../types/bigMoney";
 import {EventType} from "../../types/eventType";
 import {Operation} from "../../types/operation";
 import {Tariff} from "../../types/tariff";
@@ -160,7 +159,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                     <v-flex xs6>
                                         <div class="fs14 margB16">
                                             <v-layout class="select-section" align-center>
-                                                <span class="mr-2 pl-1">{{ moneyAmountTitle }}</span>
+                                                <span class="mr-2 pl-1">{{ purchasedCurrencyTitle }}</span>
                                                 <v-select :items="purchasedCurrencies" v-model="purchasedCurrency" label="Валюта покупки" single-line
                                                           @change="onChangeExchangeRate"></v-select>
                                             </v-layout>
@@ -417,15 +416,16 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             this.filteredShares = this.share ? [this.share] : [];
         }
         if (this.editMode && this.isCurrencyConversion) {
-            this.purchasedCurrency = new BigMoney(this.data.tradeFields.moneyAmount).currency;
-            this.debitCurrency = new BigMoney(this.data.tradeFields.linkedTradeFields.moneyAmount).currency;
+            this.purchasedCurrency = this.data.tradeFields.currency;
+            this.debitCurrency = this.data.tradeFields.linkedTradeFields.currency;
             this.calculateExchangeRate();
             this.changedPurchasedCurrencyValue();
         }
     }
 
     private calculateExchangeRate(): void {
-        this.currencyExchangeRate = new Decimal(TradeUtils.decimal(this.data.tradeFields.linkedTradeFields.moneyAmount, true)).div(this.moneyAmount).toDP(2).toString();
+        // tslint:disable-next-line
+        this.currencyExchangeRate = new Decimal(TradeUtils.decimal(this.data.tradeFields.linkedTradeFields.moneyAmount, true)).div(this.moneyAmount).toDP(2, Decimal.ROUND_HALF_UP).toString();
     }
 
     /**
@@ -457,7 +457,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         await this.fillFields();
     }
 
-    private get moneyAmountTitle(): string {
+    private get purchasedCurrencyTitle(): string {
         return this.isCurrencyBuy ? "Покупаемая валюта" : "Продаваемая валюта";
     }
 
