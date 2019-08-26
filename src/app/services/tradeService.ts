@@ -69,7 +69,6 @@ export class TradeService {
         }
         const result = await this.http.get<PageableResponse<TradeRow>>(`/trades/pageable/${id}`, urlParams);
         result.content = result.content.map(this.correctMoneyOperation);
-
         return result;
     }
 
@@ -187,9 +186,9 @@ export type TradeFields = {
     /** Валюта сделки */
     currency: string,
     /** Валюта комиссии */
-    feeCurrency: string;
+    feeCurrency: string,
     /** Поля связанной сделки */
-    linkedTradeFields?: TradeFields,
+    linkedTradeFields?: TradeFields
 };
 
 export interface TradeRequest {

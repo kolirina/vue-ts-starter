@@ -76,13 +76,13 @@ export type TradeRow = {
     /** Цена, выраженная в деньгах. Для акций, начислений, дивидендов */
     moneyPrice?: string,
     /** Цена, выраженная в процентах. Для облигаций */
-    bondPrice?: string
+    bondPrice?: string,
     /** Идентификатор связанной сделки по списанию/зачислению денежных средств. Может быть null, если у сделки нет связи */
-    moneyTradeId?: string;
+    moneyTradeId?: string,
     /** Идентификатор связанной родительской сделки. Может быть null, если у сделки нет связи */
-    parentTradeId?: string;
+    parentTradeId?: string,
     /** Связанная сделка */
-    linkedTrade?: TradeRow;
+    linkedTrade?: TradeRow
 };
 
 export type _shareRow = _portfolioRow & {
