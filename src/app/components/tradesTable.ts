@@ -3,7 +3,6 @@ import Component from "vue-class-component";
 import {Prop, Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class";
 import {UI} from "../app/ui";
-import {ChoosePortfolioDialog} from "../components/dialogs/choosePortfolioDialog";
 import {Filters} from "../platform/filters/Filters";
 import {ClientInfo, ClientService} from "../services/clientService";
 import {TableHeadersState, TABLES_NAME, TablesService} from "../services/tablesService";
@@ -18,6 +17,7 @@ import {TradeUtils} from "../utils/tradeUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {AddTradeDialog} from "./dialogs/addTradeDialog";
+import {ChoosePortfolioDialog} from "./dialogs/choosePortfolioDialog";
 import {TradesTableExtInfo} from "./tradesTableExtInfo";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -249,7 +249,23 @@ export class TradesTable extends UI {
     }
 
     private async openEditTradeDialog(trade: TradeRow): Promise<void> {
-        const tradeFields: TradeFields = {
+        const result = await new AddTradeDialog().show({
+            store: this.$store.state[StoreType.MAIN],
+            router: this.$router,
+            assetType: AssetType.valueByName(trade.asset),
+            operation: Operation.valueByName(trade.operation),
+            tradeFields: this.getTradeFields(trade),
+            tradeId: trade.id,
+            editedMoneyTradeId: trade.moneyTradeId,
+            moneyCurrency: trade.currency
+        });
+        if (result) {
+            await this.reloadPortfolio(this.portfolio.id);
+        }
+    }
+
+    private getTradeFields(trade: TradeRow): TradeFields {
+        return {
             ticker: trade.ticker,
             date: trade.date,
             quantity: trade.quantity,
@@ -262,21 +278,9 @@ export class TradesTable extends UI {
             keepMoney: CommonUtils.exists(trade.moneyTradeId),
             moneyAmount: trade.signedTotal,
             currency: trade.currency,
-            linkedTrade: trade.linkedTrade
+            feeCurrency: trade.feeCurrency,
+            linkedTradeFields: trade.linkedTrade ? this.getTradeFields(trade.linkedTrade) : null,
         };
-        const result = await new AddTradeDialog().show({
-            store: this.$store.state[StoreType.MAIN],
-            router: this.$router,
-            assetType: AssetType.valueByName(trade.asset),
-            operation: Operation.valueByName(trade.operation),
-            tradeFields: tradeFields,
-            tradeId: trade.id,
-            editedMoneyTradeId: trade.moneyTradeId,
-            moneyCurrency: trade.currency
-        });
-        if (result) {
-            await this.reloadPortfolio(this.portfolio.id);
-        }
     }
 
     private async deleteTrade(tradeRow: TradeRow): Promise<void> {

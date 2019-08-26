@@ -50,8 +50,7 @@ const MainStore = namespace(StoreType.MAIN);
                             </v-btn>
                         </div>
                         <navigation-list :mainSection="mainSection" :side-bar-opened="sideBarOpened" :settingsSelected="settingsSelected"
-                                         :show-link-to-old-version="showLinkToOldVersion"
-                                         @openDialog="openDialog" @goToOldVersion="goToOldVersion"></navigation-list>
+                                         @openDialog="openDialog"></navigation-list>
                     </div>
                     <menu-bottom-navigation></menu-bottom-navigation>
                 </v-navigation-drawer>
@@ -59,8 +58,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <div class="mobile-wrapper-menu">
                         <menu-header :side-bar-opened="sideBarOpened" :isMobile="true" :portfolio="portfolio" :clientInfo="clientInfo" @togglePanel="togglePanel"></menu-header>
                         <navigation-list :mainSection="mainSection" :sideBarOpened="sideBarOpened" :settingsSelected="settingsSelected"
-                                         :show-link-to-old-version="showLinkToOldVersion"
-                                         @openDialog="openDialog" @goToOldVersion="goToOldVersion" :class="sideBarOpened ? 'part-mobile-menu' : ''"></navigation-list>
+                                         @openDialog="openDialog" :class="sideBarOpened ? 'part-mobile-menu' : ''"></navigation-list>
                         <menu-bottom-navigation :class="sideBarOpened ? 'part-mobile-menu' : ''"></menu-bottom-navigation>
                     </div>
                     <v-container fluid :class="['paddT0', 'fb-0', sideBarOpened ? '' : 'hide-main-content']">
@@ -256,13 +254,6 @@ export class AppFrame extends UI {
         }
     }
 
-    /**
-     * Переключает на старую версию приложения
-     */
-    private async goToOldVersion(): Promise<void> {
-        window.location.assign(`https://old.intelinvest.ru/portfolio`);
-    }
-
     private togglePanel(): void {
         this.changeSideBarState(!this.sideBarOpened);
         this.localStorage.set(StoreKeys.MENU_STATE_KEY, !this.sideBarOpened);
@@ -270,9 +261,5 @@ export class AppFrame extends UI {
 
     private get settingsSelected(): boolean {
         return this.$route.path.indexOf("settings") !== -1;
-    }
-
-    private get showLinkToOldVersion(): boolean {
-        return DateUtils.parseDate(this.clientInfo.user.regDate).isAfter(this.NEW_USERS_DATE);
     }
 }

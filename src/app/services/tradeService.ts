@@ -185,8 +185,10 @@ export type TradeFields = {
     moneyAmount: string,
     /** Валюта сделки */
     currency: string,
-    /** Сущность связаной сделки */
-    linkedTrade?: TradeRow
+    /** Валюта комиссии */
+    feeCurrency: string,
+    /** Поля связанной сделки */
+    linkedTradeFields?: TradeFields
 };
 
 export interface TradeRequest {
