@@ -53,6 +53,8 @@ export type TradeRow = {
     operationLabel: string,
     /** Валюта */
     currency: string,
+    /** Валюта комиссии */
+    feeCurrency: string,
     /** Итоговая сумма сделки */
     signedTotal: string,
     /** Итоговая сумма сделки без учета комиссии */

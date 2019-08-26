@@ -3,7 +3,6 @@ import Component from "vue-class-component";
 import {Prop, Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class";
 import {UI} from "../app/ui";
-import {ChoosePortfolioDialog} from "../components/dialogs/choosePortfolioDialog";
 import {Filters} from "../platform/filters/Filters";
 import {ClientInfo, ClientService} from "../services/clientService";
 import {TableHeadersState, TABLES_NAME, TablesService} from "../services/tablesService";
@@ -18,6 +17,7 @@ import {TradeUtils} from "../utils/tradeUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {AddTradeDialog} from "./dialogs/addTradeDialog";
+import {ChoosePortfolioDialog} from "./dialogs/choosePortfolioDialog";
 import {TradesTableExtInfo} from "./tradesTableExtInfo";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -278,6 +278,7 @@ export class TradesTable extends UI {
             keepMoney: CommonUtils.exists(trade.moneyTradeId),
             moneyAmount: trade.signedTotal,
             currency: trade.currency,
+            feeCurrency: trade.feeCurrency,
             linkedTradeFields: trade.linkedTrade ? this.getTradeFields(trade.linkedTrade) : null,
         };
     }

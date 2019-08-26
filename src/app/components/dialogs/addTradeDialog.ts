@@ -192,15 +192,15 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                                          v-validate="'required'" :error-messages="errors.collect('currency_exchange_rate')"
                                                          class="required" @input="changedPurchasedCurrencyValue"></ii-number-field>
                                     </v-flex>
-                                    <!--<v-flex xs6>-->
-                                        <!--<div class="fs14 margB16">-->
-                                            <!--<v-layout class="select-section" align-center>-->
-                                                <!--<span class="mr-2 pl-1">Комиссия</span>-->
-                                                <!--<v-select :items="[commissionCurrency]" v-model="commissionCurrency" label="Валюта комиссии" single-line></v-select>-->
-                                            <!--</v-layout>-->
-                                        <!--</div>-->
-                                        <!--<ii-number-field label="Комиссия" v-model="fee" :decimals="2"></ii-number-field>-->
-                                    <!--</v-flex>-->
+                                    <v-flex xs6>
+                                        <div class="fs14 margB16">
+                                            <v-layout class="select-section" align-center>
+                                                <span class="mr-2 pl-1">Комиссия</span>
+                                                <v-select :items="[purchasedCurrency, debitCurrency]" v-model="feeCurrency" label="Валюта комиссии" single-line></v-select>
+                                            </v-layout>
+                                        </div>
+                                        <ii-number-field label="Комиссия" v-model="fee" :decimals="2"></ii-number-field>
+                                    </v-flex>
                                 </v-layout>
                             </v-flex>
                             <v-flex v-if="!isCurrencyConversion && isMoneyTrade" xs12>
@@ -292,7 +292,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     /** Валюта списания для валютной сделки */
     private debitCurrency: string = "RUB";
     /** Валюта комисии для валютной сделки */
-    private commissionCurrency: string = "RUB";
+    private feeCurrency: string = "RUB";
     /** Сумма списания по валютной сделке */
     private debitCurrencyValue: string = "";
     /** Операция сделки */
@@ -358,7 +358,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     private async onChangeExchangeRate(): Promise<void> {
         await this.loadRate();
-        this.commissionCurrency = this.debitCurrency;
+        this.feeCurrency = this.debitCurrency;
         if (this.isCurrencyBuy) {
             this.changedPurchasedCurrencyValue();
         } else {
@@ -571,11 +571,12 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             facevalue: this.getFacevalue(),
             nkd: this.getNkd(),
             perOne: this.isPerOne(),
-            fee: this.isCurrencyConversion ? "0" : this.getFee(),
+            fee: this.getFee(),
             note: this.getNote(),
             keepMoney: this.isKeepMoney(),
             moneyAmount: this.total,
-            currency: this.getCurrency()
+            currency: this.getCurrency(),
+            feeCurrency: this.getFeeCurrency(),
         };
         this.processState = true;
         try {
@@ -700,7 +701,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         this.debitCurrency = "RUB";
         this.currencyExchangeRate = null;
         this.purchasedCurrency = "USD";
-        this.commissionCurrency = "RUB";
+        this.feeCurrency = "RUB";
     }
 
     private onShareClear(): void {
@@ -723,12 +724,12 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         this.facevalue = TradeUtils.decimal(this.data.tradeFields.facevalue);
         this.nkd = TradeUtils.decimal(this.data.tradeFields.nkd);
         this.perOne = true;
-        const fee = this.data.tradeFields.linkedTradeFields && this.data.tradeFields.linkedTradeFields.fee;
-        this.fee = TradeUtils.decimal(this.isCurrencyConversion ? fee : this.data.tradeFields.fee);
+        this.fee = TradeUtils.decimal(this.data.tradeFields.fee);
         this.note = this.data.tradeFields.note;
         this.keepMoney = this.data.tradeFields.keepMoney;
         this.moneyAmount = TradeUtils.decimal(this.data.tradeFields.moneyAmount, true);
         this.currency = this.data.tradeFields.currency;
+        this.feeCurrency = this.data.tradeFields.feeCurrency;
     }
 
     private async setShareFromTicker(ticker: string): Promise<void> {
@@ -775,9 +776,10 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             operation: (this.isCurrencyBuy ? Operation.WITHDRAW : Operation.DEPOSIT).enumName,
             fields: {
                 currency: this.debitCurrency,
+                feeCurrency: this.getFeeCurrency(),
                 date: this.getDate(),
                 facevalue: null,
-                fee: this.getFee(),
+                fee: "0",
                 keepMoney: false,
                 moneyAmount: this.debitCurrencyValue,
                 nkd: null,
@@ -964,6 +966,13 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     getCurrency(): string {
         if (this.isCurrencyConversion) {
             return this.purchasedCurrency;
+        }
+        return this.assetType === AssetType.MONEY ? this.moneyCurrency : this.currency;
+    }
+
+    getFeeCurrency(): string {
+        if (this.isCurrencyConversion) {
+            return this.feeCurrency;
         }
         return this.assetType === AssetType.MONEY ? this.moneyCurrency : this.currency;
     }
