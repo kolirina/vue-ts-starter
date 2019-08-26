@@ -16,6 +16,7 @@ import {OverviewService} from "../../services/overviewService";
 import {MoneyResiduals, PortfolioParams, PortfolioService} from "../../services/portfolioService";
 import {TradeFields, TradeRequest, TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
+import {BigMoney} from "../../types/bigMoney";
 import {EventType} from "../../types/eventType";
 import {Operation} from "../../types/operation";
 import {Tariff} from "../../types/tariff";
@@ -424,8 +425,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private calculateExchangeRate(): void {
-        // tslint:disable-next-line
-        this.currencyExchangeRate = new Decimal(TradeUtils.decimal(this.data.tradeFields.linkedTradeFields.moneyAmount, true)).div(this.moneyAmount).toDP(2, Decimal.ROUND_HALF_UP).toString();
+        this.currencyExchangeRate = new BigMoney(this.data.tradeFields.linkedTradeFields.moneyAmount).amount.abs()
+            .dividedBy(this.moneyAmount).toDP(2, Decimal.ROUND_HALF_UP).toString();
     }
 
     /**
