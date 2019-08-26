@@ -7,6 +7,7 @@ import {namespace} from "vuex-class";
 import {UI} from "../app/ui";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
 import {FeedbackDialog} from "../components/dialogs/feedbackDialog";
+import {ImageDialog} from "../components/dialogs/imageDialog";
 import {AssetType} from "../types/assetType";
 import {Operation} from "../types/operation";
 import {Portfolio} from "../types/types";
@@ -134,12 +135,12 @@ const MainStore = namespace(StoreType.MAIN);
                                             <a href="https://itunes.apple.com/ru/app/intelinvest-%D1%83%D1%87%D0%B5%D1%82-
                                                 %D0%B8%D0%BD%D0%B2%D0%B5%D1%81%D1%82%D0%B8%D1%86%D0%B8%D0%B9
                                                 /id1422478197?mt=8" title="Загрузите приложение в App Store" target="_blank">
-                                                <img src="./img/help/app-store-badge2.svg" alt="pic"/>
+                                                <img src="./img/help/app-store-badge2.svg" alt="pic" @click.stop="openImageDialog"/>
                                             </a>
                                             <a href="https://play.google.com/store/apps/details?id=ru.intelinvest.portfolio"
                                                title="Загрузите приложение в Google Play"
                                                target="_blank">
-                                                <img src="./img/help/google-play-badge2.svg" alt="pic"/>
+                                                <img src="./img/help/google-play-badge2.svg" alt="pic" @click.stop="openImageDialog"/>
                                             </a>
                                         </div>
                                     </div>
@@ -160,12 +161,12 @@ const MainStore = namespace(StoreType.MAIN);
                                     <div class="wrapper-content-panel__paired-section-item">
                                         <p>
                                             Кнопка добавления сделок
-                                            <v-btn @click.native.stop="openDialog()" round icon color="#3b6ec9" class="wrapper-content-panel__paired-section-item__add-deal-btn">
+                                            <v-btn @click.stop="openDialog()"  fab dark small color="indigo" depressed class="add-btn-menu">
                                                 <v-icon>add</v-icon>
                                             </v-btn>
                                         </p>
                                         <p>
-                                            При нажатии открывается диалоговое окно, где можно выбрать
+                                            При нажатии открывается диалоговое окно, как можно выбрать
                                             тип вносимой сделки (Акция, Облигация, Деньги) и действие,
                                             в зависимости от типа сделки.
                                         </p>
@@ -217,7 +218,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             Покупка акции
                                         </div>
                                         <div>
-                                            <img src="./img/help/stock-example.gif"/>
+                                            <img src="./img/help/stock-example.gif" @click.stop="openImageDialog"/>
                                         </div>
                                     </div>
                                     <div class="gif-block-item">
@@ -225,7 +226,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             Покупка облигации
                                         </div>
                                         <div>
-                                            <img src="./img/help/bond-example.gif"/>
+                                            <img src="./img/help/bond-example.gif" @click.stop="openImageDialog"/>
                                         </div>
                                     </div>
                                     <div class="gif-block-item">
@@ -233,7 +234,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             Добавление дивиденда
                                         </div>
                                         <div>
-                                            <img src="./img/help/dividend-example.gif"/>
+                                            <img src="./img/help/dividend-example.gif" @click.stop="openImageDialog"/>
                                         </div>
                                     </div>
                                     <div class="gif-block-item">
@@ -241,7 +242,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             Добавление купонной выплаты
                                         </div>
                                         <div>
-                                            <img src="./img/help/dividend-coupon-example.gif"/>
+                                            <img src="./img/help/dividend-coupon-example.gif" @click.stop="openImageDialog"/>
                                         </div>
                                     </div>
                                     <div class="gif-block-item">
@@ -249,7 +250,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             Пополнение денежного счета
                                         </div>
                                         <div>
-                                            <img src="./img/help/make-money-example.gif"/>
+                                            <img src="./img/help/make-money-example.gif" @click.stop="openImageDialog"/>
                                         </div>
                                     </div>
                                 </div>
@@ -305,7 +306,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         <div class="gif-block-item  border-block-in-paired-section">
                                             <p>
                                                 <div>
-                                                    <img src="./img/help/import_1.png"/>
+                                                    <img src="./img/help/import_1.png" @click.stop="openImageDialog"/>
                                                 </div>
                                             </p>
                                             <div>
@@ -317,7 +318,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             </p>
                                             <p>
                                                 <div>
-                                                    <img src="./img/help/import_2.png"/>
+                                                    <img src="./img/help/import_2.png" @click.stop="openImageDialog"/>
                                                 </div>
                                             </p>
                                             <p>
@@ -442,7 +443,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         </p>
                                         <p>
                                             <div>
-                                                <img src="./img/help/portfolio_1.png"/>
+                                                <img src="./img/help/portfolio_1.png" @click.stop="openImageDialog"/>
                                             </div>
                                         </p>
                                         <p>
@@ -460,7 +461,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         </p>
                                         <p>
                                             <div>
-                                                <img src="./img/help/portfolio_2.png"/>
+                                                <img src="./img/help/portfolio_2.png" @click.stop="openImageDialog"/>
                                             </div>
                                         </p>
                                         <p>
@@ -471,7 +472,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         </p>
                                         <p>
                                             <div>
-                                                <img src="./img/help/portfolio_3.png"/>
+                                                <img src="./img/help/portfolio_3.png" @click.stop="openImageDialog"/>
                                             </div>
                                         </p>
                                     </div>
@@ -484,7 +485,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         </p>
                                         <p>
                                             <div>
-                                                <img src="./img/help/portfolio_4.png"/>
+                                                <img src="./img/help/portfolio_4.png" @click.stop="openImageDialog"/>
                                             </div>
                                         </p>
                                         <p>
@@ -499,12 +500,12 @@ const MainStore = namespace(StoreType.MAIN);
                                         </p>
                                         <p>
                                             <div>
-                                                <img src="./img/help/portfolio_5.png"/>
+                                                <img src="./img/help/portfolio_5.png" @click.stop="openImageDialog"/>
                                             </div>
                                         </p>
                                         <p>
                                             <div>
-                                                <img src="./img/help/portfolio_6.png"/>
+                                                <img src="./img/help/portfolio_6.png" @click.stop="openImageDialog"/>
                                             </div>
                                         </p>
                                         <p>
@@ -536,16 +537,16 @@ const MainStore = namespace(StoreType.MAIN);
                                     <div class="wrapper-content-panel__single-section-item">
                                         <p>
                                             Здесь вы найдете подробный анализ вашего портфеля и указание
-                                            на его узкие места - где можно увеличить доходность или снизить риск.
+                                            на его узкие места - как можно увеличить доходность или снизить риск.
                                         </p>
                                         <p>
-                                            <img src="./img/help/analytics_1.png"/>
+                                            <img src="./img/help/analytics_1.png" @click.stop="openImageDialog"/>
                                         </p>
                                         <p>
-                                            Также вы найдете графики сравнения портфеля с бенчмарками (инфляция, ставки по депозитам итд)
+                                            Также вы найдете графики сравнения портфеля с бенчмарками (инфляция, ставки по депозитам, Индекс МосБиржи)
                                         </p>
                                         <p>
-                                            <img src="./img/help/analytics_2.png"/>
+                                            <img src="./img/help/analytics_2.png" @click.stop="openImageDialog"/>
                                         </p>
                                     </div>
                                 </div>
@@ -592,7 +593,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             редактирование заметки к сделке.
                                         </p>
                                         <p>
-                                            <img src="./img/help/trades_2.png"/>
+                                            <img src="./img/help/trades_2.png" @click.stop="openImageDialog"/>
                                         </p>
                                     </div>
                                 </div>
@@ -679,7 +680,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             данную дивидендную выплату нажатием на пункт меню Исполнить в таблице.
                                         </p>
                                         <p>
-                                            <img src="./img/help/events_1.png"/>
+                                            <img src="./img/help/events_1.png" @click.stop="openImageDialog"/>
                                         </p>
                                         <p>
                                             При исполнении можно отредактировать дату зачисления,
@@ -689,7 +690,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     </div>
                                     <div class="wrapper-content-panel__paired-section-item">
                                         <p>
-                                            <img src="./img/help/events_2.png"/>
+                                            <img src="./img/help/events_2.png" @click.stop="openImageDialog"/>
                                         </p>
                                         <p>
                                             Вы можете изменить размер начисления (в случаях когда
@@ -723,7 +724,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 <div class="wrapper-content-panel__single-section">
                                     <div class="wrapper-content-panel__single-section-item">
                                         <p>
-                                            На этой странице вы можете объединить для просмотра
+                                            На этой <a href="#/combined-portfolio">странице</a> вы можете объединить для просмотра
                                             несколько портфелей в один, и проанализировать состав и
                                             доли каждой акции, если, например, она входит в состав
                                             нескольких портфелей.
@@ -750,7 +751,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             выплаты и доходность по каждой акции.
                                         </p>
                                         <p>
-                                            <img src="./img/help/dividends_1.png"/>
+                                            <img src="./img/help/dividends_1.png" @click.stop="openImageDialog"/>
                                         </p>
                                         <p>
                                             Дивиденды по годам. Отображаются суммарные выплаты и
@@ -798,7 +799,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             В разделе представлено три таблицы: Акции, Облигации и Валюты
                                         </p>
                                         <p>
-                                            <img src="./img/help/quotes_1.png"/>
+                                            <img src="./img/help/quotes_1.png" @click.stop="openImageDialog"/>
                                         </p>
                                     </div>
                                 </div>
@@ -817,14 +818,14 @@ const MainStore = namespace(StoreType.MAIN);
                                 <div class="wrapper-content-panel__paired-section">
                                     <div class="wrapper-content-panel__paired-section-item">
                                         <p>
-                                            На данной странице вы найдете подробную информацию об
-                                            эмитенте и просмотреть историю его дивидендных выплат.
+                                            На данной <a href="#/share-info">странице</a> вы найдете подробную информацию об
+                                            эмитенте и просмотреть историю дивидендных выплат для акции, купонов, амортизации и погашений для облигации.
                                         </p>
                                         <p>
                                             Также на графике вы сможете увидеть динамику изменения цены бумаги за выбранный период.
                                         </p>
                                         <p>
-                                            <img src="./img/help/information_1.png"/>
+                                            <img src="./img/help/information_1.png" @click.stop="openImageDialog"/>
                                         </p>
                                     </div>
                                 </div>
@@ -867,7 +868,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             своем портфеле на своем сайте или в блоге.
                                         </p>
                                         <p>
-                                            <img src="./img/help/settings_1.png"/>
+                                            <img src="./img/help/settings_1.png" @click.stop="openImageDialog"/>
                                         </p>
                                         <div>
                                             <a id="settings_public" class="non-cursor-click">Публичный доступ</a>
@@ -877,14 +878,14 @@ const MainStore = namespace(StoreType.MAIN);
                                             информацией по портфелю на форумы или блоги.
                                         </p>
                                         <p>
-                                            <img src="./img/help/settings_3.png"/>
+                                            <img src="./img/help/settings_3.png" @click.stop="openImageDialog"/>
                                         </p>
                                         <p>
                                             В сокращенном варианте не отображается суммарная стоимость портфеля, а только его текущие показатели доходности.
                                             Дополнительные настройки портфеля доступны при разворачивании строки в таблице. Здесь можно задать тип счета (Брокерский или ИИС).
                                         </p>
                                         <p>
-                                            <img src="./img/help/settings_4.png"/>
+                                            <img src="./img/help/settings_4.png" @click.stop="openImageDialog"/>
                                         </p>
                                         <p>
                                             Параметр "Профессиональный режим" во включенном состоянии позволяет добавлять короткие позиции в портфель,
@@ -892,7 +893,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             А также разрешает маржинальные сделки, со списанием денег больше чем есть на счету.
                                         </p>
                                         <p>
-                                            <img src="./img/help/settings_5.png"/>
+                                            <img src="./img/help/settings_5.png" @click.stop="openImageDialog"/>
                                         </p>
                                     </div>
                                     <div class="wrapper-content-panel__paired-section-item">
@@ -910,7 +911,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             Можно отписаться от рассылки или подписаться на нее снова.
                                         </p>
                                         <p>
-                                            <img src="./img/help/settings_2.png"/>
+                                            <img src="./img/help/settings_2.png" @click.stop="openImageDialog"/>
                                         </p>
                                         <div>
                                             <a id="tariffs_public" class="non-cursor-click">Тарифы</a>
@@ -952,7 +953,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             вознаграждения.
                                         </p>
                                         <p>
-                                            <img src="./img/help/settings_6.png"/>
+                                            <img src="./img/help/settings_6.png" @click.stop="openImageDialog"/>
                                         </p>
                                         <div>
                                             <a id="settings_notifications" class="non-cursor-click">Уведомления</a>
@@ -963,7 +964,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             подписаться на новости интересующих эмитентов.
                                         </p>
                                         <p>
-                                            <img src="./img/help/settings_7.png"/>
+                                            <img src="./img/help/settings_7.png" @click.stop="openImageDialog"/>
                                         </p>
                                         <p>
                                             В первом случае вы формируете список бумаг для оповещений, и
@@ -993,7 +994,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         <p>
                                             Если у Вас есть вопросы или предложения по работе сайта,
                                             вы можете написать нам по эл.почте
-                                            <a @click="openFeedBackDialog">web@intelinvest.ru</a> или
+                                            <a @click.stop="openFeedBackDialog">web@intelinvest.ru</a> или
                                             задать вопрос на канале
                                             <a href="https://telegram.me/intelinvestSupportBot" title="Задайте вопрос в Telegram" target="_blank">telegram</a>
                                             наши специалисты с радостью вам ответят и помогут.
@@ -1069,6 +1070,10 @@ export class HelpPage extends UI {
         if (result) {
             await this.reloadPortfolio(this.portfolio.id);
         }
+    }
+
+    private async openImageDialog(): Promise<void> {
+        await new ImageDialog().show((event as any).target.attributes[0].nodeValue);
     }
 
     /* Диалог обратной связи */
