@@ -53,6 +53,8 @@ export type TradeRow = {
     operationLabel: string,
     /** Валюта */
     currency: string,
+    /** Валюта комиссии */
+    feeCurrency: string,
     /** Итоговая сумма сделки */
     signedTotal: string,
     /** Итоговая сумма сделки без учета комиссии */
@@ -79,7 +81,8 @@ export type TradeRow = {
     moneyTradeId?: string,
     /** Идентификатор связанной родительской сделки. Может быть null, если у сделки нет связи */
     parentTradeId?: string,
-    linkedTrade: TradeRow
+    /** Связанная сделка */
+    linkedTrade?: TradeRow
 };
 
 export type _shareRow = _portfolioRow & {
