@@ -249,7 +249,23 @@ export class TradesTable extends UI {
     }
 
     private async openEditTradeDialog(trade: TradeRow): Promise<void> {
-        const tradeFields: TradeFields = {
+        const result = await new AddTradeDialog().show({
+            store: this.$store.state[StoreType.MAIN],
+            router: this.$router,
+            assetType: AssetType.valueByName(trade.asset),
+            operation: Operation.valueByName(trade.operation),
+            tradeFields: this.getTradeFields(trade),
+            tradeId: trade.id,
+            editedMoneyTradeId: trade.moneyTradeId,
+            moneyCurrency: trade.currency
+        });
+        if (result) {
+            await this.reloadPortfolio(this.portfolio.id);
+        }
+    }
+
+    private getTradeFields(trade: TradeRow): TradeFields {
+        return {
             ticker: trade.ticker,
             date: trade.date,
             quantity: trade.quantity,
@@ -261,21 +277,9 @@ export class TradesTable extends UI {
             note: trade.note,
             keepMoney: CommonUtils.exists(trade.moneyTradeId),
             moneyAmount: trade.signedTotal,
-            currency: trade.currency
+            currency: trade.currency,
+            linkedTradeFields: trade.linkedTrade ? this.getTradeFields(trade.linkedTrade) : null,
         };
-        const result = await new AddTradeDialog().show({
-            store: this.$store.state[StoreType.MAIN],
-            router: this.$router,
-            assetType: AssetType.valueByName(trade.asset),
-            operation: Operation.valueByName(trade.operation),
-            tradeFields: tradeFields,
-            tradeId: trade.id,
-            editedMoneyTradeId: trade.moneyTradeId,
-            moneyCurrency: trade.currency
-        });
-        if (result) {
-            await this.reloadPortfolio(this.portfolio.id);
-        }
     }
 
     private async deleteTrade(tradeRow: TradeRow): Promise<void> {

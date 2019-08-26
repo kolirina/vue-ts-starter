@@ -4,6 +4,8 @@ import {AmortizationTrade} from "./amortizationTrade";
 import {BondBuyTrade} from "./bondBuyTrade";
 import {BondSellTrade} from "./bondSellTrade";
 import {CouponTrade} from "./couponTrade";
+import {CurrencyBuyTrade} from "./currencyBuyTrade";
+import {CurrencySellTrade} from "./currencySellTrade";
 import {DividendTrade} from "./dividendTrade";
 import {MoneyDepositTrade} from "./moneyDepositTrade";
 import {MoneyIncomeTrade} from "./moneyIncomeTrade";
@@ -83,6 +85,16 @@ export class TradeMap {
                 [TradeValue.TOTAL]: new MoneyLossTrade().total,
                 [TradeValue.TOTAL_WF]: new MoneyLossTrade().totalWithoutFee,
                 [TradeValue.TOTAL_SIGN]: new MoneyLossTrade().signedTotal
+            },
+            [Operation.CURRENCY_BUY.enumName]: {
+                [TradeValue.TOTAL]: new CurrencyBuyTrade().total,
+                [TradeValue.TOTAL_WF]: new CurrencyBuyTrade().totalWithoutFee,
+                [TradeValue.TOTAL_SIGN]: new CurrencyBuyTrade().signedTotal
+            },
+            [Operation.CURRENCY_SELL.enumName]: {
+                [TradeValue.TOTAL]: new CurrencySellTrade().total,
+                [TradeValue.TOTAL_WF]: new CurrencySellTrade().totalWithoutFee,
+                [TradeValue.TOTAL_SIGN]: new CurrencySellTrade().signedTotal
             }
         }
     };

@@ -6,19 +6,19 @@
  *       420107, REPUBLIC OF TATARSTAN, KAZAN CITY, SPARTAKOVSKAYA STREET, HOUSE 2, ROOM 119
  * (c) "Intelinvest" Ltd, 2019
  *
- * —“–ќ√ќ  ќЌ‘»ƒ≈Ќ÷»јЋ№Ќќ
- *  ќћћ≈–„≈— јя “ј…Ќј
- * —ќЅ—“¬≈ЌЌ» :
- *       ќќќ "»нтеллектуальные инвестиции", »ЌЌ 1655386205
- *       420107, –≈—ѕ”ЅЋ» ј “ј“ј–—“јЌ, √ќ–ќƒ  ј«јЌ№, ”Ћ»÷ј —ѕј–“ј ќ¬— јя, ƒќћ 2, ѕќћ≈ў≈Ќ»≈ 119
- * (c) ќќќ "»нтеллектуальные инвестиции", 2019
+ * –°–Ґ–†–Ю–У–Ю –Ъ–Ю–Э–§–Ш–Ф–Х–Э–¶–Ш–Р–Ы–ђ–Э–Ю
+ * –Ъ–Ю–Ь–Ь–Х–†–І–Х–°–Ъ–Р–ѓ –Ґ–Р–Щ–Э–Р
+ * –°–Ю–С–°–Ґ–Т–Х–Э–Э–Ш–Ъ:
+ *       –Ю–Ю–Ю "–Ш–љ—В–µ–ї–ї–µ–Ї—В—Г–∞–ї—М–љ—Л–µ –Є–љ–≤–µ—Б—В–Є—Ж–Є–Є", –Ш–Э–Э 1655386205
+ *       420107, –†–Х–°–Я–£–С–Ы–Ш–Ъ–Р –Ґ–Р–Ґ–Р–†–°–Ґ–Р–Э, –У–Ю–†–Ю–Ф –Ъ–Р–Ч–Р–Э–ђ, –£–Ы–Ш–¶–Р –°–Я–Р–†–Ґ–Р–Ъ–Ю–Т–°–Ъ–Р–ѓ, –Ф–Ю–Ь 2, –Я–Ю–Ь–Х–©–Х–Э–Ш–Х 119
+ * (c) –Ю–Ю–Ю "–Ш–љ—В–µ–ї–ї–µ–Ї—В—Г–∞–ї—М–љ—Л–µ –Є–љ–≤–µ—Б—В–Є—Ж–Є–Є", 2019
  */
 
 import {Decimal} from "decimal.js";
-import {MoneyTrade} from "./moneyTrade";
+import {CurrencyTrade} from "./currencyTrade";
 import {TradeDataHolder} from "./tradeDataHolder";
 
-export class MoneyWithdrawTrade extends MoneyTrade {
+export class CurrencySellTrade extends CurrencyTrade {
 
     total(holder: TradeDataHolder): string {
         return this.totalWithoutFee(holder);

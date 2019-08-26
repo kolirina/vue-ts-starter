@@ -66,6 +66,15 @@ export class DateUtils {
     }
 
     /**
+     * Форматирование даты для отображения на странице
+     * @param date дата для форматирования
+     * @return {string} дата для отображения на странице
+     */
+    static formatDayMonthYear(date: string): string {
+        return dayjs(date).format(DateFormat.DATE);
+    }
+
+    /**
      * Возвращает текущую дату
      * @return {string} текущая дата в виде строки
      */
