@@ -21,6 +21,7 @@ import {DateUtils} from "../utils/dateUtils";
 import {TradeUtils} from "../utils/tradeUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
+import {CurrencyBalances} from "../components/currencyBalances";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -128,6 +129,7 @@ const MainStore = namespace(StoreType.MAIN);
                                                 </v-layout>
                                             </v-flex>
                                         </v-form>
+                                        <currency-balances></currency-balances>
                                         <div class="margT20">
                                             <v-btn color="primary" class="big_btn" :loading="processState"
                                                    :disabled="!moneyFormIsValid || processState" @click.native="addMoney()">
@@ -159,7 +161,7 @@ const MainStore = namespace(StoreType.MAIN);
             <balances-table :assets="portfolio.overview.assetRows" :stocks="portfolio.overview.stockPortfolio.rows" :loading="processState"/>
         </v-container>
     `,
-    components: {AssetTable, BalancesTable, StockTable}
+    components: {AssetTable, BalancesTable, StockTable, CurrencyBalances}
 })
 export class BalancesPage extends UI implements TradeDataHolder {
 
