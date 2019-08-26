@@ -72,9 +72,22 @@ import {UI} from "../../../app/ui";
                         Произвольный расход. Поля: дата, сумма, заметка, валюта, [id связанной сделки]
                     </div>
                 </div>
+                <div class="intel-invest-instruction__values-item">
+                    <div class="intel-invest-instruction__values-item__title">CURRENCY_BUY</div>
+                    <div class="intel-invest-instruction__values-item__content">
+                        Обмен валюты (Покупка). Поля: дата, сумма, заметка, валюта, id связанной сделки
+                    </div>
+                </div>
+                <div class="intel-invest-instruction__values-item">
+                    <div class="intel-invest-instruction__values-item__title">CURRENCY_SELL</div>
+                    <div class="intel-invest-instruction__values-item__content">
+                        Обмен валюты (Продажа). Поля: дата, сумма, заметка, валюта, id связанной сделки
+                    </div>
+                </div>
                 <div class="intel-invest-instruction__values-l-section">
-                    Опциональный параметр <b>LINK_ID</b> (id связанной сделки), для создания связанных сделок, должен быть уникальным и
+                    Параметр <b>LINK_ID</b> (id связанной сделки), для создания связанных сделок, должен быть уникальным и
                     совпадать у двух связанных сделок. Например, у сделки по покупке акции указываете 1, и у сделки по деньгам тоже 1.
+                    Этот параметр опциональный для всех типов сделок кроме сделок по Обмену валюты.
                 </div>
             </div>
 
