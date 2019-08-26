@@ -16,6 +16,7 @@ import {OverviewService} from "../../services/overviewService";
 import {MoneyResiduals, PortfolioParams, PortfolioService} from "../../services/portfolioService";
 import {TradeFields, TradeRequest, TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
+import {BigMoney} from "../../types/bigMoney";
 import {EventType} from "../../types/eventType";
 import {Operation} from "../../types/operation";
 import {Tariff} from "../../types/tariff";
@@ -159,7 +160,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                     <v-flex xs6>
                                         <div class="fs14 margB16">
                                             <v-layout class="select-section" align-center>
-                                                <span class="mr-2 pl-1">Покупаемая валюта</span>
+                                                <span class="mr-2 pl-1">{{ moneyAmountTitle }}</span>
                                                 <v-select :items="purchasedCurrencies" v-model="purchasedCurrency" label="Валюта покупки" single-line
                                                           @change="onChangeExchangeRate"></v-select>
                                             </v-layout>
@@ -171,7 +172,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                     <v-flex xs6>
                                         <div class="fs14 margB16">
                                             <v-layout class="select-section" align-center>
-                                                <span class="mr-2 pl-1">Валюта для списания</span>
+                                                <span class="mr-2 pl-1">{{ debitCurrencyTitle }}</span>
                                                 <v-select :items="debitCurrencies" v-model="debitCurrency" label="Валюта списания" single-line
                                                           @change="onChangeExchangeRate"></v-select>
                                             </v-layout>
@@ -416,6 +417,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             this.filteredShares = this.share ? [this.share] : [];
         }
         if (this.editMode && this.isCurrencyConversion) {
+            this.purchasedCurrency = new BigMoney(this.data.tradeFields.moneyAmount).currency;
+            this.debitCurrency = new BigMoney(this.data.tradeFields.linkedTrade.signedTotal).currency;
             this.calculateExchangeRate();
             this.changedPurchasedCurrencyValue();
         }
@@ -453,6 +456,14 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             await this.onChangeExchangeRate();
         }
         await this.fillFields();
+    }
+
+    private get moneyAmountTitle(): string {
+        return this.isCurrencyBuy ? "Покупаемая валюта" : "Продаваемая валюта";
+    }
+
+    private get debitCurrencyTitle(): string {
+        return this.isCurrencyBuy ? "Валюта списания" : "Валюта зачисления";
     }
 
     private get isCurrencyConversion(): boolean {
