@@ -217,15 +217,15 @@ const MainStore = namespace(StoreType.MAIN);
                                             Покупка акции
                                         </div>
                                         <div>
-                                            <img src="./img/help/add_stock.gif"/>
+                                            <img src="./img/help/stock-example.gif"/>
                                         </div>
-                                        <div class="gif-block-item">
-                                            <div class="gif-block-item__title" id="buy_bonds">
-                                                Покупка облигации
-                                            </div>
-                                            <div>
-                                                <img src="./img/help/add_bond.gif"/>
-                                            </div>
+                                    </div>
+                                    <div class="gif-block-item">
+                                        <div class="gif-block-item__title" id="buy_bonds">
+                                            Покупка облигации
+                                        </div>
+                                        <div>
+                                            <img src="./img/help/bond-example.gif"/>
                                         </div>
                                     </div>
                                     <div class="gif-block-item">
@@ -233,7 +233,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             Добавление дивиденда
                                         </div>
                                         <div>
-                                            <img src="./img/help/add_dividend.gif"/>
+                                            <img src="./img/help/dividend-example.gif"/>
                                         </div>
                                     </div>
                                     <div class="gif-block-item">
@@ -241,7 +241,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             Добавление купонной выплаты
                                         </div>
                                         <div>
-                                            <img src="./img/help/add_coupon.gif"/>
+                                            <img src="./img/help/dividend-coupon-example.gif"/>
                                         </div>
                                     </div>
                                     <div class="gif-block-item">
@@ -249,7 +249,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             Пополнение денежного счета
                                         </div>
                                         <div>
-                                            <img src="./img/help/add_money.gif"/>
+                                            <img src="./img/help/make-money-example.gif"/>
                                         </div>
                                     </div>
                                 </div>
@@ -303,12 +303,22 @@ const MainStore = namespace(StoreType.MAIN);
                                             <a href="#/settings/import">Импорт сделок</a>
                                         </p>
                                         <div class="gif-block-item  border-block-in-paired-section">
+                                            <p>
+                                                <div>
+                                                    <img src="./img/help/import_1.png"/>
+                                                </div>
+                                            </p>
                                             <div>
                                                 Что делать, если отчет не загружается?
                                             </div>
                                             <p>
                                                 Для начала проверьте формат файла. Для каждого брокера
                                                 описаны инструкции по форматам.
+                                            </p>
+                                            <p>
+                                                <div>
+                                                    <img src="./img/help/import_2.png"/>
+                                                </div>
                                             </p>
                                             <p>
                                                 Внимательно прочитайте информацию во всплывающем окне.
@@ -320,6 +330,8 @@ const MainStore = namespace(StoreType.MAIN);
                                                 <a href="#/balances">текущих остатков портфеля</a>.
                                             </p>
                                         </div>
+                                    </div>
+                                    <div class="wrapper-content-panel__paired-section-item">
                                         <div>
                                             Как устроен импорт?
                                         </div>
@@ -334,8 +346,6 @@ const MainStore = namespace(StoreType.MAIN);
                                             создается корректирующая сделка внесения/списания денег,
                                             чтобы стоимость портфеля соответствовала действительности.
                                         </p>
-                                    </div>
-                                    <div class="wrapper-content-panel__paired-section-item">
                                         <p>
                                             Прибыль по дивидендам и купонам и амортизации начисляется
                                             в портфель автоматически на основе наших данных.
@@ -431,6 +441,11 @@ const MainStore = namespace(StoreType.MAIN);
                                             портфеля за текущий день.
                                         </p>
                                         <p>
+                                            <div>
+                                                <img src="./img/help/portfolio_1.png"/>
+                                            </div>
+                                        </p>
+                                        <p>
                                             Ниже расположена таблица с основными типами активов
                                             (акции, облигации, деньги), их суммарными стоимостями и
                                             размером доли в портфеле.
@@ -443,8 +458,11 @@ const MainStore = namespace(StoreType.MAIN);
                                             Нажмите на кнопку напротив каждой бумаги чтобы просмотреть
                                             доступные с ней действия.
                                         </p>
-                                    </div>
-                                    <div class="wrapper-content-panel__paired-section-item">
+                                        <p>
+                                            <div>
+                                                <img src="./img/help/portfolio_2.png"/>
+                                            </div>
+                                        </p>
                                         <p>
                                             Можно быстро купить, продать или внести начисление по
                                             дивиденду или купону, причем данные будут автоматически
@@ -452,10 +470,22 @@ const MainStore = namespace(StoreType.MAIN);
                                             удаления всех бумаг, вы можете быстро очистить весь портфель.
                                         </p>
                                         <p>
+                                            <div>
+                                                <img src="./img/help/portfolio_3.png"/>
+                                            </div>
+                                        </p>
+                                    </div>
+                                    <div class="wrapper-content-panel__paired-section-item">
+                                        <p>
                                             Также есть возможность просмотреть дополнительную
                                             информацию по каждой позиции в портфеле. Для этого
                                             необходимо развернуть строку в таблице нажатием на кнопку
                                             слева.
+                                        </p>
+                                        <p>
+                                            <div>
+                                                <img src="./img/help/portfolio_4.png"/>
+                                            </div>
                                         </p>
                                         <p>
                                             Для каждой таблицы предусмотрена диаграмма распределения
@@ -466,6 +496,16 @@ const MainStore = namespace(StoreType.MAIN);
                                             На графике распределения активов по отраслям можно
                                             посмотреть какие акции и какой объем занимают по отдельной
                                             каждой отрасли.
+                                        </p>
+                                        <p>
+                                            <div>
+                                                <img src="./img/help/portfolio_5.png"/>
+                                            </div>
+                                        </p>
+                                        <p>
+                                            <div>
+                                                <img src="./img/help/portfolio_6.png"/>
+                                            </div>
                                         </p>
                                         <p>
                                             Для таблиц предусмотрена возможность фильтрации,
@@ -646,6 +686,8 @@ const MainStore = namespace(StoreType.MAIN);
                                             количество акций, внести заметку. По умолчанию размер
                                             начисления отображается уже за вычетом налога в 13%.
                                         </p>
+                                    </div>
+                                    <div class="wrapper-content-panel__paired-section-item">
                                         <p>
                                             <img src="./img/help/events_2.png"/>
                                         </p>
@@ -654,8 +696,6 @@ const MainStore = namespace(StoreType.MAIN);
                                             используется произвольная ставка налогообложения,
                                             например, эмитент уменьшил НОБ).
                                         </p>
-                                    </div>
-                                    <div class="wrapper-content-panel__paired-section-item">
                                         <p>
                                             По умолчанию установлен чекбокс "Зачислить деньги", при
                                             исполнении выплаты, будет занесена сделка по добавлению
@@ -716,12 +756,12 @@ const MainStore = namespace(StoreType.MAIN);
                                             Дивиденды по годам. Отображаются суммарные выплаты и
                                             доходность в разбивке по тикеру и году.
                                         </p>
+                                    </div>
+                                    <div class="wrapper-content-panel__paired-section-item">
                                         <p>
                                             Сделки по дивидендам. Отображаются все внесенные сделки по
                                             дивидендам.
                                         </p>
-                                    </div>
-                                    <div class="wrapper-content-panel__paired-section-item">
                                         <p>
                                             Сумма дивидендов по годам. Отображается информация в
                                             разрезе по годам.
@@ -830,22 +870,6 @@ const MainStore = namespace(StoreType.MAIN);
                                             <img src="./img/help/settings_1.png"/>
                                         </p>
                                         <div>
-                                            <a class="non-cursor-click">Профиль</a>
-                                        </div>
-                                        <p>
-                                            <a href="#/profile">Здесь</a> можно сменить пароль и адрес
-                                            электронной почты. Новый адрес необходимо подтвердить.
-                                            Уведомления будут приходить на новый адрес электронной
-                                            почты.
-                                        </p>
-                                        <p>
-                                            Также здесь можно отвязать вашу карту для отмены автоматического продления подписки.
-                                            Можно отписаться от рассылки или подписаться на нее снова.
-                                        </p>
-                                        <p>
-                                            <img src="./img/help/settings_2.png"/>
-                                        </p>
-                                        <div>
                                             <a id="settings_public" class="non-cursor-click">Публичный доступ</a>
                                         </div>
                                         <p>
@@ -870,6 +894,24 @@ const MainStore = namespace(StoreType.MAIN);
                                         <p>
                                             <img src="./img/help/settings_5.png"/>
                                         </p>
+                                    </div>
+                                    <div class="wrapper-content-panel__paired-section-item">
+                                        <div>
+                                            <a class="non-cursor-click">Профиль</a>
+                                        </div>
+                                        <p>
+                                            <a href="#/profile">Здесь</a> можно сменить пароль и адрес
+                                            электронной почты. Новый адрес необходимо подтвердить.
+                                            Уведомления будут приходить на новый адрес электронной
+                                            почты.
+                                        </p>
+                                        <p>
+                                            Также здесь можно отвязать вашу карту для отмены автоматического продления подписки.
+                                            Можно отписаться от рассылки или подписаться на нее снова.
+                                        </p>
+                                        <p>
+                                            <img src="./img/help/settings_2.png"/>
+                                        </p>
                                         <div>
                                             <a id="tariffs_public" class="non-cursor-click">Тарифы</a>
                                         </div>
@@ -879,8 +921,6 @@ const MainStore = namespace(StoreType.MAIN);
                                             Например, если у вас раньше был подключен тарифный план Профессионал, и у вас заведено 4 портфеля, то вы не сможете выбрать
                                             для подключениятарифный план Стандарт, потому что будете превышать ограничения тарифного плана.
                                         </p>
-                                    </div>
-                                    <div class="wrapper-content-panel__paired-section-item">
                                         <p>
                                             Либо если на тарифе Профессионал в портфеле у вас есть
                                             зарубежные бумаги и валюта, то переход на другие тарифы
@@ -1001,6 +1041,7 @@ export class HelpPage extends UI {
     private operation = Operation;
     /* Управление какие блоки открыты при загрузке страницы */
     private configExpansionPanel: boolean[] = [
+        true,
         true,
         true,
         true,
