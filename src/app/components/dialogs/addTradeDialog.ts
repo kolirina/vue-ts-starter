@@ -197,7 +197,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                         <div class="fs14 margB16">
                                             <v-layout class="select-section" align-center>
                                                 <span class="mr-2 pl-1">Комиссия</span>
-                                                <v-select :items="[purchasedCurrency, debitCurrency]" v-model="feeCurrency" label="Валюта комиссии" single-line></v-select>
+                                                <v-select :items="[feeCurrency]" v-model="feeCurrency" label="Валюта комиссии" single-line></v-select>
                                             </v-layout>
                                         </div>
                                         <ii-number-field label="Комиссия" v-model="fee" :decimals="2"></ii-number-field>
@@ -361,11 +361,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         const res = await this.tradeService.getCurrencyFromTo(this.purchasedCurrency, this.debitCurrency, DateUtils.formatDayMonthYear(this.date));
         this.currencyExchangeRate = res.rate;
         this.feeCurrency = this.debitCurrency;
-        if (this.isCurrencyBuy) {
-            this.changedPurchasedCurrencyValue();
-        } else {
-            this.changedDebitingCurrencyValue();
-        }
+        this.changedPurchasedCurrencyValue();
     }
 
     private onAssetTypeChange(): void {
@@ -425,7 +421,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private calculateExchangeRate(): void {
-        this.currencyExchangeRate = new BigMoney(this.data.tradeFields.linkedTradeFields.moneyAmount).amount.abs()
+        const fee = new Decimal(this.fee ? this.fee : "0");
+        this.currencyExchangeRate = new BigMoney(this.data.tradeFields.linkedTradeFields.moneyAmount).amount.abs().plus(this.isCurrencyBuy ? fee.negated() : fee)
             .dividedBy(this.moneyAmount).toDP(2, Decimal.ROUND_HALF_UP).toString();
     }
 
@@ -793,7 +790,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
                 facevalue: null,
                 fee: "0",
                 keepMoney: false,
-                moneyAmount: this.debitCurrencyValue,
+                moneyAmount: this.getCurrencyConversionMoneyAmount(),
                 nkd: null,
                 note: null,
                 perOne: false,
@@ -802,6 +799,17 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
                 ticker: null
             }
         } : null;
+    }
+
+    /**
+     * Возвращает сумму связанной сделки по деньгам с учетом комиссии
+     */
+    private getCurrencyConversionMoneyAmount(): string {
+        const fee = this.fee ? new Decimal(this.fee) : null;
+        if (fee) {
+            return new Decimal(this.debitCurrencyValue).add(this.isCurrencyBuy ? fee : fee.negated()).toDP(2, Decimal.ROUND_HALF_UP).toString();
+        }
+        return this.debitCurrencyValue;
     }
 
     private get purchasedCurrencies(): string[] {
