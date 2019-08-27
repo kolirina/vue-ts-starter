@@ -44,7 +44,7 @@ import {MainStore} from "../../../vuex/mainStore";
                                 Пожалуйста внесите остаток денежных средств на данный момент
                             </div>
                             <video-link class="balance-text">
-                                <template v-slot:header>
+                                <template v-slot:foreword>
                                     <span>Подробные пояснения - зачем указывать текущие остатки, вы найдете в данной </span>
                                 </template>
                                 <a>видео-инструкции по импорту сделок</a>

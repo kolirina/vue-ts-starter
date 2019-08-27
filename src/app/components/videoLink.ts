@@ -6,7 +6,7 @@ import {VideoHintDialog} from "./dialogs/videoHintDialog";
     // language=Vue
     template: `
         <div @click.stop="openVideo()">
-            <slot name="header"></slot>
+            <slot name="foreword"></slot>
             <slot></slot>
         </div>
     `

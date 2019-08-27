@@ -1,9 +1,6 @@
 import Component from "vue-class-component";
 import {CustomDialog} from "../../platform/dialogs/customDialog";
 
-/**
- * Диалог подтверждения
- */
 @Component({
     // language=Vue
     template: `
