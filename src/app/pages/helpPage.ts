@@ -218,7 +218,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             Покупка акции
                                         </div>
                                         <div>
-                                            <img src="./img/help/stock-example.gif" @click.stop="openImageDialog"/>
+                                            <img src="./img/help/add_stock_buy.gif" @click.stop="openImageDialog"/>
                                         </div>
                                     </div>
                                     <div class="gif-block-item">
@@ -226,7 +226,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             Покупка облигации
                                         </div>
                                         <div>
-                                            <img src="./img/help/bond-example.gif" @click.stop="openImageDialog"/>
+                                            <img src="./img/help/add_bond_trade.gif" @click.stop="openImageDialog"/>
                                         </div>
                                     </div>
                                     <div class="gif-block-item">
@@ -234,7 +234,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             Добавление дивиденда
                                         </div>
                                         <div>
-                                            <img src="./img/help/dividend-example.gif" @click.stop="openImageDialog"/>
+                                            <img src="./img/help/add_dividend.gif" @click.stop="openImageDialog"/>
                                         </div>
                                     </div>
                                     <div class="gif-block-item">
@@ -242,7 +242,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             Добавление купонной выплаты
                                         </div>
                                         <div>
-                                            <img src="./img/help/dividend-coupon-example.gif" @click.stop="openImageDialog"/>
+                                            <img src="./img/help/add_coupon.gif" @click.stop="openImageDialog"/>
                                         </div>
                                     </div>
                                     <div class="gif-block-item">
@@ -250,7 +250,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             Пополнение денежного счета
                                         </div>
                                         <div>
-                                            <img src="./img/help/make-money-example.gif" @click.stop="openImageDialog"/>
+                                            <img src="./img/help/add_money_trade.gif" @click.stop="openImageDialog"/>
                                         </div>
                                     </div>
                                 </div>
