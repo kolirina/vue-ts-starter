@@ -350,6 +350,7 @@ export interface GenerateShareUrlRequest {
 }
 
 export interface MoneyResiduals {
-    currency: string;
-    amount: string;
+    EUR: string;
+    USD: string;
+    RUB: string;
 }
