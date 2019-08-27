@@ -26,7 +26,8 @@ export class TradeUtils {
     }
 
     static getFee(trade: TradeRow): string {
-        return trade.asset === AssetType.MONEY.enumName ? null : Filters.formatMoneyAmount(trade.fee, true, null, false);
+        return (trade.asset === AssetType.MONEY.enumName && ![Operation.CURRENCY_BUY, Operation.CURRENCY_SELL].includes(Operation.valueByName(trade.operation))) ? null :
+            Filters.formatMoneyAmount(trade.fee, true, null, false);
     }
 
     static percentPrice(trade: TradeRow): boolean {

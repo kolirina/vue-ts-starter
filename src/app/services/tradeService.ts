@@ -18,12 +18,24 @@ export class TradeService {
     @Inject
     private http: Http;
 
-    async saveTrade(req: CreateTradeRequest): Promise<void> {
+    async saveTrade(req: TradeRequest): Promise<void> {
         await this.http.post("/trades", req);
     }
 
     async editTrade(req: EditTradeRequest): Promise<void> {
         await this.http.put("/trades", req);
+    }
+
+    async getCurrencyFromTo(currencyFrom: string, currencyTo: string, date: string): Promise<any> {
+        return this.http.get(`/currency/${currencyFrom}/${currencyTo}`, {date});
+    }
+
+    async copyTrade(copyMoveTradeRequest: CopyMoveTradeRequest): Promise<void> {
+        await this.http.post("/trades/copy", copyMoveTradeRequest);
+    }
+
+    async moveTrade(copyMoveTradeRequest: CopyMoveTradeRequest): Promise<void> {
+        await this.http.post("/trades/move", copyMoveTradeRequest);
     }
 
     /**
@@ -57,7 +69,6 @@ export class TradeService {
         }
         const result = await this.http.get<PageableResponse<TradeRow>>(`/trades/pageable/${id}`, urlParams);
         result.content = result.content.map(this.correctMoneyOperation);
-
         return result;
     }
 
@@ -121,6 +132,16 @@ export class TradeType extends (EnumType as IStaticEnum<TradeType>) {
     }
 }
 
+/** Поля, содержащие информацию для копирования сделки */
+export interface CopyMoveTradeRequest {
+    /** Идентификатор сделки */
+    tradeId: string;
+    /** Идентификатор портфеля в который будет скопирована сделка */
+    toPortfolioId: number;
+    /** Идентификатор портфеля с которого происходит копирование */
+    fromPortfolioId: number;
+}
+
 /** Поля, содержащие информацию для удаления сделки */
 export interface DeleteTradeRequest {
     /** Идентификатор сделки */
@@ -163,22 +184,26 @@ export type TradeFields = {
     /** Сумма денег для списания/зачисления */
     moneyAmount: string,
     /** Валюта сделки */
-    currency: string
+    currency: string,
+    /** Валюта комиссии */
+    feeCurrency: string,
+    /** Поля связанной сделки */
+    linkedTradeFields?: TradeFields
 };
 
-export type CreateTradeRequest = {
+export interface TradeRequest {
     /** Идентификатор портфеля */
-    portfolioId: number,
+    portfolioId: number;
     /** Признак добавления связанной сделки по деньгам */
-    createLinkedTrade: boolean,
+    createLinkedTrade: boolean;
     /** Актив сделки */
-    asset: string,
+    asset: string;
     /** Операция */
-    operation: string,
+    operation: string;
     /** Поля, содержащию все необходимую информацию по сделке данного типа */
-    fields: TradeFields,
+    fields: TradeFields;
     /** Поля, содержащию все необходимую информацию по связанной сделке */
-    linkedTradeRequest?: CreateTradeRequest,
+    linkedTradeRequest?: TradeRequest;
     /** Признак необходимости исполнить событие по которому добавлется сделка */
     processShareEvent?: boolean;
     /**
@@ -188,7 +213,7 @@ export type CreateTradeRequest = {
     eventDate?: string;
     /** Период начисления. Используется для дивидендов */
     eventPeriod?: string;
-};
+}
 
 /** Запрос на редактирование сделки */
 export interface EditTradeRequest {
@@ -209,7 +234,7 @@ export interface EditTradeRequest {
     /** Поля, содержащию все необходимую информацию по сделке данного типа */
     fields: TradeFields;
     /** Поля, содержащию все необходимую информацию по связанной сделке */
-    linkedTradeRequest?: EditTradeRequest;
+    linkedTradeRequest?: TradeRequest;
 }
 
 /**

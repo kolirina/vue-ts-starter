@@ -8,6 +8,7 @@ import {ShowProgress} from "../platform/decorators/showProgress";
 import {BtnReturn} from "../platform/dialogs/customDialog";
 import {ClientInfo} from "../services/clientService";
 import {ExportService, ExportType} from "../services/exportService";
+import {OverviewService} from "../services/overviewService";
 import {PortfolioParams, PortfoliosDialogType, PortfolioService} from "../services/portfolioService";
 import {EventType} from "../types/eventType";
 import {Portfolio, TableHeader} from "../types/types";
@@ -85,6 +86,12 @@ const MainStore = namespace(StoreType.MAIN);
                                 <v-list-tile @click="exportPortfolio(props.item.id)">
                                     <v-list-tile-title>
                                         Экспорт в xlsx
+                                    </v-list-tile-title>
+                                </v-list-tile>
+                                <v-divider v-if="!props.item.parentTradeId"></v-divider>
+                                <v-list-tile @click="clearPortfolio(props.item.id)">
+                                    <v-list-tile-title class="delete-btn">
+                                        Очистить
                                     </v-list-tile-title>
                                 </v-list-tile>
                                 <v-list-tile @click="deletePortfolio(props.item)">
@@ -178,12 +185,16 @@ export class PortfoliosTable extends UI {
     private reloadPortfolios: () => Promise<void>;
     @MainStore.Action(MutationType.SET_CURRENT_PORTFOLIO)
     private setCurrentPortfolio: (id: number) => Promise<Portfolio>;
+    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
+    private reloadPortfolio: (id: number) => Promise<void>;
     /** Сервис по работе с портфелями */
     @Inject
     private portfolioService: PortfolioService;
     /** Сервис для экспорта портфеля */
     @Inject
     private exportService: ExportService;
+    @Inject
+    private overviewService: OverviewService;
     /** Типы диалогов */
     private dialogTypes = PortfoliosDialogType;
 
@@ -234,6 +245,16 @@ export class PortfoliosTable extends UI {
         await this.portfolioService.createPortfolioCopy(id);
         this.$snotify.info("Копия портфеля успешно создана");
         UI.emit(EventType.PORTFOLIO_CREATED);
+    }
+
+    private async clearPortfolio(porfolioId: number): Promise<void> {
+        const result = await new ConfirmDialog().show(`Вы уверены, что хотите удалить все сделки в портфеле`);
+        if (result === BtnReturn.YES) {
+            await this.portfolioService.clearPortfolio(porfolioId);
+            this.overviewService.resetCacheForId(porfolioId);
+            await this.reloadPortfolio(porfolioId);
+            this.$snotify.info("Портфель успешно очищен");
+        }
     }
 
     private publicLink(id: string): string {

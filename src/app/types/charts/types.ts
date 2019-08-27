@@ -64,7 +64,9 @@ export type EventChartData = {
 export type HighStockEventData = {
     x: number,
     title: string,
-    text: string
+    text: string,
+    initialPoints?: HighStockEventData[],
+    color?: string
 };
 
 export type HighStockEventsGroup = {

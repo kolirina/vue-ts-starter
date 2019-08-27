@@ -5,6 +5,7 @@ import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {DividendAggregateInfo, DividendService} from "../services/dividendService";
+import {EventType} from "../types/eventType";
 import {Portfolio} from "../types/types";
 import {StoreType} from "../vuex/storeType";
 import {BaseDividendsPage} from "./baseDividendsPage";
@@ -35,6 +36,11 @@ export class DividendsPage extends UI {
      */
     async created(): Promise<void> {
         await this.loadDividendAggregateInfo();
+        UI.on(EventType.TRADE_CREATED, async () => await this.loadDividendAggregateInfo());
+    }
+
+    beforeDestroy(): void {
+        UI.off(EventType.TRADE_CREATED);
     }
 
     @Watch("portfolio")

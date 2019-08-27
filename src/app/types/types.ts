@@ -53,6 +53,8 @@ export type TradeRow = {
     operationLabel: string,
     /** Валюта */
     currency: string,
+    /** Валюта комиссии */
+    feeCurrency: string,
     /** Итоговая сумма сделки */
     signedTotal: string,
     /** Итоговая сумма сделки без учета комиссии */
@@ -74,11 +76,13 @@ export type TradeRow = {
     /** Цена, выраженная в деньгах. Для акций, начислений, дивидендов */
     moneyPrice?: string,
     /** Цена, выраженная в процентах. Для облигаций */
-    bondPrice?: string
+    bondPrice?: string,
     /** Идентификатор связанной сделки по списанию/зачислению денежных средств. Может быть null, если у сделки нет связи */
-    moneyTradeId?: string;
+    moneyTradeId?: string,
     /** Идентификатор связанной родительской сделки. Может быть null, если у сделки нет связи */
-    parentTradeId?: string;
+    parentTradeId?: string,
+    /** Связанная сделка */
+    linkedTrade?: TradeRow
 };
 
 export type _shareRow = _portfolioRow & {
@@ -473,6 +477,8 @@ export type CombinedInfoRequest = {
 export interface CurrentMoneyRequest {
     /** Текущий остаток денежных средств */
     currentMoney: string;
+    /** Валюта остатка */
+    currency: string;
     /** Признак корректировки после импорта */
     afterImport?: boolean;
 }

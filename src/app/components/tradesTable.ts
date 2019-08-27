@@ -4,7 +4,7 @@ import {Prop, Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class";
 import {UI} from "../app/ui";
 import {Filters} from "../platform/filters/Filters";
-import {ClientService} from "../services/clientService";
+import {ClientInfo, ClientService} from "../services/clientService";
 import {TableHeadersState, TABLES_NAME, TablesService} from "../services/tablesService";
 import {TradeFields, TradeType} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
@@ -17,6 +17,7 @@ import {TradeUtils} from "../utils/tradeUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {AddTradeDialog} from "./dialogs/addTradeDialog";
+import {ChoosePortfolioDialog} from "./dialogs/choosePortfolioDialog";
 import {TradesTableExtInfo} from "./tradesTableExtInfo";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -88,6 +89,17 @@ const MainStore = namespace(StoreType.MAIN);
                                         </v-list-tile-title>
                                     </v-list-tile>
                                     <v-divider v-if="!props.item.parentTradeId"></v-divider>
+                                    <v-list-tile v-if="!props.item.parentTradeId" @click="copyTrade(props.item)">
+                                        <v-list-tile-title>
+                                            Копировать
+                                        </v-list-tile-title>
+                                    </v-list-tile>
+                                    <v-list-tile v-if="!props.item.parentTradeId" @click="moveTrade(props.item)">
+                                        <v-list-tile-title>
+                                            Переместить
+                                        </v-list-tile-title>
+                                    </v-list-tile>
+                                    <v-divider v-if="!props.item.parentTradeId"></v-divider>
                                     <v-list-tile v-if="!isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.BUY)">
                                         <v-list-tile-title>
                                             Купить
@@ -138,8 +150,8 @@ const MainStore = namespace(StoreType.MAIN);
                                             Погашение
                                         </v-list-tile-title>
                                     </v-list-tile>
-                                    <!-- Связанную сделку удалить можно только удалив родительскую -->
                                     <v-divider v-if="!props.item.parentTradeId"></v-divider>
+                                    <!-- Связанную сделку удалить можно только удалив родительскую -->
                                     <v-list-tile v-if="!props.item.parentTradeId" @click="deleteTrade(props.item)">
                                         <v-list-tile-title>
                                             Удалить
@@ -169,6 +181,8 @@ export class TradesTable extends UI {
     private reloadPortfolio: (id: number) => Promise<void>;
     @MainStore.Getter
     private portfolio: Portfolio;
+    @MainStore.Getter
+    private clientInfo: ClientInfo;
     /** Список заголовков таблицы */
     @Prop()
     private headers: TableHeader[];
@@ -226,6 +240,7 @@ export class TradesTable extends UI {
             share: null,
             ticker: trade.ticker,
             operation,
+            quantity: this.getQuantity(trade),
             assetType: AssetType.valueByName(trade.asset)
         });
         if (result) {
@@ -234,7 +249,23 @@ export class TradesTable extends UI {
     }
 
     private async openEditTradeDialog(trade: TradeRow): Promise<void> {
-        const tradeFields: TradeFields = {
+        const result = await new AddTradeDialog().show({
+            store: this.$store.state[StoreType.MAIN],
+            router: this.$router,
+            assetType: AssetType.valueByName(trade.asset),
+            operation: Operation.valueByName(trade.operation),
+            tradeFields: this.getTradeFields(trade),
+            tradeId: trade.id,
+            editedMoneyTradeId: trade.moneyTradeId,
+            moneyCurrency: trade.currency
+        });
+        if (result) {
+            await this.reloadPortfolio(this.portfolio.id);
+        }
+    }
+
+    private getTradeFields(trade: TradeRow): TradeFields {
+        return {
             ticker: trade.ticker,
             date: trade.date,
             quantity: trade.quantity,
@@ -246,25 +277,36 @@ export class TradesTable extends UI {
             note: trade.note,
             keepMoney: CommonUtils.exists(trade.moneyTradeId),
             moneyAmount: trade.signedTotal,
-            currency: trade.currency
+            currency: trade.currency,
+            feeCurrency: trade.feeCurrency,
+            linkedTradeFields: trade.linkedTrade ? this.getTradeFields(trade.linkedTrade) : null,
         };
-        const result = await new AddTradeDialog().show({
-            store: this.$store.state[StoreType.MAIN],
-            router: this.$router,
-            assetType: AssetType.valueByName(trade.asset),
-            operation: Operation.valueByName(trade.operation),
-            tradeFields: tradeFields,
-            tradeId: trade.id,
-            editedMoneyTradeId: trade.moneyTradeId,
-            moneyCurrency: trade.currency
-        });
-        if (result) {
-            await this.reloadPortfolio(this.portfolio.id);
-        }
     }
 
     private async deleteTrade(tradeRow: TradeRow): Promise<void> {
         this.$emit("delete", tradeRow);
+    }
+
+    private async copyTrade(trade: TradeRow): Promise<void> {
+        const toPortfolioId = await new ChoosePortfolioDialog().show({
+            portfolios: this.clientInfo.user.portfolios, currentPortfolioId: this.portfolio.id,
+            titleDialog: "Копирование сделки в", buttonTitle: "Копировать"
+        });
+        if (!toPortfolioId) {
+            return;
+        }
+        this.$emit("copyTrade", {toPortfolioId, fromPortfolioId: this.portfolio.id, tradeId: trade.id});
+    }
+
+    private async moveTrade(trade: TradeRow): Promise<void> {
+        const toPortfolioId = await new ChoosePortfolioDialog().show({
+            portfolios: this.clientInfo.user.portfolios, currentPortfolioId: this.portfolio.id,
+            titleDialog: "Перемещение сделки в", buttonTitle: "Переместить"
+        });
+        if (!toPortfolioId) {
+            return;
+        }
+        this.$emit("moveTrade", {toPortfolioId, fromPortfolioId: this.portfolio.id, tradeId: trade.id});
     }
 
     private getTradeType(tradeType: string): string {
@@ -311,6 +353,13 @@ export class TradesTable extends UI {
 
     private isMoneyTrade(trade: TradeRow): boolean {
         return AssetType.valueByName(trade.asset) === AssetType.MONEY;
+    }
+
+    private getQuantity(trade: TradeRow): number {
+        if (!this.isMoneyTrade(trade)) {
+            return trade.quantity;
+        }
+        return null;
     }
 
     private currencyForPrice(trade: TradeRow): string {

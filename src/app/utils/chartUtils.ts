@@ -5,8 +5,8 @@ import Highcharts, {AreaChart, ChartObject, DataPoint, Gradient, IndividualSerie
 import Highstock from "highcharts/highstock";
 import {Filters} from "../platform/filters/Filters";
 import {BigMoney} from "../types/bigMoney";
-import {AnalyticsChartPoint, SimpleChartData} from "../types/charts/types";
 import {
+    AnalyticsChartPoint,
     BasePriceDot,
     ColumnChartData,
     ColumnDataSeries,
@@ -16,12 +16,13 @@ import {
     LineChartItem,
     LineChartSeries,
     PieChartTooltipFormat,
-    SectorChartData
+    SectorChartData,
+    SimpleChartData
 } from "../types/charts/types";
 import {Operation} from "../types/operation";
 import {Overview, StockPortfolioRow} from "../types/types";
 import {CommonUtils} from "./commonUtils";
-import {DateUtils} from "./dateUtils";
+import {DateFormat, DateUtils} from "./dateUtils";
 import {TradeUtils} from "./tradeUtils";
 
 export class ChartUtils {
@@ -81,13 +82,39 @@ export class ChartUtils {
     static processEventsChartData(data: EventChartData[], flags: string = "flags", onSeries: string = "totalChart",
                                   shape: string = "circlepin", width: number = 10): HighStockEventsGroup[] {
         const eventsGroups: HighStockEventsGroup[] = [];
-        const events: HighStockEventData[] = [];
         const temp = data.reduce((result: { [key: string]: HighStockEventData[] }, current: EventChartData) => {
             result[current.backgroundColor] = result[current.backgroundColor] || [];
-            result[current.backgroundColor].push({x: new Date(current.date).getTime(), title: current.text, text: current.description});
+            result[current.backgroundColor].push({x: new Date(current.date).getTime(), title: current.text, text: current.description, color: current.backgroundColor});
             return result;
         }, {} as { [key: string]: HighStockEventData[] });
         let count = 0;
+        //  TODO разобраться почему не отображаются все точки
+        // const eventsByCount: { [key: string]: HighStockEventData[] } = {};
+        // const colors = ChartUtils.getColors();
+        // Object.keys(temp).forEach(key => {
+        //     const grouped = ChartUtils.groupEvents(temp[key]);
+        //     grouped.forEach(point => {
+        //         const eventsKey = point.initialPoints.length ? point.initialPoints.length + 1 : point.title;
+        //         eventsByCount[String(eventsKey)] = eventsByCount[String(eventsKey)] || [];
+        //         eventsByCount[String(eventsKey)].push(point);
+        //     });
+        //
+        //     Object.keys(eventsByCount).forEach(byCountKey => {
+        //         const events = eventsByCount[byCountKey].sort((a, b) => a.x - b.x);
+        //         const color = isNaN(byCountKey as any) ? events[0] ? events[0].color : key : ChartUtils.getRandomColor(colors);
+        //         eventsGroups.push({
+        //             type: flags,
+        //             data: events,
+        //             name: `events${count++}`,
+        //             onSeries: onSeries,
+        //             shape: shape,
+        //             color: color,
+        //             fillColor: color,
+        //             stackDistance: 20,
+        //             width: width,
+        //         });
+        //     });
+        // });
         Object.keys(temp).forEach(key => {
             eventsGroups.push({
                 type: flags,
@@ -102,6 +129,26 @@ export class ChartUtils {
             });
         });
         return eventsGroups;
+    }
+
+    static groupEvents(events: HighStockEventData[]): HighStockEventData[] {
+        const temp = events.reduce((result: { [key: string]: HighStockEventData[] }, current: HighStockEventData) => {
+            const date = DateUtils.formatDate(dayjs(current.x), DateFormat.DATE2);
+            result[date] = result[date] || [];
+            result[date].push(current);
+            return result;
+        }, {} as { [key: string]: HighStockEventData[] });
+        const eventsGrouped: HighStockEventData[] = [];
+
+        Object.keys(temp).forEach(key => {
+            const points = temp[key];
+            const mainPoint = points.shift();
+            // надо прибавлять единицу, так как выше один элемент уже убрали
+            mainPoint.title = points.length > 0 ? String(points.length + 1) : mainPoint.title;
+            mainPoint.initialPoints = points;
+            eventsGrouped.push(mainPoint);
+        });
+        return eventsGrouped;
     }
 
     static doStockPieChartData(overview: Overview): DataPoint[] {
@@ -324,21 +371,41 @@ export class ChartUtils {
                 // @ts-ignore
                 formatter: function(): string {
                     // @ts-ignore
-                    if (this.points) {
+                    const point = this.point as HighStockEventData;
+                    if (point && point.initialPoints) {
+                        if (point.initialPoints.length > 0) {
+                            let text = `<b>${Highcharts.dateFormat("%b %d, %Y", point.initialPoints[0].x)}</b>
+<span> - </span><b>${Highcharts.dateFormat("%b %d, %Y", point.initialPoints[point.initialPoints.length - 1].x)}</b><br/>`;
+
+                            text += "<span style=\"font-size: 11px\">";
+                            text += `<p style=\"width: 400px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;\">- ${point.text}</p><br/>`;
+                            for (let i = 0; i < point.initialPoints.length; i++) {
+                                text += `<p style=\"width: 400px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;\">- ${point.initialPoints[i].text}</p><br/>`;
+                                // добавляем только четыре, так как основная точка тоже учтена
+                                if (i === 4) {
+                                    const remainCount = point.initialPoints.length - 5;
+                                    text += `<p>Еще ${remainCount} ${Filters.declension(remainCount, "событие", "события", "событий")} в этот день</p>`;
+                                    break;
+                                }
+                            }
+                            return text + "</span>";
+                        } else {
+                            return `<b>${Highcharts.dateFormat("%b %d, %Y", point.x)}</b><br/><span>${point.text}</span>`;
+                        }
+                        // @ts-ignore
+                    } else if (this.points) {
                         // The first returned item is the header, subsequent items are the points
                         // @ts-ignore
                         return ["<b>" + DateUtils.formatDate(dayjs(this.x)) + "</b>"].concat(
                             // @ts-ignore
-                            this.points.map((point): string => {
-                                return compare ? `<span style=\"color:${point.series.color}\">${point.series.name}</span>: <b>${point.y}</b>
-(${Math.round(point.point.change * 100) / 100}%)<br/>` :
-                                    `<span style=\"color:${point.series.color}\">${point.series.name}</span>: <b>${point.y}</b><br/>`;
+                            this.points.map((pointGroup): string => {
+                                return compare ? `<span style=\"color:${pointGroup.series.color}\">${pointGroup.series.name}</span>: <b>${pointGroup.y}</b>
+(${Math.round(pointGroup.point.change * 100) / 100}%)<br/>` :
+                                    `<span style=\"color:${pointGroup.series.color}\">${pointGroup.series.name}</span>: <b>${pointGroup.y}</b><br/>`;
                             })
                         );
-                        // @ts-ignore
-                    } else if (this.point) {
-                        // @ts-ignore
-                        return this.point.text;
+                    } else if (point) {
+                        return point.text;
                     }
                 }
             },
@@ -579,5 +646,11 @@ export class ChartUtils {
     private static getColors(dataSetsCountValue: number = 10): string[] {
         const dataSetsCount = Math.min(dataSetsCountValue, 30);
         return chroma.scale(["#F44336", "#03A9F4", "#4CAF50", "#FFEB3B", "#9C27B0"].reverse()).mode("hcl").colors(dataSetsCount);
+    }
+
+    private static getRandomColor(colors: string[]): string {
+        const min = 0;
+        const max = 10;
+        return colors[Math.floor(min + Math.random() * (max + 1 - min))];
     }
 }
