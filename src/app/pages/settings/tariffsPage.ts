@@ -165,7 +165,7 @@ export class TariffAgreement extends UI {
                                               :shares-count="clientInfo.user.sharesCount" :foreign-shares="clientInfo.user.foreignShares">
                     </tariff-limit-exceed-info>
                 </v-tooltip>
-                <v-tooltip v-if="available && !isTrial" content-class="custom-tooltip-wrap" bottom>
+                <v-tooltip v-if="available && isShowRecalculationPrompt" content-class="custom-tooltip-wrap" bottom>
                     <v-btn slot="activator" @click.stop="makePayment(tariff)"
                         :class="{'big_btn': true, 'selected': selected || agreementState[tariff.name]}"
                         :disabled="disabled">
@@ -176,7 +176,7 @@ export class TariffAgreement extends UI {
                         При переходе на данный тарифный план, остаток неиспользованных дней текущего тарифа пересчитаются согласно новому тарифу и продлит срок его действия
                     </div>
                 </v-tooltip>
-                <v-btn v-if="available && isTrial" @click.stop="makePayment(tariff)"
+                <v-btn v-if="available && !isShowRecalculationPrompt" @click.stop="makePayment(tariff)"
                        :class="{'big_btn': true, 'selected': selected || agreementState[tariff.name]}"
                        :disabled="disabled">
                     <span v-if="!busyState[tariff.name]">{{ buttonLabel }}</span>
@@ -413,8 +413,8 @@ export class PayButton extends UI {
         return !this.available || this.isProgress || !this.agreementState[this.tariff.name];
     }
 
-    private get isTrial(): boolean {
-        return this.clientInfo.user.tariff === Tariff.TRIAL;
+    private get isShowRecalculationPrompt(): boolean {
+        return this.clientInfo.user.tariff !== Tariff.TRIAL && this.clientInfo.user.tariff !== this.tariff;
     }
 }
 
