@@ -43,7 +43,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
             <v-layout column>
                 <dashboard :data="overview.dashboardData" :view-currency="viewCurrency" :side-bar-opened="sideBarOpened"></dashboard>
 
-                <negative-balance-notification></negative-balance-notification>
+                <negative-balance-notification v-if="showNegativeBalance"></negative-balance-notification>
 
                 <slot name="afterDashboard"></slot>
 

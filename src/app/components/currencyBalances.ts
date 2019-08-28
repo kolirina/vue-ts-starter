@@ -10,20 +10,20 @@ import {BigMoney} from "../types/bigMoney";
     // language=Vue
     template: `
         <div>
-            <v-layout column>
+            <v-layout v-if="residuals" column>
                 <div class="maxW275 margT24">
                     <ii-number-field @keydown.enter="specifyResidues" :decimals="2" :suffix="'RUB'" label="Текущий остаток в RUB"
-                                     v-model="currencyRub" persistent-hint :hint="rubHint" :rules="rulesMoney" name="currency_rub" v-validate="'required'">
+                                     v-model="currencyRub" persistent-hint :hint="getHint('RUB')" :rules="rulesMoney" name="currency_rub" v-validate="'required'">
                     </ii-number-field>
                 </div>
                 <div class="maxW275 margT24">
                     <ii-number-field @keydown.enter="specifyResidues" :decimals="2" :suffix="'USD'" label="Текущий остаток в USD"
-                                     v-model="currencyUsd" persistent-hint :hint="usdHint" :rules="rulesMoney" name="currency_usd" v-validate="'required'">
+                                     v-model="currencyUsd" persistent-hint :hint="getHint('USD')" :rules="rulesMoney" name="currency_usd" v-validate="'required'">
                     </ii-number-field>
                 </div>
                 <div class="maxW275 margT24">
                     <ii-number-field @keydown.enter="specifyResidues" :decimals="2" :suffix="'EUR'" label="Текущий остаток в EUR"
-                                     v-model="currencyEur" persistent-hint :hint="eurHint" :rules="rulesMoney" name="currency_eur" v-validate="'required'">
+                                     v-model="currencyEur" persistent-hint :hint="getHint('EUR')" :rules="rulesMoney" name="currency_eur" v-validate="'required'">
                     </ii-number-field>
                 </div>
                 <div class="maxW275 margT24 btn-section">
@@ -48,22 +48,25 @@ export class CurrencyBalances extends UI {
     private currencyRub: string = "";
     private currencyUsd: string = "";
     private currencyEur: string = "";
-    private rubHint: string = "";
-    private usdHint: string = "";
-    private eurHint: string = "";
+    private residuals: MoneyResiduals = null;
 
     async created(): Promise<void> {
         await this.loadSetCashBalances();
     }
 
     private async loadSetCashBalances(): Promise<void> {
-        const currency: MoneyResiduals = await this.portfolioService.getMoneyResiduals(this.portfolioId);
-        this.currencyRub = new BigMoney(currency.RUB).amount.toString();
-        this.currencyUsd = new BigMoney(currency.USD).amount.toString();
-        this.currencyEur = new BigMoney(currency.EUR).amount.toString();
-        this.rubHint = `Ваш текущий остаток на сервисе ${currency.RUB}`;
-        this.usdHint = `Ваш текущий остаток на сервисе ${currency.USD}`;
-        this.eurHint = `Ваш текущий остаток на сервисе ${currency.EUR}`;
+        this.residuals = await this.portfolioService.getMoneyResiduals(this.portfolioId);
+        this.currencyRub = (new BigMoney(this.residuals.RUB).amount || "").toString();
+        this.currencyUsd = (new BigMoney(this.residuals.USD).amount || "").toString();
+        this.currencyEur = (new BigMoney(this.residuals.EUR).amount || "").toString();
+    }
+
+    private getHint(currency: string): string {
+        if ((this.residuals as any)[currency]) {
+            return `Ваш текущий остаток на сервисе ${(this.residuals as any)[currency]}`;
+        } else {
+            return `В вашем портфеле не указаны остатки в валюте ${currency}`;
+        }
     }
 
     private async specifyResidues(): Promise<void> {
