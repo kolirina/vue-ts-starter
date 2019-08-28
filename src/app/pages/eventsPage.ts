@@ -20,6 +20,7 @@ import {
     ShareEvent
 } from "../services/eventService";
 import {AssetType} from "../types/assetType";
+import {EventType} from "../types/eventType";
 import {Operation} from "../types/operation";
 import {Portfolio, TableHeader} from "../types/types";
 import {DateUtils} from "../utils/dateUtils";
@@ -258,9 +259,9 @@ const MainStore = namespace(StoreType.MAIN);
                                                             <span v-if="calendarEvent.type === 'DIVIDEND_HISTORY'">Выплата дивиденда по акции</span>
                                                             <span v-if="calendarEvent.type === 'DIVIDEND_NEWS'">Планируемый дивиденд по акции</span>
                                                             <stock-link :ticker="calendarEvent.ticker"></stock-link>
-                                                                ({{ calendarEvent.shortName }}) в размере {{ calendarEvent.amount }}
-                                                                {{ calendarEvent.currency | currencySymbolByCurrency}}
-                                                            <div  class="margT10">
+                                                            ({{ calendarEvent.shortName }}) в размере {{ calendarEvent.amount }}
+                                                            {{ calendarEvent.currency | currencySymbolByCurrency}}
+                                                            <div class="margT10">
                                                                 <a @click="openTradeDialogForEvent(calendarEvent.ticker, AssetType.STOCK)">Добавить в портфель</a>
                                                             </div>
                                                         </div>
@@ -341,6 +342,15 @@ export class EventsPage extends UI {
         const eventsFromStorage = this.localStorage.get<string[]>("calendarEvents", null);
         this.typeCalendarEvents = eventsFromStorage ? eventsFromStorage : this.getDefaultFilter();
         this.calendarRequestParams.calendarEventTypes = this.typeCalendarEvents.map(e => e.toUpperCase() as CalendarType);
+        await this.loadAllData();
+        UI.on(EventType.TRADE_CREATED, async () => await this.loadAllData());
+    }
+
+    beforeDestroy(): void {
+        UI.off(EventType.TRADE_CREATED);
+    }
+
+    private async loadAllData(): Promise<void> {
         await this.loadEvents();
         await this.loadDividendNews();
         await this.loadCalendarEvents();

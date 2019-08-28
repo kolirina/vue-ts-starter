@@ -50,3 +50,15 @@
     text-align: center;
   }
 }
+.video-dialog {
+  overflow-y: hidden;
+  .dialog-wrap {
+    border-radius: 24px;
+  }
+  iframe {
+    height: 400px + 6px;
+  }
+  .v-card__text {
+    margin-bottom: -6px;
+  }
+}

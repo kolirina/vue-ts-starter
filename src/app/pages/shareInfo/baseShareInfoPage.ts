@@ -34,7 +34,7 @@ import {StoreType} from "../../vuex/storeType";
 @Component({
     // language=Vue
     template: `
-        <v-container fluid>
+        <v-container v-if="share" fluid>
             <v-card flat class="header-first-card">
                 <v-card-title class="header-first-card__wrapper-title">
                     <div class="section-title header-first-card__title-text">Информация</div>
@@ -42,7 +42,7 @@ import {StoreType} from "../../vuex/storeType";
             </v-card>
             <v-card flat class="info-share-page">
                 <share-search @change="onShareSelect"></share-search>
-                <div v-if="share">
+                <div v-if="share && share.shareType === 'STOCK'">
                     <v-layout class="info-share-page__name-stock-block" justify-space-between align-center wrap>
                         <div>
                             <div class="info-share-page__name-stock-block__title selectable">

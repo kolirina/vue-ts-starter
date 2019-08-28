@@ -288,7 +288,8 @@ export class BalancesPage extends UI implements TradeDataHolder {
             note: this.getNote(),
             keepMoney: this.isKeepMoney(),
             moneyAmount: this.moneyAmount,
-            currency: this.currency
+            currency: this.currency,
+            feeCurrency: this.currency,
         };
         this.processState = true;
         try {
@@ -442,6 +443,10 @@ export class BalancesPage extends UI implements TradeDataHolder {
     }
 
     getCurrency(): string {
+        return this.currency;
+    }
+
+    getFeeCurrency(): string {
         return this.currency;
     }
 }

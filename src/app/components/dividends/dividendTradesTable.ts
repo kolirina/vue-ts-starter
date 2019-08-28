@@ -131,6 +131,7 @@ export class DividendTradesTable extends UI {
     private rows: DividendInfo[];
 
     private async openEditTradeDialog(trade: DividendInfo): Promise<void> {
+        const currency = new BigMoney(trade.amount).currency;
         const tradeFields: TradeFields = {
             ticker: trade.ticker,
             date: trade.date,
@@ -143,7 +144,8 @@ export class DividendTradesTable extends UI {
             note: trade.note,
             keepMoney: CommonUtils.exists(trade.moneyTradeId),
             moneyAmount: trade.amount,
-            currency: new BigMoney(trade.amount).currency
+            currency: currency,
+            feeCurrency: currency,
         };
         const result = await new AddTradeDialog().show({
             store: this.$store.state[StoreType.MAIN],

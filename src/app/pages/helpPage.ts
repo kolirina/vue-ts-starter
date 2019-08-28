@@ -7,6 +7,7 @@ import {namespace} from "vuex-class";
 import {UI} from "../app/ui";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
 import {FeedbackDialog} from "../components/dialogs/feedbackDialog";
+import {ImageDialog} from "../components/dialogs/imageDialog";
 import {AssetType} from "../types/assetType";
 import {Operation} from "../types/operation";
 import {Portfolio} from "../types/types";
@@ -111,20 +112,14 @@ const MainStore = namespace(StoreType.MAIN);
                                     <div class="wrapper-content-panel__paired-section-item">
                                         <p>
                                             Сервис позволяет учитывать <a @click.stop="$vuetify.goTo('#buy_stock')">акции</a>,
-                                            <a @click.stop="$vuetify.goTo('#buy_bonds')">облигации</a>, ETF, ПИФы, валюты,
-                                            драгоценные металлы и любые виды активов.
+                                            <a @click.stop="$vuetify.goTo('#buy_bonds')">облигации</a>, ETF, валюты и другие виды активов.
                                         </p>
                                         <p>
-                                            Предоставляет информацию и оценку эффективности ваших
-                                            инвестиций в сравнении с доходностью индекса ММВБ,
-                                            инфляции, ставок по депозитам.
+                                            Предоставляет информацию и оценку эффективности ваших инвестиций в сравнении с доходностью индекса ММВБ, инфляции, ставок по депозитам.
                                         </p>
                                         <p>
-                                            Основной единицей учета является сделка. Также для более
-                                            точной оценки ваших инвестиций вы можете учитывать
-                                            дивидендные, купонные и амортизационные выплаты, вести
-                                            учет комиссий и расходов для каждого портфеля в
-                                            отдельности.
+                                            Основной единицей учета является сделка. Также для более точной оценки ваших инвестиций вы можете учитывать дивидендные,
+                                            купонные и амортизационные выплаты, вести учет комиссий и расходов для каждого портфеля в отдельности.
                                         </p>
                                     </div>
                                     <div class="wrapper-content-panel__paired-section-item">
@@ -140,12 +135,12 @@ const MainStore = namespace(StoreType.MAIN);
                                             <a href="https://itunes.apple.com/ru/app/intelinvest-%D1%83%D1%87%D0%B5%D1%82-
                                                 %D0%B8%D0%BD%D0%B2%D0%B5%D1%81%D1%82%D0%B8%D1%86%D0%B8%D0%B9
                                                 /id1422478197?mt=8" title="Загрузите приложение в App Store" target="_blank">
-                                                <img src="./img/help/app-store-badge2.svg" alt="pic"/>
+                                                <img src="./img/help/app-store-badge2.svg" alt="pic" @click.stop="openImageDialog"/>
                                             </a>
                                             <a href="https://play.google.com/store/apps/details?id=ru.intelinvest.portfolio"
                                                title="Загрузите приложение в Google Play"
                                                target="_blank">
-                                                <img src="./img/help/google-play-badge2.svg" alt="pic"/>
+                                                <img src="./img/help/google-play-badge2.svg" alt="pic" @click.stop="openImageDialog"/>
                                             </a>
                                         </div>
                                     </div>
@@ -166,12 +161,12 @@ const MainStore = namespace(StoreType.MAIN);
                                     <div class="wrapper-content-panel__paired-section-item">
                                         <p>
                                             Кнопка добавления сделок
-                                            <v-btn @click.native.stop="openDialog()" round icon color="#3b6ec9" class="wrapper-content-panel__paired-section-item__add-deal-btn">
+                                            <v-btn @click.stop="openDialog()"  fab dark small color="indigo" depressed class="add-btn-menu">
                                                 <v-icon>add</v-icon>
                                             </v-btn>
                                         </p>
                                         <p>
-                                            При нажатии открывается диалоговое окно, где можно выбрать
+                                            При нажатии открывается диалоговое окно, как можно выбрать
                                             тип вносимой сделки (Акция, Облигация, Деньги) и действие,
                                             в зависимости от типа сделки.
                                         </p>
@@ -179,7 +174,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             Для акции это - Купить, Продать, Дивиденд;<br>
                                             Для облигации - Купить, Продать, Погашение, Купон,
                                             Амортизация;<br>
-                                            Для денег - Внести, Вывести, Доход, Расход.
+                                            Для денег - Внести, Вывести, Доход, Расход, Покупка валюты, Продажа аалюты.
                                         </p>
                                         <p>
                                             При внесении сделки автоматически подставляется на
@@ -223,15 +218,15 @@ const MainStore = namespace(StoreType.MAIN);
                                             Покупка акции
                                         </div>
                                         <div>
-                                            <img src="./img/help/add_stock.gif"/>
+                                            <img src="./img/help/add_stock_buy.gif" @click.stop="openImageDialog"/>
                                         </div>
-                                        <div class="gif-block-item">
-                                            <div class="gif-block-item__title" id="buy_bonds">
-                                                Покупка облигации
-                                            </div>
-                                            <div>
-                                                <img src="./img/help/add_bond.gif"/>
-                                            </div>
+                                    </div>
+                                    <div class="gif-block-item">
+                                        <div class="gif-block-item__title" id="buy_bonds">
+                                            Покупка облигации
+                                        </div>
+                                        <div>
+                                            <img src="./img/help/add_bond_trade.gif" @click.stop="openImageDialog"/>
                                         </div>
                                     </div>
                                     <div class="gif-block-item">
@@ -239,7 +234,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             Добавление дивиденда
                                         </div>
                                         <div>
-                                            <img src="./img/help/add_dividend.gif"/>
+                                            <img src="./img/help/add_dividend.gif" @click.stop="openImageDialog"/>
                                         </div>
                                     </div>
                                     <div class="gif-block-item">
@@ -247,7 +242,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             Добавление купонной выплаты
                                         </div>
                                         <div>
-                                            <img src="./img/help/add_coupon.gif"/>
+                                            <img src="./img/help/add_coupon.gif" @click.stop="openImageDialog"/>
                                         </div>
                                     </div>
                                     <div class="gif-block-item">
@@ -255,7 +250,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             Пополнение денежного счета
                                         </div>
                                         <div>
-                                            <img src="./img/help/add_money.gif"/>
+                                            <img src="./img/help/add_money_trade.gif" @click.stop="openImageDialog"/>
                                         </div>
                                     </div>
                                 </div>
@@ -274,14 +269,14 @@ const MainStore = namespace(StoreType.MAIN);
                                 <div class="wrapper-content-panel__single-section">
                                     <div class="wrapper-content-panel__single-section-item">
                                         <p>
-                                            Эта <a href="#/balances">функция</a> полезна, если у вас
+                                            Эта функция полезна, если у вас
                                             нет полной истории сделок или вы хотите быстро начать
                                             работу с новым портфелем.
                                         </p>
                                         <p>
                                             Вы можете не заносить все сделки, а только указать текущее
                                             состояние портфеля и текущие остатки денежных средств на
-                                            счете брокера.
+                                            счете брокера. <a href="#/balances">Указать остатки</a>
                                         </p>
                                     </div>
                                 </div>
@@ -309,12 +304,22 @@ const MainStore = namespace(StoreType.MAIN);
                                             <a href="#/settings/import">Импорт сделок</a>
                                         </p>
                                         <div class="gif-block-item  border-block-in-paired-section">
+                                            <p>
+                                                <div>
+                                                    <img src="./img/help/import_1.png" @click.stop="openImageDialog"/>
+                                                </div>
+                                            </p>
                                             <div>
                                                 Что делать, если отчет не загружается?
                                             </div>
                                             <p>
                                                 Для начала проверьте формат файла. Для каждого брокера
                                                 описаны инструкции по форматам.
+                                            </p>
+                                            <p>
+                                                <div>
+                                                    <img src="./img/help/import_2.png" @click.stop="openImageDialog"/>
+                                                </div>
                                             </p>
                                             <p>
                                                 Внимательно прочитайте информацию во всплывающем окне.
@@ -326,6 +331,8 @@ const MainStore = namespace(StoreType.MAIN);
                                                 <a href="#/balances">текущих остатков портфеля</a>.
                                             </p>
                                         </div>
+                                    </div>
+                                    <div class="wrapper-content-panel__paired-section-item">
                                         <div>
                                             Как устроен импорт?
                                         </div>
@@ -340,8 +347,6 @@ const MainStore = namespace(StoreType.MAIN);
                                             создается корректирующая сделка внесения/списания денег,
                                             чтобы стоимость портфеля соответствовала действительности.
                                         </p>
-                                    </div>
-                                    <div class="wrapper-content-panel__paired-section-item">
                                         <p>
                                             Прибыль по дивидендам и купонам и амортизации начисляется
                                             в портфель автоматически на основе наших данных.
@@ -437,12 +442,14 @@ const MainStore = namespace(StoreType.MAIN);
                                             портфеля за текущий день.
                                         </p>
                                         <p>
+                                            <div>
+                                                <img src="./img/help/portfolio_1.png" @click.stop="openImageDialog"/>
+                                            </div>
+                                        </p>
+                                        <p>
                                             Ниже расположена таблица с основными типами активов
                                             (акции, облигации, деньги), их суммарными стоимостями и
                                             размером доли в портфеле.
-                                        </p>
-                                        <p>
-                                            <img src="./img/help/table_menu.png"/>
                                         </p>
                                         <p>
                                             Более подробная информация по акциям и облигациям
@@ -452,22 +459,34 @@ const MainStore = namespace(StoreType.MAIN);
                                             Нажмите на кнопку напротив каждой бумаги чтобы просмотреть
                                             доступные с ней действия.
                                         </p>
-                                    </div>
-                                    <div class="wrapper-content-panel__paired-section-item">
+                                        <p>
+                                            <div>
+                                                <img src="./img/help/portfolio_2.png" @click.stop="openImageDialog"/>
+                                            </div>
+                                        </p>
                                         <p>
                                             Можно быстро купить, продать или внести начисление по
                                             дивиденду или купону, причем данные будут автоматически
-                                            заполнены с учетом выбранной бумаги.
+                                            заполнены с учетом выбранной бумаги.Таким же образом, путем
+                                            удаления всех бумаг, вы можете быстро очистить весь портфель.
                                         </p>
                                         <p>
-                                            Например, при нажатии Внести дивиденд, будет автоматически
-                                            рассчитано количество акций на текущую дату.
+                                            <div>
+                                                <img src="./img/help/portfolio_3.png" @click.stop="openImageDialog"/>
+                                            </div>
                                         </p>
+                                    </div>
+                                    <div class="wrapper-content-panel__paired-section-item">
                                         <p>
                                             Также есть возможность просмотреть дополнительную
                                             информацию по каждой позиции в портфеле. Для этого
                                             необходимо развернуть строку в таблице нажатием на кнопку
                                             слева.
+                                        </p>
+                                        <p>
+                                            <div>
+                                                <img src="./img/help/portfolio_4.png" @click.stop="openImageDialog"/>
+                                            </div>
                                         </p>
                                         <p>
                                             Для каждой таблицы предусмотрена диаграмма распределения
@@ -480,6 +499,16 @@ const MainStore = namespace(StoreType.MAIN);
                                             каждой отрасли.
                                         </p>
                                         <p>
+                                            <div>
+                                                <img src="./img/help/portfolio_5.png" @click.stop="openImageDialog"/>
+                                            </div>
+                                        </p>
+                                        <p>
+                                            <div>
+                                                <img src="./img/help/portfolio_6.png" @click.stop="openImageDialog"/>
+                                            </div>
+                                        </p>
+                                        <p>
                                             Для таблиц предусмотрена возможность фильтрации,
                                             сортировки и отображения произвольного набора колонок. Вы
                                             включаете отображение только тех колонок, которые хотите
@@ -489,6 +518,35 @@ const MainStore = namespace(StoreType.MAIN);
                                             Разворачивающиеся панели и таблицы сохраняют свое
                                             состояние, поэтому при следующем входе, будут отображены
                                             те колонки, которые вы отметили.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </v-card>
+                    </v-expansion-panel-content>
+                    <v-expansion-panel-content>
+                        <template v-slot:actions>
+                            <i class="custom-action-icon"></i>
+                        </template>
+                        <template v-slot:header>
+                            <div id="balances">Страница Аналитика</div>
+                        </template>
+                        <v-card>
+                            <div class="wrapper-content-panel">
+                                <div class="wrapper-content-panel__single-section">
+                                    <div class="wrapper-content-panel__single-section-item">
+                                        <p>
+                                            Здесь вы найдете подробный анализ вашего портфеля и указание
+                                            на его узкие места - как можно увеличить доходность или снизить риск.
+                                        </p>
+                                        <p>
+                                            <img src="./img/help/analytics_1.png" @click.stop="openImageDialog"/>
+                                        </p>
+                                        <p>
+                                            Также вы найдете графики сравнения портфеля с бенчмарками (инфляция, ставки по депозитам, Индекс МосБиржи)
+                                        </p>
+                                        <p>
+                                            <img src="./img/help/analytics_2.png" @click.stop="openImageDialog"/>
                                         </p>
                                     </div>
                                 </div>
@@ -513,6 +571,9 @@ const MainStore = namespace(StoreType.MAIN);
                                             отображаемых колонок, сортировка и фильтрация.
                                         </p>
                                         <p>
+                                            <img src="./img/help/trades_1.png"/>
+                                        </p>
+                                        <p>
                                             Например, чтобы быстро просмотреть все сделки покупки
                                             по акции, необходимо в фильтре установить Акции и Покупка.
                                         </p>
@@ -530,6 +591,9 @@ const MainStore = namespace(StoreType.MAIN);
                                             Из контекстного меню в таблице можно быстро добавить
                                             сделку. При разворачивании строки таблицы в доступно
                                             редактирование заметки к сделке.
+                                        </p>
+                                        <p>
+                                            <img src="./img/help/trades_2.png" @click.stop="openImageDialog"/>
                                         </p>
                                     </div>
                                 </div>
@@ -612,22 +676,27 @@ const MainStore = namespace(StoreType.MAIN);
                                             информация о выплаченном дивиденде.
                                         </p>
                                         <p>
-                                            При поступлении дивидендов на ваш счет вы просто
-                                            исполняете данную дивидендную выплату нажатием на галочку
-                                            в таблице.
+                                            При поступлении дивидендов на ваш счет вы просто исполняете
+                                            данную дивидендную выплату нажатием на пункт меню Исполнить в таблице.
+                                        </p>
+                                        <p>
+                                            <img src="./img/help/events_1.png" @click.stop="openImageDialog"/>
                                         </p>
                                         <p>
                                             При исполнении можно отредактировать дату зачисления,
                                             количество акций, внести заметку. По умолчанию размер
                                             начисления отображается уже за вычетом налога в 13%.
                                         </p>
+                                    </div>
+                                    <div class="wrapper-content-panel__paired-section-item">
+                                        <p>
+                                            <img src="./img/help/events_2.png" @click.stop="openImageDialog"/>
+                                        </p>
                                         <p>
                                             Вы можете изменить размер начисления (в случаях когда
                                             используется произвольная ставка налогообложения,
                                             например, эмитент уменьшил НОБ).
                                         </p>
-                                    </div>
-                                    <div class="wrapper-content-panel__paired-section-item">
                                         <p>
                                             По умолчанию установлен чекбокс "Зачислить деньги", при
                                             исполнении выплаты, будет занесена сделка по добавлению
@@ -655,7 +724,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 <div class="wrapper-content-panel__single-section">
                                     <div class="wrapper-content-panel__single-section-item">
                                         <p>
-                                            На этой странице вы можете объединить для просмотра
+                                            На этой <a href="#/combined-portfolio">странице</a> вы можете объединить для просмотра
                                             несколько портфелей в один, и проанализировать состав и
                                             доли каждой акции, если, например, она входит в состав
                                             нескольких портфелей.
@@ -682,15 +751,18 @@ const MainStore = namespace(StoreType.MAIN);
                                             выплаты и доходность по каждой акции.
                                         </p>
                                         <p>
+                                            <img src="./img/help/dividends_1.png" @click.stop="openImageDialog"/>
+                                        </p>
+                                        <p>
                                             Дивиденды по годам. Отображаются суммарные выплаты и
                                             доходность в разбивке по тикеру и году.
                                         </p>
+                                    </div>
+                                    <div class="wrapper-content-panel__paired-section-item">
                                         <p>
                                             Сделки по дивидендам. Отображаются все внесенные сделки по
                                             дивидендам.
                                         </p>
-                                    </div>
-                                    <div class="wrapper-content-panel__paired-section-item">
                                         <p>
                                             Сумма дивидендов по годам. Отображается информация в
                                             разрезе по годам.
@@ -725,6 +797,35 @@ const MainStore = namespace(StoreType.MAIN);
                                         </p>
                                         <p>
                                             В разделе представлено три таблицы: Акции, Облигации и Валюты
+                                        </p>
+                                        <p>
+                                            <img src="./img/help/quotes_1.png" @click.stop="openImageDialog"/>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </v-card>
+                    </v-expansion-panel-content>
+                    <v-expansion-panel-content>
+                        <template v-slot:actions>
+                            <i class="custom-action-icon"></i>
+                        </template>
+                        <template v-slot:header>
+                            <div id="quotes">Страница Информация</div>
+                        </template>
+                        <v-card>
+                            <div class="wrapper-content-panel">
+                                <div class="wrapper-content-panel__paired-section">
+                                    <div class="wrapper-content-panel__paired-section-item">
+                                        <p>
+                                            На данной <a href="#/share-info">странице</a> вы найдете подробную информацию об
+                                            эмитенте и просмотреть историю дивидендных выплат для акции, купонов, амортизации и погашений для облигации.
+                                        </p>
+                                        <p>
+                                            Также на графике вы сможете увидеть динамику изменения цены бумаги за выбранный период.
+                                        </p>
+                                        <p>
+                                            <img src="./img/help/information_1.png" @click.stop="openImageDialog"/>
                                         </p>
                                     </div>
                                 </div>
@@ -766,6 +867,36 @@ const MainStore = namespace(StoreType.MAIN);
                                             полезно, если Вы хотите разместить наглядную информацию о
                                             своем портфеле на своем сайте или в блоге.
                                         </p>
+                                        <p>
+                                            <img src="./img/help/settings_1.png" @click.stop="openImageDialog"/>
+                                        </p>
+                                        <div>
+                                            <a id="settings_public" class="non-cursor-click">Публичный доступ</a>
+                                        </div>
+                                        <p>
+                                            При публичном доступе доступно встраивание информеров с
+                                            информацией по портфелю на форумы или блоги.
+                                        </p>
+                                        <p>
+                                            <img src="./img/help/settings_3.png" @click.stop="openImageDialog"/>
+                                        </p>
+                                        <p>
+                                            В сокращенном варианте не отображается суммарная стоимость портфеля, а только его текущие показатели доходности.
+                                            Дополнительные настройки портфеля доступны при разворачивании строки в таблице. Здесь можно задать тип счета (Брокерский или ИИС).
+                                        </p>
+                                        <p>
+                                            <img src="./img/help/settings_4.png" @click.stop="openImageDialog"/>
+                                        </p>
+                                        <p>
+                                            Параметр "Профессиональный режим" во включенном состоянии позволяет добавлять короткие позиции в портфель,
+                                            при этом не будет проверяться количество доступных бумаг при продаже.
+                                            А также разрешает маржинальные сделки, со списанием денег больше чем есть на счету.
+                                        </p>
+                                        <p>
+                                            <img src="./img/help/settings_5.png" @click.stop="openImageDialog"/>
+                                        </p>
+                                    </div>
+                                    <div class="wrapper-content-panel__paired-section-item">
                                         <div>
                                             <a class="non-cursor-click">Профиль</a>
                                         </div>
@@ -775,38 +906,22 @@ const MainStore = namespace(StoreType.MAIN);
                                             Уведомления будут приходить на новый адрес электронной
                                             почты.
                                         </p>
-                                        <div>
-                                            <a id="settings_public" class="non-cursor-click">Публичный доступ</a>
-                                        </div>
                                         <p>
-                                            При публичном доступе доступно встраивание информеров с
-                                            информацией по портфелю на форумы или блоги. Доступны два
-                                            вида информеров Полный и Сокращенный. В сокращенном
-                                            варианте не отображается суммарная стоимость портфеля, а
-                                            только его текущие показатели доходности. Дополнительные
-                                            настройки портфеля доступны при разворачивании строки в
-                                            таблице. Здесь можно задать тип счета (Брокерский или
-                                            ИИС). Параметр "Профессиональный режим" во включенном
-                                            состоянии позволяет добавлять короткие позиции в портфель,
-                                            при этом не будет проверяться количество доступных бумаг
-                                            при продаже. А также разрешает маржинальные сделки, со
-                                            списанием денег больше чем есть на счету.
+                                            Также здесь можно отвязать вашу карту для отмены автоматического продления подписки.
+                                            Можно отписаться от рассылки или подписаться на нее снова.
+                                        </p>
+                                        <p>
+                                            <img src="./img/help/settings_2.png" @click.stop="openImageDialog"/>
                                         </p>
                                         <div>
                                             <a id="tariffs_public" class="non-cursor-click">Тарифы</a>
                                         </div>
                                         <p>
-                                            <a href="#/settings/tariffs">В данном разделе</a> вы можете посмотреть свой текущий
-                                            тарифный план , подключить или продлить подписку на
-                                            сервис, применить подарочные промокоды. Не все тарифные
-                                            планы могут быть доступны для выбора. Например, если у вас
-                                            раньше был подключен тарифный план Профессионал, и у вас
-                                            заведено 4 портфеля, то вы не сможете выбрать для
-                                            подключения тарифный план Стандарт, потому что будете
-                                            превышать ограничения тарифного плана.
+                                            <a href="#/settings/tariffs">В данном разделе</a> вы можете посмотреть свой текущий тарифный план, подключить или продлить
+                                            подписку на сервис, применить подарочные промокоды. Не все тарифные планы могут быть доступны для выбора.
+                                            Например, если у вас раньше был подключен тарифный план Профессионал, и у вас заведено 4 портфеля, то вы не сможете выбрать
+                                            для подключениятарифный план Стандарт, потому что будете превышать ограничения тарифного плана.
                                         </p>
-                                    </div>
-                                    <div class="wrapper-content-panel__paired-section-item">
                                         <p>
                                             Либо если на тарифе Профессионал в портфеле у вас есть
                                             зарубежные бумаги и валюта, то переход на другие тарифы
@@ -824,13 +939,6 @@ const MainStore = namespace(StoreType.MAIN);
                                             год, и остаток от перерасчета прошлого тарифа будет
                                             прибавлен к оплаченному сроку.
                                         </p>
-                                        <p>
-                                            Подписку также можно отменить перейдя на Бесплатный
-                                            тарифный план. Если у вас есть оплаченный тариф, вам будет
-                                            показан диалог с предупреждением, о том, что ваша подписка
-                                            будет аннулирована. Для перехода на платный тариф нужно
-                                            будет вновь произвести оплату.
-                                        </p>
                                         <div>
                                             <a id="settings_promo_codes" class="non-cursor-click">Промокоды</a>
                                         </div>
@@ -844,14 +952,22 @@ const MainStore = namespace(StoreType.MAIN);
                                             Вами пользователя. Ниже можно настроить вид
                                             вознаграждения.
                                         </p>
+                                        <p>
+                                            <img src="./img/help/settings_6.png" @click.stop="openImageDialog"/>
+                                        </p>
                                         <div>
                                             <a id="settings_notifications" class="non-cursor-click">Уведомления</a>
                                         </div>
                                         <p>
                                             <a href="#/settings/notifications">Здесь</a> можно настроить
                                             уведомления о достижении целевых цен на акции/облигации и
-                                            подписаться на новости интересующих эмитентов. В первом
-                                            случае вы формируете список бумаг для оповещений, и
+                                            подписаться на новости интересующих эмитентов.
+                                        </p>
+                                        <p>
+                                            <img src="./img/help/settings_7.png" @click.stop="openImageDialog"/>
+                                        </p>
+                                        <p>
+                                            В первом случае вы формируете список бумаг для оповещений, и
                                             задаете цены, при которых будет срабатывать уведомление.
                                             Для целевой цены можно можно задать допуск цены, чтобы
                                             увеличить диапазон срабатывания. При достижении целевой
@@ -878,7 +994,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         <p>
                                             Если у Вас есть вопросы или предложения по работе сайта,
                                             вы можете написать нам по эл.почте
-                                            <a @click="openFeedBackDialog">web@intelinvest.ru</a> или
+                                            <a @click.stop="openFeedBackDialog">web@intelinvest.ru</a> или
                                             задать вопрос на канале
                                             <a href="https://telegram.me/intelinvestSupportBot" title="Задайте вопрос в Telegram" target="_blank">telegram</a>
                                             наши специалисты с радостью вам ответят и помогут.
@@ -939,6 +1055,7 @@ export class HelpPage extends UI {
         true,
         true,
         true,
+        true,
         true
     ];
 
@@ -953,6 +1070,10 @@ export class HelpPage extends UI {
         if (result) {
             await this.reloadPortfolio(this.portfolio.id);
         }
+    }
+
+    private async openImageDialog(): Promise<void> {
+        await new ImageDialog().show((event as any).target.attributes[0].nodeValue);
     }
 
     /* Диалог обратной связи */

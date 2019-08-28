@@ -31,6 +31,9 @@ import {UI} from "../app/ui";
                         Вы можете загрузить отчет со сделками вашего брокера или указать
                         остатки портфеля, если знаете цену или стоимость покупки бумаг.
                     </div>
+                    <video-link>
+                        <a>Смотреть видео инструкцию по импорту сделок</a>
+                    </video-link>
                     <div class="margT20 alignC">
                         <v-btn class="btn mr-1" color="#EBEFF7" to="/settings/import">
                             Загрузить отчет
