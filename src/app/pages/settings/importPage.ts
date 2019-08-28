@@ -221,6 +221,11 @@ const MainStore = namespace(StoreType.MAIN);
                             Последняя зарегистрированная сделка в портфеле от {{ portfolio.overview.lastTradeDate | date }}.
                         </b>
                     </p>
+                    <div>
+                        <video-link class="alignC">
+                            <a>Смотреть видео инструкцию по импорту сделок</a>
+                        </video-link>
+                    </div>
                     <import-instructions v-if="showInstruction" :provider="selectedProvider" @selectProvider="onSelectProvider"></import-instructions>
 
                 </v-card-text>

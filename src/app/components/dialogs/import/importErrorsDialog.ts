@@ -39,6 +39,12 @@ import {TableHeader} from "../../../types/types";
                             <div class="import-dialog-wrapper__description-text import-default-text">
                                 При импортировании отчета возникли ошибки, портфель не был импортирован полностью. Чтобы завершить формирование пожалуйста внесите остатки вручную.
                             </div>
+                            <video-link class="margB20 fs13">
+                                <template #foreword>
+                                    <span>Также для понимания причин возникновения ошибок, ознакомьтесь с </span>
+                                </template>
+                                <a>видео-инструкцией</a>
+                            </video-link>
                             <div class="import-dialog-wrapper__description-text import-default-text">
                                 Успешно {{ data.validatedTradesCount | declension("добавлена", "добавлено", "добавлено") }}
                                 {{ data.validatedTradesCount | declension("сделка", "сделки", "сделок") }}<span class="amount-deals">{{ data.validatedTradesCount }}</span></div>

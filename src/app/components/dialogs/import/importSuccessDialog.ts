@@ -43,7 +43,12 @@ import {MainStore} from "../../../vuex/mainStore";
                             <div class="balance-text">
                                 Пожалуйста внесите остаток денежных средств на данный момент
                             </div>
-
+                            <video-link class="balance-text">
+                                <template #foreword>
+                                    <span>Подробные пояснения - зачем указывать текущие остатки, вы найдете в данной </span>
+                                </template>
+                                <a>видео-инструкции по импорту сделок</a>
+                            </video-link>
                             <div class="number-field-balance">
                                 <ii-number-field v-if="portfolio" @keydown.enter="goToNextStep" :decimals="2"
                                                  suffix="RUB" label="Текущий остаток" v-model="currentMoneyRemainder" name="currentMoney" class="required">

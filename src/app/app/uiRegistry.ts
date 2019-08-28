@@ -29,6 +29,7 @@ import {IINumberField} from "../components/iiNumberField";
 import {InplaceInput} from "../components/inplaceInput";
 import {ShareSearchComponent} from "../components/shareSearchComponent";
 import {StockLink} from "../components/stockLink";
+import {VideoLink} from "../components/videoLink";
 import {ClickOutsideDirective} from "../platform/directives/clickOutsideDirective";
 import {StateDirective} from "../platform/directives/stateDirective";
 import {TariffHint} from "../platform/directives/tariffHint";
@@ -120,6 +121,7 @@ export class UIRegistry {
         UI.component("expanded-panel", ExpandedPanel);
         UI.component("chart-export-menu", ChartExportMenu);
         UI.component("micro-line-chart", MicroLineChart);
+        UI.component("video-link", VideoLink);
 
         // фильтры
         UI.filter("amount", Filters.formatMoneyAmount);
