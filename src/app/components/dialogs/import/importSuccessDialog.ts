@@ -14,16 +14,13 @@
  * (c) ООО "Интеллектуальные инвестиции", 2019
  */
 
-import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {VueRouter} from "vue-router/types/router";
-import {ShowProgress} from "../../../platform/decorators/showProgress";
 import {BtnReturn, CustomDialog} from "../../../platform/dialogs/customDialog";
 import {ImportResponse} from "../../../services/importService";
-import {OverviewService} from "../../../services/overviewService";
 import {Portfolio} from "../../../types/types";
-import {CommonUtils} from "../../../utils/commonUtils";
 import {MainStore} from "../../../vuex/mainStore";
+import {CurrencyBalances} from "../../currencyBalances";
 
 /**
  * Диалог ввода остатка денежных средств
@@ -39,24 +36,7 @@ import {MainStore} from "../../../vuex/mainStore";
                         <span class="import-dialog-wrapper__title-text">Завершение импорта</span>
                     </v-card-title>
                     <v-card-text @click.stop>
-                        <span v-if="step === 0">
-                            <div class="balance-text">
-                                Пожалуйста внесите остаток денежных средств на данный момент
-                            </div>
-                            <video-link class="balance-text">
-                                <template #foreword>
-                                    <span>Подробные пояснения - зачем указывать текущие остатки, вы найдете в данной </span>
-                                </template>
-                                <a>видео-инструкции по импорту сделок</a>
-                            </video-link>
-                            <div class="number-field-balance">
-                                <ii-number-field v-if="portfolio" @keydown.enter="goToNextStep" :decimals="2"
-                                                 suffix="RUB" label="Текущий остаток" v-model="currentMoneyRemainder" name="currentMoney" class="required">
-                                </ii-number-field>
-                            </div>
-                        </span>
-
-                        <span v-if="step === 1">
+                        <span v-if="balancesIndicated">
                             <div class="import-default-text">
                                 Поздравляем! Теперь ваш портфель сформирован и готов к работе.
                             </div>
@@ -66,28 +46,34 @@ import {MainStore} from "../../../vuex/mainStore";
                                 <span class="amount-deals">{{ data.importResult.validatedTradesCount }}</span>
                             </div>
                         </span>
+                        <span v-else>
+                            <div class="balance-text">
+                                Пожалуйста внесите остаток денежных средств на данный момент
+                            </div>
+                            <video-link class="balance-text">
+                                <template #foreword>
+                                    <span>Подробные пояснения - зачем указывать текущие остатки, вы найдете в данной </span>
+                                </template>
+                                <a>видео-инструкции по импорту сделок</a>
+                            </video-link>
+                            <currency-balances v-if="portfolio" :portfolio-id="portfolio.id" @specifyResidues="portfolioFormed" class="currency-balances"></currency-balances>
+                        </span>
                     </v-card-text>
                     <v-card-actions>
-                        <v-btn v-if="step === 0" :disabled="disabledFirstStepButton" color="primary" @click.native="goToNextStep" dark>
-                            Продолжить
-                        </v-btn>
-                        <v-btn v-if="step === 1" color="primary" @click.native="close('YES')" dark>
+                        <v-btn v-if="balancesIndicated" color="primary" @click.native="close('YES')" dark>
                             Перейти к портфелю
                         </v-btn>
                     </v-card-actions>
                 </div>
             </v-card>
         </v-dialog>
-    `
+    `,
+    components: {CurrencyBalances}
 })
 export class ImportSuccessDialog extends CustomDialog<ImportSuccessDialogData, BtnReturn> {
 
-    @Inject
-    private overviewService: OverviewService;
-    /** Текущий шаг */
-    private step = 0;
-    /** Текущий остаток денег на счете */
-    private currentMoneyRemainder: string = null;
+    /** Указаны ли остатки */
+    private balancesIndicated: boolean = false;
     /** Текущий выбранный портфель */
     private portfolio: Portfolio = null;
 
@@ -97,27 +83,15 @@ export class ImportSuccessDialog extends CustomDialog<ImportSuccessDialogData, B
      */
     mounted(): void {
         this.portfolio = (this.data.store as any).currentPortfolio;
-        this.currentMoneyRemainder = this.data.currentMoneyRemainder;
     }
 
-    @ShowProgress
-    private async goToNextStep(): Promise<void> {
-        await this.overviewService.saveOrUpdateCurrentMoney(this.portfolio.id, [{
-            currentMoney: this.currentMoneyRemainder,
-            afterImport: true,
-            currency: this.portfolio.portfolioParams.viewCurrency
-        }]);
-        this.step++;
-    }
-
-    private get disabledFirstStepButton(): boolean {
-        return CommonUtils.isBlank(this.currentMoneyRemainder);
+    private async portfolioFormed(): Promise<void> {
+        this.balancesIndicated = true;
     }
 }
 
 export type ImportSuccessDialogData = {
     store: MainStore,
     router: VueRouter,
-    importResult: ImportResponse,
-    currentMoneyRemainder: string
+    importResult: ImportResponse
 };

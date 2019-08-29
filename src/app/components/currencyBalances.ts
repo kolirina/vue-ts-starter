@@ -28,7 +28,7 @@ import {BigMoney} from "../types/bigMoney";
                 </div>
                 <div class="maxW275 margT24 btn-section">
                     <v-btn color="primary" class="big_btn" @click.native="specifyResidues()">
-                        Добавить
+                        Указать
                     </v-btn>
                 </div>
             </v-layout>

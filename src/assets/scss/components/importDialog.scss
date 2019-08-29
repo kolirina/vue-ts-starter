@@ -47,19 +47,27 @@
 }
 .import-general-error-wrapper {
     &__element-centering{
-        max-width: 373px;
+        max-width: 385px;
         margin: 0 auto;
         .v-card__title, .v-card__actions{
             justify-content: center;
         }
         .v-card__title {
-            padding: 163px 0px 0px 0px;
+            padding: 140px 0px 0px 0px;
         }
         .v-card__text {
             padding: 16px 10px 22px;
         }
         .v-card__actions {
-            padding: 0px 0px 163px 0px;
+            padding: 0px 0px 140px 0px;
+        }
+        .btn-section {
+            text-align: center;
+        }
+        .currency-balances {
+            .layout {
+                align-items: center;
+            }
         }
     }
 }
