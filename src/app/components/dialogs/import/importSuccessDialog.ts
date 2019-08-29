@@ -85,7 +85,7 @@ export class ImportSuccessDialog extends CustomDialog<ImportSuccessDialogData, B
         this.portfolio = (this.data.store as any).currentPortfolio;
     }
 
-    private async portfolioFormed(): Promise<void> {
+    private portfolioFormed(): void {
         this.balancesIndicated = true;
     }
 }
