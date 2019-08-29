@@ -56,9 +56,9 @@ export class CurrencyBalances extends UI {
 
     private async loadSetCashBalances(): Promise<void> {
         this.residuals = await this.portfolioService.getMoneyResiduals(this.portfolioId);
-        this.currencyRub = (new BigMoney(this.residuals.RUB).amount || "").toString();
-        this.currencyUsd = (new BigMoney(this.residuals.USD).amount || "").toString();
-        this.currencyEur = (new BigMoney(this.residuals.EUR).amount || "").toString();
+        this.currencyRub = (new BigMoney(this.residuals.RUB).amount || "0").toString();
+        this.currencyUsd = (new BigMoney(this.residuals.USD).amount || "0").toString();
+        this.currencyEur = (new BigMoney(this.residuals.EUR).amount || "0").toString();
     }
 
     private getHint(currency: string): string {
