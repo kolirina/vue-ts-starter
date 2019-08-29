@@ -899,7 +899,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private get keepMoneyDisabled(): boolean {
-        return this.assetType === AssetType.MONEY && [Operation.DEPOSIT, Operation.WITHDRAW].includes(this.operation);
+        return this.assetType === AssetType.MONEY && [Operation.DEPOSIT, Operation.WITHDRAW, Operation.CURRENCY_BUY, Operation.CURRENCY_SELL].includes(this.operation);
     }
 
     private get keepMoney(): boolean {

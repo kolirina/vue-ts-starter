@@ -8,7 +8,7 @@ import {UI} from "../../../app/ui";
             <div class="intel-invest-instruction__title">Вы можете импортировать сделки сами, создав CSV-файл следующей структуры:</div>
             <div class="intel-invest-instruction__format">
                 <div class="intel-invest-instruction__format-text">
-                    TYPE;DATE;TICKER;QUANTITY;PRICE;FEE;NKD;NOMINAL;CURRENCY;NOTE;LINK_ID;
+                    TYPE;DATE;TICKER;QUANTITY;PRICE;FEE;NKD;NOMINAL;CURRENCY;FEE_CURRENCY;NOTE;LINK_ID;
                 </div>
             </div>
             <div class="intel-invest-instruction__title-values">
