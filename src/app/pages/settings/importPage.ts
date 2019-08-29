@@ -369,9 +369,7 @@ export class ImportPage extends UI {
             const secondWord = Filters.declension(response.validatedTradesCount, "сделка", "сделки", "сделок");
             let navigateToPortfolioPage = true;
             if (this.importProviderFeatures.confirmMoneyBalance) {
-                const currentMoneyRemainder = await this.overviewService.getCurrentMoney(this.portfolio.id);
                 navigateToPortfolioPage = await new ImportSuccessDialog().show({
-                    currentMoneyRemainder,
                     router: this.$router,
                     store: this.$store.state[StoreType.MAIN],
                     importResult: response
