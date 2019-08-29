@@ -11,17 +11,17 @@ import {BigMoney} from "../types/bigMoney";
     template: `
         <div>
             <v-layout v-if="residuals" column>
-                <div class="maxW275 margT24">
+                <div class="maxW275 w100pc margT24">
                     <ii-number-field @keydown.enter="specifyResidues" :decimals="2" :suffix="'RUB'" label="Текущий остаток в RUB"
                                      v-model="currencyRub" persistent-hint :hint="getHint('RUB')" :rules="rulesMoney" name="currency_rub" v-validate="'required'">
                     </ii-number-field>
                 </div>
-                <div class="maxW275 margT24">
+                <div class="maxW275 w100pc margT24">
                     <ii-number-field @keydown.enter="specifyResidues" :decimals="2" :suffix="'USD'" label="Текущий остаток в USD"
                                      v-model="currencyUsd" persistent-hint :hint="getHint('USD')" :rules="rulesMoney" name="currency_usd" v-validate="'required'">
                     </ii-number-field>
                 </div>
-                <div class="maxW275 margT24">
+                <div class="maxW275 w100pc margT24">
                     <ii-number-field @keydown.enter="specifyResidues" :decimals="2" :suffix="'EUR'" label="Текущий остаток в EUR"
                                      v-model="currencyEur" persistent-hint :hint="getHint('EUR')" :rules="rulesMoney" name="currency_eur" v-validate="'required'">
                     </ii-number-field>
