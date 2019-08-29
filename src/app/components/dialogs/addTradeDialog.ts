@@ -189,7 +189,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                                 <span class="mr-2 pl-1">Курс валюты</span>
                                             </v-layout>
                                         </div>
-                                        <ii-number-field label="Курс валюты" v-model="currencyExchangeRate" :decimals="2" name="currency_exchange_rate"
+                                        <ii-number-field label="Курс валюты" v-model="currencyExchangeRate" :decimals="4" name="currency_exchange_rate"
                                                          v-validate="'required'" :error-messages="errors.collect('currency_exchange_rate')"
                                                          class="required" @input="changedPurchasedCurrencyValue"></ii-number-field>
                                     </v-flex>
@@ -423,7 +423,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private calculateExchangeRate(): void {
         const fee = new Decimal(this.fee ? this.fee : "0");
         this.currencyExchangeRate = new BigMoney(this.data.tradeFields.linkedTradeFields.moneyAmount).amount.abs().plus(this.isCurrencyBuy ? fee.negated() : fee)
-            .dividedBy(this.moneyAmount).toDP(2, Decimal.ROUND_HALF_UP).toString();
+            .dividedBy(this.moneyAmount).toDP(4, Decimal.ROUND_HALF_UP).toString();
     }
 
     /**
