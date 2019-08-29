@@ -198,22 +198,28 @@ const MainStore = namespace(StoreType.MAIN);
                         </div>
                     </div>
 
-                    <v-layout align-center class="section-upload-file" wrap pb-3>
-                        <div class="margT20">
-                            <v-btn v-if="importProviderFeatures && files.length" color="primary" class="big_btn mr-3" @click.stop="uploadFile">Загрузить</v-btn>
+                    <v-layout class="section-upload-file" wrap pb-3 column>
+                        <div v-if="importProviderFeatures && files.length" class="margT20">
+                            <v-btn color="primary" class="big_btn mr-3" @click.stop="uploadFile">Загрузить</v-btn>
                         </div>
-                        <div class="margT20">
-                            <file-link @select="onFileAdd" :accept="allowedExtensions"
-                                       v-if="importProviderFeatures && files.length" class="reselect-file-btn">Выбрать другой файл
+                        <div v-if="importProviderFeatures && files.length" class="margT20">
+                            <file-link @select="onFileAdd" :accept="allowedExtensions" class="reselect-file-btn">
+                                Выбрать другой файл
                             </file-link>
                         </div>
-                        <div class="margT20">
-                            <file-link @select="onFileAdd" :accept="allowedExtensions" v-if="importProviderFeatures && !files.length">Выбрать файл</file-link>
+                        <div class="margT20" v-if="isFinam">
+                            <div>
+                                Отчет вашего брокера не содержит информацию о комиссиях. Пожалуйста, укажите процент, который комиссия составляет от суммы сделки
+                            </div>
                         </div>
-                        <v-spacer></v-spacer>
-                        <div @click="showInstruction = !showInstruction" class="btn-show-instruction margT20" v-if="importProviderFeatures">
-                            {{ (showInstruction ? "Скрыть" : "Показать") + " инструкцию" }}
-                        </div>
+                        <v-layout class="margT20" align-center justify-space-between>
+                            <div>
+                                <file-link @select="onFileAdd" :accept="allowedExtensions" v-if="importProviderFeatures && !files.length">Выбрать файл</file-link>
+                            </div>
+                            <div @click="showInstruction = !showInstruction" class="btn-show-instruction" v-if="importProviderFeatures">
+                                {{ (showInstruction ? "Скрыть" : "Показать") + " инструкцию" }}
+                            </div>
+                        </v-layout>
                     </v-layout>
 
                     <p v-if="portfolio.overview.totalTradesCount" style="text-align: center;padding: 20px;">
@@ -409,5 +415,9 @@ export class ImportPage extends UI {
 
     private clearFiles(): void {
         this.files = [];
+    }
+
+    private get isFinam(): boolean {
+        return this.selectedProvider === DealsImportProvider.FINAM;
     }
 }
