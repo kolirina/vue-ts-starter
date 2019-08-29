@@ -154,7 +154,7 @@ export class TariffAgreement extends UI {
                         </div>
                     </div>
                 </div>
-                <v-tooltip v-if="!available" content-class="custom-tooltip-wrap" bottom>
+                <v-tooltip v-if="!available || isTariffsDifferent" content-class="custom-tooltip-wrap" bottom>
                     <v-btn slot="activator" @click.stop="makePayment(tariff)"
                            :class="{'big_btn': true, 'selected': selected || agreementState[tariff.name]}"
                            :disabled="disabled">
@@ -164,19 +164,11 @@ export class TariffAgreement extends UI {
                     <tariff-limit-exceed-info v-if="!available" :portfolios-count="clientInfo.user.portfoliosCount" :tariff="tariff"
                                               :shares-count="clientInfo.user.sharesCount" :foreign-shares="clientInfo.user.foreignShares">
                     </tariff-limit-exceed-info>
-                </v-tooltip>
-                <v-tooltip v-if="available && isShowRecalculationPrompt" content-class="custom-tooltip-wrap" bottom>
-                    <v-btn slot="activator" @click.stop="makePayment(tariff)"
-                        :class="{'big_btn': true, 'selected': selected || agreementState[tariff.name]}"
-                        :disabled="disabled">
-                        <span v-if="!busyState[tariff.name]">{{ buttonLabel }}</span>
-                        <v-progress-circular v-if="busyState[tariff.name]" indeterminate color="white" :size="20"></v-progress-circular>
-                    </v-btn>
-                    <div>
+                    <div v-else>
                         При переходе на данный тарифный план, остаток неиспользованных дней текущего тарифа пересчитаются согласно новому тарифу и продлит срок его действия
                     </div>
                 </v-tooltip>
-                <v-btn v-if="available && !isShowRecalculationPrompt" @click.stop="makePayment(tariff)"
+                <v-btn v-if="available && !isTariffsDifferent" @click.stop="makePayment(tariff)"
                        :class="{'big_btn': true, 'selected': selected || agreementState[tariff.name]}"
                        :disabled="disabled">
                     <span v-if="!busyState[tariff.name]">{{ buttonLabel }}</span>
@@ -413,8 +405,11 @@ export class PayButton extends UI {
         return !this.available || this.isProgress || !this.agreementState[this.tariff.name];
     }
 
-    private get isShowRecalculationPrompt(): boolean {
-        return this.clientInfo.user.tariff !== Tariff.TRIAL && this.clientInfo.user.tariff !== this.tariff;
+    /**
+     * Возвращает true если тариф пользовтеля не ТРИАЛ, он не совпадает с выбираемым и выбираемый не Бесплатный
+     */
+    private get isTariffsDifferent(): boolean {
+        return this.clientInfo.user.tariff !== Tariff.TRIAL && this.tariff !== Tariff.FREE && this.clientInfo.user.tariff !== this.tariff;
     }
 }
 
@@ -623,6 +618,7 @@ export class TariffsPage extends UI {
     private get isNewUser(): boolean {
         return DateUtils.parseDate(this.clientInfo.user.regDate).isAfter(this.NEW_TARIFFS_DATE);
     }
+
     /**
      * Возвращает признак отображать ли free тариф
      */
