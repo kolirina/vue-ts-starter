@@ -62,12 +62,9 @@ export class CurrencyBalances extends UI {
     }
 
     private numberСonversion(value: string): string {
-        if (value) {
-            const currency = new BigMoney(value).amount;
-            if (Number(currency) > 0) {
-                return currency.toString();
-            }
-            return "0";
+        const amountOfCurrency = new BigMoney(value).amount;
+        if (amountOfCurrency && Number(amountOfCurrency) > 0) {
+            return amountOfCurrency.toString();
         }
         return "0";
     }
