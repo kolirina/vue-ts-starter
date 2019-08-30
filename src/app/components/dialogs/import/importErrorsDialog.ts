@@ -26,7 +26,6 @@ import {TableHeader} from "../../../types/types";
 @Component({
     // language=Vue
     template: `
-
         <v-dialog v-model="showed" max-width="600px" content-class="import-errors-dialog-scroll">
             <v-card class="dialog-wrap import-dialog-wrapper">
                 <v-layout column justify-space-between class="min-height-wrapper">
@@ -64,7 +63,6 @@ import {TableHeader} from "../../../types/types";
                 </v-layout>
             </v-card>
         </v-dialog>
-
     `
 })
 export class ImportErrorsDialog extends CustomDialog<ImportErrorsDialogData, void> {
@@ -79,7 +77,6 @@ export class ImportErrorsDialog extends CustomDialog<ImportErrorsDialogData, voi
         this.data.router.push({name: "balances"});
         this.close();
     }
-
 }
 
 export type ImportErrorsDialogData = {
