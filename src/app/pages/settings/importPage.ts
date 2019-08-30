@@ -19,6 +19,7 @@ import {FileUtils} from "../../utils/fileUtils";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 import {ImportInstructions} from "./importInstructions";
+import {PortfolioParams, PortfolioService} from "../../services/portfolioService";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -199,17 +200,25 @@ const MainStore = namespace(StoreType.MAIN);
                     </div>
 
                     <v-layout class="section-upload-file" wrap pb-3 column>
-                        <div v-if="importProviderFeatures && files.length" class="margT20">
-                            <v-btn color="primary" class="big_btn mr-3" @click.stop="uploadFile">Загрузить</v-btn>
-                        </div>
-                        <div v-if="importProviderFeatures && files.length" class="margT20">
-                            <file-link @select="onFileAdd" :accept="allowedExtensions" class="reselect-file-btn">
-                                Выбрать другой файл
-                            </file-link>
-                        </div>
+                        <v-layout align-center>
+                            <div v-if="importProviderFeatures && files.length" class="margT20">
+                                <v-btn color="primary" class="big_btn mr-3" @click.stop="uploadFile">Загрузить</v-btn>
+                            </div>
+                            <div v-if="importProviderFeatures && files.length" class="margT20">
+                                <file-link @select="onFileAdd" :accept="allowedExtensions" class="reselect-file-btn">
+                                    Выбрать другой файл
+                                </file-link>
+                            </div>
+                        </v-layout>
                         <div class="margT20" v-if="isFinam">
-                            <div>
+                            <div v-if="test" class="fs13">
+                                Фиксированная комиссия: {{ portfolioParams.fixFee }}%
+                            </div>
+                            <div v-else class="fs13">
                                 Отчет вашего брокера не содержит информацию о комиссиях. Пожалуйста, укажите процент, который комиссия составляет от суммы сделки
+                                <ii-number-field label="Фиксированная комиссия" v-model="portfolioParams.fixFee" class="maxW275 w100pc"
+                                                 hint="Для автоматического рассчета комиссии при внесении сделок." :decimals="5">
+                                </ii-number-field>
                             </div>
                         </div>
                         <v-layout class="margT20" align-center justify-space-between>
@@ -254,6 +263,8 @@ export class ImportPage extends UI {
     private importService: ImportService;
     @Inject
     private overviewService: OverviewService;
+    @Inject
+    private portfolioService: PortfolioService;
     /** Все провайдеры импорта */
     private importProviderFeaturesByProvider: ImportProviderFeaturesByProvider = null;
     /** Настройки импорта для выбранного провайдера */
@@ -270,6 +281,7 @@ export class ImportPage extends UI {
     private allowedExtensions = FileUtils.ALLOWED_MIME_TYPES;
     /** Отображение инструкции к провайдеру */
     private showInstruction: boolean = true;
+    private portfolioParams: PortfolioParams = null;
 
     /**
      * Инициализирует необходимые для работы данные
@@ -278,6 +290,7 @@ export class ImportPage extends UI {
     @ShowProgress
     async created(): Promise<void> {
         this.importProviderFeaturesByProvider = await this.importService.getImportProviderFeatures();
+        this.portfolioParams = this.portfolio.portfolioParams;
     }
 
     /**
@@ -420,4 +433,9 @@ export class ImportPage extends UI {
     private get isFinam(): boolean {
         return this.selectedProvider === DealsImportProvider.FINAM;
     }
+
+    private get test(): boolean {
+        return Number(this.portfolio.portfolioParams.fixFee) > 0;
+    }
+
 }
