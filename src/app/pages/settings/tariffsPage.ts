@@ -154,7 +154,7 @@ export class TariffAgreement extends UI {
                         </div>
                     </div>
                 </div>
-                <v-tooltip v-if="!available || isTariffsDifferent" content-class="custom-tooltip-wrap" bottom>
+                <v-tooltip v-if="!available || isTariffsDifferent" :content-class="classPaymentBtn" bottom>
                     <v-btn slot="activator" @click.stop="makePayment(tariff)"
                            :class="{'big_btn': true, 'selected': selected || agreementState[tariff.name]}"
                            :disabled="disabled">
@@ -164,7 +164,7 @@ export class TariffAgreement extends UI {
                     <tariff-limit-exceed-info v-if="!available" :portfolios-count="clientInfo.user.portfoliosCount" :tariff="tariff"
                                               :shares-count="clientInfo.user.sharesCount" :foreign-shares="clientInfo.user.foreignShares">
                     </tariff-limit-exceed-info>
-                    <div v-else>
+                    <div v-if="!disabled && available">
                         При переходе на данный тарифный план, остаток неиспользованных дней текущего тарифа пересчитаются согласно новому тарифу и продлит срок его действия
                     </div>
                 </v-tooltip>
@@ -411,6 +411,10 @@ export class PayButton extends UI {
     private get isTariffsDifferent(): boolean {
         return this.clientInfo.user.tariff !== Tariff.TRIAL && this.tariff !== Tariff.FREE && this.clientInfo.user.tariff !== this.tariff;
     }
+
+    private get classPaymentBtn(): string {
+        return `custom-tooltip-wrap ${this.disabled && this.available ? "pa-0" : ""}`;
+    }
 }
 
 @Component({
@@ -625,4 +629,5 @@ export class TariffsPage extends UI {
     private get isNewTariffLayout(): boolean {
         return DateUtils.parseDate(this.clientInfo.user.regDate).isAfter(this.DELETE_FREE_TARIFF_DATE);
     }
+
 }
