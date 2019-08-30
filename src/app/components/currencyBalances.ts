@@ -56,17 +56,31 @@ export class CurrencyBalances extends UI {
 
     private async loadSetCashBalances(): Promise<void> {
         this.residuals = await this.portfolioService.getMoneyResiduals(this.portfolioId);
-        this.currencyRub = (new BigMoney(this.residuals.RUB).amount || "0").toString();
-        this.currencyUsd = (new BigMoney(this.residuals.USD).amount || "0").toString();
-        this.currencyEur = (new BigMoney(this.residuals.EUR).amount || "0").toString();
+        this.currencyRub = this.numberСonversion(this.residuals.RUB);
+        this.currencyUsd = this.numberСonversion(this.residuals.USD);
+        this.currencyEur = this.numberСonversion(this.residuals.EUR);
+    }
+
+    private numberСonversion(value: string): string {
+        if (value) {
+            if (this.isAboveZero(value)) {
+                return new BigMoney(value).amount.toString();
+            }
+            return "0";
+        }
+        return "0";
     }
 
     private getHint(currency: string): string {
-        if ((this.residuals as any)[currency]) {
+        if ((this.residuals as any)[currency] && this.isAboveZero((this.residuals as any)[currency])) {
             return `Ваш текущий остаток на сервисе ${(this.residuals as any)[currency]}`;
         } else {
             return `В вашем портфеле не указаны остатки в валюте ${currency}`;
         }
+    }
+
+    private isAboveZero(value: string): boolean {
+        return Number(new BigMoney(value).amount) > 0;
     }
 
     private async specifyResidues(): Promise<void> {
