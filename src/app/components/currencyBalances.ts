@@ -63,8 +63,9 @@ export class CurrencyBalances extends UI {
 
     private numberСonversion(value: string): string {
         if (value) {
-            if (this.isAboveZero(value)) {
-                return new BigMoney(value).amount.toString();
+            const currency = new BigMoney(value).amount;
+            if (Number(currency) > 0) {
+                return currency.toString();
             }
             return "0";
         }
@@ -72,15 +73,11 @@ export class CurrencyBalances extends UI {
     }
 
     private getHint(currency: string): string {
-        if ((this.residuals as any)[currency] && this.isAboveZero((this.residuals as any)[currency])) {
+        if ((this.residuals as any)[currency]) {
             return `Ваш текущий остаток на сервисе ${(this.residuals as any)[currency]}`;
         } else {
             return `В вашем портфеле не указаны остатки в валюте ${currency}`;
         }
-    }
-
-    private isAboveZero(value: string): boolean {
-        return Number(new BigMoney(value).amount) > 0;
     }
 
     private async specifyResidues(): Promise<void> {
