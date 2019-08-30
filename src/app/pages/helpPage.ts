@@ -571,7 +571,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             отображаемых колонок, сортировка и фильтрация.
                                         </p>
                                         <p>
-                                            <img src="./img/help/trades_1.png"/>
+                                            <img src="./img/help/trades_1.png" @click.stop="openImageDialog"/>
                                         </p>
                                         <p>
                                             Например, чтобы быстро просмотреть все сделки покупки
@@ -648,6 +648,12 @@ const MainStore = namespace(StoreType.MAIN);
                                             портфелю не стоит учитывать в прибыли, вы можете внести
                                             сделку по Выводу денежных средств со счета, чтобы денежные
                                             остатки в системе совпадали с таковыми у вашего брокера.
+                                        </p>
+                                        <p>
+                                            Также существует еще два вида сделок, это
+                                            <a @click.stop="openDialog(assetType.MONEY, operation.CURRENCY_BUY)">Покупка валюты</a> и
+                                            <a @click.stop="openDialog(assetType.MONEY, operation.CURRENCY_SELL)">Продажа валюты.</a>
+                                            Данные сделки позволяют отобразить в вашем портфеле сделки по конвертации валют.
                                         </p>
                                     </div>
                                 </div>
