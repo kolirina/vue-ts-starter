@@ -629,5 +629,4 @@ export class TariffsPage extends UI {
     private get isNewTariffLayout(): boolean {
         return DateUtils.parseDate(this.clientInfo.user.regDate).isAfter(this.DELETE_FREE_TARIFF_DATE);
     }
-
 }
