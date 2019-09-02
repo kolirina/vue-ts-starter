@@ -21,7 +21,11 @@ export class IINumberField extends Vue {
     private onInput(e: any): void {
         (this as any).internalChange = true;
         (this as any).resetSelections(e.target);
-        (this as any).internalValue = e.target.value;
+        (this as any).internalValue = this.correctDelimiter(e.target.value);
         (this as any).badInput = e.target.validity && e.target.validity.badInput;
+    }
+
+    private correctDelimiter(value: string): string {
+        return value && value.includes(",") ? value.replace(",", ".") : value;
     }
 }
