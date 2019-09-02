@@ -13,13 +13,13 @@ import {Filters} from "../../platform/filters/Filters";
 import {ClientInfo} from "../../services/clientService";
 import {DealsImportProvider, ImportProviderFeatures, ImportProviderFeaturesByProvider, ImportResponse, ImportService} from "../../services/importService";
 import {OverviewService} from "../../services/overviewService";
+import {PortfolioParams, PortfolioService} from "../../services/portfolioService";
 import {Portfolio, Status} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {FileUtils} from "../../utils/fileUtils";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 import {ImportInstructions} from "./importInstructions";
-import {PortfolioParams, PortfolioService} from "../../services/portfolioService";
 
 const MainStore = namespace(StoreType.MAIN);
 
