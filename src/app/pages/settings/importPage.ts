@@ -342,6 +342,9 @@ export class ImportPage extends UI {
                     return;
                 }
             }
+            if (this.isFinam && this.isFixFeeAboveZero && this.portfolioParams !== this.portfolio.portfolioParams) {
+                await this.portfolioService.createOrUpdatePortfolio(this.portfolioParams);
+            }
             const response = await this.importReport();
             await this.handleUploadResponse(response);
             this.clearFiles();
@@ -386,9 +389,6 @@ export class ImportPage extends UI {
             return;
         }
         if (response.validatedTradesCount) {
-            if (this.isFinam && this.isFixFeeAboveZero && this.portfolioParams !== this.portfolio.portfolioParams) {
-                await this.portfolioService.createOrUpdatePortfolio(this.portfolioParams);
-            }
             const firstWord = Filters.declension(response.validatedTradesCount, "Добавлена", "Добавлено", "Добавлено");
             const secondWord = Filters.declension(response.validatedTradesCount, "сделка", "сделки", "сделок");
             let navigateToPortfolioPage = true;
