@@ -154,7 +154,7 @@ export class TariffAgreement extends UI {
                         </div>
                     </div>
                 </div>
-                <v-tooltip v-if="!available || isTariffsDifferent" content-class="custom-tooltip-wrap" bottom>
+                <v-tooltip v-if="!available || isTariffsDifferent" :content-class="classPaymentBtn" bottom>
                     <v-btn slot="activator" @click.stop="makePayment(tariff)"
                            :class="{'big_btn': true, 'selected': selected || agreementState[tariff.name]}"
                            :disabled="disabled">
@@ -406,10 +406,14 @@ export class PayButton extends UI {
     }
 
     /**
-     * Возвращает true если тариф пользовтеля не ТРИАЛ, он не совпадает с выбираемым и выбираемый не Бесплатный
+     * Возвращает true если тариф пользовтеля не ТРИАЛ и не бесплатный, он не совпадает с выбираемым и выбираемый не Бесплатный
      */
     private get isTariffsDifferent(): boolean {
-        return this.clientInfo.user.tariff !== Tariff.TRIAL && this.tariff !== Tariff.FREE && this.clientInfo.user.tariff !== this.tariff;
+        return ![Tariff.TRIAL, Tariff.FREE].includes(this.clientInfo.user.tariff) && this.tariff !== Tariff.FREE && this.clientInfo.user.tariff !== this.tariff;
+    }
+
+    private get classPaymentBtn(): string {
+        return `custom-tooltip-wrap ${this.available ? "pa-0" : ""}`;
     }
 }
 
