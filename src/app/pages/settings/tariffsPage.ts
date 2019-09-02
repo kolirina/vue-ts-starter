@@ -164,7 +164,7 @@ export class TariffAgreement extends UI {
                     <tariff-limit-exceed-info v-if="!available" :portfolios-count="clientInfo.user.portfoliosCount" :tariff="tariff"
                                               :shares-count="clientInfo.user.sharesCount" :foreign-shares="clientInfo.user.foreignShares">
                     </tariff-limit-exceed-info>
-                    <div v-if="!disabled && available">
+                    <div v-else>
                         При переходе на данный тарифный план, остаток неиспользованных дней текущего тарифа пересчитаются согласно новому тарифу и продлит срок его действия
                     </div>
                 </v-tooltip>
@@ -406,14 +406,14 @@ export class PayButton extends UI {
     }
 
     /**
-     * Возвращает true если тариф пользовтеля не ТРИАЛ, он не совпадает с выбираемым и выбираемый не Бесплатный
+     * Возвращает true если тариф пользовтеля не ТРИАЛ и не бесплатный, он не совпадает с выбираемым и выбираемый не Бесплатный
      */
     private get isTariffsDifferent(): boolean {
-        return this.clientInfo.user.tariff !== Tariff.TRIAL && this.tariff !== Tariff.FREE && this.clientInfo.user.tariff !== this.tariff;
+        return ![Tariff.TRIAL, Tariff.FREE].includes(this.clientInfo.user.tariff) && this.tariff !== Tariff.FREE && this.clientInfo.user.tariff !== this.tariff;
     }
 
     private get classPaymentBtn(): string {
-        return `custom-tooltip-wrap ${this.disabled && this.available ? "pa-0" : ""}`;
+        return `custom-tooltip-wrap ${this.available ? "pa-0" : ""}`;
     }
 }
 
