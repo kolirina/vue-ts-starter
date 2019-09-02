@@ -211,7 +211,7 @@ const MainStore = namespace(StoreType.MAIN);
                             </div>
                         </v-layout>
                         <div class="margT20" v-if="isFinam">
-                            <div v-if="test" class="fs13">
+                            <div v-if="isFixFeeAboveZero" class="fs13">
                                 Фиксированная комиссия: {{ portfolioParams.fixFee }}%
                             </div>
                             <div v-else class="fs13">
@@ -281,6 +281,7 @@ export class ImportPage extends UI {
     private allowedExtensions = FileUtils.ALLOWED_MIME_TYPES;
     /** Отображение инструкции к провайдеру */
     private showInstruction: boolean = true;
+    private isFixFeeAboveZero: boolean = false;
     private portfolioParams: PortfolioParams = null;
 
     /**
@@ -290,6 +291,7 @@ export class ImportPage extends UI {
     @ShowProgress
     async created(): Promise<void> {
         this.importProviderFeaturesByProvider = await this.importService.getImportProviderFeatures();
+        this.isFixFeeAboveZero = Number(this.portfolio.portfolioParams.fixFee) > 0;
         this.portfolioParams = this.portfolio.portfolioParams;
     }
 
@@ -384,6 +386,9 @@ export class ImportPage extends UI {
             return;
         }
         if (response.validatedTradesCount) {
+            if (this.isFinam && this.isFixFeeAboveZero && this.portfolioParams !== this.portfolio.portfolioParams) {
+                await this.portfolioService.createOrUpdatePortfolio(this.portfolioParams);
+            }
             const firstWord = Filters.declension(response.validatedTradesCount, "Добавлена", "Добавлено", "Добавлено");
             const secondWord = Filters.declension(response.validatedTradesCount, "сделка", "сделки", "сделок");
             let navigateToPortfolioPage = true;
@@ -432,10 +437,6 @@ export class ImportPage extends UI {
 
     private get isFinam(): boolean {
         return this.selectedProvider === DealsImportProvider.FINAM;
-    }
-
-    private get test(): boolean {
-        return Number(this.portfolio.portfolioParams.fixFee) > 0;
     }
 
 }
