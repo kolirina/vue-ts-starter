@@ -2,9 +2,8 @@ import Component from "vue-class-component";
 import {Prop} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
-import {ClientInfo} from "../../services/clientService";
 import {DealsImportProvider} from "../../services/importService";
-import {Portfolio} from "../../types/types";
+import {PortfolioParams} from "../../services/portfolioService";
 import {StoreType} from "../../vuex/storeType";
 import {AlfaCapitalInstruction} from "./import_instructions/alfaCapitalInstruction";
 import {AlfadirectInstruction} from "./import_instructions/alfadirectInstruction";
@@ -66,7 +65,8 @@ const MainStore = namespace(StoreType.MAIN);
 
                 <!-- FINAM -->
                 <div v-if="provider === providers.FINAM">
-                    <FinamInstruction></FinamInstruction>
+                    <FinamInstruction :portfolio-params="portfolioParams" :is-fix-fee-above-zero="isFixFeeAboveZero" @changePortfolioParams="changePortfolioParams">
+                    </FinamInstruction>
                 </div>
 
                 <!-- FREEDOM_FINANCE -->
@@ -155,14 +155,14 @@ const MainStore = namespace(StoreType.MAIN);
 })
 export class ImportInstructions extends UI {
 
-    @MainStore.Getter
-    private clientInfo: ClientInfo;
-    @MainStore.Getter
-    private portfolio: Portfolio;
     /** Провайдеры отчетов */
     private providers = DealsImportProvider;
     @Prop()
     private provider: DealsImportProvider;
+    @Prop()
+    private portfolioParams: PortfolioParams;
+    @Prop()
+    private isFixFeeAboveZero: boolean = false;
 
     /**
      * Отправляет событие выбора провайдера
@@ -170,5 +170,9 @@ export class ImportInstructions extends UI {
      */
     private selectProvider(provider: DealsImportProvider): void {
         this.$emit("selectProvider", provider);
+    }
+
+    private changePortfolioParams(portfolioParams: PortfolioParams): void {
+        this.$emit("changePortfolioParams", portfolioParams);
     }
 }

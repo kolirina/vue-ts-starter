@@ -210,17 +210,6 @@ const MainStore = namespace(StoreType.MAIN);
                                 </file-link>
                             </div>
                         </v-layout>
-                        <div class="margT20" v-if="isFinam">
-                            <div v-if="isFixFeeAboveZero" class="fs13">
-                                Фиксированная комиссия: {{ portfolioParams.fixFee }}%
-                            </div>
-                            <div v-else class="fs13">
-                                Отчет вашего брокера не содержит информацию о комиссиях. Пожалуйста, укажите процент, который комиссия составляет от суммы сделки
-                                <ii-number-field label="Фиксированная комиссия" v-model="portfolioParams.fixFee" class="maxW275 w100pc"
-                                                 hint="Для автоматического рассчета комиссии при внесении сделок." :decimals="5">
-                                </ii-number-field>
-                            </div>
-                        </div>
                         <v-layout class="margT20" align-center justify-space-between>
                             <div>
                                 <file-link @select="onFileAdd" :accept="allowedExtensions" v-if="importProviderFeatures && !files.length">Выбрать файл</file-link>
@@ -241,7 +230,8 @@ const MainStore = namespace(StoreType.MAIN);
                             <a>Смотреть видео инструкцию по импорту сделок</a>
                         </video-link>
                     </div>
-                    <import-instructions v-if="showInstruction" :provider="selectedProvider" @selectProvider="onSelectProvider"></import-instructions>
+                    <import-instructions v-if="showInstruction" :provider="selectedProvider" @selectProvider="onSelectProvider" @changePortfolioParams="changePortfolioParams"
+                                         :portfolio-params="portfolioParams" :is-fix-fee-above-zero="isFixFeeAboveZero"></import-instructions>
 
                 </v-card-text>
             </v-card>
@@ -281,7 +271,6 @@ export class ImportPage extends UI {
     private allowedExtensions = FileUtils.ALLOWED_MIME_TYPES;
     /** Отображение инструкции к провайдеру */
     private showInstruction: boolean = true;
-    private isFixFeeAboveZero: boolean = false;
     private portfolioParams: PortfolioParams = null;
 
     /**
@@ -291,7 +280,6 @@ export class ImportPage extends UI {
     @ShowProgress
     async created(): Promise<void> {
         this.importProviderFeaturesByProvider = await this.importService.getImportProviderFeatures();
-        this.isFixFeeAboveZero = Number(this.portfolio.portfolioParams.fixFee) > 0;
         this.portfolioParams = this.portfolio.portfolioParams;
     }
 
@@ -437,6 +425,14 @@ export class ImportPage extends UI {
 
     private get isFinam(): boolean {
         return this.selectedProvider === DealsImportProvider.FINAM;
+    }
+
+    private get isFixFeeAboveZero(): boolean {
+        return Number(this.portfolio.portfolioParams.fixFee) > 0;
+    }
+
+    private changePortfolioParams(portfolioParams: PortfolioParams): void {
+        this.portfolioParams = portfolioParams;
     }
 
 }
