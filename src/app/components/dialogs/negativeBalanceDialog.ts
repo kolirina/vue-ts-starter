@@ -14,14 +14,12 @@
  * (c) ООО "Интеллектуальные инвестиции", 2019
  */
 
-import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {VueRouter} from "vue-router/types/router";
-import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn, CustomDialog} from "../../platform/dialogs/customDialog";
-import {OverviewService} from "../../services/overviewService";
 import {Portfolio} from "../../types/types";
 import {MainStore} from "../../vuex/mainStore";
+import {CurrencyBalances} from "../currencyBalances";
 
 /**
  * Диалог ввода остатка денежных средств
@@ -34,37 +32,23 @@ import {MainStore} from "../../vuex/mainStore";
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
                 <v-layout align-center column class="py-5">
                     <v-card-text @click.stop class="pb-0">
-                        <v-layout align-center column>
+                        <v-layout align-center column class="negative-balance-content">
                             <div class="fs18 alignC">
                                 Введите сумму остатка денежных средств на брокерском счету
                             </div>
-                            <div class="maxW275 my-4">
-                                <ii-number-field v-if="portfolio" @keydown.enter="specifyResidues" :decimals="2" :suffix="data.currency" label="Текущий остаток"
-                                                 v-model="currentMoneyRemainder" class="required" persistent-hint autofocus :hint="hint">
-                                </ii-number-field>
-                            </div>
+                            <currency-balances v-if="portfolio" :portfolio-id="portfolio.id" @specifyResidues="specifyResidues"></currency-balances>
                         </v-layout>
                     </v-card-text>
-                    <v-card-actions class="pt-0">
-                        <v-btn color="primary" @click.native="specifyResidues" :disabled="!currentMoneyRemainder" dark>
-                            Указать
-                        </v-btn>
-                    </v-card-actions>
                 </v-layout>
             </v-card>
         </v-dialog>
-    `
+    `,
+    components: {CurrencyBalances}
 })
 export class NegativeBalanceDialog extends CustomDialog<CurrentPortfolioInfo, BtnReturn> {
 
-    @Inject
-    private overviewService: OverviewService;
-    /** Текущий остаток денег на счете */
-    private currentMoneyRemainder: string = null;
     /** Текущий выбранный портфель */
     private portfolio: Portfolio = null;
-    /** Подсказка  */
-    private hint = "";
 
     /**
      * Инициализация данных диалога
@@ -72,22 +56,13 @@ export class NegativeBalanceDialog extends CustomDialog<CurrentPortfolioInfo, Bt
      */
     mounted(): void {
         this.portfolio = (this.data.store as any).currentPortfolio;
-        this.hint = `Ваш текущий остаток на сервисе ${this.data.currentMoneyRemainder}`;
     }
 
-    @ShowProgress
     private async specifyResidues(): Promise<void> {
-        if (!this.currentMoneyRemainder) {
-            return;
-        }
-        await this.overviewService.saveOrUpdateCurrentMoney(this.portfolio.id, [{currentMoney: this.currentMoneyRemainder, currency: this.portfolio.portfolioParams.viewCurrency}]);
         this.close(BtnReturn.YES);
     }
 }
 
 export type CurrentPortfolioInfo = {
-    store: MainStore,
-    router: VueRouter,
-    currentMoneyRemainder: string,
-    currency: string
+    store: MainStore
 };
