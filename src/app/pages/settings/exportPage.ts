@@ -77,7 +77,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             <sup class="custom-tooltip"></sup>
                                         </span>
                                         <span v-if="!clientInfo.user.emailConfirmed" class="fs13">
-                                            Вам необходимо подтвердить адрес электронной почты чтобы воспользоваться данным функционалом.
+                                            Вам необходимо подтвердить адрес электронной почты чтобы воспользоваться данной функциональностью.
                                         </span>
                                         <span v-if="isDownloadNotAllowed()" class="fs13">Экспорт сделок в csv-формат недоступен на TRIAL-плане.
                                             Пожалуйства <a @click="goToTariffs">обновите</a>

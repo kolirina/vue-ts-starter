@@ -573,7 +573,7 @@ export class ForbiddenCode extends (EnumType as IStaticEnum<ForbiddenCode>) {
 
     static readonly LIMIT_EXCEEDED = new ForbiddenCode("LIMIT_EXCEEDED", "К сожалению, Ваш тарифный план не позволяет выполнить это действие из-за лимита " +
         "на количество ценных бумаг или портфелей. Пожалуйста, обновите Ваш план и получите доступ к новым возможностям.");
-    static readonly PERMISSION_DENIED = new ForbiddenCode("PERMISSION_DENIED", "Сожалеем, но на Вашем тарифном плане этот функционал недоступен. " +
+    static readonly PERMISSION_DENIED = new ForbiddenCode("PERMISSION_DENIED", "Сожалеем, но на Вашем тарифном плане эта функциональность недоступен. " +
         "Пожалуйста, обновите Ваш план и получите доступ к новым возможностям.");
     static readonly CURRENCY_PERMISSION_DENIED = new ForbiddenCode("CURRENCY_PERMISSION_DENIED", "Сожалеем, но на Вашем тарифном плане нет возможности работы с валютами. " +
         "Пожалуйста, обновите Ваш план и получите доступ к новым возможностям.");
