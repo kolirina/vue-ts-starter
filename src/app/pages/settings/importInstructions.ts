@@ -162,7 +162,7 @@ export class ImportInstructions extends UI {
     @Prop()
     private portfolioParams: PortfolioParams;
     @Prop()
-    private isFixFeeAboveZero: boolean = false;
+    private isFixFeeAboveZero: boolean;
 
     /**
      * Отправляет событие выбора провайдера

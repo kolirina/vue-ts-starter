@@ -280,7 +280,7 @@ export class ImportPage extends UI {
     @ShowProgress
     async created(): Promise<void> {
         this.importProviderFeaturesByProvider = await this.importService.getImportProviderFeatures();
-        this.portfolioParams = Object.assign({},  this.portfolio.portfolioParams);
+        this.portfolioParams = Object.assign({}, this.portfolio.portfolioParams);
     }
 
     /**
@@ -330,7 +330,8 @@ export class ImportPage extends UI {
                     return;
                 }
             }
-            if (this.isFinam && this.isFixFeeAboveZero && this.portfolioParams !== this.portfolio.portfolioParams) {
+            if (this.isFinam && Number(this.portfolioParams.fixFee) > 0 && this.portfolioParams !== this.portfolio.portfolioParams) {
+                console.log(1);
                 await this.portfolioService.createOrUpdatePortfolio(this.portfolioParams);
             }
             const response = await this.importReport();
