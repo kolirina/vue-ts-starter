@@ -28,7 +28,7 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-container class="adviser-wrap">
-            <expanded-panel :value="$uistate.adviserDiagramPanel" :withMenu="false" :state="$uistate.ADVISER_DIAGRAM_PANEL">
+            <expanded-panel :value="$uistate.adviserAnalyticsPanel" :withMenu="false" :state="$uistate.ADVISER_ANALYTICS_PANEL">
                 <template #header>Аналитика</template>
                 <v-card v-if="hasTrades" flat class="pa-0">
                     <choose-risk v-if="!activePreloader && !isAnalys" @setRiskLevel="setRiskLevel"
