@@ -20,6 +20,7 @@ import {namespace} from "vuex-class/lib/bindings";
 import {UI, Watch} from "../app/ui";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {BtnReturn} from "../platform/dialogs/customDialog";
+import {Storage} from "../platform/services/storage";
 import {PortfolioService} from "../services/portfolioService";
 import {TableHeadersState, TABLES_NAME, TablesService} from "../services/tablesService";
 import {TradeService} from "../services/tradeService";
@@ -218,6 +219,8 @@ const MainStore = namespace(StoreType.MAIN);
 export class StockTable extends UI {
 
     @Inject
+    private localStorage: Storage;
+    @Inject
     private tradeService: TradeService;
     @Inject
     private tablesService: TablesService;
@@ -263,7 +266,7 @@ export class StockTable extends UI {
     /** Паджинация для задания дефолтной сортировки */
     private pagination: Pagination = {
         descending: false,
-        sortBy: "percCurrShare",
+        sortBy: this.localStorage.get("stockSortBy", null) || "percCurrShare",
         rowsPerPage: -1
     };
 
@@ -365,6 +368,7 @@ export class StockTable extends UI {
     }
 
     private customSort(items: StockPortfolioRow[], index: string, isDesc: boolean): StockPortfolioRow[] {
+        this.localStorage.set("stockSortBy", index);
         return SortUtils.stockSort(items, index, isDesc);
     }
 
