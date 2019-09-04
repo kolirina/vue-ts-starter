@@ -331,7 +331,6 @@ export class ImportPage extends UI {
                 }
             }
             if (this.isFinam && Number(this.portfolioParams.fixFee) > 0 && this.portfolioParams !== this.portfolio.portfolioParams) {
-                console.log(1);
                 await this.portfolioService.createOrUpdatePortfolio(this.portfolioParams);
             }
             const response = await this.importReport();
