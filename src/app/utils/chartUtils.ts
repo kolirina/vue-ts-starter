@@ -486,7 +486,7 @@ export class ChartUtils {
      * @param tooltipFormat формат тултипа
      */
     static drawPieChart(container: HTMLElement, chartData: any[], balloonTitle: string, title: string = "", viewCurrency: string = "",
-                        tooltipFormat: PieChartTooltipFormat = PieChartTooltipFormat.COMMON): ChartObject {
+                        tooltipFormat: PieChartTooltipFormat = PieChartTooltipFormat.COMMON, showLegend: boolean): ChartObject {
         const isMobile = CommonUtils.isMobile();
         return Highcharts.chart(container, {
             chart: {
@@ -521,6 +521,9 @@ export class ChartUtils {
             },
             exporting: {
                 enabled: false
+            },
+            legend: {
+                enabled: showLegend && !isMobile
             },
             series: [{
                 name: balloonTitle,

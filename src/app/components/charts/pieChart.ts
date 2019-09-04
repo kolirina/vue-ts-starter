@@ -58,6 +58,11 @@ export class PieChart extends UI {
     }
 
     private async draw(): Promise<void> {
-        this.chart = ChartUtils.drawPieChart(this.$refs.container, this.data, this.balloonTitle, this.title, this.viewCurrency, this.tooltipFormat as PieChartTooltipFormat);
+        this.chart = ChartUtils.drawPieChart(this.$refs.container, this.data, this.balloonTitle, this.title, this.viewCurrency, this.tooltipFormat as PieChartTooltipFormat,
+                                             this.isShowLegend);
+    }
+
+    private get isShowLegend(): boolean {
+        return this.data.length < 30;
     }
 }
