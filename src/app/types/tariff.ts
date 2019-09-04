@@ -2,24 +2,26 @@ import {Decimal} from "decimal.js";
 import {Enum, EnumType, IStaticEnum} from "../platform/enum";
 import {Permission} from "./permission";
 
+export const MAX = 0x7fffffff;
+
 @Enum("name")
 export class Tariff extends (EnumType as IStaticEnum<Tariff>) {
 
-    static readonly STANDARD = new Tariff("STANDARD", "Стандарт", 0x7fffffff, 2, "99", "990", "1188", "199", "2388", "2388",
+    static readonly STANDARD = new Tariff("STANDARD", "Стандарт", MAX, 2, "99", "990", "1188", "199", "2388", "2388",
         Permission.COMBINED_PORTFOLIO | Permission.INVESTMENTS);
 
-    static readonly PRO = new Tariff("PRO", "Профессионал", 0x7fffffff, 5, "199", "1990", "2388", "399", "4788", "4788",
+    static readonly PRO = new Tariff("PRO", "Профессионал", MAX, MAX, "199", "1990", "2388", "399", "4788", "4788",
         Permission.FOREIGN_SHARES | Permission.COMBINED_PORTFOLIO | Permission.INVESTMENTS | Permission.PROFF_MODE);
 
-    static readonly PREMIUM = new Tariff("PREMIUM", "Премиум", 0x7fffffff, 20, "799", "7999", "9588", "799", "9588", "9588",
+    static readonly PREMIUM = new Tariff("PREMIUM", "Премиум", MAX, 20, "599", "5999", "7188", "799", "7188", "7188",
         Permission.FOREIGN_SHARES | Permission.COMBINED_PORTFOLIO | Permission.INVESTMENTS | Permission.PROFF_MODE);
 
-    static readonly UNLIMITED = new Tariff("UNLIMITED", "Безлимитный", 0x7fffffff, 20, "799", "7999", "9588", "799", "9588", "9588",
+    static readonly UNLIMITED = new Tariff("UNLIMITED", "Безлимитный", MAX, 20, "799", "7999", "9588", "799", "9588", "9588",
         Permission.FOREIGN_SHARES | Permission.COMBINED_PORTFOLIO | Permission.INVESTMENTS | Permission.PROFF_MODE);
 
     static readonly FREE = new Tariff("FREE", "Бесплатный", 7, 1, "0", "0", "0", "0", "0", "0", 0);
 
-    static readonly TRIAL = new Tariff("TRIAL", "Профессионал (демо)", 0x7fffffff, 0x7fffffff, "199",
+    static readonly TRIAL = new Tariff("TRIAL", "Профессионал (демо)", MAX, MAX, "199",
         "1990", "2388", "399", "4788", "4788",
         Permission.FOREIGN_SHARES | Permission.COMBINED_PORTFOLIO | Permission.INVESTMENTS | Permission.PROFF_MODE);
 
