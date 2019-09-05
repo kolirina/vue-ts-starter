@@ -181,11 +181,7 @@ export class AppFrame extends UI {
     }
 
     private get getEvents(): number {
-        if (this.eventService.eventsResponse) {
-            return this.eventService.eventsResponse.events.length;
-        } else {
-            return 0;
-        }
+        return this.eventService.eventsResponse.events.length;
     }
 
     private async checkAuthorized(registration?: boolean): Promise<void> {

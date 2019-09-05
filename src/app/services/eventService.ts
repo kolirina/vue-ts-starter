@@ -19,7 +19,6 @@ export class EventService {
      */
     async loadEvents(portfolioId: number): Promise<void> {
         const eventsResponse = await this.http.get<EventsResponse>(`/events/list/${portfolioId}`);
-        console.log(eventsResponse);
         this.eventsResponse = eventsResponse;
     }
 
