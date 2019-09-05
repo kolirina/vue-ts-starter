@@ -441,7 +441,7 @@ export class EventsPage extends UI {
     }
 
     private async loadEvents(): Promise<void> {
-        const eventsResponse = await this.eventService.getEvents(this.portfolio.id);
+        const eventsResponse = await this.eventService.getEvents();
         this.events = eventsResponse.events;
         this.eventsAggregateInfo = eventsResponse.eventsAggregateInfo;
     }

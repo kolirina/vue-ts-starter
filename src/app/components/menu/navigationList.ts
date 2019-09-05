@@ -36,9 +36,9 @@ import {PortfolioSwitcher} from "../portfolioSwitcher";
                     <v-list-tile v-else :key="item.action" active-class="active-link"
                                  :to="{path: item.path, name: item.action, params: item.params}">
                         <v-list-tile-content v-if="item.action === linkAdditionalFunctionality.EVENTS && numberOfEvents" class="badge-link">
-                            <v-badge color="red">
+                            <v-badge color="primary">
                                 <template v-slot:badge>
-                                    <span>{{ numberOfEvents >= 100 ? "99+" : numberOfEvents }}</span>
+                                    <span title="У вас есть новые события по портфелю!">{{ numberOfEvents >= 100 ? "99+" : numberOfEvents }}</span>
                                 </template>
                                 <v-list-tile-title>{{ item.title }}</v-list-tile-title>
                             </v-badge>

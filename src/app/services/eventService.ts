@@ -8,6 +8,8 @@ import {Share} from "../types/types";
 @Singleton
 export class EventService {
 
+    eventsResponse: EventsResponse = null;
+
     @Inject
     private http: Http;
 
@@ -15,8 +17,14 @@ export class EventService {
      * Возвращает список событий пользователя
      * @param portfolioId идентификатор портфеля
      */
-    async getEvents(portfolioId: number): Promise<EventsResponse> {
-        return this.http.get<EventsResponse>(`/events/list/${portfolioId}`);
+    async loadEvents(portfolioId: number): Promise<void> {
+        const eventsResponse = await this.http.get<EventsResponse>(`/events/list/${portfolioId}`);
+        console.log(eventsResponse);
+        this.eventsResponse = eventsResponse;
+    }
+
+    getEvents(): EventsResponse {
+        return this.eventsResponse;
     }
 
     /**
@@ -42,6 +50,7 @@ export class EventService {
      */
     async executeAllEvents(portfolioId: number, withMoney: boolean): Promise<void> {
         await this.http.post(`/events/list/${portfolioId}/execute`, null, {withMoney});
+        await this.loadEvents(portfolioId);
     }
 
     /**
@@ -50,6 +59,7 @@ export class EventService {
      */
     async deleteAllEvents(portfolioId: number): Promise<void> {
         await this.http.post(`/events/list/${portfolioId}/delete`);
+        await this.loadEvents(portfolioId);
     }
 
     /**
