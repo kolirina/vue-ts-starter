@@ -65,7 +65,7 @@ const MainStore = namespace(StoreType.MAIN);
 
                 <!-- FINAM -->
                 <div v-if="provider === providers.FINAM">
-                    <FinamInstruction :portfolio-params="portfolioParams" :is-fix-fee-above-zero="isFixFeeAboveZero" @changePortfolioParams="changePortfolioParams">
+                    <FinamInstruction :portfolio-params="portfolioParams" @changePortfolioParams="changePortfolioParams">
                     </FinamInstruction>
                 </div>
 
@@ -161,8 +161,6 @@ export class ImportInstructions extends UI {
     private provider: DealsImportProvider;
     @Prop()
     private portfolioParams: PortfolioParams;
-    @Prop()
-    private isFixFeeAboveZero: boolean;
 
     /**
      * Отправляет событие выбора провайдера

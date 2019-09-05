@@ -1,6 +1,5 @@
-import Component from "vue-class-component";
 import {Prop} from "vue-property-decorator";
-import {UI} from "../../../app/ui";
+import {Component, UI} from "../../../app/ui";
 import {PortfolioParams} from "../../../services/portfolioService";
 
 @Component({
@@ -13,7 +12,7 @@ import {PortfolioParams} from "../../../services/portfolioService";
             <div v-else class="fs13">
                 Отчет вашего брокера не содержит информацию о комиссиях. Пожалуйста, укажите процент, который комиссия составляет от суммы сделки
                 <ii-number-field label="Фиксированная комиссия" v-model="portfolioParams.fixFee" class="maxW275 w100pc"
-                                 hint="Для автоматического рассчета комиссии при внесении сделок." :decimals="5" @input="changePortfolioParams">
+                                 hint="Для автоматического рассчета комиссии при импорте сделок." :decimals="5" @input="changePortfolioParams">
                 </ii-number-field>
             </div>
             <div>
@@ -44,14 +43,17 @@ import {PortfolioParams} from "../../../services/portfolioService";
 export class FinamInstruction extends UI {
 
     @Prop()
-    private isFixFeeAboveZero: boolean;
-    @Prop()
     private portfolioParams: PortfolioParams;
 
+    private isFixFeeAboveZero: boolean = false;
     private IMAGES: string[] = [
         "./img/import_instructions/finam/1.png",
         "./img/import_instructions/finam/2.png"
     ];
+
+    created(): void {
+        this.isFixFeeAboveZero = Number(this.portfolioParams.fixFee) > 0;
+    }
 
     private changePortfolioParams(): void {
         this.$emit("changePortfolioParams", this.portfolioParams);

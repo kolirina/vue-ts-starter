@@ -231,7 +231,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </video-link>
                     </div>
                     <import-instructions v-if="showInstruction" :provider="selectedProvider" @selectProvider="onSelectProvider" @changePortfolioParams="changePortfolioParams"
-                                         :portfolio-params="portfolioParams" :is-fix-fee-above-zero="isFixFeeAboveZero"></import-instructions>
+                                         :portfolio-params="portfolioParams"></import-instructions>
 
                 </v-card-text>
             </v-card>
@@ -280,7 +280,7 @@ export class ImportPage extends UI {
     @ShowProgress
     async created(): Promise<void> {
         this.importProviderFeaturesByProvider = await this.importService.getImportProviderFeatures();
-        this.portfolioParams = Object.assign({}, this.portfolio.portfolioParams);
+        this.portfolioParams = {...this.portfolio.portfolioParams};
     }
 
     /**
@@ -330,7 +330,7 @@ export class ImportPage extends UI {
                     return;
                 }
             }
-            if (this.isFinam && Number(this.portfolioParams.fixFee) > 0 && this.portfolioParams !== this.portfolio.portfolioParams) {
+            if (this.isFinam && this.portfolioParams !== this.portfolio.portfolioParams) {
                 await this.portfolioService.createOrUpdatePortfolio(this.portfolioParams);
             }
             const response = await this.importReport();
@@ -427,12 +427,7 @@ export class ImportPage extends UI {
         return this.selectedProvider === DealsImportProvider.FINAM;
     }
 
-    private get isFixFeeAboveZero(): boolean {
-        return Number(this.portfolio.portfolioParams.fixFee) > 0;
-    }
-
     private changePortfolioParams(portfolioParams: PortfolioParams): void {
         this.portfolioParams = portfolioParams;
     }
-
 }
