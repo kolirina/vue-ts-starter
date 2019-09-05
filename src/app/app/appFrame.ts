@@ -51,7 +51,7 @@ const MainStore = namespace(StoreType.MAIN);
                             </v-btn>
                         </div>
                         <navigation-list :mainSection="mainSection" :side-bar-opened="sideBarOpened" :settingsSelected="settingsSelected"
-                                         @openDialog="openDialog" :number-of-events="getEvents"></navigation-list>
+                                         @openDialog="openDialog" :number-of-events="getNumberOfEvents"></navigation-list>
                     </div>
                     <menu-bottom-navigation></menu-bottom-navigation>
                 </v-navigation-drawer>
@@ -132,7 +132,6 @@ export class AppFrame extends UI {
 
     /* Пользователь уведомлен об обновлениях */
     private isNotifyAccepted = false;
-    private test: number = null;
 
     /**
      * Названия кэшируемых компонентов (страниц). В качестве названия необходимо указывать либо имя файла компонента (это его name)
@@ -180,7 +179,7 @@ export class AppFrame extends UI {
         }
     }
 
-    private async getEvents(): Promise<number> {
+    private async getNumberOfEvents(): Promise<number> {
         return await this.eventService.getNumberOfEvents(this.portfolio.id);
     }
 
