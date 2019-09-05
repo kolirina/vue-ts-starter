@@ -285,7 +285,7 @@ export class BondTable extends UI {
     /** Паджинация для задания дефолтной сортировки */
     private pagination: Pagination = {
         descending: false,
-        sortBy: this.localStorage.get("bondSortBy", null) || "percCurrShare",
+        sortBy: this.localStorage.get("bondSortBy", "percCurrShare"),
         rowsPerPage: -1
     };
 
@@ -386,9 +386,9 @@ export class BondTable extends UI {
         return amount.amount.toNumber();
     }
 
-    private customSort(items: BondPortfolioRow[], index: string, isDesc: boolean): BondPortfolioRow[] {
-        this.localStorage.set("bondSortBy", index);
-        return SortUtils.bondSort(items, index, isDesc);
+    private customSort(items: BondPortfolioRow[], sortby: string, isDesc: boolean): BondPortfolioRow[] {
+        this.localStorage.set("bondSortBy", sortby);
+        return SortUtils.bondSort(items, sortby, isDesc);
     }
 
     private customFilter(items: BondPortfolioRow[], searchString: string): BondPortfolioRow[] {

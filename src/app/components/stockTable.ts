@@ -266,7 +266,7 @@ export class StockTable extends UI {
     /** Паджинация для задания дефолтной сортировки */
     private pagination: Pagination = {
         descending: false,
-        sortBy: this.localStorage.get("stockSortBy", null) || "percCurrShare",
+        sortBy: this.localStorage.get("stockSortBy", "percCurrShare"),
         rowsPerPage: -1
     };
 
@@ -367,9 +367,9 @@ export class StockTable extends UI {
         return amount.amount.toNumber();
     }
 
-    private customSort(items: StockPortfolioRow[], index: string, isDesc: boolean): StockPortfolioRow[] {
-        this.localStorage.set("stockSortBy", index);
-        return SortUtils.stockSort(items, index, isDesc);
+    private customSort(items: StockPortfolioRow[], sortby: string, isDesc: boolean): StockPortfolioRow[] {
+        this.localStorage.set("stockSortBy", sortby);
+        return SortUtils.stockSort(items, sortby, isDesc);
     }
 
     private customFilter(items: StockPortfolioRow[], searchString: string): StockPortfolioRow[] {
