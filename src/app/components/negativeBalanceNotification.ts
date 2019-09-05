@@ -49,20 +49,14 @@ export class NegativeBalanceNotification extends UI {
     private portfolio: Portfolio;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
     private reloadPortfolio: (id: number) => Promise<void>;
-    @Inject
-    private overviewService: OverviewService;
 
     private goToCalculations(): void {
         window.open("https://blog.intelinvest.ru/calculations-explained");
     }
 
     private async openDialogResidueIndications(): Promise<void> {
-        const currentMoneyRemainder = await this.overviewService.getCurrentMoney(this.portfolio.id);
         const result = await new NegativeBalanceDialog().show({
-            currentMoneyRemainder,
-            router: this.$router,
-            store: this.$store.state[StoreType.MAIN],
-            currency: this.portfolio.portfolioParams.viewCurrency
+            store: this.$store.state[StoreType.MAIN]
         });
         if (result === BtnReturn.YES) {
             await this.reloadPortfolio(this.portfolio.id);

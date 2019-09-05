@@ -6,6 +6,7 @@ import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
 import {AssetTable} from "../components/assetTable";
 import {BalancesTable} from "../components/balancesTable";
+import {CurrencyBalances} from "../components/currencyBalances";
 import {PopularPaperDialog} from "../components/dialogs/popularPaperDialog";
 import {StockTable} from "../components/stockTable";
 import {ShowProgress} from "../platform/decorators/showProgress";
@@ -115,28 +116,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 <v-flex d-flex xs5>
                                     <v-layout column wrap>
                                         <div class="title">Добавить остатки денежных средств</div>
-                                        <v-form ref="moneyForm" v-model="moneyFormIsValid" class="mt-4" lazy-validation>
-                                            <v-flex xs12>
-                                                <v-layout wrap>
-                                                    <v-flex xs12 lg8>
-                                                        <ii-number-field v-model="moneyField" requered :rules="rulesMoney" :decimals="2" label="Сумма"></ii-number-field>
-                                                    </v-flex>
-                                                    <v-spacer></v-spacer>
-                                                    <v-flex xs12 lg3>
-                                                        <v-select v-model="moneyCurrency" label="Валюта сделки" :items="currencyList"></v-select>
-                                                    </v-flex>
-                                                </v-layout>
-                                            </v-flex>
-                                        </v-form>
-                                        <div class="margT20">
-                                            <v-btn color="primary" class="big_btn" :loading="processState"
-                                                   :disabled="!moneyFormIsValid || processState" @click.native="addMoney()">
-                                                Добавить
-                                                <span slot="loader" class="custom-loader">
-                                                <v-icon light>fas fa-spinner fa-spin</v-icon>
-                                            </span>
-                                            </v-btn>
-                                        </div>
+                                        <currency-balances :portfolio-id="portfolio.id" @specifyResidues="specifyResidues"></currency-balances>
                                     </v-layout>
                                 </v-flex>
                             </v-layout>
@@ -159,14 +139,13 @@ const MainStore = namespace(StoreType.MAIN);
             <balances-table :assets="portfolio.overview.assetRows" :stocks="portfolio.overview.stockPortfolio.rows" :loading="processState"/>
         </v-container>
     `,
-    components: {AssetTable, BalancesTable, StockTable}
+    components: {AssetTable, BalancesTable, StockTable, CurrencyBalances}
 })
 export class BalancesPage extends UI implements TradeDataHolder {
 
     $refs: {
         dateMenu: any,
-        stockForm: any,
-        moneyForm: any
+        stockForm: any
     };
 
     @Inject
@@ -204,13 +183,7 @@ export class BalancesPage extends UI implements TradeDataHolder {
 
     private keepMoney = false;
 
-    private moneyField: string = null;
-
     private moneyAmount: string = null;
-
-    private moneyCurrency = "RUB";
-
-    private moneyFormIsValid = true;
 
     private nkd: string = null;
 
@@ -225,8 +198,6 @@ export class BalancesPage extends UI implements TradeDataHolder {
     private price: string = null;
 
     private rulesDate = [(val: string): boolean | string => !!val || "выберите дату"];
-
-    private rulesMoney = [(val: string): boolean | string => !!val || "укажите сумму"];
 
     private rulesPrice = [(val: string): boolean | string => !!val || "укажите цену акции или стоимость сделки"];
 
@@ -249,6 +220,10 @@ export class BalancesPage extends UI implements TradeDataHolder {
     @ShowProgress
     async created(): Promise<void> {
         this.topShares = await this.marketService.loadTopStocks();
+    }
+
+    private async specifyResidues(): Promise<void> {
+        await this.reloadPortfolio(this.portfolio.id);
     }
 
     private async popularPaper(): Promise<void> {
@@ -298,21 +273,6 @@ export class BalancesPage extends UI implements TradeDataHolder {
         await this.addTrade();
         await this.$refs.stockForm.reset();
         this.resetForm();
-    }
-
-    private async addMoney(): Promise<void> {
-        if (!this.$refs.moneyForm.validate()) {
-            return;
-        }
-        this.assetType = AssetType.MONEY;
-        this.operation = Operation.DEPOSIT;
-        this.moneyAmount = this.moneyField;
-        const currentCurrency = this.moneyCurrency;
-        this.currency = this.moneyCurrency;
-        await this.addTrade();
-        await this.$refs.moneyForm.reset();
-        this.resetForm();
-        this.moneyCurrency = this.currencyList.filter(cur => cur !== currentCurrency)[0] || CurrencyUnit.RUB.code;
     }
 
     private async addTrade(): Promise<void> {
