@@ -159,7 +159,7 @@ export class ImportInstructions extends UI {
     private providers = DealsImportProvider;
     @Prop()
     private provider: DealsImportProvider;
-    @Prop()
+    @Prop({required: true})
     private portfolioParams: PortfolioParams;
 
     /**

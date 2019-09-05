@@ -330,7 +330,7 @@ export class ImportPage extends UI {
                     return;
                 }
             }
-            if (this.isFinam && this.portfolioParams !== this.portfolio.portfolioParams) {
+            if (this.isFinam && this.portfolioParams.fixFee !== this.portfolio.portfolioParams.fixFee) {
                 await this.portfolioService.createOrUpdatePortfolio(this.portfolioParams);
             }
             const response = await this.importReport();

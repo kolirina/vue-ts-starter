@@ -42,7 +42,7 @@ import {PortfolioParams} from "../../../services/portfolioService";
 })
 export class FinamInstruction extends UI {
 
-    @Prop()
+    @Prop({required: true})
     private portfolioParams: PortfolioParams;
 
     private isFixFeeAboveZero: boolean = false;
