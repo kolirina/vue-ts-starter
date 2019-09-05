@@ -35,7 +35,15 @@ import {PortfolioSwitcher} from "../portfolioSwitcher";
                     </template>
                     <v-list-tile v-else :key="item.action" active-class="active-link"
                                  :to="{path: item.path, name: item.action, params: item.params}">
-                        <v-list-tile-content>
+                        <v-list-tile-content v-if="item.action === linkAdditionalFunctionality.EVENTS && numberOfEvents" class="badge-link">
+                            <v-badge color="red">
+                                <template v-slot:badge>
+                                    <span>{{ numberOfEvents >= 100 ? "99+" : numberOfEvents }}</span>
+                                </template>
+                                <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+                            </v-badge>
+                        </v-list-tile-content>
+                        <v-list-tile-content v-else>
                             <v-list-tile-title>{{ item.title }}</v-list-tile-title>
                         </v-list-tile-content>
                     </v-list-tile>
@@ -56,7 +64,16 @@ export class NavigationList extends UI {
     @Prop({required: true})
     private mainSection: NavBarItem[];
 
+    @Prop({type: Number})
+    private numberOfEvents: number;
+
+    /** Список ссылок с доп. функционалом */
+    private linkAdditionalFunctionality = LinkAdditionalFunctionality;
+
     private openDialog(): void {
         this.$emit("openDialog");
     }
+}
+export enum LinkAdditionalFunctionality {
+    EVENTS = "events"
 }

@@ -17,6 +17,7 @@ import {ShowProgress} from "../platform/decorators/showProgress";
 import {BtnReturn} from "../platform/dialogs/customDialog";
 import {Storage} from "../platform/services/storage";
 import {ClientInfo, ClientService} from "../services/clientService";
+import {EventService, ShareEvent} from "../services/eventService";
 import {StoreKeys} from "../types/storeKeys";
 import {Portfolio, SignInData} from "../types/types";
 import {NavBarItem} from "../types/types";
@@ -50,7 +51,7 @@ const MainStore = namespace(StoreType.MAIN);
                             </v-btn>
                         </div>
                         <navigation-list :mainSection="mainSection" :side-bar-opened="sideBarOpened" :settingsSelected="settingsSelected"
-                                         @openDialog="openDialog"></navigation-list>
+                                         @openDialog="openDialog" :number-of-events="events.length"></navigation-list>
                     </div>
                     <menu-bottom-navigation></menu-bottom-navigation>
                 </v-navigation-drawer>
@@ -102,6 +103,8 @@ export class AppFrame extends UI {
     private readonly NEW_USERS_DATE = DateUtils.parseDate("2019-05-02");
 
     @Inject
+    private eventService: EventService;
+    @Inject
     private localStorage: Storage;
     @Inject
     private clientService: ClientService;
@@ -129,6 +132,8 @@ export class AppFrame extends UI {
 
     /* Пользователь уведомлен об обновлениях */
     private isNotifyAccepted = false;
+    /** События */
+    private events: ShareEvent[] = [];
 
     /**
      * Названия кэшируемых компонентов (страниц). В качестве названия необходимо указывать либо имя файла компонента (это его name)
@@ -173,7 +178,13 @@ export class AppFrame extends UI {
             this.isNotifyAccepted = UiStateHelper.lastUpdateNotification === NotificationUpdateDialog.DATE;
             this.showUpdatesMessage();
             this.loggedIn = true;
+            await this.loadEvents();
         }
+    }
+
+    private async loadEvents(): Promise<void> {
+        const eventsResponse = await this.eventService.getEvents(this.portfolio.id);
+        this.events = eventsResponse.events;
     }
 
     private async checkAuthorized(registration?: boolean): Promise<void> {
