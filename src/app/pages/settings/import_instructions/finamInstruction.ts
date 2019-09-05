@@ -1,5 +1,4 @@
-import {Prop} from "vue-property-decorator";
-import {Component, UI} from "../../../app/ui";
+import {Component, Prop, UI} from "../../../app/ui";
 import {PortfolioParams} from "../../../services/portfolioService";
 
 @Component({
