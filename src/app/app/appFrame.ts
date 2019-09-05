@@ -132,6 +132,7 @@ export class AppFrame extends UI {
 
     /* Пользователь уведомлен об обновлениях */
     private isNotifyAccepted = false;
+    private test: number = null;
 
     /**
      * Названия кэшируемых компонентов (страниц). В качестве названия необходимо указывать либо имя файла компонента (это его name)
@@ -173,15 +174,14 @@ export class AppFrame extends UI {
         await this.checkAuthorized();
         // если удалось восстановить state, значит все уже загружено
         if (this.$store.state[StoreType.MAIN].clientInfo) {
-            await this.eventService.loadEvents(this.portfolio.id);
             this.isNotifyAccepted = UiStateHelper.lastUpdateNotification === NotificationUpdateDialog.DATE;
             this.showUpdatesMessage();
             this.loggedIn = true;
         }
     }
 
-    private get getEvents(): number {
-        return this.eventService.eventsResponse.events.length;
+    private async getEvents(): Promise<number> {
+        return await this.eventService.getNumberOfEvents(this.portfolio.id);
     }
 
     private async checkAuthorized(registration?: boolean): Promise<void> {

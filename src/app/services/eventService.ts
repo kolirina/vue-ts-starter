@@ -13,17 +13,22 @@ export class EventService {
     @Inject
     private http: Http;
 
-    /**
-     * Возвращает список событий пользователя
-     * @param portfolioId идентификатор портфеля
-     */
     async loadEvents(portfolioId: number): Promise<void> {
-        const eventsResponse = await this.http.get<EventsResponse>(`/events/list/${portfolioId}`);
-        this.eventsResponse = eventsResponse;
+        this.eventsResponse = await this.http.get<EventsResponse>(`/events/list/${portfolioId}`);
     }
 
-    getEvents(): EventsResponse {
+    async getEvents(portfolioId: number): Promise<EventsResponse> {
+        if (!this.eventsResponse) {
+            await this.loadEvents(portfolioId);
+        }
         return this.eventsResponse;
+    }
+
+    async getNumberOfEvents(portfolioId: number): Promise<number> {
+        if (!this.eventsResponse) {
+            await this.loadEvents(portfolioId);
+        }
+        return this.eventsResponse.events.length;
     }
 
     /**
