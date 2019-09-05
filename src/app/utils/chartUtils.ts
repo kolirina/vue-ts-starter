@@ -510,7 +510,7 @@ export class ChartUtils {
                     allowPointSelect: true,
                     cursor: "pointer",
                     dataLabels: {
-                        enabled: !isMobile,
+                        enabled: chartData.length < 30 && !isMobile,
                         format: "<b>{point.name}</b>: {point.percentage:.2f} %",
                         style: {
                             color: "black"
