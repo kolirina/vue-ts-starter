@@ -5,6 +5,7 @@ import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {BtnReturn} from "../platform/dialogs/customDialog";
+import {Storage} from "../platform/services/storage";
 import {PortfolioService} from "../services/portfolioService";
 import {TableHeadersState, TABLES_NAME, TablesService} from "../services/tablesService";
 import {TradeService} from "../services/tradeService";
@@ -237,6 +238,8 @@ const MainStore = namespace(StoreType.MAIN);
 export class BondTable extends UI {
 
     @Inject
+    private localStorage: Storage;
+    @Inject
     private tradeService: TradeService;
     @Inject
     private tablesService: TablesService;
@@ -282,7 +285,7 @@ export class BondTable extends UI {
     /** Паджинация для задания дефолтной сортировки */
     private pagination: Pagination = {
         descending: false,
-        sortBy: "percCurrShare",
+        sortBy: this.localStorage.get("bondSortBy", "percCurrShare"),
         rowsPerPage: -1
     };
 
@@ -383,8 +386,9 @@ export class BondTable extends UI {
         return amount.amount.toNumber();
     }
 
-    private customSort(items: BondPortfolioRow[], index: string, isDesc: boolean): BondPortfolioRow[] {
-        return SortUtils.bondSort(items, index, isDesc);
+    private customSort(items: BondPortfolioRow[], sortby: string, isDesc: boolean): BondPortfolioRow[] {
+        this.localStorage.set("bondSortBy", sortby);
+        return SortUtils.bondSort(items, sortby, isDesc);
     }
 
     private customFilter(items: BondPortfolioRow[], searchString: string): BondPortfolioRow[] {
