@@ -13,6 +13,7 @@ import {MenuHeader} from "../components/menu/menuHeader";
 import {NavigationList} from "../components/menu/navigationList";
 import {SignIn} from "../components/signIn";
 import {TariffExpiredHint} from "../components/tariffExpiredHint";
+import {Tours, TourStep} from "../components/tours/tours";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {BtnReturn} from "../platform/dialogs/customDialog";
 import {Storage} from "../platform/services/storage";
@@ -71,6 +72,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <v-footer color="#f7f9fb" :class="['footer-app', sideBarOpened ? '' : 'hide-main-content']">
                         <footer-content :clientInfo="clientInfo"></footer-content>
                     </v-footer>
+                    <v-tour name="intro" :steps="tourSteps"></v-tour>
                 </v-content>
             </template>
 
@@ -88,9 +90,7 @@ const MainStore = namespace(StoreType.MAIN);
                             <rect x="0" y="570" rx="5" ry="5" width="801.11" height="180"/>
                         </content-loader>
                     </v-container>
-                    <v-footer color="#f7f9fb" :class="['footer-app', sideBarOpened ? '' : 'hide-main-content']">
-
-                    </v-footer>
+                    <v-footer color="#f7f9fb" :class="['footer-app', sideBarOpened ? '' : 'hide-main-content']"></v-footer>
                 </v-content>
             </template>
         </v-app>`,
@@ -129,6 +129,8 @@ export class AppFrame extends UI {
 
     /* Пользователь уведомлен об обновлениях */
     private isNotifyAccepted = false;
+
+    private tourSteps: TourStep[] = Tours.INTRO_STEPS;
 
     /**
      * Названия кэшируемых компонентов (страниц). В качестве названия необходимо указывать либо имя файла компонента (это его name)

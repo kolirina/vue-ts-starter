@@ -27,7 +27,7 @@ import {UI} from "../app/ui";
                     <div class="fs16">
                         Для начала работы заполните свой портфель
                     </div>
-                    <div class="fs16 alignC margT30">
+                    <div class="fs16 alignC margT30" data-v-step="0">
                         Вы можете загрузить отчет со сделками вашего брокера или указать
                         остатки портфеля, если знаете цену или стоимость покупки бумаг.
                     </div>
@@ -35,10 +35,10 @@ import {UI} from "../app/ui";
                         <a>Смотреть видео инструкцию по импорту сделок</a>
                     </video-link>
                     <div class="margT20 alignC">
-                        <v-btn class="btn mr-1" color="#EBEFF7" to="/settings/import">
+                        <v-btn class="btn mr-1" color="#EBEFF7" to="/settings/import" data-v-step="1">
                             Загрузить отчет
                         </v-btn>
-                        <v-btn class="btn ml-3" color="#EBEFF7" to="/balances">
+                        <v-btn class="btn ml-3" color="#EBEFF7" to="/balances" data-v-step="2">
                             Указать остатки
                         </v-btn>
                     </div>
@@ -48,4 +48,9 @@ import {UI} from "../app/ui";
     `
 })
 export class EmptyPortfolioStub extends UI {
+
+    created(): void {
+        // @ts-ignore
+        this.$tours["intro"].start();
+    }
 }
