@@ -17,10 +17,8 @@ import {ShowProgress} from "../platform/decorators/showProgress";
 import {BtnReturn} from "../platform/dialogs/customDialog";
 import {Storage} from "../platform/services/storage";
 import {ClientInfo, ClientService} from "../services/clientService";
-import {EventService} from "../services/eventService";
 import {StoreKeys} from "../types/storeKeys";
-import {Portfolio, SignInData} from "../types/types";
-import {NavBarItem} from "../types/types";
+import {NavBarItem, Portfolio, SignInData} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
 import {DateUtils} from "../utils/dateUtils";
 import {UiStateHelper} from "../utils/uiStateHelper";
@@ -51,7 +49,7 @@ const MainStore = namespace(StoreType.MAIN);
                             </v-btn>
                         </div>
                         <navigation-list :mainSection="mainSection" :side-bar-opened="sideBarOpened" :settingsSelected="settingsSelected"
-                                         @openDialog="openDialog" :number-of-events="getNumberOfEvents"></navigation-list>
+                                         @openDialog="openDialog" :number-of-events="eventsCount"></navigation-list>
                     </div>
                     <menu-bottom-navigation></menu-bottom-navigation>
                 </v-navigation-drawer>
@@ -103,8 +101,6 @@ export class AppFrame extends UI {
     private readonly NEW_USERS_DATE = DateUtils.parseDate("2019-05-02");
 
     @Inject
-    private eventService: EventService;
-    @Inject
     private localStorage: Storage;
     @Inject
     private clientService: ClientService;
@@ -114,6 +110,8 @@ export class AppFrame extends UI {
     private portfolio: Portfolio;
     @MainStore.Getter
     private sideBarOpened: boolean;
+    @MainStore.Getter
+    private eventsCount: number;
 
     @MainStore.Action(MutationType.SET_CLIENT_INFO)
     private loadUser: (clientInfo: ClientInfo) => Promise<void>;
@@ -177,10 +175,6 @@ export class AppFrame extends UI {
             this.showUpdatesMessage();
             this.loggedIn = true;
         }
-    }
-
-    private async getNumberOfEvents(): Promise<number> {
-        return await this.eventService.getNumberOfEvents(this.portfolio.id);
     }
 
     private async checkAuthorized(registration?: boolean): Promise<void> {
