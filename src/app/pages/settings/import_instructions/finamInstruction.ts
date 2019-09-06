@@ -9,12 +9,17 @@ import {PortfolioParams} from "../../../services/portfolioService";
                 Фиксированная комиссия: {{ portfolioParams.fixFee }}%
             </div>
             <div v-else class="fs13">
-                Отчет вашего брокера не содержит информацию о комиссиях. Пожалуйста, укажите процент, который комиссия составляет от суммы сделки
+                <div class="mb-2">
+                    Отчет вашего брокера не содержит информацию о комиссиях.
+                </div>
+                <div class="mb-2">
+                    Пожалуйста, укажите процент, который комиссия составляет от суммы сделки.
+                </div>
                 <ii-number-field label="Фиксированная комиссия" v-model="portfolioParams.fixFee" class="maxW275 w100pc"
                                  hint="Для автоматического рассчета комиссии при импорте сделок." :decimals="5" @input="changePortfolioParams">
                 </ii-number-field>
             </div>
-            <div>
+            <div class="margT20">
                 <div class="import-default-text">
                     Перейдите в личный кабинет брокера. Перейдите на вкладку просмотра <strong>Единой<br>
                     денежной позиции</strong> далее вкладка <strong>Справка по счету.</strong>

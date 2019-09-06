@@ -231,7 +231,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </video-link>
                     </div>
                     <import-instructions v-if="showInstruction" :provider="selectedProvider" @selectProvider="onSelectProvider" @changePortfolioParams="changePortfolioParams"
-                                         :portfolio-params="portfolioParams"></import-instructions>
+                                         :portfolio-params="portfolioParams" class="margT20"></import-instructions>
 
                 </v-card-text>
             </v-card>
