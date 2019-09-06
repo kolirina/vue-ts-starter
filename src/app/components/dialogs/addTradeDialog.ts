@@ -596,8 +596,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
                 await this.saveTrade(tradeFields);
                 UI.emit(EventType.TRADE_CREATED);
             }
-
-            this.$snotify.info(`Сделка успешно ${this.editMode ? "отредактирована" : "добавлена"}`);
+            const msg = this.data.eventFields ? "Событие успешно исполнено" : `Сделка успешно ${this.editMode ? "отредактирована" : "добавлена"}`;
+            this.$snotify.info(msg);
             // отправляем в ответе true если выбранный портфель в диалоге совпадает с текущим,
             // так как данные перезагружать не нужно если добавили в другой портфель
             const currentPortfolio = this.portfolio.id === this.clientInfo.currentPortfolioId;

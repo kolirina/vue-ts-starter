@@ -16,7 +16,7 @@ import {
     CalendarType,
     DividendNewsItem,
     EventsAggregateInfo,
-    EventService,
+    EventService, EventsResponse,
     ShareEvent
 } from "../services/eventService";
 import {AssetType} from "../types/assetType";
@@ -26,6 +26,8 @@ import {Portfolio, TableHeader} from "../types/types";
 import {DateUtils} from "../utils/dateUtils";
 import {SortUtils} from "../utils/sortUtils";
 import {TradeUtils} from "../utils/tradeUtils";
+import {ActionType} from "../vuex/actionType";
+import {GetterType} from "../vuex/getterType";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 
@@ -280,18 +282,19 @@ const MainStore = namespace(StoreType.MAIN);
     `
 })
 export class EventsPage extends UI {
+
     @MainStore.Getter
     private portfolio: Portfolio;
+    @MainStore.Getter(GetterType.EVENTS)
+    private eventsResponse: EventsResponse;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
     private reloadPortfolio: (id: number) => Promise<void>;
+    @MainStore.Action(ActionType.LOAD_EVENTS)
+    private loadEvents: (id: number) => Promise<void>;
     @Inject
     private eventService: EventService;
     @Inject
     private localStorage: Storage;
-    /** События */
-    private events: ShareEvent[] = [];
-    /** Агрегированная информация по событиям */
-    private eventsAggregateInfo: EventsAggregateInfo = null;
     /** Дивидендные новости */
     private dividendNews: DividendNewsItem[] = [];
     /** Зголовки таблицы События */
@@ -351,7 +354,7 @@ export class EventsPage extends UI {
     }
 
     private async loadAllData(): Promise<void> {
-        await this.loadEvents();
+        await this.updateEvents();
         await this.loadDividendNews();
         await this.loadCalendarEvents();
     }
@@ -359,7 +362,7 @@ export class EventsPage extends UI {
     @Watch("portfolio")
     @ShowProgress
     private async onPortfolioChange(): Promise<void> {
-        await this.loadEvents();
+        await this.updateEvents();
         await this.loadDividendNews();
         // если выбран фильтр Пользовательские, нужно перезагрузить календарь
         if (this.typeCalendarEvents.includes(CalendarEventType.USER.code.toLowerCase())) {
@@ -440,10 +443,18 @@ export class EventsPage extends UI {
         await this.loadCalendarEvents();
     }
 
-    private async loadEvents(): Promise<void> {
-        const eventsResponse = await this.eventService.getEvents(this.portfolio.id);
-        this.events = eventsResponse.events;
-        this.eventsAggregateInfo = eventsResponse.eventsAggregateInfo;
+    private async updateEvents(): Promise<void> {
+        await this.loadEvents(this.portfolio.id);
+    }
+
+    /** События */
+    private get events(): ShareEvent[] {
+        return this.eventsResponse ? this.eventsResponse.events : [];
+    }
+
+    /** Агрегированная информация по событиям */
+    private get eventsAggregateInfo(): EventsAggregateInfo {
+        return this.eventsResponse ? this.eventsResponse.eventsAggregateInfo : null;
     }
 
     private async loadDividendNews(): Promise<void> {
@@ -504,7 +515,7 @@ export class EventsPage extends UI {
     @ShowProgress
     private async deleteAllEvents(): Promise<void> {
         await this.eventService.deleteAllEvents(this.portfolio.id);
-        await this.loadEvents();
+        await this.updateEvents();
         this.$snotify.info("Начисления успешно удалены");
     }
 
@@ -533,7 +544,7 @@ export class EventsPage extends UI {
             shareId: event.share.id,
             type: event.type
         });
-        await this.loadEvents();
+        await this.updateEvents();
         this.$snotify.info("Начисление удалено");
     }
 

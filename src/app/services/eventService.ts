@@ -12,7 +12,7 @@ export class EventService {
     private http: Http;
 
     /**
-     * Возвращает список событий пользователя
+     * Загружает события и агрегированную информацию по ним
      * @param portfolioId идентификатор портфеля
      */
     async getEvents(portfolioId: number): Promise<EventsResponse> {

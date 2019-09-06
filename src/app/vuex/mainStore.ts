@@ -3,12 +3,14 @@ import {Container} from "typescript-ioc";
 import {ActionContext, Module} from "vuex";
 import {Storage} from "../platform/services/storage";
 import {Client, ClientInfo, ClientService} from "../services/clientService";
+import {EventService, EventsResponse} from "../services/eventService";
 import {OverviewService} from "../services/overviewService";
 import {PortfolioParams, PortfolioService} from "../services/portfolioService";
 import {StoreKeys} from "../types/storeKeys";
 import {Tariff} from "../types/tariff";
 import {Portfolio, TariffHint} from "../types/types";
 import {DateUtils} from "../utils/dateUtils";
+import {ActionType} from "./actionType";
 import {GetterType} from "./getterType";
 import {MutationType} from "./mutationType";
 
@@ -18,6 +20,8 @@ const overviewService: OverviewService = Container.get(OverviewService);
 const clientService: ClientService = Container.get(ClientService);
 /** Сервис работы с портфелями клиента */
 const portfolioService: PortfolioService = Container.get(PortfolioService);
+/** Сервис работы с событиями по бумагам */
+const eventService: EventService = Container.get(EventService);
 /** Сервис работы с localStorage */
 const localStorage: Storage = Container.get(Storage);
 
@@ -25,6 +29,8 @@ const localStorage: Storage = Container.get(Storage);
 export class StateHolder {
     /** Информация о клиенте */
     clientInfo: ClientInfo = null;
+    /** Количество новых событий */
+    eventsResponse: EventsResponse = null;
     /** Текущий выбранный портфель */
     currentPortfolio: Portfolio = null;
     /** Версия стора */
@@ -45,6 +51,12 @@ const Getters = {
     [GetterType.CLIENT_INFO](state: StateHolder): ClientInfo {
         return state.clientInfo;
     },
+    [GetterType.EVENTS_COUNT](state: StateHolder): number {
+        return state.eventsResponse ? state.eventsResponse.events.length : 0;
+    },
+    [GetterType.EVENTS](state: StateHolder): EventsResponse {
+        return state.eventsResponse;
+    },
     [GetterType.SIDEBAR_OPENED](state: StateHolder): boolean {
         return state.sideBarOpened;
     },
@@ -64,6 +76,9 @@ const Mutations = {
     },
     [MutationType.SET_CLIENT](state: StateHolder, client: Client): void {
         state.clientInfo.user = client;
+    },
+    [MutationType.SET_EVENTS](state: StateHolder, eventsResponse: EventsResponse): void {
+        state.eventsResponse = eventsResponse;
     },
     [MutationType.SET_CURRENT_PORTFOLIO](state: StateHolder, portfolio: Portfolio): void {
         state.currentPortfolio = portfolio;
@@ -133,6 +148,14 @@ const Actions = {
         return new Promise<void>((resolve): void => {
             portfolioService.getPortfolios().then((portfolios: PortfolioParams[]): void => {
                 context.commit(MutationType.RELOAD_PORTFOLIOS, portfolios);
+                resolve();
+            });
+        });
+    },
+    [ActionType.LOAD_EVENTS](context: ActionContext<StateHolder, void>, id: number): Promise<void> {
+        return new Promise<void>((resolve): void => {
+            eventService.getEvents(id).then((eventsResponse: EventsResponse): void => {
+                context.commit(MutationType.SET_EVENTS, eventsResponse);
                 resolve();
             });
         });
