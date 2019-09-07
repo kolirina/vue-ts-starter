@@ -22,6 +22,7 @@ import {NavBarItem, Portfolio, SignInData} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
 import {DateUtils} from "../utils/dateUtils";
 import {UiStateHelper} from "../utils/uiStateHelper";
+import {ActionType} from "../vuex/actionType";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {UI} from "./ui";
@@ -125,6 +126,9 @@ export class AppFrame extends UI {
     @MainStore.Mutation(MutationType.CHANGE_SIDEBAR_STATE)
     private changeSideBarState: (sideBarState: boolean) => void;
 
+    @MainStore.Action(ActionType.LOAD_EVENTS)
+    private loadEvents: (id: number) => Promise<void>;
+
     /** Признак залогиненного пользователя */
     private loggedIn = false;
 
@@ -173,6 +177,7 @@ export class AppFrame extends UI {
         if (this.$store.state[StoreType.MAIN].clientInfo) {
             this.isNotifyAccepted = UiStateHelper.lastUpdateNotification === NotificationUpdateDialog.DATE;
             this.showUpdatesMessage();
+            await this.loadEvents(this.portfolio.id);
             this.loggedIn = true;
         }
     }
@@ -211,6 +216,7 @@ export class AppFrame extends UI {
             const clientInfo = await this.clientService.login({username: signInData.username, password: signInData.password});
             await this.loadUser(clientInfo);
             await this.setCurrentPortfolio(this.$store.state[StoreType.MAIN].clientInfo.user.currentPortfolioId);
+            await this.loadEvents(this.portfolio.id);
             this.loggedIn = true;
             this.$snotify.clear();
             this.$router.push("portfolio");
