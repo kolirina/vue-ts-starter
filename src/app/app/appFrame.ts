@@ -22,10 +22,10 @@ import {NavBarItem, Portfolio, SignInData} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
 import {DateUtils} from "../utils/dateUtils";
 import {UiStateHelper} from "../utils/uiStateHelper";
+import {ActionType} from "../vuex/actionType";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {UI} from "./ui";
-import {ActionType} from "../vuex/actionType";
 
 const MainStore = namespace(StoreType.MAIN);
 
