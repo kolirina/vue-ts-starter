@@ -56,15 +56,13 @@ export class DateTimeService {
     async initServerTimeDiff(): Promise<void> {
         try {
             const t1 = new Date().getTime();
-            const serverTime = dayjs(await this.getDateTimeMilliseconds());
+            const serverTime = await this.getDateTimeMilliseconds();
             const t2 = new Date().getTime();
             // находим среднее время выполнения запроса
             const requestTime = Math.round((t2 - t1) / 2);
             // находим время на клиенте, с которым нужно сравнить серверное
-            const localTime = (t2 - requestTime);
-            // находим разницу между серверным и локальным временем
-            // параметры diff: (1) время для сравнения, (2) единицы измерения ms, (3) возвращать ли float (false для округления до целого)
-            this.serverTimeDiff = serverTime.diff(dayjs(localTime), "ms", false);
+            const localTime = t2 - requestTime;
+            this.serverTimeDiff = Number(serverTime) - localTime;
         } catch (e) {
             this.serverTimeDiff = 0;
         }
@@ -74,7 +72,7 @@ export class DateTimeService {
      * Возвращает текущую дату и время в миллисекундах
      * @return {Promise<number>} текущее время в миллисекундах
      */
-    private async getDateTimeMilliseconds(): Promise<number> {
-        return +(await this.http.get<number>("datetime/millis"));
+    private async getDateTimeMilliseconds(): Promise<string> {
+        return await this.http.get<string>("datetime/millis");
     }
 }

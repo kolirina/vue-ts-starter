@@ -129,28 +129,26 @@ export class TariffAgreement extends UI {
                     <div v-if="!monthly && isNewUser" class="tariff__plan_year-price">{{ tariff === Tariff.FREE ? "&nbsp;" : "* при оплате за год" }}</div>
                 </div>
                 <div>
-                    <div v-if="tariff === Tariff.STANDARD" class="fs13 margB20 mt-2">
-                        <div>
-                            <span class="bold">Неограниченное</span> кол-во бумаг
-                        </div>
-                        <div>
-                            <span class="bold">2</span> портфеля
-                        </div>
-                    </div>
-                    <div v-if="tariff === Tariff.PRO" class="fs13 margB20 mt-2">
-                        <div>
-                            <span class="bold">Неограниченное</span> кол-во бумаг
-                        </div>
-                        <div>
-                            <span class="bold">Неограниченное</span> кол-во портфелей
-                        </div>
-                    </div>
-                    <div v-if="tariff === Tariff.FREE" class="fs13 margB20 mt-2">
-                        <div>
-                            <span class="bold">7</span> ценных бумаг
-                        </div>
-                        <div>
-                            <span class="bold">1</span> портфель
+                    <div class="fs13 margB20 mt-2">
+                        <div v-if="tariff === Tariff.FREE"><span class="bold">7</span> ценных бумаг</div>
+                        <div v-else><span class="bold">Неограниченное</span> кол-во бумаг</div>
+                        <div class="mt-1">
+                            <template v-if="!premiumEnabled && tariff === Tariff.PRO">
+                                <span class="bold">Неограниченное</span> кол-во портфелей
+                            </template>
+                            <template v-if="premiumEnabled && tariff === Tariff.PRO">
+                                <span class="bold">5</span> портфелей
+                            </template>
+                            <template v-else-if="tariff !== Tariff.PRO">
+                                <span class="bold">{{ tariff.maxPortfoliosCount }}</span>
+                                <span>{{ tariff.maxPortfoliosCount | declension("портфель", "портфеля", "портфелей") }}</span>
+                            </template>
+                            <v-tooltip content-class="custom-tooltip-wrap" max-width="340px" bottom>
+                                <sup v-if="tariff === Tariff.PREMIUM" class="custom-tooltip" slot="activator">
+                                    <v-icon>fas fa-info-circle</v-icon>
+                                </sup>
+                                <span>Свяжитесь с нами если Вам необходимы отдельные условия.</span>
+                            </v-tooltip>
                         </div>
                     </div>
                 </div>
@@ -182,7 +180,7 @@ export class TariffAgreement extends UI {
                     <expanded-panel v-if="isNewTariffLayout" class="toggle-block-basic-functionality">
                         <template #header>
                             <div class="py-3 fs14">
-                                Базовый функционал
+                                Базовые возможности
                             </div>
                         </template>
                         <div class="functional-list">
@@ -210,7 +208,7 @@ export class TariffAgreement extends UI {
                         </div>
                     </expanded-panel>
                     <div v-else class="py-3 fs14">
-                        Базовый функционал
+                        Базовые возможности
                     </div>
                     <div class="py-3 fs14">
                         Доступ к разделу "Аналитика"
@@ -224,7 +222,7 @@ export class TariffAgreement extends UI {
                 </div>
                 <div v-if="tariff === Tariff.PRO" class="tariff-description-wrap">
                     <div class="py-3 fs14">
-                        Функционал тарифа Стандарт
+                        Возможности тарифа Стандарт
                     </div>
                     <div class="py-3 fs14">
                         Операции с валютой
@@ -233,13 +231,27 @@ export class TariffAgreement extends UI {
                         Учет зарубежных акций, валютных активов и коротких позиций
                     </div>
                     <div class="py-3 fs14">
-                        VIP поддержка в закрытом чате в Telegram
+                        Приоритетная поддержка в закрытом чате в Telegram
                     </div>
-                    <div class="py-3 fs14">
+                    <div v-if="!premiumEnabled" class="py-3 fs14">
                         Приоритетный доступ к функционалу, который будет добавляться в сервис в будущем
                     </div>
                     <div class="py-3 fs14">
                         Льготные условия на обучение инвестированию у наших школ-партнеров
+                    </div>
+                </div>
+                <div v-if="premiumEnabled && tariff === Tariff.PREMIUM" class="tariff-description-wrap">
+                    <div class="py-3 fs14">
+                        Возможности тарифа Профессионал
+                    </div>
+                    <div class="py-3 fs14">
+                        VIP поддержка в закрытом чате в Telegram
+                    </div>
+                    <div class="py-3 fs14">
+                        Приоритетный доступ к возможностям, которые будут добавляться в сервис в будущем
+                    </div>
+                    <div class="py-3 fs14">
+                        Индивидуальная помощь при импорте отчетов брокера
                     </div>
                 </div>
                 <div v-if="tariff === Tariff.FREE" class="tariff-description-wrap">
@@ -270,7 +282,7 @@ export class TariffAgreement extends UI {
     `,
     components: {TariffAgreement, TariffLimitExceedInfo, ExpandedPanel}
 })
-export class PayButton extends UI {
+export class TariffBlock extends UI {
 
     /** Тариф */
     @Prop({required: true, type: Object})
@@ -299,6 +311,9 @@ export class PayButton extends UI {
     /** Признак отображать ли free тариф */
     @Prop({required: true, type: Boolean})
     private isNewTariffLayout: boolean;
+    /** Признак отображения Премиум тарифа */
+    @Prop({required: true, type: Boolean})
+    private premiumEnabled: boolean;
 
     /** Тарифы */
     private Tariff = Tariff;
@@ -468,15 +483,15 @@ export class PayButton extends UI {
                     </p>
 
                     <v-layout :class="['wrap-tariffs-sentence', isNewTariffLayout ? 'free-tariff-delete' : 'justify-space-around']" wrap>
-                        <pay-button v-for="item in Tariff.values()" :key="item.name" @pay="makePayment" :tariff="item" :client-info="clientInfo" :monthly="monthly"
-                                    :agreement-state="agreementState" :busy-state="busyState" :is-progress="isProgress" :payment-info="paymentInfo"
-                                    :isNewUser="isNewUser" :isNewTariffLayout="isNewTariffLayout"></pay-button>
+                        <tariff-block v-for="item in availableTariffs" :key="item.name" @pay="makePayment" :tariff="item" :client-info="clientInfo" :monthly="monthly"
+                                      :agreement-state="agreementState" :busy-state="busyState" :is-progress="isProgress" :payment-info="paymentInfo"
+                                      :is-new-user="isNewUser" :is-new-tariff-layout="isNewTariffLayout" :premium-enabled="premiumEnabled"></tariff-block>
                     </v-layout>
                 </div>
             </v-card>
         </v-container>
     `,
-    components: {PayButton}
+    components: {TariffBlock}
 })
 export class TariffsPage extends UI {
 
@@ -484,6 +499,8 @@ export class TariffsPage extends UI {
     private readonly NEW_TARIFFS_DATE = DateUtils.parseDate("2019-06-10");
     /** Дата, начиная с которой для новых пользователей не будет отображаться free тариф */
     private readonly DELETE_FREE_TARIFF_DATE = DateUtils.parseDate("2019-07-10");
+    /** Дата, начиная с которой для новых пользователей будет отображаться Премиум тариф */
+    private readonly PREMIUM_TARIFF_DATE = DateUtils.parseDate("2019-09-04");
 
     @Inject
     private clientService: ClientService;
@@ -497,6 +514,8 @@ export class TariffsPage extends UI {
     private reloadUser: () => Promise<void>;
     /** Тарифы */
     private Tariff = Tariff;
+    /** Доступные Тарифы */
+    private availableTariffs: Tariff[] = [Tariff.STANDARD, Tariff.PRO];
     /** Признак оплаты за месяц. */
     private monthly = false;
     /** Состояния оплат тарифов */
@@ -505,7 +524,7 @@ export class TariffsPage extends UI {
     };
     /** Состояния оплат тарифов */
     private agreementState: { [key: string]: boolean } = {
-        FREE: false, STANDARD: false, PRO: false
+        FREE: false, STANDARD: false, PRO: false, PREMIUM: false
     };
     /** Состояние прогресса оплаты */
     private isProgress = false;
@@ -527,6 +546,17 @@ export class TariffsPage extends UI {
             this.$snotify.info("Оплата заказа успешно завершена");
             this.$router.push({name: "tariffs"});
         }
+        this.initAvailableTariffs();
+    }
+
+    /**
+     * Подготавливает список доступных тарифов
+     */
+    private initAvailableTariffs(): void {
+        if (this.premiumEnabled) {
+            this.availableTariffs.push(Tariff.PREMIUM);
+        }
+        this.availableTariffs.push(Tariff.FREE);
     }
 
     /**
@@ -628,5 +658,12 @@ export class TariffsPage extends UI {
      */
     private get isNewTariffLayout(): boolean {
         return DateUtils.parseDate(this.clientInfo.user.regDate).isAfter(this.DELETE_FREE_TARIFF_DATE);
+    }
+
+    /**
+     * Возвращает признак отображать ли Премиум тариф
+     */
+    private get premiumEnabled(): boolean {
+        return DateUtils.parseDate(this.clientInfo.user.regDate).isAfter(this.PREMIUM_TARIFF_DATE);
     }
 }

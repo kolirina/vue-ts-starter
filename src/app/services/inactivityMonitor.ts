@@ -93,7 +93,7 @@ export class InactivityMonitor {
      * Проверить версию приложения бэкэнда
      */
     private checkBackendVersion(): void {
-        setTimeout(async () => {
+        setInterval(async () => {
             const version = await this.applicationService.getBackendVersion();
             const versionFromLocalStorage = this.storage.get<AppVersion>(StoreKeys.BACKEND_VERSION_KEY, null);
             if (version && versionFromLocalStorage && version.version !== versionFromLocalStorage.version && version.build !== versionFromLocalStorage.build) {
