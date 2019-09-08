@@ -1,5 +1,5 @@
-import * as Sentry from "@sentry/browser";
 import {BrowserClient, Hub} from "@sentry/browser";
+import * as Integrations from "@sentry/integrations";
 import {Container} from "typescript-ioc";
 import Vue from "vue";
 import {AppFrame} from "./app/app/appFrame";
@@ -24,7 +24,7 @@ export async function start(): Promise<void> {
         const client = new BrowserClient({
             dsn: "https://0a69d1634cf74275959234ed4e0bd8f0@sentry.io/1407959",
             release: `${versionConfig.version} build ${versionConfig.build}`,
-            integrations: [new Sentry.Integrations.Vue({
+            integrations: [new Integrations.Vue({
                 Vue,
                 attachProps: true
             })]
