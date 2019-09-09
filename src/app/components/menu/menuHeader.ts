@@ -10,7 +10,7 @@ import {PortfolioSwitcher} from "../portfolioSwitcher";
     template: `
         <v-layout :class="['pt-3', 'overflow-hidden', sideBarOpened && !isMobile ? 'column' : '']" align-center>
             <v-layout class="mini-menu-width sidebar-item-action" justify-center>
-                <v-btn @click="togglePanel" v-if="sideBarOpened" flat icon dark>
+                <v-btn @click="togglePanel" v-if="sideBarOpened" flat icon dark data-v-step="3">
                     <span class="hamburger-icon"></span>
                 </v-btn>
                 <span v-else class="sidebar-icon sidebar-logo"></span>

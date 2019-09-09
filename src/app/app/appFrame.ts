@@ -71,7 +71,31 @@ const MainStore = namespace(StoreType.MAIN);
                     <v-footer color="#f7f9fb" :class="['footer-app', sideBarOpened ? '' : 'hide-main-content']">
                         <footer-content :clientInfo="clientInfo"></footer-content>
                     </v-footer>
-                    <v-tour name="intro" :steps="tourSteps"></v-tour>
+                    <v-tour name="intro" :steps="tourSteps">
+                        <template slot-scope="tour">
+                            <transition name="fade">
+                                <v-step
+                                    v-if="tour.currentStep === index"
+                                    v-for="(step, index) of tour.steps"
+                                    :key="index"
+                                    :step="step"
+                                    :previous-step="tour.previousStep"
+                                    :next-step="tour.nextStep"
+                                    :stop="tour.stop"
+                                    :is-first="tour.isFirst"
+                                    :is-last="tour.isLast"
+                                    :labels="tour.labels"
+                                >
+                                    <template>
+                                        <div slot="actions">
+                                            <!-- <button @click="tour.previousStep" class="btn btn-primary">Previous step</button>
+                                            <button @click="myCustomNextStep" class="btn btn-primary">Next step</button> -->
+                                        </div>
+                                    </template>
+                                </v-step>
+                            </transition>
+                        </template>
+                    </v-tour>
                 </v-content>
             </template>
 
@@ -176,6 +200,17 @@ export class AppFrame extends UI {
             this.isNotifyAccepted = UiStateHelper.lastUpdateNotification === NotificationUpdateDialog.DATE;
             this.showUpdatesMessage();
             this.loggedIn = true;
+            if (this.portfolio && this.portfolio.overview.totalTradesCount === 0 && (this.$route.name === "portfolio" || this.$route.name === "trades")) {
+                this.$tours["intro"].start();
+            }
+        }
+    }
+
+    private myCustomNextStep(): void {
+        // @ts-ignore
+        this.$router.push("/settings/import");
+        if (this.$tours['intro'].currentStep === 1) {
+            this.$tours['intro'].nextStep();
         }
     }
 

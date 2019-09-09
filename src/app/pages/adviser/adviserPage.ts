@@ -27,7 +27,7 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-container class="adviser-wrap">
+        <v-container class="adviser-wrap" data-v-step="6">
             <expanded-panel :value="$uistate.adviserAnalyticsPanel" :withMenu="false" :state="$uistate.ADVISER_ANALYTICS_PANEL">
                 <template #header>Аналитика</template>
                 <v-card v-if="hasTrades" flat class="pa-0">
@@ -133,6 +133,12 @@ export class AdviserPage extends UI {
         await this.loadDiagramData();
         UI.on(EventType.TRADE_CREATED, async () => await this.analysisPortfolio());
         UI.on(EventType.TRADE_UPDATED, async () => await this.analysisPortfolio());
+        if (this.$tours['intro'] && this.$tours['intro'].currentStep === 5) {
+            this.$nextTick(() => {
+                console.log("выбрать файл");
+                this.$tours['intro'].nextStep();
+            });
+        }
     }
 
     beforeDestroy(): void {

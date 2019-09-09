@@ -48,9 +48,4 @@ import {UI} from "../app/ui";
     `
 })
 export class EmptyPortfolioStub extends UI {
-
-    created(): void {
-        // @ts-ignore
-        this.$tours["intro"].start();
-    }
 }
