@@ -144,10 +144,16 @@
   }
 }
 .badge-link {
-  .v-badge__badge {
-    top: 0px;
-    font-size: 9px;
-    width: 15px;
-    height: 15px;
+  .v-badge {
+    display: flex;
+    position: inherit;
+    align-items: center;
+    .v-badge__badge {
+      top: 0px;
+      font-size: 12px;
+      width: 23px;
+      height: 19px;
+      position: inherit;
+    }
   }
 }
