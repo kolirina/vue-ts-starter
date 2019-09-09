@@ -10,10 +10,13 @@ import {PortfolioParams} from "../../../services/portfolioService";
             </div>
             <div v-else class="fs13">
                 <div class="mb-2">
-                    Отчет вашего брокера не содержит информацию о комиссиях.
+                    Отчеты вашего брокера не содержат информацию о комиссиях.
                 </div>
                 <div class="mb-2">
-                    Пожалуйста, укажите процент, который комиссия составляет от суммы сделки.
+                    Пожалуйста, укажите процент, который составляет комиссия от суммы сделки.
+                </div>
+                <div class="mb-2">
+                    И мы автоматически рассчитаем комиссию по каждой сделке.
                 </div>
                 <ii-number-field label="Фиксированная комиссия" v-model="portfolioParams.fixFee" class="maxW275 w100pc"
                                  hint="Для автоматического рассчета комиссии при импорте сделок." :decimals="5" @input="changePortfolioParams">
