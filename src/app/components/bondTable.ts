@@ -283,11 +283,11 @@ export class BondTable extends UI {
     /** Типы активов */
     private AssetType = AssetType;
     /** Паджинация для задания дефолтной сортировки */
-    private pagination: Pagination = {
-        descending: this.localStorage.get("descendingBondSort", false),
-        sortBy: this.localStorage.get("bondSortBy", "percCurrShare"),
+    private pagination: Pagination = this.localStorage.get("bondPagination", {
+        descending: false,
+        sortBy: "percCurrShare",
         rowsPerPage: -1
-    };
+    });
 
     /**
      * Инициализация данных
@@ -386,9 +386,12 @@ export class BondTable extends UI {
         return amount.amount.toNumber();
     }
 
+    @Watch("pagination")
+    private paginationChange(): void {
+        this.localStorage.set("bondPagination", this.pagination);
+    }
+
     private customSort(items: BondPortfolioRow[], sortby: string, isDesc: boolean): BondPortfolioRow[] {
-        this.localStorage.set("bondSortBy", sortby);
-        this.localStorage.set("descendingBondSort", isDesc);
         return SortUtils.bondSort(items, sortby, isDesc);
     }
 
