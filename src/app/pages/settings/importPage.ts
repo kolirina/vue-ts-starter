@@ -13,6 +13,7 @@ import {Filters} from "../../platform/filters/Filters";
 import {ClientInfo} from "../../services/clientService";
 import {DealsImportProvider, ImportProviderFeatures, ImportProviderFeaturesByProvider, ImportResponse, ImportService} from "../../services/importService";
 import {OverviewService} from "../../services/overviewService";
+import {PortfolioParams, PortfolioService} from "../../services/portfolioService";
 import {Portfolio, Status} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {FileUtils} from "../../utils/fileUtils";
@@ -198,22 +199,25 @@ const MainStore = namespace(StoreType.MAIN);
                         </div>
                     </div>
 
-                    <v-layout align-center class="section-upload-file" wrap pb-3>
-                        <div class="margT20">
-                            <v-btn v-if="importProviderFeatures && files.length" color="primary" class="big_btn mr-3" @click.stop="uploadFile">Загрузить</v-btn>
-                        </div>
-                        <div class="margT20">
-                            <file-link @select="onFileAdd" :accept="allowedExtensions"
-                                       v-if="importProviderFeatures && files.length" class="reselect-file-btn">Выбрать другой файл
-                            </file-link>
-                        </div>
-                        <div class="margT20">
-                            <file-link @select="onFileAdd" :accept="allowedExtensions" v-if="importProviderFeatures && !files.length">Выбрать файл</file-link>
-                        </div>
-                        <v-spacer></v-spacer>
-                        <div @click="showInstruction = !showInstruction" class="btn-show-instruction margT20" v-if="importProviderFeatures">
-                            {{ (showInstruction ? "Скрыть" : "Показать") + " инструкцию" }}
-                        </div>
+                    <v-layout class="section-upload-file" wrap pb-3 column>
+                        <v-layout align-center>
+                            <div v-if="importProviderFeatures && files.length" class="margT20">
+                                <v-btn color="primary" class="big_btn mr-3" @click.stop="uploadFile">Загрузить</v-btn>
+                            </div>
+                            <div v-if="importProviderFeatures && files.length" class="margT20">
+                                <file-link @select="onFileAdd" :accept="allowedExtensions" class="reselect-file-btn">
+                                    Выбрать другой файл
+                                </file-link>
+                            </div>
+                        </v-layout>
+                        <v-layout class="margT20" align-center justify-space-between>
+                            <div>
+                                <file-link @select="onFileAdd" :accept="allowedExtensions" v-if="importProviderFeatures && !files.length">Выбрать файл</file-link>
+                            </div>
+                            <div @click="showInstruction = !showInstruction" class="btn-show-instruction" v-if="importProviderFeatures">
+                                {{ (showInstruction ? "Скрыть" : "Показать") + " инструкцию" }}
+                            </div>
+                        </v-layout>
                     </v-layout>
 
                     <p v-if="portfolio.overview.totalTradesCount" style="text-align: center;padding: 20px;">
@@ -226,7 +230,8 @@ const MainStore = namespace(StoreType.MAIN);
                             <a>Смотреть видео инструкцию по импорту сделок</a>
                         </video-link>
                     </div>
-                    <import-instructions v-if="showInstruction" :provider="selectedProvider" @selectProvider="onSelectProvider"></import-instructions>
+                    <import-instructions v-if="showInstruction" :provider="selectedProvider" @selectProvider="onSelectProvider" @changePortfolioParams="changePortfolioParams"
+                                         :portfolio-params="portfolioParams" class="margT20"></import-instructions>
 
                 </v-card-text>
             </v-card>
@@ -248,6 +253,8 @@ export class ImportPage extends UI {
     private importService: ImportService;
     @Inject
     private overviewService: OverviewService;
+    @Inject
+    private portfolioService: PortfolioService;
     /** Все провайдеры импорта */
     private importProviderFeaturesByProvider: ImportProviderFeaturesByProvider = null;
     /** Настройки импорта для выбранного провайдера */
@@ -264,6 +271,7 @@ export class ImportPage extends UI {
     private allowedExtensions = FileUtils.ALLOWED_MIME_TYPES;
     /** Отображение инструкции к провайдеру */
     private showInstruction: boolean = true;
+    private portfolioParams: PortfolioParams = null;
 
     /**
      * Инициализирует необходимые для работы данные
@@ -272,6 +280,7 @@ export class ImportPage extends UI {
     @ShowProgress
     async created(): Promise<void> {
         this.importProviderFeaturesByProvider = await this.importService.getImportProviderFeatures();
+        this.portfolioParams = {...this.portfolio.portfolioParams};
     }
 
     /**
@@ -320,6 +329,9 @@ export class ImportPage extends UI {
                 if (result !== BtnReturn.YES) {
                     return;
                 }
+            }
+            if (this.isFinam && this.portfolioParams.fixFee !== this.portfolio.portfolioParams.fixFee) {
+                await this.portfolioService.createOrUpdatePortfolio(this.portfolioParams);
             }
             const response = await this.importReport();
             await this.handleUploadResponse(response);
@@ -407,5 +419,13 @@ export class ImportPage extends UI {
 
     private clearFiles(): void {
         this.files = [];
+    }
+
+    private get isFinam(): boolean {
+        return this.selectedProvider === DealsImportProvider.FINAM;
+    }
+
+    private changePortfolioParams(portfolioParams: PortfolioParams): void {
+        this.portfolioParams = portfolioParams;
     }
 }
