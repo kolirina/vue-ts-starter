@@ -34,6 +34,31 @@ const MainStore = namespace(StoreType.MAIN);
     template: `
         <v-app id="inspire" light>
             <tariff-expired-hint></tariff-expired-hint>
+            <v-tour name="intro" :steps="tourSteps">
+                <template slot-scope="tour">
+                    <transition name="fade">
+                        <v-step
+                            v-if="tour.currentStep === index"
+                            v-for="(step, index) of tour.steps"
+                            :key="index"
+                            :step="step"
+                            :previous-step="tour.previousStep"
+                            :next-step="tour.nextStep"
+                            :stop="tour.stop"
+                            :is-first="tour.isFirst"
+                            :is-last="tour.isLast"
+                            :labels="tour.labels"
+                        >
+                            <template>
+                                <div slot="actions">
+                                    <button @click="tour.previousStep" class="btn btn-primary">Previous step</button>
+                                    <button @click="myCustomNextStep" class="btn btn-primary">Next step</button>
+                                </div>
+                            </template>
+                        </v-step>
+                    </transition>
+                </template>
+            </v-tour>
             <vue-snotify></vue-snotify>
             <error-handler></error-handler>
             <template v-if="!loading && !loggedIn">
@@ -71,39 +96,12 @@ const MainStore = namespace(StoreType.MAIN);
                     <v-footer color="#f7f9fb" :class="['footer-app', sideBarOpened ? '' : 'hide-main-content']">
                         <footer-content :clientInfo="clientInfo"></footer-content>
                     </v-footer>
-                    <v-tour name="intro" :steps="tourSteps">
-                        <template slot-scope="tour">
-                            <transition name="fade">
-                                <v-step
-                                    v-if="tour.currentStep === index"
-                                    v-for="(step, index) of tour.steps"
-                                    :key="index"
-                                    :step="step"
-                                    :previous-step="tour.previousStep"
-                                    :next-step="tour.nextStep"
-                                    :stop="tour.stop"
-                                    :is-first="tour.isFirst"
-                                    :is-last="tour.isLast"
-                                    :labels="tour.labels"
-                                >
-                                    <template>
-                                        <div slot="actions">
-                                            <!-- <button @click="tour.previousStep" class="btn btn-primary">Previous step</button>
-                                            <button @click="myCustomNextStep" class="btn btn-primary">Next step</button> -->
-                                        </div>
-                                    </template>
-                                </v-step>
-                            </transition>
-                        </template>
-                    </v-tour>
                 </v-content>
             </template>
 
             <template v-if="loading">
                 <v-content>
-                    <div class="mobile-wrapper-menu">
-
-                    </div>
+                    <div class="mobile-wrapper-menu"></div>
                     <v-container fluid :class="['paddT0', 'fb-0', sideBarOpened ? '' : 'hide-main-content']">
                         <content-loader :height="800" :width="800" :speed="1" primaryColor="#f3f3f3" secondaryColor="#ecebeb">
                             <rect x="0" y="20" rx="5" ry="5" width="801.11" height="80"/>
@@ -200,18 +198,11 @@ export class AppFrame extends UI {
             this.isNotifyAccepted = UiStateHelper.lastUpdateNotification === NotificationUpdateDialog.DATE;
             this.showUpdatesMessage();
             this.loggedIn = true;
-            if (this.portfolio && this.portfolio.overview.totalTradesCount === 0 && (this.$route.name === "portfolio" || this.$route.name === "trades")) {
-                this.$tours["intro"].start();
-            }
         }
     }
 
     private myCustomNextStep(): void {
-        // @ts-ignore
-        this.$router.push("/settings/import");
-        if (this.$tours['intro'].currentStep === 1) {
-            this.$tours['intro'].nextStep();
-        }
+        this.$tours["intro"].nextStep();
     }
 
     private async checkAuthorized(registration?: boolean): Promise<void> {

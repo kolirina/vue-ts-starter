@@ -10,7 +10,7 @@ import {PortfolioSwitcher} from "../portfolioSwitcher";
         <v-layout class="overflow-hidden">
             <v-layout column justify-space-between align-center class="mini-menu-width">
                 <div>
-                    <v-btn @click.stop="openDialog" fab dark small color="indigo" depressed class="add-btn-menu">
+                    <v-btn @click.stop="openDialog" fab dark small color="indigo" depressed class="add-btn-menu" data-v-step="3">
                         <v-icon dark>add</v-icon>
                     </v-btn>
                 </div>
@@ -19,6 +19,22 @@ import {PortfolioSwitcher} from "../portfolioSwitcher";
                 <div v-for="item in mainSection">
                     <template v-if="item.action === 'adviser'">
                         <v-list-tile :key="item.action" active-class="active-link" data-v-step="4"
+                                     :to="{path: item.path, name: item.action, params: item.params}">
+                            <v-list-tile-content v-if="item.action === linkAdditionalFunctionality.EVENTS && numberOfEvents" class="badge-link">
+                                <v-badge color="primary">
+                                    <template #badge>
+                                        <span title="У вас есть новые события по портфелю!">{{ numberOfEvents >= 100 ? "99+" : numberOfEvents }}</span>
+                                    </template>
+                                    <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+                                </v-badge>
+                            </v-list-tile-content>
+                            <v-list-tile-content v-else>
+                                <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+                            </v-list-tile-content>
+                        </v-list-tile>
+                    </template>
+                    <template v-else-if="item.action === 'help'">
+                        <v-list-tile :key="item.action" active-class="active-link" data-v-step="5"
                                      :to="{path: item.path, name: item.action, params: item.params}">
                             <v-list-tile-content v-if="item.action === linkAdditionalFunctionality.EVENTS && numberOfEvents" class="badge-link">
                                 <v-badge color="primary">

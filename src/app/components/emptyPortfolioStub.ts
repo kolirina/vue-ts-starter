@@ -48,4 +48,7 @@ import {UI} from "../app/ui";
     `
 })
 export class EmptyPortfolioStub extends UI {
+    created(): void {
+        this.$tours["intro"].start();
+    }
 }

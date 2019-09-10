@@ -38,25 +38,16 @@ const MainStore = namespace(StoreType.MAIN);
                     </div>
                 </v-card-title>
             </v-card>
-            <v-card flat class="px-0 py-0">
+            <v-card flat class="px-0 py-0" data-v-step="1">
                 <v-card-text class="import-wrapper-content">
                     <div class="providers">
                         <div v-for="provider in providers.values()" :key="provider.code" @click="onSelectProvider(provider)"
-                             v-if="provider !== providers.SBERBANK" class="item">
+                             v-if="provider !== providers.INTELINVEST" class="item">
                             <div :class="['w100pc', 'alignC', selectedProvider === provider ? 'active' : '']">
                                 <div :class="['item-img-block', provider.code.toLowerCase()]">
                                 </div>
                                 <div class="item-text">
                                     {{ provider.description }}
-                                </div>
-                            </div>
-                        </div>
-                        <div @click="onSelectProvider(providers.SBERBANK)" v-else class="item" data-v-step="1">
-                            <div :class="['w100pc', 'alignC', selectedProvider === providers.SBERBANK ? 'active' : '']">
-                                <div :class="['item-img-block', providers.SBERBANK.code.toLowerCase()]">
-                                </div>
-                                <div class="item-text">
-                                    {{ providers.SBERBANK.description }}
                                 </div>
                             </div>
                         </div>
@@ -219,7 +210,7 @@ const MainStore = namespace(StoreType.MAIN);
                             </file-link>
                         </div>
                         <div class="margT20">
-                            <file-link @select="onFileAdd" :accept="allowedExtensions" v-if="importProviderFeatures && !files.length" data-v-step="2">Выбрать файл</file-link>
+                            <file-link @select="onFileAdd" :accept="allowedExtensions" v-if="importProviderFeatures && !files.length">Выбрать файл</file-link>
                         </div>
                         <v-spacer></v-spacer>
                         <div @click="showInstruction = !showInstruction" class="btn-show-instruction margT20" v-if="importProviderFeatures">
@@ -232,8 +223,8 @@ const MainStore = namespace(StoreType.MAIN);
                             Последняя зарегистрированная сделка в портфеле от {{ portfolio.overview.lastTradeDate | date }}.
                         </b>
                     </p>
-                    <div>
-                        <video-link class="alignC">
+                    <div data-v-step="2">
+                        <video-link class="alignC" @click="nextStep">
                             <a>Смотреть видео инструкцию по импорту сделок</a>
                         </video-link>
                     </div>
@@ -288,15 +279,14 @@ export class ImportPage extends UI {
     }
 
     async mounted(): Promise<void> {
-        if (this.$tours['intro'] && this.$tours['intro'].currentStep === 0) {
-            console.log(this.$tours['intro'].currentStep);
-            // if (!this.importProviderFeaturesByProvider) {
-            //     this.importProviderFeaturesByProvider = await this.importService.getImportProviderFeatures();
-            // }
-            // this.selectedProvider = DealsImportProvider.SBERBANK;
-            // this.importProviderFeatures = {...this.importProviderFeaturesByProvider[DealsImportProvider.SBERBANK.code]};
-            this.$tours['intro'].nextStep();
+        console.log(this.$tours["intro"]);
+        if (this.$tours["intro"] && this.$tours["intro"].currentStep === 0) {
+            this.$tours["intro"].nextStep();
         }
+    }
+
+    private nextStep(): void {
+        this.$tours["intro"].nextStep();
     }
 
     /**
@@ -304,10 +294,6 @@ export class ImportPage extends UI {
      * @param {FileList} fileList список файлов
      */
     private onFileAdd(fileList: File[]): void {
-        console.log(this.$tours['intro'].currentStep);
-        if (this.$tours['intro'] && this.$tours['intro'].currentStep === 2) {
-            this.$tours['intro'].nextStep();
-        }
         let filtered = fileList;
         if (fileList.length > 1) {
             this.$snotify.warning("Пожалуйста загружайте по одному файлу для более точных результатов импорта.");
@@ -432,11 +418,8 @@ export class ImportPage extends UI {
             this.importProviderFeatures.createLinkedTrade = false;
         }
         this.clearFiles();
-        if (this.$tours['intro'] && this.$tours['intro'].currentStep === 1) {
-            this.$nextTick(() => {
-                console.log("выбрать файл");
-                this.$tours['intro'].nextStep();
-            });
+        if (this.$tours["intro"] && this.$tours["intro"].currentStep === 1) {
+            this.$tours["intro"].nextStep();
         }
     }
 
