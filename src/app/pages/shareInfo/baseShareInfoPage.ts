@@ -16,6 +16,7 @@
 
 import Decimal from "decimal.js";
 import {Inject} from "typescript-ioc";
+import {namespace} from "vuex-class/lib/bindings";
 import {Component, Prop, UI, Watch} from "../../app/ui";
 import {DividendChart} from "../../components/charts/dividendChart";
 import {AddTradeDialog} from "../../components/dialogs/addTradeDialog";
@@ -23,15 +24,15 @@ import {CreateOrEditNotificationDialog} from "../../components/dialogs/createOrE
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {MarketService} from "../../services/marketService";
 import {NotificationType} from "../../services/notificationsService";
+import {TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
+import {BigMoney} from "../../types/bigMoney";
 import {BaseChartDot, Dot, HighStockEventsGroup} from "../../types/charts/types";
 import {Operation} from "../../types/operation";
-import {Portfolio, Share, ShareType, Stock, StockDynamic} from "../../types/types";
+import {Portfolio, Share, ShareType, Stock, StockDynamic, TradeRow} from "../../types/types";
 import {ChartUtils} from "../../utils/chartUtils";
 import {TradeUtils} from "../../utils/tradeUtils";
 import {StoreType} from "../../vuex/storeType";
-import {TradeService} from "../../services/tradeService";
-import {namespace} from "vuex-class/lib/bindings";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -355,6 +356,7 @@ export class BaseShareInfoPage extends UI {
     private stockDynamic: StockDynamic = null;
     /** Данные для микрографика */
     private microChartData: any[] = [];
+    private operations = Operation;
 
     /**
      * Инициализация данных
@@ -389,26 +391,56 @@ export class BaseShareInfoPage extends UI {
         this.stockDynamic = result.stockDynamic;
         this.microChartData = ChartUtils.convertPriceDataDots(result.stockDynamic.yearHistory);
         const trades = await this.tradeService.getShareTrades(this.portfolio.id.toString(), ticker);
-        const events: any = [];
-        trades.forEach((item: any) => {
+        const events: TradeToEventChartData[] = [];
+        trades.forEach((item: TradeRow) => {
             events.push({
                 backgroundColor: this.getBackgroundColor(item.operation),
                 date: item.date,
-                description: this.getDescription(item.operation, item.signedTotal),
+                description: this.getDescription(item.operation, item.signedTotal, item.ticker),
                 graph: "g1",
-                text: item.operation[1],
+                text: item.operation[0],
                 type: "sign"
             });
         });
-        this.events = ChartUtils.processEventsChartData(events);
+        this.events = ChartUtils.processEventsChartData(
+            events.sort((a: TradeToEventChartData, b: TradeToEventChartData) => new Date(a.date).getTime() - new Date(b.date).getTime())
+        );
     }
 
-    private getDescription(operation: string, totalAmount: string): string {
-        return `${operation} ${totalAmount}`;
+    private getDescription(operation: string, totalAmount: string, ticker?: string): string {
+        switch (operation) {
+            case this.operations.DIVIDEND.enumName:
+                return `Дивиденд ${ticker} на сумму: ${new BigMoney(totalAmount).amount.abs()} ${new BigMoney(totalAmount).currency}`;
+            case this.operations.INCOME.enumName:
+                return `Доход на сумму ${new BigMoney(totalAmount).amount.abs()} ${new BigMoney(totalAmount).currency}`;
+            case this.operations.BUY.enumName:
+                return `Покупка акции ${ticker} на сумму: ${new BigMoney(totalAmount).amount.abs()} ${new BigMoney(totalAmount).currency}`;
+            case this.operations.COUPON.enumName:
+                return `Купон ${ticker} на сумму: ${new BigMoney(totalAmount).amount.abs()} ${new BigMoney(totalAmount).currency}`;
+            case this.operations.SELL.enumName:
+                return `Продажа акции ${ticker} на сумму: ${new BigMoney(totalAmount).amount.abs()} ${new BigMoney(totalAmount).currency}`;
+            case this.operations.LOSS.enumName:
+                return `Расход на сумму: ${new BigMoney(totalAmount).amount.abs()} ${new BigMoney(totalAmount).currency}`;
+        }
+        throw new Error("Неизвестный тип операции");
     }
 
     private getBackgroundColor(operation: string): string {
-        return "#006400b3";
+        switch (operation) {
+            case this.operations.DIVIDEND.enumName:
+                return "#93D8FF";
+            case this.operations.INCOME.enumName:
+                return "#006400";
+            case this.operations.BUY.enumName:
+                return "#006400b3";
+            case this.operations.COUPON.enumName:
+                return "#C0A0FB";
+            case this.operations.SELL.enumName:
+                return "#f009";
+            case this.operations.LOSS.enumName:
+                return "#ff0000";
+        }
+        throw new Error("Неизвестный тип операции");
     }
 
     private async openDialog(): Promise<void> {
@@ -459,4 +491,12 @@ export class BaseShareInfoPage extends UI {
     get currencySymbol(): string {
         return TradeUtils.getCurrencySymbol(this.share.currency);
     }
+}
+export interface TradeToEventChartData {
+    backgroundColor: string;
+    date: string;
+    description: string;
+    graph: string;
+    text: string;
+    type: string;
 }
