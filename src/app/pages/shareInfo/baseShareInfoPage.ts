@@ -26,10 +26,14 @@ import {NotificationType} from "../../services/notificationsService";
 import {AssetType} from "../../types/assetType";
 import {BaseChartDot, Dot, HighStockEventsGroup} from "../../types/charts/types";
 import {Operation} from "../../types/operation";
-import {Share, ShareType, Stock, StockDynamic} from "../../types/types";
+import {Portfolio, Share, ShareType, Stock, StockDynamic} from "../../types/types";
 import {ChartUtils} from "../../utils/chartUtils";
 import {TradeUtils} from "../../utils/tradeUtils";
 import {StoreType} from "../../vuex/storeType";
+import {TradeService} from "../../services/tradeService";
+import {namespace} from "vuex-class/lib/bindings";
+
+const MainStore = namespace(StoreType.MAIN);
 
 @Component({
     // language=Vue
@@ -332,7 +336,11 @@ export class BaseShareInfoPage extends UI {
     private portfolioAvgPrice: number;
 
     @Inject
+    private tradeService: TradeService;
+    @Inject
     private marketService: MarketService;
+    @MainStore.Getter
+    private portfolio: Portfolio;
     /** Типы активов */
     private assetType = AssetType;
     /** Ценная бумага */
@@ -378,9 +386,29 @@ export class BaseShareInfoPage extends UI {
         this.share = result.stock;
         this.history = result.history;
         this.dividends = result.dividends;
-        this.events.push(result.events);
         this.stockDynamic = result.stockDynamic;
         this.microChartData = ChartUtils.convertPriceDataDots(result.stockDynamic.yearHistory);
+        const trades = await this.tradeService.getShareTrades(this.portfolio.id.toString(), ticker);
+        const events: any = [];
+        trades.forEach((item: any) => {
+            events.push({
+                backgroundColor: this.getBackgroundColor(item.operation),
+                date: item.date,
+                description: this.getDescription(item.operation, item.signedTotal),
+                graph: "g1",
+                text: item.operation[1],
+                type: "sign"
+            });
+        });
+        this.events = ChartUtils.processEventsChartData(events);
+    }
+
+    private getDescription(operation: string, totalAmount: string): string {
+        return `${operation} ${totalAmount}`;
+    }
+
+    private getBackgroundColor(operation: string): string {
+        return "#006400b3";
     }
 
     private async openDialog(): Promise<void> {

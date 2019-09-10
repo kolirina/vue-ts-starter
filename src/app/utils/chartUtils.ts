@@ -81,12 +81,14 @@ export class ChartUtils {
 
     static processEventsChartData(data: EventChartData[], flags: string = "flags", onSeries: string = "totalChart",
                                   shape: string = "circlepin", width: number = 10): HighStockEventsGroup[] {
+        console.log(data);
         const eventsGroups: HighStockEventsGroup[] = [];
         const temp = data.reduce((result: { [key: string]: HighStockEventData[] }, current: EventChartData) => {
             result[current.backgroundColor] = result[current.backgroundColor] || [];
             result[current.backgroundColor].push({x: new Date(current.date).getTime(), title: current.text, text: current.description, color: current.backgroundColor});
             return result;
         }, {} as { [key: string]: HighStockEventData[] });
+        console.log(temp);
         let count = 0;
         //  TODO разобраться почему не отображаются все точки
         // const eventsByCount: { [key: string]: HighStockEventData[] } = {};
@@ -128,6 +130,7 @@ export class ChartUtils {
                 width: width
             });
         });
+        console.log(eventsGroups);
         return eventsGroups;
     }
 
