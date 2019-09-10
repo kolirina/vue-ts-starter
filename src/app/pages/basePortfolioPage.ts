@@ -162,7 +162,12 @@ export class BasePortfolioPage extends UI {
         bondPieChart: PieChart,
         sectorsChart: PieChart
     };
-
+    @Inject
+    private tablesService: TablesService;
+    @Inject
+    private storageService: Storage;
+    @Inject
+    private overviewService: OverviewService;
     /** Данные по портфелю */
     @Prop({default: null, required: true})
     private overview: Overview;
@@ -199,12 +204,9 @@ export class BasePortfolioPage extends UI {
     /** Признак проф. режима */
     @Prop({type: Boolean, default: null})
     private professionalMode: boolean;
-    @Inject
-    private tablesService: TablesService;
-    @Inject
-    private storageService: Storage;
-    @Inject
-    private overviewService: OverviewService;
+    /** Текущий остаток денег в портфеле */
+    @Prop({type: String, default: null})
+    private currentMoneyRemainder: string;
     /** Список заголовков таблиц */
     private headers: TableHeaders = this.tablesService.headers;
     /** Названия таблиц с заголовками */
@@ -231,7 +233,6 @@ export class BasePortfolioPage extends UI {
     private bondFilter: PortfolioRowFilter = {};
     /** Типы возможных пустых блоков */
     private emptyBlockType = EmptyBlockType;
-    private currentMoneyRemainder: string = null;
 
     /**
      * Инициализация данных компонента
@@ -240,7 +241,6 @@ export class BasePortfolioPage extends UI {
     async created(): Promise<void> {
         this.stockTablePanelClosed = UiStateHelper.stocksTablePanel[0] === 0;
         this.bondTablePanelClosed = UiStateHelper.bondsTablePanel[0] === 0;
-        await this.getCurrentMoneyRemainder();
         this.assetsPieChartData = this.doAssetsPieChartData();
         this.stockPieChartData = this.doStockPieChartData();
         this.bondPieChartData = this.doBondPieChartData();
@@ -251,17 +251,10 @@ export class BasePortfolioPage extends UI {
 
     @Watch("overview")
     private async onPortfolioChange(): Promise<void> {
-        await this.getCurrentMoneyRemainder();
         this.assetsPieChartData = this.doAssetsPieChartData();
         this.stockPieChartData = this.doStockPieChartData();
         this.bondPieChartData = this.doBondPieChartData();
         this.sectorsChartData = this.doSectorsChartData();
-    }
-
-    private async getCurrentMoneyRemainder(): Promise<void> {
-        if (this.portfolioId) {
-            this.currentMoneyRemainder = await this.overviewService.getCurrentMoney(Number(this.portfolioId));
-        }
     }
 
     private blockNotEmpty(type: EmptyBlockType): boolean {

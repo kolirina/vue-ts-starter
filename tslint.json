@@ -21,6 +21,7 @@
       true,
       "no-public"
     ],
+    "only-arrow-functions": false,
     /** Обязательное указание типов для возвращаемого результата */
     "typedef": [
       true,
