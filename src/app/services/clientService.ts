@@ -71,10 +71,12 @@ export class ClientService {
     }
 
     /**
-     * Переключает на старую версию сервиса
+     * Обновляет дату уведомления об обнвлениях
+     * @param date дата уведомления об обновлениях
+     * @returns {Promise<void>}
      */
-    async switchToOldVersion(): Promise<string> {
-        return this.http.get<string>(`/user/switch-to-old`);
+    async setNotificationConfirmDate(date: string): Promise<void> {
+        await this.http.post(`/user/notification-date/${date}`);
     }
 
     /**
@@ -181,6 +183,8 @@ export interface BaseClient {
     referrerEarnedTotalAmount: string;
     /** Подписан ли пользователь на emeil рассылку */
     unsubscribed: boolean;
+    /** Дата уведомления о последних изменениях в сервисе */
+    updateNotificationConfirmDate?: string;
 }
 
 export interface ClientResponse extends BaseClient {

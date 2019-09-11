@@ -42,11 +42,14 @@ export class LocalStorageUpdater {
      * Централизованно изменяет данные в localStorage, которые потеряли свою актуальность изза новых версий приложения
      */
     updateLocalStorage(): void {
-        // this.updateCalendarEventTypes();
-        // this.updateTableColumns();
-        this.updateChartsStorage();
-        this.updateTradeFilterSetting();
-        this.localStorage.set<string>(StoreKeys.LOCAL_STORAGE_LAST_UPDATE_DATE_KEY, versionConfig.date);
+        if (versionConfig.date !== this.localStorage.get<string>(StoreKeys.LOCAL_STORAGE_LAST_UPDATE_DATE_KEY, versionConfig.date)) {
+            // this.updateCalendarEventTypes();
+            // this.updateTableColumns();
+            this.updateChartsStorage();
+            this.updateTradeFilterSetting();
+            this.localStorage.delete("last_update_notification");
+            this.localStorage.set<string>(StoreKeys.LOCAL_STORAGE_LAST_UPDATE_DATE_KEY, versionConfig.date);
+        }
     }
 
     /**
