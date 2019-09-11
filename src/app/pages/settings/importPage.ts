@@ -212,8 +212,11 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-layout>
                         <v-layout class="margT20" align-center justify-space-between>
                             <div>
-                                <file-link @select="onFileAdd" :accept="allowedExtensions" v-if="importProviderFeatures && !files.length">Выбрать файл</file-link>
+                                <file-link @select="onFileAdd" :accept="allowedExtensions" v-if="importProviderFeatures && !files.length" class="select-file-btn">
+                                    Выбрать файл
+                                </file-link>
                             </div>
+
                             <div @click="showInstruction = !showInstruction" class="btn-show-instruction" v-if="importProviderFeatures">
                                 {{ (showInstruction ? "Скрыть" : "Показать") + " инструкцию" }}
                             </div>
@@ -232,7 +235,6 @@ const MainStore = namespace(StoreType.MAIN);
                     </div>
                     <import-instructions v-if="showInstruction" :provider="selectedProvider" @selectProvider="onSelectProvider" @changePortfolioParams="changePortfolioParams"
                                          :portfolio-params="portfolioParams" class="margT20"></import-instructions>
-
                 </v-card-text>
             </v-card>
         </v-container>

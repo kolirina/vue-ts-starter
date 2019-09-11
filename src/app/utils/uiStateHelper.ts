@@ -20,7 +20,6 @@ export class UiStateHelper {
     static readonly INVESTMENTS_SETTINGS_PANEL = "investmentsSettingsPanel";
     static readonly REFERRAL_STATISTICS_PANEL = "referralStatistics";
     static readonly EVENTS_CALENDAR = "events_calendar";
-    static readonly LAST_UPDATE_NOTIFICATION = "last_update_notification";
     static readonly TRADES_FILTER = "trades_filter";
     static readonly IMPORT_SETTINGS = "import_settings";
     static readonly ADVISER_ANALYTICS_PANEL = "adviser_analytics_panel";
@@ -160,14 +159,6 @@ export class UiStateHelper {
 
     static get eventsCalendarPanel(): number[] {
         return [localStorage.get(UiStateHelper.EVENTS_CALENDAR, 0)];
-    }
-
-    static set lastUpdateNotification(value: string) {
-        localStorage.set(UiStateHelper.LAST_UPDATE_NOTIFICATION, value);
-    }
-
-    static get lastUpdateNotification(): string {
-        return localStorage.get(UiStateHelper.LAST_UPDATE_NOTIFICATION, null);
     }
 
     static set tradesFilter(value: number[]) {

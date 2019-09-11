@@ -175,7 +175,7 @@ export class AppFrame extends UI {
         await this.checkAuthorized();
         // если удалось восстановить state, значит все уже загружено
         if (this.$store.state[StoreType.MAIN].clientInfo) {
-            this.isNotifyAccepted = UiStateHelper.lastUpdateNotification === NotificationUpdateDialog.DATE;
+            this.isNotifyAccepted = this.clientInfo.user.updateNotificationConfirmDate === NotificationUpdateDialog.DATE;
             this.showUpdatesMessage();
             await this.loadEvents(this.portfolio.id);
             this.loggedIn = true;
@@ -254,7 +254,8 @@ export class AppFrame extends UI {
     private async openNotificationUpdateDialog(): Promise<void> {
         const dlgReturn = await new NotificationUpdateDialog().show();
         if (dlgReturn === BtnReturn.YES) {
-            UiStateHelper.lastUpdateNotification = NotificationUpdateDialog.DATE;
+            await this.clientService.setNotificationConfirmDate(NotificationUpdateDialog.DATE);
+            this.clientInfo.user.updateNotificationConfirmDate = NotificationUpdateDialog.DATE;
             this.isNotifyAccepted = true;
         } else if (dlgReturn === BtnReturn.SHOW_FEEDBACK) {
             await new FeedbackDialog().show(this.clientInfo);
