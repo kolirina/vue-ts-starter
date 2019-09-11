@@ -84,7 +84,7 @@ const MainStore = namespace(StoreType.MAIN);
                         <a @click.stop="$vuetify.goTo('#tariffs_public')">Тарифы</a>
                     </div>
                     <div class="wrapper-list-reference__item-content-wrapper">
-                        <a @click.stop="$vuetify.goTo('#settings_promo_codes')">Промокоды</a>
+                        <a @click.stop="$vuetify.goTo('#settings_promo_codes')">Партнерская программа</a>
                     </div>
                     <div class="wrapper-list-reference__item-content-wrapper">
                         <a @click.stop="$vuetify.goTo('#settings_notifications')">Уведомления</a>
@@ -946,7 +946,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             прибавлен к оплаченному сроку.
                                         </p>
                                         <div>
-                                            <a id="settings_promo_codes" class="non-cursor-click">Промокоды</a>
+                                            <a id="settings_promo_codes" class="non-cursor-click">Партнерская программа</a>
                                         </div>
                                         <p>
                                             <a href="#/settings/promo-codes">В данном</a> разделе будет
