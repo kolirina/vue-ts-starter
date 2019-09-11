@@ -37,6 +37,7 @@ import {Filters} from "../platform/filters/Filters";
 import {highchartsRu} from "../platform/locale/highchartsRu";
 import {RU} from "../platform/locale/ru";
 import {ruLocale} from "../platform/locale/veeValidateMessages";
+import {ChartUtils} from "../utils/chartUtils";
 // import {RouterConfiguration} from "../router/routerConfiguration";
 import {UiStateHelper} from "../utils/uiStateHelper";
 import {UI} from "./ui";
@@ -153,5 +154,6 @@ export class UIRegistry {
         // локализация highcharts
         Highcharts.setOptions({lang: highchartsRu});
         Highstock.setOptions({lang: highchartsRu});
+        ChartUtils.initPieChartAnimation();
     }
 }

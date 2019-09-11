@@ -61,20 +61,25 @@
     padding-left: 0 !important;
   }
 
-  th {
-    color: $non-active-table-th-color !important;
+  thead {
+    th {
+      padding: 10px 14px;
+      border: 0 none;
+      background-color: #ffffff;
+      font-weight: bold !important;
 
-    &:nth-child(1) {
-      padding: 0 5px 0 20px !important;
-      text-align: center;
-    }
+      &:nth-child(1) {
+        padding: 0 5px 0 20px !important;
+        text-align: center;
+      }
 
-    &:nth-child(2) {
-      padding-left: 0 !important;
-    }
+      &:nth-child(2) {
+        padding-left: 0 !important;
+      }
 
-    &.active {
-      color: $theme-color-dark-blue !important;
+      &.active {
+        color: $theme-color-dark-blue !important;
+      }
     }
   }
 }
@@ -203,8 +208,6 @@ table.v-table thead td:first-child, table.v-table thead td:not(:nth-child(1)), t
           font-size: 12px;
           line-height: 16px;
           letter-spacing: 0.2px;
-          color: #4F5D75;
-          opacity: 0.48;
         }
       }
     }

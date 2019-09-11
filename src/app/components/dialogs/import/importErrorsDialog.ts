@@ -49,7 +49,7 @@ import {TableHeader} from "../../../types/types";
                                 {{ data.validatedTradesCount | declension("сделка", "сделки", "сделок") }}<span class="amount-deals">{{ data.validatedTradesCount }}</span></div>
                         </v-card-text>
                         <v-card-text class="import-dialog-wrapper__content import-dialog-wrapper__error-table selectable">
-                            <v-data-table :headers="headers" :items="data.errors" hide-actions must-sort>
+                            <v-data-table :headers="headers" :items="data.errors" class="data-table" hide-actions must-sort>
                                 <template #items="props">
                                     <tr class="selectable">
                                         <td class="text-xs-center"><span v-if="props.item.dealDate">{{ props.item.dealDate | date }}</span></td>
