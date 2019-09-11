@@ -206,17 +206,17 @@ const MainStore = namespace(StoreType.MAIN);
                             </div>
                             <div v-if="importProviderFeatures && files.length" class="margT20">
                                 <file-link @select="onFileAdd" :accept="allowedExtensions" class="reselect-file-btn">
-                                Выбрать другой файл
-                            </file-link>
-                        </div>
+                                    Выбрать другой файл
+                                </file-link>
+                            </div>
                         </v-layout>
                         <v-layout class="margT20" align-center justify-space-between>
                             <div>
-                            <file-link @select="onFileAdd" :accept="allowedExtensions" v-if="importProviderFeatures && !files.length" class="select-file-btn">
-                                Выбрать файл
-                            </file-link>
-                        </div>
-                        
+                                <file-link @select="onFileAdd" :accept="allowedExtensions" v-if="importProviderFeatures && !files.length" class="select-file-btn">
+                                    Выбрать файл
+                                </file-link>
+                            </div>
+
                             <div @click="showInstruction = !showInstruction" class="btn-show-instruction" v-if="importProviderFeatures">
                                 {{ (showInstruction ? "Скрыть" : "Показать") + " инструкцию" }}
                             </div>
