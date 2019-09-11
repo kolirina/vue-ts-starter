@@ -44,7 +44,7 @@ import {CustomDialog} from "../../../platform/dialogs/customDialog";
                         </div>
                     </v-card-text>
                     <v-card-actions>
-                        <v-btn color="primary" @click="goToBalances" dark>
+                        <v-btn color="big_btn primary" @click="goToBalances" dark>
                             Указать текущие остатки
                         </v-btn>
                     </v-card-actions>

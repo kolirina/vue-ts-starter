@@ -204,11 +204,14 @@ const MainStore = namespace(StoreType.MAIN);
                         </div>
                         <div class="margT20">
                             <file-link @select="onFileAdd" :accept="allowedExtensions"
-                                       v-if="importProviderFeatures && files.length" class="reselect-file-btn">Выбрать другой файл
+                                       v-if="importProviderFeatures && files.length" class="reselect-file-btn">
+                                Выбрать другой файл
                             </file-link>
                         </div>
                         <div class="margT20">
-                            <file-link @select="onFileAdd" :accept="allowedExtensions" v-if="importProviderFeatures && !files.length">Выбрать файл</file-link>
+                            <file-link @select="onFileAdd" :accept="allowedExtensions" v-if="importProviderFeatures && !files.length" class="select-file-btn">
+                                Выбрать файл
+                            </file-link>
                         </div>
                         <v-spacer></v-spacer>
                         <div @click="showInstruction = !showInstruction" class="btn-show-instruction margT20" v-if="importProviderFeatures">
@@ -227,7 +230,6 @@ const MainStore = namespace(StoreType.MAIN);
                         </video-link>
                     </div>
                     <import-instructions v-if="showInstruction" :provider="selectedProvider" @selectProvider="onSelectProvider"></import-instructions>
-
                 </v-card-text>
             </v-card>
         </v-container>

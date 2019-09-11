@@ -62,7 +62,7 @@ import {TableHeader} from "../../../types/types";
                     </div>
                     <v-card-actions class="import-dialog-wrapper__actions">
                         <v-spacer></v-spacer>
-                        <v-btn color="primary" @click.native="goToBalances" dark>
+                        <v-btn color="big_btn primary" @click.native="goToBalances" dark>
                             Указать текущие остатки
                         </v-btn>
                     </v-card-actions>

@@ -60,7 +60,7 @@ import {CurrencyBalances} from "../../currencyBalances";
                         </span>
                     </v-card-text>
                     <v-card-actions>
-                        <v-btn v-if="balancesIndicated" color="primary" @click.native="close('YES')" dark>
+                        <v-btn v-if="balancesIndicated" color="big_btn primary" @click.native="close('YES')" dark>
                             Перейти к портфелю
                         </v-btn>
                     </v-card-actions>
