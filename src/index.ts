@@ -5,6 +5,7 @@ import Vue from "vue";
 import {AppFrame} from "./app/app/appFrame";
 import {UI} from "./app/app/ui";
 import {UIRegistry} from "./app/app/uiRegistry";
+import {Tours} from "./app/components/tours/tours";
 import {Storage} from "./app/platform/services/storage";
 import {RouterConfiguration} from "./app/router/routerConfiguration";
 import {ApplicationService} from "./app/services/applicationService";
@@ -15,7 +16,6 @@ import {EventType} from "./app/types/eventType";
 import {StoreKeys} from "./app/types/storeKeys";
 import {VuexConfiguration} from "./app/vuex/vuexConfiguration";
 import * as versionConfig from "./version.json";
-import {Tours} from "./app/components/tours/tours";
 
 /**
  * Запуск приложения
