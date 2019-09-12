@@ -156,5 +156,15 @@
 }
 
 .v-tour {
-  z-index: 101;
+  z-index: 999;
+  .v-step {
+    z-index: 999;
+    .btn {
+      background: #3b6ec9;
+      padding: 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      outline: none;
+    }
+  }
 }

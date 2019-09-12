@@ -25,7 +25,7 @@ import {CustomDialog} from "../../../platform/dialogs/customDialog";
     // language=Vue
     template: `
         <v-dialog v-model="showed" max-width="600px">
-            <v-card class="dialog-wrap import-dialog-wrapper import-general-error-wrapper">
+            <v-card class="dialog-wrap import-dialog-wrapper import-general-error-wrapper" data-v-step="3">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
 
                 <div class="import-general-error-wrapper__element-centering">
@@ -54,6 +54,12 @@ import {CustomDialog} from "../../../platform/dialogs/customDialog";
     `
 })
 export class ImportGeneralErrorDialog extends CustomDialog<ImportGeneralErrorDialogData, void> {
+
+    mounted(): void {
+        if (this.$tours["intro"] && this.$tours["intro"].isRunning) {
+            this.$tours["intro"].currentStep = 3;
+        }
+    }
 
     private goToBalances(): void {
         this.data.router.push({name: "balances"});

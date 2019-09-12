@@ -10,7 +10,7 @@ import {PortfolioSwitcher} from "../portfolioSwitcher";
         <v-layout class="overflow-hidden">
             <v-layout column justify-space-between align-center class="mini-menu-width">
                 <div>
-                    <v-btn @click.stop="openDialog" fab dark small color="indigo" depressed class="add-btn-menu" data-v-step="3">
+                    <v-btn @click.stop="openDialog" fab dark small color="indigo" depressed class="add-btn-menu" data-v-step="6">
                         <v-icon dark>add</v-icon>
                     </v-btn>
                 </div>
@@ -18,7 +18,7 @@ import {PortfolioSwitcher} from "../portfolioSwitcher";
             <v-layout v-if="!sideBarOpened" column class="wrap-list-menu">
                 <div v-for="item in mainSection">
                     <template v-if="item.action === 'adviser'">
-                        <v-list-tile :key="item.action" active-class="active-link" data-v-step="4"
+                        <v-list-tile :key="item.action" active-class="active-link" data-v-step="7"
                                      :to="{path: item.path, name: item.action, params: item.params}">
                             <v-list-tile-content v-if="item.action === linkAdditionalFunctionality.EVENTS && numberOfEvents" class="badge-link">
                                 <v-badge color="primary">
@@ -34,7 +34,7 @@ import {PortfolioSwitcher} from "../portfolioSwitcher";
                         </v-list-tile>
                     </template>
                     <template v-else-if="item.action === 'help'">
-                        <v-list-tile :key="item.action" active-class="active-link" data-v-step="5"
+                        <v-list-tile :key="item.action" active-class="active-link" data-v-step="8"
                                      :to="{path: item.path, name: item.action, params: item.params}">
                             <v-list-tile-content v-if="item.action === linkAdditionalFunctionality.EVENTS && numberOfEvents" class="badge-link">
                                 <v-badge color="primary">

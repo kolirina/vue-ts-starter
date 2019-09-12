@@ -29,7 +29,7 @@ import {CurrencyBalances} from "../../currencyBalances";
     // language=Vue
     template: `
         <v-dialog v-model="showed" max-width="600px" persistent ref="dialog">
-            <v-card class="dialog-wrap import-dialog-wrapper">
+            <v-card class="dialog-wrap import-dialog-wrapper" data-v-step="5">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
                 <div class="import-general-error-wrapper__element-centering">
                     <v-card-title>
@@ -77,12 +77,11 @@ export class ImportSuccessDialog extends CustomDialog<ImportSuccessDialogData, B
     /** Текущий выбранный портфель */
     private portfolio: Portfolio = null;
 
-    /**
-     * Инициализация данных диалога
-     * @inheritDoc
-     */
     mounted(): void {
         this.portfolio = (this.data.store as any).currentPortfolio;
+        if (this.$tours["intro"] && this.$tours["intro"].isRunning) {
+            this.$tours["intro"].currentStep = 5;
+        }
     }
 
     private portfolioFormed(): void {

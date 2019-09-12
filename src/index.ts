@@ -15,6 +15,7 @@ import {EventType} from "./app/types/eventType";
 import {StoreKeys} from "./app/types/storeKeys";
 import {VuexConfiguration} from "./app/vuex/vuexConfiguration";
 import * as versionConfig from "./version.json";
+import {Tours} from "./app/components/tours/tours";
 
 /**
  * Запуск приложения
@@ -62,7 +63,9 @@ export async function start(): Promise<void> {
         router.onError(errorHandler);
         const store = VuexConfiguration.getStore();
         const app = new AppFrame({router, store});
+        const tours = new Tours();
         app.$mount("#app");
+        tours.$mount("#tours");
     } catch (error) {
         console.error("ERROR WHILE INIT APPLICATION", error);
     }

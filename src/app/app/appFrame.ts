@@ -13,7 +13,7 @@ import {MenuHeader} from "../components/menu/menuHeader";
 import {NavigationList} from "../components/menu/navigationList";
 import {SignIn} from "../components/signIn";
 import {TariffExpiredHint} from "../components/tariffExpiredHint";
-import {Tours, TourStep} from "../components/tours/tours";
+import {Tours} from "../components/tours/tours";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {BtnReturn} from "../platform/dialogs/customDialog";
 import {Storage} from "../platform/services/storage";
@@ -34,31 +34,6 @@ const MainStore = namespace(StoreType.MAIN);
     template: `
         <v-app id="inspire" light>
             <tariff-expired-hint></tariff-expired-hint>
-            <v-tour name="intro" :steps="tourSteps">
-                <template slot-scope="tour">
-                    <transition name="fade">
-                        <v-step
-                            v-if="tour.currentStep === index"
-                            v-for="(step, index) of tour.steps"
-                            :key="index"
-                            :step="step"
-                            :previous-step="tour.previousStep"
-                            :next-step="tour.nextStep"
-                            :stop="tour.stop"
-                            :is-first="tour.isFirst"
-                            :is-last="tour.isLast"
-                            :labels="tour.labels"
-                        >
-                            <template>
-                                <div slot="actions">
-                                    <button @click="tour.previousStep" class="btn btn-primary">Previous step</button>
-                                    <button @click="myCustomNextStep" class="btn btn-primary">Next step</button>
-                                </div>
-                            </template>
-                        </v-step>
-                    </transition>
-                </template>
-            </v-tour>
             <vue-snotify></vue-snotify>
             <error-handler></error-handler>
             <template v-if="!loading && !loggedIn">
@@ -153,8 +128,6 @@ export class AppFrame extends UI {
     /* Пользователь уведомлен об обновлениях */
     private isNotifyAccepted = false;
 
-    private tourSteps: TourStep[] = Tours.INTRO_STEPS;
-
     /**
      * Названия кэшируемых компонентов (страниц). В качестве названия необходимо указывать либо имя файла компонента (это его name)
      * или название компонента если он зарегистрирован в uiRegistry через UI.component.
@@ -199,10 +172,6 @@ export class AppFrame extends UI {
             this.showUpdatesMessage();
             this.loggedIn = true;
         }
-    }
-
-    private myCustomNextStep(): void {
-        this.$tours["intro"].nextStep();
     }
 
     private async checkAuthorized(registration?: boolean): Promise<void> {

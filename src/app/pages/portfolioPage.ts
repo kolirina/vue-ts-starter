@@ -61,6 +61,9 @@ export class PortfolioPage extends UI {
      */
     async created(): Promise<void> {
         await this.loadPortfolioLineChart();
+        if (this.$tours["intro"] && this.$tours["intro"].currentStep === 5) {
+            this.$tours["intro"].nextStep();
+        }
     }
 
     @Watch("portfolio")

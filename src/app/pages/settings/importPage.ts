@@ -224,7 +224,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </b>
                     </p>
                     <div data-v-step="2">
-                        <video-link class="alignC" @click="nextStep">
+                        <video-link class="alignC">
                             <a>Смотреть видео инструкцию по импорту сделок</a>
                         </video-link>
                     </div>
@@ -279,14 +279,9 @@ export class ImportPage extends UI {
     }
 
     async mounted(): Promise<void> {
-        console.log(this.$tours["intro"]);
         if (this.$tours["intro"] && this.$tours["intro"].currentStep === 0) {
             this.$tours["intro"].nextStep();
         }
-    }
-
-    private nextStep(): void {
-        this.$tours["intro"].nextStep();
     }
 
     /**
@@ -392,6 +387,9 @@ export class ImportPage extends UI {
             }
             await this.reloadPortfolio(this.portfolio.id);
             this.$snotify.info(`Импорт прошел успешно. ${firstWord} ${response.validatedTradesCount} ${secondWord}.`);
+            if (this.$tours["intro"] && this.$tours["intro"].currentStep === 5) {
+                this.$tours["intro"].nextStep();
+            }
             if (navigateToPortfolioPage) {
                 this.$router.push("portfolio");
             }

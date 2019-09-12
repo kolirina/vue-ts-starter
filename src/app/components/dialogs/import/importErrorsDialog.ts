@@ -27,7 +27,7 @@ import {TableHeader} from "../../../types/types";
     // language=Vue
     template: `
         <v-dialog v-model="showed" max-width="600px" content-class="import-errors-dialog-scroll">
-            <v-card class="dialog-wrap import-dialog-wrapper">
+            <v-card class="dialog-wrap import-dialog-wrapper" data-v-step="4">
                 <v-layout column justify-space-between class="min-height-wrapper">
                     <div>
                         <v-icon class="closeDialog" @click.native="close">close</v-icon>
@@ -78,6 +78,12 @@ export class ImportErrorsDialog extends CustomDialog<ImportErrorsDialogData, voi
         {text: "Тикер", align: "left", value: "dealTicker", sortable: false},
         {text: "Ошибка", align: "center", value: "message", sortable: false}
     ];
+
+    mounted(): void {
+        if (this.$tours["intro"] && this.$tours["intro"].isRunning) {
+            this.$tours["intro"].currentStep = 4;
+        }
+    }
 
     private goToBalances(): void {
         this.data.router.push({name: "balances"});
