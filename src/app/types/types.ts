@@ -336,6 +336,8 @@ export type Share = {
     shareType: ShareType;
     /** Дата последнего изменения по бумаге */
     lastUpdateTime?: string;
+    /** Рейтинг бумаги */
+    rating: string;
 };
 
 /**
