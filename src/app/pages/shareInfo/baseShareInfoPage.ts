@@ -357,7 +357,6 @@ export class BaseShareInfoPage extends UI {
     private stockDynamic: StockDynamic = null;
     /** Данные для микрографика */
     private microChartData: any[] = [];
-    private operations = Operation;
 
     /**
      * Инициализация данных
@@ -460,13 +459,4 @@ export class BaseShareInfoPage extends UI {
     get currencySymbol(): string {
         return TradeUtils.getCurrencySymbol(this.share.currency);
     }
-}
-
-export interface TradeToEventChartData {
-    backgroundColor: string;
-    date: string;
-    description: string;
-    graph: string;
-    text: string;
-    type: string;
 }
