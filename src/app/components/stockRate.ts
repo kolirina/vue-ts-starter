@@ -1,7 +1,6 @@
+import Decimal from "decimal.js";
 import {Inject} from "typescript-ioc";
-import Component from "vue-class-component";
-import {Prop} from "vue-property-decorator";
-import {UI} from "../app/ui";
+import {Component, Prop, UI} from "../app/ui";
 import {Filters} from "../platform/filters/Filters";
 import {MarketService} from "../services/marketService";
 import {Share} from "../types/types";
@@ -26,7 +25,7 @@ export class StockRate extends UI {
     }
 
     private get hint(): string {
-        const count = parseInt(this.share.ratingCount, 2);
-        return `На основе ${count} ${Filters.declension(count, "голоса", "голосам", "голосов")} пользователей`;
+        const count = new Decimal(this.share.ratingCount).toDP(0).toNumber();
+        return `На основе ${count} ${Filters.declension(count, "голоса", "голосов", "голосов")} пользователей`;
     }
 }

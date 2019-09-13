@@ -417,15 +417,6 @@ export class BaseShareInfoPage extends UI {
         this.$refs.chartComponent.chart.exportChart({type: ChartUtils.EXPORT_TYPES[type]});
     }
 
-    private get totalVoices(): number {
-        try {
-            const stock: Stock = this.share as Stock;
-            return new Decimal(stock.maxRating / stock.rating).toDP(0).toNumber();
-        } catch (e) {
-            return 50;
-        }
-    }
-
     get currencySymbol(): string {
         return TradeUtils.getCurrencySymbol(this.share.currency);
     }
