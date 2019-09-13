@@ -399,9 +399,10 @@ export class ChartUtils {
                         return ["<b>" + DateUtils.formatDate(dayjs(this.x)) + "</b>"].concat(
                             // @ts-ignore
                             this.points.map((pointGroup): string => {
-                                return compare ? `<span style=\"color:${pointGroup.series.color}\">${pointGroup.series.name}</span>: <b>${pointGroup.y}</b>
+                                const rounded = Filters.formatNumber(new Decimal(pointGroup.y).toDP(decimals).toString());
+                                return compare ? `<span style=\"color:${pointGroup.series.color}\">${pointGroup.series.name}</span>: <b>${rounded}</b>
 (${Math.round(pointGroup.point.change * 100) / 100}%)<br/>` :
-                                    `<span style=\"color:${pointGroup.series.color}\">${pointGroup.series.name}</span>: <b>${pointGroup.y}</b><br/>`;
+                                    `<span style=\"color:${pointGroup.series.color}\">${pointGroup.series.name}</span>: <b>${rounded}</b><br/>`;
                             })
                         );
                     } else if (point) {

@@ -16,6 +16,7 @@
 
 import Decimal from "decimal.js";
 import {Inject} from "typescript-ioc";
+import {namespace} from "vuex-class/lib/bindings";
 import {Component, Prop, UI, Watch} from "../../app/ui";
 import {DividendChart} from "../../components/charts/dividendChart";
 import {AddTradeDialog} from "../../components/dialogs/addTradeDialog";
@@ -23,18 +24,21 @@ import {CreateOrEditNotificationDialog} from "../../components/dialogs/createOrE
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {MarketService} from "../../services/marketService";
 import {NotificationType} from "../../services/notificationsService";
+import {TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
 import {BaseChartDot, Dot, HighStockEventsGroup} from "../../types/charts/types";
 import {Operation} from "../../types/operation";
-import {Share, ShareType, Stock, StockDynamic} from "../../types/types";
+import {Portfolio, Share, ShareType, Stock, StockDynamic} from "../../types/types";
 import {ChartUtils} from "../../utils/chartUtils";
 import {TradeUtils} from "../../utils/tradeUtils";
 import {StoreType} from "../../vuex/storeType";
 
+const MainStore = namespace(StoreType.MAIN);
+
 @Component({
     // language=Vue
     template: `
-        <v-container v-if="share" fluid>
+        <v-container fluid>
             <v-card flat class="header-first-card">
                 <v-card-title class="header-first-card__wrapper-title">
                     <div class="section-title header-first-card__title-text">Информация</div>
@@ -332,7 +336,11 @@ export class BaseShareInfoPage extends UI {
     private portfolioAvgPrice: number;
 
     @Inject
+    private tradeService: TradeService;
+    @Inject
     private marketService: MarketService;
+    @MainStore.Getter
+    private portfolio: Portfolio;
     /** Типы активов */
     private assetType = AssetType;
     /** Ценная бумага */
@@ -343,6 +351,8 @@ export class BaseShareInfoPage extends UI {
     private dividends: BaseChartDot[] = [];
     /** События по бумаге */
     private events: HighStockEventsGroup[] = [];
+    /** События по бумаге */
+    private shareEvents: HighStockEventsGroup[] = [];
     /** Динамика цены по бумаге */
     private stockDynamic: StockDynamic = null;
     /** Данные для микрографика */
@@ -371,16 +381,34 @@ export class BaseShareInfoPage extends UI {
         }
     }
 
+    @Watch("portfolio")
+    @ShowProgress
+    private async onPortfolioChange(): Promise<void> {
+        if (this.share) {
+            this.events = [];
+            this.events.push(...this.shareEvents);
+            await this.loadTradeEvents(this.share.ticker);
+        }
+    }
+
     @ShowProgress
     private async loadShareInfo(ticker: string): Promise<void> {
         const result = await this.marketService.getStockInfo(ticker);
         this.events = [];
+        this.shareEvents = [];
         this.share = result.stock;
         this.history = result.history;
         this.dividends = result.dividends;
-        this.events.push(result.events);
         this.stockDynamic = result.stockDynamic;
         this.microChartData = ChartUtils.convertPriceDataDots(result.stockDynamic.yearHistory);
+        this.events.push(result.events);
+        this.shareEvents.push(result.events);
+        await this.loadTradeEvents(ticker);
+    }
+
+    private async loadTradeEvents(ticker: string): Promise<void> {
+        const tradeEvents = await this.tradeService.getShareTradesEvent(this.portfolio.id, ticker);
+        this.events.push(...ChartUtils.processEventsChartData(tradeEvents, "flags", "dataseries"));
     }
 
     private async openDialog(): Promise<void> {
