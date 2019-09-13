@@ -21,6 +21,7 @@ import {Component, Prop, UI, Watch} from "../../app/ui";
 import {DividendChart} from "../../components/charts/dividendChart";
 import {AddTradeDialog} from "../../components/dialogs/addTradeDialog";
 import {CreateOrEditNotificationDialog} from "../../components/dialogs/createOrEditNotificationDialog";
+import {StockRate} from "../../components/stockRate";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {MarketService} from "../../services/marketService";
 import {NotificationType} from "../../services/notificationsService";
@@ -71,8 +72,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         ,&nbsp;родительский сектор: {{ share.sector.parent.name }}
                                     </span>
                                     <span class="rating-section">
-                                        <v-rating color="#A1A6B6" size="10" v-model="share.rating" dense readonly full-icon="fiber_manual_record"
-                                                  empty-icon="panorama_fish_eye" title=""></v-rating>
+                                        <stock-rate :share="share"></stock-rate>
                                     </span>
                                 </div>
                             </div>
@@ -321,7 +321,7 @@ const MainStore = namespace(StoreType.MAIN);
             </template>
         </v-container>
     `,
-    components: {DividendChart}
+    components: {DividendChart, StockRate}
 })
 export class BaseShareInfoPage extends UI {
 
@@ -363,10 +363,7 @@ export class BaseShareInfoPage extends UI {
      * @inheritDoc
      */
     async created(): Promise<void> {
-        const ticker = this.$route.params.ticker;
-        if (ticker) {
-            await this.loadShareInfo(ticker);
-        }
+        await this.loadShareInfo();
     }
 
     /**
@@ -375,10 +372,7 @@ export class BaseShareInfoPage extends UI {
      */
     @Watch("$route.params.ticker")
     private async onRouterChange(): Promise<void> {
-        const ticker = this.$route.params.ticker;
-        if (ticker) {
-            await this.loadShareInfo(ticker);
-        }
+        await this.loadShareInfo();
     }
 
     @Watch("portfolio")
@@ -392,7 +386,11 @@ export class BaseShareInfoPage extends UI {
     }
 
     @ShowProgress
-    private async loadShareInfo(ticker: string): Promise<void> {
+    private async loadShareInfo(): Promise<void> {
+        const ticker = this.$route.params.ticker;
+        if (!ticker) {
+            return;
+        }
         const result = await this.marketService.getStockInfo(ticker);
         this.events = [];
         this.shareEvents = [];
@@ -445,15 +443,6 @@ export class BaseShareInfoPage extends UI {
 
     private async exportTo(type: string): Promise<void> {
         this.$refs.chartComponent.chart.exportChart({type: ChartUtils.EXPORT_TYPES[type]});
-    }
-
-    private get totalVoices(): number {
-        try {
-            const stock: Stock = this.share as Stock;
-            return new Decimal(stock.maxRating / stock.rating).toDP(0).toNumber();
-        } catch (e) {
-            return 50;
-        }
     }
 
     get currencySymbol(): string {

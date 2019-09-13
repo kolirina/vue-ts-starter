@@ -13,6 +13,10 @@ export class MarketService {
     @Inject
     private http: Http;
 
+    async putRate(rate: string, ticker: string): Promise<Share[]> {
+        return this.http.post(`/market/rating/${ticker}/${rate}`);
+    }
+
     async searchStocks(query: string): Promise<Share[]> {
         return this.http.get("/market/stocks/search", {query});
     }

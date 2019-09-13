@@ -6,6 +6,7 @@ import {AdditionalPagination} from "../../components/additionalPagination";
 import {AddTradeDialog} from "../../components/dialogs/addTradeDialog";
 import {EmptySearchResult} from "../../components/emptySearchResult";
 import {QuotesFilterTable} from "../../components/quotesFilterTable";
+import {StockRate} from "../../components/stockRate";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {Storage} from "../../platform/services/storage";
 import {MarketService, QuotesFilter} from "../../services/marketService";
@@ -43,8 +44,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </td>
                         <td class="text-xs-center ii-number-cell">{{ props.item.lotsize }}</td>
                         <td class="text-xs-center">
-                            <v-rating v-model="props.item.rating" color="#A1A6B6" size="10" dense readonly full-icon="fiber_manual_record"
-                                    empty-icon="panorama_fish_eye" title=""></v-rating>
+                            <stock-rate :share="props.item"></stock-rate>
                         </td>
                         <td class="text-xs-center">
                             <v-btn v-if="props.item.currency === 'RUB'" :href="'http://moex.com/ru/issue.aspx?code=' + props.item.ticker" target="_blank"
@@ -85,7 +85,7 @@ const MainStore = namespace(StoreType.MAIN);
             </v-data-table>
         </v-container>
     `,
-    components: {AdditionalPagination, QuotesFilterTable, EmptySearchResult}
+    components: {AdditionalPagination, QuotesFilterTable, EmptySearchResult, StockRate}
 })
 export class StockQuotes extends UI {
 
