@@ -233,8 +233,8 @@ const MainStore = namespace(StoreType.MAIN);
                             <a>Смотреть видео инструкцию по импорту сделок</a>
                         </video-link>
                     </div>
-                    <import-instructions v-if="showInstruction" :provider="selectedProvider" @selectProvider="onSelectProvider" @changePortfolioParams="changePortfolioParams"
-                                         :portfolio-params="portfolioParams" class="margT20"></import-instructions>
+                    <import-instructions v-if="showInstruction && portfolioParams" :provider="selectedProvider" @selectProvider="onSelectProvider"
+                                         @changePortfolioParams="changePortfolioParams" :portfolio-params="portfolioParams" class="margT20"></import-instructions>
                 </v-card-text>
             </v-card>
         </v-container>
