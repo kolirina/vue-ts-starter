@@ -22,7 +22,10 @@ import {PortfolioParams} from "../../../services/portfolioService";
                                  hint="Для автоматического рассчета комиссии при импорте сделок." :decimals="5" @input="changePortfolioParams">
                 </ii-number-field>
             </div>
-            <div class="margT20">
+            <div class="margT50">
+                <div class="fs16 bold alignC margB20">
+                    Инструкция
+                </div>
                 <div class="import-default-text">
                     Перейдите в личный кабинет брокера. Перейдите на вкладку просмотра <strong>Единой<br>
                     денежной позиции</strong> далее вкладка <strong>Справка по счету.</strong>
