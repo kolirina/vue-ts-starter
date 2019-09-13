@@ -104,7 +104,7 @@ import {TradeUtils} from "../utils/tradeUtils";
                     <div class="ext-info__item">
                         Сумма {{ tradeRow.signedTotal | amount(true) }} <span>{{ tradeRow.signedTotal | currencySymbol }}</span><br>
                         Комиссия {{ getFee(tradeRow) }} <span>{{ tradeRow.fee | currencySymbol }}</span><br>
-                        Сумма без комиссии {{ tradeRow.totalWithoutFee | amount }} <span>{{ tradeRow.totalWithoutFee | currencySymbol }}</span>
+                        Сумма без комиссии {{ tradeRow.totalWithoutFee | amount(true) }} <span>{{ tradeRow.totalWithoutFee | currencySymbol }}</span>
                     </div>
                 </td>
             </tr>
