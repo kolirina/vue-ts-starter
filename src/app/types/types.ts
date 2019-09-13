@@ -338,6 +338,8 @@ export type Share = {
     lastUpdateTime?: string;
     /** Рейтинг бумаги */
     rating: string;
+    /** Голосов пользователей по бумаге */
+    ratingCount: string;
 };
 
 /**
