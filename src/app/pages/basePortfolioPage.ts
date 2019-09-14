@@ -119,7 +119,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                     </v-card-text>
                 </expanded-panel>
 
-                <expanded-panel v-if="blockNotEmpty(emptyBlockType.STOCK_PORTFOLIO)" :value="$uistate.stockGraph" :state="$uistate.STOCK_CHART_PANEL" customMenu class="mt-3">
+                <expanded-panel v-if="blockNotEmpty(emptyBlockType.STOCK_PIE)" :value="$uistate.stockGraph" :state="$uistate.STOCK_CHART_PANEL" customMenu class="mt-3">
                     <template #header>Состав портфеля акций</template>
                     <template #customMenu>
                         <chart-export-menu @print="print('stockPieChart')" @exportTo="exportTo('stockPieChart', $event)" class="exp-panel-menu"></chart-export-menu>
@@ -129,7 +129,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                     </v-card-text>
                 </expanded-panel>
 
-                <expanded-panel v-if="blockNotEmpty(emptyBlockType.BOND_PORTFOLIO)" :value="$uistate.bondGraph" :state="$uistate.BOND_CHART_PANEL" customMenu class="mt-3">
+                <expanded-panel v-if="blockNotEmpty(emptyBlockType.BOND_PIE)" :value="$uistate.bondGraph" :state="$uistate.BOND_CHART_PANEL" customMenu class="mt-3">
                     <template #header>Состав портфеля облигаций</template>
                     <template #customMenu>
                         <chart-export-menu @print="print('bondPieChart')" @exportTo="exportTo('bondPieChart', $event)" class="exp-panel-menu"></chart-export-menu>
@@ -138,7 +138,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                         <pie-chart ref="bondPieChart" :data="bondPieChartData" :view-currency="viewCurrency" v-tariff-expired-hint></pie-chart>
                     </v-card-text>
                 </expanded-panel>
-                <expanded-panel v-if="blockNotEmpty(emptyBlockType.STOCK_PORTFOLIO)" :value="$uistate.sectorsGraph" :state="$uistate.SECTORS_PANEL" customMenu class="mt-3">
+                <expanded-panel v-if="blockNotEmpty(emptyBlockType.SECTORS_PIE)" :value="$uistate.sectorsGraph" :state="$uistate.SECTORS_PANEL" customMenu class="mt-3">
                     <template #header>Состав портфеля по секторам</template>
                     <template #customMenu>
                         <chart-export-menu @print="print('sectorsChart')" @exportTo="exportTo('sectorsChart', $event)" class="exp-panel-menu"></chart-export-menu>
@@ -265,6 +265,11 @@ export class BasePortfolioPage extends UI {
                 return this.overview.bondPortfolio.rows.length > 0;
             case EmptyBlockType.STOCK_PORTFOLIO:
                 return this.overview.stockPortfolio.rows.length > 0;
+            case EmptyBlockType.STOCK_PIE:
+            case EmptyBlockType.SECTORS_PIE:
+                return this.overview.stockPortfolio.rows.some(row => row.quantity !== 0);
+            case EmptyBlockType.BOND_PIE:
+                return this.overview.bondPortfolio.rows.some(row => row.quantity !== 0);
             case EmptyBlockType.ASSETS:
                 return this.overview.totalTradesCount > 0;
         }
@@ -353,5 +358,8 @@ export enum EmptyBlockType {
     ASSETS = "assets",
     DEFAULT = "default",
     STOCK_PORTFOLIO = "stockPortfolio",
-    BOND_PORTFOLIO = "bondPortfolio"
+    BOND_PORTFOLIO = "bondPortfolio",
+    BOND_PIE = "bondPie",
+    STOCK_PIE = "stockPie",
+    SECTORS_PIE = "sectorsPie",
 }
