@@ -5,10 +5,7 @@ import {PortfolioParams} from "../../../services/portfolioService";
     // language=Vue
     template: `
         <div>
-            <div v-if="isFixFeeAboveZero" class="fs13">
-                Фиксированная комиссия: {{ portfolioParams.fixFee }}%
-            </div>
-            <div v-else class="fs13">
+            <div v-if="showFixedCommissionInput" class="fs13">
                 <div class="mb-2">
                     Отчеты вашего брокера не содержат информацию о комиссиях.
                 </div>
@@ -55,14 +52,15 @@ export class FinamInstruction extends UI {
     @Prop({required: true})
     private portfolioParams: PortfolioParams;
 
-    private isFixFeeAboveZero: boolean = false;
+    private showFixedCommissionInput: boolean = false;
+
     private IMAGES: string[] = [
         "./img/import_instructions/finam/1.png",
         "./img/import_instructions/finam/2.png"
     ];
 
     created(): void {
-        this.isFixFeeAboveZero = Number(this.portfolioParams.fixFee) > 0;
+        this.showFixedCommissionInput = Number(this.portfolioParams.fixFee) === 0;
     }
 
     private changePortfolioParams(): void {
