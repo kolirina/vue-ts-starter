@@ -28,7 +28,7 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-data-table :headers="headers" :items="portfolios" item-key="id" :custom-sort="customSort" hide-actions class="portfolios-content-table" must-sort>
+        <v-data-table :headers="headers" :items="portfolios" item-key="id" :custom-sort="customSort" hide-actions class="data-table portfolios-content-table" must-sort>
             <template #items="props">
                 <tr class="selectable" @dblclick="props.expanded = !props.expanded">
                     <td>

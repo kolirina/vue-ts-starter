@@ -35,32 +35,48 @@ import {CurrencyBalances} from "../../currencyBalances";
                     <v-card-title>
                         <span class="import-dialog-wrapper__title-text">Завершение импорта</span>
                     </v-card-title>
-                    <v-card-text @click.stop>
-                        <span v-if="balancesIndicated">
-                            <div class="import-default-text">
-                                Поздравляем! Теперь ваш портфель сформирован и готов к работе.
-                            </div>
-                            <div class="import-default-text">
-                                Успешно {{ data.importResult.validatedTradesCount | declension("добавлена", "добавлено", "добавлено") }}
-                                {{ data.importResult.validatedTradesCount | declension("сделка", "сделки", "сделок") }}
-                                <span class="amount-deals">{{ data.importResult.validatedTradesCount }}</span>
-                            </div>
-                        </span>
-                        <span v-else>
-                            <div class="balance-text">
-                                Пожалуйста внесите остаток денежных средств на данный момент
-                            </div>
-                            <video-link class="balance-text">
-                                <template #foreword>
-                                    <span>Подробные пояснения - зачем указывать текущие остатки, вы найдете в данной </span>
-                                </template>
-                                <a>видео-инструкции по импорту сделок</a>
-                            </video-link>
-                            <currency-balances v-if="portfolio" :portfolio-id="portfolio.id" @specifyResidues="portfolioFormed" class="currency-balances"></currency-balances>
-                        </span>
-                    </v-card-text>
+
+                    <v-window v-model="step">
+                        <v-window-item :value="1">
+                            <v-card-text @click.stop>
+                                <span>
+                                    <div class="balance-text">
+                                        Пожалуйста внесите остаток денежных средств на данный момент
+                                    </div>
+                                    <video-link class="balance-text">
+                                        <template #foreword>
+                                            <span>Подробные пояснения - зачем указывать текущие остатки, вы найдете в данной </span>
+                                        </template>
+                                        <a>видео-инструкции по импорту сделок</a>
+                                    </video-link>
+                                    <currency-balances v-if="portfolio" :portfolio-id="portfolio.id" @specifyResidues="portfolioFormed"
+                                                       class="currency-balances"></currency-balances>
+                                </span>
+                            </v-card-text>
+                        </v-window-item>
+
+                        <v-window-item :value="2">
+                            <v-card-text @click.stop>
+                                <span>
+                                    <div class="import-default-text">
+                                        Поздравляем! Теперь ваш портфель сформирован и готов к работе.
+                                    </div>
+                                    <div class="import-default-text">
+                                        Успешно {{ data.importResult.validatedTradesCount | declension("добавлена", "добавлено", "добавлено") }}
+                                        {{ data.importResult.validatedTradesCount | declension("сделка", "сделки", "сделок") }}
+                                        <span class="amount-deals">{{ data.importResult.validatedTradesCount }}</span>
+                                    </div>
+                                </span>
+                            </v-card-text>
+                        </v-window-item>
+                    </v-window>
+
                     <v-card-actions>
-                        <v-btn v-if="balancesIndicated" color="primary" @click.native="close('YES')" dark>
+                        <v-btn v-if="step === 2" color="big_btn" @click.native="step = 1">
+                            Назад
+                        </v-btn>
+                        <v-spacer></v-spacer>
+                        <v-btn v-if="step === 2" color="big_btn primary" @click.native="close('YES')" dark>
                             Перейти к портфелю
                         </v-btn>
                     </v-card-actions>
@@ -72,8 +88,8 @@ import {CurrencyBalances} from "../../currencyBalances";
 })
 export class ImportSuccessDialog extends CustomDialog<ImportSuccessDialogData, BtnReturn> {
 
-    /** Указаны ли остатки */
-    private balancesIndicated: boolean = false;
+    /** Индекс шага */
+    private step: number = 1;
     /** Текущий выбранный портфель */
     private portfolio: Portfolio = null;
 
@@ -86,7 +102,7 @@ export class ImportSuccessDialog extends CustomDialog<ImportSuccessDialogData, B
     }
 
     private portfolioFormed(): void {
-        this.balancesIndicated = true;
+        this.step = 2;
     }
 }
 

@@ -352,7 +352,7 @@ export class BalancesPage extends UI implements TradeDataHolder {
 
     private calculateOnTotal(): void {
         this.changedTotal = !!this.total;
-        if (this.changedTotal && this.changedQuantity) {
+        if (this.changedTotal && !!this.quantity) {
             this.changedPrice = false;
             this.price = new Decimal(this.total).dividedBy(new Decimal(this.quantity)).toDecimalPlaces(6, Decimal.ROUND_HALF_UP).toString();
         } else {
@@ -363,7 +363,7 @@ export class BalancesPage extends UI implements TradeDataHolder {
 
     private changeOnQuantity(): void {
         this.changedQuantity = !!this.quantity;
-        if (this.changedQuantity && this.changedTotal) {
+        if (this.changedQuantity && !!this.total) {
             this.changedPrice = false;
             this.price = new Decimal(this.total).dividedBy(new Decimal(this.quantity)).toDecimalPlaces(6, Decimal.ROUND_HALF_UP).toString();
             this.total = new Decimal(this.price).mul(new Decimal(this.quantity)).toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toString();
@@ -375,7 +375,7 @@ export class BalancesPage extends UI implements TradeDataHolder {
 
     private changeOnTotal(): void {
         this.changedTotal = !!this.total;
-        if (this.changedTotal && this.changedQuantity) {
+        if (this.changedTotal && !!this.quantity) {
             this.changedPrice = false;
             this.price = new Decimal(this.total).dividedBy(new Decimal(this.quantity)).toDecimalPlaces(6, Decimal.ROUND_HALF_UP).toString();
             this.total = new Decimal(this.price).mul(new Decimal(this.quantity)).toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toString();

@@ -264,11 +264,11 @@ export class StockTable extends UI {
     /** Типы активов */
     private AssetType = AssetType;
     /** Паджинация для задания дефолтной сортировки */
-    private pagination: Pagination = {
+    private pagination: Pagination = this.localStorage.get("stockPagination", {
         descending: false,
-        sortBy: this.localStorage.get("stockSortBy", "percCurrShare"),
+        sortBy: "percCurrShare",
         rowsPerPage: -1
-    };
+    });
 
     /**
      * Инициализация данных
@@ -367,8 +367,12 @@ export class StockTable extends UI {
         return amount.amount.toNumber();
     }
 
+    @Watch("pagination")
+    private paginationChange(): void {
+        this.localStorage.set("stockPagination", this.pagination);
+    }
+
     private customSort(items: StockPortfolioRow[], sortby: string, isDesc: boolean): StockPortfolioRow[] {
-        this.localStorage.set("stockSortBy", sortby);
         return SortUtils.stockSort(items, sortby, isDesc);
     }
 

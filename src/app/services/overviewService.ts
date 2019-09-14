@@ -21,6 +21,8 @@ export class OverviewService {
 
     private cache: { [key: number]: Portfolio } = {};
 
+    private overviewByPeriod: { [key: number]: { [key: string]: Overview } } = {};
+
     async getById(id: number): Promise<Portfolio> {
         let portfolio = this.cache[id];
         if (!portfolio) {
@@ -56,9 +58,25 @@ export class OverviewService {
      */
     async getPortfolioOverviewCombined(request: CombinedInfoRequest): Promise<Overview> {
         const overview = await this.http.post<Overview>(`/portfolios/overview-combined`, request);
-        // проставляем идентификаторы чтобы работали разворачиваютщиеся блоки в табилицах
-        overview.stockPortfolio.rows.forEach((value, index) => value.id = index.toString());
-        overview.bondPortfolio.rows.forEach((value, index) => value.id = index.toString());
+        this.prepareOverview(overview);
+        return overview;
+    }
+
+    /**
+     * Возвращает данные по комбинированному портфелю
+     * @param id идентификатор портфеля
+     * @param period период
+     * @return {Promise<>}
+     */
+    async getPortfolioOverviewByPeriod(id: number, period: string): Promise<Overview> {
+        const overviews = this.overviewByPeriod[id] || {};
+        let overview = overviews[period];
+        if (!overview) {
+            overview = await this.http.get<Overview>(`/portfolios/period/${period}/${id}`);
+            this.prepareOverview(overview);
+            overviews[period] = overview;
+            this.overviewByPeriod[id] = overviews;
+        }
         return overview;
     }
 
@@ -125,9 +143,16 @@ export class OverviewService {
             shareNotes: portfolioResponse.shareNotes ? portfolioResponse.shareNotes : {}
         } as PortfolioParams;
         const overview = await this.http.get<Overview>(`/portfolios/${id}/overview`);
-        // проставляем идентификаторы чтобы работали разворачиваютщиеся блоки в табилицах
+        this.prepareOverview(overview);
+        return {id, portfolioParams: portfolio, overview};
+    }
+
+    /**
+     * Проставляет идентификаторы чтобы работали разворачиваютщиеся блоки в табилицах
+     * @param overview информация по портфелю
+     */
+    private prepareOverview(overview: Overview): void {
         overview.stockPortfolio.rows.forEach((value, index) => value.id = index.toString());
         overview.bondPortfolio.rows.forEach((value, index) => value.id = index.toString());
-        return {id, portfolioParams: portfolio, overview};
     }
 }
