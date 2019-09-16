@@ -76,7 +76,7 @@ import {CurrencyBalances} from "../../currencyBalances";
                             Назад
                         </v-btn>
                         <v-spacer></v-spacer>
-                        <v-btn v-if="step === 2" color="big_btn primary" @click.native="close('YES')" dark>
+                        <v-btn v-if="step === 2" color="big_btn primary" @click.native="close('YES')" dark data-v-step="6">
                             Перейти к портфелю
                         </v-btn>
                     </v-card-actions>
@@ -104,6 +104,7 @@ export class ImportSuccessDialog extends CustomDialog<ImportSuccessDialogData, B
 
     private portfolioFormed(): void {
         this.step = 2;
+        this.$tours["intro"].nextStep();
     }
 }
 

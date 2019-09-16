@@ -27,7 +27,7 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-container class="adviser-wrap" data-v-step="6">
+        <v-container class="adviser-wrap">
             <expanded-panel :value="$uistate.adviserAnalyticsPanel" :withMenu="false" :state="$uistate.ADVISER_ANALYTICS_PANEL">
                 <template #header>Аналитика</template>
                 <v-card v-if="hasTrades" flat class="pa-0">
