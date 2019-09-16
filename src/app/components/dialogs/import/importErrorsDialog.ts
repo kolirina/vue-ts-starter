@@ -49,7 +49,7 @@ import {TableHeader} from "../../../types/types";
                                 {{ data.validatedTradesCount | declension("сделка", "сделки", "сделок") }}<span class="amount-deals">{{ data.validatedTradesCount }}</span></div>
                         </v-card-text>
                         <v-card-text class="import-dialog-wrapper__content import-dialog-wrapper__error-table selectable">
-                            <v-data-table :headers="headers" :items="data.errors" hide-actions must-sort>
+                            <v-data-table :headers="headers" :items="data.errors" class="data-table" hide-actions must-sort>
                                 <template #items="props">
                                     <tr class="selectable">
                                         <td class="text-xs-center"><span v-if="props.item.dealDate">{{ props.item.dealDate | date }}</span></td>
@@ -62,7 +62,7 @@ import {TableHeader} from "../../../types/types";
                     </div>
                     <v-card-actions class="import-dialog-wrapper__actions">
                         <v-spacer></v-spacer>
-                        <v-btn color="primary" @click.native="goToBalances" dark>
+                        <v-btn color="big_btn primary" @click.native="goToBalances" dark>
                             Указать текущие остатки
                         </v-btn>
                     </v-card-actions>

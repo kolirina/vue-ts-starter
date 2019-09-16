@@ -58,8 +58,17 @@
         color: #FFFFFF;
         padding: 8px 20px;
         height: 44px;
+        min-width: 124px;
         text-decoration: none !important;
         white-space: nowrap;
+      }
+      .select-file-btn {
+        .file-link__text {
+          padding: 12px 20px;
+          background: #3b6ec9;
+          color: #FFFFFF;
+          white-space: nowrap;
+        }
       }
       .reselect-file-btn {
         .file-link__text {

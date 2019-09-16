@@ -30,7 +30,7 @@ import {PortfolioBackup} from "../../types/types";
                                       v-model="selectedPortfolios"
                                       item-key="id"
                                       select-all hide-actions
-                                      class="portfolio-choose-table">
+                                      class="data-table portfolio-choose-table">
                             <template v-slot:headers="props">
                                 <v-layout align-center>
                                     <v-checkbox

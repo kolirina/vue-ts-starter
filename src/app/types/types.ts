@@ -213,17 +213,25 @@ export type BondPortfolioRow = BondPortfolioSumRow & {
     lastBuy: string
 };
 
-export type Overview = {
-    dashboardData: DashboardData,
-    assetRows: AssetRow[],
-    stockPortfolio: StockPortfolio,
-    bondPortfolio: BondPortfolio,
-    totalTradesCount: number,
+/** Сущность с основными данными по портфелю */
+export interface Overview {
+    /** Данные дашборда */
+    dashboardData: DashboardData;
+    /** Данные таблицы Активы */
+    assetRows: AssetRow[];
+    /** Данные таблицы Акции */
+    stockPortfolio: StockPortfolio;
+    /** Данные таблицы Облигации */
+    bondPortfolio: BondPortfolio;
+    /** Общее количество сделок в портфеле */
+    totalTradesCount: number;
     /** Дата первой сделки в портфеле. Может быть null если в портфеле еще ни одной сделки */
-    firstTradeDate: string,
+    firstTradeDate: string;
     /** Дата последней сделки в портфеле. Может быть null если в портфеле еще ни одной сделки */
-    lastTradeDate: string
-};
+    lastTradeDate: string;
+    /** Дата по которую рассчитаны данные */
+    cutDate: string;
+}
 
 export type StockPortfolio = {
     sumRow: StockPortfolioSumRow,
@@ -328,6 +336,10 @@ export type Share = {
     shareType: ShareType;
     /** Дата последнего изменения по бумаге */
     lastUpdateTime?: string;
+    /** Рейтинг бумаги */
+    rating: string;
+    /** Голосов пользователей по бумаге */
+    ratingCount: string;
 };
 
 /**
@@ -595,6 +607,21 @@ export class RiskType extends (EnumType as IStaticEnum<RiskType>) {
     static readonly HIGH = new RiskType("high", "высокий", "Хочу получить максимальный доход, готов на значительный риск", "./img/adviser/highestRisk.svg");
 
     private constructor(public code: string, public title: string, public description: string, public imgSrc: string) {
+        super();
+    }
+}
+
+@Enum("code")
+export class OverviewPeriod extends (EnumType as IStaticEnum<OverviewPeriod>) {
+
+    static readonly PREVIOUS_WEEK = new OverviewPeriod("PREVIOUS_WEEK", "Прошлая неделя");
+    static readonly PREVIOUS_MONTH = new OverviewPeriod("PREVIOUS_MONTH", "Прошлый месяц");
+    static readonly PREVIOUS_QUARTER = new OverviewPeriod("PREVIOUS_QUARTER", "Прошлый квартал");
+    static readonly PREVIOUS_HALF_YEAR = new OverviewPeriod("PREVIOUS_HALF_YEAR", "Прошлое полугодие");
+    static readonly PREVIOUS_YEAR = new OverviewPeriod("PREVIOUS_YEAR", "Прошлый год");
+    static readonly TOTAL = new OverviewPeriod("TOTAL", "За все время");
+
+    private constructor(public code: string, public description: string) {
         super();
     }
 }

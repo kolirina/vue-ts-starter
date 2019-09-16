@@ -4,6 +4,7 @@ import {Enum, EnumType, IStaticEnum} from "../platform/enum";
 import {Http, UrlParams} from "../platform/services/http";
 import {Storage} from "../platform/services/storage";
 import {AssetType} from "../types/assetType";
+import {EventChartData} from "../types/charts/types";
 import {Operation} from "../types/operation";
 import {TradeListType} from "../types/tradeListType";
 import {PageableResponse, TradeRow} from "../types/types";
@@ -46,6 +47,16 @@ export class TradeService {
      */
     async getShareTrades(id: string, ticker: string): Promise<TradeRow[]> {
         return this.http.get<TradeRow[]>(`/trades/${id}/${ticker}`);
+    }
+
+    /**
+     * Загружает и возвращает события по сделкам по тикеру в портфеле
+     * @param {string} id идентификатор портфеля
+     * @param {string} ticker тикер
+     * @returns {Promise<TradeRow[]>}
+     */
+    async getShareTradesEvent(id: number, ticker: string): Promise<EventChartData[]> {
+        return this.http.get<EventChartData[]>(`/trades/${id}/events/${ticker}`);
     }
 
     /**

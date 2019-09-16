@@ -399,9 +399,10 @@ export class ChartUtils {
                         return ["<b>" + DateUtils.formatDate(dayjs(this.x)) + "</b>"].concat(
                             // @ts-ignore
                             this.points.map((pointGroup): string => {
-                                return compare ? `<span style=\"color:${pointGroup.series.color}\">${pointGroup.series.name}</span>: <b>${pointGroup.y}</b>
+                                const rounded = Filters.formatNumber(new Decimal(pointGroup.y).toDP(decimals).toString());
+                                return compare ? `<span style=\"color:${pointGroup.series.color}\">${pointGroup.series.name}</span>: <b>${rounded}</b>
 (${Math.round(pointGroup.point.change * 100) / 100}%)<br/>` :
-                                    `<span style=\"color:${pointGroup.series.color}\">${pointGroup.series.name}</span>: <b>${pointGroup.y}</b><br/>`;
+                                    `<span style=\"color:${pointGroup.series.color}\">${pointGroup.series.name}</span>: <b>${rounded}</b><br/>`;
                             })
                         );
                     } else if (point) {
@@ -641,6 +642,42 @@ export class ChartUtils {
             result.push([new Date(value.date).getTime(), new BigMoney((value as any)[fieldName]).amount.toDP(2, Decimal.ROUND_HALF_UP).toNumber()]);
         });
         return result;
+    }
+
+    static initPieChartAnimation(): void {
+        // @ts-ignore
+        // tslint:disable-next-line:typedef
+        Highcharts.seriesTypes.pie.prototype.animate = function(init) {
+            const series = this;
+            const points = series.points;
+
+            if (!init) {
+                // @ts-ignore
+                // tslint:disable-next-line:typedef
+                Highcharts.each(points, function(point, index) {
+                    const graphic = point.graphic;
+                    const args = point.shapeArgs;
+
+                    if (graphic) {
+                        graphic.attr({
+                            // r: 0,
+                            start: 0,
+                            end: 0
+                        });
+
+                        // tslint:disable-next-line:typedef
+                        setTimeout(function() {
+                            graphic.animate({
+                                // r: args.r,
+                                start: args.start,
+                                end: args.end
+                            }, series.options.animation);
+                        }, 100);
+                    }
+                });
+                this.animate = null;
+            }
+        };
     }
 
     private static getColors(dataSetsCountValue: number = 10): string[] {

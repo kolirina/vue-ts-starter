@@ -27,10 +27,12 @@ export class TariffHint implements DirectiveOptions {
                 display: "block"
             };
         });
-        el.addEventListener("mouseleave", (event) => {
+        el.addEventListener("mouseleave", (event: MouseEvent): void => {
+            // @ts-ignore
+            const toElement = event.relatedTarget || event.toElement;
             /** Условие что бы при ховере на подсказку она не уезжала */
             // noinspection JSDeprecatedSymbols
-            if (!(event.toElement.className === "custom-v-menu" || event.toElement.className === "v-menu-content")) {
+            if (!(toElement.className === "custom-v-menu" || toElement.className === "v-menu-content")) {
                 (store as any).state.MAIN.tariffExpiredHintCoords = {
                     x: "0px",
                     y: "0px",
