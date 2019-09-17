@@ -123,7 +123,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 <span class="menuDots"></span>
                             </v-btn>
                             <v-list dense>
-                                <v-list-tile v-if="portfolioId" @click="openShareTradesDialog(props.item.stock.ticker)">
+                                <v-list-tile @click="openShareTradesDialog(props.item.stock.ticker)">
                                     <v-list-tile-title>
                                         Все сделки
                                     </v-list-tile-title>
@@ -231,6 +231,9 @@ export class StockTable extends UI {
     /** Идентификатор портфеля */
     @Prop({default: null, type: String, required: true})
     private portfolioId: string;
+    /** Айди портфелей для комбинирования */
+    @Prop({default: [], required: false})
+    private ids: number[];
     /** Валюта просмотра информации */
     @Prop({required: true, type: String})
     private viewCurrency: string;
@@ -308,7 +311,13 @@ export class StockTable extends UI {
     }
 
     private async openShareTradesDialog(ticker: string): Promise<void> {
-        await new ShareTradesDialog().show({trades: await this.tradeService.getShareTrades(this.portfolioId, ticker), ticker});
+        let tardes = null;
+        if (this.portfolioId) {
+            tardes = await this.tradeService.getShareTrades(this.portfolioId, ticker);
+        } else {
+            tardes = await this.tradeService.getTradesCombinedPortfolio(ticker, this.viewCurrency, this.ids);
+        }
+        await new ShareTradesDialog().show({trades: tardes, ticker});
     }
 
     /**
