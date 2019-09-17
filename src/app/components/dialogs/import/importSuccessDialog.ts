@@ -93,13 +93,15 @@ export class ImportSuccessDialog extends CustomDialog<ImportSuccessDialogData, B
     /** Текущий выбранный портфель */
     private portfolio: Portfolio = null;
 
+    /**
+     * Инициализация данных диалога
+     * @inheritDoc
+     */
     mounted(): void {
         this.portfolio = (this.data.store as any).currentPortfolio;
-        this.$nextTick(() => {
-            if (this.$tours["intro"] && this.$tours["intro"].isRunning) {
-                this.$tours["intro"].currentStep = 5;
-            }
-        });
+        if (this.$tours["intro"] && this.$tours["intro"].isRunning) {
+            this.$tours["intro"].currentStep = 5;
+        }
     }
 
     private portfolioFormed(): void {

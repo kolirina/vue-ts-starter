@@ -283,17 +283,13 @@ export class ImportPage extends UI {
      */
     @ShowProgress
     async created(): Promise<void> {
-        if (!this.importProviderFeaturesByProvider) {
-            this.importProviderFeaturesByProvider = await this.importService.getImportProviderFeatures();
-        }
+        this.portfolioParams = {...this.portfolio.portfolioParams};
     }
 
     async mounted(): Promise<void> {
         if (this.$tours["intro"] && this.$tours["intro"].currentStep === 0) {
             this.$tours["intro"].nextStep();
         }
-        this.importProviderFeaturesByProvider = await this.importService.getImportProviderFeatures();
-        this.portfolioParams = {...this.portfolio.portfolioParams};
     }
 
     /**
