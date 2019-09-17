@@ -101,7 +101,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 <span class="menuDots"></span>
                             </v-btn>
                             <v-list dense>
-                                <v-list-tile v-if="portfolioId" @click="openShareTradesDialog(props.item.bond.ticker)">
+                                <v-list-tile @click="openShareTradesDialog(props.item.bond.ticker)">
                                     <v-list-tile-title>
                                         Все сделки
                                     </v-list-tile-title>
@@ -111,7 +111,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         Заметка
                                     </v-list-tile-title>
                                 </v-list-tile>
-                                <v-divider v-if="portfolioId || shareNotes"></v-divider>
+                                <v-divider></v-divider>
                                 <v-list-tile @click="openTradeDialog(props.item, operation.BUY)">
                                     <v-list-tile-title>
                                         Купить
@@ -250,6 +250,9 @@ export class BondTable extends UI {
     /** Идентификатор портфеля */
     @Prop({default: null, type: String, required: true})
     private portfolioId: string;
+    /** Айди портфелей для комбинирования */
+    @Prop({default: [], required: false})
+    private ids: number[];
     /** Валюта просмотра информации */
     @Prop({required: true, type: String})
     private viewCurrency: string;
@@ -327,7 +330,13 @@ export class BondTable extends UI {
     }
 
     private async openShareTradesDialog(ticker: string): Promise<void> {
-        await new ShareTradesDialog().show({trades: await this.tradeService.getShareTrades(this.portfolioId, ticker), ticker});
+        let tardes = null;
+        if (this.portfolioId) {
+            tardes = await this.tradeService.getShareTrades(this.portfolioId, ticker);
+        } else {
+            tardes = await this.tradeService.getTradesCombinedPortfolio(ticker, this.viewCurrency, this.ids);
+        }
+        await new ShareTradesDialog().show({trades: tardes, ticker});
     }
 
     private async openTradeDialog(bondRow: BondPortfolioRow, operation: Operation): Promise<void> {

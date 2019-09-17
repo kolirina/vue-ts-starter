@@ -84,7 +84,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                     </template>
                     <portfolio-rows-table-filter :filter.sync="bondFilter" :store-key="StoreKeys.BONDS_TABLE_FILTER_KEY"></portfolio-rows-table-filter>
                     <bond-table :rows="bondRows" :headers="getHeaders(TABLES_NAME.BOND)" :search="bondFilter.search" :filter="bondFilter"
-                                :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes"></bond-table>
+                                :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes"  :ids="ids"></bond-table>
                 </expanded-panel>
 
                 <expanded-panel v-if="blockNotEmpty(emptyBlockType.DEFAULT)" :value="$uistate.historyPanel"

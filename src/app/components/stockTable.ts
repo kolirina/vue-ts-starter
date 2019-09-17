@@ -133,7 +133,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         Заметка
                                     </v-list-tile-title>
                                 </v-list-tile>
-                                <v-divider v-if="portfolioId || shareNotes"></v-divider>
+                                <v-divider></v-divider>
                                 <v-list-tile @click="openTradeDialog(props.item, operation.BUY)">
                                     <v-list-tile-title>
                                         Купить
