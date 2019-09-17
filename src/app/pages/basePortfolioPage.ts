@@ -172,7 +172,7 @@ export class BasePortfolioPage extends UI {
     @Prop({default: null, required: true})
     private overview: Overview;
     /** Айди портфелей для комбинирования */
-    @Prop({default: [], required: false})
+    @Prop({default: (): number[] => [], required: false})
     private ids: number[];
     /** Название портфеля */
     @Prop({default: "", type: String, required: false})
