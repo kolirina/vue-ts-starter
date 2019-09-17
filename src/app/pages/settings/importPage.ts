@@ -283,6 +283,7 @@ export class ImportPage extends UI {
      */
     @ShowProgress
     async created(): Promise<void> {
+        this.importProviderFeaturesByProvider = await this.importService.getImportProviderFeatures();
         this.portfolioParams = {...this.portfolio.portfolioParams};
     }
 
