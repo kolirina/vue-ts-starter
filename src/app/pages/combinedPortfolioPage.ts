@@ -98,7 +98,6 @@ export class CombinedPortfolioPage extends UI {
      * @inheritDoc
      */
     async created(): Promise<void> {
-        this.ids = this.clientInfo.user.portfolios.filter(value => value.combined).map(value => value.id);
         await this.doCombinedPortfolio();
     }
 
@@ -121,6 +120,10 @@ export class CombinedPortfolioPage extends UI {
         next();
     }
 
+    private getIds(): void {
+        this.ids = this.clientInfo.user.portfolios.filter(value => value.combined).map(value => value.id);
+    }
+
     private async showDialogCompositePortfolio(): Promise<void> {
         const result = await new CompositePortfolioManagement().show({portfolio: this.clientInfo.user.portfolios, viewCurrency: this.viewCurrency});
         if (result) {
@@ -131,16 +134,13 @@ export class CombinedPortfolioPage extends UI {
 
     private async doCombinedPortfolio(): Promise<void> {
         this.overview = null;
+        this.getIds();
         this.overview = await this.overviewService.getPortfolioOverviewCombined({ids: this.ids, viewCurrency: this.viewCurrency});
         await this.loadPortfolioLineChart();
     }
 
     private blockNotEmpty(): boolean {
         return this.overview.bondPortfolio.rows.length !== 0 || this.overview.stockPortfolio.rows.length !== 0;
-    }
-
-    private async onPortfolioLineChartPanelStateChanges(): Promise<void> {
-        await this.loadPortfolioLineChart();
     }
 
     private async loadPortfolioLineChart(): Promise<void> {
