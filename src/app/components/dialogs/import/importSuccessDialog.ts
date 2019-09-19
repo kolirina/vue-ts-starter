@@ -29,7 +29,7 @@ import {CurrencyBalances} from "../../currencyBalances";
     // language=Vue
     template: `
         <v-dialog v-model="showed" max-width="600px" persistent ref="dialog">
-            <v-card class="dialog-wrap import-dialog-wrapper" data-v-step="5">
+            <v-card class="dialog-wrap import-dialog-wrapper">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
                 <div class="import-general-error-wrapper__element-centering">
                     <v-card-title>
@@ -76,7 +76,7 @@ import {CurrencyBalances} from "../../currencyBalances";
                             Назад
                         </v-btn>
                         <v-spacer></v-spacer>
-                        <v-btn v-if="step === 2" color="big_btn primary" @click.native="close('YES')" dark data-v-step="6">
+                        <v-btn v-if="step === 2" color="big_btn primary" @click.native="close('YES')" dark>
                             Перейти к портфелю
                         </v-btn>
                     </v-card-actions>

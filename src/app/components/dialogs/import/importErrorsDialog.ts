@@ -27,7 +27,7 @@ import {TableHeader} from "../../../types/types";
     // language=Vue
     template: `
         <v-dialog v-model="showed" max-width="600px" content-class="import-errors-dialog-scroll">
-            <v-card class="dialog-wrap import-dialog-wrapper" data-v-step="4">
+            <v-card class="dialog-wrap import-dialog-wrapper">
                 <v-layout column justify-space-between class="min-height-wrapper">
                     <div>
                         <v-icon class="closeDialog" @click.native="close">close</v-icon>

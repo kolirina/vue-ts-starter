@@ -38,7 +38,6 @@ import {highchartsRu} from "../platform/locale/highchartsRu";
 import {RU} from "../platform/locale/ru";
 import {ruLocale} from "../platform/locale/veeValidateMessages";
 import {ChartUtils} from "../utils/chartUtils";
-// import {RouterConfiguration} from "../router/routerConfiguration";
 import {UiStateHelper} from "../utils/uiStateHelper";
 import {UI} from "./ui";
 

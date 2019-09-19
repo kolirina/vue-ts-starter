@@ -25,7 +25,7 @@ import {CustomDialog} from "../../../platform/dialogs/customDialog";
     // language=Vue
     template: `
         <v-dialog v-model="showed" max-width="600px">
-            <v-card class="dialog-wrap import-dialog-wrapper import-general-error-wrapper" data-v-step="3">
+            <v-card class="dialog-wrap import-dialog-wrapper import-general-error-wrapper">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
 
                 <div class="import-general-error-wrapper__element-centering">

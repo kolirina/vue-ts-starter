@@ -5,7 +5,6 @@ import Vue from "vue";
 import {AppFrame} from "./app/app/appFrame";
 import {UI} from "./app/app/ui";
 import {UIRegistry} from "./app/app/uiRegistry";
-import {Tours} from "./app/components/tours/tours";
 import {Storage} from "./app/platform/services/storage";
 import {RouterConfiguration} from "./app/router/routerConfiguration";
 import {ApplicationService} from "./app/services/applicationService";
@@ -63,9 +62,7 @@ export async function start(): Promise<void> {
         router.onError(errorHandler);
         const store = VuexConfiguration.getStore();
         const app = new AppFrame({router, store});
-        const tours = new Tours();
         app.$mount("#app");
-        tours.$mount("#tours");
     } catch (error) {
         console.error("ERROR WHILE INIT APPLICATION", error);
     }

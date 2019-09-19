@@ -13,85 +13,15 @@
  *       420107, РЕСПУБЛИКА ТАТАРСТАН, ГОРОД КАЗАНЬ, УЛИЦА СПАРТАКОВСКАЯ, ДОМ 2, ПОМЕЩЕНИЕ 119
  * (c) ООО "Интеллектуальные инвестиции", 2019
  */
-import Component from "vue-class-component";
-import {UI} from "../../app/ui";
+import {Inject} from "typescript-ioc";
+import {namespace} from "vuex-class";
+import {Component, UI, Watch} from "../../app/ui";
+import {OnBoardingTourService, OnBoardTour, TourStep} from "../../services/onBoardingTourService";
+import {RouteMeta} from "../../types/router/types";
+import {Portfolio} from "../../types/types";
+import {StoreType} from "../../vuex/storeType";
 
-const INTRO_STEPS: TourStep[] = [
-    {
-        target: `[data-v-step="0"]`,
-        content: "Добро пожаловать в Intelinvest - сервис учёта и контроля инвестиций. Это основное меню, после импорта здесь у вас появятся главные" +
-        "показатели вашего портфеля (прибыль, доходность и пр.) Чтобы начать заполнять свой портфель, кликните на эту кнопку и загрузите отчёт о сделках вашего брокера.",
-        params: {
-            placement: "top"
-        }
-    },
-    {
-        target: `[data-v-step="1"]`,
-        content: "Выберите иконку вашего брокера.",
-        params: {
-            placement: "bottom"
-        }
-    },
-    {
-        target: `[data-v-step="2"]`,
-        content: "Ознакомьтесь с инструкцией по скачиванию отчета вашего брокера в корректном формате и с видео инструкцией по импорту сделок." +
-        "Далее загрузите отчет брокера использовав кнопку выбора файла или просто перетащите нужный файл в зону загрузки.",
-        params: {
-            placement: "top"
-        }
-    },
-    {
-        target: `[data-v-step="3"]`,
-        content: "Если после загрузки отчета вы увидели ошибку импорта - вероятнее всего вы загрузили отчет в неверном формате." +
-        "Перечитайте пожалуйста инструкцию по скачиванию отчета брокера на странице Настройки - Импорт сделок или обратитесь в техподдержку.",
-        params: {
-            placement: "right"
-        }
-    },
-    {
-        target: `[data-v-step="4"]`,
-        content: "Если после загрузки отчета вы увидели список ошибок - ознакомьтесь пожалуйста с причинами их возникновения в инструкции на" +
-        "странице импорта или обратитесь в техподдержку.",
-        params: {
-            placement: "right"
-        }
-    },
-    {
-        target: `[data-v-step="5"]`,
-        content: "Если ваши остатки по валютам после импорта отчета не совпадают с реальными, их необходимо скорректировать. Ввести актуальные остатки вы можете в данной форме",
-        params: {
-            placement: "left"
-        }
-    },
-    {
-        target: `[data-v-step="6"]`,
-        content: "Для просмотра результатов импорта отчета, перейдите в Портфель",
-        params: {
-            placement: "right"
-        }
-    },
-    {
-        target: `[data-v-step="7"]`,
-        content: "Если вам необходимо добавить какую-либо сделку вручную, это можно сделать кликнув на иконку Плюсика. В данном диалоговом окне вы сможете внести сделки по купле/продаже акций и облигаций, купону, дивиденду, амортизации, расходу, доходу, внесению, списанию денег, конвертации валют.",
-        params: {
-            placement: "right"
-        }
-    },
-    {
-        target: `[data-v-step="8"]`,
-        content: "В меню Аналитика вы найдете множество подсказок - как увеличить доходность вашего портфеля и снизить риски.",
-        params: {
-            placement: "right"
-        }
-    },
-    {
-        target: `[data-v-step="9"]`,
-        content: "В меню Справка вы найдете все интересующие вас вопросы, а также каналы связи с техподдержкой. Желаем успехов в вашей инвестиционной деятельности!",
-        params: {
-            placement: "top"
-        }
-    }
-];
+const MainStore = namespace(StoreType.MAIN);
 
 @Component({
     // language=Vue
@@ -99,18 +29,16 @@ const INTRO_STEPS: TourStep[] = [
         <v-tour name="intro" :steps="tourSteps">
             <template slot-scope="tour">
                 <transition name="fade">
-                    <v-step
-                        v-if="tour.currentStep === index"
-                        v-for="(step, index) of tour.steps"
-                        :key="index"
-                        :step="step"
-                        :previous-step="tour.previousStep"
-                        :next-step="tour.nextStep"
-                        :stop="tour.stop"
-                        :is-first="tour.isFirst"
-                        :is-last="tour.isLast"
-                        :labels="tour.labels"
-                    >
+                    <v-step v-if="tour.currentStep === index"
+                            v-for="(step, index) of tour.steps"
+                            :key="index"
+                            :step="step"
+                            :previous-step="tour.previousStep"
+                            :next-step="tour.nextStep"
+                            :stop="tour.stop"
+                            :is-first="tour.isFirst"
+                            :is-last="tour.isLast"
+                            :labels="tour.labels">
                         <template>
                             <slot name="content">
                                 <div class="v-step__content">
@@ -120,9 +48,11 @@ const INTRO_STEPS: TourStep[] = [
                         </template>
                         <template>
                             <div slot="actions">
-                                <button @click="onboardingDone" class="btn btn-primary">Пропустить обучение</button>
-                                <button v-if="isLastStep" @click="onboardingDone" class="btn btn-primary">Завершить обучение</button>
-                                <button v-else-if="isPenultimate || isAddTradeBtnHint" @click="myCustomNextStep" class="btn btn-primary">Следющий шаг</button>
+                                <div v-if="!step.params.hideButtons">
+                                    <button v-if="hasMore" @click="skipOnBoarding" class="btn btn-primary">Пропустить обучение</button>
+                                    <button v-if="isLastStep" @click="doneOnBoarding" class="btn btn-primary">Завершить обучение</button>
+                                    <button v-else-if="hasMore" @click="nextStep" class="btn btn-primary">Следющий шаг</button>
+                                </div>
                             </div>
                         </template>
                     </v-step>
@@ -132,9 +62,43 @@ const INTRO_STEPS: TourStep[] = [
 })
 
 export class Tours extends UI {
-    private tourSteps: TourStep[] = INTRO_STEPS;
 
-    private myCustomNextStep(): void {
+    @MainStore.Getter
+    private portfolio: Portfolio;
+    @Inject
+    private onBoardingTourService: OnBoardingTourService;
+
+    private tourSteps: TourStep[] = [];
+    private tourName: string = null;
+
+    /**
+     * TODO обновление при смене портфеля (через событие)
+     */
+    @Watch("$route", {immediate: true, deep: true})
+    async onRouteUpdate(): Promise<void> {
+        this.stop();
+        this.tourSteps = [];
+        this.tourName = null;
+        const meta: RouteMeta = this.$router.currentRoute.meta;
+        if (meta.tourName) {
+            this.tourName = meta.tourName;
+            this.tourSteps = await this.onBoardingTourService.getTourSteps(meta.tourName, this.portfolio.overview);
+            setTimeout(() => this.start(), 1000);
+        }
+    }
+
+    private start(): void {
+        this.$tours["intro"].start();
+    }
+
+    private stop(): void {
+        if (!this.$tours["intro"]) {
+            return;
+        }
+        this.$tours["intro"].stop();
+    }
+
+    private nextStep(): void {
         this.$tours["intro"].nextStep();
     }
 
@@ -142,28 +106,26 @@ export class Tours extends UI {
         return this.$tours["intro"].isLast;
     }
 
-    private onboardingDone(): void {
-        this.$tours["intro"].stop();
+    private doneOnBoarding(): void {
+        this.stop();
     }
 
-    private get isPenultimate(): boolean {
-        return this.$tours["intro"].numberOfSteps - 1 === this.$tours["intro"].currentStep;
+    private async skipOnBoarding(): Promise<void> {
+        this.stop();
+        const tour: OnBoardTour = {
+            name: this.tourName,
+            currentStep: this.$tours["intro"].currentStep,
+            isComplete: false,
+            isSkipped: true
+        };
+        await this.onBoardingTourService.saveOnBoardTour(tour);
     }
 
-    private get isAddTradeBtnHint(): boolean {
-        return this.$tours["intro"].currentStep === 6;
+    private get hasMore(): boolean {
+        return this.$tours["intro"].numberOfSteps - 1 !== this.$tours["intro"].currentStep;
     }
-}
-export interface TourStep {
-    target: string;
-    content: string;
-    params?: TourStepParams;
-}
 
-export interface TourStepHeader {
-    title: string;
-}
-
-export interface TourStepParams {
-    placement?: string;
+    private get isEmptyPortfolio(): boolean {
+        return this.portfolio && this.portfolio.overview.totalTradesCount === 0;
+    }
 }

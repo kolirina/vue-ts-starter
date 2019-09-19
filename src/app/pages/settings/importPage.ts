@@ -39,7 +39,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </div>
                 </v-card-title>
             </v-card>
-            <v-card flat class="px-0 py-0" data-v-step="1">
+            <v-card flat class="px-0 py-0" data-v-step="0">
                 <v-card-text class="import-wrapper-content">
                     <div class="providers">
                         <div v-for="provider in providers.values()" :key="provider.code" @click="onSelectProvider(provider)"
@@ -201,7 +201,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </div>
                     </div>
 
-                    <v-layout class="section-upload-file" wrap pb-3 column>
+                    <v-layout class="section-upload-file" wrap pb-3 column data-v-step="2">
                         <v-layout align-center>
                             <div v-if="importProviderFeatures && files.length" class="margT20">
                                 <v-btn color="primary" class="big_btn mr-3" @click.stop="uploadFile">Загрузить</v-btn>
@@ -230,7 +230,7 @@ const MainStore = namespace(StoreType.MAIN);
                             Последняя зарегистрированная сделка в портфеле от {{ portfolio.overview.lastTradeDate | date }}.
                         </b>
                     </p>
-                    <div data-v-step="2">
+                    <div data-v-step="1">
                         <video-link class="alignC">
                             <a>Смотреть видео инструкцию по импорту сделок</a>
                         </video-link>

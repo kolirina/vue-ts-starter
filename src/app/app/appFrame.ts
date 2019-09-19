@@ -34,9 +34,13 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-app id="inspire" light>
+            <!-- Подсказка об истекшем тарифе -->
             <tariff-expired-hint></tariff-expired-hint>
+            <!-- Компонент сообщений -->
             <vue-snotify></vue-snotify>
+            <!-- Обработчик ошибок -->
             <error-handler></error-handler>
+
             <template v-if="!loading && !loggedIn">
                 <sign-in @login="login" @registration="checkAuthorized"></sign-in>
             </template>
@@ -72,6 +76,8 @@ const MainStore = namespace(StoreType.MAIN);
                     <v-footer color="#f7f9fb" :class="['footer-app', sideBarOpened ? '' : 'hide-main-content']">
                         <footer-content :clientInfo="clientInfo"></footer-content>
                     </v-footer>
+                    <!-- Туры пользователя -->
+                    <tours></tours>
                 </v-content>
             </template>
 
@@ -91,7 +97,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-content>
             </template>
         </v-app>`,
-    components: {ContentLoader, ErrorHandler, FeedbackDialog, SignIn, FooterContent, MenuHeader, NavigationList, MenuBottomNavigation, TariffExpiredHint}
+    components: {ContentLoader, ErrorHandler, FeedbackDialog, SignIn, FooterContent, MenuHeader, NavigationList, MenuBottomNavigation, TariffExpiredHint, Tours}
 })
 export class AppFrame extends UI {
 
