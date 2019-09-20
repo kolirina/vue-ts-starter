@@ -76,7 +76,7 @@ export class OnBoardingTourService {
                 case TourName.PORTFOLIO:
                     return this.preparePortfolioSteps(overview);
                 case TourName.TRADES:
-                    const emptyPortfolio = PortfolioUtils.blockNotEmpty(overview, PortfolioBlockType.EMPTY);
+                    const emptyPortfolio = PortfolioUtils.isBlockShowed(overview, PortfolioBlockType.EMPTY);
                     return emptyPortfolio ? TOUR_STEPS[TourName.INTRO_TRADES] : steps;
                 default:
                     return steps;
@@ -93,7 +93,7 @@ export class OnBoardingTourService {
         const steps: TourStep[] = [];
         const blockIndexes: { [key: string]: number } = PortfolioUtils.getShowedBlocks(overview);
         Object.keys(blockIndexes).forEach(type => {
-            const rendered = PortfolioUtils.blockNotEmpty(overview, type as PortfolioBlockType);
+            const rendered = PortfolioUtils.isBlockShowed(overview, type as PortfolioBlockType);
             if (rendered) {
                 const index = String(blockIndexes[type]);
                 const step = TOURS_BY_PORTFOLIO_BLOCK[type];
@@ -263,7 +263,8 @@ export const TOURS_BY_PORTFOLIO_BLOCK: { [key: string]: TourStep } = {
         content: "Добро пожаловать в Intelinvest - сервис учёта и контроля инвестиций. Это основная страница, после добавления сделок здесь появятся основные " +
             "показатели вашего портфеля (прибыль, доходность и пр.) Чтобы начать заполнять свой портфель, кликните на эту кнопку и загрузите отчёт о сделках вашего брокера.",
         params: {
-            placement: "top"
+            placement: "top",
+            hideButtons: true
         }
     },
     [PortfolioBlockType.DASHBOARD]: {

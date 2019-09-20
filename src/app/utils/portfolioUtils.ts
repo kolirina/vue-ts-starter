@@ -59,10 +59,14 @@ export class PortfolioUtils {
         if (overview.stockPortfolio.rows.some(row => row.quantity !== 0)) {
             result[PortfolioBlockType.SECTORS_CHART] = count++;
         }
+        // если ни одного блока не добавлено, значит портфель пустой
+        if (count === 0) {
+            result[PortfolioBlockType.EMPTY] = count++;
+        }
         return result;
     }
 
-    static blockNotEmpty(overview: Overview, type: PortfolioBlockType): boolean {
+    static isBlockShowed(overview: Overview, type: PortfolioBlockType): boolean {
         switch (type) {
             case PortfolioBlockType.HISTORY_CHART:
                 return overview.bondPortfolio.rows.length !== 0 || overview.stockPortfolio.rows.length !== 0;

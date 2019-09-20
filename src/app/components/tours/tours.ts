@@ -103,6 +103,12 @@ export class Tours extends UI {
         if (!this.clientInfo.user.needShowTour) {
             return;
         }
+        // обрабатываем отдельный кейс самого первого шага, когда у нас нет кнопки Завершить тур или Перейти к следующему шагу
+        if (["portfolio", "trades"].includes(this.tourName) && this.tourSteps.length === 1 && this.$router.currentRoute.meta.tourName === "import") {
+            await this.doneOnBoarding();
+            this.stop();
+            return;
+        }
         await this.reInitTours();
     }
 
