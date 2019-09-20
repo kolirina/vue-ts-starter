@@ -99,14 +99,10 @@ export class ImportSuccessDialog extends CustomDialog<ImportSuccessDialogData, B
      */
     mounted(): void {
         this.portfolio = (this.data.store as any).currentPortfolio;
-        if (this.$tours["intro"] && this.$tours["intro"].isRunning) {
-            this.$tours["intro"].currentStep = 5;
-        }
     }
 
     private portfolioFormed(): void {
         this.step = 2;
-        this.$tours["intro"].nextStep();
     }
 }
 

@@ -287,12 +287,6 @@ export class ImportPage extends UI {
         this.portfolioParams = {...this.portfolio.portfolioParams};
     }
 
-    async mounted(): Promise<void> {
-        if (this.$tours["intro"] && this.$tours["intro"].currentStep === 0) {
-            this.$tours["intro"].nextStep();
-        }
-    }
-
     /**
      * Событие при добавлении вложений
      * @param {FileList} fileList список файлов
@@ -399,9 +393,6 @@ export class ImportPage extends UI {
             }
             await this.reloadPortfolio(this.portfolio.id);
             this.$snotify.info(`Импорт прошел успешно. ${firstWord} ${response.validatedTradesCount} ${secondWord}.`);
-            if (this.$tours["intro"] && this.$tours["intro"].currentStep === 5) {
-                this.$tours["intro"].nextStep();
-            }
             if (navigateToPortfolioPage) {
                 this.$router.push("portfolio");
             }
@@ -428,9 +419,6 @@ export class ImportPage extends UI {
             this.importProviderFeatures.createLinkedTrade = false;
         }
         this.clearFiles();
-        if (this.$tours["intro"] && this.$tours["intro"].currentStep === 1) {
-            this.$tours["intro"].nextStep();
-        }
     }
 
     private clearFiles(): void {

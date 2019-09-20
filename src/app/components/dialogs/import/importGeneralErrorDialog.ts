@@ -55,12 +55,6 @@ import {CustomDialog} from "../../../platform/dialogs/customDialog";
 })
 export class ImportGeneralErrorDialog extends CustomDialog<ImportGeneralErrorDialogData, void> {
 
-    mounted(): void {
-        if (this.$tours["intro"] && this.$tours["intro"].isRunning) {
-            this.$tours["intro"].currentStep = 3;
-        }
-    }
-
     private goToBalances(): void {
         this.data.router.push({name: "balances"});
         this.close();

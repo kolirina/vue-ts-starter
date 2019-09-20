@@ -247,6 +247,7 @@ export class BasePortfolioPage extends UI {
     private emptyBlockType = BlockType;
     /** Типы возможных пустых блоков */
     private PortfolioBlockType = PortfolioBlockType;
+    /** Индексы блоков */
     private blockIndexes: { [key: string]: number } = {};
 
     /**

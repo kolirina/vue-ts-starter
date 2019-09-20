@@ -17,39 +17,7 @@ import {PortfolioSwitcher} from "../portfolioSwitcher";
             </v-layout>
             <v-layout v-if="!sideBarOpened" column class="wrap-list-menu">
                 <div v-for="item in mainSection">
-                    <template v-if="item.action === 'adviser'">
-                        <v-list-tile :key="item.action" active-class="active-link"
-                                     :to="{path: item.path, name: item.action, params: item.params}">
-                            <v-list-tile-content v-if="item.action === linkAdditionalFunctionality.EVENTS && numberOfEvents" class="badge-link">
-                                <v-badge color="primary">
-                                    <template #badge>
-                                        <span title="У вас есть новые события по портфелю!">{{ numberOfEvents >= 100 ? "99+" : numberOfEvents }}</span>
-                                    </template>
-                                    <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-                                </v-badge>
-                            </v-list-tile-content>
-                            <v-list-tile-content v-else>
-                                <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-                            </v-list-tile-content>
-                        </v-list-tile>
-                    </template>
-                    <template v-else-if="item.action === 'help'">
-                        <v-list-tile :key="item.action" active-class="active-link"
-                                     :to="{path: item.path, name: item.action, params: item.params}">
-                            <v-list-tile-content v-if="item.action === linkAdditionalFunctionality.EVENTS && numberOfEvents" class="badge-link">
-                                <v-badge color="primary">
-                                    <template #badge>
-                                        <span title="У вас есть новые события по портфелю!">{{ numberOfEvents >= 100 ? "99+" : numberOfEvents }}</span>
-                                    </template>
-                                    <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-                                </v-badge>
-                            </v-list-tile-content>
-                            <v-list-tile-content v-else>
-                                <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-                            </v-list-tile-content>
-                        </v-list-tile>
-                    </template>
-                    <template v-else-if="item.subMenu">
+                    <template v-if="item.subMenu">
                         <v-menu transition="slide-y-transition" bottom left class="submenu-item-list" content-class="submenu-v-menu" nudge-bottom="47">
                             <v-list-tile slot="activator" :class="{'active-link': settingsSelected}">
                                 <v-list-tile-title>{{ item.title }}</v-list-tile-title>

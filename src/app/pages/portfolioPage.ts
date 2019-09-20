@@ -87,9 +87,6 @@ export class PortfolioPage extends UI {
     async created(): Promise<void> {
         this.overview = this.portfolio.overview;
         await this.loadPortfolioLineChart();
-        if (this.$tours["intro"] && this.$tours["intro"].currentStep === 5) {
-            this.$tours["intro"].nextStep();
-        }
         await this.getCurrentMoneyRemainder();
         const firstTradeYear = DateUtils.getYearDate(this.overview.firstTradeDate);
         const currentYear = dayjs().year();

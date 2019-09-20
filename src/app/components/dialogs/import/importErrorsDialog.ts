@@ -79,12 +79,6 @@ export class ImportErrorsDialog extends CustomDialog<ImportErrorsDialogData, voi
         {text: "Ошибка", align: "center", value: "message", sortable: false}
     ];
 
-    mounted(): void {
-        if (this.$tours["intro"] && this.$tours["intro"].isRunning) {
-            this.$tours["intro"].currentStep = 4;
-        }
-    }
-
     private goToBalances(): void {
         this.data.router.push({name: "balances"});
         this.close();
