@@ -19,12 +19,11 @@ export class PromoCodeService {
     }
 
     /**
-     * Отправляет запрос на смену типа вознаграждения промокода
-     * @param {string} userId
-     * @returns {Promise<void>}
+     * Возвращает данные по реферальной программе
+     * @returns данные по реферальной программе
      */
-    async getPromoCodeStatistics(userId: string): Promise<PromoCodeStatistics> {
-        return this.http.get<PromoCodeStatistics>(`/promo-code/statistics/${userId}`);
+    async getPromoCodeStatistics(): Promise<PromoCodeStatistics> {
+        return this.http.get<PromoCodeStatistics>(`/promo-code/statistics`);
     }
 }
 
