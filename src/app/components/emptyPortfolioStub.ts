@@ -35,7 +35,7 @@ import {UI} from "../app/ui";
                         <a>Смотреть видео инструкцию по импорту сделок</a>
                     </video-link>
                     <div class="margT20 alignC">
-                        <v-btn class="btn mr-1" color="#EBEFF7" to="/settings/import">
+                        <v-btn class="btn mr-1" color="#EBEFF7" to="/settings/import" data-v-step="0">
                             Загрузить отчет
                         </v-btn>
                         <v-btn class="btn ml-3" color="#EBEFF7" to="/balances">

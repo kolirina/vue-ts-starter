@@ -28,6 +28,7 @@ import {TradesPage} from "../pages/tradesPage";
 import {Storage} from "../platform/services/storage";
 import {ClientService} from "../services/clientService";
 import {LogoutService} from "../services/logoutService";
+import {RouteMeta} from "../types/router/types";
 import {StoreKeys} from "../types/storeKeys";
 import {Tariff} from "../types/tariff";
 import {CommonUtils} from "../utils/commonUtils";
@@ -117,7 +118,8 @@ export class RouterConfiguration {
                 component: PortfolioPage,
                 meta: {
                     tariffAllowed: true,
-                    title: "Портфель"
+                    title: "Портфель",
+                    tourName: "portfolio"
                 }
             },
             {
@@ -134,7 +136,8 @@ export class RouterConfiguration {
                 path: "/events",
                 component: EventsPage,
                 meta: {
-                    title: "События"
+                    title: "События",
+                    tourName: "events"
                 }
             },
             {
@@ -151,7 +154,8 @@ export class RouterConfiguration {
                 component: TradesPage,
                 meta: {
                     tariffAllowed: true,
-                    title: "Сделки"
+                    title: "Сделки",
+                    tourName: "trades"
                 }
             },
             {
@@ -229,7 +233,8 @@ export class RouterConfiguration {
                         path: "import",
                         component: ImportPage,
                         meta: {
-                            title: "Импорт сделок"
+                            title: "Импорт сделок",
+                            tourName: "import"
                         }
                     },
                     {
@@ -317,10 +322,4 @@ export class RouterConfiguration {
             display: "none"
         };
     }
-}
-
-interface RouteMeta {
-    tariffAllowed: boolean;
-    title?: string;
-    public?: boolean;
 }

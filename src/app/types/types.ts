@@ -562,6 +562,22 @@ export interface Currency {
     value: string;
 }
 
+export enum EventType {
+    reloadLineChart = "reloadLineChart",
+    exportTable = "exportTable",
+}
+
+export enum BlockType {
+    EMPTY = "empty",
+    ASSETS = "assets",
+    HISTORY_PANEL = "historyPanel",
+    STOCK_PORTFOLIO = "stockPortfolio",
+    BOND_PORTFOLIO = "bondPortfolio",
+    BOND_PIE = "bondPie",
+    STOCK_PIE = "stockPie",
+    SECTORS_PIE = "sectorsPie",
+}
+
 /** Перечислению доступных валют */
 @Enum("code")
 export class CurrencyUnit extends (EnumType as IStaticEnum<CurrencyUnit>) {

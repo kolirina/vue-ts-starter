@@ -33,7 +33,7 @@ const MainStore = namespace(StoreType.MAIN);
             <empty-portfolio-stub v-if="isEmptyBlockShowed"></empty-portfolio-stub>
             <div v-else>
                 <dashboard :data="portfolio.overview.dashboardData" :side-bar-opened="sideBarOpened" :view-currency="portfolio.portfolioParams.viewCurrency"></dashboard>
-                <expanded-panel :disabled="true" :withMenu="true" name="trades" :alwaysOpen="true" :value="[true]" class="auto-cursor">
+                <expanded-panel :disabled="true" :withMenu="true" name="trades" :alwaysOpen="true" :value="[true]" class="auto-cursor" data-v-step="0">
                     <template #header>Сделки</template>
                     <template #list>
                         <v-list-tile-title @click="openTableSettings(TABLES_NAME.TRADE)">Настроить колонки</v-list-tile-title>
@@ -42,12 +42,14 @@ const MainStore = namespace(StoreType.MAIN);
                     </template>
                     <v-layout justify-space-between wrap class="trades-filter-section">
                         <trades-table-filter v-if="tradesFilter" :store-key="StoreKeys.TRADES_FILTER_SETTINGS_KEY" @filter="onFilterChange" :filter="tradesFilter"
-                                            :is-default="isDefaultFilter"></trades-table-filter>
+                                             :is-default="isDefaultFilter" data-v-step="1"></trades-table-filter>
                         <additional-pagination :pagination="pagination" @update:pagination="onTablePaginationChange"></additional-pagination>
                     </v-layout>
                     <empty-search-result v-if="isEmptySearchResult" @resetFilter="resetFilter"></empty-search-result>
                     <trades-table v-else :trades="trades" :pagination="pagination" @copyTrade="copyTrade" @moveTrade="moveTrade"
-                                :headers="getHeaders(TABLES_NAME.TRADE)" @delete="onDelete" @resetFilter="resetFilter" @update:pagination="onTablePaginationChange"></trades-table>
+                                  :headers="getHeaders(TABLES_NAME.TRADE)" @delete="onDelete" @resetFilter="resetFilter" @update:pagination="onTablePaginationChange"
+                                  data-v-step="2">
+                    </trades-table>
                 </expanded-panel>
             </div>
         </v-container>

@@ -13,10 +13,12 @@ import {MenuHeader} from "../components/menu/menuHeader";
 import {NavigationList} from "../components/menu/navigationList";
 import {SignIn} from "../components/signIn";
 import {TariffExpiredHint} from "../components/tariffExpiredHint";
+import {Tours} from "../components/tours/tours";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {BtnReturn} from "../platform/dialogs/customDialog";
 import {Storage} from "../platform/services/storage";
 import {ClientInfo, ClientService} from "../services/clientService";
+import {OnBoardingTourService} from "../services/onBoardingTourService";
 import {StoreKeys} from "../types/storeKeys";
 import {NavBarItem, Portfolio, SignInData} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
@@ -33,9 +35,13 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-app id="inspire" light>
+            <!-- Подсказка об истекшем тарифе -->
             <tariff-expired-hint></tariff-expired-hint>
+            <!-- Компонент сообщений -->
             <vue-snotify></vue-snotify>
+            <!-- Обработчик ошибок -->
             <error-handler></error-handler>
+
             <template v-if="!loading && !loggedIn">
                 <sign-in @login="login" @registration="checkAuthorized"></sign-in>
             </template>
@@ -71,14 +77,14 @@ const MainStore = namespace(StoreType.MAIN);
                     <v-footer color="#f7f9fb" :class="['footer-app', sideBarOpened ? '' : 'hide-main-content']">
                         <footer-content :clientInfo="clientInfo"></footer-content>
                     </v-footer>
+                    <!-- Туры пользователя -->
+                    <tours></tours>
                 </v-content>
             </template>
 
             <template v-if="loading">
                 <v-content>
-                    <div class="mobile-wrapper-menu">
-
-                    </div>
+                    <div class="mobile-wrapper-menu"></div>
                     <v-container fluid :class="['paddT0', 'fb-0', sideBarOpened ? '' : 'hide-main-content']">
                         <content-loader :height="800" :width="800" :speed="1" primaryColor="#f3f3f3" secondaryColor="#ecebeb">
                             <rect x="0" y="20" rx="5" ry="5" width="801.11" height="80"/>
@@ -88,13 +94,11 @@ const MainStore = namespace(StoreType.MAIN);
                             <rect x="0" y="570" rx="5" ry="5" width="801.11" height="180"/>
                         </content-loader>
                     </v-container>
-                    <v-footer color="#f7f9fb" :class="['footer-app', sideBarOpened ? '' : 'hide-main-content']">
-
-                    </v-footer>
+                    <v-footer color="#f7f9fb" :class="['footer-app', sideBarOpened ? '' : 'hide-main-content']"></v-footer>
                 </v-content>
             </template>
         </v-app>`,
-    components: {ContentLoader, ErrorHandler, FeedbackDialog, SignIn, FooterContent, MenuHeader, NavigationList, MenuBottomNavigation, TariffExpiredHint}
+    components: {ContentLoader, ErrorHandler, FeedbackDialog, SignIn, FooterContent, MenuHeader, NavigationList, MenuBottomNavigation, TariffExpiredHint, Tours}
 })
 export class AppFrame extends UI {
 
@@ -105,6 +109,8 @@ export class AppFrame extends UI {
     private localStorage: Storage;
     @Inject
     private clientService: ClientService;
+    @Inject
+    private onBoardingTourService: OnBoardingTourService;
     @MainStore.Getter
     private clientInfo: ClientInfo;
     @MainStore.Getter
@@ -178,6 +184,7 @@ export class AppFrame extends UI {
             this.isNotifyAccepted = this.clientInfo.user.updateNotificationConfirmDate === NotificationUpdateDialog.DATE;
             this.showUpdatesMessage();
             await this.loadEvents(this.portfolio.id);
+            await this.loadOnBoardingTours();
             this.loggedIn = true;
         }
     }
@@ -199,6 +206,7 @@ export class AppFrame extends UI {
             const client = await this.clientService.getClientInfo();
             await this.loadUser({token: this.localStorage.get(StoreKeys.TOKEN_KEY, null), user: client});
             await this.setCurrentPortfolio(this.$store.state[StoreType.MAIN].clientInfo.user.currentPortfolioId);
+            await this.loadOnBoardingTours();
             this.loggedIn = true;
         } finally {
             this.loading = false;
@@ -217,11 +225,18 @@ export class AppFrame extends UI {
             await this.loadUser(clientInfo);
             await this.setCurrentPortfolio(this.$store.state[StoreType.MAIN].clientInfo.user.currentPortfolioId);
             await this.loadEvents(this.portfolio.id);
+            await this.loadOnBoardingTours();
             this.loggedIn = true;
             this.$snotify.clear();
             this.$router.push("portfolio");
         } finally {
             this.loading = false;
+        }
+    }
+
+    private async loadOnBoardingTours(): Promise<void> {
+        if (this.clientInfo.user.needShowTour) {
+            await this.onBoardingTourService.initTours();
         }
     }
 
