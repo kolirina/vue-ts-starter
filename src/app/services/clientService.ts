@@ -185,6 +185,8 @@ export interface BaseClient {
     unsubscribed: boolean;
     /** Дата уведомления о последних изменениях в сервисе */
     updateNotificationConfirmDate?: string;
+    /** Признак необходимости отображения привественного тура пользователю */
+    needShowTour: boolean;
 }
 
 export interface ClientResponse extends BaseClient {

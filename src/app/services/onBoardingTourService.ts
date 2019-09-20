@@ -26,38 +26,51 @@ export class OnBoardingTourService {
 
     @Inject
     private http: Http;
-
+    /** Корневой url */
     private readonly ROOT = "/onboarding";
+    /** Карта пользовательских туров */
+    private userTours: UserOnBoardTours = null;
 
-    private userTours: OnBoardTour[] = null;
+    /**
+     * Инициализирует данные туров пользователя
+     */
+    async initTours(): Promise<UserOnBoardTours> {
+        if (!this.userTours) {
+            const result = await this.http.get<OnBoardTour[]>(this.ROOT);
+            this.userTours = {};
+            result.forEach(tour => this.userTours[tour.name] = tour);
+        }
+        return this.userTours;
+    }
 
     /**
      * Возвращает данные по доходностям бенчмарков в сравнении с доходностью портфеля
      */
-    async getOnBoardingTours(): Promise<OnBoardTour[]> {
-        if (!this.userTours) {
-            this.userTours = await this.http.get<OnBoardTour[]>(this.ROOT);
-        }
+    getOnBoardingTours(): UserOnBoardTours {
         return this.userTours;
     }
 
     /**
      * Возвращает данные по ставкам депозитов за последние 6 месяцев
      */
-    async saveOnBoardTour(tour: OnBoardTour): Promise<void> {
-        await this.http.post(this.ROOT, tour);
+    async saveOrUpdateOnBoardTour(tour: OnBoardTour): Promise<void> {
+        if (!tour.id) {
+            const result = await this.http.post<OnBoardTour>(this.ROOT, tour);
+            this.userTours[result.name] = result;
+        } else {
+            await this.http.put(this.ROOT, tour);
+            this.userTours[tour.name] = tour;
+        }
     }
 
     /**
-     * Возвращает данные по инфляции за последние 6 месяцев
+     * Возвращает набор шагов для тура
+     * @param tourName имя тура
+     * @param overview данные по портфелю
      */
-    async updateOnBoardTour(tour: OnBoardTour): Promise<void> {
-        await this.http.put(this.ROOT, tour);
-    }
-
     async getTourSteps(tourName: string, overview: Overview): Promise<TourStep[]> {
-        const userTour = (await this.getOnBoardingTours()).find(tour => tour.name === tourName);
-        if (!userTour || !userTour.isComplete && !userTour.isSkipped) {
+        const userTour = this.getOnBoardingTours()[tourName];
+        if (!userTour || !userTour.complete && !userTour.skipped) {
             const steps: TourStep[] = TOUR_STEPS[tourName];
             switch (tourName) {
                 case TourName.PORTFOLIO:
@@ -72,6 +85,10 @@ export class OnBoardingTourService {
         return [];
     }
 
+    /**
+     * Возвращает набор шагов для тура по странице Портфель. Так как блоков может быть разное количество и разный порядок
+     * @param overview данные по портфелю
+     */
     private preparePortfolioSteps(overview: Overview): TourStep[] {
         const steps: TourStep[] = [];
         const blockIndexes: { [key: string]: number } = PortfolioUtils.getShowedBlocks(overview);
@@ -88,6 +105,11 @@ export class OnBoardingTourService {
     }
 }
 
+/** Карта пользовательских туров */
+export interface UserOnBoardTours {
+    [key: string]: OnBoardTour;
+}
+
 /** Описание тура пользователя */
 export interface OnBoardTour {
     /** Идентификатор тура */
@@ -96,12 +118,15 @@ export interface OnBoardTour {
     name: string;
     /** Текущий шаг тура, на котором остановился пользователь */
     currentStep: number;
+    /** Общее количество шагов в туре */
+    totalSteps: number;
     /** Признак пропуска тура */
-    isSkipped: boolean;
+    skipped: boolean;
     /** Признак завершенности тура */
-    isComplete: boolean;
+    complete: boolean;
 }
 
+/** Перечисление доступных туров */
 export enum TourName {
     INTRO_PORTFOLIO = "intro_portfolio",
     INTRO_TRADES = "intro_trades",
@@ -111,6 +136,7 @@ export enum TourName {
     IMPORT = "import",
 }
 
+/** Сущность шага */
 export interface TourStep {
     target: string;
     content: string;
@@ -118,6 +144,7 @@ export interface TourStep {
     params?: TourStepParams;
 }
 
+/** Параметры шага */
 export interface TourStepParams {
     placement?: string;
     enableScrolling?: boolean;
@@ -125,6 +152,7 @@ export interface TourStepParams {
     hideButtons?: boolean;
 }
 
+/** Блоки портфеля к которым необходимо отобразить подсказку */
 export enum PortfolioBlockType {
     DASHBOARD = "DASHBOARD",
     ASSETS = "ASSETS",
@@ -138,6 +166,9 @@ export enum PortfolioBlockType {
     EMPTY = "EMPTY"
 }
 
+/**
+ * Набор всех шагов в разбивке по турам
+ */
 export const TOUR_STEPS: { [key: string]: TourStep[] } = {
     [TourName.INTRO_TRADES]: [
         {
@@ -155,7 +186,8 @@ export const TOUR_STEPS: { [key: string]: TourStep[] } = {
             target: `[data-v-step="0"]`,
             content: "На данной странице отображается список всех ваших сделок в портфеле.",
             params: {
-                placement: "bottom"
+                placement: "bottom",
+                enableScrolling: false
             }
         },
         {
@@ -163,7 +195,8 @@ export const TOUR_STEPS: { [key: string]: TourStep[] } = {
             content: "С помощью фильтра легко работать со списком сделок. Можно отобразить только нужные операции, скрыть связанные сделки, " +
                 "отфильтровать сделки по дате, или найти определенную сделку.",
             params: {
-                placement: "bottom"
+                placement: "bottom",
+                enableScrolling: false
             }
         },
     ],
@@ -221,6 +254,9 @@ export const TOUR_STEPS: { [key: string]: TourStep[] } = {
     ]
 };
 
+/**
+ * Набор шагов для блоков на странице Портфель
+ */
 export const TOURS_BY_PORTFOLIO_BLOCK: { [key: string]: TourStep } = {
     [PortfolioBlockType.EMPTY]: {
         target: `[data-v-step="$0"]`,
@@ -305,31 +341,3 @@ export const TOURS_BY_PORTFOLIO_BLOCK: { [key: string]: TourStep } = {
         }
     },
 };
-
-/*
-        {
-            target: `[data-v-step="3"]`,
-            content: "Если после загрузки отчета вы увидели список ошибок - ознакомьтесь пожалуйста с причинами их возникновения в инструкции на " +
-                "странице импорта или обратитесь в техподдержку.",
-            params: {
-                placement: "right"
-            }
-        },
-        {
-            target: `[data-v-step="4"]`,
-            content: "Если ваши остатки по валютам после импорта отчета не совпадают с реальными, их необходимо скорректировать. " +
-                "Ввести актуальные остатки вы можете в данной форме",
-            params: {
-                placement: "left"
-            }
-        },
-        {
-            target: `[data-v-step="6"]`,
-            content: "Если вам необходимо добавить какую-либо сделку вручную, это можно сделать кликнув на иконку Плюсика. " +
-                "В данном диалоговом окне вы сможете внести сделки по купле/продаже акций и облигаций, купону, дивиденду, " +
-                "амортизации, расходу, доходу, внесению, списанию денег, конвертации валют.",
-            params: {
-                placement: "right"
-            }
-        },
- */

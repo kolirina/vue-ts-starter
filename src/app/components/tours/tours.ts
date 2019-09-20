@@ -16,7 +16,8 @@
 import {Inject} from "typescript-ioc";
 import {namespace} from "vuex-class";
 import {Component, UI, Watch} from "../../app/ui";
-import {OnBoardingTourService, OnBoardTour, TourStep} from "../../services/onBoardingTourService";
+import {ClientInfo} from "../../services/clientService";
+import {OnBoardingTourService, OnBoardTour, TourStep, UserOnBoardTours} from "../../services/onBoardingTourService";
 import {RouteMeta} from "../../types/router/types";
 import {Portfolio} from "../../types/types";
 import {StoreType} from "../../vuex/storeType";
@@ -65,17 +66,50 @@ export class Tours extends UI {
 
     @MainStore.Getter
     private portfolio: Portfolio;
+    @MainStore.Getter
+    private clientInfo: ClientInfo;
     @Inject
     private onBoardingTourService: OnBoardingTourService;
-
+    /** Набор шагов для текущего тура */
     private tourSteps: TourStep[] = [];
+    /** Название текущего тура */
     private tourName: string = null;
+    /** Набор пользовательских туров (которые он уже мог пройти) */
+    private userOnBoardings: UserOnBoardTours = null;
 
     /**
-     * TODO обновление при смене портфеля (через событие)
+     * Получает набор пользовательских туров
+     */
+    created(): void {
+        this.userOnBoardings = this.onBoardingTourService.getOnBoardingTours();
+    }
+
+    /**
+     * Следит за изменением портфеля и создает туры
+     */
+    @Watch("portfolio")
+    private async onPortfolioChange(): Promise<void> {
+        if (!this.clientInfo.user.needShowTour) {
+            return;
+        }
+        await this.reInitTours();
+    }
+
+    /**
+     * Следит за изменением роутинга и создает туры
      */
     @Watch("$route", {immediate: true, deep: true})
-    async onRouteUpdate(): Promise<void> {
+    private async onRouteUpdate(): Promise<void> {
+        if (!this.clientInfo.user.needShowTour) {
+            return;
+        }
+        await this.reInitTours();
+    }
+
+    /**
+     * Переинициализирует туры учитывая текущий портфель
+     */
+    private async reInitTours(): Promise<void> {
         this.stop();
         this.tourSteps = [];
         this.tourName = null;
@@ -83,14 +117,22 @@ export class Tours extends UI {
         if (meta.tourName) {
             this.tourName = meta.tourName;
             this.tourSteps = await this.onBoardingTourService.getTourSteps(meta.tourName, this.portfolio.overview);
-            setTimeout(() => this.start(), 1000);
+            if (this.tourSteps.length) {
+                this.start();
+            }
         }
     }
 
+    /**
+     * Запускает тур
+     */
     private start(): void {
-        this.$tours["intro"].start();
+        setTimeout(() => this.$tours["intro"].start(), 1000);
     }
 
+    /**
+     * Останавливает тур (если он был ранее запущен)
+     */
     private stop(): void {
         if (!this.$tours["intro"]) {
             return;
@@ -98,34 +140,61 @@ export class Tours extends UI {
         this.$tours["intro"].stop();
     }
 
+    /**
+     * Осуществляет переход к следующему шагу
+     */
     private nextStep(): void {
         this.$tours["intro"].nextStep();
     }
 
+    /**
+     * Возвращает признак последнего шага
+     */
     private get isLastStep(): boolean {
         return this.$tours["intro"].isLast;
     }
 
-    private doneOnBoarding(): void {
+    /**
+     * Завершает тур
+     */
+    private async doneOnBoarding(): Promise<void> {
+        const tour = this.getTour();
+        tour.complete = true;
+        await this.onBoardingTourService.saveOrUpdateOnBoardTour(tour);
         this.stop();
     }
 
+    /**
+     * Пропускает тут
+     */
     private async skipOnBoarding(): Promise<void> {
+        const tour = this.getTour();
+        tour.skipped = true;
+        await this.onBoardingTourService.saveOrUpdateOnBoardTour(tour);
         this.stop();
-        const tour: OnBoardTour = {
-            name: this.tourName,
-            currentStep: this.$tours["intro"].currentStep,
-            isComplete: false,
-            isSkipped: true
-        };
-        await this.onBoardingTourService.saveOnBoardTour(tour);
     }
 
+    /**
+     * Возвращает тур пользователя (если он есть) или создает новый
+     */
+    private getTour(): OnBoardTour {
+        let tour: OnBoardTour = this.userOnBoardings[this.tourName];
+        if (!tour) {
+            tour = {
+                name: this.tourName,
+                currentStep: this.$tours["intro"].currentStep,
+                totalSteps: this.$tours["intro"].numberOfSteps,
+                complete: false,
+                skipped: false
+            };
+        }
+        return tour;
+    }
+
+    /**
+     * Возвращает признак что в туре есть еще доступные шаги
+     */
     private get hasMore(): boolean {
         return this.$tours["intro"].numberOfSteps - 1 !== this.$tours["intro"].currentStep;
-    }
-
-    private get isEmptyPortfolio(): boolean {
-        return this.portfolio && this.portfolio.overview.totalTradesCount === 0;
     }
 }

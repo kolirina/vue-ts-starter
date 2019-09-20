@@ -18,6 +18,7 @@ import {ShowProgress} from "../platform/decorators/showProgress";
 import {BtnReturn} from "../platform/dialogs/customDialog";
 import {Storage} from "../platform/services/storage";
 import {ClientInfo, ClientService} from "../services/clientService";
+import {OnBoardingTourService} from "../services/onBoardingTourService";
 import {StoreKeys} from "../types/storeKeys";
 import {NavBarItem, Portfolio, SignInData} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
@@ -108,6 +109,8 @@ export class AppFrame extends UI {
     private localStorage: Storage;
     @Inject
     private clientService: ClientService;
+    @Inject
+    private onBoardingTourService: OnBoardingTourService;
     @MainStore.Getter
     private clientInfo: ClientInfo;
     @MainStore.Getter
@@ -181,6 +184,7 @@ export class AppFrame extends UI {
             this.isNotifyAccepted = this.clientInfo.user.updateNotificationConfirmDate === NotificationUpdateDialog.DATE;
             this.showUpdatesMessage();
             await this.loadEvents(this.portfolio.id);
+            await this.loadOnBoardingTours();
             this.loggedIn = true;
         }
     }
@@ -202,6 +206,7 @@ export class AppFrame extends UI {
             const client = await this.clientService.getClientInfo();
             await this.loadUser({token: this.localStorage.get(StoreKeys.TOKEN_KEY, null), user: client});
             await this.setCurrentPortfolio(this.$store.state[StoreType.MAIN].clientInfo.user.currentPortfolioId);
+            await this.loadOnBoardingTours();
             this.loggedIn = true;
         } finally {
             this.loading = false;
@@ -220,11 +225,18 @@ export class AppFrame extends UI {
             await this.loadUser(clientInfo);
             await this.setCurrentPortfolio(this.$store.state[StoreType.MAIN].clientInfo.user.currentPortfolioId);
             await this.loadEvents(this.portfolio.id);
+            await this.loadOnBoardingTours();
             this.loggedIn = true;
             this.$snotify.clear();
             this.$router.push("portfolio");
         } finally {
             this.loading = false;
+        }
+    }
+
+    private async loadOnBoardingTours(): Promise<void> {
+        if (this.clientInfo.user.needShowTour) {
+            await this.onBoardingTourService.initTours();
         }
     }
 
