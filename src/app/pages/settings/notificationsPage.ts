@@ -21,7 +21,7 @@ const MainStore = namespace(StoreType.MAIN);
             <div class="section-title header-first-card__title-text" :class="{'empty-notifications-title-page': notifications.length === 0}">Уведомления</div>
             <v-card :class="{'notifications-card notifications-card-main': true, 'notifications-card-full': notifications.length !== 0}">
                 <div v-if="notifications.length === 0">
-                    <div class="text-empty-notifications">
+                    <div class="text-empty-notifications" data-v-step="0">
                         Здесь будут Ваши настройки уведомлений о дивидендах,<br>
                         достижении целевых цен на акции и облигации, а также<br>
                         о новостях интересующих эмитентов.
