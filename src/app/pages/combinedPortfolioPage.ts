@@ -98,6 +98,7 @@ export class CombinedPortfolioPage extends UI {
      * @inheritDoc
      */
     async created(): Promise<void> {
+        this.setIds();
         await this.doCombinedPortfolio();
     }
 
@@ -120,7 +121,10 @@ export class CombinedPortfolioPage extends UI {
         next();
     }
 
-    private getIds(): void {
+    /**
+     * Подготавливает идентификаторы портфелей
+     */
+    private setIds(): void {
         this.ids = this.clientInfo.user.portfolios.filter(value => value.combined).map(value => value.id);
     }
 
@@ -128,13 +132,13 @@ export class CombinedPortfolioPage extends UI {
         const result = await new CompositePortfolioManagement().show({portfolio: this.clientInfo.user.portfolios, viewCurrency: this.viewCurrency});
         if (result) {
             this.viewCurrency = result;
+            this.setIds();
             await this.doCombinedPortfolio();
         }
     }
 
     private async doCombinedPortfolio(): Promise<void> {
         this.overview = null;
-        this.getIds();
         this.overview = await this.overviewService.getPortfolioOverviewCombined({ids: this.ids, viewCurrency: this.viewCurrency});
         await this.loadPortfolioLineChart();
     }

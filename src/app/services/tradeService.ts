@@ -49,6 +49,12 @@ export class TradeService {
         return this.http.get<TradeRow[]>(`/trades/${id}/${ticker}`);
     }
 
+    /**
+     * Возвращает список сделок для комбинированного портфеля
+     * @param ticker тикер
+     * @param viewCurrency валюта
+     * @param ids идентификаторы портфелей
+     */
     async getTradesCombinedPortfolio(ticker: string, viewCurrency: string, ids: number[]): Promise<TradeRow[]> {
         return this.http.post<TradeRow[]>(`/trades/combined/${ticker}`, {ids, viewCurrency});
     }

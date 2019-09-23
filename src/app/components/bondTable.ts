@@ -330,13 +330,13 @@ export class BondTable extends UI {
     }
 
     private async openShareTradesDialog(ticker: string): Promise<void> {
-        let tardes = null;
+        let trades = [];
         if (this.portfolioId) {
-            tardes = await this.tradeService.getShareTrades(this.portfolioId, ticker);
+            trades = await this.tradeService.getShareTrades(this.portfolioId, ticker);
         } else {
-            tardes = await this.tradeService.getTradesCombinedPortfolio(ticker, this.viewCurrency, this.ids);
+            trades = await this.tradeService.getTradesCombinedPortfolio(ticker, this.viewCurrency, this.ids);
         }
-        await new ShareTradesDialog().show({trades: tardes, ticker});
+        await new ShareTradesDialog().show({trades, ticker});
     }
 
     private async openTradeDialog(bondRow: BondPortfolioRow, operation: Operation): Promise<void> {
