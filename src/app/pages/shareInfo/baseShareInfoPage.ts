@@ -47,7 +47,7 @@ const MainStore = namespace(StoreType.MAIN);
             </v-card>
             <v-card flat class="info-share-page">
                 <share-search @change="onShareSelect"></share-search>
-                <div v-if="share && share.shareType === 'STOCK'">
+                <div v-if="share && share.shareType === 'STOCK'" data-v-step="0">
                     <v-layout class="info-share-page__name-stock-block" justify-space-between align-center wrap>
                         <div>
                             <div class="info-share-page__name-stock-block__title selectable">
@@ -71,7 +71,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     <span v-if="share.sector.parent" class="info-share-page__name-stock-block__subtitle">
                                         ,&nbsp;родительский сектор: {{ share.sector.parent.name }}
                                     </span>
-                                    <span class="rating-section">
+                                    <span class="rating-section"  data-v-step="1">
                                         <stock-rate :share="share"></stock-rate>
                                     </span>
                                 </div>
@@ -297,7 +297,7 @@ const MainStore = namespace(StoreType.MAIN);
             </v-card>
 
             <div class="space-between-blocks"></div>
-            <v-card v-if="share" class="chart-overflow" flat>
+            <v-card v-if="share" class="chart-overflow" flat  data-v-step="2">
                 <v-card-title class="chart-title">
                     Цена бумаги
                 </v-card-title>
@@ -308,7 +308,7 @@ const MainStore = namespace(StoreType.MAIN);
 
             <template v-if="dividends.length">
                 <div class="space-between-blocks"></div>
-                <v-card v-if="share" flat class="dividends-chart">
+                <v-card v-if="share" flat class="dividends-chart"  data-v-step="3">
                     <v-card-title class="chart-title">
                         Дивиденды
                         <v-spacer></v-spacer>

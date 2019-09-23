@@ -164,7 +164,8 @@ export class RouterConfiguration {
                 component: CombinedPortfolioPage,
                 meta: {
                     tariffAllowed: true,
-                    title: "Составной портфель"
+                    title: "Составной портфель",
+                    tourName: "combined_portfolio"
                 }
             },
             {
@@ -172,7 +173,8 @@ export class RouterConfiguration {
                 path: "/quotes",
                 meta: {
                     tariffAllowed: true,
-                    title: "Котировки"
+                    title: "Котировки",
+                    tourName: "quotes"
                 },
                 component: QuotesPage,
             },
@@ -190,7 +192,8 @@ export class RouterConfiguration {
                         name: "share",
                         meta: {
                             tariffAllowed: true,
-                            title: "Информация по бумаге"
+                            title: "Информация по бумаге",
+                            tourName: "stock_info"
                         },
                         component: ShareInfoPage
                     }
@@ -216,7 +219,8 @@ export class RouterConfiguration {
                         path: "/settings/portfolio-management",
                         meta: {
                             tariffAllowed: true,
-                            title: "Управление портфелями"
+                            title: "Управление портфелями",
+                            tourName: "portfolio_management"
                         },
                         component: PortfoliosManagementPage
                     },
@@ -269,7 +273,8 @@ export class RouterConfiguration {
                         path: "notifications",
                         component: NotificationsPage,
                         meta: {
-                            title: "Уведомления"
+                            title: "Уведомления",
+                            tourName: "notifications"
                         }
                     },
                 ]

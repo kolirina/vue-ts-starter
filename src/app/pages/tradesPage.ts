@@ -29,9 +29,9 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-container v-if="portfolio" fluid class="paddT0 h100pc">
+        <div v-if="portfolio" class="h100pc">
             <empty-portfolio-stub v-if="isEmptyBlockShowed"></empty-portfolio-stub>
-            <div v-else>
+            <v-container v-else fluid class="paddT0 h100pc">
                 <dashboard :data="portfolio.overview.dashboardData" :side-bar-opened="sideBarOpened" :view-currency="portfolio.portfolioParams.viewCurrency"></dashboard>
                 <expanded-panel :disabled="true" :withMenu="true" name="trades" :alwaysOpen="true" :value="[true]" class="auto-cursor" data-v-step="0">
                     <template #header>Сделки</template>
@@ -51,8 +51,8 @@ const MainStore = namespace(StoreType.MAIN);
                                   data-v-step="2">
                     </trades-table>
                 </expanded-panel>
-            </div>
-        </v-container>
+            </v-container>
+        </div>
     `,
     components: {TradesTable, ExpandedPanel, TradesTableFilter, AdditionalPagination, EmptySearchResult, EmptyPortfolioStub}
 })

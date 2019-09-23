@@ -42,7 +42,7 @@ const MainStore = namespace(StoreType.MAIN);
                             </div>
                         </v-layout>
                         <v-layout v-if="!blockNotEmpty()" column class="empty-station px-4 py-4 mt-3">
-                            <div class="empty-station__description">
+                            <div class="empty-station__description" data-v-step="0">
                                 Здесь вы можете объединить для просмотра несколько портфелей в один, и проанализировать
                                 состав и доли каждой акции, если, например, она входит в состав нескольких портфелей.
                             </div>
