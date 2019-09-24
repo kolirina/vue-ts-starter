@@ -7,5 +7,6 @@ export enum EventType {
     PRINT = "print",
     EXPORT = "exportTo",
     TRADE_CREATED = "DEAL_CREATED",
-    TRADE_UPDATED = "DEAL_UPDATED"
+    TRADE_UPDATED = "DEAL_UPDATED",
+    TOUR_EVENT = "TOUR_EVENT",
 }

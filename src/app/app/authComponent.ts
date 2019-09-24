@@ -55,6 +55,10 @@ export class AuthComponent extends UI {
         } else {
             await this.login();
         }
+        const fromRegistration = this.$route.query.fromRegistration;
+        if (fromRegistration === "true") {
+            this.$snotify.info("Поздравляем с успешной регистрацией! Письмо в паролем отправлено вам на почту.");
+        }
     }
 
     private async login(): Promise<void> {
@@ -64,5 +68,6 @@ export class AuthComponent extends UI {
         await this.loadUser({token: token, user: client});
         await this.setCurrentPortfolio(this.$store.state[StoreType.MAIN].clientInfo.user.currentPortfolioId);
         this.$router.push("/portfolio");
+
     }
 }

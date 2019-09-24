@@ -17,7 +17,8 @@ import {Inject} from "typescript-ioc";
 import {namespace} from "vuex-class";
 import {Component, UI, Watch} from "../../app/ui";
 import {ClientInfo} from "../../services/clientService";
-import {OnBoardingTourService, OnBoardTour, TourStep, UserOnBoardTours} from "../../services/onBoardingTourService";
+import {OnBoardingTourService, OnBoardTour, TourEvent, TourEventType, TourStep, UserOnBoardTours} from "../../services/onBoardingTourService";
+import {EventType} from "../../types/eventType";
 import {RouteMeta} from "../../types/router/types";
 import {Portfolio} from "../../types/types";
 import {StoreType} from "../../vuex/storeType";
@@ -82,6 +83,14 @@ export class Tours extends UI {
      */
     created(): void {
         this.userOnBoardings = this.onBoardingTourService.getOnBoardingTours();
+        UI.on(EventType.TOUR_EVENT, this.onTourEvent);
+    }
+
+    /**
+     * Отписывается от события
+     */
+    beforeDestroy(): void {
+        UI.off(EventType.TOUR_EVENT);
     }
 
     /**
@@ -103,13 +112,23 @@ export class Tours extends UI {
         if (!this.clientInfo.user.needShowTour) {
             return;
         }
-        // обрабатываем отдельный кейс самого первого шага, когда у нас нет кнопки Завершить тур или Перейти к следующему шагу
-        if (["portfolio", "trades"].includes(this.tourName) && this.tourSteps.length === 1 && this.$router.currentRoute.meta.tourName === "import") {
-            await this.doneOnBoarding();
-            this.stop();
-            return;
-        }
         await this.reInitTours();
+    }
+
+    /**
+     * Обрабатывает событие для взаимодействия на текущий тур
+     * @param event событие с данными
+     */
+    private async onTourEvent(event: TourEvent): Promise<void> {
+        switch (event.type) {
+            case TourEventType.DONE:
+                await this.doneOnBoarding();
+                break;
+            case TourEventType.SKIP:
+                await this.skipOnBoarding();
+                break;
+        }
+        this.stop();
     }
 
     /**
