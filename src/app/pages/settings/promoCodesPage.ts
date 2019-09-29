@@ -114,7 +114,7 @@ export class PromoCodesPage extends UI {
      */
     @ShowProgress
     async created(): Promise<void> {
-        this.promoCodeStatistics = await this.promoCodeService.getPromoCodeStatistics(this.clientInfo.user.id);
+        this.promoCodeStatistics = await this.promoCodeService.getPromoCodeStatistics();
     }
 
     @ShowProgress

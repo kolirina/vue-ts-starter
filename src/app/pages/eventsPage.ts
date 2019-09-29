@@ -47,7 +47,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-card-title>
             </v-card>
 
-            <v-card class="events__card" flat>
+            <v-card class="events__card" flat data-v-step="0">
                 <v-card-title class="events__card-title">
                     Новые события
                     <v-spacer></v-spacer>
@@ -143,7 +143,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-card-text>
             </v-card>
 
-            <v-card style="margin-top: 30px" flat>
+            <v-card style="margin-top: 30px" flat data-v-step="1">
                 <v-card-title class="events__card-title">Дивидендные новости</v-card-title>
 
                 <v-card-text>
@@ -186,7 +186,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-card-text>
             </v-card>
 
-            <v-card class="events__card" flat style="margin-top: 30px">
+            <v-card class="events__card" flat style="margin-top: 30px" data-v-step="2">
                 <v-card-title class="events__card-title">
                     <v-layout class="px-0 py-0" align-center>
                         Календарь событий

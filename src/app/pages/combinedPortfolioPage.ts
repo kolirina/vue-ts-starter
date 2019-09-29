@@ -27,7 +27,7 @@ const MainStore = namespace(StoreType.MAIN);
             <template v-if="overview">
                 <base-portfolio-page :overview="overview" :line-chart-data="lineChartData" :line-chart-events="lineChartEvents" :index-line-chart-data="indexLineChartData"
                                      portfolio-name="Составной портфель" :view-currency="viewCurrency" :state-key-prefix="StoreKeys.PORTFOLIO_COMBINED_CHART"
-                                     :side-bar-opened="sideBarOpened"
+                                     :side-bar-opened="sideBarOpened" :ids="ids"
                                      @reloadLineChart="loadPortfolioLineChart">
                     <template #afterDashboard>
                         <v-layout align-center>
@@ -42,7 +42,7 @@ const MainStore = namespace(StoreType.MAIN);
                             </div>
                         </v-layout>
                         <v-layout v-if="!blockNotEmpty()" column class="empty-station px-4 py-4 mt-3">
-                            <div class="empty-station__description">
+                            <div class="empty-station__description" data-v-step="0">
                                 Здесь вы можете объединить для просмотра несколько портфелей в один, и проанализировать
                                 состав и доли каждой акции, если, например, она входит в состав нескольких портфелей.
                             </div>
@@ -90,12 +90,15 @@ export class CombinedPortfolioPage extends UI {
     private indexLineChartData: any[] = null;
     /** Ключи для сохранения информации */
     private StoreKeys = StoreKeys;
+    /** Айди портфелей для комбинирования */
+    private ids: number[] = [];
 
     /**
      * Инициализация данных компонента
      * @inheritDoc
      */
     async created(): Promise<void> {
+        this.setIds();
         await this.doCombinedPortfolio();
     }
 
@@ -118,18 +121,25 @@ export class CombinedPortfolioPage extends UI {
         next();
     }
 
+    /**
+     * Подготавливает идентификаторы портфелей
+     */
+    private setIds(): void {
+        this.ids = this.clientInfo.user.portfolios.filter(value => value.combined).map(value => value.id);
+    }
+
     private async showDialogCompositePortfolio(): Promise<void> {
         const result = await new CompositePortfolioManagement().show({portfolio: this.clientInfo.user.portfolios, viewCurrency: this.viewCurrency});
         if (result) {
             this.viewCurrency = result;
+            this.setIds();
             await this.doCombinedPortfolio();
         }
     }
 
     private async doCombinedPortfolio(): Promise<void> {
         this.overview = null;
-        const ids = this.clientInfo.user.portfolios.filter(value => value.combined).map(value => value.id);
-        this.overview = await this.overviewService.getPortfolioOverviewCombined({ids: ids, viewCurrency: this.viewCurrency});
+        this.overview = await this.overviewService.getPortfolioOverviewCombined({ids: this.ids, viewCurrency: this.viewCurrency});
         await this.loadPortfolioLineChart();
     }
 
@@ -137,18 +147,13 @@ export class CombinedPortfolioPage extends UI {
         return this.overview.bondPortfolio.rows.length !== 0 || this.overview.stockPortfolio.rows.length !== 0;
     }
 
-    private async onPortfolioLineChartPanelStateChanges(): Promise<void> {
-        await this.loadPortfolioLineChart();
-    }
-
     private async loadPortfolioLineChart(): Promise<void> {
-        const ids = this.clientInfo.user.portfolios.filter(value => value.combined).map(value => value.id);
         if (UiStateHelper.historyPanel[0] === 1) {
-            this.lineChartData = await this.overviewService.getCostChartCombined({ids: ids, viewCurrency: this.viewCurrency});
+            this.lineChartData = await this.overviewService.getCostChartCombined({ids: this.ids, viewCurrency: this.viewCurrency});
             if (this.overview.firstTradeDate) {
                 this.indexLineChartData = await this.marketHistoryService.getIndexHistory("MMVB", dayjs(this.overview.firstTradeDate).format("DD.MM.YYYY"));
             }
-            this.lineChartEvents = await this.overviewService.getEventsChartDataCombined({ids: ids, viewCurrency: this.viewCurrency});
+            this.lineChartEvents = await this.overviewService.getEventsChartDataCombined({ids: this.ids, viewCurrency: this.viewCurrency});
         }
     }
 }

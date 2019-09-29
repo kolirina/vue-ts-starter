@@ -47,16 +47,18 @@ const MainStore = namespace(StoreType.MAIN);
                         <v-card-text class="export-page__content">
                             <div class="info-block">
                                 Выгрузите сделки вашего текущего портфеля в csv или xlsx формате.
-                                На триале если тариф истек экспортировать сделки нельзя.
                                 <v-tooltip v-if="isDownloadNotAllowed()" content-class="custom-tooltip-wrap" bottom>
                                     <sup class="custom-tooltip" slot="activator">
                                         <v-icon>fas fa-info-circle</v-icon>
                                     </sup>
-                                    <span>Экспорт сделок в csv-формат недоступен на TRIAL-плане.
-                                Пожалуйства <a href="/#/settings/tariffs">обновите</a>
-                                подписку чтобы иметь возможность экспортировать сделки в csv формат.
-                                Или воспользуйтесь экспортом в xlsx.</span>
-                                </v-tooltip><br>
+                                    <span>
+                                        Экспорт сделок в csv-формат недоступен на TRIAL-плане.
+                                        Пожалуйства <a href="/#/settings/tariffs">обновите</a>
+                                        подписку чтобы иметь возможность экспортировать сделки в csv формат.
+                                        Или воспользуйтесь экспортом в xlsx.
+                                    </span>
+                                </v-tooltip>
+                                <br>
                                 <br>
                                 Данный файл содержит полную информацию о всех сделках и является полностью совместимым для обратного импорта в сервис.
                             </div>

@@ -21,7 +21,7 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-container v-if="portfolio" fluid class="pa-0">
+        <v-container v-if="portfolio" fluid class="pa-0" data-v-step="0">
             <div class="additional-pagination-quotes-table">
                 <additional-pagination :pagination="pagination" @update:pagination="onTablePaginationChange"></additional-pagination>
             </div>

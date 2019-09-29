@@ -28,6 +28,7 @@ import {TradesPage} from "../pages/tradesPage";
 import {Storage} from "../platform/services/storage";
 import {ClientService} from "../services/clientService";
 import {LogoutService} from "../services/logoutService";
+import {RouteMeta} from "../types/router/types";
 import {StoreKeys} from "../types/storeKeys";
 import {Tariff} from "../types/tariff";
 import {CommonUtils} from "../utils/commonUtils";
@@ -117,7 +118,8 @@ export class RouterConfiguration {
                 component: PortfolioPage,
                 meta: {
                     tariffAllowed: true,
-                    title: "Портфель"
+                    title: "Портфель",
+                    tourName: "portfolio"
                 }
             },
             {
@@ -134,7 +136,8 @@ export class RouterConfiguration {
                 path: "/events",
                 component: EventsPage,
                 meta: {
-                    title: "События"
+                    title: "События",
+                    tourName: "events"
                 }
             },
             {
@@ -151,7 +154,8 @@ export class RouterConfiguration {
                 component: TradesPage,
                 meta: {
                     tariffAllowed: true,
-                    title: "Сделки"
+                    title: "Сделки",
+                    tourName: "trades"
                 }
             },
             {
@@ -160,7 +164,8 @@ export class RouterConfiguration {
                 component: CombinedPortfolioPage,
                 meta: {
                     tariffAllowed: true,
-                    title: "Составной портфель"
+                    title: "Составной портфель",
+                    tourName: "combined_portfolio"
                 }
             },
             {
@@ -168,7 +173,8 @@ export class RouterConfiguration {
                 path: "/quotes",
                 meta: {
                     tariffAllowed: true,
-                    title: "Котировки"
+                    title: "Котировки",
+                    tourName: "quotes"
                 },
                 component: QuotesPage,
             },
@@ -186,7 +192,8 @@ export class RouterConfiguration {
                         name: "share",
                         meta: {
                             tariffAllowed: true,
-                            title: "Информация по бумаге"
+                            title: "Информация по бумаге",
+                            tourName: "stock_info"
                         },
                         component: ShareInfoPage
                     }
@@ -212,7 +219,8 @@ export class RouterConfiguration {
                         path: "/settings/portfolio-management",
                         meta: {
                             tariffAllowed: true,
-                            title: "Управление портфелями"
+                            title: "Управление портфелями",
+                            tourName: "portfolio_management"
                         },
                         component: PortfoliosManagementPage
                     },
@@ -229,7 +237,8 @@ export class RouterConfiguration {
                         path: "import",
                         component: ImportPage,
                         meta: {
-                            title: "Импорт сделок"
+                            title: "Импорт сделок",
+                            tourName: "import"
                         }
                     },
                     {
@@ -264,7 +273,8 @@ export class RouterConfiguration {
                         path: "notifications",
                         component: NotificationsPage,
                         meta: {
-                            title: "Уведомления"
+                            title: "Уведомления",
+                            tourName: "notifications"
                         }
                     },
                 ]
@@ -317,10 +327,4 @@ export class RouterConfiguration {
             display: "none"
         };
     }
-}
-
-interface RouteMeta {
-    tariffAllowed: boolean;
-    title?: string;
-    public?: boolean;
 }

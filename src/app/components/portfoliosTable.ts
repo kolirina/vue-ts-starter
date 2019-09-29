@@ -28,10 +28,11 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-data-table :headers="headers" :items="portfolios" item-key="id" :custom-sort="customSort" hide-actions class="data-table portfolios-content-table" must-sort>
+        <v-data-table :headers="headers" :items="portfolios" item-key="id" :custom-sort="customSort" hide-actions class="data-table portfolios-content-table" must-sort
+                      data-v-step="0">
             <template #items="props">
                 <tr class="selectable" @dblclick="props.expanded = !props.expanded">
-                    <td>
+                    <td data-v-step="2">
                         <span @click="props.expanded = !props.expanded" class="data-table-cell" :class="{'data-table-cell-open': props.expanded, 'path': true}"></span>
                     </td>
                     <td class="pl-0">
@@ -62,7 +63,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <td class="text-xs-center">{{ getCurrencySymbol(props.item.viewCurrency) }}</td>
                     <td class="text-xs-left">{{ props.item.accountType.description }}</td>
                     <td class="text-xs-right">{{ props.item.openDate }}</td>
-                    <td class="justify-center layout px-0" @click.stop>
+                    <td class="justify-center layout px-0" @click.stop data-v-step="1">
                         <v-menu transition="slide-y-transition" bottom left min-width="173" nudge-bottom="30">
                             <v-btn slot="activator" flat icon dark>
                                 <span class="menuDots"></span>
@@ -75,7 +76,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 </v-list-tile>
                                 <v-list-tile @click="clonePortfolio(props.item.id)">
                                     <v-list-tile-title>
-                                        Копировать
+                                        Создать копию
                                     </v-list-tile-title>
                                 </v-list-tile>
                                 <v-list-tile @click="downloadFile(props.item.id)" :disabled="downloadNotAllowed">
@@ -154,7 +155,7 @@ const MainStore = namespace(StoreType.MAIN);
                             </v-layout>
 
                             <v-layout class="link-section" wrap>
-                                <v-flex md3>
+                                <v-flex md2>
                                     <div>
                                         <a class="portfolio-link portfolio-default-text fs14" :href="informerH(props.item.id)" target="_blank">Информер-картинка горизонтальный</a>
                                     </div>
@@ -162,7 +163,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         <a class="portfolio-link portfolio-default-text fs14" :href="informerV(props.item.id)" target="_blank">Информер-картинка вертикальный</a>
                                     </div>
                                 </v-flex>
-                                <v-flex md9 class="fs14">
+                                <v-flex md10 class="fs14">
                                     <div v-if="showNoteLink(props.item.note)">
                                         <span class="bold">Заметка:</span>
                                         <span>{{ props.item.note }}</span>

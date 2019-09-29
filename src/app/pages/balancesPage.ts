@@ -8,7 +8,6 @@ import {AssetTable} from "../components/assetTable";
 import {BalancesTable} from "../components/balancesTable";
 import {CurrencyBalances} from "../components/currencyBalances";
 import {PopularPaperDialog} from "../components/dialogs/popularPaperDialog";
-import {StockTable} from "../components/stockTable";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {MarketHistoryService} from "../services/marketHistoryService";
 import {MarketService} from "../services/marketService";
@@ -139,7 +138,7 @@ const MainStore = namespace(StoreType.MAIN);
             <balances-table :assets="portfolio.overview.assetRows" :stocks="portfolio.overview.stockPortfolio.rows" :loading="processState"/>
         </v-container>
     `,
-    components: {AssetTable, BalancesTable, StockTable, CurrencyBalances}
+    components: {AssetTable, BalancesTable, CurrencyBalances}
 })
 export class BalancesPage extends UI implements TradeDataHolder {
 

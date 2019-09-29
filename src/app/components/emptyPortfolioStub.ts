@@ -16,6 +16,8 @@
 
 import Component from "vue-class-component";
 import {UI} from "../app/ui";
+import {TourEvent, TourEventType} from "../services/onBoardingTourService";
+import {EventType} from "../types/eventType";
 
 @Component({
     // language=Vue
@@ -35,7 +37,7 @@ import {UI} from "../app/ui";
                         <a>Смотреть видео инструкцию по импорту сделок</a>
                     </video-link>
                     <div class="margT20 alignC">
-                        <v-btn class="btn mr-1" color="#EBEFF7" to="/settings/import">
+                        <v-btn class="btn mr-1" color="#EBEFF7" @click="goToImport" data-v-step="0">
                             Загрузить отчет
                         </v-btn>
                         <v-btn class="btn ml-3" color="#EBEFF7" to="/balances">
@@ -48,4 +50,9 @@ import {UI} from "../app/ui";
     `
 })
 export class EmptyPortfolioStub extends UI {
+
+    private goToImport(): void {
+        this.$router.push("/settings/import");
+        UI.emit(EventType.TOUR_EVENT, {type: TourEventType.DONE} as TourEvent);
+    }
 }
