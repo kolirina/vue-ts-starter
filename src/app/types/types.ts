@@ -61,6 +61,8 @@ export type TradeRow = {
     totalWithoutFee: string,
     /** Тикер */
     ticker?: string,
+    /** Идентификатор ценной бумаги/актива (Для замены тикера) */
+    shareId?: string,
     /** Название компании */
     companyName?: string,
     /** Количество */
@@ -373,6 +375,7 @@ export type Stock = Share & {
     color: string;
     /** Признак что акция привилегированная */
     privileged: string;
+    /** Сектор */
     sector: Sector;
     /** Кол-во акций в обращении */
     issueSize: string;
@@ -380,6 +383,23 @@ export type Stock = Share & {
     issueCapitalization: string;
     /** Идентификатор эмитента на сайте биржи */
     moexId: string;
+};
+
+export type Asset = Share & {
+    /** Url по которму можно парсить цену */
+    source?: string;
+    /** Регулярное выражение для парсинга цены */
+    regex?: string;
+    /** Список тэгов */
+    tags?: string;
+    /** Заметка */
+    note?: string;
+    /** Идентификатор пользователя (владельца), может не быть, если это общесистемный актив */
+    userId?: string;
+    /** Текущая цена */
+    price: string;
+    /** Сектор */
+    sector: Sector;
 };
 
 /** Информация по динамике ценной бумаги */
@@ -461,6 +481,14 @@ export type StockInfo = {
     stockDynamic: StockDynamic;
     /** События. В данном случае дивиденды */
     events: HighStockEventsGroup;
+};
+
+/** Информация по активу */
+export type AssetInfo = {
+    /** Актив */
+    asset: Asset;
+    /** История цены */
+    history: Dot[];
 };
 
 /** Информация по облигации */

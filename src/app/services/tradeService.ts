@@ -145,10 +145,11 @@ export class TradeService {
 export class TradeType extends (EnumType as IStaticEnum<TradeType>) {
 
     static readonly STOCK = new TradeType("STOCK", "stock-color");
+    static readonly ASSET = new TradeType("ASSET", "stock-color");
     static readonly BOND = new TradeType("BOND", "bond-color");
     static readonly MONEY = new TradeType("MONEY", "money-color");
 
-    private constructor(public code: string, public description: string) {
+    private constructor(public code: string, public color: string) {
         super();
     }
 }
@@ -182,6 +183,8 @@ export interface DeleteAllTradeRequest {
 }
 
 export type TradeFields = {
+    /** Идентификатор ценной бумаги/актива (Для замены тикера) */
+    shareId?: string,
     /** Тикер */
     ticker: string,
     /** Дата */
@@ -263,6 +266,7 @@ export interface EditTradeRequest {
  */
 export enum TableName {
     STOCK_TRADE = "STOCK_TRADE",
+    ASSET_TRADE = "ASSET_TRADE",
     BOND_TRADE = "BOND_TRADE",
     DIVIDEND_TRADE = "DIVIDEND_TRADE"
 }

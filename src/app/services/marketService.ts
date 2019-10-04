@@ -2,7 +2,7 @@ import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {Http, UrlParams} from "../platform/services/http";
 import {BaseChartDot, Dot, EventChartData, HighStockEventData, HighStockEventsGroup} from "../types/charts/types";
-import {Bond, BondInfo, Currency, PageableResponse, Share, Stock, StockDynamic, StockInfo} from "../types/types";
+import {Asset, AssetInfo, Bond, BondInfo, Currency, PageableResponse, Share, Stock, StockDynamic, StockInfo} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
 import {CommonUtils} from "../utils/commonUtils";
 
@@ -25,6 +25,10 @@ export class MarketService {
         return this.http.get("/market/bonds/search", {query});
     }
 
+    async searchAssets(query: string): Promise<Share[]> {
+        return this.http.get("/market/assets/search", {query});
+    }
+
     async searchShares(query: string): Promise<Share[]> {
         return this.http.get("/market/shares/search", {query});
     }
@@ -38,6 +42,14 @@ export class MarketService {
             stockDynamic: result.stockDynamic,
             events: this.convertStockEvents(result.dividends, ticker)
         } as StockInfo;
+    }
+
+    async getAssetInfo(assetId: string): Promise<AssetInfo> {
+        const result = await this.http.get<_assetInfo>(`/market/asset/${assetId}/info`);
+        return {
+            asset: result.asset,
+            history: this.convertDots(result.history)
+        } as AssetInfo;
     }
 
     async getStockById(id: number): Promise<StockInfo> {
@@ -156,6 +168,14 @@ type _stockInfo = {
     dividends: BaseChartDot[];
     /** Динамика */
     stockDynamic: StockDynamic;
+};
+
+/** Информация по акции */
+type _assetInfo = {
+    /** Актив */
+    asset: Asset;
+    /** История цены */
+    history: _baseChartDot[];
 };
 
 /** Информация по акции */

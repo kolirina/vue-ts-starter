@@ -42,7 +42,7 @@ import {TradeUtils} from "../utils/tradeUtils";
             </tr>
 
             <!-- Сделка по Акции -->
-            <tr v-if="tradeRow.asset === 'STOCK'">
+            <tr v-if="tradeRow.asset === 'STOCK' || tradeRow.asset === 'ASSET'">
                 <td>
                     <div class="ext-info__item">
                         Тикер <span class="ext-info__ticker"><stock-link :ticker="tradeRow.ticker"></stock-link></span><br>

@@ -398,8 +398,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         if (this.data.quantity) {
             this.quantity = this.data.quantity;
         }
-        if (this.data.ticker) {
-            await this.setShareFromTicker(this.data.ticker);
+        if (this.data.ticker || this.data.shareId) {
+            await this.setShareFromTicker(this.isAssetTrade ? this.data.shareId : this.data.ticker);
             this.fillFieldsFromShare();
             this.filteredShares = [this.share];
         } else if (this.data.tradeFields) {
@@ -497,6 +497,10 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             if (this.assetType === AssetType.STOCK) {
                 const stock = (await this.marketHistoryService.getStockHistory(this.share.ticker, dayjs(this.date).format("DD.MM.YYYY")));
                 this.fillFieldsFromStock(stock);
+            } else if (this.assetType === AssetType.ASSET) {
+                // todo assets
+                // const bond = (await this.marketHistoryService.getBondHistory(this.share.ticker, dayjs(this.date).format("DD.MM.YYYY")));
+                // this.fillFieldsFromBond(bond);
             } else if (this.assetType === AssetType.BOND) {
                 const bond = (await this.marketHistoryService.getBondHistory(this.share.ticker, dayjs(this.date).format("DD.MM.YYYY")));
                 this.fillFieldsFromBond(bond);
@@ -505,6 +509,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private async fillFromSuggestedInfo(): Promise<void> {
+        // todo assets получение количества для активов
         const suggestedInfo = await this.tradeService.getSuggestedInfo(this.portfolio.id, this.assetType.enumName,
             this.operation.enumName, this.share.ticker, this.date);
         if (suggestedInfo) {
@@ -547,6 +552,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             } else if (this.isBondTrade) {
                 const row = this.portfolio.overview.bondPortfolio.rows.find(item => item.bond.ticker === this.share.ticker);
                 this.currentCountShareSearch = row ? row.quantity : null;
+            } else if (this.isAssetTrade) {
+                // todo assets подсчет количества в портфеле активов
             }
         }
     }
@@ -558,6 +565,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         }
         this.currency = this.share.currency;
         if (this.assetType === AssetType.STOCK) {
+            this.fillFieldsFromStock(this.share as Stock);
+        } else if (this.assetType === AssetType.ASSET) {
             this.fillFieldsFromStock(this.share as Stock);
         } else if (this.assetType === AssetType.BOND) {
             this.fillFieldsFromBond(this.share as Bond);
@@ -573,6 +582,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             return;
         }
         const tradeFields: TradeFields = {
+            shareId: this.share ? String(this.share.id) : null,
             ticker: this.shareTicker,
             date: this.getDate(),
             quantity: this.getQuantity(),
@@ -721,7 +731,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private async setTradeFields(): Promise<void> {
-        await this.setShareFromTicker(this.data.tradeFields.ticker);
+        await this.setShareFromTicker(this.isAssetTrade ? this.data.tradeFields.shareId : this.data.tradeFields.ticker);
         this.filteredShares = [this.share];
 
         this.tradeId = this.data.tradeId;
@@ -741,11 +751,13 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         this.feeCurrency = this.data.tradeFields.feeCurrency;
     }
 
-    private async setShareFromTicker(ticker: string): Promise<void> {
+    private async setShareFromTicker(shareId: string): Promise<void> {
         if (this.assetType === AssetType.STOCK) {
-            this.share = (await this.marketService.getStockInfo(ticker)).stock;
+            this.share = (await this.marketService.getStockInfo(shareId)).stock;
+        } else if (this.assetType === AssetType.ASSET) {
+            this.share = (await this.marketService.getAssetInfo(shareId)).asset;
         } else if (this.assetType === AssetType.BOND) {
-            this.share = (await this.marketService.getBondInfo(ticker)).bond;
+            this.share = (await this.marketService.getBondInfo(shareId)).bond;
         }
     }
 
@@ -823,6 +835,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private get shareTicker(): string {
         switch (this.assetType) {
             case AssetType.STOCK:
+            case AssetType.ASSET:
                 return this.share ? this.share.ticker : null;
             case AssetType.BOND:
                 return this.share ? (this.share as Bond).isin : null;
@@ -831,11 +844,15 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private get shareAssetType(): boolean {
-        return this.assetType === AssetType.STOCK || this.assetType === AssetType.BOND;
+        return [AssetType.ASSET, AssetType.STOCK, AssetType.BOND].includes(this.assetType);
     }
 
     private get isStockTrade(): boolean {
         return this.assetType === AssetType.STOCK;
+    }
+
+    private get isAssetTrade(): boolean {
+        return this.assetType === AssetType.ASSET;
     }
 
     private get isBondTrade(): boolean {
@@ -871,6 +888,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         }
         switch (this.assetType) {
             case AssetType.STOCK:
+            case AssetType.ASSET:
                 return this.share && this.date && this.price && this.quantity > 0;
             case AssetType.BOND:
                 return this.share && this.date && this.price && (!!this.facevalue || [Operation.COUPON, Operation.AMORTIZATION].includes(this.operation)) && this.quantity > 0;
@@ -1008,6 +1026,7 @@ export type TradeDialogData = {
     tradeFields?: TradeFields,
     share?: Share,
     ticker?: string,
+    shareId?: string,
     quantity?: number,
     eventFields?: EventFields,
     operation?: Operation,

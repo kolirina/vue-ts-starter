@@ -91,40 +91,41 @@ export class ShareSearchComponent extends UI {
     @Watch("searchQuery")
     private async onSearch(): Promise<void> {
         clearTimeout(this.currentTimer);
+        this.shareSearch = true;
         if (!this.searchQuery || this.searchQuery.length < 1) {
             this.shareSearch = false;
             this.hideNoDataLabel = true;
             return;
         }
-        this.shareSearch = true;
-        const delay = new Promise((resolve, reject): void => {
-            this.currentTimer = setTimeout(async (): Promise<void> => {
-                try {
-                    if (this.assetType === AssetType.STOCK) {
-                        this.filteredSharesMutated = await this.marketService.searchStocks(this.searchQuery);
-                    } else if (this.assetType === AssetType.BOND) {
-                        this.filteredSharesMutated = await this.marketService.searchBonds(this.searchQuery);
-                    } else {
-                        this.filteredSharesMutated = await this.marketService.searchShares(this.searchQuery);
-                    }
-                    this.hideNoDataLabel = this.filteredSharesMutated.length > 0;
-                    this.shareSearch = false;
-                } catch (error) {
-                    reject(error);
-                }
-            }, 1000);
-        });
-
+        await this.setTimeout(1000);
         try {
-            delay.then(() => {
-                clearTimeout(this.currentTimer);
-                this.shareSearch = false;
-            });
-        } catch (error) {
+            if (this.assetType === AssetType.STOCK) {
+                this.filteredSharesMutated = await this.marketService.searchStocks(this.searchQuery);
+            } else if (this.assetType === AssetType.BOND) {
+                this.filteredSharesMutated = await this.marketService.searchBonds(this.searchQuery);
+            } else if (this.assetType === AssetType.ASSET) {
+                this.filteredSharesMutated = await this.marketService.searchAssets(this.searchQuery);
+            } else {
+                this.filteredSharesMutated = await this.marketService.searchShares(this.searchQuery);
+            }
+            this.hideNoDataLabel = this.filteredSharesMutated.length > 0;
+            this.shareSearch = false;
+        } finally {
             clearTimeout(this.currentTimer);
             this.shareSearch = false;
-            throw error;
         }
+    }
+
+    /**
+     * Возвращает `setTimeout`, обернутый в промис
+     * @param timeout таймаут в миллисекундах
+     */
+    private async setTimeout(timeout: number): Promise<void> {
+        return new Promise((resolve): void => {
+            this.currentTimer = setTimeout(async () => {
+                resolve();
+            }, timeout);
+        });
     }
 
     private shareLabelSelected(share: Share): string {

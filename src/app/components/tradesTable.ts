@@ -40,6 +40,8 @@ const MainStore = namespace(StoreType.MAIN);
                         <stock-link v-if="props.item.asset === tradeType.STOCK.code" :ticker="props.item.ticker"></stock-link>
                         <bond-link v-if="props.item.asset === tradeType.BOND.code" :ticker="props.item.ticker"></bond-link>
                         <span v-if="props.item.asset === tradeType.MONEY.code">{{ props.item.ticker }}</span>
+                        <!-- todo assets страница с просмотром истории цены инструмента -->
+                        <span v-if="props.item.asset === tradeType.ASSET.code">{{ props.item.ticker }}</span>
                     </td>
                     <td v-if="tableHeadersState.name" class="text-xs-left">{{ props.item.companyName }}</td>
                     <td v-if="tableHeadersState.operationLabel" class="text-xs-left">{{ props.item.operationLabel }}</td>
@@ -130,7 +132,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             Расход
                                         </v-list-tile-title>
                                     </v-list-tile>
-                                    <v-list-tile v-if="isStockTrade(props.item)" @click="openTradeDialog(props.item, operation.DIVIDEND)">
+                                    <v-list-tile v-if="isStockOrAssetTrade(props.item)" @click="openTradeDialog(props.item, operation.DIVIDEND)">
                                         <v-list-tile-title>
                                             Дивиденд
                                         </v-list-tile-title>
@@ -239,6 +241,7 @@ export class TradesTable extends UI {
             router: this.$router,
             share: null,
             ticker: trade.ticker,
+            shareId: trade.shareId,
             operation,
             quantity: this.getQuantity(trade),
             assetType: AssetType.valueByName(trade.asset)
@@ -266,6 +269,7 @@ export class TradesTable extends UI {
 
     private getTradeFields(trade: TradeRow): TradeFields {
         return {
+            shareId: trade.shareId,
             ticker: trade.ticker,
             date: trade.date,
             quantity: trade.quantity,
@@ -310,15 +314,7 @@ export class TradesTable extends UI {
     }
 
     private getTradeType(tradeType: string): string {
-        switch (tradeType) {
-            case TradeType.STOCK.code:
-                return TradeType.STOCK.description;
-            case TradeType.BOND.code:
-                return TradeType.BOND.description;
-            case TradeType.MONEY.code:
-                return TradeType.MONEY.description;
-        }
-        throw new Error(`Неизвестный тип сделки ${tradeType}`);
+        return TradeType.valueByName(tradeType).color;
     }
 
     private getTradeDate(trade: TradeRow): string {
@@ -347,8 +343,8 @@ export class TradesTable extends UI {
         return AssetType.valueByName(trade.asset) === AssetType.BOND;
     }
 
-    private isStockTrade(trade: TradeRow): boolean {
-        return AssetType.valueByName(trade.asset) === AssetType.STOCK;
+    private isStockOrAssetTrade(trade: TradeRow): boolean {
+        return [AssetType.ASSET, AssetType.STOCK].includes(AssetType.valueByName(trade.asset));
     }
 
     private isMoneyTrade(trade: TradeRow): boolean {
