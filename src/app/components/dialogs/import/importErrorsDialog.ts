@@ -46,7 +46,14 @@ import {TableHeader} from "../../../types/types";
                             </video-link>
                             <div class="import-dialog-wrapper__description-text import-default-text">
                                 Успешно {{ data.validatedTradesCount | declension("добавлена", "добавлено", "добавлено") }}
-                                {{ data.validatedTradesCount | declension("сделка", "сделки", "сделок") }}<span class="amount-deals">{{ data.validatedTradesCount }}</span></div>
+                                <span class="amount-deals">{{ data.validatedTradesCount }}</span>
+                                {{ data.validatedTradesCount | declension("сделка", "сделки", "сделок") }}
+                                <template v-if="data.duplicateTradeErrorCount">
+                                    , <span class="amount-deals">{{ data.duplicateTradeErrorCount }}</span>
+                                    {{ data.duplicateTradeErrorCount | declension("сделка", "сделки", "сделок") }}
+                                    из отчета уже были загружены ранее.
+                                </template>
+                            </div>
                         </v-card-text>
                         <v-card-text class="import-dialog-wrapper__content import-dialog-wrapper__error-table selectable">
                             <v-data-table :headers="headers" :items="data.errors" class="data-table" hide-actions must-sort>
@@ -88,5 +95,6 @@ export class ImportErrorsDialog extends CustomDialog<ImportErrorsDialogData, voi
 export type ImportErrorsDialogData = {
     errors: DealImportError[],
     validatedTradesCount: number,
+    duplicateTradeErrorCount: number,
     router: VueRouter
 };
