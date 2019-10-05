@@ -29,7 +29,7 @@ import {Bond, Share} from "../types/types";
         <v-autocomplete :items="filteredSharesMutated" v-model="share" @change="onShareSelect" @click:clear="onSearchClear"
                         :label="placeholder"
                         :loading="shareSearch" no-data-text="Ничего не найдено" clearable :required="required" :rules="rules"
-                        dense :hide-no-data="true" :no-filter="true" :search-input.sync="searchQuery" :autofocus="autofocus">
+                        dense :hide-no-data="hideNoDataLabel" :no-filter="true" :search-input.sync="searchQuery" :autofocus="autofocus">
             <template #selection="data">
                 {{ shareLabelSelected(data.item) }}
             </template>
@@ -58,8 +58,9 @@ export class ShareSearchComponent extends UI {
     private required: boolean;
     @Prop({required: false, type: Array, default: (): any[] => []})
     private rules: any[];
-
+    /** Отфильтрованные данные */
     private filteredSharesMutated: Share[] = [];
+    /** Тип актива бумаги */
     private assetTypeMutated: AssetType;
 
     @Inject
@@ -72,6 +73,7 @@ export class ShareSearchComponent extends UI {
     private share: Share = null;
     private shareSearch = false;
     private notFoundLabel = "Ничего не найдено";
+    private hideNoDataLabel = true;
 
     @Watch("filteredShares")
     private async onFilteredSharesChange(filteredShares: Share[]): Promise<void> {
@@ -91,6 +93,7 @@ export class ShareSearchComponent extends UI {
         clearTimeout(this.currentTimer);
         if (!this.searchQuery || this.searchQuery.length < 1) {
             this.shareSearch = false;
+            this.hideNoDataLabel = true;
             return;
         }
         this.shareSearch = true;
@@ -104,6 +107,7 @@ export class ShareSearchComponent extends UI {
                     } else {
                         this.filteredSharesMutated = await this.marketService.searchShares(this.searchQuery);
                     }
+                    this.hideNoDataLabel = this.filteredSharesMutated.length > 0;
                     this.shareSearch = false;
                 } catch (error) {
                     reject(error);

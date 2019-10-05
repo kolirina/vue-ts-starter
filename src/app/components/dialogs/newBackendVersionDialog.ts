@@ -14,10 +14,8 @@
  * (c) ООО "Интеллектуальные инвестиции", 2019
  */
 
-import {Inject} from "typescript-ioc";
-import Component from "vue-class-component";
+import {Component} from "../../app/ui";
 import {CustomDialog} from "../../platform/dialogs/customDialog";
-import {LogoutService} from "../../services/logoutService";
 
 /**
  * Диалог подтверждения
@@ -32,12 +30,12 @@ import {LogoutService} from "../../services/logoutService";
                     <v-card-title class="dialog-header-text">Требуется подтверждение</v-card-title>
                     <v-card-text>
                         <div class="import-default-text">Ваша версия приложения устарела.</div>
-                        <div class="import-default-text">Вам необходимо заново войти в приложение.</div>
-                        <div class="import-default-text">Вы будете перенаправлены на страницу входа.</div>
+                        <div class="import-default-text">Необходимо обновить приложение.</div>
+                        <div class="import-default-text">Страница будет перезагружена.</div>
                         <div class="import-default-text-margin-t import-default-text">Продолжить?</div>
                     </v-card-text>
                     <v-card-actions>
-                        <v-btn color="primary" @click.native="logout">Да</v-btn>
+                        <v-btn color="primary" @click.native="reload">Да</v-btn>
                         <v-btn @click.native="close('NO')">Нет</v-btn>
                     </v-card-actions>
                 </div>
@@ -47,10 +45,7 @@ import {LogoutService} from "../../services/logoutService";
 })
 export class NewBackendVersionDialog extends CustomDialog<void, void> {
 
-    @Inject
-    private logoutService: LogoutService;
-
-    private async logout(): Promise<void> {
-        await this.logoutService.logout();
+    private reload(): void {
+        window.location.replace("/");
     }
 }

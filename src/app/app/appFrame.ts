@@ -164,6 +164,7 @@ export class AppFrame extends UI {
         {
             title: "Настройки", icon: "fas fa-cog", action: "settings", subMenu: [
                 {title: "Управление портфелями", action: "portfolio-management", icon: "fas fa-suitcase"},
+                {title: "Профиль", action: "profile", icon: "fas fa-user"},
                 {title: "Импорт сделок", action: "import", icon: "fas fa-download"},
                 {title: "Экспорт сделок", action: "export", icon: "fas fa-upload"},
                 {title: "Тарифы", action: "tariffs", icon: "fas fa-credit-card"},

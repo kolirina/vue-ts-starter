@@ -62,9 +62,14 @@ import {CurrencyBalances} from "../../currencyBalances";
                                         Поздравляем! Теперь ваш портфель сформирован и готов к работе.
                                     </div>
                                     <div class="import-default-text">
-                                        Успешно {{ data.importResult.validatedTradesCount | declension("добавлена", "добавлено", "добавлено") }}
-                                        {{ data.importResult.validatedTradesCount | declension("сделка", "сделки", "сделок") }}
-                                        <span class="amount-deals">{{ data.importResult.validatedTradesCount }}</span>
+                                        Успешно {{ data.validatedTradesCount | declension("добавлена", "добавлено", "добавлено") }}
+                                        <span class="amount-deals">{{ data.validatedTradesCount }}</span>
+                                        {{ data.validatedTradesCount | declension("сделка", "сделки", "сделок") }}
+                                        <template v-if="data.duplicateTradeErrorCount">
+                                            , <span class="amount-deals">{{ data.duplicateTradeErrorCount }}</span>
+                                            {{ data.duplicateTradeErrorCount | declension("сделка", "сделки", "сделок") }}
+                                            из отчета уже были загружены ранее.
+                                        </template>
                                     </div>
                                 </span>
                             </v-card-text>
@@ -109,5 +114,6 @@ export class ImportSuccessDialog extends CustomDialog<ImportSuccessDialogData, B
 export type ImportSuccessDialogData = {
     store: MainStore,
     router: VueRouter,
-    importResult: ImportResponse
+    validatedTradesCount: number,
+    duplicateTradeErrorCount: number
 };
