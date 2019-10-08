@@ -151,7 +151,7 @@ export interface TourStep {
 
 /** Параметры шага */
 export interface TourStepParams {
-    placement?: string;
+    placement?: "left" | "top" | "right" | "bottom";
     enableScrolling?: boolean;
     offset?: number;
     hideButtons?: boolean;
@@ -192,8 +192,8 @@ export const TOUR_STEPS: { [key: string]: TourStep[] } = {
                 "После добавления сделок здесь появится список всех ваших сделок." +
                 "Чтобы начать заполнять свой портфель, кликните на эту кнопку и загрузите отчёт о сделках вашего брокера.",
             params: {
-                placement: "top",
-                hideButtons: true
+                placement: "bottom",
+                hideButtons: false
             }
         }],
     [TourName.PORTFOLIO]: [],
@@ -332,25 +332,17 @@ export const TOUR_STEPS: { [key: string]: TourStep[] } = {
     [TourName.IMPORT]: [
         {
             target: `[data-v-step="0"]`,
-            content: "Выберите иконку вашего брокера.",
+            content: "Выберите иконку вашего брокера",
             params: {
                 placement: "bottom"
             }
         },
         {
             target: `[data-v-step="1"]`,
-            content: "Ознакомтесь с инструкцией по скачиванию отчета вашего брокера в корректном формате и с видео инструкцией по импорту сделок. " +
-                "Далее загрузите отчет брокера использовав кнопку выбора файла или просто перетащите нужный файл в зону загрузки.",
+            content: "Следуйте инструкции со скриншотами, чтобы скачать отчет брокера. Загрузите полученный отчет, " +
+                "используя кнопку выбора файла или просто перетащив файл в зону загрузки. Для вашего удобства мы также подготовили подробную видео-инструкцию",
             params: {
                 placement: "top"
-            }
-        },
-        {
-            target: `[data-v-step="2"]`,
-            content: "Если после загрузки отчета вы увидели ошибку импорта - вероятнее всего вы загрузили отчет в неверном формате. " +
-                "Перечитайте пожалуйста инструкцию по скачиванию отчета брокера на странице Настройки - Импорт сделок или обратитесь в техподдержку.",
-            params: {
-                placement: "left"
             }
         }
     ],
@@ -395,8 +387,8 @@ export const TOURS_BY_PORTFOLIO_BLOCK: { [key: string]: TourStep } = {
             "показатели вашего портфеля (прибыль, доходность и пр.) <br>" +
             "Чтобы начать заполнять свой портфель, кликните на эту кнопку и загрузите отчёт о сделках вашего брокера.",
         params: {
-            placement: "top",
-            hideButtons: true
+            placement: "bottom",
+            hideButtons: false
         }
     },
     [PortfolioBlockType.DASHBOARD]: {
