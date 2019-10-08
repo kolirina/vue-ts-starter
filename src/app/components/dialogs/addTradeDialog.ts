@@ -483,24 +483,24 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         if (!this.date || !this.share || this.processShareEvent) {
             return;
         }
-        const date = DateUtils.parseDate(this.date);
+        // если это операция начисления, просто получаем данные о количестве и начичлеии.
+        const calculationOperation = this.CALCULATION_OPERATIONS.includes(this.operation);
+        if (calculationOperation) {
+            await this.fillFromSuggestedInfo();
+            return;
+        }
         // если дата текущая заполняем поля диалога из бумаги
         // иначе пробуем получить данных за прошлые даты
+        const date = DateUtils.parseDate(this.date);
         if (DateUtils.isCurrentDate(date)) {
             this.fillFieldsFromShare();
         } else if (DateUtils.isBefore(date)) {
-            const calculationOperation = this.CALCULATION_OPERATIONS.includes(this.operation);
-            if (calculationOperation) {
-                await this.fillFromSuggestedInfo();
-                return;
-            }
             if (this.assetType === AssetType.STOCK) {
                 const stock = (await this.marketHistoryService.getStockHistory(this.share.ticker, dayjs(this.date).format("DD.MM.YYYY")));
                 this.fillFieldsFromStock(stock);
             } else if (this.assetType === AssetType.ASSET) {
-                // todo assets
-                // const bond = (await this.marketHistoryService.getBondHistory(this.share.ticker, dayjs(this.date).format("DD.MM.YYYY")));
-                // this.fillFieldsFromBond(bond);
+                const asset = (await this.marketHistoryService.getAssetHistory(String(this.share.id), dayjs(this.date).format("DD.MM.YYYY")));
+                this.fillFieldsFromStock(asset as Stock);
             } else if (this.assetType === AssetType.BOND) {
                 const bond = (await this.marketHistoryService.getBondHistory(this.share.ticker, dayjs(this.date).format("DD.MM.YYYY")));
                 this.fillFieldsFromBond(bond);
@@ -509,9 +509,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private async fillFromSuggestedInfo(): Promise<void> {
-        // todo assets получение количества для активов
         const suggestedInfo = await this.tradeService.getSuggestedInfo(this.portfolio.id, this.assetType.enumName,
-            this.operation.enumName, this.share.ticker, this.date);
+            this.operation.enumName, this.share.ticker, String(this.share.id), this.date);
         if (suggestedInfo) {
             this.quantity = suggestedInfo.quantity;
             this.price = suggestedInfo.amount || this.price;

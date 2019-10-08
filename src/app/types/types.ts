@@ -427,6 +427,11 @@ export type StockHistoryResponse = {
     date: string;
 };
 
+export type AssetHistoryResponse = {
+    asset: Asset;
+    date: string;
+};
+
 export type Sector = {
     name: string;
     parent: Sector;

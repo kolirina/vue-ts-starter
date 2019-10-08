@@ -115,12 +115,13 @@ export class TradeService {
      * @param asset тип актива
      * @param operation тип операции
      * @param ticker тикер
+     * @param shareId Идентификатор ценной бумаги/актива (Для замены тикера)
      * @param date дата
      * @returns данные с суммной начисления и количеством
      */
-    async getSuggestedInfo(portfolioId: number, asset: string, operation: string, ticker: string, date: string): Promise<SuggestedQuantityResponse> {
+    async getSuggestedInfo(portfolioId: number, asset: string, operation: string, ticker: string, shareId: string, date: string): Promise<SuggestedQuantityResponse> {
         const request: SuggestedQuantityRequest = {
-            portfolioId, asset, operation, ticker, date
+            portfolioId, asset, operation, ticker, shareId, date
         };
         return this.http.post<SuggestedQuantityResponse>("/trades/suggest", request);
     }
@@ -305,6 +306,8 @@ export interface SuggestedQuantityRequest {
     portfolioId: number;
     /** Тикер для акции или isin для облигации. Используется для поиска бумаги */
     ticker: string;
+    /** Идентификатор ценной бумаги/актива (Для замены тикера) */
+    shareId?: string;
     /** Дата */
     date: string;
 }
