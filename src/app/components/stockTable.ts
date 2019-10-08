@@ -63,13 +63,15 @@ const MainStore = namespace(StoreType.MAIN);
                 </span>
             </template>
             <template #items="props">
-                <tr :class="['selectable', {'bold-row': !props.item.stock}]" @dblclick="expandRow(props)">
+                <tr :class="['selectable', {'bold-row': !props.item.stock}]" @dblclick="expandRow(props)" @click.stop>
                     <td>
                         <span v-if="props.item.stock" @click="props.expanded = !props.expanded"
                               :class="{'data-table-cell-open': props.expanded, 'path': true, 'data-table-cell': true}"></span>
                     </td>
                     <td v-if="tableHeadersState.company" class="text-xs-left">
-                        <span v-if="props.item.stock" :class="props.item.quantity !== 0 ? '' : 'line-through'">{{ props.item.stock.shortname }}</span>&nbsp;
+                        <stock-link v-if="props.item.stock" :class="props.item.quantity !== 0 ? '' : 'line-through'"
+                                    :ticker="props.item.stock.ticker">{{ props.item.stock.shortname }}</stock-link>
+                        &nbsp;
                         <span v-if="props.item.stock && props.item.quantity !== 0"
                               :class="markupClasses(Number(props.item.stock.change))">{{ props.item.stock.change }}&nbsp;%</span>
                     </td>
