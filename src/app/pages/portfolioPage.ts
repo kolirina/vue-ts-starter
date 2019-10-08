@@ -31,8 +31,8 @@ const MainStore = namespace(StoreType.MAIN);
                                  :professional-mode="portfolio.portfolioParams.professionalMode"
                                  :current-money-remainder="currentMoneyRemainder"
                                  @reloadLineChart="loadPortfolioLineChart" @exportTable="onExportTable" exportable>
-                <template v-if="false" #afterDashboard>
-                    <v-layout align-center>
+                <template #afterDashboard>
+                    <v-layout v-show="false" align-center>
                         <v-btn-toggle v-model="selectedPeriod" @change="onPeriodChange" mandatory>
                             <v-btn v-for="period in periods" :value="period" :key="period.code" depressed class="btn-item">
                                 {{ period.description }}

@@ -245,6 +245,8 @@ const MainStore = namespace(StoreType.MAIN);
 })
 export class ImportPage extends UI {
 
+    /** Текст ошибки о дублировании сделки */
+    private static readonly DUPLICATE_MSG = "Сделка уже была импортирована ранее";
     /** Максимальный размер загружаемого файла 10 Мб */
     readonly MAX_SIZE = 1024 * 1024 * 10;
     @MainStore.Getter
@@ -369,16 +371,25 @@ export class ImportPage extends UI {
             await new ImportGeneralErrorDialog().show({generalError: response.generalError, router: this.$router});
             return;
         }
+        let duplicateTradeErrorCount = 0;
         if (response.errors && response.errors.length) {
-            await new ImportErrorsDialog().show({
-                errors: response.errors, router: this.$router,
-                validatedTradesCount: response.validatedTradesCount
-            });
+            const duplicateTradeErrors = response.errors.filter(error => error.message === ImportPage.DUPLICATE_MSG);
+            const errors = response.errors.filter(error => !duplicateTradeErrors.includes(error));
+            duplicateTradeErrorCount = duplicateTradeErrors.length;
+            // если после удаления ошибки все еще остались, отображаем диалог
             // отображаем диалог с ошибками, но информацию по портфелю надо перезагрузить если были успешно импортированы сделки
-            if (response.validatedTradesCount) {
-                await this.reloadPortfolio(this.portfolio.id);
+            if (errors.length) {
+                await new ImportErrorsDialog().show({
+                    errors: errors,
+                    router: this.$router,
+                    validatedTradesCount: response.validatedTradesCount,
+                    duplicateTradeErrorCount
+                });
+                if (response.validatedTradesCount) {
+                    await this.reloadPortfolio(this.portfolio.id);
+                }
+                return;
             }
-            return;
         }
         if (response.validatedTradesCount) {
             const firstWord = Filters.declension(response.validatedTradesCount, "Добавлена", "Добавлено", "Добавлено");
@@ -388,7 +399,8 @@ export class ImportPage extends UI {
                 navigateToPortfolioPage = await new ImportSuccessDialog().show({
                     router: this.$router,
                     store: this.$store.state[StoreType.MAIN],
-                    importResult: response
+                    validatedTradesCount: response.validatedTradesCount,
+                    duplicateTradeErrorCount
                 }) === BtnReturn.YES;
             }
             await this.reloadPortfolio(this.portfolio.id);
@@ -396,6 +408,8 @@ export class ImportPage extends UI {
             if (navigateToPortfolioPage) {
                 this.$router.push("portfolio");
             }
+        } else if (response.errors && response.errors.length === duplicateTradeErrorCount && response.validatedTradesCount === 0) {
+            this.$snotify.warning("Импорт завершен. Все сделки из отчета уже были импортированы ранее.");
         } else {
             this.$snotify.warning("Импорт завершен. В отчете не содержится информации по сделкам.");
         }

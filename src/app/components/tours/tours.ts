@@ -53,7 +53,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 <div v-if="!step.params.hideButtons">
                                     <button v-if="hasMore" @click="skipOnBoarding" class="btn btn-primary">Пропустить обучение</button>
                                     <button v-if="isLastStep" @click="doneOnBoarding" class="btn btn-primary">Завершить обучение</button>
-                                    <button v-else-if="hasMore" @click="nextStep" class="btn btn-primary">Следющий шаг</button>
+                                    <button v-else-if="hasMore" @click="nextStep" class="btn btn-primary">Следующий шаг</button>
                                 </div>
                             </div>
                         </template>
