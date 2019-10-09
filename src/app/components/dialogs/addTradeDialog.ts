@@ -752,9 +752,9 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     private async setShareFromTicker(shareId: string): Promise<void> {
         if (this.assetType === AssetType.STOCK) {
-            this.share = (await this.marketService.getStockInfo(shareId)).stock;
+            this.share = (await this.marketService.getStockInfo(shareId)).share;
         } else if (this.assetType === AssetType.ASSET) {
-            this.share = (await this.marketService.getAssetInfo(shareId)).asset;
+            this.share = (await this.marketService.getAssetInfo(shareId)).share;
         } else if (this.assetType === AssetType.BOND) {
             this.share = (await this.marketService.getBondInfo(shareId)).bond;
         }

@@ -215,6 +215,10 @@ export class BondInfoPage extends UI {
                 this.$router.push(`/share-info/${share.ticker}`);
                 return;
             }
+            if (this.share.shareType === ShareType.ASSET) {
+                this.$router.push(`/asset-info/${share.id}`);
+                return;
+            }
             this.events = [];
             const result = await this.marketService.getBondInfo(this.share.isin);
             this.share = result.bond;

@@ -70,6 +70,16 @@ export class TradeService {
     }
 
     /**
+     * Загружает и возвращает события по сделкам по тикеру в портфеле
+     * @param {string} id идентификатор портфеля
+     * @param {string} shareId идентификатор актива
+     * @returns {Promise<TradeRow[]>}
+     */
+    async getAssetShareTradesEvent(id: number, shareId: string): Promise<EventChartData[]> {
+        return this.http.get<EventChartData[]>(`/trades/${id}/asset/events/${shareId}`);
+    }
+
+    /**
      * Загружает и возвращает сделки по тикеру в портфеле
      * @param {string} id идентификатор портфеля
      * @param offset смещение

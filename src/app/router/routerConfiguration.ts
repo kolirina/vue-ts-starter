@@ -7,6 +7,7 @@ import {Resolver} from "../../../typings/vue";
 import {AuthComponent} from "../app/authComponent";
 import {TariffExpiredDialog} from "../components/dialogs/tariffExpiredDialog";
 import {AdviserPage} from "../pages/adviser/adviserPage";
+import {AssetInfoPage} from "../pages/assetInfoPage";
 import {BalancesPage} from "../pages/balancesPage";
 import {BondInfoPage} from "../pages/bondInfoPage";
 import {CombinedPortfolioPage} from "../pages/combinedPortfolioPage";
@@ -198,6 +199,15 @@ export class RouterConfiguration {
                         component: ShareInfoPage
                     }
                 ],
+            },
+            {
+                path: "/asset-info/:ticker",
+                name: "asset",
+                meta: {
+                    tariffAllowed: true,
+                    title: "Информация по активу"
+                },
+                component: AssetInfoPage
             },
             {
                 name: "bond-info",

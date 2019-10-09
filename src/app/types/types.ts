@@ -131,7 +131,7 @@ export type _shareRow = _portfolioRow & {
     decimals: string
 };
 
-export type StockPortfolioSumRow = _shareRow & {
+export type SharePortfolioSumRow = _shareRow & {
     /**
      * Текущая цена. Храним именно значение, а не используем из сущности Stock, чтобы не было расхождений, потому что кэш бумаг обновляется чаще
      * чем кэш портфеля
@@ -159,24 +159,35 @@ export type BondPortfolioSumRow = _shareRow & {
     sellNkd: string
 };
 
-export type StockPortfolioRow = StockPortfolioSumRow & {
-
-    // private StockTarget stockTarget = new StockTarget();
+export type SharePortfolioRow = SharePortfolioSumRow & {
+    /** Используется в качестве ключа в таблицах и все. */
     id: string,
-    stock: Stock,
+    /** Количество */
     quantity: number,
     /** Средняя цена покупки */
     avgBuy: string,
-
+    /** Чистая цена по бумаге */
     avgBuyClean: string,
-
+    /** Дата первой сделки */
     firstBuy: string,
-
+    /** Дата последенй сделки */
     lastBuy: string,
     /** Признак того, что позиция по бумаге короткая */
     isShort: string,
     /** Количество полных лотов по бумаге в портфеле */
     lotCounts: string
+};
+
+export type StockPortfolioSumRow = SharePortfolioSumRow & {};
+
+export type StockPortfolioRow = SharePortfolioRow & {
+    stock: Stock,
+};
+
+export type AssetPortfolioSumRow = SharePortfolioSumRow & {};
+
+export type AssetPortfolioRow = SharePortfolioRow & {
+    asset: Asset,
 };
 
 export type BondPortfolioRow = BondPortfolioSumRow & {
@@ -223,6 +234,8 @@ export interface Overview {
     assetRows: AssetRow[];
     /** Данные таблицы Акции */
     stockPortfolio: StockPortfolio;
+    /** Данные таблицы Активы */
+    assetPortfolio: AssetPortfolio;
     /** Данные таблицы Облигации */
     bondPortfolio: BondPortfolio;
     /** Общее количество сделок в портфеле */
@@ -236,8 +249,13 @@ export interface Overview {
 }
 
 export type StockPortfolio = {
-    sumRow: StockPortfolioSumRow,
+    sumRow: SharePortfolioSumRow,
     rows: StockPortfolioRow[]
+};
+
+export type AssetPortfolio = {
+    sumRow: AssetPortfolioSumRow,
+    rows: AssetPortfolioRow[]
 };
 
 export type BondPortfolio = {
@@ -308,7 +326,8 @@ export interface PortfolioBackup {
 
 export enum ShareType {
     STOCK = "STOCK",
-    BOND = "BOND"
+    BOND = "BOND",
+    ASSET = "ASSET",
 }
 
 export type Share = {
@@ -403,7 +422,7 @@ export type Asset = Share & {
 };
 
 /** Информация по динамике ценной бумаги */
-export type StockDynamic = {
+export type ShareDynamic = {
     /** Минимальная за год */
     minYearPrice: string;
     /** Максимальная за год */
@@ -418,8 +437,6 @@ export type StockDynamic = {
     yearHistory: BasePriceDot[];
     /** Текущая цена */
     current: string;
-    /** Сдвиг для линейного графика */
-    shift: string;
 };
 
 export type StockHistoryResponse = {
@@ -477,13 +494,13 @@ export type BondHistoryResponse = {
 /** Информация по акции */
 export type StockInfo = {
     /** Акция */
-    stock: Stock;
+    share: Stock;
     /** История цены */
     history: Dot[];
     /** Дивиденды */
     dividends: BaseChartDot[];
     /** Динамика */
-    stockDynamic: StockDynamic;
+    shareDynamic: ShareDynamic;
     /** События. В данном случае дивиденды */
     events: HighStockEventsGroup;
 };
@@ -491,9 +508,15 @@ export type StockInfo = {
 /** Информация по активу */
 export type AssetInfo = {
     /** Актив */
-    asset: Asset;
+    share: Asset;
+    /** Информация по динамике ценной бумаги */
+    shareDynamic: ShareDynamic;
     /** История цены */
     history: Dot[];
+    /** Дивиденды */
+    dividends?: BaseChartDot[];
+    /** События. В данном случае дивиденды */
+    events?: HighStockEventsGroup;
 };
 
 /** Информация по облигации */
