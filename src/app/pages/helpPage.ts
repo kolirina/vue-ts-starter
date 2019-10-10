@@ -161,7 +161,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     <div class="wrapper-content-panel__paired-section-item">
                                         <p>
                                             Кнопка добавления сделок
-                                            <v-btn @click.stop="openDialog()"  fab dark small color="indigo" depressed class="add-btn-menu">
+                                            <v-btn @click.stop="openDialog()" fab dark small color="indigo" depressed class="add-btn-menu">
                                                 <v-icon>add</v-icon>
                                             </v-btn>
                                         </p>
@@ -305,9 +305,9 @@ const MainStore = namespace(StoreType.MAIN);
                                         </p>
                                         <div class="gif-block-item  border-block-in-paired-section">
                                             <p>
-                                                <div>
-                                                    <img src="./img/help/import_1.png" @click.stop="openImageDialog"/>
-                                                </div>
+                                            <div>
+                                                <img src="./img/help/import_1.png" @click.stop="openImageDialog"/>
+                                            </div>
                                             </p>
                                             <div>
                                                 Что делать, если отчет не загружается?
@@ -317,9 +317,9 @@ const MainStore = namespace(StoreType.MAIN);
                                                 описаны инструкции по форматам.
                                             </p>
                                             <p>
-                                                <div>
-                                                    <img src="./img/help/import_2.png" @click.stop="openImageDialog"/>
-                                                </div>
+                                            <div>
+                                                <img src="./img/help/import_2.png" @click.stop="openImageDialog"/>
+                                            </div>
                                             </p>
                                             <p>
                                                 Внимательно прочитайте информацию во всплывающем окне.
@@ -442,9 +442,9 @@ const MainStore = namespace(StoreType.MAIN);
                                             портфеля за текущий день.
                                         </p>
                                         <p>
-                                            <div>
-                                                <img src="./img/help/portfolio_1.png" @click.stop="openImageDialog"/>
-                                            </div>
+                                        <div>
+                                            <img src="./img/help/portfolio_1.png" @click.stop="openImageDialog"/>
+                                        </div>
                                         </p>
                                         <p>
                                             Ниже расположена таблица с основными типами активов
@@ -460,9 +460,9 @@ const MainStore = namespace(StoreType.MAIN);
                                             доступные с ней действия.
                                         </p>
                                         <p>
-                                            <div>
-                                                <img src="./img/help/portfolio_2.png" @click.stop="openImageDialog"/>
-                                            </div>
+                                        <div>
+                                            <img src="./img/help/portfolio_2.png" @click.stop="openImageDialog"/>
+                                        </div>
                                         </p>
                                         <p>
                                             Можно быстро купить, продать или внести начисление по
@@ -471,9 +471,9 @@ const MainStore = namespace(StoreType.MAIN);
                                             удаления всех бумаг, вы можете быстро очистить весь портфель.
                                         </p>
                                         <p>
-                                            <div>
-                                                <img src="./img/help/portfolio_3.png" @click.stop="openImageDialog"/>
-                                            </div>
+                                        <div>
+                                            <img src="./img/help/portfolio_3.png" @click.stop="openImageDialog"/>
+                                        </div>
                                         </p>
                                     </div>
                                     <div class="wrapper-content-panel__paired-section-item">
@@ -484,9 +484,9 @@ const MainStore = namespace(StoreType.MAIN);
                                             слева.
                                         </p>
                                         <p>
-                                            <div>
-                                                <img src="./img/help/portfolio_4.png" @click.stop="openImageDialog"/>
-                                            </div>
+                                        <div>
+                                            <img src="./img/help/portfolio_4.png" @click.stop="openImageDialog"/>
+                                        </div>
                                         </p>
                                         <p>
                                             Для каждой таблицы предусмотрена диаграмма распределения
@@ -499,14 +499,14 @@ const MainStore = namespace(StoreType.MAIN);
                                             каждой отрасли.
                                         </p>
                                         <p>
-                                            <div>
-                                                <img src="./img/help/portfolio_5.png" @click.stop="openImageDialog"/>
-                                            </div>
+                                        <div>
+                                            <img src="./img/help/portfolio_5.png" @click.stop="openImageDialog"/>
+                                        </div>
                                         </p>
                                         <p>
-                                            <div>
-                                                <img src="./img/help/portfolio_6.png" @click.stop="openImageDialog"/>
-                                            </div>
+                                        <div>
+                                            <img src="./img/help/portfolio_6.png" @click.stop="openImageDialog"/>
+                                        </div>
                                         </p>
                                         <p>
                                             Для таблиц предусмотрена возможность фильтрации,
@@ -529,21 +529,16 @@ const MainStore = namespace(StoreType.MAIN);
                             <i class="custom-action-icon"></i>
                         </template>
                         <template v-slot:header>
-                            <div id="balances">Страница Аналитика</div>
+                            <div id="analytics">Страница Аналитика</div>
                         </template>
                         <v-card>
                             <div class="wrapper-content-panel">
                                 <div class="wrapper-content-panel__single-section">
                                     <div class="wrapper-content-panel__single-section-item">
                                         <p>
-                                            Здесь вы найдете подробный анализ вашего портфеля и указание
-                                            на его узкие места - как можно увеличить доходность или снизить риск.
-                                        </p>
-                                        <p>
-                                            <img src="./img/help/analytics_1.png" @click.stop="openImageDialog"/>
-                                        </p>
-                                        <p>
-                                            Также вы найдете графики сравнения портфеля с бенчмарками (инфляция, ставки по депозитам, Индекс МосБиржи)
+                                            В этом разделе представлена аналитическая информация по портфелю: график сравнения доходности портфеля
+                                            с бенчмарками (инфляция, ставки по депозитам, Индекс МосБиржи).
+                                            Графики официальной инфляции в России и ставок по депозитам на основе данных ЦБ РФ.
                                         </p>
                                         <p>
                                             <img src="./img/help/analytics_2.png" @click.stop="openImageDialog"/>

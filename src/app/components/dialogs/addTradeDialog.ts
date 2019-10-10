@@ -17,7 +17,7 @@ import {MoneyResiduals, PortfolioParams, PortfolioService} from "../../services/
 import {TradeFields, TradeRequest, TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
 import {BigMoney} from "../../types/bigMoney";
-import {EventType} from "../../types/eventType";
+import {AddTradeEvent, EventType} from "../../types/eventType";
 import {Operation} from "../../types/operation";
 import {Tariff} from "../../types/tariff";
 import {TradeDataHolder} from "../../types/trade/tradeDataHolder";
@@ -594,7 +594,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
                 UI.emit(EventType.TRADE_UPDATED);
             } else {
                 await this.saveTrade(tradeFields);
-                UI.emit(EventType.TRADE_CREATED);
+                UI.emit(EventType.TRADE_CREATED, {portfolioId: this.portfolio.id} as AddTradeEvent);
             }
             const msg = this.data.eventFields ? "Событие успешно исполнено" : `Сделка успешно ${this.editMode ? "отредактирована" : "добавлена"}`;
             this.$snotify.info(msg);

@@ -12,7 +12,7 @@ import {TradeService} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
 import {Operation} from "../types/operation";
-import {BondPortfolioRow, Pagination, TableHeader} from "../types/types";
+import {BondPortfolioRow, Pagination, Portfolio, TableHeader} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
 import {SortUtils} from "../utils/sortUtils";
 import {TradeUtils} from "../utils/tradeUtils";
@@ -249,6 +249,10 @@ export class BondTable extends UI {
     private portfolioService: PortfolioService;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
     private reloadPortfolio: (id: number) => Promise<void>;
+    /** Если работаем из составного портфеля и добавляем сделку в текущий портфель, надо перезагрузить его */
+    @MainStore.Getter
+    private portfolio: Portfolio;
+
     /** Идентификатор портфеля */
     @Prop({default: null, type: String, required: true})
     private portfolioId: string;
@@ -351,7 +355,7 @@ export class BondTable extends UI {
             assetType: AssetType.BOND
         });
         if (result) {
-            await this.reloadPortfolio(Number(this.portfolioId));
+            await this.reloadPortfolio(CommonUtils.isBlank(this.portfolioId) ? this.portfolio.id : Number(this.portfolioId));
         }
     }
 
