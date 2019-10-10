@@ -11,6 +11,7 @@ import {ClientInfo, ClientService} from "../services/clientService";
 import {MarketHistoryService} from "../services/marketHistoryService";
 import {OverviewService} from "../services/overviewService";
 import {HighStockEventsGroup} from "../types/charts/types";
+import {AddTradeEvent, EventType} from "../types/eventType";
 import {Permission} from "../types/permission";
 import {StoreKeys} from "../types/storeKeys";
 import {ForbiddenCode, Overview} from "../types/types";
@@ -100,6 +101,16 @@ export class CombinedPortfolioPage extends UI {
     async created(): Promise<void> {
         this.setIds();
         await this.doCombinedPortfolio();
+        UI.on(EventType.TRADE_CREATED, async (event: AddTradeEvent): Promise<void> => {
+            // перезагружаем информацию если сделка была добавлена в портфель входящий в составной
+            if (this.ids.includes(event.portfolioId)) {
+                await this.doCombinedPortfolio();
+            }
+        });
+    }
+
+    beforeDestroy(): void {
+        UI.off(EventType.TRADE_CREATED);
     }
 
     /**

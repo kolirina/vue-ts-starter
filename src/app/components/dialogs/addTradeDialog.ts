@@ -17,7 +17,7 @@ import {MoneyResiduals, PortfolioParams, PortfolioService} from "../../services/
 import {TradeFields, TradeRequest, TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
 import {BigMoney} from "../../types/bigMoney";
-import {EventType} from "../../types/eventType";
+import {AddTradeEvent, EventType} from "../../types/eventType";
 import {Operation} from "../../types/operation";
 import {Tariff} from "../../types/tariff";
 import {TradeDataHolder} from "../../types/trade/tradeDataHolder";
@@ -104,14 +104,14 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                             <!-- Цена -->
                             <v-flex v-if="shareAssetType" xs12 sm6>
                                 <ii-number-field :label="priceLabel" v-model="price" class="required" name="price" v-validate="'required|min_value:0.000001'"
-                                                 :error-messages="errors.collect('price')" @keyup="calculateFee" persistent-hint
+                                                 :error-messages="errors.collect('price')" @keyup="calculateFee" persistent-hint maxLength="11"
                                                  :hint="isBondTrade ? 'Указывается в процентах, например, 101.59' : ''">
                                 </ii-number-field>
                             </v-flex>
 
                             <!-- Количество -->
                             <v-flex v-if="shareAssetType" xs12 sm6>
-                                <ii-number-field label="Количество" v-model="quantity" @keyup="calculateFee" name="quantity" :decimals="0"
+                                <ii-number-field label="Количество" v-model="quantity" @keyup="calculateFee" name="quantity" :decimals="0" maxLength="11"
                                                  v-validate="'required|min_value:1'" :error-messages="errors.collect('quantity')" class="required" browser-autocomplete="false">
                                 </ii-number-field>
                                 <div class="fs12-opacity mt-1">
@@ -125,7 +125,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
 
                             <!-- Номинал -->
                             <v-flex v-if="isBondTrade" xs12 sm3>
-                                <ii-number-field label="Номинал" v-model="facevalue" @keyup="calculateFee" :decimals="2" name="facevalue"
+                                <ii-number-field label="Номинал" v-model="facevalue" @keyup="calculateFee" :decimals="2" name="facevalue" maxLength="11"
                                                  v-validate="'required|min_value:0.01'" :error-messages="errors.collect('facevalue')" class="required">
                                 </ii-number-field>
                             </v-flex>
@@ -134,7 +134,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                             <v-flex xs12 sm9>
                                 <v-layout wrap>
                                     <v-flex v-if="isBondTrade" xs12 lg6>
-                                        <ii-number-field label="НКД" v-model="nkd" @keyup="calculateFee" :decimals="2" name="nkd"
+                                        <ii-number-field label="НКД" v-model="nkd" @keyup="calculateFee" :decimals="2" name="nkd" maxLength="11"
                                                          v-validate="nkdValidationString" :error-messages="errors.collect('nkd')" class="required">
                                         </ii-number-field>
                                     </v-flex>
@@ -149,7 +149,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
 
                             <!-- Комиссия -->
                             <v-flex v-if="shareAssetType && !calculationAssetType" xs12>
-                                <ii-number-field label="Комиссия" v-model="fee" :decimals="2"
+                                <ii-number-field label="Комиссия" v-model="fee" :decimals="2" maxLength="11"
                                                  hint="Для автоматического рассчета комиссии задайте значение в Настройках или введите значение суммарной комиссии">
                                 </ii-number-field>
                             </v-flex>
@@ -167,7 +167,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                         </div>
                                         <ii-number-field :label="'Сумма в ' +  purchasedCurrency" v-model="moneyAmount" :decimals="2" name="purchased_currency_value"
                                                          v-validate="'required'" :error-messages="errors.collect('purchased_currency_value')"
-                                                         class="required" @input="changedPurchasedCurrencyValue"></ii-number-field>
+                                                         class="required" @input="changedPurchasedCurrencyValue" maxLength="11"></ii-number-field>
                                     </v-flex>
                                     <v-flex xs6>
                                         <div class="fs14 margB16">
@@ -179,7 +179,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                         </div>
                                         <ii-number-field :label="'Сумма в ' +  debitCurrency" v-model="debitCurrencyValue" :decimals="2" name="debiting_currency_value"
                                                          v-validate="'required'" :error-messages="errors.collect('debiting_currency_value')"
-                                                         class="required" @input="changedDebitingCurrencyValue"></ii-number-field>
+                                                         class="required" @input="changedDebitingCurrencyValue" maxLength="11"></ii-number-field>
                                     </v-flex>
                                 </v-layout>
                                 <v-layout wrap class="margB35">
@@ -190,7 +190,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                             </v-layout>
                                         </div>
                                         <ii-number-field label="Курс валюты" v-model="currencyExchangeRate" :decimals="4" name="currency_exchange_rate"
-                                                         v-validate="'required'" :error-messages="errors.collect('currency_exchange_rate')"
+                                                         v-validate="'required'" :error-messages="errors.collect('currency_exchange_rate')" maxLength="11"
                                                          class="required" @input="changedPurchasedCurrencyValue"></ii-number-field>
                                     </v-flex>
                                     <v-flex xs6>
@@ -200,7 +200,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                                 <v-select :items="[feeCurrency]" v-model="feeCurrency" label="Валюта комиссии" single-line></v-select>
                                             </v-layout>
                                         </div>
-                                        <ii-number-field label="Комиссия" v-model="fee" :decimals="2"></ii-number-field>
+                                        <ii-number-field label="Комиссия" v-model="fee" :decimals="2" maxLength="11"></ii-number-field>
                                     </v-flex>
                                 </v-layout>
                             </v-flex>
@@ -208,7 +208,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                 <v-layout wrap>
                                     <v-flex xs12 lg8>
                                         <ii-number-field label="Сумма" v-model="moneyAmount" :decimals="2" name="money_amount" v-validate="'required|min_value:0.01'"
-                                                         :error-messages="errors.collect('money_amount')" class="required" key="money-amount"></ii-number-field>
+                                                         :error-messages="errors.collect('money_amount')" class="required" key="money-amount" maxLength="18"></ii-number-field>
                                     </v-flex>
                                     <v-flex xs12 lg4>
                                         <v-select :items="currencyList" v-model="moneyCurrency" label="Валюта сделки"></v-select>
@@ -594,7 +594,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
                 UI.emit(EventType.TRADE_UPDATED);
             } else {
                 await this.saveTrade(tradeFields);
-                UI.emit(EventType.TRADE_CREATED);
+                UI.emit(EventType.TRADE_CREATED, {portfolioId: this.portfolio.id} as AddTradeEvent);
             }
             const msg = this.data.eventFields ? "Событие успешно исполнено" : `Сделка успешно ${this.editMode ? "отредактирована" : "добавлена"}`;
             this.$snotify.info(msg);
