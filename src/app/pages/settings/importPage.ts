@@ -408,7 +408,7 @@ export class ImportPage extends UI {
             if (navigateToPortfolioPage) {
                 this.$router.push("portfolio");
             }
-        } else if (response.errors && response.errors.length === duplicateTradeErrorCount && response.validatedTradesCount === 0) {
+        } else if (response.errors && duplicateTradeErrorCount > 0 && response.errors.length === duplicateTradeErrorCount && response.validatedTradesCount === 0) {
             this.$snotify.warning("Импорт завершен. Все сделки из отчета уже были импортированы ранее.");
         } else {
             this.$snotify.warning("Импорт завершен. В отчете не содержится информации по сделкам.");

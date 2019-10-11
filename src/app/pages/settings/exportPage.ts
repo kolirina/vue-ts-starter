@@ -70,7 +70,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     Настройте автоматический бэкап портфеля. Файлы выбранных портфелей (в csv формате) будут отравляться на вашу эл почту по заданному расписанию.
                                 </div>
                                 <v-layout align-center class="margT20">
-                                    <v-btn color="#EBEFF7" @click.stop="openBackupDialog" :disabled="!clientInfo.user.emailConfirmed || isDownloadNotAllowed()">
+                                    <v-btn color="primary" @click.stop="openBackupDialog" :disabled="!clientInfo.user.emailConfirmed || isDownloadNotAllowed()">
                                         Настроить
                                     </v-btn>
                                     <v-menu v-if="!clientInfo.user.emailConfirmed || isDownloadNotAllowed()" open-on-hover bottom nudge-bottom="12"

@@ -12,7 +12,7 @@ import {TradeService} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
 import {Operation} from "../types/operation";
-import {BondPortfolioRow, Pagination, TableHeader} from "../types/types";
+import {BondPortfolioRow, Pagination, Portfolio, TableHeader} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
 import {SortUtils} from "../utils/sortUtils";
 import {TradeUtils} from "../utils/tradeUtils";
@@ -48,13 +48,15 @@ const MainStore = namespace(StoreType.MAIN);
                 </span>
             </template>
             <template #items="props">
-                <tr :class="['selectable', {'bold-row': !props.item.bond}]" @dblclick="expandRow(props)">
+                <tr :class="['selectable', {'bold-row': !props.item.bond}]" @dblclick="expandRow(props)" @click.stop>
                     <td>
                         <span v-if="props.item.bond" @click="props.expanded = !props.expanded"
                               :class="{'data-table-cell-open': props.expanded, 'path': true, 'data-table-cell': true}"></span>
                     </td>
                     <td v-if="tableHeadersState.company" class="text-xs-left">
-                        <span v-if="props.item.bond" :class="props.item.quantity !== 0 ? '' : 'line-through'">{{ props.item.bond.shortname }}</span>&nbsp;
+                        <bond-link v-if="props.item.bond" :class="props.item.quantity !== 0 ? '' : 'line-through'"
+                                   :ticker="props.item.bond.ticker">{{ props.item.bond.shortname }}</bond-link>
+                        &nbsp;
                         <span v-if="props.item.bond && props.item.quantity !== 0"
                               :class="markupClasses(Number(props.item.bond.change))">{{ props.item.bond.change }}&nbsp;%</span>
                     </td>
@@ -247,6 +249,10 @@ export class BondTable extends UI {
     private portfolioService: PortfolioService;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
     private reloadPortfolio: (id: number) => Promise<void>;
+    /** Если работаем из составного портфеля и добавляем сделку в текущий портфель, надо перезагрузить его */
+    @MainStore.Getter
+    private portfolio: Portfolio;
+
     /** Идентификатор портфеля */
     @Prop({default: null, type: String, required: true})
     private portfolioId: string;
@@ -349,7 +355,7 @@ export class BondTable extends UI {
             assetType: AssetType.BOND
         });
         if (result) {
-            await this.reloadPortfolio(Number(this.portfolioId));
+            await this.reloadPortfolio(CommonUtils.isBlank(this.portfolioId) ? this.portfolio.id : Number(this.portfolioId));
         }
     }
 
