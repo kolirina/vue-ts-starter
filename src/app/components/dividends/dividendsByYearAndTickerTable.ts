@@ -76,7 +76,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 </v-btn>
                                 <v-list dense>
                                     <v-list-tile @click="deleteAllTrades(props.item)">
-                                        <v-list-tile-title>
+                                        <v-list-tile-title class="delete-btn">
                                             Удалить
                                         </v-list-tile-title>
                                     </v-list-tile>

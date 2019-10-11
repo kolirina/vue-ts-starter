@@ -154,7 +154,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     <v-divider v-if="!props.item.parentTradeId"></v-divider>
                                     <!-- Связанную сделку удалить можно только удалив родительскую -->
                                     <v-list-tile v-if="!props.item.parentTradeId" @click="deleteTrade(props.item)">
-                                        <v-list-tile-title>
+                                        <v-list-tile-title class="delete-btn">
                                             Удалить
                                         </v-list-tile-title>
                                     </v-list-tile>

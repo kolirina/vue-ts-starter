@@ -139,7 +139,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 </v-list-tile>
                                 <v-divider></v-divider>
                                 <v-list-tile @click="deleteAllTrades(props.item)">
-                                    <v-list-tile-title>
+                                    <v-list-tile-title class="delete-btn">
                                         Удалить
                                     </v-list-tile-title>
                                 </v-list-tile>

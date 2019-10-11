@@ -170,14 +170,24 @@ export class RouterConfiguration {
                 }
             },
             {
-                name: "quotes",
                 path: "/quotes",
-                meta: {
-                    tariffAllowed: true,
-                    title: "Котировки",
-                    tourName: "quotes"
-                },
+                redirect: "/quotes/stock",
                 component: QuotesPage,
+            },
+            {
+                path: "/quotes/:tab",
+                component: QuotesPage,
+                children: [
+                    {
+                        path: "",
+                        name: "quotes",
+                        meta: {
+                            tariffAllowed: true,
+                            title: "Котировки",
+                            tourName: "quotes"
+                        },
+                        component: QuotesPage
+                    }]
             },
             {
                 path: "/share-info",

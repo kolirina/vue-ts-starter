@@ -68,7 +68,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 </v-list-tile-title>
                             </v-list-tile>
                             <v-list-tile @click.native="confirmDeleteAllEvents" style="color: #ff5b5d;">
-                                <v-list-tile-title>
+                                <v-list-tile-title class="delete-btn">
                                     Удалить все
                                 </v-list-tile-title>
                             </v-list-tile>
@@ -128,7 +128,7 @@ const MainStore = namespace(StoreType.MAIN);
                                                 </v-list-tile-title>
                                             </v-list-tile>
                                             <v-list-tile @click="rejectEvent(props.item)">
-                                                <v-list-tile-title>
+                                                <v-list-tile-title class="delete-btn">
                                                     Удалить
                                                 </v-list-tile-title>
                                             </v-list-tile>
