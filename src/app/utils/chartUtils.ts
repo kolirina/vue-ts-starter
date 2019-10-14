@@ -56,7 +56,7 @@ export class ChartUtils {
             .reduce((result: Decimal, current: Decimal) => result.add(current), new Decimal("0"));
         const rowsBySector: { [sectorName: string]: StockPortfolioRow[] } = {};
         overview.stockPortfolio.rows.filter(row => row.quantity !== 0).forEach(row => {
-            const sector = row.stock.sector;
+            const sector = row.share.sector;
             const sectorName = sector.root ? sector.name : sector.parent.name;
             if (rowsBySector[sectorName] === undefined) {
                 rowsBySector[sectorName] = [];
@@ -66,7 +66,7 @@ export class ChartUtils {
         Object.keys(rowsBySector).forEach(key => {
             const sumAmount = rowsBySector[key].map(row => new BigMoney(row.currCost).amount.abs())
                 .reduce((result: Decimal, current: Decimal) => result.add(current), new Decimal("0"));
-            const tickers = rowsBySector[key].map(row => row.stock.ticker).join(", ");
+            const tickers = rowsBySector[key].map(row => row.share.ticker).join(", ");
             const percentage = new Decimal(sumAmount).mul(100).dividedBy(currentTotalCost).toDP(2, Decimal.ROUND_HALF_UP).toString();
             data.push({
                 name: key,
@@ -155,7 +155,7 @@ export class ChartUtils {
         const data: DataPoint[] = [];
         overview.stockPortfolio.rows.filter(value => new BigMoney(value.currCost).amount.toString() !== "0").forEach(row => {
             data.push({
-                name: row.stock.shortname,
+                name: row.share.shortname,
                 y: new Decimal(new BigMoney(row.currCost).amount.abs().toString()).toDP(2, Decimal.ROUND_HALF_UP).toNumber()
             });
         });

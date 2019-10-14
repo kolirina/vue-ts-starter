@@ -182,12 +182,14 @@ export type StockPortfolioSumRow = SharePortfolioSumRow & {};
 
 export type StockPortfolioRow = SharePortfolioRow & {
     stock: Stock,
+    share: Stock | Asset
 };
 
 export type AssetPortfolioSumRow = SharePortfolioSumRow & {};
 
 export type AssetPortfolioRow = SharePortfolioRow & {
     asset: Asset,
+    share: Stock | Asset,
 };
 
 export type BondPortfolioRow = BondPortfolioSumRow & {
@@ -246,6 +248,10 @@ export interface Overview {
     lastTradeDate: string;
     /** Дата по которую рассчитаны данные */
     cutDate: string;
+    /** Общая сумма пользовательских прибылей */
+    usersIncomes: string;
+    /** Общая сумма пользовательских убытков */
+    usersLosses: string;
 }
 
 export type StockPortfolio = {

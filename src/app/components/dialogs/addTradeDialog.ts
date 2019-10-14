@@ -546,7 +546,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         this.currentCountShareSearch = null;
         if (this.share) {
             if (this.isStockTrade) {
-                const row = this.portfolio.overview.stockPortfolio.rows.find(item => item.stock.ticker === this.share.ticker);
+                const row = this.portfolio.overview.stockPortfolio.rows.find(item => item.share.ticker === this.share.ticker);
                 this.currentCountShareSearch = row ? row.quantity : null;
             } else if (this.isBondTrade) {
                 const row = this.portfolio.overview.bondPortfolio.rows.find(item => item.bond.ticker === this.share.ticker);

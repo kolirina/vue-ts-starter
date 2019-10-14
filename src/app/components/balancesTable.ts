@@ -117,8 +117,8 @@ export class BalancesTable extends UI {
             this.balancesTableRow.push({
                 id: row.id,
                 type: "STOCK",
-                company: row.stock.shortname,
-                ticker: row.stock.ticker,
+                company: row.share.shortname,
+                ticker: row.share.ticker,
                 quantity: row.quantity,
                 avgBuy: row.avgBuy,
                 currCost: row.currCost

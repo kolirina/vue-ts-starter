@@ -48,7 +48,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </span>
             </template>
             <template #items="props">
-                <tr :class="['selectable', {'bold-row': !props.item.bond}]" @dblclick="expandRow(props)">
+                <tr :class="['selectable', {'bold-row': !props.item.bond}]" @dblclick="expandRow(props)" @click.stop>
                     <td>
                         <span v-if="props.item.bond" @click="props.expanded = !props.expanded"
                               :class="{'data-table-cell-open': props.expanded, 'path': true, 'data-table-cell': true}"></span>

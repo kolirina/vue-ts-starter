@@ -44,7 +44,7 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-data-table class="data-table" :headers="headers" :items="filteredRows" item-key="stock.id"
+        <v-data-table class="data-table" :headers="headers" :items="filteredRows" item-key="share.id"
                       :search="search" :custom-sort="customSort" :custom-filter="customFilter" :pagination.sync="pagination" expand hide-actions must-sort>
             <v-progress-linear slot="progress" color="blue" indeterminate></v-progress-linear>
             <template #headerCell="props">
@@ -63,18 +63,19 @@ const MainStore = namespace(StoreType.MAIN);
                 </span>
             </template>
             <template #items="props">
-                <tr :class="['selectable', {'bold-row': !props.item.stock}]" @dblclick="expandRow(props)">
+                <tr :class="['selectable', {'bold-row': !props.item.share}]" @dblclick="expandRow(props)" @click.stop>
                     <td>
-                        <span v-if="props.item.stock" @click="props.expanded = !props.expanded"
+                        <span v-if="props.item.share" @click="props.expanded = !props.expanded"
                               :class="{'data-table-cell-open': props.expanded, 'path': true, 'data-table-cell': true}"></span>
                     </td>
                     <td v-if="tableHeadersState.company" class="text-xs-left">
-                        <span v-if="props.item.stock" :class="props.item.quantity !== 0 ? '' : 'line-through'">{{ props.item.stock.shortname }}</span>&nbsp;
-                        <span v-if="props.item.stock && props.item.quantity !== 0"
-                              :class="markupClasses(Number(props.item.stock.change))">{{ props.item.stock.change }}&nbsp;%</span>
+                        <span v-if="props.item.share" :class="props.item.quantity !== 0 ? '' : 'line-through'">{{ props.item.share.shortname }}</span>&nbsp;
+                        <span v-if="props.item.share && props.item.quantity !== 0"
+                              :class="markupClasses(Number(props.item.share.change))">{{ props.item.share.change }}&nbsp;%</span>
                     </td>
                     <td v-if="tableHeadersState.ticker" class="text-xs-left">
-                        <stock-link v-if="props.item.stock" :ticker="props.item.stock.ticker"></stock-link>
+                        <stock-link v-if="props.item.share && props.item.assetType === 'STOCK'" :ticker="props.item.share.ticker"></stock-link>
+                        <asset-link v-if="props.item.share && props.item.assetType === 'ASSET'" :ticker="String(props.item.share.id)">{{ props.item.share.ticker }}</asset-link>
                     </td>
                     <td v-if="tableHeadersState.quantity" class="text-xs-right ii-number-cell">{{props.item.quantity}}</td>
                     <td v-if="tableHeadersState.avgBuy" class="text-xs-right ii-number-cell">
@@ -118,17 +119,17 @@ const MainStore = namespace(StoreType.MAIN);
                     <td v-if="tableHeadersState.summFee" class="text-xs-right ii-number-cell">{{ props.item.summFee | amount(true) }}</td>
                     <td v-if="tableHeadersState.percCurrShare" class="text-xs-right ii-number-cell">{{ props.item.percCurrShare | number }}</td>
                     <td class="justify-center layout px-0" @click.stop>
-                        <v-menu v-if="props.item.stock" transition="slide-y-transition" bottom left>
+                        <v-menu v-if="props.item.share" transition="slide-y-transition" bottom left>
                             <v-btn slot="activator" flat icon dark>
                                 <span class="menuDots"></span>
                             </v-btn>
                             <v-list dense>
-                                <v-list-tile @click="openShareTradesDialog(props.item.stock.ticker)">
+                                <v-list-tile @click="openShareTradesDialog(props.item.share.ticker)">
                                     <v-list-tile-title>
                                         Все сделки
                                     </v-list-tile-title>
                                 </v-list-tile>
-                                <v-list-tile v-if="shareNotes" @click="openEditShareNoteDialog(props.item.stock.ticker)">
+                                <v-list-tile v-if="shareNotes" @click="openEditShareNoteDialog(props.item.share.ticker)">
                                     <v-list-tile-title>
                                         Заметка
                                     </v-list-tile-title>
@@ -168,7 +169,8 @@ const MainStore = namespace(StoreType.MAIN);
                             <div class="ext-info__item">
                                 Тикер
                                 <span class="ext-info__ticker">
-                                    <stock-link :ticker="props.item.stock.ticker"></stock-link>
+                                    <stock-link v-if="props.item.assetType === 'STOCK'" :ticker="props.item.share.ticker"></stock-link>
+                                    <asset-link v-if="props.item.assetType === 'ASSET'" :ticker="String(props.item.share.id)">{{ props.item.share.ticker }}</asset-link>
                                 </span><br>
                                 В портфеле {{ props.item.ownedDays }} {{ props.item.ownedDays | declension("день", "дня", "дней") }}, c {{ props.item.firstBuy | date }}<br>
                                 Кол-во полных лотов {{ props.item.lotCounts | number }} <span>шт.</span><br>
@@ -194,7 +196,7 @@ const MainStore = namespace(StoreType.MAIN);
                             <div class="ext-info__item">
                                 Курсовая прибыль {{ props.item.rateProfit | amount }} <span>{{ portfolioCurrency }}</span><br>
                                 Курсовая прибыль {{ props.item.rateProfitPercent | number }} <span>%</span><br>
-                                <template v-if="shareNotes&& shareNotes[props.item.stock.ticker]">Заметка {{ shareNotes[props.item.stock.ticker] }}</template>
+                                <template v-if="shareNotes&& shareNotes[props.item.share.ticker]">Заметка {{ shareNotes[props.item.share.ticker] }}</template>
                             </div>
                         </td>
                         <td>
@@ -341,7 +343,7 @@ export class StockTable extends UI {
         const result = await new AddTradeDialog().show({
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
-            share: stockRow.stock,
+            share: stockRow.share,
             quantity: Math.abs(stockRow.quantity),
             operation,
             assetType: AssetType.STOCK
@@ -352,7 +354,7 @@ export class StockTable extends UI {
     }
 
     private async deleteAllTrades(stockRow: StockPortfolioRow): Promise<void> {
-        const result = await new ConfirmDialog().show(`Вы уверены, что хотите удалить все сделки по ценной бумаге ${stockRow.stock.ticker} (${stockRow.quantity} шт.)?`);
+        const result = await new ConfirmDialog().show(`Вы уверены, что хотите удалить все сделки по ценной бумаге ${stockRow.share.ticker} (${stockRow.quantity} шт.)?`);
         if (result === BtnReturn.YES) {
             await this.deleteAllTradesAndReloadData(stockRow);
         }
@@ -362,7 +364,7 @@ export class StockTable extends UI {
     private async deleteAllTradesAndReloadData(stockRow: StockPortfolioRow): Promise<void> {
         await this.tradeService.deleteAllTrades({
             assetType: AssetType.STOCK.enumName,
-            ticker: stockRow.stock.ticker,
+            ticker: stockRow.share.ticker,
             portfolioId: Number(this.portfolioId)
         });
         await this.reloadPortfolio(Number(this.portfolioId));
@@ -392,15 +394,15 @@ export class StockTable extends UI {
         }
         search = search.toLowerCase();
         return items.filter(row => {
-            return row.stock && (row.stock.shortname.toLowerCase().includes(search) ||
-                row.stock.ticker.toLowerCase().includes(search) ||
-                row.stock.price.includes(search) ||
+            return row.share && (row.share.shortname.toLowerCase().includes(search) ||
+                row.share.ticker.toLowerCase().includes(search) ||
+                row.share.price.includes(search) ||
                 row.yearYield.includes(search));
         });
     }
 
     private expandRow(props: any): void {
-        if (props.item.stock) {
+        if (props.item.share) {
             props.expanded = !props.expanded;
         }
     }

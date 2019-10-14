@@ -48,7 +48,7 @@ export class ShareInfoPage extends UI {
     }
 
     private get portfolioAvgPrice(): number {
-        const row = this.portfolio.overview.stockPortfolio.rows.find(r => r.stock.ticker === this.ticker);
+        const row = this.portfolio.overview.stockPortfolio.rows.find(r => r.share.ticker === this.ticker);
         return row ? new BigMoney(row.avgBuy).amount.toNumber() : null;
     }
 

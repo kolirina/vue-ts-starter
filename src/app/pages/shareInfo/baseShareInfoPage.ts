@@ -70,7 +70,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     <span v-if="share.sector.parent" class="info-share-page__name-stock-block__subtitle">
                                         ,&nbsp;родительский сектор: {{ share.sector.parent.name }}
                                     </span>
-                                    <span class="rating-section" data-v-step="1">
+                                    <span v-if="share.shareType === 'STOCK'" class="rating-section" data-v-step="1">
                                         <stock-rate :share="share"></stock-rate>
                                     </span>
                                 </div>
