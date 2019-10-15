@@ -130,6 +130,14 @@ export class TradeService {
     }
 
     /**
+     * Отправляет запрос на удаление всех сделок по активу
+     * @param deleteTradeRequest запрос на удаление всех сделок по активу
+     */
+    async deleteAllAssetTrades(deleteTradeRequest: DeleteAllAssetTradeRequest): Promise<void> {
+        await this.http.post("/trades/asset/deleteAll", deleteTradeRequest);
+    }
+
+    /**
      * Загружает и возвращает сделки по тикеру в портфеле
      * @param portfolioId идентификатор портфеля
      * @param asset тип актива
@@ -199,6 +207,14 @@ export interface DeleteAllTradeRequest {
     assetType: string;
     /** Тикер */
     ticker: string;
+    /** Идентификатор портфеля */
+    portfolioId: number;
+}
+
+/** Поля, содержащие информацию для удаления всех сделок по активу */
+export interface DeleteAllAssetTradeRequest {
+    /** Тикер */
+    assetId: number;
     /** Идентификатор портфеля */
     portfolioId: number;
 }

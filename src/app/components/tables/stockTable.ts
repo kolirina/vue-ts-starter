@@ -364,11 +364,19 @@ export class StockTable extends UI {
 
     @ShowProgress
     private async deleteAllTradesAndReloadData(stockRow: StockPortfolioRow): Promise<void> {
-        await this.tradeService.deleteAllTrades({
-            assetType: AssetType.STOCK.enumName,
-            ticker: stockRow.share.ticker,
-            portfolioId: Number(this.portfolioId)
-        });
+        if (stockRow.assetType === AssetType.STOCK.enumName) {
+            await this.tradeService.deleteAllTrades({
+                assetType: AssetType.STOCK.enumName,
+                ticker: stockRow.share.ticker,
+                portfolioId: Number(this.portfolioId)
+            });
+        } else if (stockRow.assetType === AssetType.ASSET.enumName) {
+            await this.tradeService.deleteAllAssetTrades({
+                assetId: stockRow.share.id,
+                portfolioId: Number(this.portfolioId)
+            });
+        }
+        this.$snotify.info(`Сделки по бумаге ${stockRow.share.name} успешно удалены`);
         await this.reloadPortfolio(Number(this.portfolioId));
     }
 
