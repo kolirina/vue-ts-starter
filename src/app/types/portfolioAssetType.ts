@@ -29,7 +29,10 @@ export class PortfolioAssetType extends (EnumType as IStaticEnum<PortfolioAssetT
     static readonly RUBLES = new PortfolioAssetType("Рубли", AssetType.MONEY, CurrencyUnit.RUB);
     static readonly DOLLARS = new PortfolioAssetType("Доллары", AssetType.MONEY, CurrencyUnit.USD);
     static readonly EURO = new PortfolioAssetType("Евро", AssetType.MONEY, CurrencyUnit.EUR);
-    static readonly ETF = new PortfolioAssetType("ETF", AssetType.STOCK, null);
+    static readonly ETF = new PortfolioAssetType("ETF/ПИФ", AssetType.STOCK, null);
+    static readonly METALL = new PortfolioAssetType("Драгметаллы", AssetType.ASSET, null);
+    static readonly REALTY = new PortfolioAssetType("Недвижимость", AssetType.ASSET, null);
+    static readonly OTHER = new PortfolioAssetType("Прочие активы", AssetType.ASSET, null);
 
     private constructor(public description: string, public assetType: AssetType, public currency: CurrencyUnit) {
         super();

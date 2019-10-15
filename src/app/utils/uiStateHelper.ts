@@ -6,6 +6,7 @@ const localStorage: Storage = Container.get(Storage);
 export class UiStateHelper {
 
     static readonly STOCKS = "stocks_panel";
+    static readonly ASSET_TABLE = "assets_table";
     static readonly HISTORY_PANEL = "history_chart";
     static readonly STOCK_CHART_PANEL = "stocksChartPanel";
     static readonly BOND_CHART_PANEL = "bondsChartPanel";
@@ -39,6 +40,14 @@ export class UiStateHelper {
 
     static get bondsTablePanel(): number[] {
         return [localStorage.get(UiStateHelper.BONDS, 0)];
+    }
+
+    static set assetsTablePanel(value: number[]) {
+        localStorage.set(UiStateHelper.ASSET_TABLE, value);
+    }
+
+    static get assetsTablePanel(): number[] {
+        return [localStorage.get(UiStateHelper.ASSET_TABLE, 0)];
     }
 
     static set yearDivsTablePanel(value: number[]) {

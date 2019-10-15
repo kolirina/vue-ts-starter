@@ -18,8 +18,9 @@ import {Inject} from "typescript-ioc";
 import * as versionConfig from "../../version.json";
 import {Storage} from "../platform/services/storage";
 import {StoreKeys} from "../types/storeKeys";
+import {TableHeader} from "../types/types";
 import {DateUtils} from "../utils/dateUtils";
-import {TableHeaders, TablesService} from "./tablesService";
+import {TableHeaders, TABLES_NAME, TablesService} from "./tablesService";
 
 export class LocalStorageUpdater {
 
@@ -42,29 +43,13 @@ export class LocalStorageUpdater {
      * Централизованно изменяет данные в localStorage, которые потеряли свою актуальность изза новых версий приложения
      */
     updateLocalStorage(): void {
-        if (versionConfig.date !== this.localStorage.get<string>(StoreKeys.LOCAL_STORAGE_LAST_UPDATE_DATE_KEY, versionConfig.date)) {
-            // this.updateCalendarEventTypes();
-            // this.updateTableColumns();
+        const needUpdate = this.needUpdate();
+        if (needUpdate) {
+            this.updateTableColumns();
             this.updateChartsStorage();
             this.updateTradeFilterSetting();
             this.localStorage.delete("last_update_notification");
             this.localStorage.set<string>(StoreKeys.LOCAL_STORAGE_LAST_UPDATE_DATE_KEY, versionConfig.date);
-        }
-    }
-
-    /**
-     * Обновляет типы событий календаря
-     */
-    private updateCalendarEventTypes(): void {
-        const eventsFromStorage = this.localStorage.get<string[]>("calendarEvents", null);
-        if (eventsFromStorage) {
-            if (eventsFromStorage.includes("custom")) {
-                eventsFromStorage.splice(eventsFromStorage.indexOf("custom"), 1);
-            }
-            if (eventsFromStorage.includes("dividend")) {
-                eventsFromStorage.splice(eventsFromStorage.indexOf("dividend"), 1);
-            }
-            this.localStorage.set<string[]>("calendarEvents", eventsFromStorage);
         }
     }
 
@@ -75,7 +60,9 @@ export class LocalStorageUpdater {
         const needUpdate = this.needUpdate();
         const headersFromStorage = this.localStorage.get<TableHeaders>("tableHeadersParams", null);
         if (needUpdate) {
-            this.localStorage.set<TableHeaders>("tableHeadersParams", {...this.tableService.HEADERS});
+            const assetColumns: TableHeader[] = this.tableService.HEADERS[TABLES_NAME.ASSET];
+            headersFromStorage[TABLES_NAME.ASSET] = assetColumns;
+            this.localStorage.set<TableHeaders>("tableHeadersParams", {...headersFromStorage});
         }
     }
 

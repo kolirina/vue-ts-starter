@@ -1,27 +1,43 @@
+/*
+ * STRICTLY CONFIDENTIAL
+ * TRADE SECRET
+ * PROPRIETARY:
+ *       "Intelinvest" Ltd, TIN 1655386205
+ *       420107, REPUBLIC OF TATARSTAN, KAZAN CITY, SPARTAKOVSKAYA STREET, HOUSE 2, ROOM 119
+ * (c) "Intelinvest" Ltd, 2019
+ *
+ * СТРОГО КОНФИДЕНЦИАЛЬНО
+ * КОММЕРЧЕСКАЯ ТАЙНА
+ * СОБСТВЕННИК:
+ *       ООО "Интеллектуальные инвестиции", ИНН 1655386205
+ *       420107, РЕСПУБЛИКА ТАТАРСТАН, ГОРОД КАЗАНЬ, УЛИЦА СПАРТАКОВСКАЯ, ДОМ 2, ПОМЕЩЕНИЕ 119
+ * (c) ООО "Интеллектуальные инвестиции", 2019
+ */
+
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {Prop} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
-import {UI} from "../app/ui";
-import {DisableConcurrentExecution} from "../platform/decorators/disableConcurrentExecution";
-import {ShowProgress} from "../platform/decorators/showProgress";
-import {BtnReturn} from "../platform/dialogs/customDialog";
-import {ClientInfo} from "../services/clientService";
-import {ExportService, ExportType} from "../services/exportService";
-import {OverviewService} from "../services/overviewService";
-import {PortfolioParams, PortfoliosDialogType, PortfolioService} from "../services/portfolioService";
-import {EventType} from "../types/eventType";
-import {Portfolio, TableHeader} from "../types/types";
-import {CommonUtils} from "../utils/commonUtils";
-import {ExportUtils} from "../utils/exportUtils";
-import {SortUtils} from "../utils/sortUtils";
-import {TradeUtils} from "../utils/tradeUtils";
-import {MutationType} from "../vuex/mutationType";
-import {StoreType} from "../vuex/storeType";
-import {ConfirmDialog} from "./dialogs/confirmDialog";
-import {EmbeddedBlocksDialog} from "./dialogs/embeddedBlocksDialog";
-import {PortfolioEditDialog} from "./dialogs/portfolioEditDialog";
-import {SharePortfolioDialog} from "./dialogs/sharePortfolioDialog";
+import {UI} from "../../app/ui";
+import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
+import {ShowProgress} from "../../platform/decorators/showProgress";
+import {BtnReturn} from "../../platform/dialogs/customDialog";
+import {ClientInfo} from "../../services/clientService";
+import {ExportService, ExportType} from "../../services/exportService";
+import {OverviewService} from "../../services/overviewService";
+import {PortfolioParams, PortfoliosDialogType, PortfolioService} from "../../services/portfolioService";
+import {EventType} from "../../types/eventType";
+import {Portfolio, TableHeader} from "../../types/types";
+import {CommonUtils} from "../../utils/commonUtils";
+import {ExportUtils} from "../../utils/exportUtils";
+import {SortUtils} from "../../utils/sortUtils";
+import {TradeUtils} from "../../utils/tradeUtils";
+import {MutationType} from "../../vuex/mutationType";
+import {StoreType} from "../../vuex/storeType";
+import {ConfirmDialog} from "../dialogs/confirmDialog";
+import {EmbeddedBlocksDialog} from "../dialogs/embeddedBlocksDialog";
+import {PortfolioEditDialog} from "../dialogs/portfolioEditDialog";
+import {SharePortfolioDialog} from "../dialogs/sharePortfolioDialog";
 
 const MainStore = namespace(StoreType.MAIN);
 

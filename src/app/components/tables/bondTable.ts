@@ -1,28 +1,44 @@
+/*
+ * STRICTLY CONFIDENTIAL
+ * TRADE SECRET
+ * PROPRIETARY:
+ *       "Intelinvest" Ltd, TIN 1655386205
+ *       420107, REPUBLIC OF TATARSTAN, KAZAN CITY, SPARTAKOVSKAYA STREET, HOUSE 2, ROOM 119
+ * (c) "Intelinvest" Ltd, 2019
+ *
+ * СТРОГО КОНФИДЕНЦИАЛЬНО
+ * КОММЕРЧЕСКАЯ ТАЙНА
+ * СОБСТВЕННИК:
+ *       ООО "Интеллектуальные инвестиции", ИНН 1655386205
+ *       420107, РЕСПУБЛИКА ТАТАРСТАН, ГОРОД КАЗАНЬ, УЛИЦА СПАРТАКОВСКАЯ, ДОМ 2, ПОМЕЩЕНИЕ 119
+ * (c) ООО "Интеллектуальные инвестиции", 2019
+ */
+
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {Prop, Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
-import {UI} from "../app/ui";
-import {ShowProgress} from "../platform/decorators/showProgress";
-import {BtnReturn} from "../platform/dialogs/customDialog";
-import {Storage} from "../platform/services/storage";
-import {PortfolioService} from "../services/portfolioService";
-import {TableHeadersState, TABLES_NAME, TablesService} from "../services/tablesService";
-import {TradeService} from "../services/tradeService";
-import {AssetType} from "../types/assetType";
-import {BigMoney} from "../types/bigMoney";
-import {Operation} from "../types/operation";
-import {BondPortfolioRow, Pagination, TableHeader} from "../types/types";
-import {CommonUtils} from "../utils/commonUtils";
-import {SortUtils} from "../utils/sortUtils";
-import {TradeUtils} from "../utils/tradeUtils";
-import {MutationType} from "../vuex/mutationType";
-import {StoreType} from "../vuex/storeType";
-import {AddTradeDialog} from "./dialogs/addTradeDialog";
-import {ConfirmDialog} from "./dialogs/confirmDialog";
-import {EditShareNoteDialog, EditShareNoteDialogData} from "./dialogs/editShareNoteDialog";
-import {ShareTradesDialog} from "./dialogs/shareTradesDialog";
-import {PortfolioRowFilter} from "./portfolioRowsTableFilter";
+import {UI} from "../../app/ui";
+import {ShowProgress} from "../../platform/decorators/showProgress";
+import {BtnReturn} from "../../platform/dialogs/customDialog";
+import {Storage} from "../../platform/services/storage";
+import {PortfolioService} from "../../services/portfolioService";
+import {TableHeadersState, TABLES_NAME, TablesService} from "../../services/tablesService";
+import {TradeService} from "../../services/tradeService";
+import {AssetType} from "../../types/assetType";
+import {BigMoney} from "../../types/bigMoney";
+import {Operation} from "../../types/operation";
+import {BondPortfolioRow, Pagination, TableHeader} from "../../types/types";
+import {CommonUtils} from "../../utils/commonUtils";
+import {SortUtils} from "../../utils/sortUtils";
+import {TradeUtils} from "../../utils/tradeUtils";
+import {MutationType} from "../../vuex/mutationType";
+import {StoreType} from "../../vuex/storeType";
+import {AddTradeDialog} from "../dialogs/addTradeDialog";
+import {ConfirmDialog} from "../dialogs/confirmDialog";
+import {EditShareNoteDialog, EditShareNoteDialogData} from "../dialogs/editShareNoteDialog";
+import {ShareTradesDialog} from "../dialogs/shareTradesDialog";
+import {PortfolioRowFilter} from "../portfolioRowsTableFilter";
 
 const MainStore = namespace(StoreType.MAIN);
 

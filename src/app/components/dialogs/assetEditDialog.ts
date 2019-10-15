@@ -46,22 +46,22 @@ import {TradeUtils} from "../../utils/tradeUtils";
                                           dense hide-details :readonly="editMode"></v-select>
                             </v-flex>
 
-                            <!-- Тикер бумаги -->
+                            <!-- Тикер актива -->
                             <v-flex xs12 sm6>
-                                <v-text-field label="Код бумаги (ticker/isin)" v-model.trim="asset.ticker" class="required"
+                                <v-text-field label="Код актива (ticker/isin)" v-model.trim="asset.ticker" class="required"
                                               v-validate="'required|max:50'" :error-messages="errors.collect('ticker')" name="ticker"></v-text-field>
                             </v-flex>
 
-                            <!-- Название бумаги -->
+                            <!-- Название актива -->
                             <v-flex xs12>
-                                <v-text-field label="Название бумаги" v-model.trim="asset.name" :counter="120" class="required"
+                                <v-text-field label="Название актива" v-model.trim="asset.name" :counter="120" class="required"
                                               v-validate="'required|max:160'" :error-messages="errors.collect('name')" name="name"></v-text-field>
                             </v-flex>
 
                             <!-- Цена -->
                             <v-flex xs12 sm6>
-                                <ii-number-field label="Цена бумаги" v-model="asset.price" class="required" name="price" v-validate="'required|min_value:0.000001'"
-                                                 :error-messages="errors.collect('price')" persistent-hint hint="Текущая цена бумаги, если не знаете, поставте 0">
+                                <ii-number-field label="Цена актива" v-model="asset.price" class="required" name="price" v-validate="'required|min_value:0.000001'"
+                                                 :error-messages="errors.collect('price')" persistent-hint hint="Текущая цена актива, если не знаете, поставте 0">
                                 </ii-number-field>
                             </v-flex>
 

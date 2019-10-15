@@ -631,6 +631,7 @@ export enum EventType {
 
 export enum BlockType {
     EMPTY = "empty",
+    AGGREGATE = "aggreagate",
     ASSETS = "assets",
     HISTORY_PANEL = "historyPanel",
     STOCK_PORTFOLIO = "stockPortfolio",

@@ -1,17 +1,31 @@
+/*
+ * STRICTLY CONFIDENTIAL
+ * TRADE SECRET
+ * PROPRIETARY:
+ *       "Intelinvest" Ltd, TIN 1655386205
+ *       420107, REPUBLIC OF TATARSTAN, KAZAN CITY, SPARTAKOVSKAYA STREET, HOUSE 2, ROOM 119
+ * (c) "Intelinvest" Ltd, 2019
+ *
+ * СТРОГО КОНФИДЕНЦИАЛЬНО
+ * КОММЕРЧЕСКАЯ ТАЙНА
+ * СОБСТВЕННИК:
+ *       ООО "Интеллектуальные инвестиции", ИНН 1655386205
+ *       420107, РЕСПУБЛИКА ТАТАРСТАН, ГОРОД КАЗАНЬ, УЛИЦА СПАРТАКОВСКАЯ, ДОМ 2, ПОМЕЩЕНИЕ 119
+ * (c) ООО "Интеллектуальные инвестиции", 2019
+ */
+
 import {Inject} from "typescript-ioc";
-import Component from "vue-class-component";
-import {Prop, Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
-import {UI} from "../app/ui";
-import {BtnReturn} from "../platform/dialogs/customDialog";
-import {TradeService} from "../services/tradeService";
-import {BigMoney} from "../types/bigMoney";
-import {Operation} from "../types/operation";
-import {AssetRow, Pagination, Portfolio, StockPortfolioRow, TableHeader} from "../types/types";
-import {SortUtils} from "../utils/sortUtils";
-import {MutationType} from "../vuex/mutationType";
-import {StoreType} from "../vuex/storeType";
-import {ConfirmDialog} from "./dialogs/confirmDialog";
+import {Component, Prop, UI, Watch} from "../../app/ui";
+import {BtnReturn} from "../../platform/dialogs/customDialog";
+import {TradeService} from "../../services/tradeService";
+import {BigMoney} from "../../types/bigMoney";
+import {Operation} from "../../types/operation";
+import {AssetRow, Pagination, Portfolio, StockPortfolioRow, TableHeader} from "../../types/types";
+import {SortUtils} from "../../utils/sortUtils";
+import {MutationType} from "../../vuex/mutationType";
+import {StoreType} from "../../vuex/storeType";
+import {ConfirmDialog} from "../dialogs/confirmDialog";
 
 const MainStore = namespace(StoreType.MAIN);
 

@@ -28,6 +28,12 @@ export class Filters {
                 return "Евро";
             case "ETF":
                 return "ETF";
+            case "OTHER":
+                return "Прочие активы";
+            case "METALL":
+                return "Драгметаллы";
+            case "REALTY":
+                return "Недвижимость";
         }
         throw new Error("Неизвестный тип актива: " + type);
     }

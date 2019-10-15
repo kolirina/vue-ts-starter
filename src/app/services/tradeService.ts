@@ -50,6 +50,16 @@ export class TradeService {
     }
 
     /**
+     * Загружает и возвращает сделки по тикеру в портфеле
+     * @param {string} id идентификатор портфеля
+     * @param {string} assetId идентификатор актива
+     * @returns {Promise<TradeRow[]>}
+     */
+    async getAssetShareTrades(id: string, assetId: number): Promise<TradeRow[]> {
+        return this.http.get<TradeRow[]>(`/trades/${id}/asset/${assetId}`);
+    }
+
+    /**
      * Возвращает список сделок для комбинированного портфеля
      * @param ticker тикер
      * @param viewCurrency валюта

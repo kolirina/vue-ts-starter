@@ -14,30 +14,28 @@
  * (c) ООО "Интеллектуальные инвестиции", 2018
  */
 import {Inject} from "typescript-ioc";
-import Component from "vue-class-component";
-import {Prop} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
-import {UI, Watch} from "../app/ui";
-import {ShowProgress} from "../platform/decorators/showProgress";
-import {BtnReturn} from "../platform/dialogs/customDialog";
-import {Storage} from "../platform/services/storage";
-import {PortfolioService} from "../services/portfolioService";
-import {TableHeadersState, TABLES_NAME, TablesService} from "../services/tablesService";
-import {TradeService} from "../services/tradeService";
-import {AssetType} from "../types/assetType";
-import {BigMoney} from "../types/bigMoney";
-import {Operation} from "../types/operation";
-import {Pagination, StockPortfolioRow, TableHeader} from "../types/types";
-import {CommonUtils} from "../utils/commonUtils";
-import {SortUtils} from "../utils/sortUtils";
-import {TradeUtils} from "../utils/tradeUtils";
-import {MutationType} from "../vuex/mutationType";
-import {StoreType} from "../vuex/storeType";
-import {AddTradeDialog} from "./dialogs/addTradeDialog";
-import {ConfirmDialog} from "./dialogs/confirmDialog";
-import {EditShareNoteDialog, EditShareNoteDialogData} from "./dialogs/editShareNoteDialog";
-import {ShareTradesDialog} from "./dialogs/shareTradesDialog";
-import {PortfolioRowFilter} from "./portfolioRowsTableFilter";
+import {Component, Prop, UI, Watch} from "../../app/ui";
+import {ShowProgress} from "../../platform/decorators/showProgress";
+import {BtnReturn} from "../../platform/dialogs/customDialog";
+import {Storage} from "../../platform/services/storage";
+import {PortfolioService} from "../../services/portfolioService";
+import {TableHeadersState, TABLES_NAME, TablesService} from "../../services/tablesService";
+import {TradeService} from "../../services/tradeService";
+import {AssetType} from "../../types/assetType";
+import {BigMoney} from "../../types/bigMoney";
+import {Operation} from "../../types/operation";
+import {Pagination, StockPortfolioRow, TableHeader} from "../../types/types";
+import {CommonUtils} from "../../utils/commonUtils";
+import {SortUtils} from "../../utils/sortUtils";
+import {TradeUtils} from "../../utils/tradeUtils";
+import {MutationType} from "../../vuex/mutationType";
+import {StoreType} from "../../vuex/storeType";
+import {AddTradeDialog} from "../dialogs/addTradeDialog";
+import {ConfirmDialog} from "../dialogs/confirmDialog";
+import {EditShareNoteDialog, EditShareNoteDialogData} from "../dialogs/editShareNoteDialog";
+import {ShareTradesDialog} from "../dialogs/shareTradesDialog";
+import {PortfolioRowFilter} from "../portfolioRowsTableFilter";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -104,13 +102,17 @@ const MainStore = namespace(StoreType.MAIN);
                         {{ props.item.profitFromDividendsPercent }}
                     </td>
                     <td v-if="tableHeadersState.rateProfit" :class="markupClasses(amount(props.item.rateProfit))"
-                        v-tariff-expired-hint>{{ props.item.rateProfit | amount(true) }}</td>
+                        v-tariff-expired-hint>{{ props.item.rateProfit | amount(true) }}
+                    </td>
                     <td v-if="tableHeadersState.rateProfitPercent" :class="markupClasses(Number(props.item.rateProfitPercent))"
-                        v-tariff-expired-hint>{{ props.item.rateProfitPercent }}</td>
+                        v-tariff-expired-hint>{{ props.item.rateProfitPercent }}
+                    </td>
                     <td v-if="tableHeadersState.exchangeProfit" :class="markupClasses(amount(props.item.exchangeProfit))"
-                        v-tariff-expired-hint>{{ props.item.exchangeProfit | amount(true) }}</td>
+                        v-tariff-expired-hint>{{ props.item.exchangeProfit | amount(true) }}
+                    </td>
                     <td v-if="tableHeadersState.exchangeProfitPercent" :class="markupClasses(Number(props.item.exchangeProfitPercent))"
-                        v-tariff-expired-hint>{{ props.item.exchangeProfitPercent }}</td>
+                        v-tariff-expired-hint>{{ props.item.exchangeProfitPercent }}
+                    </td>
                     <td v-if="tableHeadersState.profit" :class="markupClasses(amount(props.item.profit))" v-tariff-expired-hint>{{ props.item.profit| amount(true) }}</td>
                     <td v-if="tableHeadersState.percProfit" :class="markupClasses(Number(props.item.percProfit))" v-tariff-expired-hint>{{ props.item.percProfit | number }}</td>
                     <td v-if="tableHeadersState.yearYield" :class="markupClasses(Number(props.item.yearYield))" v-tariff-expired-hint>{{ props.item.yearYield }}</td>

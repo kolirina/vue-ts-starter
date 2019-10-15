@@ -1,24 +1,40 @@
+/*
+ * STRICTLY CONFIDENTIAL
+ * TRADE SECRET
+ * PROPRIETARY:
+ *       "Intelinvest" Ltd, TIN 1655386205
+ *       420107, REPUBLIC OF TATARSTAN, KAZAN CITY, SPARTAKOVSKAYA STREET, HOUSE 2, ROOM 119
+ * (c) "Intelinvest" Ltd, 2019
+ *
+ * СТРОГО КОНФИДЕНЦИАЛЬНО
+ * КОММЕРЧЕСКАЯ ТАЙНА
+ * СОБСТВЕННИК:
+ *       ООО "Интеллектуальные инвестиции", ИНН 1655386205
+ *       420107, РЕСПУБЛИКА ТАТАРСТАН, ГОРОД КАЗАНЬ, УЛИЦА СПАРТАКОВСКАЯ, ДОМ 2, ПОМЕЩЕНИЕ 119
+ * (c) ООО "Интеллектуальные инвестиции", 2019
+ */
+
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {Prop, Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class";
-import {UI} from "../app/ui";
-import {Filters} from "../platform/filters/Filters";
-import {ClientInfo, ClientService} from "../services/clientService";
-import {TableHeadersState, TABLES_NAME, TablesService} from "../services/tablesService";
-import {TradeFields, TradeType} from "../services/tradeService";
-import {AssetType} from "../types/assetType";
-import {BigMoney} from "../types/bigMoney";
-import {Operation} from "../types/operation";
-import {Pagination, Portfolio, TableHeader, TablePagination, TradeRow} from "../types/types";
-import {CommonUtils} from "../utils/commonUtils";
-import {DateFormat} from "../utils/dateUtils";
-import {TradeUtils} from "../utils/tradeUtils";
-import {MutationType} from "../vuex/mutationType";
-import {StoreType} from "../vuex/storeType";
-import {AddTradeDialog} from "./dialogs/addTradeDialog";
-import {ChoosePortfolioDialog} from "./dialogs/choosePortfolioDialog";
-import {TradesTableExtInfo} from "./tradesTableExtInfo";
+import {UI} from "../../app/ui";
+import {Filters} from "../../platform/filters/Filters";
+import {ClientInfo, ClientService} from "../../services/clientService";
+import {TableHeadersState, TABLES_NAME, TablesService} from "../../services/tablesService";
+import {TradeFields, TradeType} from "../../services/tradeService";
+import {AssetType} from "../../types/assetType";
+import {BigMoney} from "../../types/bigMoney";
+import {Operation} from "../../types/operation";
+import {Pagination, Portfolio, TableHeader, TablePagination, TradeRow} from "../../types/types";
+import {CommonUtils} from "../../utils/commonUtils";
+import {DateFormat} from "../../utils/dateUtils";
+import {TradeUtils} from "../../utils/tradeUtils";
+import {MutationType} from "../../vuex/mutationType";
+import {StoreType} from "../../vuex/storeType";
+import {AddTradeDialog} from "../dialogs/addTradeDialog";
+import {ChoosePortfolioDialog} from "../dialogs/choosePortfolioDialog";
+import {TradesTableExtInfo} from "../tradesTableExtInfo";
 
 const MainStore = namespace(StoreType.MAIN);
 

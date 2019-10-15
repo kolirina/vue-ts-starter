@@ -8,7 +8,7 @@ import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog";
 import {EmptyPortfolioStub} from "../components/emptyPortfolioStub";
 import {EmptySearchResult} from "../components/emptySearchResult";
 import {ExpandedPanel} from "../components/expandedPanel";
-import {TradesTable} from "../components/tradesTable";
+import {TradesTable} from "../components/tables/tradesTable";
 import {TradesTableFilter} from "../components/tradesTableFilter";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {ClientInfo} from "../services/clientService";

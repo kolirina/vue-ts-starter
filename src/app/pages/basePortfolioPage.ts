@@ -17,14 +17,15 @@
 import {DataPoint} from "highcharts";
 import {Inject} from "typescript-ioc";
 import {Component, Prop, UI, Watch} from "../app/ui";
-import {AssetTable} from "../components/assetTable";
-import {BondTable} from "../components/bondTable";
 import {PieChart} from "../components/charts/pieChart";
 import {PortfolioLineChart} from "../components/charts/portfolioLineChart";
 import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog";
 import {NegativeBalanceNotification} from "../components/negativeBalanceNotification";
 import {PortfolioRowFilter, PortfolioRowsTableFilter} from "../components/portfolioRowsTableFilter";
-import {StockTable} from "../components/stockTable";
+import {AggregateAssetTable} from "../components/tables/aggregateAssetTable";
+import {AssetTable} from "../components/tables/assetTable";
+import {BondTable} from "../components/tables/bondTable";
+import {StockTable} from "../components/tables/stockTable";
 import {Filters} from "../platform/filters/Filters";
 import {Storage} from "../platform/services/storage";
 import {ExportType} from "../services/exportService";
@@ -33,7 +34,7 @@ import {OverviewService} from "../services/overviewService";
 import {TableHeaders, TABLES_NAME, TablesService} from "../services/tablesService";
 import {HighStockEventsGroup, SectorChartData} from "../types/charts/types";
 import {StoreKeys} from "../types/storeKeys";
-import {BlockType, BondPortfolioRow, EventType, Overview, StockPortfolioRow, TableHeader} from "../types/types";
+import {AssetPortfolioRow, BlockType, BondPortfolioRow, EventType, Overview, StockPortfolioRow, TableHeader} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
 import {PortfolioUtils} from "../utils/portfolioUtils";
 import {UiStateHelper} from "../utils/uiStateHelper";
@@ -50,8 +51,8 @@ import {UiStateHelper} from "../utils/uiStateHelper";
 
                 <slot name="afterDashboard"></slot>
 
-                <asset-table v-if="blockNotEmpty(emptyBlockType.ASSETS)" :assets="overview.assetRows" class="mt-3"
-                             :data-v-step="getTourStepIndex(PortfolioBlockType.ASSETS)"></asset-table>
+                <aggregate-asset-table v-if="blockNotEmpty(emptyBlockType.AGGREGATE)" :assets="overview.assetRows" class="mt-3"
+                                       :data-v-step="getTourStepIndex(PortfolioBlockType.AGGREGATE_TABLE)"></aggregate-asset-table>
 
                 <expanded-panel v-if="blockNotEmpty(emptyBlockType.STOCK_PORTFOLIO)" :value="$uistate.stocksTablePanel"
                                 :withMenu="true" name="stock" :state="$uistate.STOCKS" @click="onStockTablePanelClick" class="mt-3 selectable"
@@ -90,7 +91,28 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                     </template>
                     <portfolio-rows-table-filter :filter.sync="bondFilter" :store-key="StoreKeys.BONDS_TABLE_FILTER_KEY"></portfolio-rows-table-filter>
                     <bond-table :rows="bondRows" :headers="getHeaders(TABLES_NAME.BOND)" :search="bondFilter.search" :filter="bondFilter"
-                                :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes"  :ids="ids"></bond-table>
+                                :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes" :ids="ids"></bond-table>
+                </expanded-panel>
+
+                <expanded-panel v-if="blockNotEmpty(emptyBlockType.ASSETS)" :value="$uistate.assetsTablePanel"
+                                :withMenu="true" name="stock" :state="$uistate.ASSET_TABLE" @click="onAssetTablePanelClick" class="mt-3 selectable"
+                                :data-v-step="getTourStepIndex(PortfolioBlockType.ASSET_TABLE)">
+                    <template #header>
+                        <span>Активы</span>
+                        <v-fade-transition mode="out-in">
+                            <span v-if="assetTablePanelClosed" class="v-expansion-panel__header-info">
+                                {{ assetRowsCountLabel }}
+                            </span>
+                        </v-fade-transition>
+                    </template>
+                    <template #list>
+                        <!-- todo assets настрока колонок и экспорт таблицы -->
+                        <!--                        <v-list-tile-title @click="openTableHeadersDialog(TABLES_NAME.STOCK)">Настроить колонки</v-list-tile-title>-->
+                        <!--                        <v-list-tile-title v-if="exportable" @click="exportTable(ExportType.STOCKS)">Экспорт в xlsx</v-list-tile-title>-->
+                    </template>
+                    <portfolio-rows-table-filter :filter.sync="assetFilter" :store-key="StoreKeys.ASSETS_TABLE_FILTER_KEY"></portfolio-rows-table-filter>
+                    <asset-table :rows="assetRows" :headers="getHeaders(TABLES_NAME.ASSET)" :search="assetFilter.search" :filter="assetFilter"
+                                 :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes" :ids="ids"></asset-table>
                 </expanded-panel>
 
                 <expanded-panel v-if="blockNotEmpty(emptyBlockType.HISTORY_PANEL)" :value="$uistate.historyPanel"
@@ -115,7 +137,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                     </v-card-text>
                 </expanded-panel>
 
-                <expanded-panel v-if="blockNotEmpty(emptyBlockType.ASSETS)" :value="$uistate.assetGraph" :state="$uistate.ASSET_CHART_PANEL" customMenu class="mt-3"
+                <expanded-panel v-if="blockNotEmpty(emptyBlockType.AGGREGATE)" :value="$uistate.assetGraph" :state="$uistate.ASSET_CHART_PANEL" customMenu class="mt-3"
                                 :data-v-step="getTourStepIndex(PortfolioBlockType.ASSETS_CHART)">
                     <template #header>Состав портфеля по активам</template>
                     <template #customMenu>
@@ -163,7 +185,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
             </v-layout>
         </v-container>
     `,
-    components: {AssetTable, StockTable, BondTable, PortfolioLineChart, PortfolioRowsTableFilter, NegativeBalanceNotification}
+    components: {AggregateAssetTable, StockTable, BondTable, AssetTable, PortfolioLineChart, PortfolioRowsTableFilter, NegativeBalanceNotification}
 })
 export class BasePortfolioPage extends UI {
 
@@ -232,6 +254,8 @@ export class BasePortfolioPage extends UI {
     private StoreKeys = StoreKeys;
     /** Признак закрытой панели Акции */
     private stockTablePanelClosed = true;
+    /** Признак закрытой панели Активы */
+    private assetTablePanelClosed = true;
     /** Признак закрытой панели Облигации */
     private bondTablePanelClosed = true;
     /** Данные для графика таблицы Активы */
@@ -246,6 +270,8 @@ export class BasePortfolioPage extends UI {
     private stockFilter: PortfolioRowFilter = {};
     /** Фильтр таблицы Облигации */
     private bondFilter: PortfolioRowFilter = {};
+    /** Фильтр таблицы Активы */
+    private assetFilter: PortfolioRowFilter = {};
     /** Типы возможных пустых блоков */
     private emptyBlockType = BlockType;
     /** Типы возможных пустых блоков */
@@ -260,12 +286,14 @@ export class BasePortfolioPage extends UI {
     async created(): Promise<void> {
         this.stockTablePanelClosed = UiStateHelper.stocksTablePanel[0] === 0;
         this.bondTablePanelClosed = UiStateHelper.bondsTablePanel[0] === 0;
+        this.assetTablePanelClosed = UiStateHelper.assetsTablePanel[0] === 0;
         this.assetsPieChartData = this.doAssetsPieChartData();
         this.stockPieChartData = this.doStockPieChartData();
         this.bondPieChartData = this.doBondPieChartData();
         this.sectorsChartData = this.doSectorsChartData();
         this.stockFilter = this.storageService.get(StoreKeys.STOCKS_TABLE_FILTER_KEY, {});
         this.bondFilter = this.storageService.get(StoreKeys.BONDS_TABLE_FILTER_KEY, {});
+        this.assetFilter = this.storageService.get(StoreKeys.ASSETS_TABLE_FILTER_KEY, {});
         this.blockIndexes = PortfolioUtils.getShowedBlocks(this.overview);
     }
 
@@ -291,8 +319,10 @@ export class BasePortfolioPage extends UI {
                 return this.overview.stockPortfolio.rows.some(row => row.quantity !== 0);
             case BlockType.BOND_PIE:
                 return this.overview.bondPortfolio.rows.some(row => row.quantity !== 0);
-            case BlockType.ASSETS:
+            case BlockType.AGGREGATE:
                 return this.overview.totalTradesCount > 0;
+            case BlockType.ASSETS:
+                return this.overview.assetPortfolio.rows.length > 0;
             case BlockType.EMPTY:
                 return this.overview.totalTradesCount === 0;
         }
@@ -320,6 +350,10 @@ export class BasePortfolioPage extends UI {
 
     private onStockTablePanelClick(): void {
         this.stockTablePanelClosed = UiStateHelper.stocksTablePanel[0] === 0;
+    }
+
+    private onAssetTablePanelClick(): void {
+        this.assetTablePanelClosed = UiStateHelper.assetsTablePanel[0] === 0;
     }
 
     private onBondTablePanelClick(): void {
@@ -357,6 +391,10 @@ export class BasePortfolioPage extends UI {
         return [...this.overview.stockPortfolio.rows, this.overview.stockPortfolio.sumRow as StockPortfolioRow];
     }
 
+    private get assetRows(): AssetPortfolioRow[] {
+        return [...this.overview.assetPortfolio.rows, this.overview.assetPortfolio.sumRow as AssetPortfolioRow];
+    }
+
     private get bondRows(): BondPortfolioRow[] {
         return [...this.overview.bondPortfolio.rows, this.overview.bondPortfolio.sumRow as BondPortfolioRow];
     }
@@ -368,6 +406,11 @@ export class BasePortfolioPage extends UI {
     private get stockRowsCountLabel(): string {
         const count = this.overview.stockPortfolio.rows.filter(row => row.quantity !== 0).length;
         return `${count} ${Filters.declension(count, "акция", "акции", "акций")}`;
+    }
+
+    private get assetRowsCountLabel(): string {
+        const count = this.overview.assetPortfolio.rows.filter(row => row.quantity !== 0).length;
+        return `${count} ${Filters.declension(count, "актив", "актива", "активов")}`;
     }
 
     private get bondRowsCountLabel(): string {

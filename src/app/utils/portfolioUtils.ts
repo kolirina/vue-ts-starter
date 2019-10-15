@@ -28,7 +28,7 @@ export class PortfolioUtils {
         // сделки есть, отображается дашборд и таблица активов
         if (overview.totalTradesCount > 0) {
             result[PortfolioBlockType.DASHBOARD] = count++;
-            result[PortfolioBlockType.ASSETS] = count++;
+            result[PortfolioBlockType.AGGREGATE_TABLE] = count++;
         }
         // есть акции или облигации, отображаем график
         if (overview.bondPortfolio.rows.length !== 0 || overview.stockPortfolio.rows.length !== 0) {
@@ -79,7 +79,7 @@ export class PortfolioUtils {
                 return overview.stockPortfolio.rows.some(row => row.quantity !== 0);
             case PortfolioBlockType.BOND_CHART:
                 return overview.bondPortfolio.rows.some(row => row.quantity !== 0);
-            case PortfolioBlockType.ASSETS:
+            case PortfolioBlockType.AGGREGATE_TABLE:
             case PortfolioBlockType.DASHBOARD:
             case PortfolioBlockType.ASSETS_CHART:
                 return overview.totalTradesCount > 0;

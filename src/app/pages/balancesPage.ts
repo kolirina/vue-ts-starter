@@ -1,13 +1,12 @@
 import dayjs from "dayjs";
 import Decimal from "decimal.js";
 import {Inject} from "typescript-ioc";
-import {Component} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
-import {UI} from "../app/ui";
-import {AssetTable} from "../components/assetTable";
-import {BalancesTable} from "../components/balancesTable";
+import {Component, UI} from "../app/ui";
 import {CurrencyBalances} from "../components/currencyBalances";
 import {PopularPaperDialog} from "../components/dialogs/popularPaperDialog";
+import {AggregateAssetTable} from "../components/tables/aggregateAssetTable";
+import {BalancesTable} from "../components/tables/balancesTable";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {MarketHistoryService} from "../services/marketHistoryService";
 import {MarketService} from "../services/marketService";
@@ -138,7 +137,7 @@ const MainStore = namespace(StoreType.MAIN);
             <balances-table :assets="portfolio.overview.assetRows" :stocks="portfolio.overview.stockPortfolio.rows" :loading="processState"/>
         </v-container>
     `,
-    components: {AssetTable, BalancesTable, CurrencyBalances}
+    components: {AggregateAssetTable, BalancesTable, CurrencyBalances}
 })
 export class BalancesPage extends UI implements TradeDataHolder {
 
