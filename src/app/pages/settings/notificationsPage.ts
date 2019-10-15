@@ -51,7 +51,10 @@ const MainStore = namespace(StoreType.MAIN);
 
             <v-card v-if="notifications.length !== 0" class="notifications-card" v-for="notification in notifications" :key="notification.id">
                 <div class="notifications-card-header">
-                    <div class="notifications-card-header-title">{{notification.share.shortname}}</div>
+                    <div class="notifications-card-header-title">
+                        <stock-link v-if="notification.share.shareType === 'STOCK'" :ticker="notification.share.ticker">{{ notification.share.shortname }}</stock-link>
+                        <bond-link v-if="notification.share.shareType === 'BOND'" :ticker="notification.share.ticker">{{ notification.share.shortname }}</bond-link>
+                    </div>
                     <div class="notifications-card-header-price">
                         Цена {{ getNotificationPrice(notification) }}
                         <i :class="notification.share.currency.toLowerCase()"></i>
