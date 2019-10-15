@@ -180,6 +180,9 @@ export class TariffAgreement extends UI {
                         Базовые возможности
                     </div>
                     <div class="py-3 fs14">
+                        Возможность публичного доступа к портфелю
+                    </div>
+                    <div class="py-3 fs14">
                         Доступ к разделу "Аналитика"
                     </div>
                     <div class="py-3 fs14">
