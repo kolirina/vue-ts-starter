@@ -131,7 +131,7 @@ import {DateFormat, DateUtils} from "../../utils/dateUtils";
                                                     hide-details class="shrink mr-2 portfolio-default-text"
                                                     label="Публичный доступ к портфелю"></v-checkbox>
                                     </v-flex>
-                                    <v-flex xs12 class="mb-2">
+                                    <v-flex xs12 class="mb-2 mt-4">
                                         <v-checkbox v-model="divAccess"
                                                     hide-details class="shrink mr-2 mt-0 portfolio-default-text"
                                                     label="Просмотр дивидендов"></v-checkbox>
