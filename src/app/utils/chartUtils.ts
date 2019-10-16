@@ -175,9 +175,20 @@ export class ChartUtils {
 
     static doAssetsPieChartData(overview: Overview): DataPoint[] {
         const data: DataPoint[] = [];
+        overview.assetPortfolio.rows.filter(value => new BigMoney(value.currCost).amount.toString() !== "0").forEach(row => {
+            data.push({
+                name: row.share.shortname,
+                y: new Decimal(new BigMoney(row.currCost).amount.abs().toString()).toDP(2, Decimal.ROUND_HALF_UP).toNumber()
+            });
+        });
+        return data;
+    }
+
+    static doAggregatePieChartData(overview: Overview): DataPoint[] {
+        const data: DataPoint[] = [];
         overview.assetRows.filter(value => new BigMoney(value.currCost).amount.toString() !== "0").forEach(row => {
             const currCost = new BigMoney(row.currCost);
-            const currCostAmount = currCost.amount.abs().toDP(2, Decimal.ROUND_HALF_UP).toNumber();
+            const currCostAmount = Filters.formatNumber(currCost.amount.abs().toDP(2, Decimal.ROUND_HALF_UP).toString());
             data.push({
                 name: Filters.assetDesc(row.type),
                 description: `${currCostAmount} ${currCost.currencySymbol}`,

@@ -348,7 +348,7 @@ export class StockTable extends UI {
             share: stockRow.share,
             quantity: Math.abs(stockRow.quantity),
             operation,
-            assetType: AssetType.STOCK
+            assetType: AssetType.valueByName(stockRow.share.shareType)
         });
         if (result) {
             await this.reloadPortfolio(Number(this.portfolioId));

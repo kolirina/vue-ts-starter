@@ -411,6 +411,8 @@ export type Stock = Share & {
 };
 
 export type Asset = Share & {
+    /** Тип актива */
+    category: string;
     /** Url по которму можно парсить цену */
     source?: string;
     /** Регулярное выражение для парсинга цены */

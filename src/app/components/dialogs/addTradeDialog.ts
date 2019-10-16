@@ -23,7 +23,7 @@ import {Tariff} from "../../types/tariff";
 import {TradeDataHolder} from "../../types/trade/tradeDataHolder";
 import {TradeMap} from "../../types/trade/tradeMap";
 import {TradeValue} from "../../types/trade/tradeValue";
-import {Bond, CurrencyUnit, ErrorInfo, Portfolio, Share, Stock} from "../../types/types";
+import {Asset, Bond, CurrencyUnit, ErrorInfo, Portfolio, Share, ShareType} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {DateUtils} from "../../utils/dateUtils";
 import {TradeUtils} from "../../utils/tradeUtils";
@@ -116,7 +116,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                 </ii-number-field>
                                 <div class="fs12-opacity mt-1">
                                     <span v-if="showCurrentQuantityLabel">
-                                        Текущее количество {{ isStockTrade ? "акций" : "облигаций" }}
+                                        Текущее количество {{ isStockTrade ? "акций" : isAssetTrade ? "бумаг" : "облигаций" }}
                                         <a @click="setToQuantity" title="Подставить в Количество">{{ currentCountShareSearch }} шт.</a>
                                     </span>
                                     <span v-else>{{ lotSizeHint }}</span>
@@ -364,13 +364,15 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         this.changedPurchasedCurrencyValue();
     }
 
-    private onAssetTypeChange(): void {
+    private onAssetTypeChange(clearFields: boolean = true): void {
         if (this.data.operation === undefined) {
             this.operation = this.assetType.operations[0];
         } else {
             this.operation = this.data.operation;
         }
-        this.clearFields();
+        if (clearFields) {
+            this.clearFields();
+        }
     }
 
     private changedPurchasedCurrencyValue(): void {
@@ -497,10 +499,10 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         } else if (DateUtils.isBefore(date)) {
             if (this.assetType === AssetType.STOCK) {
                 const stock = (await this.marketHistoryService.getStockHistory(this.share.ticker, dayjs(this.date).format("DD.MM.YYYY")));
-                this.fillFieldsFromStock(stock);
+                this.setPriceFromStockTypeShare(stock.price);
             } else if (this.assetType === AssetType.ASSET) {
                 const asset = (await this.marketHistoryService.getAssetHistory(String(this.share.id), dayjs(this.date).format("DD.MM.YYYY")));
-                this.fillFieldsFromStock(asset as Stock);
+                this.setPriceFromStockTypeShare(asset.price);
             } else if (this.assetType === AssetType.BOND) {
                 const bond = (await this.marketHistoryService.getBondHistory(this.share.ticker, dayjs(this.date).format("DD.MM.YYYY")));
                 this.fillFieldsFromBond(bond);
@@ -536,6 +538,10 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private async onShareSelect(share: Share): Promise<void> {
+        if (share && share.shareType === ShareType.ASSET && this.assetType !== AssetType.ASSET) {
+            this.assetType = AssetType.ASSET;
+        }
+        this.onAssetTypeChange(false);
         this.share = share;
         this.calculateCurrentShareQuantity();
         this.fillFieldsFromShare();
@@ -545,14 +551,15 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private calculateCurrentShareQuantity(): void {
         this.currentCountShareSearch = null;
         if (this.share) {
-            if (this.isStockTrade) {
+            if (this.isStockTrade || (this.share as Asset).category === "STOCK") {
                 const row = this.portfolio.overview.stockPortfolio.rows.find(item => item.share.ticker === this.share.ticker);
                 this.currentCountShareSearch = row ? row.quantity : null;
             } else if (this.isBondTrade) {
                 const row = this.portfolio.overview.bondPortfolio.rows.find(item => item.bond.ticker === this.share.ticker);
                 this.currentCountShareSearch = row ? row.quantity : null;
             } else if (this.isAssetTrade) {
-                // todo assets подсчет количества в портфеле активов
+                const row = this.portfolio.overview.assetPortfolio.rows.find(item => item.asset.id === this.share.id);
+                this.currentCountShareSearch = row ? row.quantity : null;
             }
         }
     }
@@ -564,9 +571,9 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         }
         this.currency = this.share.currency;
         if (this.assetType === AssetType.STOCK) {
-            this.fillFieldsFromStock(this.share as Stock);
+            this.setPriceFromStockTypeShare(this.share.price);
         } else if (this.assetType === AssetType.ASSET) {
-            this.fillFieldsFromStock(this.share as Stock);
+            this.setPriceFromStockTypeShare(this.share.price);
         } else if (this.assetType === AssetType.BOND) {
             this.fillFieldsFromBond(this.share as Bond);
         }
@@ -670,8 +677,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         }
     }
 
-    private fillFieldsFromStock(stock: Stock): void {
-        this.price = this.CALCULATION_OPERATIONS.includes(this.operation) ? "" : TradeUtils.decimal(stock.price);
+    private setPriceFromStockTypeShare(price: string): void {
+        this.price = this.CALCULATION_OPERATIONS.includes(this.operation) ? "" : TradeUtils.decimal(price);
     }
 
     /**
@@ -940,7 +947,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private get showCurrentQuantityLabel(): boolean {
-        return this.currentCountShareSearch && (this.isStockTrade || this.isBondTrade);
+        return this.currentCountShareSearch && (this.isStockTrade || this.isBondTrade || this.isAssetTrade);
     }
 
     /**
