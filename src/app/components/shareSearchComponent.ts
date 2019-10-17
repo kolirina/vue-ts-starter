@@ -18,6 +18,7 @@ import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {Watch} from "vue-property-decorator";
 import {Prop, UI} from "../app/ui";
+import {Filters} from "../platform/filters/Filters";
 import {MarketService} from "../services/marketService";
 import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
@@ -34,7 +35,7 @@ import {Bond, Share} from "../types/types";
                 {{ shareLabelSelected(data.item) }}
             </template>
             <template #item="data">
-                {{ shareLabelListItem(data.item) }}
+                <span v-html="shareLabelListItem(data.item)"></span>
             </template>
         </v-autocomplete>
 
@@ -61,7 +62,7 @@ export class ShareSearchComponent extends UI {
     /** Отфильтрованные данные */
     private filteredSharesMutated: Share[] = [];
     /** Тип актива бумаги */
-    private assetTypeMutated: AssetType;
+    private assetTypeMutated: AssetType = null;
 
     @Inject
     private marketService: MarketService;
@@ -74,6 +75,10 @@ export class ShareSearchComponent extends UI {
     private shareSearch = false;
     private notFoundLabel = "Ничего не найдено";
     private hideNoDataLabel = true;
+
+    created(): void {
+        this.assetTypeMutated = this.assetType;
+    }
 
     @Watch("filteredShares")
     private async onFilteredSharesChange(filteredShares: Share[]): Promise<void> {
@@ -136,11 +141,11 @@ export class ShareSearchComponent extends UI {
         if ((share as any) === this.notFoundLabel) {
             return this.notFoundLabel;
         }
-        if (this.assetTypeMutated === AssetType.STOCK) {
+        if ([AssetType.STOCK, AssetType.ASSET].includes(this.assetTypeMutated)) {
             const price = new BigMoney(share.price);
-            return `${share.ticker} (${share.shortname}), ${price.amount.toString()} ${price.currency}`;
+            return `${share.ticker} (${share.shortname}), <b>${Filters.formatNumber(price.amount.toString())}</b> ${price.currencySymbol}`;
         } else if (this.assetTypeMutated === AssetType.BOND) {
-            return `${share.ticker} (${share.shortname}), ${(share as Bond).prevprice}%`;
+            return `${share.ticker} (${share.shortname}), <b>${(share as Bond).prevprice}</b> %`;
         }
         return `${share.ticker} (${share.shortname})`;
     }

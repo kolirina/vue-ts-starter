@@ -42,10 +42,6 @@ const MainStore = namespace(StoreType.MAIN);
             <v-data-table v-else :headers="headers" :items="filteredAssets" item-key="id" class="data-table quotes-table" must-sort hide-actions>
                 <template #items="props">
                     <tr class="selectable">
-                        <td>
-                        <span @click="props.expanded = !props.expanded"
-                              :class="{'data-table-cell-open': props.expanded, 'path': true, 'data-table-cell': true}"></span>
-                        </td>
                         <td class="text-xs-left">
                             <asset-link :ticker="String(props.item.id)">{{ props.item.ticker }}</asset-link>
                         </td>
@@ -106,7 +102,6 @@ export class CommonAssetQuotes extends UI {
     private filteredAssets: AssetModel[] = [];
 
     private headers: TableHeader[] = [
-        {text: "", align: "left", sortable: false, value: "", width: "50"},
         {text: "Тикер", align: "left", value: "ticker", width: "80"},
         {text: "Компания", align: "left", value: "name", width: "200"},
         {text: "Тип", align: "left", value: "assetType", width: "50"},

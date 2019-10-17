@@ -62,6 +62,10 @@ export class AssetService {
         return this.http.put(this.BASE, this.mapToRequest(asset));
     }
 
+    async checkSource(request: CheckAssetModel): Promise<string> {
+        return this.http.post<string>(`${this.BASE}/check`, request);
+    }
+
     async deleteAsset(assetId: number): Promise<void> {
         return this.http.delete(`${this.BASE}/${assetId}`);
     }
@@ -105,6 +109,13 @@ export interface AssetModelBase {
 export interface AssetModel extends AssetModelBase {
     /** Тип актива */
     category: AssetCategory;
+}
+
+export interface CheckAssetModel {
+    /** Url по которму можно парсить цену */
+    source: string;
+    /** Регулярное выражение для парсинга цены */
+    regex: string;
 }
 
 export interface AssetModelDto extends AssetModelBase {
