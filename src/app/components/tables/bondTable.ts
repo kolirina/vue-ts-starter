@@ -28,7 +28,7 @@ import {TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
 import {BigMoney} from "../../types/bigMoney";
 import {Operation} from "../../types/operation";
-import {BondPortfolioRow, Pagination, TableHeader} from "../../types/types";
+import {BondPortfolioRow, Pagination, Portfolio, TableHeader} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {SortUtils} from "../../utils/sortUtils";
 import {TradeUtils} from "../../utils/tradeUtils";

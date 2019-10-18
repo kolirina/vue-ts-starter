@@ -27,6 +27,7 @@ import {ExportService, ExportType} from "../../services/exportService";
 import {OverviewService} from "../../services/overviewService";
 import {PortfolioParams, PortfoliosDialogType, PortfolioService} from "../../services/portfolioService";
 import {EventType} from "../../types/eventType";
+import {Tariff} from "../../types/tariff";
 import {Portfolio, TableHeader} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {ExportUtils} from "../../utils/exportUtils";
