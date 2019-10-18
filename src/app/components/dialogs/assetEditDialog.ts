@@ -82,6 +82,12 @@ import {TradeUtils} from "../../utils/tradeUtils";
                                 <v-text-field label="Регулярное выражение" v-model.trim="asset.regex" :counter="1024"
                                               v-validate="'max:1024'" :error-messages="errors.collect('regex')" name="regex"
                                               persistent-hint hint="Регулярное выражение для парсинга цены актива"></v-text-field>
+                                <div class="fs12-opacity mt-1">
+                                    <span v-if="asset.source && asset.regex">
+                                        <a @click="checkSource" title="Проверить">Проверить</a>
+                                        Найденное значение: {{ foundValue }}
+                                    </span>
+                                </div>
                             </v-flex>
 
                             <!-- Заметка -->
@@ -134,6 +140,8 @@ export class AssetEditDialog extends CustomDialog<AssetModel, boolean> {
     private asset: AssetModel = null;
     /** Индикатор состояния */
     private processState = false;
+    /** Индикатор состояния */
+    private foundValue: string = null;
 
     async mounted(): Promise<void> {
         await this.setDialogParams();
@@ -191,6 +199,12 @@ export class AssetEditDialog extends CustomDialog<AssetModel, boolean> {
 
     private async editAsset(): Promise<void> {
         await this.assetService.editAsset(this.asset);
+    }
+
+    // todo assets проверка цены
+    private async checkSource(): Promise<void> {
+        const result = await this.assetService.checkSource({source: this.asset.source, regex: this.asset.regex});
+        this.foundValue = result ? result : "Ничего не найдено";
     }
 
     private handleError(error: ErrorInfo): void {

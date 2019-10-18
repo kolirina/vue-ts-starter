@@ -5,6 +5,7 @@ import {BaseChartDot, Dot, EventChartData, HighStockEventData, HighStockEventsGr
 import {Asset, AssetInfo, Bond, BondInfo, Currency, PageableResponse, Share, ShareDynamic, Stock, StockInfo} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
 import {CommonUtils} from "../utils/commonUtils";
+import {AssetCategory} from "./assetService";
 
 @Service("MarketService")
 @Singleton
@@ -159,6 +160,11 @@ export class MarketService {
 export interface QuotesFilter {
     searchQuery?: string;
     showUserShares?: boolean;
+}
+
+export interface AssetQuotesFilter {
+    searchQuery?: string;
+    categories?: AssetCategory[];
 }
 
 /** Информация по акции */

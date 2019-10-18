@@ -17,12 +17,12 @@
 import {Inject} from "typescript-ioc";
 import {namespace} from "vuex-class/lib/bindings";
 import {Component, UI} from "../../app/ui";
+import {CommonAssetQuotesFilter} from "../../components/commonAssetQuotesFilter";
 import {AddTradeDialog} from "../../components/dialogs/addTradeDialog";
 import {EmptySearchResult} from "../../components/emptySearchResult";
-import {QuotesFilterTable} from "../../components/quotesFilterTable";
 import {ShowProgress} from "../../platform/decorators/showProgress";
-import {AssetModel, AssetService} from "../../services/assetService";
-import {QuotesFilter} from "../../services/marketService";
+import {AssetCategory, AssetModel, AssetService} from "../../services/assetService";
+import {AssetQuotesFilter} from "../../services/marketService";
 import {AssetType} from "../../types/assetType";
 import {Operation} from "../../types/operation";
 import {Portfolio, TableHeader} from "../../types/types";
@@ -35,7 +35,7 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-container v-if="portfolio" fluid class="pa-0" data-v-step="0">
-            <quotes-filter-table :filter="filter" @input="tableSearch" :min-length="1" placeholder="Поиск"></quotes-filter-table>
+            <common-asset-quotes-filter :filter="filter" @input="tableSearch" @filter="onFilterChange" :min-length="1" placeholder="Поиск"></common-asset-quotes-filter>
 
             <empty-search-result v-if="filteredAssets.length === 0" @resetFilter="resetFilter"></empty-search-result>
 
@@ -78,7 +78,7 @@ const MainStore = namespace(StoreType.MAIN);
             </v-data-table>
         </v-container>
     `,
-    components: {QuotesFilterTable, EmptySearchResult}
+    components: {CommonAssetQuotesFilter, EmptySearchResult}
 })
 export class CommonAssetQuotes extends UI {
 
@@ -92,9 +92,9 @@ export class CommonAssetQuotes extends UI {
     private assetService: AssetService;
 
     /** Фильтр котировок */
-    private filter: QuotesFilter = {
+    private filter: AssetQuotesFilter = {
         searchQuery: "",
-        showUserShares: false
+        categories: [...AssetCategory.values()]
     };
 
     private assets: AssetModel[] = [];
@@ -118,6 +118,7 @@ export class CommonAssetQuotes extends UI {
 
     private async resetFilter(): Promise<void> {
         this.filter.searchQuery = "";
+        this.filter.categories = [...AssetCategory.values()];
         this.filteredAssets = [...this.assets];
     }
 
@@ -128,6 +129,10 @@ export class CommonAssetQuotes extends UI {
             return asset.name.toLowerCase().includes(searchString) ||
                 asset.ticker.toLowerCase().includes(searchString);
         });
+    }
+
+    private onFilterChange(): void {
+        this.filteredAssets = this.assets.filter(asset => this.filter.categories.includes(asset.category));
     }
 
     private async openTradeDialog(asset: AssetModel, operation: Operation): Promise<void> {
