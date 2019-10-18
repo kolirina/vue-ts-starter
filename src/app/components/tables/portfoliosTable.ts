@@ -146,8 +146,8 @@ const MainStore = namespace(StoreType.MAIN);
                                     </span>
                                 </v-tooltip>
                             </v-layout>
-                            <v-layout class="setings-btn">
-                                <v-btn class="btn" v-clipboard="() => publicLink(props.item.id)" @click="copyPortfolioLink">
+                            <v-layout v-if="publicSettingsAllowed" class="setings-btn">
+                                <v-btn v-if="props.item.access" class="btn" v-clipboard="() => publicLink(props.item.id)" @click="copyPortfolioLink">
                                     Копировать ссылку на портфель
                                 </v-btn>
                                 <v-menu content-class="dialog-type-menu"
@@ -171,7 +171,7 @@ const MainStore = namespace(StoreType.MAIN);
                             </v-layout>
 
                             <v-layout class="link-section" wrap>
-                                <v-flex md2>
+                                <v-flex v-if="publicSettingsAllowed" md2>
                                     <div>
                                         <a class="portfolio-link portfolio-default-text fs14" :href="informerH(props.item.id)" target="_blank">Информер-картинка горизонтальный</a>
                                     </div>
@@ -179,10 +179,10 @@ const MainStore = namespace(StoreType.MAIN);
                                         <a class="portfolio-link portfolio-default-text fs14" :href="informerV(props.item.id)" target="_blank">Информер-картинка вертикальный</a>
                                     </div>
                                 </v-flex>
-                                <v-flex md10 class="fs14">
-                                    <div v-if="showNoteLink(props.item.note)">
+                                <v-flex md10 class="fs14 maxW500">
+                                    <div v-if="showNoteLink(props.item.note)" class="maxW500">
                                         <span class="bold">Заметка:</span>
-                                        <span>{{ props.item.note }}</span>
+                                        <div class="text-truncate">{{ props.item.note }}</div>
                                     </div>
                                     <a v-else @click.stop="openDialogForEdit(props.item)">Создать заметку</a>
                                 </v-flex>
@@ -346,5 +346,12 @@ export class PortfoliosTable extends UI {
      */
     private get downloadNotAllowed(): boolean {
         return ExportUtils.isDownloadNotAllowed(this.clientInfo);
+    }
+
+    /**
+     * Возвращает признак доступности для работы с настройками публичного портфеля
+     */
+    private get publicSettingsAllowed(): boolean {
+        return this.clientInfo.user.tariff !== Tariff.FREE;
     }
 }

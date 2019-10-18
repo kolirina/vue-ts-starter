@@ -50,10 +50,10 @@ const MainStore = namespace(StoreType.MAIN);
                         </template>
                         <template>
                             <div slot="actions">
-                                <div v-if="!step.params.hideButtons">
-                                    <button v-if="hasMore" @click="skipOnBoarding" class="btn btn-primary">Пропустить обучение</button>
-                                    <button v-if="isLastStep" @click="doneOnBoarding" class="btn btn-primary">Завершить обучение</button>
-                                    <button v-else-if="hasMore" @click="nextStep" class="btn btn-primary">Следющий шаг</button>
+                                <div class="buttons" v-if="!step.params.hideButtons">
+                                    <button v-if="hasMore" @click="skipOnBoarding" class="btn btn-primary">Пропустить</button>
+                                    <button v-if="isLastStep" @click="doneOnBoarding" class="btn btn-primary">Понятно</button>
+                                    <button v-else-if="hasMore" @click="nextStep" class="btn btn-primary">Далее</button>
                                 </div>
                             </div>
                         </template>

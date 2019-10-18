@@ -67,7 +67,9 @@ const MainStore = namespace(StoreType.MAIN);
                               :class="{'data-table-cell-open': props.expanded, 'path': true, 'data-table-cell': true}"></span>
                     </td>
                     <td v-if="tableHeadersState.company" class="text-xs-left">
-                        <span v-if="props.item.share" :class="props.item.quantity !== 0 ? '' : 'line-through'">{{ props.item.share.shortname }}</span>&nbsp;
+                        <stock-link v-if="props.item.share" :class="props.item.quantity !== 0 ? '' : 'line-through'"
+                                    :ticker="props.item.stock.ticker">{{ props.item.share.shortname }}</stock-link>
+                        &nbsp;
                         <span v-if="props.item.share && props.item.quantity !== 0"
                               :class="markupClasses(Number(props.item.share.change))">{{ props.item.share.change }}&nbsp;%</span>
                     </td>
@@ -232,6 +234,10 @@ export class StockTable extends UI {
     private portfolioService: PortfolioService;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
     private reloadPortfolio: (id: number) => Promise<void>;
+    /** Если работаем из составного портфеля и добавляем сделку в текущий портфель, надо перезагрузить его */
+    @MainStore.Getter
+    private portfolio: Portfolio;
+
     /** Идентификатор портфеля */
     @Prop({default: null, type: String, required: true})
     private portfolioId: string;
@@ -351,7 +357,7 @@ export class StockTable extends UI {
             assetType: AssetType.valueByName(stockRow.share.shareType)
         });
         if (result) {
-            await this.reloadPortfolio(Number(this.portfolioId));
+            await this.reloadPortfolio(CommonUtils.isBlank(this.portfolioId) ? this.portfolio.id : Number(this.portfolioId));
         }
     }
 

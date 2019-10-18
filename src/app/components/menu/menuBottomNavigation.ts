@@ -16,7 +16,7 @@ import {ThemeSwitcher} from "../themeSwitcher";
                         <span class="profile-icon"></span>
                     </v-btn>
                 </div>
-                <div v-show="false" class="mt-1 mb-3">
+                <div class="mt-1 mb-3">
                     <theme-switcher></theme-switcher>
                 </div>
             </v-layout>

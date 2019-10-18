@@ -116,8 +116,7 @@ export class TariffAgreement extends UI {
 @Component({
     // language=Vue
     template: `
-        <v-layout v-if="tariff !== Tariff.TRIAL && !(tariff === Tariff.FREE && isNewTariffLayout)" column
-                  :class="['tariff-item', 'margB30', tariff === Tariff.PRO ? 'pro-tariff' : '']">
+        <v-layout v-if="tariff !== Tariff.TRIAL" :class="['tariff-item', 'margB30', tariff === Tariff.PRO ? 'pro-tariff' : '']" column>
             <div v-if="tariff === Tariff.PRO" class="alignC fs13 tariff-most-popular">
                 Выбор 67% инвесторов
             </div>
@@ -177,38 +176,11 @@ export class TariffAgreement extends UI {
                 </div>
                 <tariff-agreement :value="agreementState[tariff.name]" @agree="agreementState[tariff.name] = $event"></tariff-agreement>
                 <div v-if="tariff === Tariff.STANDARD" class="tariff-description-wrap">
-                    <expanded-panel v-if="isNewTariffLayout" class="toggle-block-basic-functionality">
-                        <template #header>
-                            <div class="py-3 fs14">
-                                Базовые возможности
-                            </div>
-                        </template>
-                        <div class="functional-list">
-                            <div class="py-3 fs14">
-                                Импорт и экспорт сделок
-                            </div>
-                            <div class="py-3 fs14">
-                                Полная аналитика портфеля
-                            </div>
-                            <div class="py-3 fs14">
-                                Учет дивидендов, купонов, комиссий и амортизации
-                            </div>
-                            <div class="py-3 fs14">
-                                Котировки и актуальная информация о эмитенте
-                            </div>
-                            <div class="py-3 fs14">
-                                Уведомления о ценах акций и облигаций
-                            </div>
-                            <div class="py-3 fs14">
-                                Возможность публичного доступа к портфелю
-                            </div>
-                            <div class="py-3 fs14">
-                                Дивидендный анализ
-                            </div>
-                        </div>
-                    </expanded-panel>
-                    <div v-else class="py-3 fs14">
+                    <div class="py-3 fs14">
                         Базовые возможности
+                    </div>
+                    <div class="py-3 fs14">
+                        Возможность публичного доступа к портфелю
                     </div>
                     <div class="py-3 fs14">
                         Доступ к разделу "Аналитика"
@@ -271,9 +243,6 @@ export class TariffAgreement extends UI {
                         Уведомления о ценах акций и облигаций
                     </div>
                     <div class="py-3 fs14">
-                        Возможность публичного доступа к портфелю
-                    </div>
-                    <div class="py-3 fs14">
                         Дивидендный анализ
                     </div>
                 </div>
@@ -308,9 +277,6 @@ export class TariffBlock extends UI {
     /** Признак использования новой тарифной сетки для пользователей */
     @Prop({required: true, type: Boolean})
     private isNewUser: boolean;
-    /** Признак отображать ли free тариф */
-    @Prop({required: true, type: Boolean})
-    private isNewTariffLayout: boolean;
     /** Признак отображения Премиум тарифа */
     @Prop({required: true, type: Boolean})
     private premiumEnabled: boolean;
@@ -482,10 +448,10 @@ export class TariffBlock extends UI {
                         <template v-if="clientInfo.user.nextPurchaseDiscountExpired">(срок действия скидки до {{ clientInfo.user.nextPurchaseDiscountExpired | date }})</template>
                     </p>
 
-                    <v-layout :class="['wrap-tariffs-sentence', isNewTariffLayout ? 'free-tariff-delete' : 'justify-space-around']" wrap>
+                    <v-layout class="wrap-tariffs-sentence justify-space-around" wrap>
                         <tariff-block v-for="item in availableTariffs" :key="item.name" @pay="makePayment" :tariff="item" :client-info="clientInfo" :monthly="monthly"
                                       :agreement-state="agreementState" :busy-state="busyState" :is-progress="isProgress" :payment-info="paymentInfo"
-                                      :is-new-user="isNewUser" :is-new-tariff-layout="isNewTariffLayout" :premium-enabled="premiumEnabled"></tariff-block>
+                                      :is-new-user="isNewUser" :premium-enabled="premiumEnabled"></tariff-block>
                     </v-layout>
                 </div>
             </v-card>
@@ -497,8 +463,6 @@ export class TariffsPage extends UI {
 
     /** Дата, начиная с которой действуют новые тарифы */
     private readonly NEW_TARIFFS_DATE = DateUtils.parseDate("2019-06-10");
-    /** Дата, начиная с которой для новых пользователей не будет отображаться free тариф */
-    private readonly DELETE_FREE_TARIFF_DATE = DateUtils.parseDate("2019-07-10");
     /** Дата, начиная с которой для новых пользователей будет отображаться Премиум тариф */
     private readonly PREMIUM_TARIFF_DATE = DateUtils.parseDate("2019-09-04");
 
@@ -520,7 +484,7 @@ export class TariffsPage extends UI {
     private monthly = false;
     /** Состояния оплат тарифов */
     private busyState: { [key: string]: boolean } = {
-        FREE: false, STANDARD: false, PRO: false
+        FREE: false, STANDARD: false, PRO: false, PREMIUM: false
     };
     /** Состояния оплат тарифов */
     private agreementState: { [key: string]: boolean } = {
@@ -651,13 +615,6 @@ export class TariffsPage extends UI {
      */
     private get isNewUser(): boolean {
         return DateUtils.parseDate(this.clientInfo.user.regDate).isAfter(this.NEW_TARIFFS_DATE);
-    }
-
-    /**
-     * Возвращает признак отображать ли free тариф
-     */
-    private get isNewTariffLayout(): boolean {
-        return DateUtils.parseDate(this.clientInfo.user.regDate).isAfter(this.DELETE_FREE_TARIFF_DATE);
     }
 
     /**

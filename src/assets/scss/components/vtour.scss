@@ -141,8 +141,16 @@
 
 .v-tour {
   z-index: 999;
+  font-size: 13px;
+
+  .buttons {
+    justify-content: space-evenly;
+    display: flex;
+  }
+
   .v-step {
     z-index: 999;
+
     .btn {
       background: #3b6ec9;
       padding: 7px;

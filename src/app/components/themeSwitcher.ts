@@ -34,8 +34,20 @@ export class ThemeSwitcher extends UI {
     @Inject
     private storage: Storage;
 
-    private readonly CSS_STYLES = ":root {background-color: #fefefe;filter: invert(100%);}*{background-color: inherit;}img:not([src*=\".svg\"]),video {filter: invert(100%);}" +
-        ".dashboard-wrap{filter: invert(100%);}";
+    private readonly CSS_STYLES = `
+    :root {
+        background-color: #fefefe;
+        filter: invert(100%);
+    }
+    img:not([src*=\".svg\"]),video {
+        filter: invert(100%);
+    }
+    .dashboard-wrap {
+        filter: invert(100%);
+    }
+    .v-overlay--active:before {
+        background-color: #ffffff !important;
+    }`;
 
     private nightTheme = false;
 

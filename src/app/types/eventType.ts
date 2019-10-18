@@ -12,3 +12,7 @@ export enum EventType {
     ASSET_UPDATED = "ASSET_UPDATED",
     TOUR_EVENT = "TOUR_EVENT",
 }
+
+export interface AddTradeEvent {
+    portfolioId?: number;
+}
