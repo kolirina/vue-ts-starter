@@ -14,9 +14,11 @@
  * (c) ООО "Интеллектуальные инвестиции", 2019
  */
 
-import Component from "vue-class-component";
-import {Prop, UI} from "../app/ui";
+import {Inject} from "typescript-ioc";
+import {Component, Prop, UI} from "../app/ui";
+import {FiltersService} from "../services/filtersService";
 import {QuotesFilter} from "../services/marketService";
+import {StoreKeys} from "../types/storeKeys";
 import {CommonUtils} from "../utils/commonUtils";
 import {TableFilterBase} from "./tableFilterBase";
 
@@ -53,13 +55,24 @@ export class QuotesFilterTable extends UI {
     /** Минимальная длина поиска */
     @Prop({required: false, type: Number, default: 0})
     private minLength: number;
+    /** Ключ для хранения состояния */
+    @Prop({required: true, type: String})
+    private storeKey: StoreKeys;
+    @Inject
+    private filtersService: FiltersService;
 
     private onChange(): void {
         this.$emit("changeShowUserShares", this.filter.showUserShares);
+        this.saveFilter();
     }
 
     private onSearch(searchQuery: string): void {
         this.$emit("input", searchQuery);
+        this.saveFilter();
+    }
+
+    private saveFilter(): void {
+        this.filtersService.saveFilter(this.storeKey, this.filter);
     }
 
     private get isDefaultFilter(): boolean {

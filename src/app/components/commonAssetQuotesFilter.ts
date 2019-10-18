@@ -14,9 +14,12 @@
  * (c) ООО "Интеллектуальные инвестиции", 2019
  */
 
+import {Inject} from "typescript-ioc";
 import {Component, Prop, UI} from "../app/ui";
 import {AssetCategory} from "../services/assetService";
+import {FiltersService} from "../services/filtersService";
 import {AssetQuotesFilter} from "../services/marketService";
+import {StoreKeys} from "../types/storeKeys";
 import {CommonUtils} from "../utils/commonUtils";
 import {TableFilterBase} from "./tableFilterBase";
 
@@ -48,6 +51,11 @@ export class CommonAssetQuotesFilter extends UI {
     /** Минимальная длина поиска */
     @Prop({required: false, type: Number, default: 0})
     private minLength: number;
+    /** Ключ для хранения состояния */
+    @Prop({required: true, type: String})
+    private storeKey: StoreKeys;
+    @Inject
+    private filtersService: FiltersService;
 
     private categories = AssetCategory.values();
 
@@ -62,6 +70,7 @@ export class CommonAssetQuotesFilter extends UI {
 
     private onSearch(searchQuery: string): void {
         this.$emit("input", searchQuery);
+        this.saveFilter();
     }
 
     private get isDefaultFilter(): boolean {
@@ -69,7 +78,11 @@ export class CommonAssetQuotesFilter extends UI {
     }
 
     private emitFilterChange(): void {
-        // todo assets сохранение фильтра
         this.$emit("filter", this.filter);
+        this.saveFilter();
+    }
+
+    private saveFilter(): void {
+        this.filtersService.saveAssetFilter(this.storeKey, this.filter);
     }
 }

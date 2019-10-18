@@ -25,10 +25,12 @@ import {EmptySearchResult} from "../../components/emptySearchResult";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {AssetCategory, AssetModel, AssetService} from "../../services/assetService";
+import {FiltersService} from "../../services/filtersService";
 import {AssetQuotesFilter} from "../../services/marketService";
 import {AssetType} from "../../types/assetType";
 import {EventType} from "../../types/eventType";
 import {Operation} from "../../types/operation";
+import {StoreKeys} from "../../types/storeKeys";
 import {Portfolio, TableHeader} from "../../types/types";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
@@ -40,7 +42,8 @@ const MainStore = namespace(StoreType.MAIN);
     template: `
         <v-container v-if="portfolio" fluid class="pa-0" data-v-step="0">
             <v-layout align-center justify-start row fill-height>
-                <common-asset-quotes-filter :filter="filter" @input="tableSearch" @filter="onFilterChange" :min-length="1" placeholder="Поиск"></common-asset-quotes-filter>
+                <common-asset-quotes-filter :filter="filter" @input="tableSearch" @filter="onFilterChange" :min-length="1" placeholder="Поиск"
+                                            :store-key="StoreKeys.CUSTOM_QUOTES_FILTER_KEY"></common-asset-quotes-filter>
 
                 <v-btn color="primary" class="mr-4" @click="openAddAssetDialog">
                     Добавить
@@ -125,16 +128,20 @@ export class AssetQuotes extends UI {
     private operation = Operation;
     @Inject
     private assetService: AssetService;
+    @Inject
+    private filtersService: FiltersService;
 
     /** Фильтр котировок */
-    private filter: AssetQuotesFilter = {
+    private filter: AssetQuotesFilter = this.filtersService.getAssetFilter(StoreKeys.CUSTOM_QUOTES_FILTER_KEY, {
         searchQuery: "",
         categories: [...AssetCategory.values()]
-    };
+    });
 
     private assets: AssetModel[] = [];
 
     private filteredAssets: AssetModel[] = [];
+    /** Ключи для сохранения информации */
+    private StoreKeys = StoreKeys;
 
     private headers: TableHeader[] = [
         {text: "", align: "left", sortable: false, value: "", width: "50"},
@@ -170,6 +177,7 @@ export class AssetQuotes extends UI {
     private async loadAssets(): Promise<void> {
         this.assets = await this.assetService.getUserAssets();
         this.filteredAssets = [...this.assets];
+        this.onFilterChange();
     }
 
     private async tableSearch(search: string): Promise<void> {

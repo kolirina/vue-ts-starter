@@ -15,6 +15,16 @@ export enum StoreKeys {
     PORTFOLIO_COMBINED_CHART = "PORTFOLIO_COMBINED_CHART",
     /** Ключ с настройками фильтра таблицы сделки */
     TRADES_FILTER_SETTINGS_KEY = "trades_filter_settings",
+    /** Ключ с настройками фильтра таблицы общих активов */
+    COMMON_QUOTES_FILTER_KEY = "common_quotes_filter_key",
+    /** Ключ с настройками фильтра таблицы кастомных активов */
+    CUSTOM_QUOTES_FILTER_KEY = "custom_quotes_filter_key",
+    /** Ключ с настройками фильтра таблицы кастомных активов */
+    STOCK_QUOTES_FILTER_KEY = "stock_quotes_filter_key",
+    /** Ключ с настройками фильтра таблицы кастомных активов */
+    BOND_QUOTES_FILTER_KEY = "bond_quotes_filter_key",
+    /** Ключ с настройками фильтров */
+    FILTERS_KEY = "FILTERS_KEY",
     /** Ключ с настройками фильтра таблицы Акции */
     STOCKS_TABLE_FILTER_KEY = "stocks_table_filter",
     /** Ключ с настройками фильтра таблицы Облигации */

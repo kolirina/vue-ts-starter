@@ -9,9 +9,11 @@ import {QuotesFilterTable} from "../../components/quotesFilterTable";
 import {StockRate} from "../../components/stockRate";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {Storage} from "../../platform/services/storage";
+import {FiltersService} from "../../services/filtersService";
 import {MarketService, QuotesFilter} from "../../services/marketService";
 import {AssetType} from "../../types/assetType";
 import {Operation} from "../../types/operation";
+import {StoreKeys} from "../../types/storeKeys";
 import {Pagination, Portfolio, Stock, TableHeader} from "../../types/types";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
@@ -25,8 +27,8 @@ const MainStore = namespace(StoreType.MAIN);
             <div class="additional-pagination-quotes-table">
                 <additional-pagination :pagination="pagination" @update:pagination="onTablePaginationChange"></additional-pagination>
             </div>
-            <quotes-filter-table :filter="filter" @input="tableSearch" @changeShowUserShares="changeShowUserShares" :min-length="1"
-                                 placeholder="Поиск"></quotes-filter-table>
+            <quotes-filter-table :filter="filter" @input="tableSearch" @changeShowUserShares="changeShowUserShares" :min-length="1" placeholder="Поиск"
+                                 :store-key="StoreKeys.STOCK_QUOTES_FILTER_KEY"></quotes-filter-table>
             <empty-search-result v-if="isEmptySearchResult" @resetFilter="resetFilter"></empty-search-result>
             <v-data-table v-else
                           :headers="headers" :items="stocks" item-key="id" :pagination="pagination" @update:pagination="onTablePaginationChange"
@@ -48,11 +50,11 @@ const MainStore = namespace(StoreType.MAIN);
                         </td>
                         <td class="text-xs-center">
                             <v-btn v-if="props.item.currency === 'RUB'" :href="'http://moex.com/ru/issue.aspx?code=' + props.item.ticker" target="_blank"
-                                :title="'Профиль эмитента ' + props.item.name + ' на сайте биржи'" icon>
+                                   :title="'Профиль эмитента ' + props.item.name + ' на сайте биржи'" icon>
                                 <i class="quotes-share"></i>
                             </v-btn>
                             <v-btn v-if="props.item.currency !== 'RUB'" :href="'https://finance.yahoo.com/quote/' + props.item.ticker" target="_blank"
-                                :title="'Профиль эмитента ' + props.item.name + ' на сайте Yahoo Finance'" icon>
+                                   :title="'Профиль эмитента ' + props.item.name + ' на сайте Yahoo Finance'" icon>
                                 <i class="quotes-share"></i>
                             </v-btn>
                         </td>
@@ -99,13 +101,18 @@ export class StockQuotes extends UI {
     private marketservice: MarketService;
     @Inject
     private localStorage: Storage;
+    @Inject
+    private filtersService: FiltersService;
 
     /** Фильтр котировок */
-    private filter: QuotesFilter = {
+    private filter: QuotesFilter = this.filtersService.getFilter<QuotesFilter>(StoreKeys.STOCK_QUOTES_FILTER_KEY, {
         searchQuery: "",
         showUserShares: false
-    };
+    });
 
+    /** Ключи для сохранения информации */
+    private StoreKeys = StoreKeys;
+    /** Признак что ничего не найдено */
     private isEmptySearchResult: boolean = false;
 
     private headers: TableHeader[] = [
