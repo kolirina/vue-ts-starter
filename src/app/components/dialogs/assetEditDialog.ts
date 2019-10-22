@@ -61,7 +61,7 @@ import {TradeUtils} from "../../utils/tradeUtils";
                             <!-- Цена -->
                             <v-flex xs12 sm6>
                                 <ii-number-field label="Цена актива" v-model="asset.price" class="required" name="price" v-validate="'required|min_value:0.000001'"
-                                                 :error-messages="errors.collect('price')" persistent-hint hint="Текущая цена актива, если не знаете, поставте 0">
+                                                 :error-messages="errors.collect('price')" persistent-hint hint="Текущая цена актива, если не знаете, поставьте 1">
                                 </ii-number-field>
                             </v-flex>
 
