@@ -82,51 +82,23 @@ export class ChartUtils {
     static processEventsChartData(data: EventChartData[], flags: string = "flags", onSeries: string = "totalChart",
                                   shape: string = "circlepin", width: number = 10): HighStockEventsGroup[] {
         const eventsGroups: HighStockEventsGroup[] = [];
-        const temp = data.reduce((result: { [key: string]: HighStockEventData[] }, current: EventChartData) => {
-            result[current.backgroundColor] = result[current.backgroundColor] || [];
-            result[current.backgroundColor].push({x: new Date(current.date).getTime(), title: current.text, text: current.description, color: current.backgroundColor});
-            return result;
-        }, {} as { [key: string]: HighStockEventData[] });
-        let count = 0;
-        //  TODO разобраться почему не отображаются все точки
-        // const eventsByCount: { [key: string]: HighStockEventData[] } = {};
-        // const colors = ChartUtils.getColors();
-        // Object.keys(temp).forEach(key => {
-        //     const grouped = ChartUtils.groupEvents(temp[key]);
-        //     grouped.forEach(point => {
-        //         const eventsKey = point.initialPoints.length ? point.initialPoints.length + 1 : point.title;
-        //         eventsByCount[String(eventsKey)] = eventsByCount[String(eventsKey)] || [];
-        //         eventsByCount[String(eventsKey)].push(point);
-        //     });
-        //
-        //     Object.keys(eventsByCount).forEach(byCountKey => {
-        //         const events = eventsByCount[byCountKey].sort((a, b) => a.x - b.x);
-        //         const color = isNaN(byCountKey as any) ? events[0] ? events[0].color : key : ChartUtils.getRandomColor(colors);
-        //         eventsGroups.push({
-        //             type: flags,
-        //             data: events,
-        //             name: `events${count++}`,
-        //             onSeries: onSeries,
-        //             shape: shape,
-        //             color: color,
-        //             fillColor: color,
-        //             stackDistance: 20,
-        //             width: width,
-        //         });
-        //     });
-        // });
-        Object.keys(temp).forEach(key => {
-            eventsGroups.push({
-                type: flags,
-                data: temp[key],
-                name: `events${count++}`,
-                onSeries: onSeries,
-                shape: shape,
-                color: key,
-                fillColor: key,
-                stackDistance: 20,
-                width: width
-            });
+        const eventsByCount: { [key: string]: HighStockEventData[] } = {};
+        const mapped = data.map(item => {
+            const parsedDate = DateUtils.parseDate(item.date);
+            const date = Date.UTC(parsedDate.year(), parsedDate.month(), parsedDate.date());
+            return {x: date, title: item.text, text: item.description, color: item.backgroundColor};
+        });
+        const grouped = ChartUtils.groupEvents(mapped);
+        eventsGroups.push({
+            type: flags,
+            data: grouped,
+            name: `events`,
+            onSeries: onSeries,
+            stackDistance: 20,
+            shape: shape,
+            color: "rgba(5,0,217,0.4)",
+            fillColor: "rgba(5,0,217,0.4)",
+            width: width
         });
         return eventsGroups;
     }
@@ -243,7 +215,7 @@ export class ChartUtils {
         marker: {
             radius: 2
         },
-        lineWidth: 1,
+        lineWidth: 2,
         states: {
             hover: {
                 lineWidth: 1
@@ -418,7 +390,6 @@ export class ChartUtils {
             },
             series: [
                 ...compareSeries || [],
-                // @ts-ignore
                 ...eventsChartData || []
             ],
         });
@@ -639,7 +610,13 @@ export class ChartUtils {
     static convertToDots(data: LineChartItem[], fieldName: string): any[] {
         const result: any[] = [];
         data.forEach(value => {
-            result.push([new Date(value.date).getTime(), new BigMoney((value as any)[fieldName]).amount.toDP(2, Decimal.ROUND_HALF_UP).toNumber()]);
+            const parsedDate = DateUtils.parseDate(value.date);
+            const date = Date.UTC(parsedDate.year(), parsedDate.month(), parsedDate.date());
+            const amount = new BigMoney((value as any)[fieldName]).amount.toDP(2, Decimal.ROUND_HALF_UP).toNumber();
+            if (result.length === 0) {
+                result.push([date - 1, 0]);
+            }
+            result.push([date, amount]);
         });
         return result;
     }

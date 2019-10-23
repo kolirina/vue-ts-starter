@@ -73,12 +73,12 @@ export type HighStockEventsGroup = {
     type: string,
     data: HighStockEventData[]
     onSeries: string,
-    shape: string,
+    shape?: string,
     name?: string,
-    color: string,
-    fillColor: string,
-    stackDistance: number,
-    width: number
+    color?: string,
+    fillColor?: string,
+    stackDistance?: number,
+    width?: number
 };
 
 export type SectorChartData = {
