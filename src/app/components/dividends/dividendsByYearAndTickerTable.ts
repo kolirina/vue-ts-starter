@@ -59,7 +59,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </td>
                     <td class="text-xs-left">{{ props.item.shortName }}</td>
                     <td class="text-xs-right">{{ props.item.year }}</td>
-                    <td class="text-xs-right ii-number-cell">{{ props.item.quantity | integer }}</td>
+                    <td class="text-xs-right ii-number-cell">{{ props.item.quantity | quantity }}</td>
                     <td class="text-xs-right ii-number-cell">
                         {{ props.item.perOne | amount(true) }}&nbsp;<span class="second-value">{{ props.item.perOne | currencySymbol }}</span>
                     </td>

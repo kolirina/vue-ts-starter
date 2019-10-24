@@ -165,6 +165,7 @@ export interface QuotesFilter {
 export interface AssetQuotesFilter {
     searchQuery?: string;
     categories?: AssetCategory[];
+    currency?: string;
 }
 
 /** Информация по акции */

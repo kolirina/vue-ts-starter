@@ -88,6 +88,20 @@ export class Filters {
     }
 
     /**
+     * Используется для форматирования чисел
+     * @param value строка
+     * @param returnZeros признак возврата нулевого значения вместо пустого
+     */
+    static formatQuantity(value: string, returnZeros: boolean = false): string {
+        if (!value) {
+            return returnZeros ? "0" : "";
+        }
+        const amount = new Decimal(value);
+        return Filters.replaceCommaToDot(DF_NO_SCALE.format(amount.toNumber())).replace(".00", "");
+
+    }
+
+    /**
      * Используется для форматирования размера файла
      * @param value размер в байтах
      */

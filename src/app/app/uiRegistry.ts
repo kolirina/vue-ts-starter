@@ -123,6 +123,7 @@ export class UIRegistry {
         UI.filter("amount", Filters.formatMoneyAmount);
         UI.filter("assetDesc", Filters.assetDesc);
         UI.filter("number", Filters.formatNumber);
+        UI.filter("quantity", Filters.formatQuantity);
         UI.filter("integer", Filters.formatInteger);
         UI.filter("date", Filters.formatDate);
         UI.filter("declension", Filters.declension);

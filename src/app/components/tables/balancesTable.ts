@@ -41,7 +41,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <td class="text-xs-left">
                         <stock-link v-if="props.item.ticker" :ticker="props.item.ticker"></stock-link>
                     </td>
-                    <td class="text-xs-right">{{ props.item.quantity }}</td>
+                    <td class="text-xs-right">{{ props.item.quantity | quantity(true) }}</td>
                     <td class="text-xs-right"><span v-if="props.item.type === 'STOCK'">{{ props.item.avgBuy | amount }}</span></td>
                     <td class="text-xs-right">{{ props.item.currCost | amount(true)}}</td>
                     <td class="justify-center layout px-0" @click.stop>

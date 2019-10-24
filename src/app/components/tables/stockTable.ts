@@ -77,7 +77,7 @@ const MainStore = namespace(StoreType.MAIN);
                         <stock-link v-if="props.item.share && props.item.assetType === 'STOCK'" :ticker="props.item.share.ticker"></stock-link>
                         <asset-link v-if="props.item.share && props.item.assetType === 'ASSET'" :ticker="String(props.item.share.id)">{{ props.item.share.ticker }}</asset-link>
                     </td>
-                    <td v-if="tableHeadersState.quantity" class="text-xs-right ii-number-cell">{{props.item.quantity}}</td>
+                    <td v-if="tableHeadersState.quantity" class="text-xs-right ii-number-cell">{{props.item.quantity | quantity(!!props.item.share) }}</td>
                     <td v-if="tableHeadersState.avgBuy" class="text-xs-right ii-number-cell">
                         <v-tooltip content-class="custom-tooltip-wrap" bottom>
                             <template #activator="{ on }">
@@ -178,7 +178,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 </span><br>
                                 В портфеле {{ props.item.ownedDays }} {{ props.item.ownedDays | declension("день", "дня", "дней") }}, c {{ props.item.firstBuy | date }}<br>
                                 Кол-во полных лотов {{ props.item.lotCounts | number }} <span>шт.</span><br>
-                                Всего {{ props.item.quantity | number }} <span>{{ props.item.quantity | declension("акция", "акции", "акций") }}</span>
+                                Всего {{ props.item.quantity | quantity(true) }} <span>{{ props.item.quantity | declension("акция", "акции", "акций") }}</span>
                             </div>
                         </td>
                         <td>

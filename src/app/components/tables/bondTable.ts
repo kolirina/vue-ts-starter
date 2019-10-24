@@ -79,7 +79,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <td v-if="tableHeadersState.ticker" class="text-xs-left">
                         <bond-link v-if="props.item.bond" :ticker="props.item.bond.ticker"></bond-link>
                     </td>
-                    <td v-if="tableHeadersState.quantity" class="text-xs-right ii-number-cell" v-tariff-expired-hint>{{ props.item.quantity }}</td>
+                    <td v-if="tableHeadersState.quantity" class="text-xs-right ii-number-cell" v-tariff-expired-hint>{{ props.item.quantity | quantity(!!props.item.bond) }}</td>
                     <td v-if="tableHeadersState.avgBuy" class="text-xs-right ii-number-cell" v-tariff-expired-hint>
                         <template>{{ props.item.avgBuy | number(false) }}</template>
                     </td>
@@ -178,7 +178,8 @@ const MainStore = namespace(StoreType.MAIN);
                                 </span><br>
                                 В портфеле {{ props.item.ownedDays }} {{ props.item.ownedDays | declension("день", "дня", "дней")}}, c {{ props.item.firstBuy | date }}<br>
                                 Дата погашения {{ props.item.bond.matdate }}<br>
-                                Количество {{ props.item.quantity | number }} <span>{{ props.item.quantity | declension("облигация", "облигации", "облигации") }}</span>
+                                Количество {{ props.item.quantity | quantity(true) }}
+                                <span>{{ props.item.quantity | declension("облигация", "облигации", "облигаций") }}</span>
                             </div>
                         </td>
                         <td>

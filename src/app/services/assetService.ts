@@ -17,7 +17,10 @@
 import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {Enum, EnumType, IStaticEnum} from "../platform/enum";
-import {Http} from "../platform/services/http";
+import {Http, UrlParams} from "../platform/services/http";
+import {PageableResponse, Pagination} from "../types/types";
+import {CommonUtils} from "../utils/commonUtils";
+import {AssetQuotesFilter} from "./marketService";
 
 @Service("AssetService")
 @Singleton
@@ -44,14 +47,39 @@ export class AssetService {
     /**
      * Возвращает данные по активам пользователя
      */
-    async getCommonAssets(): Promise<AssetModel[]> {
-        const result = await this.http.get<AssetModelDto[]>(`${this.BASE}/common`);
-        return result.map(asset => {
-            return {
-                ...asset,
-                category: AssetCategory.valueByName(asset.category)
-            } as AssetModel;
-        });
+    async getCommonAssets(pagination: Pagination, assetFilter: AssetQuotesFilter): Promise<PageableResponse<AssetModel>> {
+        const offset: number = pagination.rowsPerPage * (pagination.page - 1) || 0;
+        const pageSize: number = pagination.rowsPerPage || 50;
+        const sortColumn: string = pagination.sortBy || "ticker";
+        const descending: boolean = pagination.descending;
+        const search: string = assetFilter.searchQuery || "";
+        const category: string[] = assetFilter.categories.map(c => c.code);
+        const currency: string = assetFilter.currency;
+        const urlParams: UrlParams = {offset, pageSize, search, category};
+        if (sortColumn) {
+            urlParams.sortColumn = sortColumn.toUpperCase();
+        }
+        if (CommonUtils.exists(descending)) {
+            urlParams.descending = descending;
+        }
+        if (CommonUtils.exists(currency)) {
+            urlParams.currency = currency;
+        }
+        const result = await this.http.get<PageableResponse<AssetModelDto>>(`${this.BASE}/common`, urlParams);
+        return {
+            descending: result.descending,
+            offset: result.offset,
+            pageNumber: result.pageNumber,
+            pages: result.pages,
+            pageSize: result.pageSize,
+            totalItems: result.totalItems,
+            content: result.content.map(asset => {
+                return {
+                    ...asset,
+                    category: AssetCategory.valueByName(asset.category)
+                } as AssetModel;
+            })
+        } as PageableResponse<AssetModel>;
     }
 
     async saveAsset(asset: AssetModel): Promise<void> {

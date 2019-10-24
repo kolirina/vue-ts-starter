@@ -54,7 +54,7 @@ import {TradeUtils} from "../utils/tradeUtils";
                     <div class="ext-info__item">
                         Операция {{ tradeRow.operationLabel }}<br>
                         Дата {{ getTradeDate(tradeRow) }}<br>
-                        Количество {{ tradeRow.quantity }} <span>шт.</span><br>
+                        Количество {{ tradeRow.quantity | quantity }} <span>шт.</span><br>
                         Цена {{ getPrice(tradeRow) }} <span>{{ currencyForPrice(tradeRow) }}</span><br>
                     </div>
                 </td>

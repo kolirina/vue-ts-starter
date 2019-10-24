@@ -38,7 +38,6 @@ import {Bond, Share} from "../types/types";
                 <span v-html="shareLabelListItem(data.item)"></span>
             </template>
         </v-autocomplete>
-
     `
 })
 export class ShareSearchComponent extends UI {

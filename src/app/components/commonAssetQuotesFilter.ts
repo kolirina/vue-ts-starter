@@ -20,6 +20,7 @@ import {AssetCategory} from "../services/assetService";
 import {FiltersService} from "../services/filtersService";
 import {AssetQuotesFilter} from "../services/marketService";
 import {StoreKeys} from "../types/storeKeys";
+import {CurrencyUnit} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
 import {TableFilterBase} from "./tableFilterBase";
 
@@ -29,6 +30,15 @@ import {TableFilterBase} from "./tableFilterBase";
         <v-layout align-center class="pl-2">
             <table-filter-base @search="onSearch" :search-query="filter.searchQuery" :search-label="placeholder" :min-length="minLength" :is-default="isDefaultFilter">
                 <div class="trades-filter">
+                    <div class="trades-filter__label mb-0">Валюта бумаги</div>
+                    <div class="trades-filter__currencies">
+                        <v-select :items="currencyList" v-model="filter.currency" label="Валюта бумаги" @change="onCurrencyChange">
+                            <template #append-outer>
+                                <v-icon small @click="resetCurrency">clear</v-icon>
+                            </template>
+                        </v-select>
+                    </div>
+
                     <div class="trades-filter__label">Категория актива</div>
                     <div class="trades-filter__operations">
                         <v-switch v-for="category in categories" @change="onCategoryChange($event, category)" :label="category.description"
@@ -58,6 +68,8 @@ export class CommonAssetQuotesFilter extends UI {
     private filtersService: FiltersService;
 
     private categories = AssetCategory.values();
+    /** Список валют */
+    private currencyList = CurrencyUnit.values().map(c => c.code);
 
     private onCategoryChange(checked: boolean, category: AssetCategory): void {
         if (checked) {
@@ -73,8 +85,19 @@ export class CommonAssetQuotesFilter extends UI {
         this.saveFilter();
     }
 
+    private onCurrencyChange(): void {
+        this.$emit("filter", this.filter);
+        this.saveFilter();
+    }
+
+    private resetCurrency(): void {
+        this.filter.currency = null;
+        this.$emit("filter", this.filter);
+        this.saveFilter();
+    }
+
     private get isDefaultFilter(): boolean {
-        return this.filter.categories.length === this.categories.length && CommonUtils.isBlank(this.filter.searchQuery);
+        return this.filter.categories.length === this.categories.length && CommonUtils.isBlank(this.filter.searchQuery) && !CommonUtils.exists(this.filter.currency);
     }
 
     private emitFilterChange(): void {

@@ -168,7 +168,7 @@ export class BalancesPage extends UI implements TradeDataHolder {
     private closePrice: BigMoney = null;
 
     private currency = "RUB";
-
+    /** Список валют */
     private currencyList = CurrencyUnit.values().map(c => c.code);
 
     private date = DateUtils.currentDate();

@@ -57,7 +57,8 @@ export class FiltersService {
             return {
                 ...(defaultFilter ? defaultFilter : null),
                 searchQuery: filter.searchQuery,
-                categories: filter.categories.map(category => AssetCategory.valueByName(category))
+                categories: filter.categories.map(category => AssetCategory.valueByName(category)),
+                currency: filter.currency
             } as AssetQuotesFilter;
         }
         return defaultFilter;
@@ -83,7 +84,8 @@ export class FiltersService {
         const filtersCache = this.storageService.get<FilterCache<AssetQuotesFilterPlain>>(StoreKeys.FILTERS_KEY, {});
         filtersCache[stateKey] = {
             searchQuery: filter.searchQuery,
-            categories: filter.categories.map(category => category.code)
+            categories: filter.categories.map(category => category.code),
+            currency: filter.currency,
         };
         this.storageService.set(StoreKeys.FILTERS_KEY, filtersCache);
     }
@@ -96,4 +98,5 @@ type FilterCache<T> = {
 interface AssetQuotesFilterPlain {
     searchQuery: string;
     categories: string[];
+    currency?: string;
 }

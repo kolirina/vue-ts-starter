@@ -15,6 +15,7 @@ import {AssetType} from "../../types/assetType";
 import {Operation} from "../../types/operation";
 import {StoreKeys} from "../../types/storeKeys";
 import {Pagination, Portfolio, Stock, TableHeader} from "../../types/types";
+import {TradeUtils} from "../../utils/tradeUtils";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 
@@ -40,11 +41,14 @@ const MainStore = namespace(StoreType.MAIN);
                             <stock-link :ticker="props.item.ticker"></stock-link>
                         </td>
                         <td class="text-xs-left">{{ props.item.shortname }}</td>
-                        <td class="text-xs-center ii-number-cell">{{ props.item.price | amount(false, null, false, false) }}</td>
+                        <td class="text-xs-center ii-number-cell">
+                            {{ props.item.price | amount(false, null, false) }} <span class="second-value">{{ currencyForPrice(props.item) }}</span>
+                        </td>
                         <td :class="[( Number(props.item.change) >= 0 ) ? 'ii--green-markup' : 'ii--red-markup', 'ii-number-cell', 'text-xs-center']">
                             {{ props.item.change }}&nbsp;%
                         </td>
                         <td class="text-xs-center ii-number-cell">{{ props.item.lotsize }}</td>
+                        <td class="text-xs-center">{{ props.item.currency }}</td>
                         <td class="text-xs-center">
                             <stock-rate :share="props.item"></stock-rate>
                         </td>
@@ -121,6 +125,7 @@ export class StockQuotes extends UI {
         {text: "Цена", align: "center", value: "price"},
         {text: "Изменение", align: "center", value: "change"},
         {text: "Размер лота", align: "center", value: "lotsize", sortable: false},
+        {text: "Валюта", align: "center", value: "currency", width: "50"},
         {text: "Рейтинг", align: "center", value: "rating"},
         {text: "Профиль эмитента", align: "center", value: "profile", sortable: false},
         {text: "", value: "", align: "center", sortable: false}
@@ -188,5 +193,9 @@ export class StockQuotes extends UI {
         if (result) {
             await this.reloadPortfolio(this.portfolio.id);
         }
+    }
+
+    private currencyForPrice(stock: Stock): string {
+        return TradeUtils.currencySymbolByAmount(stock.price).toLowerCase();
     }
 }

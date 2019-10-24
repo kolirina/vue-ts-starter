@@ -61,7 +61,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <td v-if="tableHeadersState.name" class="text-xs-left">{{ props.item.companyName }}</td>
                     <td v-if="tableHeadersState.operationLabel" class="text-xs-left">{{ props.item.operationLabel }}</td>
                     <td v-if="tableHeadersState.date" class="text-xs-center">{{ getTradeDate(props.item) }}</td>
-                    <td v-if="tableHeadersState.quantity" class="text-xs-right ii-number-cell">{{ props.item.quantity }}</td>
+                    <td v-if="tableHeadersState.quantity" class="text-xs-right ii-number-cell">{{ props.item.quantity | quantity }}</td>
                     <td v-if="tableHeadersState.price" :class="['text-xs-right', 'ii-number-cell']">
                         {{ getPrice(props.item) }}&nbsp;<span class="second-value">{{ currencyForPrice(props.item) }}</span>
                     </td>

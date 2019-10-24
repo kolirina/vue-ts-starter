@@ -32,6 +32,8 @@ import {EventType} from "../../types/eventType";
 import {Operation} from "../../types/operation";
 import {StoreKeys} from "../../types/storeKeys";
 import {Portfolio, TableHeader} from "../../types/types";
+import {CommonUtils} from "../../utils/commonUtils";
+import {TradeUtils} from "../../utils/tradeUtils";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 
@@ -64,7 +66,9 @@ const MainStore = namespace(StoreType.MAIN);
                         </td>
                         <td class="text-xs-left">{{ props.item.name }}</td>
                         <td class="text-xs-left">{{ props.item.category.description }}</td>
-                        <td class="text-xs-center ii-number-cell">{{ props.item.price | amount(false, null, false, false) }}</td>
+                        <td class="text-xs-center ii-number-cell">
+                            {{ props.item.price | amount(false, null, false) }} <span class="second-value">{{ currencyForPrice(props.item) }}</span>
+                        </td>
                         <td class="text-xs-left">{{ props.item.source }}</td>
                         <td class="text-xs-left">{{ props.item.regex }}</td>
                         <td class="text-xs-center">{{ props.item.currency }}</td>
@@ -134,7 +138,8 @@ export class AssetQuotes extends UI {
     /** Фильтр котировок */
     private filter: AssetQuotesFilter = this.filtersService.getAssetFilter(StoreKeys.CUSTOM_QUOTES_FILTER_KEY, {
         searchQuery: "",
-        categories: [...AssetCategory.values()]
+        categories: [...AssetCategory.values()],
+        currency: null,
     });
 
     private assets: AssetModel[] = [];
@@ -156,7 +161,6 @@ export class AssetQuotes extends UI {
         {text: "", value: "", align: "center", sortable: false, width: "50"}
     ];
 
-    @ShowProgress
     async created(): Promise<void> {
         await this.loadAssets();
         UI.on(EventType.ASSET_CREATED, async () => await this.loadAssets());
@@ -171,9 +175,11 @@ export class AssetQuotes extends UI {
     private async resetFilter(): Promise<void> {
         this.filter.searchQuery = "";
         this.filter.categories = [...AssetCategory.values()];
+        this.filter.currency = null;
         this.filteredAssets = [...this.assets];
     }
 
+    @ShowProgress
     private async loadAssets(): Promise<void> {
         this.assets = await this.assetService.getUserAssets();
         this.filteredAssets = [...this.assets];
@@ -190,7 +196,8 @@ export class AssetQuotes extends UI {
     }
 
     private onFilterChange(): void {
-        this.filteredAssets = this.assets.filter(asset => this.filter.categories.includes(asset.category));
+        this.filteredAssets = this.assets.filter(asset => this.filter.categories.includes(asset.category) &&
+            (!CommonUtils.exists(this.filter.currency) || asset.currency === this.filter.currency));
     }
 
     private async openTradeDialog(asset: AssetModel, operation: Operation): Promise<void> {
@@ -225,5 +232,9 @@ export class AssetQuotes extends UI {
     private async deleteAssetAndReloadData(assetId: number): Promise<void> {
         await this.assetService.deleteAsset(assetId);
         await this.loadAssets();
+    }
+
+    private currencyForPrice(asset: AssetModel): string {
+        return TradeUtils.currencySymbolByAmount(asset.price).toLowerCase();
     }
 }
