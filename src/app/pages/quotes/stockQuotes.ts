@@ -28,7 +28,7 @@ const MainStore = namespace(StoreType.MAIN);
             <div class="additional-pagination-quotes-table">
                 <additional-pagination :pagination="pagination" @update:pagination="onTablePaginationChange"></additional-pagination>
             </div>
-            <quotes-filter-table :filter="filter" @input="tableSearch" @changeShowUserShares="changeShowUserShares" :min-length="1" placeholder="Поиск"
+            <quotes-filter-table :filter="filter" @input="tableSearch" @changeShowUserShares="changeShowUserShares" @filter="onFilterChange" :min-length="1" placeholder="Поиск"
                                  :store-key="StoreKeys.STOCK_QUOTES_FILTER_KEY"></quotes-filter-table>
             <empty-search-result v-if="isEmptySearchResult" @resetFilter="resetFilter"></empty-search-result>
             <v-data-table v-else
@@ -149,6 +149,7 @@ export class StockQuotes extends UI {
     private async resetFilter(): Promise<void> {
         this.filter.searchQuery = "";
         this.filter.showUserShares = false;
+        this.filter.currency = null;
         await this.loadStocks();
     }
 
@@ -167,6 +168,13 @@ export class StockQuotes extends UI {
         await this.loadStocks();
     }
 
+    /**
+     * Обрабатывает изменение фильтра
+     */
+    private async onFilterChange(): Promise<void> {
+        await this.loadStocks();
+    }
+
     private async tableSearch(search: string): Promise<void> {
         this.filter.searchQuery = search;
         await this.loadStocks();
@@ -174,8 +182,7 @@ export class StockQuotes extends UI {
 
     @ShowProgress
     private async loadStocks(): Promise<void> {
-        const response = await this.marketservice.loadStocks(this.pagination.rowsPerPage * (this.pagination.page - 1),
-            this.pagination.rowsPerPage, this.pagination.sortBy, this.pagination.descending, this.filter.searchQuery, this.filter.showUserShares);
+        const response = await this.marketservice.loadStocks(this.pagination, this.filter);
         this.stocks = response.content;
         this.pagination.totalItems = response.totalItems;
         this.pagination.pages = response.pages;

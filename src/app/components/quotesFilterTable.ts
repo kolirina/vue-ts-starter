@@ -19,6 +19,7 @@ import {Component, Prop, UI} from "../app/ui";
 import {FiltersService} from "../services/filtersService";
 import {QuotesFilter} from "../services/marketService";
 import {StoreKeys} from "../types/storeKeys";
+import {CurrencyUnit} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
 import {TableFilterBase} from "./tableFilterBase";
 
@@ -27,19 +28,33 @@ import {TableFilterBase} from "./tableFilterBase";
     template: `
         <v-layout align-center class="pl-2">
             <table-filter-base @search="onSearch" :search-query="filter.searchQuery" :search-label="placeholder" :min-length="minLength" :is-default="isDefaultFilter">
-                <v-switch v-model="filter.showUserShares" @change="onChange">
-                    <template #label>
-                        <span class="fs13">Показать мои бумаги</span>
-                        <v-tooltip content-class="custom-tooltip-wrap" bottom>
-                            <sup class="custom-tooltip" slot="activator">
-                                <v-icon>fas fa-info-circle</v-icon>
-                            </sup>
-                            <span>
+                <div class="trades-filter">
+                    <div class="trades-filter__label mb-0">Валюта бумаги</div>
+                    <div class="trades-filter__currencies">
+                        <v-select :items="currencyList" v-model="filter.currency" label="Валюта бумаги" @change="onCurrencyChange">
+                            <template #append-outer>
+                                <v-icon small @click="resetCurrency">clear</v-icon>
+                            </template>
+                        </v-select>
+                    </div>
+
+                    <div class="trades-filter__label">Категория актива</div>
+                    <div class="trades-filter__operations">
+                        <v-switch v-model="filter.showUserShares" @change="onChange">
+                            <template #label>
+                                <span class="fs13">Показать мои бумаги</span>
+                                <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                                    <sup class="custom-tooltip" slot="activator">
+                                        <v-icon>fas fa-info-circle</v-icon>
+                                    </sup>
+                                    <span>
                                 Включите, если хотите увидеть только свои бумаги
                             </span>
-                        </v-tooltip>
-                    </template>
-                </v-switch>
+                                </v-tooltip>
+                            </template>
+                        </v-switch>
+                    </div>
+                </div>
             </table-filter-base>
         </v-layout>
     `,
@@ -61,6 +76,9 @@ export class QuotesFilterTable extends UI {
     @Inject
     private filtersService: FiltersService;
 
+    /** Список валют */
+    private currencyList = CurrencyUnit.values().map(c => c.code);
+
     private onChange(): void {
         this.$emit("changeShowUserShares", this.filter.showUserShares);
         this.saveFilter();
@@ -71,11 +89,23 @@ export class QuotesFilterTable extends UI {
         this.saveFilter();
     }
 
+    private onCurrencyChange(): void {
+        this.$emit("filter", this.filter);
+        this.saveFilter();
+    }
+
+    private resetCurrency(): void {
+        this.filter.currency = null;
+        this.$emit("filter", this.filter);
+        this.saveFilter();
+    }
+
     private saveFilter(): void {
         this.filtersService.saveFilter(this.storeKey, this.filter);
     }
 
     private get isDefaultFilter(): boolean {
-        return (!CommonUtils.exists(this.filter.showUserShares) || this.filter.showUserShares === false) && CommonUtils.isBlank(this.filter.searchQuery);
+        return (!CommonUtils.exists(this.filter.showUserShares) || this.filter.showUserShares === false) && CommonUtils.isBlank(this.filter.searchQuery)
+            && !CommonUtils.exists(this.filter.currency);
     }
 }

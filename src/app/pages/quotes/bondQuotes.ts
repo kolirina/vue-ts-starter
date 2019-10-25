@@ -26,7 +26,7 @@ const MainStore = namespace(StoreType.MAIN);
             <div class="additional-pagination-quotes-table">
                 <additional-pagination :pagination="pagination" @update:pagination="onTablePaginationChange"></additional-pagination>
             </div>
-            <quotes-filter-table :filter="filter" @input="tableSearch" @changeShowUserShares="changeShowUserShares" :min-length="3" placeholder="Поиск"
+            <quotes-filter-table :filter="filter" @input="tableSearch" @changeShowUserShares="changeShowUserShares" @filter="onFilterChange" :min-length="3" placeholder="Поиск"
                                  :store-key="StoreKeys.BOND_QUOTES_FILTER_KEY"></quotes-filter-table>
             <empty-search-result v-if="isEmptySearchResult" @resetFilter="resetFilter"></empty-search-result>
             <v-data-table v-else
@@ -46,6 +46,7 @@ const MainStore = namespace(StoreType.MAIN);
                         <td class="text-xs-right">{{ props.item.couponvalue | amount(true) }}</td>
                         <td class="text-xs-center">{{ props.item.nextcoupon }}</td>
                         <td class="text-xs-center">{{ props.item.facevalue | amount(true) }}</td>
+                        <td class="text-xs-center">{{ props.item.currency }}</td>
                         <td class="text-xs-center">{{ props.item.duration }}</td>
                         <td class="text-xs-center">
                             <v-btn v-if="props.item.currency === 'RUB'" :href="'http://moex.com/ru/issue.aspx?code=' + props.item.ticker" target="_blank"
@@ -134,6 +135,7 @@ export class BondQuotes extends UI {
         {text: "Купон", align: "right", value: "couponvalue"},
         {text: "След. купон", align: "center", value: "nextcoupon"},
         {text: "Номинал", align: "center", value: "facevalue"},
+        {text: "Валюта", align: "center", value: "currency", width: "50"},
         {text: "Дюрация", align: "center", value: "duration"},
         {text: "Профиль эмитента", align: "center", value: "profile", sortable: false},
         {text: "Меню", value: "", align: "center", sortable: false}
@@ -157,6 +159,7 @@ export class BondQuotes extends UI {
     private async resetFilter(): Promise<void> {
         this.filter.searchQuery = "";
         this.filter.showUserShares = false;
+        this.filter.currency = null;
         await this.loadBonds();
     }
 
@@ -174,6 +177,13 @@ export class BondQuotes extends UI {
         await this.loadBonds();
     }
 
+    /**
+     * Обрабатывает изменение фильтра
+     */
+    private async onFilterChange(): Promise<void> {
+        await this.loadBonds();
+    }
+
     private async changeShowUserShares(showUserShares: boolean): Promise<void> {
         this.localStorage.set<boolean>("showUserBonds", showUserShares);
         this.filter.showUserShares = showUserShares;
@@ -182,8 +192,7 @@ export class BondQuotes extends UI {
 
     @ShowProgress
     private async loadBonds(): Promise<void> {
-        const response = await this.marketservice.loadBonds(this.pagination.rowsPerPage * (this.pagination.page - 1),
-            this.pagination.rowsPerPage, this.pagination.sortBy, this.pagination.descending, this.filter.searchQuery, this.filter.showUserShares);
+        const response = await this.marketservice.loadBonds(this.pagination, this.filter);
         this.bonds = response.content;
         this.pagination.totalItems = response.totalItems;
         this.pagination.pages = response.pages;

@@ -2,7 +2,7 @@ import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {Http, UrlParams} from "../platform/services/http";
 import {BaseChartDot, Dot, EventChartData, HighStockEventData, HighStockEventsGroup} from "../types/charts/types";
-import {Asset, AssetInfo, Bond, BondInfo, Currency, PageableResponse, Share, ShareDynamic, Stock, StockInfo} from "../types/types";
+import {Asset, AssetInfo, Bond, BondInfo, Currency, PageableResponse, Pagination, Share, ShareDynamic, Stock, StockInfo} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
 import {CommonUtils} from "../utils/commonUtils";
 import {AssetCategory} from "./assetService";
@@ -90,30 +90,16 @@ export class MarketService {
     /**
      * Загружает и возвращает список акций
      */
-    async loadStocks(offset: number = 0, pageSize: number = 50, sortColumn: string,
-                     descending: boolean = false, search: string = null, showUserShares: boolean = false): Promise<PageableResponse<Stock>> {
-        const urlParams: UrlParams = {offset, pageSize, search, showUserShares};
-        if (sortColumn) {
-            urlParams.sortColumn = sortColumn.toUpperCase();
-        }
-        if (CommonUtils.exists(descending)) {
-            urlParams.descending = descending;
-        }
+    async loadStocks(pagination: Pagination, filter: QuotesFilter): Promise<PageableResponse<Stock>> {
+        const urlParams = this.makeFilterRequest(pagination, filter);
         return this.http.get<PageableResponse<Stock>>(`/market/stocks`, urlParams);
     }
 
     /**
      * Загружает и возвращает список облигаций
      */
-    async loadBonds(offset: number = 0, pageSize: number = 50, sortColumn: string,
-                    descending: boolean = false, search: string = null, showUserShares: boolean = false): Promise<PageableResponse<Bond>> {
-        const urlParams: UrlParams = {offset, pageSize, search, showUserShares};
-        if (sortColumn) {
-            urlParams.sortColumn = sortColumn.toUpperCase();
-        }
-        if (CommonUtils.exists(descending)) {
-            urlParams.descending = descending;
-        }
+    async loadBonds(pagination: Pagination, filter: QuotesFilter): Promise<PageableResponse<Bond>> {
+        const urlParams = this.makeFilterRequest(pagination, filter);
         return this.http.get<PageableResponse<Bond>>(`/market/bonds`, urlParams);
     }
 
@@ -129,6 +115,27 @@ export class MarketService {
      */
     async loadTopStocks(): Promise<Stock[]> {
         return this.http.get<Stock[]>(`/market/top-stocks`);
+    }
+
+    private makeFilterRequest(pagination: Pagination, filter: QuotesFilter): UrlParams {
+        const offset: number = pagination.rowsPerPage * (pagination.page - 1) || 0;
+        const pageSize: number = pagination.rowsPerPage || 50;
+        const sortColumn: string = pagination.sortBy || "ticker";
+        const descending: boolean = pagination.descending;
+        const search: string = filter.searchQuery || "";
+        const currency: string = filter.currency;
+        const showUserShares = filter.showUserShares;
+        const urlParams: UrlParams = {offset, pageSize, search, showUserShares};
+        if (sortColumn) {
+            urlParams.sortColumn = sortColumn.toUpperCase();
+        }
+        if (CommonUtils.exists(descending)) {
+            urlParams.descending = descending;
+        }
+        if (CommonUtils.exists(currency)) {
+            urlParams.currency = currency;
+        }
+        return urlParams;
     }
 
     private convertDots(dots: _baseChartDot[]): Dot[] {
@@ -160,6 +167,7 @@ export class MarketService {
 export interface QuotesFilter {
     searchQuery?: string;
     showUserShares?: boolean;
+    currency?: string;
 }
 
 export interface AssetQuotesFilter {
