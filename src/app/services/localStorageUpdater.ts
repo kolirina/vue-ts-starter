@@ -18,6 +18,8 @@ import {Inject} from "typescript-ioc";
 import * as versionConfig from "../../version.json";
 import {Storage} from "../platform/services/storage";
 import {StoreKeys} from "../types/storeKeys";
+import {BROWSER} from "../types/types";
+import {CommonUtils} from "../utils/commonUtils";
 import {DateUtils} from "../utils/dateUtils";
 import {TableHeaders, TablesService} from "./tablesService";
 
@@ -45,6 +47,7 @@ export class LocalStorageUpdater {
         if (versionConfig.date !== this.localStorage.get<string>(StoreKeys.LOCAL_STORAGE_LAST_UPDATE_DATE_KEY, versionConfig.date)) {
             // this.updateCalendarEventTypes();
             // this.updateTableColumns();
+            this.turnOffNightTheme();
             this.updateChartsStorage();
             this.updateTradeFilterSetting();
             this.localStorage.delete("last_update_notification");
@@ -97,6 +100,16 @@ export class LocalStorageUpdater {
         const needUpdate = this.needUpdate();
         if (needUpdate) {
             this.localStorage.delete(StoreKeys.TRADES_FILTER_SETTINGS_KEY);
+        }
+    }
+
+    /**
+     * Обновляет настройки фильтра сделок
+     */
+    private turnOffNightTheme(): void {
+        const browserInfo = CommonUtils.detectBrowser();
+        if (browserInfo.name === BROWSER.FIREFOX) {
+            this.localStorage.delete(StoreKeys.THEME);
         }
     }
 
