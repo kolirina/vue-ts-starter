@@ -90,7 +90,6 @@ export class ThemeSwitcher extends UI {
 
     private get invertSupported(): boolean {
         const browserInfo = CommonUtils.detectBrowser();
-        console.log(browserInfo);
         if (browserInfo.name === BROWSER.FIREFOX) {
             return false;
         }
