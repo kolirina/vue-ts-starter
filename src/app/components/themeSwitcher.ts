@@ -17,6 +17,9 @@
 import {Inject} from "typescript-ioc";
 import {Component, UI} from "../app/ui";
 import {Storage} from "../platform/services/storage";
+import {StoreKeys} from "../types/storeKeys";
+import {BROWSER} from "../types/types";
+import {CommonUtils} from "../utils/commonUtils";
 
 @Component({
     // language=Vue
@@ -45,6 +48,15 @@ export class ThemeSwitcher extends UI {
     .dashboard-wrap {
         filter: invert(100%);
     }
+    .ii--green-markup {
+        filter: invert(100%);
+    }
+    .ii--red-markup {
+        filter: invert(100%);
+    }
+    a.decorationNone {
+        filter: invert(100%);
+    }
     .v-overlay--active:before {
         background-color: #ffffff !important;
     }`;
@@ -55,18 +67,18 @@ export class ThemeSwitcher extends UI {
         if (!this.invertSupported) {
             return;
         }
-        this.nightTheme = this.storage.get<string>("theme", Theme.DAY) === Theme.NIGHT;
+        this.nightTheme = this.storage.get<string>(StoreKeys.THEME, Theme.DAY) === Theme.NIGHT;
         this.setStyles();
     }
 
     private toggleTheme(): void {
         this.nightTheme = !this.nightTheme;
-        this.storage.set("theme", this.nightTheme ? Theme.NIGHT : Theme.DAY);
+        this.storage.set(StoreKeys.THEME, this.nightTheme ? Theme.NIGHT : Theme.DAY);
         this.setStyles();
     }
 
     private setStyles(): void {
-        let stylesElement = document.getElementById("theme");
+        let stylesElement = document.getElementById(StoreKeys.THEME);
         if (!stylesElement) {
             stylesElement = document.createElement("style");
             stylesElement.id = "theme";
@@ -77,6 +89,11 @@ export class ThemeSwitcher extends UI {
     }
 
     private get invertSupported(): boolean {
+        const browserInfo = CommonUtils.detectBrowser();
+        console.log(browserInfo);
+        if (browserInfo.name === BROWSER.FIREFOX) {
+            return false;
+        }
         const prop = "filter";
         const el = document.createElement("test");
         const mStyle = el.style;
