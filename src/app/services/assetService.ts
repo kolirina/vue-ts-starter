@@ -158,12 +158,12 @@ export class AssetCategory extends (EnumType as IStaticEnum<AssetCategory>) {
     static readonly BOND = new AssetCategory("BOND", "Облигации");
     static readonly MONEY = new AssetCategory("MONEY", "Деньги");
     static readonly ETF = new AssetCategory("ETF", "ETF/ПИФ");
-    static readonly FUTURE = new AssetCategory("FUTURE", "Фьючерс");
-    static readonly OPTION = new AssetCategory("OPTION", "Опцион");
+    static readonly FUTURE = new AssetCategory("FUTURE", "Фьючерсы");
+    static readonly OPTION = new AssetCategory("OPTION", "Опционы");
     static readonly METALL = new AssetCategory("METALL", "Драгметаллы");
     static readonly REALTY = new AssetCategory("REALTY", "Недвижимость");
-    static readonly CURRENCY = new AssetCategory("CURRENCY", "Деньги");
-    static readonly CRYPTO_CURRENCY = new AssetCategory("CRYPTO_CURRENCY", "Криптовалюта");
+    static readonly CURRENCY = new AssetCategory("CURRENCY", "Валюты");
+    static readonly CRYPTO_CURRENCY = new AssetCategory("CRYPTO_CURRENCY", "Криптовалюты");
     static readonly OTHER = new AssetCategory("OTHER", "Разное");
 
     private constructor(public code: string, public description: string) {
