@@ -73,18 +73,20 @@ const MainStore = namespace(StoreType.MAIN);
                                     <div>
                                         <span>Из них хоть раз оплативших:</span>{{ promoCodeStatistics.hasPaymentsReferralCount }}
                                     </div>
-                                    <div>
-                                        <span>Всего заработано:</span>{{ promoCodeStatistics.referrerPaymentsTotal }}
-                                        <span class="rewards-currency rub"></span>
-                                    </div>
-                                    <div>
-                                        <span>Всего выплачено:</span>{{ promoCodeStatistics.referrerPaymentsTotalPaid }}
-                                        <span class="rewards-currency rub"></span>
-                                    </div>
-                                    <div class="statistics__label">
-                                        <span>Остаток для выплаты:</span>{{ promoCodeStatistics.referrerPaymentsTotalUnpaid }}
-                                        <span class="rewards-currency rub"></span>
-                                    </div>
+                                    <template v-if="clientInfo.user.referralAwardType === 'PAYMENT'">
+                                        <div>
+                                            <span>Всего заработано:</span>{{ promoCodeStatistics.referrerPaymentsTotal }}
+                                            <span class="rewards-currency rub"></span>
+                                        </div>
+                                        <div>
+                                            <span>Всего выплачено:</span>{{ promoCodeStatistics.referrerPaymentsTotalPaid }}
+                                            <span class="rewards-currency rub"></span>
+                                        </div>
+                                        <div class="statistics__label">
+                                            <span>Остаток для выплаты:</span>{{ promoCodeStatistics.referrerPaymentsTotalUnpaid }}
+                                            <span class="rewards-currency rub"></span>
+                                        </div>
+                                    </template>
                                 </div>
                             </expanded-panel>
                         </div>

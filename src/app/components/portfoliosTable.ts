@@ -183,6 +183,8 @@ export class PortfoliosTable extends UI {
 
     @MainStore.Getter
     private clientInfo: ClientInfo;
+    @MainStore.Getter
+    private portfolio: Portfolio;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIOS)
     private reloadPortfolios: () => Promise<void>;
     @MainStore.Action(MutationType.SET_CURRENT_PORTFOLIO)
@@ -249,12 +251,14 @@ export class PortfoliosTable extends UI {
         UI.emit(EventType.PORTFOLIO_CREATED);
     }
 
-    private async clearPortfolio(porfolioId: number): Promise<void> {
+    private async clearPortfolio(portfolioId: number): Promise<void> {
         const result = await new ConfirmDialog().show(`Вы уверены, что хотите удалить все сделки в портфеле`);
         if (result === BtnReturn.YES) {
-            await this.portfolioService.clearPortfolio(porfolioId);
-            this.overviewService.resetCacheForId(porfolioId);
-            await this.reloadPortfolio(porfolioId);
+            await this.portfolioService.clearPortfolio(portfolioId);
+            this.overviewService.resetCacheForId(portfolioId);
+            if (this.portfolio.id === portfolioId) {
+                await this.reloadPortfolio(portfolioId);
+            }
             this.$snotify.info("Портфель успешно очищен");
         }
     }
