@@ -8,6 +8,7 @@ import {UIRegistry} from "./app/app/uiRegistry";
 import {Storage} from "./app/platform/services/storage";
 import {RouterConfiguration} from "./app/router/routerConfiguration";
 import {ApplicationService} from "./app/services/applicationService";
+import {ClientInfo} from "./app/services/clientService";
 import {DateTimeService} from "./app/services/dateTimeService";
 import {InactivityMonitor} from "./app/services/inactivityMonitor";
 import {LocalStorageUpdater} from "./app/services/localStorageUpdater";
@@ -41,6 +42,12 @@ export async function start(): Promise<void> {
             UI.emit(EventType.HANDLE_ERROR, error);
             // логгируем ошибки только в prod-сборке
             if (!Vue.config.productionTip) {
+                const user: ClientInfo = (VuexConfiguration.getStore() as any).state.MAIN.clientInfo;
+                sentryHub.setUser({
+                    username: user.user.username,
+                    id: user.user.id,
+                    currentPortfolio: user.user.currentPortfolioId
+                });
                 sentryHub.captureException(error);
             }
         };
