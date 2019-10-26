@@ -25,7 +25,7 @@
     text-transform: initial !important;
 
     &:before {
-      background-color: #fff!important;
+      background-color: #fff !important;
     }
   }
 
@@ -37,6 +37,7 @@
 
   &-hover-black {
     border-color: #000;
+
     &:hover {
       background-color: #000 !important;
     }
@@ -67,7 +68,9 @@
   }
 
   &.theme--dark,
-  &.primary {color: #fff}
+  &.primary {
+    color: #fff
+  }
 
   &.v-btn--disabled {
     border-color: #EBEFF7 !important;
@@ -91,10 +94,14 @@
     color: #fff !important;
   }
 
-  .btns & + & {margin-left: 12px}
+  .btns & + & {
+    margin-left: 12px
+  }
 }
 
-.v-btn__content {line-height: 1}
+.v-btn__content {
+  line-height: 1
+}
 
 .v-card__actions {
   .v-btn + .v-btn {
