@@ -13,7 +13,6 @@ export class Tariff extends (EnumType as IStaticEnum<Tariff>) {
     static readonly PRO = new Tariff("PRO", "Профессионал", MAX, MAX, "399", "199", "4788", "4788",
         Permission.FOREIGN_SHARES | Permission.COMBINED_PORTFOLIO | Permission.INVESTMENTS | Permission.PROFF_MODE);
 
-
     static readonly FREE = new Tariff("FREE", "Бесплатный", 7, 1, "0", "0", "0", "0", 0);
 
     static readonly TRIAL = new Tariff("TRIAL", "Профессионал (демо)", MAX, MAX, "399", "199", "4788", "4788",
