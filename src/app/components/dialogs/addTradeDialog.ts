@@ -419,6 +419,9 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             this.calculateExchangeRate();
             this.changedPurchasedCurrencyValue();
         }
+        if (!this.editMode) {
+            this.calculateFee();
+        }
         this.calculateCurrentShareQuantity();
     }
 
@@ -455,6 +458,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             await this.onChangeExchangeRate();
         }
         await this.fillFields();
+        this.calculateFee();
     }
 
     private get purchasedCurrencyTitle(): string {
@@ -515,14 +519,20 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         }
     }
 
+    /**
+     * Осуществляет пересчет фиксированной комиссии
+     * Работает для всех типов сделок кроме денежных и кроме Купоны, Амортизации, Погашения, Дивиденда
+     */
     private calculateFee(): void {
         const fixFee = this.portfolio.portfolioParams.fixFee ? new Decimal(this.portfolio.portfolioParams.fixFee) : null;
-        if (fixFee && !fixFee.isZero() && this.assetType !== AssetType.MONEY) {
+        const calculation = [Operation.REPAYMENT, Operation.COUPON, Operation.AMORTIZATION, Operation.DIVIDEND].includes(this.operation);
+        if (fixFee && !fixFee.isZero() && this.assetType !== AssetType.MONEY && !calculation) {
             const totalNkd = this.getNkd() && this.getQuantity() ? new Decimal(this.getNkd()).mul(new Decimal(this.isPerOne() ? this.getQuantity() : 1)) :
                 new Decimal(0);
             this.fee = this.totalWithoutFee ? new Decimal(this.totalWithoutFee).sub(totalNkd).mul(fixFee)
                 .dividedBy(100).toDP(2, Decimal.ROUND_HALF_UP).toString() : this.fee;
         }
+        this.resetFee();
     }
 
     private async onDateSelected(date: string): Promise<void> {
@@ -713,6 +723,13 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         this.currencyExchangeRate = null;
         this.purchasedCurrency = "USD";
         this.feeCurrency = "RUB";
+    }
+
+    private resetFee(): void {
+        const calculation = [Operation.REPAYMENT, Operation.COUPON, Operation.AMORTIZATION, Operation.DIVIDEND].includes(this.operation);
+        if (calculation) {
+            this.fee = "";
+        }
     }
 
     private onShareClear(): void {
