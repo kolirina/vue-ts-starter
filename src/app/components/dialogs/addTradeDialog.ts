@@ -370,7 +370,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         } else {
             this.operation = this.data.operation;
         }
-        this.clearFields();
+        // исправление бага валидатора https://github.com/logaretm/vee-validate/issues/2109
+        this.$nextTick(() => this.clearFields());
     }
 
     private changedPurchasedCurrencyValue(): void {
@@ -418,6 +419,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             this.calculateExchangeRate();
             this.changedPurchasedCurrencyValue();
         }
+        this.calculateCurrentShareQuantity();
     }
 
     private calculateExchangeRate(): void {
@@ -544,7 +546,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             if (this.isStockTrade) {
                 const row = this.portfolio.overview.stockPortfolio.rows.find(item => item.stock.ticker === this.share.ticker);
                 this.currentCountShareSearch = row ? row.quantity : null;
-            } else if (this.isBondTrade) {
+            } else if (this.assetType === AssetType.BOND) {
                 const row = this.portfolio.overview.bondPortfolio.rows.find(item => item.bond.ticker === this.share.ticker);
                 this.currentCountShareSearch = row ? row.quantity : null;
             }
@@ -923,7 +925,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private get showCurrentQuantityLabel(): boolean {
-        return this.currentCountShareSearch && (this.isStockTrade || this.isBondTrade);
+        return this.currentCountShareSearch && (this.isStockTrade || this.assetType === AssetType.BOND);
     }
 
     /**

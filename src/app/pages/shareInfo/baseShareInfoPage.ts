@@ -21,15 +21,17 @@ import {Component, Prop, UI, Watch} from "../../app/ui";
 import {DividendChart} from "../../components/charts/dividendChart";
 import {AddTradeDialog} from "../../components/dialogs/addTradeDialog";
 import {CreateOrEditNotificationDialog} from "../../components/dialogs/createOrEditNotificationDialog";
+import {FeedbackDialog} from "../../components/dialogs/feedbackDialog";
 import {StockRate} from "../../components/stockRate";
 import {ShowProgress} from "../../platform/decorators/showProgress";
+import {ClientInfo} from "../../services/clientService";
 import {MarketService} from "../../services/marketService";
 import {NotificationType} from "../../services/notificationsService";
 import {TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
 import {BaseChartDot, Dot, HighStockEventsGroup} from "../../types/charts/types";
 import {Operation} from "../../types/operation";
-import {Portfolio, Share, ShareType, Stock, StockDynamic} from "../../types/types";
+import {ErrorInfo, Portfolio, Share, ShareType, Stock, StockDynamic} from "../../types/types";
 import {ChartUtils} from "../../utils/chartUtils";
 import {TradeUtils} from "../../utils/tradeUtils";
 import {StoreType} from "../../vuex/storeType";
@@ -71,7 +73,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     <span v-if="share.sector.parent" class="info-share-page__name-stock-block__subtitle">
                                         ,&nbsp;родительский сектор: {{ share.sector.parent.name }}
                                     </span>
-                                    <span class="rating-section"  data-v-step="1">
+                                    <span class="rating-section" data-v-step="1">
                                         <stock-rate :share="share"></stock-rate>
                                     </span>
                                 </div>
@@ -88,8 +90,14 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-layout>
                 </div>
                 <div class="info-share-page__empty" v-else>
-                    <span>
+                    <span v-if="!shareNotFound">
                         Здесь будет показана информация об интересующих Вас акциях, а также о доходности по ним.
+                    </span>
+                    <span v-else>
+                        Бумага не была найдена в системе.
+                        <a @click.stop="openFeedBackDialog">
+                            <span>Напишите нам</span> <i class="fas fa-envelope"></i>
+                        </a> и мы постараемся ее добавить
                     </span>
                 </div>
                 <v-card-text class="info-about-stock" v-if="share">
@@ -296,19 +304,21 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-card-text>
             </v-card>
 
-            <div class="space-between-blocks"></div>
-            <v-card v-if="share" class="chart-overflow" flat  data-v-step="2">
-                <v-card-title class="chart-title">
-                    Цена бумаги
-                </v-card-title>
-                <v-card-text>
-                    <line-chart :data="history" :events-chart-data="events" :balloon-title="share.ticker" :avg-line-value="portfolioAvgPrice"></line-chart>
-                </v-card-text>
-            </v-card>
+            <template v-if="share">
+                <div class="space-between-blocks"></div>
+                <v-card class="chart-overflow" flat data-v-step="2">
+                    <v-card-title class="chart-title">
+                        Цена бумаги
+                    </v-card-title>
+                    <v-card-text>
+                        <line-chart :data="history" :events-chart-data="events" :balloon-title="share.ticker" :avg-line-value="portfolioAvgPrice"></line-chart>
+                    </v-card-text>
+                </v-card>
+            </template>
 
             <template v-if="dividends.length">
                 <div class="space-between-blocks"></div>
-                <v-card v-if="share" flat class="dividends-chart"  data-v-step="3">
+                <v-card v-if="share" flat class="dividends-chart" data-v-step="3">
                     <v-card-title class="chart-title">
                         Дивиденды
                         <v-spacer></v-spacer>
@@ -341,6 +351,8 @@ export class BaseShareInfoPage extends UI {
     private marketService: MarketService;
     @MainStore.Getter
     private portfolio: Portfolio;
+    @MainStore.Getter
+    private clientInfo: ClientInfo;
     /** Типы активов */
     private assetType = AssetType;
     /** Ценная бумага */
@@ -357,6 +369,8 @@ export class BaseShareInfoPage extends UI {
     private stockDynamic: StockDynamic = null;
     /** Данные для микрографика */
     private microChartData: any[] = [];
+    /** Признак, если бумага не была найдена */
+    private shareNotFound = false;
 
     /**
      * Инициализация данных
@@ -387,21 +401,30 @@ export class BaseShareInfoPage extends UI {
 
     @ShowProgress
     private async loadShareInfo(): Promise<void> {
+        this.shareNotFound = false;
         const ticker = this.$route.params.ticker;
         if (!ticker) {
             return;
         }
-        const result = await this.marketService.getStockInfo(ticker);
-        this.events = [];
-        this.shareEvents = [];
-        this.share = result.stock;
-        this.history = result.history;
-        this.dividends = result.dividends;
-        this.stockDynamic = result.stockDynamic;
-        this.microChartData = ChartUtils.convertPriceDataDots(result.stockDynamic.yearHistory);
-        this.events.push(result.events);
-        this.shareEvents.push(result.events);
-        await this.loadTradeEvents(ticker);
+        try {
+            const result = await this.marketService.getStockInfo(ticker);
+            this.events = [];
+            this.shareEvents = [];
+            this.share = result.stock;
+            this.history = result.history;
+            this.dividends = result.dividends;
+            this.stockDynamic = result.stockDynamic;
+            this.microChartData = ChartUtils.convertPriceDataDots(result.stockDynamic.yearHistory);
+            this.events.push(result.events);
+            this.shareEvents.push(result.events);
+            await this.loadTradeEvents(ticker);
+        } catch (e) {
+            if ((e as ErrorInfo).errorCode === "NOT_FOUND") {
+                this.shareNotFound = true;
+            } else {
+                throw e;
+            }
+        }
     }
 
     private async loadTradeEvents(ticker: string): Promise<void> {
@@ -423,6 +446,9 @@ export class BaseShareInfoPage extends UI {
     }
 
     private async onShareSelect(share: Share): Promise<void> {
+        if (this.share.ticker === share.ticker) {
+            return;
+        }
         this.share = share;
         if (this.share) {
             if (this.share.shareType === ShareType.BOND) {
@@ -447,5 +473,10 @@ export class BaseShareInfoPage extends UI {
 
     get currencySymbol(): string {
         return TradeUtils.getCurrencySymbol(this.share.currency);
+    }
+
+    private async openFeedBackDialog(): Promise<void> {
+        const message = `Пожалуйста добавьте бумагу ${this.$route.params.ticker} в систему.`;
+        await new FeedbackDialog().show({clientInfo: this.clientInfo, message: message});
     }
 }
