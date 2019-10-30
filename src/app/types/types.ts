@@ -626,6 +626,18 @@ export interface Currency {
     value: string;
 }
 
+export interface BrowserInfo {
+    name: string;
+    version?: string;
+}
+
+export enum BROWSER {
+    CHROME = "Chrome",
+    FIREFOX = "Firefox",
+    IE = "Ie",
+    SAFARY = "Safary"
+}
+
 export enum EventType {
     reloadLineChart = "reloadLineChart",
     exportTable = "exportTable",

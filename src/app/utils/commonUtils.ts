@@ -1,3 +1,5 @@
+import {BrowserInfo} from "../types/types";
+
 export class CommonUtils {
 
     private constructor() {
@@ -67,5 +69,37 @@ export class CommonUtils {
         const UA = window.navigator.userAgent.toLowerCase();
         return (UA && UA.indexOf("android") > 0) || (UA && /iphone|ipad|ipod|ios/.test(UA));
 
+    }
+
+    /**
+     * Определяет тип и версию браузера.
+     * @returns {@link BrowserInfo}
+     */
+    static detectBrowser(): BrowserInfo {
+        const userAgent = navigator.userAgent;
+        let version;
+        let browserInfo = userAgent.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
+        if (/trident/i.test(browserInfo[1])) {
+            version = /\brv[ :]+(\d+)/g.exec(userAgent) || [];
+            return {name: "MSIE", version: (version[1] || "")};
+        }
+        if (browserInfo[1] === "Chrome") {
+            version = userAgent.match(/\bOPR\/(\d+)/);
+            if (version != null) {
+                return {name: "Opera", version: version[1]};
+            }
+            version = userAgent.match(/\bEdge\/(\d+)/);
+            if (version != null) {
+                return {name: "Edge", version: version[1]};
+            }
+        }
+        browserInfo = browserInfo[2] ? [browserInfo[1], browserInfo[2]] :
+            [navigator.appName, navigator.appVersion, "-?"];
+
+        version = userAgent.match(/version\/(\d+)/i);
+        if (version != null) {
+            browserInfo.splice(1, 1, version[1]);
+        }
+        return {name: browserInfo[0], version: browserInfo[1]};
     }
 }
