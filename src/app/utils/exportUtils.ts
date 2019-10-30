@@ -14,10 +14,9 @@
  * (c) ООО "Интеллектуальные инвестиции", 2019
  */
 
-import dayjs from "dayjs";
 import {ClientInfo} from "../services/clientService";
 import {Tariff} from "../types/tariff";
-import {DateUtils} from "./dateUtils";
+import {TariffUtils} from "./tariffUtils";
 
 export class ExportUtils {
 
@@ -29,6 +28,6 @@ export class ExportUtils {
      */
     static isDownloadNotAllowed(clientInfo: ClientInfo): boolean {
         const userTariff = clientInfo.user.tariff;
-        return userTariff === Tariff.TRIAL || (dayjs().isAfter(DateUtils.parseDate(clientInfo.user.paidTill)) && userTariff !== Tariff.FREE);
+        return userTariff === Tariff.TRIAL || TariffUtils.isTariffExpired(clientInfo.user);
     }
 }

@@ -26,6 +26,7 @@ import {TradeValue} from "../../types/trade/tradeValue";
 import {Bond, CurrencyUnit, ErrorInfo, Portfolio, Share, Stock} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {DateUtils} from "../../utils/dateUtils";
+import {TariffUtils} from "../../utils/tariffUtils";
 import {TradeUtils} from "../../utils/tradeUtils";
 import {MainStore} from "../../vuex/mainStore";
 import {TariffExpiredDialog} from "./tariffExpiredDialog";
@@ -949,7 +950,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
      * Проверяет тариф на активность
      */
     private async checkAllowedAddTrade(): Promise<void> {
-        const tariffExpired = this.clientInfo.tariff !== Tariff.FREE && DateUtils.parseDate(this.clientInfo.paidTill).isBefore(dayjs());
+        const tariffExpired = TariffUtils.isTariffExpired(this.clientInfo);
         if (tariffExpired) {
             this.close();
             await new TariffExpiredDialog().show(this.data.router);
