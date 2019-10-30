@@ -100,6 +100,7 @@ export class AssetService {
 
     private mapToRequest(asset: AssetModel): AssetModelDto {
         return {
+            id: asset.id,
             category: asset.category.code,
             ticker: asset.ticker,
             currency: asset.currency,

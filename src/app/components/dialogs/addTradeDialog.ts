@@ -400,6 +400,10 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         if (this.data.quantity) {
             this.quantity = this.data.quantity;
         }
+        if (this.data.date) {
+            this.date = TradeUtils.getDateString(this.data.date);
+            this.time = TradeUtils.getTimeString(this.data.date);
+        }
         if (this.data.ticker || this.data.shareId) {
             await this.setShareFromTicker(this.isAssetTrade ? this.data.shareId : this.data.ticker);
             this.fillFieldsFromShare();
@@ -1051,6 +1055,7 @@ export type TradeDialogData = {
     ticker?: string,
     shareId?: string,
     quantity?: number,
+    date?: string,
     eventFields?: EventFields,
     operation?: Operation,
     assetType?: AssetType,

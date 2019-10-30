@@ -82,10 +82,12 @@ import {TradeUtils} from "../../utils/tradeUtils";
                                 <v-text-field label="Регулярное выражение" v-model.trim="asset.regex" :counter="1024"
                                               v-validate="'max:1024'" :error-messages="errors.collect('regex')" name="regex"
                                               persistent-hint hint="Регулярное выражение для парсинга цены актива"></v-text-field>
-                                <div class="fs12-opacity mt-1">
-                                    <span v-if="asset.source && asset.regex">
-                                        <a @click="checkSource" title="Проверить">Проверить</a>
-                                        Найденное значение: {{ foundValue }}
+                                <div v-if="asset.source && asset.regex" class="mt-1">
+                                    <a @click="checkSource" title="Проверить" class="fs12">Проверить</a>
+                                    <span v-if="foundValue" class="fs12-opacity">Найденное значение:</span>
+                                    <b v-if="foundValue" class="fs12">{{ foundValue }}</b>
+                                    <span v-if="foundValue" class="fs12">
+                                        <a @click="setToPrice" title="Указать в качестве цены">Указать в качестве цены</a>
                                     </span>
                                 </div>
                             </v-flex>
@@ -201,10 +203,13 @@ export class AssetEditDialog extends CustomDialog<AssetModel, boolean> {
         await this.assetService.editAsset(this.asset);
     }
 
-    // todo assets проверка цены
     private async checkSource(): Promise<void> {
         const result = await this.assetService.checkSource({source: this.asset.source, regex: this.asset.regex});
         this.foundValue = result ? result : "Ничего не найдено";
+    }
+
+    private setToPrice(): void {
+        this.asset.price = this.foundValue;
     }
 
     private handleError(error: ErrorInfo): void {

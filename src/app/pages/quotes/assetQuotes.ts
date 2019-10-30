@@ -52,7 +52,17 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-btn>
             </v-layout>
 
-            <empty-search-result v-if="filteredAssets.length === 0" @resetFilter="resetFilter"></empty-search-result>
+            <empty-search-result v-if="filteredAssets.length === 0 && assets.length !== 0" @resetFilter="resetFilter"></empty-search-result>
+            <v-container v-if="assets.length === 0" class="h100pc">
+                <v-layout justify-center align-center column class="h100pc">
+                    <v-img src="./img/portfolio/empty-portfolio.svg" width="100%" heigth="100%" max-width="353" max-height="302" class="margB35"></v-img>
+                    <div class="alignC mw520">
+                        <div class="fs16">
+                            Список кастомных активов пуст
+                        </div>
+                    </div>
+                </v-layout>
+            </v-container>
 
             <v-data-table v-else :headers="headers" :items="filteredAssets" item-key="id" class="data-table quotes-table" must-sort expand hide-actions>
                 <template #items="props">
