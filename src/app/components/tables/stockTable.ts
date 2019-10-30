@@ -68,7 +68,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </td>
                     <td v-if="tableHeadersState.company" class="text-xs-left">
                         <stock-link v-if="props.item.share" :class="props.item.quantity !== 0 ? '' : 'line-through'"
-                                    :ticker="props.item.stock.ticker">{{ props.item.share.shortname }}</stock-link>
+                                    :ticker="props.item.share.ticker">{{ props.item.share.shortname }}</stock-link>
                         &nbsp;
                         <span v-if="props.item.share && props.item.quantity !== 0"
                               :class="markupClasses(Number(props.item.share.change))">{{ props.item.share.change }}&nbsp;%</span>

@@ -390,7 +390,7 @@ export class BaseShareInfoPage extends UI {
         if (this.share) {
             this.events = [];
             this.events.push(...this.shareEvents);
-            await this.loadTradeEvents(this.share.ticker);
+            await this.loadTradeEvents();
         }
     }
 
@@ -409,12 +409,12 @@ export class BaseShareInfoPage extends UI {
         this.microChartData = ChartUtils.convertPriceDataDots(result.shareDynamic.yearHistory);
         this.events.push(result.events);
         this.shareEvents.push(result.events);
-        await this.loadTradeEvents(this.ticker);
+        await this.loadTradeEvents();
     }
 
-    private async loadTradeEvents(ticker: string): Promise<void> {
-        const tradeEvents = this.isStockAsset ? await this.tradeService.getShareTradesEvent(this.portfolio.id, ticker) :
-            await this.tradeService.getAssetShareTradesEvent(this.portfolio.id, ticker);
+    private async loadTradeEvents(): Promise<void> {
+        const tradeEvents = this.isStockAsset ? await this.tradeService.getShareTradesEvent(this.portfolio.id, this.share.ticker) :
+            await this.tradeService.getAssetShareTradesEvent(this.portfolio.id, String(this.share.id));
         this.events.push(...ChartUtils.processEventsChartData(tradeEvents, "flags", "dataseries"));
     }
 
