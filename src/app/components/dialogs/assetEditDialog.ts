@@ -21,6 +21,7 @@ import {DisableConcurrentExecution} from "../../platform/decorators/disableConcu
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {CustomDialog} from "../../platform/dialogs/customDialog";
 import {AssetCategory, AssetModel, AssetService} from "../../services/assetService";
+import {BigMoney} from "../../types/bigMoney";
 import {EventType} from "../../types/eventType";
 import {CurrencyUnit, ErrorInfo} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
@@ -144,6 +145,8 @@ export class AssetEditDialog extends CustomDialog<AssetModel, boolean> {
     private processState = false;
     /** Индикатор состояния */
     private foundValue: string = null;
+    /** Начальная цена редактируемого актива */
+    private initialPrice: string = null;
 
     async mounted(): Promise<void> {
         await this.setDialogParams();
@@ -164,7 +167,9 @@ export class AssetEditDialog extends CustomDialog<AssetModel, boolean> {
             };
         } else {
             this.asset = {...this.data};
+            this.asset.price = new BigMoney(this.asset.price).amount.toString();
         }
+        this.initialPrice = this.asset.price;
     }
 
     @ShowProgress
@@ -187,7 +192,7 @@ export class AssetEditDialog extends CustomDialog<AssetModel, boolean> {
             }
             const msg = `Актив успешно ${this.editMode ? "отредактирован" : "добавлен"}`;
             this.$snotify.info(msg);
-            this.close();
+            this.close(this.initialPrice !== this.asset.price);
         } catch (e) {
             this.handleError(e);
         } finally {

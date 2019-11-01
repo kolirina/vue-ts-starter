@@ -82,8 +82,12 @@ export class AssetService {
         } as PageableResponse<AssetModel>;
     }
 
-    async saveAsset(asset: AssetModel): Promise<void> {
-        return this.http.post(this.BASE, this.mapToRequest(asset));
+    async saveAsset(asset: AssetModel): Promise<AssetModel> {
+        const result = await this.http.post<AssetModelDto>(this.BASE, this.mapToRequest(asset));
+        return {
+            ...result,
+            category: AssetCategory.valueByName(result.category)
+        } as AssetModel;
     }
 
     async editAsset(asset: AssetModel): Promise<void> {
@@ -126,13 +130,13 @@ export interface AssetModelBase {
     /** Цена актива (текущая) */
     price: string;
     /** Url по которму можно парсить цену */
-    source: string;
+    source?: string;
     /** Регулярное выражение для парсинга цены */
-    regex: string;
+    regex?: string;
     /** Список тэгов */
-    tags: string;
+    tags?: string;
     /** Заметка */
-    note: string;
+    note?: string;
 }
 
 export interface AssetModel extends AssetModelBase {

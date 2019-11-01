@@ -126,6 +126,14 @@ const MainStore = namespace(StoreType.MAIN);
                                     </td>
                                 </tr>
                                 <tr>
+                                    <td class="info-about-stock__content-title">Дата последнего обновления</td>
+                                    <td>
+                                        <span class="info-about-stock__content-value">
+                                            {{ share.lastUpdateTime | date("DD.MM.YYYY HH:mm:ss") }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
                                     <td class="info-about-stock__content-title">Кол-во бумаг в обращении</td>
                                     <td v-if="share.issueSize">
                                         <span class="info-about-stock__content-value">

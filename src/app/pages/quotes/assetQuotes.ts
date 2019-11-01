@@ -225,6 +225,12 @@ export class AssetQuotes extends UI {
 
     private async openAssetEditDialog(asset: AssetModel): Promise<void> {
         const result = await new AssetEditDialog().show(asset);
+        if (result) {
+            const isInCurrentPortfolio = this.portfolio.overview.assetPortfolio.rows.some(row => row.share.id === asset.id);
+            if (isInCurrentPortfolio) {
+                await this.reloadPortfolio(this.portfolio.id);
+            }
+        }
     }
 
     private async openAddAssetDialog(): Promise<void> {

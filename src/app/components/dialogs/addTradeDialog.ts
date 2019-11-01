@@ -7,6 +7,7 @@ import {UI} from "../../app/ui";
 import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {CustomDialog} from "../../platform/dialogs/customDialog";
+import {AssetCategory, AssetService} from "../../services/assetService";
 import {Client, ClientService} from "../../services/clientService";
 import {DateTimeService} from "../../services/dateTimeService";
 import {EventFields} from "../../services/eventService";
@@ -75,7 +76,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                             <!-- Тикер бумаги -->
                             <v-flex v-if="shareAssetType" xs12 :class="portfolioProModeEnabled ? 'sm6' : 'sm9'">
                                 <share-search :asset-type="assetType" :filtered-shares="filteredShares"
-                                              placeholder="Тикер или название компании" class="required"
+                                              :placeholder="shareSearchPlaceholder" class="required"
                                               @change="onShareSelect" @clear="onShareClear" autofocus></share-search>
                             </v-flex>
 
@@ -100,6 +101,34 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                     </v-time-picker>
                                 </v-dialog>
                             </v-flex>
+
+                            <!-- Блок указания данных по добавляемому активу -->
+                            <v-layout v-if="newCustomAsset" class="ma-auto" wrap>
+                                <!-- Категория актива -->
+                                <v-flex xs12 sm6>
+                                    <v-select :items="assetCategories" v-model="assetCategory" :return-object="true" label="Категория актива" item-text="description"
+                                              dense hide-details></v-select>
+                                </v-flex>
+                                <!-- Цена -->
+                                <v-flex xs12 sm3>
+                                    <ii-number-field label="Текущая цена" v-model="assetPrice" class="required" name="assetPrice" v-validate="'required|min_value:0.000001'"
+                                                     :error-messages="errors.collect('assetPrice')">
+                                    </ii-number-field>
+                                </v-flex>
+                                <!-- Влюта -->
+                                <v-flex xs12 sm3>
+                                    <v-select :items="currencyList" v-model="assetCurrency" label="Валюта актива"></v-select>
+                                </v-flex>
+                                <!-- Дополнительная информация -->
+                                <v-flex xs12 sm12>
+                                    <div class="fs12-opacity mt-1">
+                                    <span>
+                                        Вы можете настроить дополнительые параметры позже на
+                                        <a @click="goToUserAssets" title="Управление активами">странице</a> управления вашими активами
+                                    </span>
+                                    </div>
+                                </v-flex>
+                            </v-layout>
 
                             <!-- Цена -->
                             <v-flex v-if="shareAssetType" xs12 sm6>
@@ -149,9 +178,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
 
                             <!-- Комиссия -->
                             <v-flex v-if="shareAssetType && !calculationAssetType" xs12>
-                                <ii-number-field label="Комиссия" v-model="fee" :decimals="2" maxLength="11"
-                                                 hint="Для автоматического рассчета комиссии задайте значение в Настройках или введите значение суммарной комиссии">
-                                </ii-number-field>
+                                <ii-number-field label="Комиссия" v-model="fee" :decimals="2" maxLength="11" :hint="feeHint"></ii-number-field>
                             </v-flex>
 
                             <!-- Сумма денег (для денежной сделки) -->
@@ -274,6 +301,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private overviewService: OverviewService;
     @Inject
     private dateTimeService: DateTimeService;
+    @Inject
+    private assetService: AssetService;
     /** Информация о клиенте */
     private clientInfo: Client = null;
     /** Операции начислений */
@@ -282,6 +311,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private portfolio: Portfolio = null;
     /** Типы возможных активов */
     private assetTypes = AssetType.values();
+    /** Типы возможных активов */
+    private assetCategories = AssetCategory.values();
     /** Операции */
     private Operation = Operation;
     /** Тип добавляемого актива */
@@ -304,6 +335,12 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private moneyCurrency = "RUB";
     /** Ценная бумага сделки. Для денег может быть null */
     private share: Share = null;
+    /** Текущая цена актива */
+    private assetPrice = "";
+    /** Тип актива по умолчанию */
+    private assetCategory: AssetCategory = AssetCategory.OTHER;
+    /** Валюта актива по умолчанию */
+    private assetCurrency = "RUB";
     /** Список найденных бумаг для добавления */
     private filteredShares: Share[] = [];
 
@@ -508,7 +545,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             if (this.assetType === AssetType.STOCK) {
                 const stock = (await this.marketHistoryService.getStockHistory(this.share.ticker, dayjs(this.date).format("DD.MM.YYYY")));
                 this.setPriceFromStockTypeShare(stock.price);
-            } else if (this.assetType === AssetType.ASSET) {
+            } else if (this.assetType === AssetType.ASSET && this.share.id) {
                 const asset = (await this.marketHistoryService.getAssetHistory(String(this.share.id), dayjs(this.date).format("DD.MM.YYYY")));
                 this.setPriceFromStockTypeShare(asset.price);
             } else if (this.assetType === AssetType.BOND) {
@@ -623,6 +660,9 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
                 await this.editTrade(tradeFields);
                 UI.emit(EventType.TRADE_UPDATED);
             } else {
+                if (this.newCustomAsset) {
+                    await this.saveAsset(tradeFields);
+                }
                 await this.saveTrade(tradeFields);
                 UI.emit(EventType.TRADE_CREATED, {portfolioId: this.portfolio.id} as AddTradeEvent);
             }
@@ -641,6 +681,19 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         } finally {
             this.processState = false;
         }
+    }
+
+    private async saveAsset(tradeFields: TradeFields): Promise<void> {
+        const asset = await this.assetService.saveAsset({
+            category: this.assetCategory,
+            currency: this.assetCurrency,
+            ticker: this.share.shortname,
+            name: this.share.shortname,
+            price: this.assetPrice,
+        });
+        this.share.id = asset.id;
+        tradeFields.shareId = String(asset.id);
+        UI.emit(EventType.ASSET_CREATED);
     }
 
     private async saveTrade(tradeFields: TradeFields): Promise<void> {
@@ -741,11 +794,13 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         this.currencyExchangeRate = null;
         this.purchasedCurrency = "USD";
         this.feeCurrency = "RUB";
+        this.assetPrice = "";
+        this.assetCategory = AssetCategory.OTHER;
+        this.assetCurrency = "RUB";
     }
 
     private resetFee(): void {
-        const calculation = [Operation.REPAYMENT, Operation.COUPON, Operation.AMORTIZATION, Operation.DIVIDEND].includes(this.operation);
-        if (calculation) {
+        if (!this.autoFeeApplicable) {
             this.fee = "";
         }
     }
@@ -916,7 +971,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         switch (this.assetType) {
             case AssetType.STOCK:
             case AssetType.ASSET:
-                return this.share && this.date && this.price && this.quantity > 0;
+                return this.share && this.date && this.price && this.quantity > 0 && (!this.newCustomAsset || !!this.assetPrice);
             case AssetType.BOND:
                 return this.share && this.date && this.price && (!!this.facevalue || [Operation.COUPON, Operation.AMORTIZATION].includes(this.operation)) && this.quantity > 0;
             case AssetType.MONEY:
@@ -932,10 +987,13 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private get lotSizeHint(): string {
-        return "указывается в штуках." + (this.share && this.assetType === AssetType.STOCK ? " 1 лот = " + this.share.lotsize + " шт." : "");
+        return this.newCustomAsset ? "" : "указывается в штуках." + (this.share && this.assetType === AssetType.STOCK ? " 1 лот = " + this.share.lotsize + " шт." : "");
     }
 
     private get priceLabel(): string {
+        if (this.newCustomAsset) {
+            return "Цена покупки";
+        }
         return [Operation.AMORTIZATION, Operation.COUPON, Operation.DIVIDEND].includes(this.operation) ? "Начисление" : "Цена";
     }
 
@@ -967,6 +1025,26 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         return `${this.editMode ? "Редактирование" : "Добавление"} сделки${this.editMode ? "" : " в"}`;
     }
 
+    private get shareSearchPlaceholder(): string {
+        return this.isAssetTrade ? "Наименование" : "Тикер или название компании";
+    }
+
+    private get feeHint(): string {
+        return this.autoFeeApplicable ? "Для автоматического рассчета комиссии задайте значение в Настройках или введите значение суммарной комиссии" : "";
+    }
+
+    /**
+     * Возвращает признак применимости авторасчета комиссии для выбранного типа актива и операции
+     */
+    private get autoFeeApplicable(): boolean {
+        return this.isStockTrade || (this.isAssetTrade && (this.share && ["STOCK", "BOND", "ETF"].includes((this.share as Asset).category))) ||
+            [Operation.REPAYMENT, Operation.COUPON, Operation.AMORTIZATION, Operation.DIVIDEND].includes(this.operation);
+    }
+
+    private get newCustomAsset(): boolean {
+        return this.isAssetTrade && this.share && this.share.id === null;
+    }
+
     private get showCurrentQuantityLabel(): boolean {
         return this.currentCountShareSearch && (this.isStockTrade || this.isBondTrade || this.isAssetTrade);
     }
@@ -979,6 +1057,12 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         if (tariffExpired) {
             this.close();
             await new TariffExpiredDialog().show(this.data.router);
+        }
+    }
+
+    private goToUserAssets(): void {
+        if (this.data.router.currentRoute.path !== "/quotes/user-assets") {
+            this.data.router.push("/quotes/user-assets");
         }
     }
 

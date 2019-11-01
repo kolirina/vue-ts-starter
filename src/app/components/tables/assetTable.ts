@@ -18,19 +18,22 @@ import {Component, namespace, Prop, UI, Watch} from "../../app/ui";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {Storage} from "../../platform/services/storage";
+import {AssetCategory} from "../../services/assetService";
+import {ClientInfo} from "../../services/clientService";
 import {PortfolioService} from "../../services/portfolioService";
 import {TableHeadersState, TABLES_NAME, TablesService} from "../../services/tablesService";
 import {TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
 import {BigMoney} from "../../types/bigMoney";
 import {Operation} from "../../types/operation";
-import {AssetPortfolioRow, Pagination, Share, StockPortfolioRow, TableHeader} from "../../types/types";
+import {Asset, AssetPortfolioRow, Pagination, Share, ShareType, StockPortfolioRow, TableHeader} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {SortUtils} from "../../utils/sortUtils";
 import {TradeUtils} from "../../utils/tradeUtils";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 import {AddTradeDialog} from "../dialogs/addTradeDialog";
+import {AssetEditDialog} from "../dialogs/assetEditDialog";
 import {ConfirmDialog} from "../dialogs/confirmDialog";
 import {EditShareNoteDialog, EditShareNoteDialogData} from "../dialogs/editShareNoteDialog";
 import {ShareTradesDialog} from "../dialogs/shareTradesDialog";
@@ -89,7 +92,16 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-tooltip>
                     </td>
                     <td v-if="tableHeadersState.currPrice" class="text-xs-right ii-number-cell">
-                        <template>{{ props.item.currPrice | amount(false, null, false, false) }}</template>
+                        <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                            <template #activator="{ on }">
+                                <span class="data-table__header-with-tooltip" v-on="on">
+                                    <template>{{ props.item.currPrice | amount(false, null, false, false) }}</template>
+                                </span>
+                            </template>
+                            <span v-if="props.item.share">
+                                Дата последнего обновления {{ props.item.share.lastUpdateTime | date("DD.MM.YYYY HH:mm:ss") }}
+                            </span>
+                        </v-tooltip>
                     </td>
                     <td v-if="tableHeadersState.bcost" class="text-xs-right ii-number-cell" v-tariff-expired-hint>{{ props.item.bcost | amount(true) }}</td>
                     <td v-if="tableHeadersState.scost" class="text-xs-right ii-number-cell">{{ props.item.scost | amount(true) }}</td>
@@ -125,6 +137,12 @@ const MainStore = namespace(StoreType.MAIN);
                                 <span class="menuDots"></span>
                             </v-btn>
                             <v-list dense>
+                                <v-list-tile v-if="assetEditAllowed(props.item.share)" @click="openAssetEditDialog(props.item.share)">
+                                    <v-list-tile-title>
+                                        Настроить актив
+                                    </v-list-tile-title>
+                                </v-list-tile>
+                                <v-divider v-if="assetEditAllowed(props.item.share)"></v-divider>
                                 <v-list-tile @click="openShareTradesDialog(props.item.share)">
                                     <v-list-tile-title>
                                         Все сделки
@@ -146,7 +164,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         Продать
                                     </v-list-tile-title>
                                 </v-list-tile>
-                                <v-list-tile @click="openTradeDialog(props.item, operation.DIVIDEND)">
+                                <v-list-tile v-if="dividendApplicable(props.item)" @click="openTradeDialog(props.item, operation.DIVIDEND)">
                                     <v-list-tile-title>
                                         Дивиденд
                                     </v-list-tile-title>
@@ -230,6 +248,8 @@ export class AssetTable extends UI {
     private portfolioService: PortfolioService;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
     private reloadPortfolio: (id: number) => Promise<void>;
+    @MainStore.Getter
+    private clientInfo: ClientInfo;
     /** Идентификатор портфеля */
     @Prop({default: null, type: String, required: true})
     private portfolioId: string;
@@ -322,6 +342,30 @@ export class AssetTable extends UI {
         await new ShareTradesDialog().show({trades, ticker: share.ticker});
     }
 
+    private assetEditAllowed(share: Share): boolean {
+        const asset = share as Asset;
+        return asset.userId === this.clientInfo.user.id;
+    }
+
+    private async openAssetEditDialog(share: Share): Promise<void> {
+        const asset = share as Asset;
+        const result = await new AssetEditDialog().show({
+            id: asset.id,
+            ticker: asset.ticker,
+            category: AssetCategory.valueByName(asset.category),
+            currency: asset.currency,
+            name: asset.name,
+            price: asset.price,
+            source: asset.source,
+            regex: asset.regex,
+            tags: asset.tags,
+            note: asset.note,
+        });
+        if (result) {
+            await this.reloadPortfolio(Number(this.portfolioId));
+        }
+    }
+
     /**
      * Обновляет заметки по бумага в портфеле
      * @param share
@@ -338,17 +382,17 @@ export class AssetTable extends UI {
     @ShowProgress
     private async editShareNote(data: EditShareNoteDialogData): Promise<void> {
         await this.portfolioService.updateShareNotes(this.portfolioId, this.shareNotes, data);
-        this.$snotify.info(`Заметка по бумаге ${data.ticker} была успешно сохранена`);
+        this.$snotify.info(`Заметка по активу ${data.ticker} была успешно сохранена`);
     }
 
     private async openTradeDialog(stockRow: StockPortfolioRow, operation: Operation): Promise<void> {
         const result = await new AddTradeDialog().show({
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
-            share: stockRow.share,
+            shareId: String(stockRow.share.id),
             quantity: Math.abs(stockRow.quantity),
             operation,
-            assetType: AssetType.STOCK
+            assetType: AssetType.ASSET
         });
         if (result) {
             await this.reloadPortfolio(Number(this.portfolioId));
@@ -356,7 +400,7 @@ export class AssetTable extends UI {
     }
 
     private async deleteAllTrades(stockRow: StockPortfolioRow): Promise<void> {
-        const result = await new ConfirmDialog().show(`Вы уверены, что хотите удалить все сделки по ценной бумаге ${stockRow.share.ticker} (${stockRow.quantity} шт.)?`);
+        const result = await new ConfirmDialog().show(`Вы уверены, что хотите удалить все сделки по активу "${stockRow.share.shortname}" (${stockRow.quantity} шт.)?`);
         if (result === BtnReturn.YES) {
             await this.deleteAllTradesAndReloadData(stockRow);
         }
@@ -364,9 +408,8 @@ export class AssetTable extends UI {
 
     @ShowProgress
     private async deleteAllTradesAndReloadData(stockRow: StockPortfolioRow): Promise<void> {
-        await this.tradeService.deleteAllTrades({
-            assetType: AssetType.STOCK.enumName,
-            ticker: stockRow.share.ticker,
+        await this.tradeService.deleteAllAssetTrades({
+            assetId: stockRow.share.id,
             portfolioId: Number(this.portfolioId)
         });
         await this.reloadPortfolio(Number(this.portfolioId));
@@ -415,6 +458,12 @@ export class AssetTable extends UI {
 
     private markupClasses(amount: number): string[] {
         return TradeUtils.markupClasses(amount);
+    }
+
+    private dividendApplicable(stockRow: StockPortfolioRow): boolean {
+        const asset = stockRow.share as Asset;
+        return asset.shareType === ShareType.STOCK || (["STOCK", "BOND", "ETF"].includes(asset.category) &&
+            !(asset.source || "").includes("investfunds.ru"));
     }
 
     private get portfolioCurrency(): string {

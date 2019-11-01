@@ -5,9 +5,9 @@ import {Operation} from "./operation";
 export class AssetType extends (EnumType as IStaticEnum<AssetType>) {
 
     static readonly STOCK = new AssetType("Акции", [Operation.BUY, Operation.SELL, Operation.DIVIDEND]);
-    static readonly ASSET = new AssetType("Актив", [Operation.BUY, Operation.SELL, Operation.DIVIDEND]);
     static readonly BOND = new AssetType("Облигации", [Operation.BUY, Operation.SELL, Operation.REPAYMENT, Operation.COUPON, Operation.AMORTIZATION]);
     static readonly MONEY = new AssetType("Деньги", [Operation.DEPOSIT, Operation.WITHDRAW, Operation.INCOME, Operation.LOSS, Operation.CURRENCY_BUY, Operation.CURRENCY_SELL]);
+    static readonly ASSET = new AssetType("Прочий актив", [Operation.BUY, Operation.SELL, Operation.DIVIDEND]);
 
     private constructor(public description: string, public operations: Operation[]) {
         super();

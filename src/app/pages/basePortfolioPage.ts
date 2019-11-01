@@ -98,7 +98,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                                 :withMenu="true" name="asset" :state="$uistate.ASSET_TABLE" @click="onAssetTablePanelClick" class="mt-3 selectable"
                                 :data-v-step="getTourStepIndex(PortfolioBlockType.ASSET_TABLE)">
                     <template #header>
-                        <span>Активы</span>
+                        <span>Прочие активы</span>
                         <v-fade-transition mode="out-in">
                             <span v-if="assetTablePanelClosed" class="v-expansion-panel__header-info">
                                 {{ assetRowsCountLabel }}

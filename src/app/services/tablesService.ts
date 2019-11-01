@@ -3,6 +3,13 @@ import {Service} from "../platform/decorators/service";
 import {Storage} from "../platform/services/storage";
 import {TableHeader} from "../types/types";
 
+const getHeaders = (headers: TableHeader[], isAsset: boolean = false): TableHeader[] => {
+    if (isAsset) {
+        headers[1].text = "Название";
+    }
+    return headers;
+};
+
 @Service("TablesService")
 @Singleton
 export class TablesService {
@@ -125,8 +132,8 @@ export class TablesService {
     ];
 
     readonly HEADERS: TableHeaders = {
-        [TABLES_NAME.STOCK]: [...this.SHARE_TYPES_HEADERS],
-        [TABLES_NAME.ASSET]: [...this.SHARE_TYPES_HEADERS],
+        [TABLES_NAME.STOCK]: [...getHeaders(this.SHARE_TYPES_HEADERS)],
+        [TABLES_NAME.ASSET]: [...(getHeaders(this.SHARE_TYPES_HEADERS, true))],
 
         [TABLES_NAME.BOND]: [
             {text: "", align: "left", ghost: true, sortable: false, value: "", active: true, width: "50"},
