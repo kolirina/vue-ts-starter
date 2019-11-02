@@ -107,7 +107,7 @@ export class DividendDashboardComponent extends UI {
             hasNotBorderLeft: true,
             mainCurrency,
             secondCurrency: secondCurrency,
-            tooltip: "Общая сумма полученных дивинедов за все время ведения портфеля"
+            tooltip: "Общая сумма полученных дивидендов за все время ведения портфеля"
         };
         this.blocks[1] = {
             name: "Дивидендная доходность",
