@@ -15,7 +15,8 @@
  */
 
 import dayjs from "dayjs";
-import {ClientInfo} from "../services/clientService";
+import {Client, ClientInfo} from "../services/clientService";
+import {Tariff} from "../types/tariff";
 import {DateUtils} from "./dateUtils";
 
 export class TariffUtils {
@@ -35,5 +36,11 @@ export class TariffUtils {
         const nextPurchaseDiscountExpired = DateUtils.parseDate(clientInfo.user.nextPurchaseDiscountExpired);
         return (clientInfo.user.nextPurchaseDiscountExpired == null || dayjs().isBefore(nextPurchaseDiscountExpired)) &&
             clientInfo.user.nextPurchaseDiscount > 0;
+    }
+
+    static isTariffExpired(clientInfo: Client): boolean {
+        const paidTill = DateUtils.parseDate(clientInfo.paidTill);
+        const currentDate = dayjs();
+        return clientInfo.tariff !== Tariff.FREE && paidTill.isBefore(currentDate) && !paidTill.isSame(currentDate, "date");
     }
 }

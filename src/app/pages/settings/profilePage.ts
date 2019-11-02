@@ -107,6 +107,8 @@ export class ProfilePage extends UI {
 
     @MainStore.Getter
     private clientInfo: ClientInfo;
+    @MainStore.Getter
+    private expiredTariff: boolean;
     @MainStore.Action(MutationType.RELOAD_CLIENT_INFO)
     private reloadUser: () => Promise<void>;
     /** Сервис для работы с данными клиента */
@@ -237,8 +239,7 @@ export class ProfilePage extends UI {
     }
 
     private get expirationDescription(): string {
-        const paidTill = DateUtils.parseDate(this.clientInfo.user.paidTill);
-        return `${paidTill.isAfter(dayjs()) ? "действует до " : "истек "} ${this.expirationDate}`;
+        return `${this.expiredTariff ? "истек " : "действует до "} ${this.expirationDate}`;
     }
 
     private get expirationDate(): string {

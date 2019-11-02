@@ -251,6 +251,9 @@ export class TariffBlock extends UI {
     @Prop({required: false, type: Object})
     private paymentInfo: UserPaymentInfo;
 
+    @MainStore.Getter
+    private expiredTariff: boolean;
+
     /** Тарифы */
     private Tariff = Tariff;
 
@@ -296,8 +299,7 @@ export class TariffBlock extends UI {
     }
 
     private get expirationDescription(): string {
-        const paidTill = DateUtils.parseDate(this.clientInfo.user.paidTill);
-        return (paidTill.isAfter(dayjs()) ? "Действует до " : "Истек ") + this.expirationDate;
+        return (this.expiredTariff ? "Истек " : "Действует до ") + this.expirationDate;
     }
 
     private get expirationDate(): string {
@@ -432,6 +434,8 @@ export class TariffsPage extends UI {
     @MainStore.Getter
     private clientInfo: ClientInfo;
     @MainStore.Getter
+    private expiredTariff: boolean;
+    @MainStore.Getter
     private portfolio: Portfolio;
     @MainStore.Action(MutationType.RELOAD_CLIENT_INFO)
     private reloadUser: () => Promise<void>;
@@ -536,7 +540,7 @@ export class TariffsPage extends UI {
      * Возвращает признак истекшей подписки
      */
     private isSubscriptionExpired(): boolean {
-        return dayjs().isAfter(DateUtils.parseDate(this.clientInfo.user.paidTill));
+        return this.expiredTariff;
     }
 
     /**

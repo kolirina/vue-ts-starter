@@ -23,11 +23,11 @@ import {FeedbackService, FeedbackType} from "../../services/feedbackService";
                     <v-container grid-list-md>
                         <v-layout wrap>
                             <v-flex xs12 sm12>
-                                <v-text-field label="От кого" v-model.trim="data.user.username" :readonly="isDemoUser()"></v-text-field>
+                                <v-text-field label="От кого" v-model.trim="data.clientInfo.user.username" :readonly="isDemoUser()"></v-text-field>
                             </v-flex>
 
                             <v-flex xs12 sm12>
-                                <v-text-field label="Email" v-model.trim="data.user.email" :readonly="isDemoUser()"></v-text-field>
+                                <v-text-field label="Email" v-model.trim="data.clientInfo.user.email" :readonly="isDemoUser()"></v-text-field>
                             </v-flex>
 
                             <v-flex xs12 sm12>
@@ -55,7 +55,7 @@ import {FeedbackService, FeedbackType} from "../../services/feedbackService";
         </v-dialog>
     `
 })
-export class FeedbackDialog extends CustomDialog<ClientInfo, void> {
+export class FeedbackDialog extends CustomDialog<FeedbackDialogData, void> {
 
     @Inject
     private feedbackService: FeedbackService;
@@ -78,8 +78,9 @@ export class FeedbackDialog extends CustomDialog<ClientInfo, void> {
      * @inheritDoc
      */
     mounted(): void {
-        this.username = this.data.user.username;
-        this.email = this.data.user.email;
+        this.username = this.data.clientInfo.user.username;
+        this.email = this.data.clientInfo.user.email;
+        this.message = this.data.message;
     }
 
     /**
@@ -103,4 +104,9 @@ export class FeedbackDialog extends CustomDialog<ClientInfo, void> {
     private isDemoUser(): boolean {
         return this.username !== "demo_user";
     }
+}
+
+export interface FeedbackDialogData {
+    clientInfo: ClientInfo;
+    message?: string;
 }

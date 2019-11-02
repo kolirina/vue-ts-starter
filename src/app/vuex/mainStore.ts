@@ -1,4 +1,3 @@
-import dayjs from "dayjs";
 import {Container} from "typescript-ioc";
 import {ActionContext, Module} from "vuex";
 import {Storage} from "../platform/services/storage";
@@ -7,9 +6,8 @@ import {EventService, EventsResponse} from "../services/eventService";
 import {OverviewService} from "../services/overviewService";
 import {PortfolioParams, PortfolioService} from "../services/portfolioService";
 import {StoreKeys} from "../types/storeKeys";
-import {Tariff} from "../types/tariff";
 import {Portfolio, TariffHint} from "../types/types";
-import {DateUtils} from "../utils/dateUtils";
+import {TariffUtils} from "../utils/tariffUtils";
 import {ActionType} from "./actionType";
 import {GetterType} from "./getterType";
 import {MutationType} from "./mutationType";
@@ -64,7 +62,7 @@ const Getters = {
         return state.tariffExpiredHintCoords;
     },
     [GetterType.EXPIRED_TARIFF](state: StateHolder): boolean {
-        return state.clientInfo.user.tariff !== Tariff.FREE && DateUtils.parseDate(state.clientInfo.user.paidTill).isBefore(dayjs());
+        return TariffUtils.isTariffExpired(state.clientInfo.user);
     }
 };
 
