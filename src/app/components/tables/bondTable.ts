@@ -28,7 +28,7 @@ import {TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
 import {BigMoney} from "../../types/bigMoney";
 import {Operation} from "../../types/operation";
-import {BondPortfolioRow, Pagination, Portfolio, TableHeader} from "../../types/types";
+import {BondPortfolioRow, Pagination, Portfolio, ShareType, TableHeader} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {SortUtils} from "../../utils/sortUtils";
 import {TradeUtils} from "../../utils/tradeUtils";
@@ -359,7 +359,7 @@ export class BondTable extends UI {
         } else {
             trades = await this.tradeService.getTradesCombinedPortfolio(ticker, this.viewCurrency, this.ids);
         }
-        await new ShareTradesDialog().show({trades, ticker});
+        await new ShareTradesDialog().show({trades, ticker, shareType: ShareType.BOND});
     }
 
     private async openTradeDialog(bondRow: BondPortfolioRow, operation: Operation): Promise<void> {

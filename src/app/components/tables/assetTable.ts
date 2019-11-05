@@ -339,7 +339,7 @@ export class AssetTable extends UI {
         } else {
             trades = await this.tradeService.getTradesCombinedPortfolio(share.ticker, this.viewCurrency, this.ids);
         }
-        await new ShareTradesDialog().show({trades, ticker: share.ticker});
+        await new ShareTradesDialog().show({trades, ticker: share.ticker, shareType: ShareType.ASSET});
     }
 
     private assetEditAllowed(share: Share): boolean {
@@ -375,14 +375,14 @@ export class AssetTable extends UI {
         const data = await new EditShareNoteDialog().show({ticker: share.ticker, note: this.shareNotes[key]});
         if (data) {
             data.ticker = key;
-            await this.editShareNote(data);
+            await this.editShareNote(data, share.ticker);
         }
     }
 
     @ShowProgress
-    private async editShareNote(data: EditShareNoteDialogData): Promise<void> {
+    private async editShareNote(data: EditShareNoteDialogData, ticker: string): Promise<void> {
         await this.portfolioService.updateShareNotes(this.portfolioId, this.shareNotes, data);
-        this.$snotify.info(`Заметка по активу ${data.ticker} была успешно сохранена`);
+        this.$snotify.info(`Заметка по активу ${ticker} была успешно сохранена`);
     }
 
     private async openTradeDialog(stockRow: StockPortfolioRow, operation: Operation): Promise<void> {

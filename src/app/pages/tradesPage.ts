@@ -165,8 +165,9 @@ export class TradesPage extends UI {
         await this.tradeService.deleteTrade({portfolioId: this.portfolio.id, tradeId: tradeRow.id});
         await this.reloadPortfolio(this.portfolio.id);
         await this.loadTrades();
-        this.$snotify.info(`Операция '${tradeRow.operationLabel}' ${AssetType.valueByName(tradeRow.asset) === AssetType.MONEY ? "" :
-            `по бумаге ${tradeRow.ticker}`} была успешно удалена`);
+        const assetType = AssetType.valueByName(tradeRow.asset);
+        this.$snotify.info(`Операция '${tradeRow.operationLabel}' ${assetType === AssetType.MONEY ? "" :
+            `по ${assetType === AssetType.ASSET ? "активу" : "бумаге"} ${tradeRow.ticker}`} была успешно удалена`);
     }
 
     private async loadTrades(): Promise<void> {

@@ -248,10 +248,6 @@ export interface Overview {
     lastTradeDate: string;
     /** Дата по которую рассчитаны данные */
     cutDate: string;
-    /** Общая сумма пользовательских прибылей */
-    usersIncomes: string;
-    /** Общая сумма пользовательских убытков */
-    usersLosses: string;
 }
 
 export type StockPortfolio = {
@@ -293,16 +289,30 @@ export type TableHeader = {
 };
 
 export type DashboardData = {
+    /** Текущая суммарная стоимость */
     currentCost: string,
+    /** Текущая суммарная стоимость */
     currentCostInAlternativeCurrency: string,
+    /** Суммарный доход за исключением дивидендов и купонов */
     profitWithoutDividendsAndCoupons: string,
+    /** Суммарный доход */
     profit: string,
+    /** Суммарный доход в процентах */
     percentProfit: string,
+    /** Суммарный доход без учета комиссий */
     profitWithoutFees: string,
+    /** Годовая доходность портфеля */
     yearYield: string,
+    /** Годовая доходность за исключением дивидендов и купонов */
     yearYieldWithoutDividendsAndCoupons: string,
+    /** Изменение за день */
     dailyChanges: string,
+    /** Изменение за день в процентах */
     dailyChangesPercent: string
+    /** Общая сумма пользовательских прибылей */
+    usersIncomes: string;
+    /** Общая сумма пользовательских убытков */
+    usersLosses: string;
 };
 
 export type DashboardBrick = {
@@ -317,7 +327,8 @@ export type DashboardBrick = {
     mainCurrency: string,
     secondCurrency: string,
     tooltip?: string,
-    secondTooltip?: string
+    secondTooltip?: string;
+    mainValueTooltip?: string;
 };
 
 /** Описание бэкапа портфеля */

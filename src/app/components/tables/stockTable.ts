@@ -25,7 +25,7 @@ import {TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
 import {BigMoney} from "../../types/bigMoney";
 import {Operation} from "../../types/operation";
-import {Pagination, Portfolio, StockPortfolioRow, TableHeader} from "../../types/types";
+import {Pagination, Portfolio, ShareType, StockPortfolioRow, TableHeader} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {SortUtils} from "../../utils/sortUtils";
 import {TradeUtils} from "../../utils/tradeUtils";
@@ -327,7 +327,7 @@ export class StockTable extends UI {
         } else {
             trades = await this.tradeService.getTradesCombinedPortfolio(ticker, this.viewCurrency, this.ids);
         }
-        await new ShareTradesDialog().show({trades, ticker});
+        await new ShareTradesDialog().show({trades, ticker, shareType: ShareType.STOCK});
     }
 
     /**

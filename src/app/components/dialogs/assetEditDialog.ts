@@ -43,8 +43,9 @@ import {TradeUtils} from "../../utils/tradeUtils";
                         <v-layout wrap>
                             <!-- Категория актива -->
                             <v-flex xs12 sm6>
-                                <v-select :items="assetCategories" v-model="asset.category" :return-object="true" label="Категория актива" item-text="description"
+                                <v-select v-if="!editMode" :items="assetCategories" v-model="asset.category" :return-object="true" label="Категория актива" item-text="description"
                                           dense hide-details :readonly="editMode"></v-select>
+                                <v-text-field v-else :value="asset.category.description" label="Категория актива (Редактирование недоступно)" disabled></v-text-field>
                             </v-flex>
 
                             <!-- Тикер актива -->
@@ -59,39 +60,61 @@ import {TradeUtils} from "../../utils/tradeUtils";
                                               v-validate="'required|max:160'" :error-messages="errors.collect('name')" name="name"></v-text-field>
                             </v-flex>
 
-                            <!-- Цена -->
-                            <v-flex xs12 sm6>
-                                <ii-number-field label="Цена актива" v-model="asset.price" class="required" name="price" v-validate="'required|min_value:0.000001'"
-                                                 :error-messages="errors.collect('price')" persistent-hint hint="Текущая цена актива, если не знаете, поставьте 1">
-                                </ii-number-field>
+                            <!-- Выбор типа определения цены -->
+                            <v-flex xs12 sm12 class="mb-3">
+                                <v-switch v-model="autoPrice" class="margT0" hide-details>
+                                    <template #label>
+                                        <span>Текущая цена: {{ priceTypeLabel }}</span>
+                                        <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" bottom>
+                                            <sup class="custom-tooltip" slot="activator">
+                                                <v-icon>fas fa-info-circle</v-icon>
+                                            </sup>
+                                            <span>
+                                                Включите для настройки автоматического поиска цены актива
+                                            </span>
+                                        </v-tooltip>
+                                    </template>
+                                </v-switch>
                             </v-flex>
 
-                            <!-- Влюта -->
-                            <v-flex xs12 sm6>
-                                <v-select :items="currencyList" v-model="asset.currency" label="Валюта актива" :readonly="editMode"></v-select>
-                            </v-flex>
+                            <template v-if="!autoPrice">
+                                <!-- Цена -->
+                                <v-flex xs12 sm6>
+                                    <ii-number-field label="Цена актива" v-model="asset.price" class="required" name="price" v-validate="'required|min_value:0.000001'"
+                                                     :error-messages="errors.collect('price')" persistent-hint hint="Текущая цена актива, если не знаете, поставьте 1">
+                                    </ii-number-field>
+                                </v-flex>
 
-                            <!-- Источник -->
-                            <v-flex xs12>
-                                <v-text-field label="Источник" v-model.trim="asset.source" :counter="1024"
-                                              v-validate="'max:1024'" :error-messages="errors.collect('source')" name="source"
-                                              persistent-hint hint="url по которому можно найти цену по активу"></v-text-field>
-                            </v-flex>
+                                <!-- Влюта -->
+                                <v-flex xs12 sm6>
+                                    <v-select v-if="!editMode" :items="currencyList" v-model="asset.currency" label="Валюта актива"></v-select>
+                                    <v-text-field v-else :value="asset.currency" label="Валюта актива (Редактирование недоступно)" disabled></v-text-field>
+                                </v-flex>
+                            </template>
 
-                            <!-- Регулярное выражение -->
-                            <v-flex xs12>
-                                <v-text-field label="Регулярное выражение" v-model.trim="asset.regex" :counter="1024"
-                                              v-validate="'max:1024'" :error-messages="errors.collect('regex')" name="regex"
-                                              persistent-hint hint="Регулярное выражение для парсинга цены актива"></v-text-field>
-                                <div v-if="asset.source && asset.regex" class="mt-1">
-                                    <a @click="checkSource" title="Проверить" class="fs12">Проверить</a>
-                                    <span v-if="foundValue" class="fs12-opacity">Найденное значение:</span>
-                                    <b v-if="foundValue" class="fs12">{{ foundValue }}</b>
-                                    <span v-if="foundValue" class="fs12">
+                            <template v-else>
+                                <!-- Источник -->
+                                <v-flex xs12>
+                                    <v-text-field label="Источник" v-model.trim="asset.source" :counter="1024"
+                                                  v-validate="'max:1024'" :error-messages="errors.collect('source')" name="source"
+                                                  persistent-hint hint="url по которому можно найти цену по активу"></v-text-field>
+                                </v-flex>
+
+                                <!-- Регулярное выражение -->
+                                <v-flex xs12>
+                                    <v-text-field label="Регулярное выражение" v-model.trim="asset.regex" :counter="1024"
+                                                  v-validate="'max:1024'" :error-messages="errors.collect('regex')" name="regex"
+                                                  persistent-hint hint="Регулярное выражение для парсинга цены актива"></v-text-field>
+                                    <div v-if="asset.source && asset.regex" class="mt-1">
+                                        <a @click="checkSource" title="Проверить" class="fs12">Проверить</a>
+                                        <span v-if="foundValue" class="fs12-opacity">Найденное значение:</span>
+                                        <b v-if="foundValue" class="fs12">{{ foundValue }}</b>
+                                        <span v-if="foundValue" class="fs12">
                                         <a @click="setToPrice" title="Указать в качестве цены">Указать в качестве цены</a>
                                     </span>
-                                </div>
-                            </v-flex>
+                                    </div>
+                                </v-flex>
+                            </template>
 
                             <!-- Заметка -->
                             <v-flex xs12>
@@ -147,6 +170,8 @@ export class AssetEditDialog extends CustomDialog<AssetModel, boolean> {
     private foundValue: string = null;
     /** Начальная цена редактируемого актива */
     private initialPrice: string = null;
+    /** Тип определения цены - Вручную */
+    private autoPrice = false;
 
     async mounted(): Promise<void> {
         await this.setDialogParams();
@@ -247,5 +272,9 @@ export class AssetEditDialog extends CustomDialog<AssetModel, boolean> {
 
     private get dialogTitle(): string {
         return `${this.editMode ? "Редактирование" : "Добавление"} актива`;
+    }
+
+    private get priceTypeLabel(): string {
+        return `${this.autoPrice ? "Получение с web-страницы" : "Указывается вручную"}`;
     }
 }

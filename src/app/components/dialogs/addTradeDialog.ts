@@ -123,7 +123,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                 <v-flex xs12 sm12>
                                     <div class="fs12-opacity mt-1">
                                     <span>
-                                        Вы можете настроить дополнительые параметры позже на
+                                        Вы можете настроить дополнительные параметры позже на
                                         <a @click="goToUserAssets" title="Управление активами">странице</a> управления вашими активами
                                     </span>
                                     </div>
@@ -145,10 +145,10 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                 </ii-number-field>
                                 <div class="fs12-opacity mt-1">
                                     <span v-if="showCurrentQuantityLabel">
-                                        Текущее количество {{ isStockTrade ? "акций" : isAssetTrade ? "бумаг" : "облигаций" }}
+                                        Текущее количество {{ isStockTrade ? "акций" : isAssetTrade ? "" : "облигаций" }}
                                         <a @click="setToQuantity" title="Подставить в Количество">{{ currentCountShareSearch }} шт.</a>
                                     </span>
-                                    <span v-else>{{ lotSizeHint }}</span>
+                                    <span v-else>{{ isAssetTrade ? "" : lotSizeHint }}</span>
                                 </div>
                             </v-flex>
 
