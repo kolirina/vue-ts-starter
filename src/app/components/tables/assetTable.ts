@@ -362,7 +362,11 @@ export class AssetTable extends UI {
             note: asset.note,
         });
         if (result) {
-            await this.reloadPortfolio(Number(this.portfolioId));
+            if (result.needUpdate) {
+                await this.reloadPortfolio(Number(this.portfolioId));
+            }
+            share.ticker = result.asset.ticker;
+            share.shortname = result.asset.name;
         }
     }
 

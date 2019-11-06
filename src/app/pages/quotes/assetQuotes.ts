@@ -52,7 +52,6 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-btn>
             </v-layout>
 
-            <empty-search-result v-if="filteredAssets.length === 0 && assets.length !== 0" @resetFilter="resetFilter"></empty-search-result>
             <v-container v-if="assets.length === 0" class="h100pc">
                 <v-layout justify-center align-center column class="h100pc">
                     <v-img src="./img/portfolio/empty-portfolio.svg" width="100%" heigth="100%" max-width="353" max-height="302" class="margB35"></v-img>
@@ -63,6 +62,8 @@ const MainStore = namespace(StoreType.MAIN);
                     </div>
                 </v-layout>
             </v-container>
+
+            <empty-search-result v-if="filteredAssets.length === 0 && assets.length !== 0" @resetFilter="resetFilter"></empty-search-result>
 
             <v-data-table v-else :headers="headers" :items="filteredAssets" item-key="id" class="data-table quotes-table" must-sort expand hide-actions>
                 <template #items="props">
@@ -223,18 +224,22 @@ export class AssetQuotes extends UI {
         }
     }
 
+    /**
+     * Открывает диалог на редактирование актива
+     * @param asset редактируемый актив
+     */
     private async openAssetEditDialog(asset: AssetModel): Promise<void> {
         const result = await new AssetEditDialog().show(asset);
         if (result) {
             const isInCurrentPortfolio = this.portfolio.overview.assetPortfolio.rows.some(row => row.share.id === asset.id);
-            if (isInCurrentPortfolio) {
+            if (isInCurrentPortfolio && result.needUpdate) {
                 await this.reloadPortfolio(this.portfolio.id);
             }
         }
     }
 
     private async openAddAssetDialog(): Promise<void> {
-        const result = await new AssetEditDialog().show();
+        await new AssetEditDialog().show();
     }
 
     private async deleteAsset(assetId: number): Promise<void> {

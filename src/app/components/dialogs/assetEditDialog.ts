@@ -81,7 +81,7 @@ import {TradeUtils} from "../../utils/tradeUtils";
                                 <!-- Цена -->
                                 <v-flex xs12 sm6>
                                     <ii-number-field label="Цена актива" v-model="asset.price" class="required" name="price" v-validate="'required|min_value:0.000001'"
-                                                     :error-messages="errors.collect('price')" persistent-hint hint="Текущая цена актива, если не знаете, поставьте 1">
+                                                     :error-messages="errors.collect('price')">
                                     </ii-number-field>
                                 </v-flex>
 
@@ -153,7 +153,7 @@ import {TradeUtils} from "../../utils/tradeUtils";
     `,
     components: {CustomDialog}
 })
-export class AssetEditDialog extends CustomDialog<AssetModel, boolean> {
+export class AssetEditDialog extends CustomDialog<AssetModel, AssetEditDialogResult> {
 
     @Inject
     private assetService: AssetService;
@@ -180,9 +180,9 @@ export class AssetEditDialog extends CustomDialog<AssetModel, boolean> {
     private async setDialogParams(): Promise<void> {
         if (!this.data) {
             this.asset = {
-                category: AssetCategory.STOCK,
+                category: AssetCategory.OTHER,
                 currency: "RUB",
-                ticker: "",
+                ticker: "Актив",
                 name: "",
                 source: "",
                 regex: "",
@@ -217,7 +217,7 @@ export class AssetEditDialog extends CustomDialog<AssetModel, boolean> {
             }
             const msg = `Актив успешно ${this.editMode ? "отредактирован" : "добавлен"}`;
             this.$snotify.info(msg);
-            this.close(this.initialPrice !== this.asset.price);
+            this.close({asset: this.asset, needUpdate: this.initialPrice !== this.asset.price});
         } catch (e) {
             this.handleError(e);
         } finally {
@@ -277,4 +277,9 @@ export class AssetEditDialog extends CustomDialog<AssetModel, boolean> {
     private get priceTypeLabel(): string {
         return `${this.autoPrice ? "Получение с web-страницы" : "Указывается вручную"}`;
     }
+}
+
+export interface AssetEditDialogResult {
+    asset: AssetModel;
+    needUpdate: boolean;
 }
