@@ -1,5 +1,48 @@
+.theme--light.v-table tbody tr:hover:not(.v-datatable__expand-row) {
+  background: #3B6EC9;
+  td {
+    color: white;
+    a {
+      color: inherit;
+    }
+  }
+}
 .theme--light.v-data-iterator .v-data-iterator__actions,
 .theme--light.v-expansion-panel .v-expansion-panel__container .v-expansion-panel__header .v-expansion-panel__header__icon .v-icon,
+.theme--light.v-table {
+  thead {
+    background: #DEE2F0;
+    tr{
+      &:first-child {
+        height: 32px !important;
+        th {
+          font-size: 12px !important;
+          color: #51545f !important;
+          background: #DEE2F0 !important;
+        }
+      }
+    }
+  }
+  tbody {
+    .selectable {
+      &:first-child {
+        td {
+          height: 40px !important;
+        }
+      }
+      &:last-child {
+        td {
+          height: 45px !important;
+        }
+      }
+      td {
+        height: 39px !important;
+        font-size: 13px !important;
+        color: #040427;
+      }
+    }
+  }
+}
 .theme--light.v-table thead th {
   color: $table--header--font-color;
 }
@@ -19,12 +62,12 @@
 
 .ii--red-markup {
   font-family: "OpenSans Semibold";
-  color: $table--num--red-color;
+  color: $table--num--red-color !important;
 }
 
 .ii--green-markup {
   font-family: "OpenSans Semibold";
-  color: $table--num--green-color;
+  color: $table--num--green-color !important;
 }
 
 .ii-number-cell {
