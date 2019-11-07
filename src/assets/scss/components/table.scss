@@ -19,6 +19,12 @@
           font-size: 12px !important;
           color: #51545f !important;
           background: #DEE2F0 !important;
+          &:first-child {
+            padding-left: 20px !important;
+          }
+          &:last-child {
+            padding-right: 20px !important;
+          }
         }
       }
     }
@@ -39,7 +45,17 @@
         height: 39px !important;
         font-size: 13px !important;
         color: #040427;
+        &:first-child {
+          padding-left: 20px !important;
+        }
+        &:last-child {
+          padding-right: 20px !important;
+        }
       }
+    }
+    .v-btn {
+      height: 40px !important;
+      margin: 0px 10px !important;
     }
   }
 }

@@ -101,7 +101,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                         <chart-export-menu v-if="lineChartData && lineChartEvents" @print="print('portfolioLineChart')" @exportTo="exportTo('portfolioLineChart', $event)"
                                            class="exp-panel-menu"></chart-export-menu>
                     </template>
-                    <v-card-text>
+                    <v-card-text class="px-1">
                         <portfolio-line-chart v-if="lineChartData && lineChartEvents" ref="portfolioLineChart" :data="lineChartData" :moex-index-data="indexLineChartData"
                                               :state-key-prefix="stateKeyPrefix"
                                               :events-chart-data="lineChartEvents" :balloon-title="portfolioName"></portfolio-line-chart>
