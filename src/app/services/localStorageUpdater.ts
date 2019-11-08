@@ -61,7 +61,7 @@ export class LocalStorageUpdater {
     private updateTableColumns(): void {
         const needUpdate = this.needUpdate();
         const headersFromStorage = this.localStorage.get<TableHeaders>("tableHeadersParams", null);
-        if (needUpdate) {
+        if (needUpdate && headersFromStorage) {
             const assetColumns: TableHeader[] = this.tableService.HEADERS[TABLES_NAME.ASSET];
             headersFromStorage[TABLES_NAME.ASSET] = assetColumns;
             this.localStorage.set<TableHeaders>("tableHeadersParams", {...headersFromStorage});

@@ -350,16 +350,18 @@ export class AssetTable extends UI {
     private async openAssetEditDialog(share: Share): Promise<void> {
         const asset = share as Asset;
         const result = await new AssetEditDialog().show({
-            id: asset.id,
-            ticker: asset.ticker,
-            category: AssetCategory.valueByName(asset.category),
-            currency: asset.currency,
-            name: asset.name,
-            price: asset.price,
-            source: asset.source,
-            regex: asset.regex,
-            tags: asset.tags,
-            note: asset.note,
+            asset: {
+                id: asset.id,
+                ticker: asset.ticker,
+                category: AssetCategory.valueByName(asset.category),
+                currency: asset.currency,
+                name: asset.name,
+                price: asset.price,
+                source: asset.source,
+                regex: asset.regex,
+                tags: asset.tags,
+                note: asset.note,
+            }, router: this.$router
         });
         if (result) {
             if (result.needUpdate) {

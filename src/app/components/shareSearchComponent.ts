@@ -15,9 +15,7 @@
  */
 
 import {Inject} from "typescript-ioc";
-import Component from "vue-class-component";
-import {Watch} from "vue-property-decorator";
-import {Prop, UI} from "../app/ui";
+import {Component, Prop, UI, Watch} from "../app/ui";
 import {Filters} from "../platform/filters/Filters";
 import {AssetCategory} from "../services/assetService";
 import {MarketService} from "../services/marketService";
@@ -73,6 +71,10 @@ export class ShareSearchComponent extends UI {
 
     @Prop({required: false, type: Boolean, default: false})
     private autofocus: boolean;
+
+    /** Признак разрешения создания нового актива через поиск. Используется только в диалоге добавления сделок */
+    @Prop({required: false, type: Boolean, default: false})
+    private createAssetAllowed: boolean;
 
     @Prop({required: false, type: Boolean, default: false})
     private required: boolean;
@@ -133,7 +135,7 @@ export class ShareSearchComponent extends UI {
                 this.filteredSharesMutated = await this.marketService.searchShares(this.searchQuery);
             }
             // не нашли кастомный актив, предлагаем добавить его
-            if (this.assetType === AssetType.ASSET && this.filteredSharesMutated.length === 0) {
+            if (this.assetType === AssetType.ASSET && this.filteredSharesMutated.length === 0 && this.createAssetAllowed) {
                 const newAsset = {...this.NEW_CUSTOM_ASSET};
                 newAsset.shortname = this.searchQuery;
                 this.filteredSharesMutated.push(newAsset);

@@ -25,12 +25,14 @@ import {EmptySearchResult} from "../../components/emptySearchResult";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {AssetCategory, AssetModel, AssetService} from "../../services/assetService";
+import {ClientInfo} from "../../services/clientService";
 import {FiltersService} from "../../services/filtersService";
 import {AssetQuotesFilter} from "../../services/marketService";
 import {AssetType} from "../../types/assetType";
 import {EventType} from "../../types/eventType";
 import {Operation} from "../../types/operation";
 import {StoreKeys} from "../../types/storeKeys";
+import {Tariff} from "../../types/tariff";
 import {Portfolio, TableHeader} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {TradeUtils} from "../../utils/tradeUtils";
@@ -47,7 +49,7 @@ const MainStore = namespace(StoreType.MAIN);
                 <common-asset-quotes-filter :filter="filter" @input="tableSearch" @filter="onFilterChange" :min-length="1" placeholder="Поиск"
                                             :store-key="StoreKeys.CUSTOM_QUOTES_FILTER_KEY"></common-asset-quotes-filter>
 
-                <v-btn color="primary" class="mr-4" @click="openAddAssetDialog">
+                <v-btn v-if="userAssetsAllowed" color="primary" class="mr-4" @click="openAddAssetDialog">
                     Добавить
                 </v-btn>
             </v-layout>
@@ -56,79 +58,88 @@ const MainStore = namespace(StoreType.MAIN);
                 <v-layout justify-center align-center column class="h100pc">
                     <v-img src="./img/portfolio/empty-portfolio.svg" width="100%" heigth="100%" max-width="353" max-height="302" class="margB35"></v-img>
                     <div class="alignC mw520">
-                        <div class="fs16">
+                        <div v-if="userAssetsAllowed" class="fs16">
                             Список кастомных активов пуст
+                        </div>
+                        <div v-else class="fs16">
+                            Этот раздел служит для создания любых произвольных активов.<br/>
+                            Например, для учета недвижимости, депозитов, долей в компаниях и прочих активов.<br/>
+                            Для управления произвольными активами у вас должен быть
+                            <router-link to="/settings/tariffs">подключен</router-link>
+                            тарифный план Стандарт или Профессионал.
                         </div>
                     </div>
                 </v-layout>
             </v-container>
 
-            <empty-search-result v-if="filteredAssets.length === 0 && assets.length !== 0" @resetFilter="resetFilter"></empty-search-result>
+            <template v-else>
+                <empty-search-result v-if="filteredAssets.length === 0 && assets.length !== 0" @resetFilter="resetFilter"></empty-search-result>
 
-            <v-data-table v-else :headers="headers" :items="filteredAssets" item-key="id" class="data-table quotes-table" must-sort expand hide-actions>
-                <template #items="props">
-                    <tr class="selectable" @dblclick="props.expanded = !props.expanded">
-                        <td>
+                <v-data-table v-else :headers="headers" :items="filteredAssets" item-key="id" class="data-table quotes-table" must-sort expand hide-actions>
+                    <template #items="props">
+                        <tr class="selectable" @dblclick="props.expanded = !props.expanded">
+                            <td>
                         <span @click="props.expanded = !props.expanded"
                               :class="{'data-table-cell-open': props.expanded, 'path': true, 'data-table-cell': true}"></span>
-                        </td>
-                        <td class="text-xs-left">
-                            <asset-link :ticker="String(props.item.id)">{{ props.item.ticker }}</asset-link>
-                        </td>
-                        <td class="text-xs-left">{{ props.item.name }}</td>
-                        <td class="text-xs-left">{{ props.item.category.description }}</td>
-                        <td class="text-xs-center ii-number-cell">
-                            {{ props.item.price | amount(false, null, false) }} <span class="second-value">{{ currencyForPrice(props.item) }}</span>
-                        </td>
-                        <td class="text-xs-left">{{ props.item.source }}</td>
-                        <td class="text-xs-left">{{ props.item.regex }}</td>
-                        <td class="text-xs-center">{{ props.item.currency }}</td>
-                        <td class="text-xs-left">{{ props.item.tags }}</td>
-                        <td class="justify-end layout px-0" @click.stop>
-                            <v-menu transition="slide-y-transition" bottom left nudge-bottom="25">
-                                <v-btn slot="activator" flat icon dark>
-                                    <span class="menuDots"></span>
-                                </v-btn>
-                                <v-list dense>
-                                    <v-list-tile @click="openAssetEditDialog(props.item)">
-                                        <v-list-tile-title>
-                                            Редактировать
-                                        </v-list-tile-title>
-                                    </v-list-tile>
-                                    <v-list-tile @click="deleteAsset(props.item.id)">
-                                        <v-list-tile-title class="delete-btn">
-                                            Удалить
-                                        </v-list-tile-title>
-                                    </v-list-tile>
-                                    <v-divider></v-divider>
-                                    <v-list-tile @click="openTradeDialog(props.item, operation.BUY)">
-                                        <v-list-tile-title>
-                                            Купить
-                                        </v-list-tile-title>
-                                    </v-list-tile>
-                                    <v-list-tile @click="openTradeDialog(props.item, operation.SELL)">
-                                        <v-list-tile-title>
-                                            Продать
-                                        </v-list-tile-title>
-                                    </v-list-tile>
-                                    <v-list-tile @click="openTradeDialog(props.item, operation.DIVIDEND)">
-                                        <v-list-tile-title>
-                                            Дивиденд
-                                        </v-list-tile-title>
-                                    </v-list-tile>
-                                </v-list>
-                            </v-menu>
-                        </td>
-                    </tr>
-                </template>
+                            </td>
+                            <td class="text-xs-left">
+                                <asset-link :ticker="String(props.item.id)">{{ props.item.ticker }}</asset-link>
+                            </td>
+                            <td class="text-xs-left">{{ props.item.name }}</td>
+                            <td class="text-xs-left">{{ props.item.category.description }}</td>
+                            <td class="text-xs-center ii-number-cell">
+                                {{ props.item.price | amount(false, null, false) }} <span class="second-value">{{ currencyForPrice(props.item) }}</span>
+                            </td>
+                            <td class="text-xs-left">{{ props.item.source }}</td>
+                            <td class="text-xs-left">{{ props.item.regex }}</td>
+                            <td class="text-xs-center">{{ props.item.currency }}</td>
+                            <td class="text-xs-left">{{ props.item.tags }}</td>
+                            <td class="justify-end layout px-0" @click.stop>
+                                <v-menu transition="slide-y-transition" bottom left nudge-bottom="25">
+                                    <v-btn slot="activator" flat icon dark>
+                                        <span class="menuDots"></span>
+                                    </v-btn>
+                                    <v-list dense>
+                                        <v-list-tile @click="openAssetEditDialog(props.item)">
+                                            <v-list-tile-title>
+                                                Редактировать
+                                            </v-list-tile-title>
+                                        </v-list-tile>
+                                        <v-list-tile @click="deleteAsset(props.item.id)">
+                                            <v-list-tile-title class="delete-btn">
+                                                Удалить
+                                            </v-list-tile-title>
+                                        </v-list-tile>
+                                        <v-divider></v-divider>
+                                        <v-list-tile @click="openTradeDialog(props.item, operation.BUY)">
+                                            <v-list-tile-title>
+                                                Купить
+                                            </v-list-tile-title>
+                                        </v-list-tile>
+                                        <v-list-tile @click="openTradeDialog(props.item, operation.SELL)">
+                                            <v-list-tile-title>
+                                                Продать
+                                            </v-list-tile-title>
+                                        </v-list-tile>
+                                        <v-list-tile @click="openTradeDialog(props.item, operation.DIVIDEND)">
+                                            <v-list-tile-title>
+                                                Дивиденд
+                                            </v-list-tile-title>
+                                        </v-list-tile>
+                                    </v-list>
+                                </v-menu>
+                            </td>
+                        </tr>
+                    </template>
 
-                <template #expand="props">
-                    <v-card flat class="mt-2">
-                        <span class="bold">Заметка:</span>
-                        <v-card-text>{{ props.item.note }}</v-card-text>
-                    </v-card>
-                </template>
-            </v-data-table>
+                    <template #expand="props">
+                        <v-card flat class="mt-2">
+                            <span class="bold">Заметка:</span>
+                            <v-card-text>{{ props.item.note }}</v-card-text>
+                        </v-card>
+                    </template>
+                </v-data-table>
+            </template>
         </v-container>
     `,
     components: {CommonAssetQuotesFilter, EmptySearchResult}
@@ -139,6 +150,8 @@ export class AssetQuotes extends UI {
     private reloadPortfolio: (id: number) => Promise<void>;
     @MainStore.Getter
     private portfolio: Portfolio;
+    @MainStore.Getter
+    private clientInfo: ClientInfo;
     /** Текущая операция */
     private operation = Operation;
     @Inject
@@ -229,7 +242,7 @@ export class AssetQuotes extends UI {
      * @param asset редактируемый актив
      */
     private async openAssetEditDialog(asset: AssetModel): Promise<void> {
-        const result = await new AssetEditDialog().show(asset);
+        const result = await new AssetEditDialog().show({asset, router: this.$router});
         if (result) {
             const isInCurrentPortfolio = this.portfolio.overview.assetPortfolio.rows.some(row => row.share.id === asset.id);
             if (isInCurrentPortfolio && result.needUpdate) {
@@ -239,7 +252,7 @@ export class AssetQuotes extends UI {
     }
 
     private async openAddAssetDialog(): Promise<void> {
-        await new AssetEditDialog().show();
+        await new AssetEditDialog().show({asset: null, router: this.$router});
     }
 
     private async deleteAsset(assetId: number): Promise<void> {
@@ -257,5 +270,13 @@ export class AssetQuotes extends UI {
 
     private currencyForPrice(asset: AssetModel): string {
         return TradeUtils.currencySymbolByAmount(asset.price).toLowerCase();
+    }
+
+    /**
+     * Возвращает признак доступности раздела с пользовательскими активами.
+     * Если у пользователя тариф не Бесплатный
+     */
+    private get userAssetsAllowed(): boolean {
+        return this.clientInfo.user.tariff !== Tariff.FREE;
     }
 }

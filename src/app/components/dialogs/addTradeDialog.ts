@@ -1,9 +1,8 @@
 import dayjs from "dayjs";
 import Decimal from "decimal.js";
 import {Inject} from "typescript-ioc";
-import Component from "vue-class-component";
 import {VueRouter} from "vue-router/types/router";
-import {UI} from "../../app/ui";
+import {Component, UI} from "../../app/ui";
 import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {CustomDialog} from "../../platform/dialogs/customDialog";
@@ -20,6 +19,7 @@ import {AssetType} from "../../types/assetType";
 import {BigMoney} from "../../types/bigMoney";
 import {AddTradeEvent, EventType} from "../../types/eventType";
 import {Operation} from "../../types/operation";
+import {Permission} from "../../types/permission";
 import {Tariff} from "../../types/tariff";
 import {TradeDataHolder} from "../../types/trade/tradeDataHolder";
 import {TradeMap} from "../../types/trade/tradeMap";
@@ -75,8 +75,8 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
 
                             <!-- Тикер бумаги -->
                             <v-flex v-if="shareAssetType" xs12 :class="portfolioProModeEnabled ? 'sm6' : 'sm9'">
-                                <share-search :asset-type="assetType" :filtered-shares="filteredShares"
-                                              :placeholder="shareSearchPlaceholder" class="required"
+                                <share-search :asset-type="assetType" :filtered-shares="filteredShares" :placeholder="shareSearchPlaceholder" class="required"
+                                              :create-asset-allowed="createAssetAllowed"
                                               @change="onShareSelect" @clear="onShareClear" autofocus></share-search>
                             </v-flex>
 
@@ -1047,6 +1047,10 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     private get showCurrentQuantityLabel(): boolean {
         return this.currentCountShareSearch && (this.isStockTrade || this.isBondTrade || this.isAssetTrade);
+    }
+
+    private get createAssetAllowed(): boolean {
+        return this.clientInfo && this.clientInfo.tariff.hasPermission(Permission.INVESTMENTS);
     }
 
     /**

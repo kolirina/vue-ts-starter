@@ -16,15 +16,19 @@
 
 import {Inject} from "typescript-ioc";
 import {Field} from "vee-validate";
+import {VueRouter} from "vue-router/types/router";
 import {Component, UI} from "../../app/ui";
 import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {CustomDialog} from "../../platform/dialogs/customDialog";
 import {AssetCategory, AssetModel, AssetService} from "../../services/assetService";
+import {Client, ClientService} from "../../services/clientService";
 import {BigMoney} from "../../types/bigMoney";
 import {EventType} from "../../types/eventType";
+import {Permission} from "../../types/permission";
 import {CurrencyUnit, ErrorInfo} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
+import {TextUtils} from "../../utils/textUtils";
 import {TradeUtils} from "../../utils/tradeUtils";
 
 @Component({
@@ -52,11 +56,16 @@ import {TradeUtils} from "../../utils/tradeUtils";
                             <v-flex xs12 sm6>
                                 <v-text-field label="Код актива (ticker/isin)" v-model.trim="asset.ticker" class="required"
                                               v-validate="'required|max:50'" :error-messages="errors.collect('ticker')" name="ticker"></v-text-field>
+                                <div class="mt-1">
+                                    <span v-if="preDefinedCode" class="fs12">
+                                        <a @click="setPreDefinedCode" title="Указать в качестве кода">Указать '{{ preDefinedCode }}' в качестве кода</a>
+                                    </span>
+                                </div>
                             </v-flex>
 
                             <!-- Название актива -->
                             <v-flex xs12>
-                                <v-text-field label="Название актива" v-model.trim="asset.name" :counter="120" class="required"
+                                <v-text-field label="Название актива" v-model.trim="asset.name" :counter="120" class="required" autofocus
                                               v-validate="'required|max:160'" :error-messages="errors.collect('name')" name="name"></v-text-field>
                             </v-flex>
 
@@ -87,8 +96,19 @@ import {TradeUtils} from "../../utils/tradeUtils";
 
                                 <!-- Влюта -->
                                 <v-flex xs12 sm6>
-                                    <v-select v-if="!editMode" :items="currencyList" v-model="asset.currency" label="Валюта актива"></v-select>
-                                    <v-text-field v-else :value="asset.currency" label="Валюта актива (Редактирование недоступно)" disabled></v-text-field>
+                                    <template v-if="!editMode && foreignCurrencyAllowed">
+                                        <v-select :items="currencyList" v-model="asset.currency" label="Валюта актива"></v-select>
+                                    </template>
+                                    <template v-if="!editMode && !foreignCurrencyAllowed">
+                                        <v-text-field :value="asset.currency" label="Валюта актива (Редактирование недоступно)" disabled></v-text-field>
+                                        <div class="fs12-opacity mt-1">
+                                            <span>
+                                                Добавление валютных активов доступно только на тарифном плане
+                                                <a @click="goToTariffs" title="Подключить">Профессионал</a>
+                                            </span>
+                                        </div>
+                                    </template>
+                                    <v-text-field v-if="editMode" :value="asset.currency" label="Валюта актива (Редактирование недоступно)" disabled></v-text-field>
                                 </v-flex>
                             </template>
 
@@ -110,8 +130,8 @@ import {TradeUtils} from "../../utils/tradeUtils";
                                         <span v-if="foundValue" class="fs12-opacity">Найденное значение:</span>
                                         <b v-if="foundValue" class="fs12">{{ foundValue }}</b>
                                         <span v-if="foundValue" class="fs12">
-                                        <a @click="setToPrice" title="Указать в качестве цены">Указать в качестве цены</a>
-                                    </span>
+                                            <a @click="setToPrice" title="Указать в качестве цены">Указать в качестве цены</a>
+                                        </span>
                                     </div>
                                 </v-flex>
                             </template>
@@ -153,15 +173,16 @@ import {TradeUtils} from "../../utils/tradeUtils";
     `,
     components: {CustomDialog}
 })
-export class AssetEditDialog extends CustomDialog<AssetModel, AssetEditDialogResult> {
+export class AssetEditDialog extends CustomDialog<AssetEditDialogData, AssetEditDialogResult> {
 
     @Inject
     private assetService: AssetService;
-
+    @Inject
+    private clientService: ClientService;
     /** Типы возможных активов */
     private assetCategories = AssetCategory.values();
     /** Список валют */
-    private currencyList = CurrencyUnit.values().map(c => c.code);
+    private currencyList: string[] = [];
     /** Актив */
     private asset: AssetModel = null;
     /** Индикатор состояния */
@@ -172,17 +193,25 @@ export class AssetEditDialog extends CustomDialog<AssetModel, AssetEditDialogRes
     private initialPrice: string = null;
     /** Тип определения цены - Вручную */
     private autoPrice = false;
+    /** Информация о клиенте */
+    private clientInfo: Client = null;
 
+    /**
+     * Производит инициализацию данных диалога.
+     * Для пользователей тарифа Стандарт доступна только валюта Рубль при создании актива
+     */
     async mounted(): Promise<void> {
+        this.clientInfo = await this.clientService.getClientInfo();
+        this.currencyList = CurrencyUnit.values().map(c => c.code).filter(code => this.foreignCurrencyAllowed || code === "RUB");
         await this.setDialogParams();
     }
 
     private async setDialogParams(): Promise<void> {
-        if (!this.data) {
+        if (!this.data.asset) {
             this.asset = {
                 category: AssetCategory.OTHER,
                 currency: "RUB",
-                ticker: "Актив",
+                ticker: "",
                 name: "",
                 source: "",
                 regex: "",
@@ -191,7 +220,7 @@ export class AssetEditDialog extends CustomDialog<AssetModel, AssetEditDialogRes
                 tags: ""
             };
         } else {
-            this.asset = {...this.data};
+            this.asset = {...this.data.asset};
             this.asset.price = new BigMoney(this.asset.price).amount.toString();
         }
         this.initialPrice = this.asset.price;
@@ -242,6 +271,16 @@ export class AssetEditDialog extends CustomDialog<AssetModel, AssetEditDialogRes
         this.asset.price = this.foundValue;
     }
 
+    private setPreDefinedCode(): void {
+        this.asset.ticker = this.preDefinedCode;
+    }
+
+    private goToTariffs(): void {
+        if (this.data.router.currentRoute.path !== "/settings/tariffs") {
+            this.data.router.push("/settings/tariffs");
+        }
+    }
+
     private handleError(error: ErrorInfo): void {
         // если 403 ошибки при добавлении сделок, диалог уже отобразили, больше ошибок показывать не нужно
         if (!CommonUtils.exists(error.fields)) {
@@ -270,6 +309,14 @@ export class AssetEditDialog extends CustomDialog<AssetModel, AssetEditDialogRes
         return this.asset && !!this.asset.id;
     }
 
+    private get preDefinedCode(): string {
+        return this.asset && this.asset.name ? TextUtils.transliterate(this.asset.name).toUpperCase().replace(new RegExp("[-|_|\\s]*", "g"), "").substring(0, 5) : "";
+    }
+
+    private get foreignCurrencyAllowed(): boolean {
+        return this.clientInfo.tariff.hasPermission(Permission.FOREIGN_SHARES);
+    }
+
     private get dialogTitle(): string {
         return `${this.editMode ? "Редактирование" : "Добавление"} актива`;
     }
@@ -282,4 +329,9 @@ export class AssetEditDialog extends CustomDialog<AssetModel, AssetEditDialogRes
 export interface AssetEditDialogResult {
     asset: AssetModel;
     needUpdate: boolean;
+}
+
+export interface AssetEditDialogData {
+    asset: AssetModel;
+    router: VueRouter;
 }
