@@ -378,7 +378,7 @@ export class AssetTable extends UI {
      */
     private async openEditShareNoteDialog(share: Share): Promise<void> {
         const key = `${share.id}${share.ticker}`;
-        const data = await new EditShareNoteDialog().show({ticker: share.ticker, note: this.shareNotes[key]});
+        const data = await new EditShareNoteDialog().show({ticker: share.ticker, note: this.shareNotes[key], shareType: ShareType.ASSET});
         if (data) {
             data.ticker = key;
             await this.editShareNote(data, share.ticker);

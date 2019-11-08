@@ -68,7 +68,8 @@ const MainStore = namespace(StoreType.MAIN);
                     </td>
                     <td v-if="tableHeadersState.company" class="text-xs-left">
                         <stock-link v-if="props.item.share" :class="props.item.quantity !== 0 ? '' : 'line-through'"
-                                    :ticker="props.item.share.ticker">{{ props.item.share.shortname }}</stock-link>
+                                    :ticker="props.item.share.ticker">{{ props.item.share.shortname }}
+                        </stock-link>
                         &nbsp;
                         <span v-if="props.item.share && props.item.quantity !== 0"
                               :class="markupClasses(Number(props.item.share.change))">{{ props.item.share.change }}&nbsp;%</span>
@@ -335,7 +336,7 @@ export class StockTable extends UI {
      * @param ticker тикер по которому редактируется заметка
      */
     private async openEditShareNoteDialog(ticker: string): Promise<void> {
-        const data = await new EditShareNoteDialog().show({ticker, note: this.shareNotes[ticker]});
+        const data = await new EditShareNoteDialog().show({ticker, note: this.shareNotes[ticker], shareType: ShareType.STOCK});
         if (data) {
             await this.editShareNote(data);
         }

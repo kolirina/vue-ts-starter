@@ -15,6 +15,7 @@
  */
 import Component from "vue-class-component";
 import {CustomDialog} from "../../platform/dialogs/customDialog";
+import {ShareType} from "../../types/types";
 
 /**
  * Диалог подтверждения
@@ -26,7 +27,7 @@ import {CustomDialog} from "../../platform/dialogs/customDialog";
             <v-card class="dialog-wrap">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
 
-                <v-card-title class="headline">Заметка к бумаге {{ data.ticker }}</v-card-title>
+                <v-card-title class="headline">{{ title }} {{ data.ticker }}</v-card-title>
                 <v-card-text>
                     <v-textarea v-model="data.note" autofocus @keydown.ctrl.enter="close(data)"></v-textarea>
                 </v-card-text>
@@ -40,9 +41,14 @@ import {CustomDialog} from "../../platform/dialogs/customDialog";
     `
 })
 export class EditShareNoteDialog extends CustomDialog<EditShareNoteDialogData, EditShareNoteDialogData> {
+
+    private get title(): string {
+        return `Заметка к ${this.data.shareType === ShareType.ASSET ? "активу" : "бумаге"}`;
+    }
 }
 
 export interface EditShareNoteDialogData {
     ticker: string;
     note: string;
+    shareType: ShareType;
 }
