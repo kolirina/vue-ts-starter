@@ -20,7 +20,7 @@ export class TextUtils {
     }
 
     static transliterate(text: string): string {
-        text = text
+        return text
             .replace(/\u0401/g, "YO")
             .replace(/\u0419/g, "I")
             .replace(/\u0426/g, "TS")
@@ -88,7 +88,5 @@ export class TextUtils {
             .replace(/\u044C/g, "")
             .replace(/\u0431/g, "b")
             .replace(/\u044E/g, "yu");
-
-        return text;
     }
 }
