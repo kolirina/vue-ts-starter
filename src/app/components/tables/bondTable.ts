@@ -381,7 +381,7 @@ export class BondTable extends UI {
      * @param ticker тикер по которому редактируется заметка
      */
     private async openEditShareNoteDialog(ticker: string): Promise<void> {
-        const data = await new EditShareNoteDialog().show({ticker, note: this.shareNotes[ticker]});
+        const data = await new EditShareNoteDialog().show({ticker, note: this.shareNotes[ticker], shareType: ShareType.BOND});
         if (data) {
             await this.editShareNote(data);
         }
