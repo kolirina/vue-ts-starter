@@ -20,15 +20,17 @@ import {Component, Prop, UI, Watch} from "../../app/ui";
 import {DividendChart} from "../../components/charts/dividendChart";
 import {AddTradeDialog} from "../../components/dialogs/addTradeDialog";
 import {CreateOrEditNotificationDialog} from "../../components/dialogs/createOrEditNotificationDialog";
+import {FeedbackDialog} from "../../components/dialogs/feedbackDialog";
 import {StockRate} from "../../components/stockRate";
 import {ShowProgress} from "../../platform/decorators/showProgress";
+import {ClientInfo} from "../../services/clientService";
 import {MarketService} from "../../services/marketService";
 import {NotificationType} from "../../services/notificationsService";
 import {TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
 import {BaseChartDot, Dot, HighStockEventsGroup} from "../../types/charts/types";
 import {Operation} from "../../types/operation";
-import {Portfolio, Share, ShareDynamic, ShareType} from "../../types/types";
+import {ErrorInfo, Portfolio, Share, ShareDynamic, ShareType} from "../../types/types";
 import {ChartUtils} from "../../utils/chartUtils";
 import {TradeUtils} from "../../utils/tradeUtils";
 import {StoreType} from "../../vuex/storeType";
@@ -87,15 +89,21 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-layout>
                 </div>
                 <div class="info-share-page__empty" v-else>
-                    <span>
+                    <span v-if="!shareNotFound">
                         Здесь будет показана информация об интересующих Вас ценных бумагах, а также о доходности по ним.
+                    </span>
+                    <span v-else>
+                        Бумага не была найдена в системе.
+                        <a @click.stop="openFeedBackDialog">
+                            <span>Напишите нам</span> <i class="fas fa-envelope"></i>
+                        </a> и мы постараемся ее добавить
                     </span>
                 </div>
                 <v-card-text class="info-about-stock" v-if="share">
                     <v-layout justify-space-between wrap>
                         <div>
                             <div class="info-about-stock__title">
-                                {{ isStockAsset ? 'Об акции' : 'О бумаге' }}
+                                {{ isStockAsset ? 'Об акции' : 'Об активе' }}
                             </div>
                             <table class="info-about-stock__content information-table">
                                 <thead>
@@ -309,15 +317,17 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-card-text>
             </v-card>
 
-            <div class="space-between-blocks"></div>
-            <v-card v-if="share" class="chart-overflow" flat data-v-step="2">
-                <v-card-title class="chart-title">
-                    Цена бумаги
-                </v-card-title>
-                <v-card-text>
-                    <line-chart :data="history" :events-chart-data="events" :balloon-title="share.ticker" :avg-line-value="portfolioAvgPrice"></line-chart>
-                </v-card-text>
-            </v-card>
+            <template v-if="share">
+                <div class="space-between-blocks"></div>
+                <v-card class="chart-overflow" flat data-v-step="2">
+                    <v-card-title class="chart-title">
+                        Цена бумаги
+                    </v-card-title>
+                    <v-card-text>
+                        <line-chart :data="history" :events-chart-data="events" :balloon-title="share.ticker" :avg-line-value="portfolioAvgPrice"></line-chart>
+                    </v-card-text>
+                </v-card>
+            </template>
 
             <template v-if="dividends.length">
                 <div class="space-between-blocks"></div>
@@ -358,6 +368,8 @@ export class BaseShareInfoPage extends UI {
     private marketService: MarketService;
     @MainStore.Getter
     private portfolio: Portfolio;
+    @MainStore.Getter
+    private clientInfo: ClientInfo;
     /** Ценная бумага */
     private share: Share = null;
     /** История цены по бумаге */
@@ -374,6 +386,8 @@ export class BaseShareInfoPage extends UI {
     private microChartData: any[] = [];
     /** Типы активов */
     private AssetType = AssetType;
+    /** Признак, если бумага не была найдена */
+    private shareNotFound = false;
 
     /**
      * Инициализация данных
@@ -404,20 +418,30 @@ export class BaseShareInfoPage extends UI {
 
     @ShowProgress
     private async loadShareInfo(): Promise<void> {
-        if (!this.ticker) {
+        this.shareNotFound = false;
+        const ticker = this.$route.params.ticker;
+        if (!ticker) {
             return;
         }
-        const result = this.isStockAsset ? await this.marketService.getStockInfo(this.ticker) : await this.marketService.getAssetInfo(this.ticker);
-        this.events = [];
-        this.shareEvents = [];
-        this.share = result.share;
-        this.history = result.history;
-        this.dividends = result.dividends;
-        this.shareDynamic = result.shareDynamic;
-        this.microChartData = ChartUtils.convertPriceDataDots(result.shareDynamic.yearHistory);
-        this.events.push(result.events);
-        this.shareEvents.push(result.events);
-        await this.loadTradeEvents();
+        try {
+            const result = this.isStockAsset ? await this.marketService.getStockInfo(this.ticker) : await this.marketService.getAssetInfo(this.ticker);
+            this.events = [];
+            this.shareEvents = [];
+            this.share = result.share;
+            this.history = result.history;
+            this.dividends = result.dividends;
+            this.shareDynamic = result.shareDynamic;
+            this.microChartData = ChartUtils.convertPriceDataDots(result.shareDynamic.yearHistory);
+            this.events.push(result.events);
+            this.shareEvents.push(result.events);
+            await this.loadTradeEvents();
+        } catch (e) {
+            if ((e as ErrorInfo).errorCode === "NOT_FOUND") {
+                this.shareNotFound = true;
+            } else {
+                throw e;
+            }
+        }
     }
 
     private async loadTradeEvents(): Promise<void> {
@@ -440,6 +464,9 @@ export class BaseShareInfoPage extends UI {
     }
 
     private async onShareSelect(share: Share): Promise<void> {
+        if (this.share.ticker === share.ticker) {
+            return;
+        }
         this.share = share;
         if (this.share) {
             if (this.share.shareType === ShareType.BOND) {
@@ -472,5 +499,10 @@ export class BaseShareInfoPage extends UI {
 
     private get isStockAsset(): boolean {
         return this.assetType === AssetType.STOCK;
+    }
+
+    private async openFeedBackDialog(): Promise<void> {
+        const message = `Пожалуйста добавьте бумагу ${this.$route.params.ticker} в систему.`;
+        await new FeedbackDialog().show({clientInfo: this.clientInfo, message: message});
     }
 }

@@ -4,6 +4,7 @@ import {namespace} from "vuex-class/lib/bindings";
 import {UI, Watch} from "../../app/ui";
 import {AverageAnnualYieldChart} from "../../components/charts/averageAnnualYield";
 import {SimpleLineChart} from "../../components/charts/simpleLineChart";
+import {RebalancingComponent} from "../../components/rebalancingComponent";
 import {Storage} from "../../platform/services/storage";
 import {AdviceService} from "../../services/adviceService";
 import {AnalyticsService} from "../../services/analyticsService";
@@ -67,9 +68,11 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-flex>
                 </v-layout>
             </expanded-panel>
+
+            <rebalancing-component v-show="false"></rebalancing-component>
         </v-container>
     `,
-    components: {ChooseRisk, Preloader, AnalysisResult, EmptyAdvice, AverageAnnualYieldChart, SimpleLineChart}
+    components: {ChooseRisk, Preloader, AnalysisResult, EmptyAdvice, AverageAnnualYieldChart, SimpleLineChart, RebalancingComponent}
 })
 export class AdviserPage extends UI {
 

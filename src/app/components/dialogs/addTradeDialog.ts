@@ -27,6 +27,7 @@ import {TradeValue} from "../../types/trade/tradeValue";
 import {Asset, Bond, CurrencyUnit, ErrorInfo, Portfolio, Share, ShareType} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {DateUtils} from "../../utils/dateUtils";
+import {TariffUtils} from "../../utils/tariffUtils";
 import {TradeUtils} from "../../utils/tradeUtils";
 import {MainStore} from "../../vuex/mainStore";
 import {TariffExpiredDialog} from "./tariffExpiredDialog";
@@ -408,7 +409,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             this.operation = this.data.operation;
         }
         if (clearFields) {
-            this.clearFields();
+            // исправление бага валидатора https://github.com/logaretm/vee-validate/issues/2109
+            this.$nextTick(() => this.clearFields());
         }
     }
 
@@ -464,6 +466,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         if (!this.editMode) {
             this.calculateFee();
         }
+        this.calculateCurrentShareQuantity();
     }
 
     private calculateExchangeRate(): void {
@@ -605,7 +608,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             if (this.isStockTrade || (this.share as Asset).category === "STOCK") {
                 const row = this.portfolio.overview.stockPortfolio.rows.find(item => item.share.ticker === this.share.ticker);
                 this.currentCountShareSearch = row ? row.quantity : null;
-            } else if (this.isBondTrade) {
+            } else if (this.assetType === AssetType.BOND) {
                 const row = this.portfolio.overview.bondPortfolio.rows.find(item => item.bond.ticker === this.share.ticker);
                 this.currentCountShareSearch = row ? row.quantity : null;
             } else if (this.isAssetTrade) {
@@ -1046,7 +1049,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private get showCurrentQuantityLabel(): boolean {
-        return this.currentCountShareSearch && (this.isStockTrade || this.isBondTrade || this.isAssetTrade);
+        return this.currentCountShareSearch && (this.isStockTrade || this.assetType === AssetType.BOND || this.isAssetTrade);
     }
 
     private get createAssetAllowed(): boolean {
@@ -1057,7 +1060,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
      * Проверяет тариф на активность
      */
     private async checkAllowedAddTrade(): Promise<void> {
-        const tariffExpired = this.clientInfo.tariff !== Tariff.FREE && DateUtils.parseDate(this.clientInfo.paidTill).isBefore(dayjs());
+        const tariffExpired = TariffUtils.isTariffExpired(this.clientInfo);
         if (tariffExpired) {
             this.close();
             await new TariffExpiredDialog().show(this.data.router);

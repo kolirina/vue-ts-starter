@@ -1,4 +1,3 @@
-import dayjs from "dayjs";
 import {Container} from "typescript-ioc";
 import Vue from "vue";
 import VueRouter, {Route} from "vue-router";
@@ -31,9 +30,8 @@ import {ClientService} from "../services/clientService";
 import {LogoutService} from "../services/logoutService";
 import {RouteMeta} from "../types/router/types";
 import {StoreKeys} from "../types/storeKeys";
-import {Tariff} from "../types/tariff";
 import {CommonUtils} from "../utils/commonUtils";
-import {DateUtils} from "../utils/dateUtils";
+import {TariffUtils} from "../utils/tariffUtils";
 import {VuexConfiguration} from "../vuex/vuexConfiguration";
 
 Vue.use(VueRouter);
@@ -84,7 +82,7 @@ export class RouterConfiguration {
                 // осуществляем переход по роуту и если пользователь залогинен отображаем диалог об истечении тарифа при соблюдении условий
                 const tariffAllowed = (to.meta as RouteMeta).tariffAllowed;
                 if (!tariffAllowed && authorized) {
-                    const tariffExpired = client.tariff !== Tariff.FREE && DateUtils.parseDate(client.paidTill).isBefore(dayjs());
+                    const tariffExpired = TariffUtils.isTariffExpired(client);
 
                     if (tariffExpired) {
                         await new TariffExpiredDialog().show(RouterConfiguration.router);
