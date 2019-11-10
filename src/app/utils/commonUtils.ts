@@ -102,4 +102,20 @@ export class CommonUtils {
         }
         return {name: browserInfo[0], version: browserInfo[1]};
     }
+
+    /**
+     * Возвращает признак, нужно ли логгировать ошибку в сентри
+     * @param error ошибка
+     */
+    static skipSendToSentry(error: Error | any): boolean {
+        return !error || this.isUserError(error) || "Не удалось выполнить запрос, повторите позже" === error.message;
+    }
+
+    /**
+     * Проверяет объект на то что это пользовательская ошибка
+     * @param userError пользовательская ошибка
+     */
+    static isUserError(userError: any): boolean {
+        return userError.hasOwnProperty("errorCode") && userError.hasOwnProperty("message") && userError.hasOwnProperty("fields");
+    }
 }

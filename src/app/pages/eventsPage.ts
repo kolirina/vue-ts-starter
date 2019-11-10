@@ -22,7 +22,7 @@ import {
 import {AssetType} from "../types/assetType";
 import {EventType} from "../types/eventType";
 import {Operation} from "../types/operation";
-import {Portfolio, TableHeader} from "../types/types";
+import {Pagination, Portfolio, TableHeader} from "../types/types";
 import {DateUtils} from "../utils/dateUtils";
 import {SortUtils} from "../utils/sortUtils";
 import {TradeUtils} from "../utils/tradeUtils";
@@ -100,7 +100,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </div>
 
                     <v-data-table v-if="events.length" :headers="eventsHeaders" :items="events" item-key="id" :custom-sort="customSortEvents"
-                                  class="data-table events-table" hide-actions must-sort>
+                                  class="data-table events-table" :pagination.sync="eventsPagination" hide-actions must-sort>
                         <template #items="props">
                             <tr class="selectable">
                                 <td class="text-xs-left pl-30">{{ props.item.label }}</td>
@@ -334,6 +334,12 @@ export class EventsPage extends UI {
     private AssetType = AssetType;
     /** Порядок дней отображаемых в календаре */
     private weekdays = [1, 2, 3, 4, 5, 6, 0];
+    /** Паджинация для задания дефолтной сортировки */
+    private eventsPagination: Pagination = this.localStorage.get("eventsPagination", {
+        descending: false,
+        sortBy: "date",
+        rowsPerPage: -1
+    });
 
     /**
      * Инициализация данных
@@ -368,6 +374,11 @@ export class EventsPage extends UI {
         if (this.typeCalendarEvents.includes(CalendarEventType.USER.code.toLowerCase())) {
             await this.loadCalendarEvents();
         }
+    }
+
+    @Watch("eventsPagination")
+    private paginationChange(): void {
+        this.localStorage.set("eventsPagination", this.eventsPagination);
     }
 
     /**

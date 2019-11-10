@@ -237,7 +237,7 @@ export class TablesService {
             {text: "Название", align: "left", value: TABLE_HEADERS.NAME, active: true, width: "160"},
             {text: "Операция", align: "left", value: TABLE_HEADERS.OPERATION_LABEL, active: true, width: "100"},
             {text: "Дата сделки", align: "center", value: TABLE_HEADERS.DATE, active: true, width: "80"},
-            {text: "Количество", align: "right", value: TABLE_HEADERS.QUANTITY, sortable: false, active: false, width: "50"},
+            {text: "Количество", align: "right", value: TABLE_HEADERS.QUANTITY, sortable: false, active: true, width: "50"},
             {text: "Цена", align: "right", value: TABLE_HEADERS.PRICE, sortable: false, active: true, width: "90"},
             {text: "Номинал", align: "right", value: TABLE_HEADERS.FACE_VALUE, sortable: false, active: false, width: "50"},
             {text: "НКД", align: "right", value: TABLE_HEADERS.NKD, sortable: false, active: false, width: "40"},

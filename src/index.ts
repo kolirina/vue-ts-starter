@@ -14,6 +14,7 @@ import {InactivityMonitor} from "./app/services/inactivityMonitor";
 import {LocalStorageUpdater} from "./app/services/localStorageUpdater";
 import {EventType} from "./app/types/eventType";
 import {StoreKeys} from "./app/types/storeKeys";
+import {CommonUtils} from "./app/utils/commonUtils";
 import {VuexConfiguration} from "./app/vuex/vuexConfiguration";
 import * as versionConfig from "./version.json";
 
@@ -42,6 +43,10 @@ export async function start(): Promise<void> {
             UI.emit(EventType.HANDLE_ERROR, error);
             // логгируем ошибки только в prod-сборке
             if (!Vue.config.productionTip) {
+                // не логгируем в сентри пользовательские ошибки, например, о том что имя пользователя уже занято ошибка сети
+                if (CommonUtils.skipSendToSentry(error)) {
+                    return;
+                }
                 const user: ClientInfo = (VuexConfiguration.getStore() as any).state.MAIN.clientInfo;
                 sentryHub.setUser({
                     username: user.user.username,
