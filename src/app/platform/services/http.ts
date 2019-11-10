@@ -307,7 +307,7 @@ export class Http {
     }
 
     private makeErrorInfo(responseError: any): ErrorInfo {
-        if (responseError.hasOwnProperty("errorCode") && responseError.hasOwnProperty("message") && responseError.hasOwnProperty("fields")) {
+        if (CommonUtils.isUserError(responseError)) {
             return responseError as ErrorInfo;
         }
         return null;
