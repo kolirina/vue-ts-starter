@@ -33,13 +33,13 @@ import {CommonUtils} from "../../utils/commonUtils";
 import {ExportUtils} from "../../utils/exportUtils";
 import {SortUtils} from "../../utils/sortUtils";
 import {TradeUtils} from "../../utils/tradeUtils";
+import {ActionType} from "../../vuex/actionType";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 import {ConfirmDialog} from "../dialogs/confirmDialog";
 import {EmbeddedBlocksDialog} from "../dialogs/embeddedBlocksDialog";
 import {PortfolioEditDialog} from "../dialogs/portfolioEditDialog";
 import {SharePortfolioDialog} from "../dialogs/sharePortfolioDialog";
-import {ActionType} from "../vuex/actionType";
 
 const MainStore = namespace(StoreType.MAIN);
 
