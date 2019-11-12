@@ -2,9 +2,10 @@ import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {Http, UrlParams} from "../platform/services/http";
 import {BaseChartDot, Dot, EventChartData, HighStockEventData, HighStockEventsGroup} from "../types/charts/types";
-import {Bond, BondInfo, Currency, PageableResponse, Share, Stock, StockDynamic, StockInfo} from "../types/types";
+import {Asset, AssetInfo, Bond, BondInfo, Currency, PageableResponse, Pagination, Share, ShareDynamic, Stock, StockInfo} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
 import {CommonUtils} from "../utils/commonUtils";
+import {AssetCategory} from "./assetService";
 
 @Service("MarketService")
 @Singleton
@@ -25,6 +26,10 @@ export class MarketService {
         return this.http.get("/market/bonds/search", {query});
     }
 
+    async searchAssets(query: string): Promise<Share[]> {
+        return this.http.get("/market/assets/search", {query});
+    }
+
     async searchShares(query: string): Promise<Share[]> {
         return this.http.get("/market/shares/search", {query});
     }
@@ -32,22 +37,33 @@ export class MarketService {
     async getStockInfo(ticker: string): Promise<StockInfo> {
         const result = await this.http.get<_stockInfo>(`/market/stock/${ticker}/info`);
         return {
-            stock: result.stock,
+            share: result.share,
             history: this.convertDots(result.history),
             dividends: result.dividends,
-            stockDynamic: result.stockDynamic,
+            shareDynamic: result.shareDynamic,
             events: this.convertStockEvents(result.dividends, ticker)
         } as StockInfo;
+    }
+
+    async getAssetInfo(assetId: string): Promise<AssetInfo> {
+        const result = await this.http.get<_assetInfo>(`/market/asset/${assetId}/info`);
+        return {
+            share: result.share,
+            dividends: result.dividends,
+            shareDynamic: result.shareDynamic,
+            history: this.convertDots(result.history),
+            events: {}
+        } as AssetInfo;
     }
 
     async getStockById(id: number): Promise<StockInfo> {
         const result = await this.http.get<_stockInfo>(`/market/stock/${id}/info-by-id`);
         return {
-            stock: result.stock,
+            share: result.share,
             history: this.convertDots(result.history),
             dividends: result.dividends,
-            stockDynamic: result.stockDynamic,
-            events: this.convertStockEvents(result.dividends, result.stock.ticker)
+            shareDynamic: result.shareDynamic,
+            events: this.convertStockEvents(result.dividends, result.share.ticker)
         } as StockInfo;
     }
 
@@ -74,30 +90,16 @@ export class MarketService {
     /**
      * Загружает и возвращает список акций
      */
-    async loadStocks(offset: number = 0, pageSize: number = 50, sortColumn: string,
-                     descending: boolean = false, search: string = null, showUserShares: boolean = false): Promise<PageableResponse<Stock>> {
-        const urlParams: UrlParams = {offset, pageSize, search, showUserShares};
-        if (sortColumn) {
-            urlParams.sortColumn = sortColumn.toUpperCase();
-        }
-        if (CommonUtils.exists(descending)) {
-            urlParams.descending = descending;
-        }
+    async loadStocks(pagination: Pagination, filter: QuotesFilter): Promise<PageableResponse<Stock>> {
+        const urlParams = this.makeFilterRequest(pagination, filter);
         return this.http.get<PageableResponse<Stock>>(`/market/stocks`, urlParams);
     }
 
     /**
      * Загружает и возвращает список облигаций
      */
-    async loadBonds(offset: number = 0, pageSize: number = 50, sortColumn: string,
-                    descending: boolean = false, search: string = null, showUserShares: boolean = false): Promise<PageableResponse<Bond>> {
-        const urlParams: UrlParams = {offset, pageSize, search, showUserShares};
-        if (sortColumn) {
-            urlParams.sortColumn = sortColumn.toUpperCase();
-        }
-        if (CommonUtils.exists(descending)) {
-            urlParams.descending = descending;
-        }
+    async loadBonds(pagination: Pagination, filter: QuotesFilter): Promise<PageableResponse<Bond>> {
+        const urlParams = this.makeFilterRequest(pagination, filter);
         return this.http.get<PageableResponse<Bond>>(`/market/bonds`, urlParams);
     }
 
@@ -115,10 +117,31 @@ export class MarketService {
         return this.http.get<Stock[]>(`/market/top-stocks`);
     }
 
+    private makeFilterRequest(pagination: Pagination, filter: QuotesFilter): UrlParams {
+        const offset: number = pagination.rowsPerPage * (pagination.page - 1) || 0;
+        const pageSize: number = pagination.rowsPerPage || 50;
+        const sortColumn: string = pagination.sortBy || "ticker";
+        const descending: boolean = pagination.descending;
+        const search: string = filter.searchQuery || "";
+        const currency: string = filter.currency;
+        const showUserShares = filter.showUserShares;
+        const urlParams: UrlParams = {offset, pageSize, search, showUserShares};
+        if (sortColumn) {
+            urlParams.sortColumn = sortColumn.toUpperCase();
+        }
+        if (CommonUtils.exists(descending)) {
+            urlParams.descending = descending;
+        }
+        if (CommonUtils.exists(currency)) {
+            urlParams.currency = currency;
+        }
+        return urlParams;
+    }
+
     private convertDots(dots: _baseChartDot[]): Dot[] {
         const result: Dot[] = [];
         dots.forEach(value => {
-            result.push([new Date(value.date).getTime(), value.amount]);
+            result.push([new Date(value.date).getTime(), value.price]);
         });
         return result || [];
     }
@@ -144,18 +167,37 @@ export class MarketService {
 export interface QuotesFilter {
     searchQuery?: string;
     showUserShares?: boolean;
+    currency?: string;
+}
+
+export interface AssetQuotesFilter {
+    searchQuery?: string;
+    categories?: AssetCategory[];
+    currency?: string;
 }
 
 /** Информация по акции */
 type _stockInfo = {
     /** Акция */
-    stock: Stock;
+    share: Stock;
     /** История цены */
     history: _baseChartDot[];
     /** Дивиденды */
     dividends: BaseChartDot[];
     /** Динамика */
-    stockDynamic: StockDynamic;
+    shareDynamic: ShareDynamic;
+};
+
+/** Информация по акции */
+type _assetInfo = {
+    /** Актив */
+    share: Asset;
+    /** История цены */
+    history: _baseChartDot[];
+    /** Дивиденды */
+    dividends: BaseChartDot[];
+    /** Информация по динамике ценной бумаги */
+    shareDynamic: ShareDynamic;
 };
 
 /** Информация по акции */
@@ -170,5 +212,5 @@ type _bondInfo = {
 
 export type _baseChartDot = {
     date: string,
-    amount: number
+    price: number
 };

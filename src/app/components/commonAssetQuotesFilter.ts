@@ -16,8 +16,9 @@
 
 import {Inject} from "typescript-ioc";
 import {Component, Prop, UI} from "../app/ui";
+import {AssetCategory} from "../services/assetService";
 import {FiltersService} from "../services/filtersService";
-import {QuotesFilter} from "../services/marketService";
+import {AssetQuotesFilter} from "../services/marketService";
 import {StoreKeys} from "../types/storeKeys";
 import {CurrencyUnit} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
@@ -40,18 +41,8 @@ import {TableFilterBase} from "./tableFilterBase";
 
                     <div class="trades-filter__label">Категория актива</div>
                     <div class="trades-filter__operations">
-                        <v-switch v-model="filter.showUserShares" @change="onChange">
-                            <template #label>
-                                <span class="fs13">Показать мои бумаги</span>
-                                <v-tooltip content-class="custom-tooltip-wrap" bottom>
-                                    <sup class="custom-tooltip" slot="activator">
-                                        <v-icon>fas fa-info-circle</v-icon>
-                                    </sup>
-                                    <span>
-                                Включите, если хотите увидеть только свои бумаги
-                            </span>
-                                </v-tooltip>
-                            </template>
+                        <v-switch v-for="category in categories" @change="onCategoryChange($event, category)" :label="category.description"
+                                  v-model="filter.categories.includes(category)" :key="category.enumName">
                         </v-switch>
                     </div>
                 </div>
@@ -60,13 +51,13 @@ import {TableFilterBase} from "./tableFilterBase";
     `,
     components: {TableFilterBase}
 })
-export class QuotesFilterTable extends UI {
+export class CommonAssetQuotesFilter extends UI {
 
     @Prop({required: false, default: ""})
     private placeholder: string;
     /** Фильтр */
     @Prop({required: true, type: Object})
-    private filter: QuotesFilter;
+    private filter: AssetQuotesFilter;
     /** Минимальная длина поиска */
     @Prop({required: false, type: Number, default: 0})
     private minLength: number;
@@ -76,12 +67,17 @@ export class QuotesFilterTable extends UI {
     @Inject
     private filtersService: FiltersService;
 
+    private categories = AssetCategory.values();
     /** Список валют */
     private currencyList = CurrencyUnit.values().map(c => c.code);
 
-    private onChange(): void {
-        this.$emit("changeShowUserShares", this.filter.showUserShares);
-        this.saveFilter();
+    private onCategoryChange(checked: boolean, category: AssetCategory): void {
+        if (checked) {
+            this.filter.categories.push(category);
+        } else {
+            this.filter.categories = this.filter.categories.filter(operation => operation !== category);
+        }
+        this.emitFilterChange();
     }
 
     private onSearch(searchQuery: string): void {
@@ -100,12 +96,16 @@ export class QuotesFilterTable extends UI {
         this.saveFilter();
     }
 
-    private saveFilter(): void {
-        this.filtersService.saveFilter(this.storeKey, this.filter);
+    private get isDefaultFilter(): boolean {
+        return this.filter.categories.length === this.categories.length && CommonUtils.isBlank(this.filter.searchQuery) && !CommonUtils.exists(this.filter.currency);
     }
 
-    private get isDefaultFilter(): boolean {
-        return (!CommonUtils.exists(this.filter.showUserShares) || this.filter.showUserShares === false) && CommonUtils.isBlank(this.filter.searchQuery)
-            && !CommonUtils.exists(this.filter.currency);
+    private emitFilterChange(): void {
+        this.$emit("filter", this.filter);
+        this.saveFilter();
+    }
+
+    private saveFilter(): void {
+        this.filtersService.saveAssetFilter(this.storeKey, this.filter);
     }
 }

@@ -15,13 +15,13 @@
  */
 
 import {Inject} from "typescript-ioc";
-import Component from "vue-class-component";
-import {Watch} from "vue-property-decorator";
-import {Prop, UI} from "../app/ui";
+import {Component, Prop, UI, Watch} from "../app/ui";
+import {Filters} from "../platform/filters/Filters";
+import {AssetCategory} from "../services/assetService";
 import {MarketService} from "../services/marketService";
 import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
-import {Bond, Share} from "../types/types";
+import {Asset, Bond, Share, ShareType} from "../types/types";
 
 @Component({
     // language=Vue
@@ -34,13 +34,31 @@ import {Bond, Share} from "../types/types";
                 {{ shareLabelSelected(data.item) }}
             </template>
             <template #item="data">
-                {{ shareLabelListItem(data.item) }}
+                <span v-html="shareLabelListItem(data.item)"></span>
             </template>
         </v-autocomplete>
-
     `
 })
 export class ShareSearchComponent extends UI {
+
+    private NEW_CUSTOM_ASSET: Asset = {
+        id: null,
+        shortname: "",
+        price: null,
+        lotsize: "",
+        decimals: "",
+        currency: "RUB",
+        isin: "",
+        change: "",
+        boardName: "",
+        name: "",
+        ticker: "",
+        shareType: ShareType.ASSET,
+        rating: "0",
+        ratingCount: "0",
+        category: AssetCategory.OTHER.code,
+        sector: null
+    };
 
     @Prop({required: false})
     private assetType: AssetType;
@@ -54,6 +72,10 @@ export class ShareSearchComponent extends UI {
     @Prop({required: false, type: Boolean, default: false})
     private autofocus: boolean;
 
+    /** Признак разрешения создания нового актива через поиск. Используется только в диалоге добавления сделок */
+    @Prop({required: false, type: Boolean, default: false})
+    private createAssetAllowed: boolean;
+
     @Prop({required: false, type: Boolean, default: false})
     private required: boolean;
     @Prop({required: false, type: Array, default: (): any[] => []})
@@ -61,7 +83,7 @@ export class ShareSearchComponent extends UI {
     /** Отфильтрованные данные */
     private filteredSharesMutated: Share[] = [];
     /** Тип актива бумаги */
-    private assetTypeMutated: AssetType;
+    private assetTypeMutated: AssetType = null;
 
     @Inject
     private marketService: MarketService;
@@ -74,6 +96,10 @@ export class ShareSearchComponent extends UI {
     private shareSearch = false;
     private notFoundLabel = "Ничего не найдено";
     private hideNoDataLabel = true;
+
+    created(): void {
+        this.assetTypeMutated = this.assetType;
+    }
 
     @Watch("filteredShares")
     private async onFilteredSharesChange(filteredShares: Share[]): Promise<void> {
@@ -91,55 +117,65 @@ export class ShareSearchComponent extends UI {
     @Watch("searchQuery")
     private async onSearch(): Promise<void> {
         clearTimeout(this.currentTimer);
+        this.shareSearch = true;
         if (!this.searchQuery || this.searchQuery.length < 1) {
             this.shareSearch = false;
             this.hideNoDataLabel = true;
             return;
         }
-        this.shareSearch = true;
-        const delay = new Promise((resolve, reject): void => {
-            this.currentTimer = setTimeout(async (): Promise<void> => {
-                try {
-                    if (this.assetType === AssetType.STOCK) {
-                        this.filteredSharesMutated = await this.marketService.searchStocks(this.searchQuery);
-                    } else if (this.assetType === AssetType.BOND) {
-                        this.filteredSharesMutated = await this.marketService.searchBonds(this.searchQuery);
-                    } else {
-                        this.filteredSharesMutated = await this.marketService.searchShares(this.searchQuery);
-                    }
-                    this.hideNoDataLabel = this.filteredSharesMutated.length > 0;
-                    this.shareSearch = false;
-                } catch (error) {
-                    reject(error);
-                }
-            }, 1000);
-        });
-
+        await this.setTimeout(1000);
         try {
-            delay.then(() => {
-                clearTimeout(this.currentTimer);
-                this.shareSearch = false;
-            });
-        } catch (error) {
+            if (this.assetType === AssetType.STOCK) {
+                this.filteredSharesMutated = await this.marketService.searchStocks(this.searchQuery);
+            } else if (this.assetType === AssetType.BOND) {
+                this.filteredSharesMutated = await this.marketService.searchBonds(this.searchQuery);
+            } else if (this.assetType === AssetType.ASSET) {
+                this.filteredSharesMutated = await this.marketService.searchAssets(this.searchQuery);
+            } else {
+                this.filteredSharesMutated = await this.marketService.searchShares(this.searchQuery);
+            }
+            // не нашли кастомный актив, предлагаем добавить его
+            if (this.assetType === AssetType.ASSET && this.filteredSharesMutated.length === 0 && this.createAssetAllowed) {
+                const newAsset = {...this.NEW_CUSTOM_ASSET};
+                newAsset.shortname = this.searchQuery;
+                this.filteredSharesMutated.push(newAsset);
+            }
+            this.hideNoDataLabel = this.filteredSharesMutated.length > 0;
+            this.shareSearch = false;
+        } finally {
             clearTimeout(this.currentTimer);
             this.shareSearch = false;
-            throw error;
         }
     }
 
+    /**
+     * Возвращает `setTimeout`, обернутый в промис
+     * @param timeout таймаут в миллисекундах
+     */
+    private async setTimeout(timeout: number): Promise<void> {
+        return new Promise((resolve): void => {
+            this.currentTimer = setTimeout(async () => {
+                resolve();
+            }, timeout);
+        });
+    }
+
     private shareLabelSelected(share: Share): string {
-        return `${share.ticker} (${share.shortname})`;
+        return share.shareType === ShareType.STOCK ? `${share.ticker} (${share.shortname})` : share.shortname;
     }
 
     private shareLabelListItem(share: Share): string {
         if ((share as any) === this.notFoundLabel) {
             return this.notFoundLabel;
         }
-        if (this.assetTypeMutated === AssetType.STOCK) {
-            const price = new BigMoney(share.price);
-            return `${share.ticker} (${share.shortname}), ${price.amount.toString()} ${price.currency}`;
+        if ([AssetType.STOCK, AssetType.ASSET].includes(this.assetTypeMutated)) {
+            if (share.price !== null) {
+                const price = new BigMoney(share.price);
+                return `${share.ticker} (${share.shortname}), <b>${Filters.formatNumber(price.amount.toString())}</b> ${price.currencySymbol}`;
+            }
+            return `Создать актив "${share.shortname}"`;
         } else if (this.assetTypeMutated === AssetType.BOND) {
-            return `${share.ticker} (${share.shortname}), ${(share as Bond).prevprice}%`;
+            return `${share.ticker} (${share.shortname}), <b>${(share as Bond).prevprice}</b> %`;
         }
         return `${share.ticker} (${share.shortname})`;
     }

@@ -143,3 +143,12 @@ export interface ChartSeriesFilter {
     /** Признак отображения графика стоимости Облигаций */
     bondChart: boolean;
 }
+
+export enum ChartType {
+    ASSETS_CHART = "assetsPieChart",
+    STOCK_CHART = "stockPieChart",
+    BOND_CHART = "bondPieChart",
+    SECTORS_CHART = "sectorsChart",
+    AGGREGATE_CHART = "aggregatePieChart",
+    PORTFOLIO_LINE_CHART = "portfolioLineChart",
+}

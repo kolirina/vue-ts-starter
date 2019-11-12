@@ -28,6 +28,12 @@ export class Filters {
                 return "Евро";
             case "ETF":
                 return "ETF";
+            case "OTHER":
+                return "Прочие активы";
+            case "METALL":
+                return "Драгметаллы";
+            case "REALTY":
+                return "Недвижимость";
         }
         throw new Error("Неизвестный тип актива: " + type);
     }
@@ -78,6 +84,20 @@ export class Filters {
         const amount = new Decimal(value);
         return Filters.replaceCommaToDot(needFormat ? DF_NO_SCALE.format(scale ? amount.toDecimalPlaces(scale, Decimal.ROUND_HALF_UP).toNumber() :
             amount.toNumber()) : String(amount.toNumber()));
+
+    }
+
+    /**
+     * Используется для форматирования чисел
+     * @param value строка
+     * @param returnZeros признак возврата нулевого значения вместо пустого
+     */
+    static formatQuantity(value: string, returnZeros: boolean = false): string {
+        if (!value) {
+            return returnZeros ? "0" : "";
+        }
+        const amount = new Decimal(value);
+        return Filters.replaceCommaToDot(DF_NO_SCALE.format(amount.toNumber())).replace(".00", "");
 
     }
 

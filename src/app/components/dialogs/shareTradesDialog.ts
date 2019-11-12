@@ -1,6 +1,6 @@
 import Component from "vue-class-component";
 import {CustomDialog} from "../../platform/dialogs/customDialog";
-import {Pagination, TableHeader, TradeRow} from "../../types/types";
+import {Pagination, ShareType, TableHeader, TradeRow} from "../../types/types";
 import {SortUtils} from "../../utils/sortUtils";
 import {TradeUtils} from "../../utils/tradeUtils";
 
@@ -15,7 +15,7 @@ import {TradeUtils} from "../../utils/tradeUtils";
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
 
                 <v-card-title class="paddB0">
-                    <span class="headline">Сделки по бумаге <b>{{ data.ticker }}</b></span>
+                    <span class="headline">{{ title }} <b>{{ data.ticker }}</b></span>
                     <v-spacer></v-spacer>
                 </v-card-title>
                 <v-card-text>
@@ -81,9 +81,14 @@ export class ShareTradesDialog extends CustomDialog<ShareTradesDialogData, void>
     private customSort(items: TradeRow[], index: string, isDesc: boolean): TradeRow[] {
         return SortUtils.simpleSort<TradeRow>(items, index, isDesc);
     }
+
+    private get title(): string {
+        return `Сделки по ${this.data.shareType === ShareType.ASSET ? "активу" : "бумаге"}`;
+    }
 }
 
 export type ShareTradesDialogData = {
     trades: TradeRow[],
-    ticker: string
+    ticker: string,
+    shareType: ShareType
 };

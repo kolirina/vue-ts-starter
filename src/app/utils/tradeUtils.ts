@@ -37,11 +37,13 @@ export class TradeUtils {
 
     static moneyPrice(trade: TradeRow): boolean {
         const tradeOperation = Operation.valueByName(trade.operation);
-        return trade.asset === AssetType.STOCK.enumName || tradeOperation === Operation.COUPON || tradeOperation === Operation.AMORTIZATION;
+        return [AssetType.STOCK.enumName, AssetType.ASSET.enumName].includes(trade.asset) || [Operation.COUPON, Operation.AMORTIZATION].includes(tradeOperation);
     }
 
     static tradeTable(assetType: AssetType, operation: Operation): string {
-        if (assetType === AssetType.BOND) {
+        if (assetType === AssetType.ASSET) {
+            return TableName.ASSET_TRADE;
+        } else if (assetType === AssetType.BOND) {
             return TableName.BOND_TRADE;
         } else if (operation === Operation.DIVIDEND) {
             return TableName.DIVIDEND_TRADE;

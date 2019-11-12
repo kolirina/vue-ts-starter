@@ -1,7 +1,22 @@
-import Component from "vue-class-component";
-import {Watch} from "vue-property-decorator";
+/*
+ * STRICTLY CONFIDENTIAL
+ * TRADE SECRET
+ * PROPRIETARY:
+ *       "Intelinvest" Ltd, TIN 1655386205
+ *       420107, REPUBLIC OF TATARSTAN, KAZAN CITY, SPARTAKOVSKAYA STREET, HOUSE 2, ROOM 119
+ * (c) "Intelinvest" Ltd, 2019
+ *
+ * СТРОГО КОНФИДЕНЦИАЛЬНО
+ * КОММЕРЧЕСКАЯ ТАЙНА
+ * СОБСТВЕННИК:
+ *       ООО "Интеллектуальные инвестиции", ИНН 1655386205
+ *       420107, РЕСПУБЛИКА ТАТАРСТАН, ГОРОД КАЗАНЬ, УЛИЦА СПАРТАКОВСКАЯ, ДОМ 2, ПОМЕЩЕНИЕ 119
+ * (c) ООО "Интеллектуальные инвестиции", 2019
+ */
+
 import {namespace} from "vuex-class";
-import {UI} from "../app/ui";
+import {Component, UI, Watch} from "../app/ui";
+import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
 import {Portfolio} from "../types/types";
 import {MutationType} from "../vuex/mutationType";
@@ -13,11 +28,11 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <base-share-info-page :ticker="ticker" :portfolio-avg-price="portfolioAvgPrice" @reloadPortfolio="onReloadPortfolio"></base-share-info-page>
+        <base-share-info-page :ticker="ticker" :asset-type="AssetType.ASSET" :portfolio-avg-price="portfolioAvgPrice" @reloadPortfolio="onReloadPortfolio"></base-share-info-page>
     `,
     components: {BaseShareInfoPage}
 })
-export class ShareInfoPage extends UI {
+export class AssetInfoPage extends UI {
 
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
     private reloadPortfolio: (id: number) => Promise<void>;
@@ -25,6 +40,8 @@ export class ShareInfoPage extends UI {
     private portfolio: Portfolio;
     /** Код ценной бумаги */
     private ticker: string = null;
+    /** Типы активов */
+    private AssetType = AssetType;
 
     /**
      * Инициализация данных
@@ -48,7 +65,7 @@ export class ShareInfoPage extends UI {
     }
 
     private get portfolioAvgPrice(): number {
-        const row = this.portfolio.overview.stockPortfolio.rows.find(r => r.share.ticker === this.ticker);
+        const row = this.portfolio.overview.assetPortfolio.rows.find(r => String(r.asset.id) === this.ticker);
         return row ? new BigMoney(row.avgBuy).amount.toNumber() : null;
     }
 

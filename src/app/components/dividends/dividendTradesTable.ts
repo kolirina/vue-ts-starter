@@ -88,7 +88,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         </v-list-tile-title>
                                     </v-list-tile>
                                     <v-list-tile @click.stop="deleteDividendTrade(props.item)">
-                                        <v-list-tile-title>
+                                        <v-list-tile-title class="delete-btn">
                                             Удалить
                                         </v-list-tile-title>
                                     </v-list-tile>

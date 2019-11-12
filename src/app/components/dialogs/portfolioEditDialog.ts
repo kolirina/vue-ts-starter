@@ -8,6 +8,7 @@ import {ShowProgress} from "../../platform/decorators/showProgress";
 import {CustomDialog} from "../../platform/dialogs/customDialog";
 import {IisType, PortfolioAccountType, PortfolioParams, PortfolioService} from "../../services/portfolioService";
 import {EventType} from "../../types/eventType";
+import {CurrencyUnit} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {DateFormat, DateUtils} from "../../utils/dateUtils";
 import {MainStore} from "../../vuex/mainStore";
@@ -140,7 +141,8 @@ export class PortfolioEditDialog extends CustomDialog<PortfolioDialogData, boole
     private portfolioParams: PortfolioParams = null;
 
     private dateMenuValue = false;
-    private currencyList = ["RUB", "USD", "EUR"];
+    /** Список валют */
+    private currencyList = CurrencyUnit.values().map(c => c.code);
     private accessTypes = [AccessTypes.PRIVATE, AccessTypes.PUBLIC];
     private iisTypes = IisType.values();
     private accountType = PortfolioAccountType;

@@ -14,7 +14,6 @@
  * (c) ООО "Интеллектуальные инвестиции", 2019
  */
 
-import Decimal from "decimal.js";
 import {Inject} from "typescript-ioc";
 import {namespace} from "vuex-class/lib/bindings";
 import {Component, Prop, UI, Watch} from "../../app/ui";
@@ -31,7 +30,7 @@ import {TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
 import {BaseChartDot, Dot, HighStockEventsGroup} from "../../types/charts/types";
 import {Operation} from "../../types/operation";
-import {ErrorInfo, Portfolio, Share, ShareType, Stock, StockDynamic} from "../../types/types";
+import {ErrorInfo, Portfolio, Share, ShareDynamic, ShareType} from "../../types/types";
 import {ChartUtils} from "../../utils/chartUtils";
 import {TradeUtils} from "../../utils/tradeUtils";
 import {StoreType} from "../../vuex/storeType";
@@ -49,7 +48,7 @@ const MainStore = namespace(StoreType.MAIN);
             </v-card>
             <v-card flat class="info-share-page">
                 <share-search @change="onShareSelect"></share-search>
-                <div v-if="share && share.shareType === 'STOCK'" data-v-step="0">
+                <div v-if="share && (share.shareType === 'STOCK' || share.shareType === 'ASSET')" data-v-step="0">
                     <v-layout class="info-share-page__name-stock-block" justify-space-between align-center wrap>
                         <div>
                             <div class="info-share-page__name-stock-block__title selectable">
@@ -61,11 +60,11 @@ const MainStore = namespace(StoreType.MAIN);
                                         {{ share.ticker }}
                                     </strong>
                                 </span>
-                                <span>
+                                <span v-if="isStockAsset">
                                     (ISIN {{ share.isin }})
                                 </span>
                             </div>
-                            <div>
+                            <div v-if="share.sector">
                                 <div class="info-share-page__name-stock-block__sector-rating">
                                     <span class="info-share-page__name-stock-block__subtitle">
                                         Сектор - {{ share.sector.name }}
@@ -73,7 +72,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     <span v-if="share.sector.parent" class="info-share-page__name-stock-block__subtitle">
                                         ,&nbsp;родительский сектор: {{ share.sector.parent.name }}
                                     </span>
-                                    <span class="rating-section" data-v-step="1">
+                                    <span v-if="share.shareType === 'STOCK'" class="rating-section" data-v-step="1">
                                         <stock-rate :share="share"></stock-rate>
                                     </span>
                                 </div>
@@ -91,7 +90,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </div>
                 <div class="info-share-page__empty" v-else>
                     <span v-if="!shareNotFound">
-                        Здесь будет показана информация об интересующих Вас акциях, а также о доходности по ним.
+                        Здесь будет показана информация об интересующих Вас ценных бумагах, а также о доходности по ним.
                     </span>
                     <span v-else>
                         Бумага не была найдена в системе.
@@ -104,7 +103,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <v-layout justify-space-between wrap>
                         <div>
                             <div class="info-about-stock__title">
-                                Об акции
+                                {{ isStockAsset ? 'Об акции' : 'Об активе' }}
                             </div>
                             <table class="info-about-stock__content information-table">
                                 <thead>
@@ -120,9 +119,9 @@ const MainStore = namespace(StoreType.MAIN);
                                     </td>
                                     <td>
                                         <span class="info-about-stock__content-value">
-                                            {{ share.lotsize }}
+                                            {{ share.lotsize || 'н/д' }}
                                         </span>
-                                        <span class="info-about-stock__content-legend">шт.</span>
+                                        <span v-if="share.lotsize" class="info-about-stock__content-legend">шт.</span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -135,21 +134,35 @@ const MainStore = namespace(StoreType.MAIN);
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td class="info-about-stock__content-title">Кол-во акций в обращении</td>
+                                    <td class="info-about-stock__content-title">Дата последнего обновления</td>
                                     <td>
+                                        <span class="info-about-stock__content-value">
+                                            {{ share.lastUpdateTime | date("DD.MM.YYYY HH:mm:ss") }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="info-about-stock__content-title">Кол-во бумаг в обращении</td>
+                                    <td v-if="share.issueSize">
                                         <span class="info-about-stock__content-value">
                                             {{ share.issueSize | integer }}
                                         </span>
                                         <span class="info-about-stock__content-legend">шт.</span>
                                     </td>
+                                    <td v-else>
+                                        <span class="info-about-stock__content-value">н/д</span>
+                                    </td>
                                 </tr>
-                                <tr v-if="share.issueCapitalization">
+                                <tr>
                                     <td class="info-about-stock__content-title">Рыночная капитализация</td>
-                                    <td>
+                                    <td v-if="share.issueCapitalization">
                                         <span class="info-about-stock__content-value">
                                             {{ share.issueCapitalization | number }}
                                         </span>
                                         <span class="info-about-stock__content-legend">{{ currencySymbol }}</span>
+                                    </td>
+                                    <td v-else>
+                                        <span class="info-about-stock__content-value">н/д</span>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -172,9 +185,9 @@ const MainStore = namespace(StoreType.MAIN);
                                         <td class="info-about-stock__content-title">За 1 месяц</td>
                                         <td>
                                             <v-layout align-center>
-                                                <div :class="stockDynamic.yieldMonth1 >= 0 ? 'icon-positive' : 'icon-negative'"></div>
-                                                <span :class="['info-about-stock__content', (stockDynamic.yieldMonth1 >= 0 ? 'above' : 'less') + '-than-zero']">
-                                                    {{ stockDynamic.yieldMonth1 }} %
+                                                <div :class="shareDynamic.yieldMonth1 >= 0 ? 'icon-positive' : 'icon-negative'"></div>
+                                                <span :class="['info-about-stock__content', (shareDynamic.yieldMonth1 >= 0 ? 'above' : 'less') + '-than-zero']">
+                                                    {{ shareDynamic.yieldMonth1 }} %
                                                 </span>
                                             </v-layout>
                                         </td>
@@ -183,9 +196,9 @@ const MainStore = namespace(StoreType.MAIN);
                                         <td class="info-about-stock__content-title">За 6 месяцев</td>
                                         <td>
                                             <v-layout align-center>
-                                                <div :class="stockDynamic.yieldMonth6 >= 0 ? 'icon-positive' : 'icon-negative'"></div>
-                                                <span :class="['info-about-stock__content', (stockDynamic.yieldMonth6 >= 0 ? 'above' : 'less') + '-than-zero']">
-                                                    {{ stockDynamic.yieldMonth6 }} %
+                                                <div :class="shareDynamic.yieldMonth6 >= 0 ? 'icon-positive' : 'icon-negative'"></div>
+                                                <span :class="['info-about-stock__content', (shareDynamic.yieldMonth6 >= 0 ? 'above' : 'less') + '-than-zero']">
+                                                    {{ shareDynamic.yieldMonth6 }} %
                                                 </span>
                                             </v-layout>
                                         </td>
@@ -194,9 +207,9 @@ const MainStore = namespace(StoreType.MAIN);
                                         <td class="info-about-stock__content-title">За 12 месяцев</td>
                                         <td>
                                             <v-layout align-center>
-                                                <div :class="stockDynamic.yieldMonth12 >= 0 ? 'icon-positive' : 'icon-negative'"></div>
-                                                <span :class="['info-about-stock__content', (stockDynamic.yieldMonth12 >= 0 ? 'above' : 'less') + '-than-zero']">
-                                                    {{ stockDynamic.yieldMonth12 }} %
+                                                <div :class="shareDynamic.yieldMonth12 >= 0 ? 'icon-positive' : 'icon-negative'"></div>
+                                                <span :class="['info-about-stock__content', (shareDynamic.yieldMonth12 >= 0 ? 'above' : 'less') + '-than-zero']">
+                                                    {{ shareDynamic.yieldMonth12 }} %
                                                 </span>
                                             </v-layout>
                                         </td>
@@ -220,7 +233,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         <td class="info-about-stock__content-title">Минимум</td>
                                         <td>
                                             <span class="info-about-stock__content-value">
-                                                {{ stockDynamic.minYearPrice | amount }}
+                                                {{ shareDynamic.minYearPrice | amount }}
                                             </span>
                                             <span class="info-about-stock__content-legend">{{ currencySymbol }}</span>
                                         </td>
@@ -229,7 +242,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         <td class="info-about-stock__content-title">Максимум</td>
                                         <td>
                                             <span class="info-about-stock__content-value">
-                                                {{ stockDynamic.maxYearPrice | amount }}
+                                                {{ shareDynamic.maxYearPrice | amount }}
                                             </span>
                                             <span class="info-about-stock__content-legend">{{ currencySymbol }}</span>
                                         </td>
@@ -241,10 +254,10 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-layout>
                     <v-layout justify-space-between wrap>
                         <div>
-                            <div class="info-about-stock__title">
+                            <div v-if="isStockAsset" class="info-about-stock__title">
                                 Доходность
                             </div>
-                            <table class="info-about-stock__content information-table">
+                            <table v-if="isStockAsset" class="info-about-stock__content information-table">
                                 <thead>
                                 <tr>
                                     <th class="indent-between-title-value-200"></th>
@@ -290,7 +303,7 @@ const MainStore = namespace(StoreType.MAIN);
                             </v-card>
                         </div>
                     </v-layout>
-                    <div class="info-share-page__footer">
+                    <div v-if="isStockAsset" class="info-share-page__footer">
                         <a class="info-share-page__footer__link" v-if="share.currency === 'RUB'" :href="'http://moex.com/ru/issue.aspx?code=' + share.ticker" target="_blank"
                            :title="'Профиль эмитента' + share.companyName + ' на сайте биржи'">
                             Перейти на профиль эмитента
@@ -345,6 +358,10 @@ export class BaseShareInfoPage extends UI {
     @Prop({type: Number, default: null, required: false})
     private portfolioAvgPrice: number;
 
+    @Prop({type: Object, default: (): AssetType => AssetType.STOCK, required: false})
+    /** Тип активов */
+    private assetType: AssetType;
+
     @Inject
     private tradeService: TradeService;
     @Inject
@@ -353,8 +370,6 @@ export class BaseShareInfoPage extends UI {
     private portfolio: Portfolio;
     @MainStore.Getter
     private clientInfo: ClientInfo;
-    /** Типы активов */
-    private assetType = AssetType;
     /** Ценная бумага */
     private share: Share = null;
     /** История цены по бумаге */
@@ -366,9 +381,11 @@ export class BaseShareInfoPage extends UI {
     /** События по бумаге */
     private shareEvents: HighStockEventsGroup[] = [];
     /** Динамика цены по бумаге */
-    private stockDynamic: StockDynamic = null;
+    private shareDynamic: ShareDynamic = null;
     /** Данные для микрографика */
     private microChartData: any[] = [];
+    /** Типы активов */
+    private AssetType = AssetType;
     /** Признак, если бумага не была найдена */
     private shareNotFound = false;
 
@@ -384,7 +401,7 @@ export class BaseShareInfoPage extends UI {
      * Следит за изменение тикера в url.
      * Не вызывается при первоначальной загрузке
      */
-    @Watch("$route.params.ticker")
+    @Watch("ticker")
     private async onRouterChange(): Promise<void> {
         await this.loadShareInfo();
     }
@@ -395,7 +412,7 @@ export class BaseShareInfoPage extends UI {
         if (this.share) {
             this.events = [];
             this.events.push(...this.shareEvents);
-            await this.loadTradeEvents(this.share.ticker);
+            await this.loadTradeEvents();
         }
     }
 
@@ -407,17 +424,17 @@ export class BaseShareInfoPage extends UI {
             return;
         }
         try {
-            const result = await this.marketService.getStockInfo(ticker);
+            const result = this.isStockAsset ? await this.marketService.getStockInfo(this.ticker) : await this.marketService.getAssetInfo(this.ticker);
             this.events = [];
             this.shareEvents = [];
-            this.share = result.stock;
+            this.share = result.share;
             this.history = result.history;
             this.dividends = result.dividends;
-            this.stockDynamic = result.stockDynamic;
-            this.microChartData = ChartUtils.convertPriceDataDots(result.stockDynamic.yearHistory);
+            this.shareDynamic = result.shareDynamic;
+            this.microChartData = ChartUtils.convertPriceDataDots(result.shareDynamic.yearHistory);
             this.events.push(result.events);
             this.shareEvents.push(result.events);
-            await this.loadTradeEvents(ticker);
+            await this.loadTradeEvents();
         } catch (e) {
             if ((e as ErrorInfo).errorCode === "NOT_FOUND") {
                 this.shareNotFound = true;
@@ -427,8 +444,9 @@ export class BaseShareInfoPage extends UI {
         }
     }
 
-    private async loadTradeEvents(ticker: string): Promise<void> {
-        const tradeEvents = await this.tradeService.getShareTradesEvent(this.portfolio.id, ticker);
+    private async loadTradeEvents(): Promise<void> {
+        const tradeEvents = this.isStockAsset ? await this.tradeService.getShareTradesEvent(this.portfolio.id, this.share.ticker) :
+            await this.tradeService.getAssetShareTradesEvent(this.portfolio.id, String(this.share.id));
         this.events.push(...ChartUtils.processEventsChartData(tradeEvents, "flags", "dataseries"));
     }
 
@@ -438,7 +456,7 @@ export class BaseShareInfoPage extends UI {
             router: this.$router,
             share: this.share,
             operation: Operation.BUY,
-            assetType: AssetType.STOCK
+            assetType: this.assetType
         });
         if (result) {
             await this.$emit("reloadPortfolio");
@@ -453,6 +471,10 @@ export class BaseShareInfoPage extends UI {
         if (this.share) {
             if (this.share.shareType === ShareType.BOND) {
                 this.$router.push(`/bond-info/${share.isin}`);
+                return;
+            }
+            if (this.share.shareType === ShareType.ASSET) {
+                this.$router.push(`/asset-info/${share.id}`);
                 return;
             }
             this.$router.push(`/share-info/${share.ticker}`);
@@ -471,8 +493,12 @@ export class BaseShareInfoPage extends UI {
         this.$refs.chartComponent.chart.exportChart({type: ChartUtils.EXPORT_TYPES[type]});
     }
 
-    get currencySymbol(): string {
+    private get currencySymbol(): string {
         return TradeUtils.getCurrencySymbol(this.share.currency);
+    }
+
+    private get isStockAsset(): boolean {
+        return this.assetType === AssetType.STOCK;
     }
 
     private async openFeedBackDialog(): Promise<void> {
