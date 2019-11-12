@@ -464,7 +464,7 @@ export class BaseShareInfoPage extends UI {
     }
 
     private async onShareSelect(share: Share): Promise<void> {
-        if (this.share.ticker === share.ticker) {
+        if (share && this.share.ticker === share.ticker) {
             return;
         }
         this.share = share;

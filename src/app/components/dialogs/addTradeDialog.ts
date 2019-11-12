@@ -20,7 +20,6 @@ import {BigMoney} from "../../types/bigMoney";
 import {AddTradeEvent, EventType} from "../../types/eventType";
 import {Operation} from "../../types/operation";
 import {Permission} from "../../types/permission";
-import {Tariff} from "../../types/tariff";
 import {TradeDataHolder} from "../../types/trade/tradeDataHolder";
 import {TradeMap} from "../../types/trade/tradeMap";
 import {TradeValue} from "../../types/trade/tradeValue";
@@ -79,6 +78,13 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                 <share-search :asset-type="assetType" :filtered-shares="filteredShares" :placeholder="shareSearchPlaceholder" class="required"
                                               :create-asset-allowed="createAssetAllowed"
                                               @change="onShareSelect" @clear="onShareClear" autofocus></share-search>
+                                <!-- Дополнительная информация -->
+                                <div v-if="isAssetTrade" class="fs12-opacity mt-1">
+                                    <span>
+                                        Более подробную информацию об активах вы можете прочитать в
+                                        <a @click="goToHelp" title="Управление активами">Справке</a>
+                                    </span>
+                                </div>
                             </v-flex>
 
                             <!-- Дата сделки -->
@@ -123,10 +129,10 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                 <!-- Дополнительная информация -->
                                 <v-flex xs12 sm12>
                                     <div class="fs12-opacity mt-1">
-                                    <span>
-                                        Вы можете настроить дополнительные параметры позже на
-                                        <a @click="goToUserAssets" title="Управление активами">странице</a> управления вашими активами
-                                    </span>
+                                        <span>
+                                            Вы можете настроить дополнительные параметры позже на
+                                            <a @click="goToUserAssets" title="Управление активами">странице</a> управления вашими активами
+                                        </span>
                                     </div>
                                 </v-flex>
                             </v-layout>
@@ -1070,6 +1076,12 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private goToUserAssets(): void {
         if (this.data.router.currentRoute.path !== "/quotes/user-assets") {
             this.data.router.push("/quotes/user-assets");
+        }
+    }
+
+    private goToHelp(): void {
+        if (this.data.router.currentRoute.path !== "/help") {
+            this.data.router.push("/help");
         }
     }
 
