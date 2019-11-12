@@ -7,7 +7,7 @@ const DEFAULT_SCALE = 2;
 const MAX_SCALE = 3;
 const NO_SCALE = 9;
 const DF = new Intl.NumberFormat("ru", {minimumFractionDigits: DEFAULT_SCALE, maximumFractionDigits: DEFAULT_SCALE});
-const DF_MAX_SCALE = new Intl.NumberFormat("ru", {maximumFractionDigits: MAX_SCALE});
+const DF_MAX_SCALE = new Intl.NumberFormat("ru", {maximumFractionDigits: NO_SCALE});
 const DF_NO_SCALE = new Intl.NumberFormat("ru", {minimumFractionDigits: DEFAULT_SCALE, maximumFractionDigits: NO_SCALE});
 
 export class Filters {

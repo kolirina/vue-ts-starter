@@ -17,7 +17,7 @@
 import {Inject} from "typescript-ioc";
 import {Field} from "vee-validate";
 import {VueRouter} from "vue-router/types/router";
-import {Component, UI} from "../../app/ui";
+import {Component, UI, Watch} from "../../app/ui";
 import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {CustomDialog} from "../../platform/dialogs/customDialog";
@@ -65,13 +65,13 @@ import {TradeUtils} from "../../utils/tradeUtils";
 
                             <!-- Название актива -->
                             <v-flex xs12>
-                                <v-text-field label="Название актива" v-model.trim="asset.name" :counter="120" class="required" autofocus
+                                <v-text-field label="Название актива" v-model.trim="asset.name" :counter="120" class="required" autofocus autocomplete="off"
                                               v-validate="'required|max:160'" :error-messages="errors.collect('name')" name="name"></v-text-field>
                             </v-flex>
 
                             <!-- Выбор типа определения цены -->
                             <v-flex xs12 sm12 class="mb-3">
-                                <v-switch v-model="autoPrice" class="margT0" hide-details>
+                                <v-switch :value="autoPrice" @change="onAutoPriceChange" class="margT0" hide-details>
                                     <template #label>
                                         <span>Текущая цена: {{ priceTypeLabel }}</span>
                                         <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" bottom>
@@ -86,33 +86,31 @@ import {TradeUtils} from "../../utils/tradeUtils";
                                 </v-switch>
                             </v-flex>
 
-                            <template v-if="!autoPrice">
-                                <!-- Цена -->
-                                <v-flex xs12 sm6>
-                                    <ii-number-field label="Цена актива" v-model="asset.price" class="required" name="price" v-validate="'required|min_value:0.000001'"
-                                                     :error-messages="errors.collect('price')">
-                                    </ii-number-field>
-                                </v-flex>
+                            <!-- Цена -->
+                            <v-flex xs12 sm6>
+                                <ii-number-field label="Цена актива" v-model="asset.price" class="required" name="price" v-validate="'required|min_value:0.000001'"
+                                                 :error-messages="errors.collect('price')">
+                                </ii-number-field>
+                            </v-flex>
 
-                                <!-- Влюта -->
-                                <v-flex xs12 sm6>
-                                    <template v-if="!editMode && foreignCurrencyAllowed">
-                                        <v-select :items="currencyList" v-model="asset.currency" label="Валюта актива"></v-select>
-                                    </template>
-                                    <template v-if="!editMode && !foreignCurrencyAllowed">
-                                        <v-text-field :value="asset.currency" label="Валюта актива (Редактирование недоступно)" disabled></v-text-field>
-                                        <div class="fs12-opacity mt-1">
+                            <!-- Влюта -->
+                            <v-flex xs12 sm6>
+                                <template v-if="!editMode && foreignCurrencyAllowed">
+                                    <v-select :items="currencyList" v-model="asset.currency" label="Валюта актива"></v-select>
+                                </template>
+                                <template v-if="!editMode && !foreignCurrencyAllowed">
+                                    <v-text-field :value="asset.currency" label="Валюта актива (Редактирование недоступно)" disabled></v-text-field>
+                                    <div class="fs12-opacity mt-1">
                                             <span>
                                                 Добавление валютных активов доступно только на тарифном плане
                                                 <a @click="goToTariffs" title="Подключить">Профессионал</a>
                                             </span>
-                                        </div>
-                                    </template>
-                                    <v-text-field v-if="editMode" :value="asset.currency" label="Валюта актива (Редактирование недоступно)" disabled></v-text-field>
-                                </v-flex>
-                            </template>
+                                    </div>
+                                </template>
+                                <v-text-field v-if="editMode" :value="asset.currency" label="Валюта актива (Редактирование недоступно)" disabled></v-text-field>
+                            </v-flex>
 
-                            <template v-else>
+                            <template v-if="autoPrice">
                                 <!-- Источник -->
                                 <v-flex xs12>
                                     <v-text-field label="Источник" v-model.trim="asset.source" :counter="1024"
@@ -132,6 +130,7 @@ import {TradeUtils} from "../../utils/tradeUtils";
                                         <span v-if="foundValue" class="fs12">
                                             <a @click="setToPrice" title="Указать в качестве цены">Указать в качестве цены</a>
                                         </span>
+                                        <span v-if="!foundValue && priceChecked" class="fs12">Ничего не найдено</span>
                                     </div>
                                 </v-flex>
                             </template>
@@ -195,6 +194,8 @@ export class AssetEditDialog extends CustomDialog<AssetEditDialogData, AssetEdit
     private autoPrice = false;
     /** Информация о клиенте */
     private clientInfo: Client = null;
+    /** Признак проверки цены на регулярке */
+    private priceChecked = false;
 
     /**
      * Производит инициализацию данных диалога.
@@ -204,6 +205,7 @@ export class AssetEditDialog extends CustomDialog<AssetEditDialogData, AssetEdit
         this.clientInfo = await this.clientService.getClientInfo();
         this.currencyList = CurrencyUnit.values().map(c => c.code).filter(code => this.foreignCurrencyAllowed || code === "RUB");
         await this.setDialogParams();
+        this.autoPrice = !!this.asset.source && !!this.asset.regex;
     }
 
     private async setDialogParams(): Promise<void> {
@@ -264,7 +266,27 @@ export class AssetEditDialog extends CustomDialog<AssetEditDialogData, AssetEdit
 
     private async checkSource(): Promise<void> {
         const result = await this.assetService.checkSource({source: this.asset.source, regex: this.asset.regex});
-        this.foundValue = result ? result : "Ничего не найдено";
+        this.priceChecked = true;
+        this.foundValue = result ? result : null;
+    }
+
+    @Watch("asset.source")
+    private onAssetSourceChange(): void {
+        this.priceChecked = false;
+    }
+
+    @Watch("asset.regex")
+    private onAssetRegexChange(): void {
+        this.priceChecked = false;
+    }
+
+    private onAutoPriceChange(newValue: boolean): void {
+        this.autoPrice = newValue;
+        this.priceChecked = false;
+        this.$nextTick(() => {
+            this.asset.source = "";
+            this.asset.regex = "";
+        });
     }
 
     private setToPrice(): void {
