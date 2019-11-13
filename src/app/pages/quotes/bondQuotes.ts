@@ -31,7 +31,7 @@ const MainStore = namespace(StoreType.MAIN);
             <v-data-table v-else
                           :headers="headers" :items="bonds" item-key="id" :pagination="pagination" @update:pagination="onTablePaginationChange"
                           :rows-per-page-items="[25, 50, 100, 200]"
-                          :total-items="pagination.totalItems" class="data-table table-bottom-pagination" must-sort>
+                          :total-items="pagination.totalItems" class="data-table table-bottom-pagination normalize-table" must-sort>
                 <template #items="props">
                     <tr class="selectable">
                         <td class="text-xs-left">
@@ -47,14 +47,16 @@ const MainStore = namespace(StoreType.MAIN);
                         <td class="text-xs-center">{{ props.item.facevalue | amount(true) }}</td>
                         <td class="text-xs-center">{{ props.item.duration }}</td>
                         <td class="text-xs-center">
-                            <v-btn v-if="props.item.currency === 'RUB'" :href="'http://moex.com/ru/issue.aspx?code=' + props.item.ticker" target="_blank"
-                               :title="'Профиль эмитента ' + props.item.name + ' на сайте биржи'" icon>
-                                <img src="img/quotes/share.svg">
-                            </v-btn>
-                            <v-btn v-if="props.item.currency !== 'RUB'" :href="'https://finance.yahoo.com/quote/' + props.item.ticker" target="_blank"
-                               :title="'Профиль эмитента ' + props.item.name + ' на сайте Yahoo Finance'" icon>
-                                <img src="img/quotes/share.svg">
-                            </v-btn>
+                            <span>
+                                <v-btn v-if="props.item.currency === 'RUB'" :href="'http://moex.com/ru/issue.aspx?code=' + props.item.ticker" target="_blank"
+                                :title="'Профиль эмитента ' + props.item.name + ' на сайте биржи'" icon>
+                                    <img src="img/quotes/share.svg">
+                                </v-btn>
+                                <v-btn v-if="props.item.currency !== 'RUB'" :href="'https://finance.yahoo.com/quote/' + props.item.ticker" target="_blank"
+                                :title="'Профиль эмитента ' + props.item.name + ' на сайте Yahoo Finance'" icon>
+                                    <img src="img/quotes/share.svg">
+                                </v-btn>
+                            </span>
                         </td>
                         <td class="justify-center layout px-0" @click.stop>
                             <v-menu transition="slide-y-transition" bottom left nudge-bottom="25">
