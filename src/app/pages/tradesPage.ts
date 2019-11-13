@@ -8,15 +8,15 @@ import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog";
 import {EmptyPortfolioStub} from "../components/emptyPortfolioStub";
 import {EmptySearchResult} from "../components/emptySearchResult";
 import {ExpandedPanel} from "../components/expandedPanel";
-import {TradesTable} from "../components/tradesTable";
+import {TradesTable} from "../components/tables/tradesTable";
 import {TradesTableFilter} from "../components/tradesTableFilter";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {ClientInfo} from "../services/clientService";
 import {ExportService, ExportType} from "../services/exportService";
-import {FilterService} from "../services/filterService";
 import {OverviewService} from "../services/overviewService";
 import {TableHeaders, TABLES_NAME, TablesService} from "../services/tablesService";
 import {CopyMoveTradeRequest, TradeService, TradesFilter} from "../services/tradeService";
+import {TradesFilterService} from "../services/tradesFilterService";
 import {AssetType} from "../types/assetType";
 import {StoreKeys} from "../types/storeKeys";
 import {Pagination, Portfolio, TableHeader, TradeRow} from "../types/types";
@@ -63,7 +63,7 @@ export class TradesPage extends UI {
     @Inject
     private tradeService: TradeService;
     @Inject
-    private filterService: FilterService;
+    private tradesFilterService: TradesFilterService;
     @Inject
     private exportService: ExportService;
     @Inject
@@ -106,7 +106,7 @@ export class TradesPage extends UI {
      * @inheritDoc
      */
     async created(): Promise<void> {
-        this.tradesFilter = this.filterService.getFilter(StoreKeys.TRADES_FILTER_SETTINGS_KEY);
+        this.tradesFilter = this.tradesFilterService.getFilter(StoreKeys.TRADES_FILTER_SETTINGS_KEY);
     }
 
     getHeaders(name: string): TableHeader[] {
@@ -147,7 +147,7 @@ export class TradesPage extends UI {
     }
 
     private async resetFilter(): Promise<void> {
-        this.tradesFilter = this.filterService.getDefaultFilter();
+        this.tradesFilter = this.tradesFilterService.getDefaultFilter();
         await this.onFilterChange();
     }
 
@@ -165,8 +165,9 @@ export class TradesPage extends UI {
         await this.tradeService.deleteTrade({portfolioId: this.portfolio.id, tradeId: tradeRow.id});
         await this.reloadPortfolio(this.portfolio.id);
         await this.loadTrades();
-        this.$snotify.info(`Операция '${tradeRow.operationLabel}' ${AssetType.valueByName(tradeRow.asset) === AssetType.MONEY ? "" :
-            `по бумаге ${tradeRow.ticker}`} была успешно удалена`);
+        const assetType = AssetType.valueByName(tradeRow.asset);
+        this.$snotify.info(`Операция '${tradeRow.operationLabel}' ${assetType === AssetType.MONEY ? "" :
+            `по ${assetType === AssetType.ASSET ? "активу" : "бумаге"} ${tradeRow.ticker}`} была успешно удалена`);
     }
 
     private async loadTrades(): Promise<void> {
@@ -176,7 +177,7 @@ export class TradesPage extends UI {
             this.pagination.rowsPerPage,
             this.pagination.sortBy,
             this.pagination.descending,
-            this.filterService.getTradesFilterRequest(this.tradesFilter)
+            this.tradesFilterService.getTradesFilterRequest(this.tradesFilter)
         );
         this.trades = result.content;
         this.pagination.totalItems = result.totalItems;
@@ -201,11 +202,11 @@ export class TradesPage extends UI {
         await this.loadTrades();
         // при смене фильтра сбрасываем паджинацию чтобы не остаться на несуществующей странице
         this.pagination.page = 1;
-        this.filterService.saveFilter(StoreKeys.TRADES_FILTER_SETTINGS_KEY, this.tradesFilter);
+        this.tradesFilterService.saveFilter(StoreKeys.TRADES_FILTER_SETTINGS_KEY, this.tradesFilter);
     }
 
     private get isDefaultFilter(): boolean {
-        return this.filterService.isDefaultFilter(this.tradesFilter);
+        return this.tradesFilterService.isDefaultFilter(this.tradesFilter);
     }
 
     /**

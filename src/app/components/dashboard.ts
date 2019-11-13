@@ -17,8 +17,14 @@ import {DashboardBrick, DashboardData} from "../types/types";
                 </v-tooltip>
             </v-card-title>
             <v-container fluid pl-3 pt-0>
-                <v-layout row class="mx-0 py-2 ">
-                    <span class="dashboard-currency dashboard-card-big-nums" :class="block.mainCurrency">{{ block.mainValue }} </span>
+                <v-layout row class="mx-0 py-2">
+                    <span class="dashboard-currency dashboard-card-big-nums mr-1" :class="block.mainCurrency">{{ block.mainValue }} </span>
+                    <v-tooltip v-if="block.mainValueTooltip" content-class="custom-tooltip-wrap dashboard-tooltip" :max-width="450" bottom right>
+                        <sup slot="activator">
+                            <v-icon slot="activator" style="font-size: 12px">far fa-question-circle</v-icon>
+                        </sup>
+                        <span v-html="block.mainValueTooltip"></span>
+                    </v-tooltip>
                 </v-layout>
                 <v-layout row class="mx-0 dashboard-card-small-nums">
                     <div>
@@ -40,7 +46,7 @@ import {DashboardBrick, DashboardData} from "../types/types";
                                 <sup slot="activator">
                                     <v-icon slot="activator" style="font-size: 12px">far fa-question-circle</v-icon>
                                 </sup>
-                                <span>{{ block.secondTooltip }}</span>
+                                <span v-html="block.secondTooltip"></span>
                             </v-tooltip>
                         </template>
                     </div>
@@ -135,8 +141,11 @@ export class Dashboard extends UI {
             tooltip: "Прибыль, образованная активами портфеля за все его время." +
                 "                                Она включает в себя: прибыль от совершенных ранее сделок (бумага куплена дешевле и продана дороже)," +
                 "                                выплаченные дивиденды и купоны, курсовую прибыль (бумага куплена дешевле и подорожала, но еще не продана).<br/>" +
+                "                                Сумму по сделкам с типом Расход и Доход.<br/>" +
                 "                                Ввод и вывод денежных средств на прибыль портфеля не влияют. <br/>" +
-                "                                Ниже указана прибыль портфеля в отношении к его средневзвешенной стоимости вложений с учетом денег."
+                "                                Ниже указана прибыль портфеля в отношении к его средневзвешенной стоимости вложений с учетом денег.",
+            mainValueTooltip: `Пользовательская прибыль: ${Filters.formatMoneyAmount(newValue.usersIncomes)}<br/>
+                            Пользовательские убытки: ${Filters.formatMoneyAmount(newValue.usersLosses)}<br/>`
         };
         this.blocks[2] = {
             name: "Среднегодовая доходность",

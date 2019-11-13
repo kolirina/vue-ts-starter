@@ -17,23 +17,24 @@
 import {DataPoint} from "highcharts";
 import {Inject} from "typescript-ioc";
 import {Component, Prop, UI, Watch} from "../app/ui";
-import {AssetTable} from "../components/assetTable";
-import {BondTable} from "../components/bondTable";
 import {PieChart} from "../components/charts/pieChart";
 import {PortfolioLineChart} from "../components/charts/portfolioLineChart";
 import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog";
 import {NegativeBalanceNotification} from "../components/negativeBalanceNotification";
 import {PortfolioRowFilter, PortfolioRowsTableFilter} from "../components/portfolioRowsTableFilter";
-import {StockTable} from "../components/stockTable";
+import {AggregateAssetTable} from "../components/tables/aggregateAssetTable";
+import {AssetTable} from "../components/tables/assetTable";
+import {BondTable} from "../components/tables/bondTable";
+import {StockTable} from "../components/tables/stockTable";
 import {Filters} from "../platform/filters/Filters";
 import {Storage} from "../platform/services/storage";
 import {ExportType} from "../services/exportService";
 import {PortfolioBlockType} from "../services/onBoardingTourService";
 import {OverviewService} from "../services/overviewService";
 import {TableHeaders, TABLES_NAME, TablesService} from "../services/tablesService";
-import {HighStockEventsGroup, SectorChartData} from "../types/charts/types";
+import {ChartType, HighStockEventsGroup, SectorChartData} from "../types/charts/types";
 import {StoreKeys} from "../types/storeKeys";
-import {BlockType, BondPortfolioRow, EventType, Overview, StockPortfolioRow, TableHeader} from "../types/types";
+import {AssetPortfolioRow, BlockType, BondPortfolioRow, EventType, Overview, StockPortfolioRow, TableHeader} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
 import {PortfolioUtils} from "../utils/portfolioUtils";
 import {UiStateHelper} from "../utils/uiStateHelper";
@@ -50,8 +51,8 @@ import {UiStateHelper} from "../utils/uiStateHelper";
 
                 <slot name="afterDashboard"></slot>
 
-                <asset-table v-if="blockNotEmpty(emptyBlockType.ASSETS)" :assets="overview.assetRows" class="mt-3"
-                             :data-v-step="getTourStepIndex(PortfolioBlockType.ASSETS)"></asset-table>
+                <aggregate-asset-table v-if="blockNotEmpty(emptyBlockType.AGGREGATE)" :assets="overview.assetRows" class="mt-3"
+                                       :data-v-step="getTourStepIndex(PortfolioBlockType.AGGREGATE_TABLE)"></aggregate-asset-table>
 
                 <expanded-panel v-if="blockNotEmpty(emptyBlockType.STOCK_PORTFOLIO)" :value="$uistate.stocksTablePanel"
                                 :withMenu="true" name="stock" :state="$uistate.STOCKS" @click="onStockTablePanelClick" class="mt-3 selectable"
@@ -90,7 +91,28 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                     </template>
                     <portfolio-rows-table-filter :filter.sync="bondFilter" :store-key="StoreKeys.BONDS_TABLE_FILTER_KEY"></portfolio-rows-table-filter>
                     <bond-table :rows="bondRows" :headers="getHeaders(TABLES_NAME.BOND)" :search="bondFilter.search" :filter="bondFilter"
-                                :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes"  :ids="ids"></bond-table>
+                                :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes" :ids="ids"></bond-table>
+                </expanded-panel>
+
+                <expanded-panel v-if="blockNotEmpty(emptyBlockType.ASSETS)" :value="$uistate.assetsTablePanel"
+                                :withMenu="true" name="asset" :state="$uistate.ASSET_TABLE" @click="onAssetTablePanelClick" class="mt-3 selectable"
+                                :data-v-step="getTourStepIndex(PortfolioBlockType.ASSET_TABLE)">
+                    <template #header>
+                        <span>Прочие активы</span>
+                        <v-fade-transition mode="out-in">
+                            <span v-if="assetTablePanelClosed" class="v-expansion-panel__header-info">
+                                {{ assetRowsCountLabel }}
+                            </span>
+                        </v-fade-transition>
+                    </template>
+                    <template #list>
+                        <!-- todo assets настрока колонок и экспорт таблицы -->
+                        <v-list-tile-title @click="openTableHeadersDialog(TABLES_NAME.ASSET)">Настроить колонки</v-list-tile-title>
+                        <v-list-tile-title v-if="exportable" @click="exportTable(ExportType.ASSETS)">Экспорт в xlsx</v-list-tile-title>
+                    </template>
+                    <portfolio-rows-table-filter :filter.sync="assetFilter" :store-key="StoreKeys.ASSETS_TABLE_FILTER_KEY"></portfolio-rows-table-filter>
+                    <asset-table :rows="assetRows" :headers="getHeaders(TABLES_NAME.ASSET)" :search="assetFilter.search" :filter="assetFilter"
+                                 :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes" :ids="ids"></asset-table>
                 </expanded-panel>
 
                 <expanded-panel v-if="blockNotEmpty(emptyBlockType.HISTORY_PANEL)" :value="$uistate.historyPanel"
@@ -98,12 +120,14 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                                 :data-v-step="getTourStepIndex(PortfolioBlockType.HISTORY_CHART)">
                     <template #header>Стоимость портфеля</template>
                     <template #customMenu>
-                        <chart-export-menu v-if="lineChartData && lineChartEvents" @print="print('portfolioLineChart')" @exportTo="exportTo('portfolioLineChart', $event)"
+                        <chart-export-menu v-if="lineChartData && lineChartEvents" @print="print(ChartType.PORTFOLIO_LINE_CHART)"
+                                           @exportTo="exportTo(ChartType.PORTFOLIO_LINE_CHART, $event)"
                                            class="exp-panel-menu"></chart-export-menu>
                     </template>
+
                     <v-card-text class="px-1">
-                        <portfolio-line-chart v-if="lineChartData && lineChartEvents" ref="portfolioLineChart" :data="lineChartData" :moex-index-data="indexLineChartData"
-                                              :state-key-prefix="stateKeyPrefix"
+                        <portfolio-line-chart v-if="lineChartData && lineChartEvents" :ref="ChartType.PORTFOLIO_LINE_CHART" :data="lineChartData"
+                                              :moex-index-data="indexLineChartData" :state-key-prefix="stateKeyPrefix"
                                               :events-chart-data="lineChartEvents" :balloon-title="portfolioName"></portfolio-line-chart>
                         <v-container v-else grid-list-md text-xs-center>
                             <v-layout row wrap>
@@ -115,15 +139,17 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                     </v-card-text>
                 </expanded-panel>
 
-                <expanded-panel v-if="blockNotEmpty(emptyBlockType.ASSETS)" :value="$uistate.assetGraph" :state="$uistate.ASSET_CHART_PANEL" customMenu class="mt-3"
-                                :data-v-step="getTourStepIndex(PortfolioBlockType.ASSETS_CHART)">
-                    <template #header>Состав портфеля по активам</template>
+                <expanded-panel v-if="blockNotEmpty(emptyBlockType.AGGREGATE)" :value="$uistate.aggregateGraph" :state="$uistate.AGGREGATE_CHART_PANEL" customMenu class="mt-3"
+                                :data-v-step="getTourStepIndex(PortfolioBlockType.AGGREGATE_CHART)">
+                    <template #header>Состав портфеля по категориям</template>
                     <template #customMenu>
-                        <chart-export-menu @print="print('assetsPieChart')" @exportTo="exportTo('assetsPieChart', $event)" class="exp-panel-menu"></chart-export-menu>
+                        <chart-export-menu @print="print(ChartType.AGGREGATE_CHART)" @exportTo="exportTo(ChartType.AGGREGATE_CHART, $event)"
+                                           class="exp-panel-menu"></chart-export-menu>
                     </template>
                     <v-card-text>
                         <!-- Валюта тут не нужна так как валюта будет браться из каждого актива в отдельности -->
-                        <pie-chart ref="assetsPieChart" :data="assetsPieChartData" :balloon-title="portfolioName" tooltip-format="ASSETS" v-tariff-expired-hint></pie-chart>
+                        <pie-chart :ref="ChartType.AGGREGATE_CHART" :data="aggregatePieChartData" :balloon-title="portfolioName"
+                                   tooltip-format="ASSETS" v-tariff-expired-hint></pie-chart>
                     </v-card-text>
                 </expanded-panel>
 
@@ -131,10 +157,11 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                                 :data-v-step="getTourStepIndex(PortfolioBlockType.STOCK_CHART)">
                     <template #header>Состав портфеля акций</template>
                     <template #customMenu>
-                        <chart-export-menu @print="print('stockPieChart')" @exportTo="exportTo('stockPieChart', $event)" class="exp-panel-menu"></chart-export-menu>
+                        <chart-export-menu @print="print(ChartType.STOCK_CHART)" @exportTo="exportTo(ChartType.STOCK_CHART, $event)"
+                                           class="exp-panel-menu"></chart-export-menu>
                     </template>
                     <v-card-text>
-                        <pie-chart ref="stockPieChart" :data="stockPieChartData" :view-currency="viewCurrency" v-tariff-expired-hint></pie-chart>
+                        <pie-chart :ref="ChartType.STOCK_CHART" :data="stockPieChartData" :view-currency="viewCurrency" v-tariff-expired-hint></pie-chart>
                     </v-card-text>
                 </expanded-panel>
 
@@ -142,10 +169,23 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                                 :data-v-step="getTourStepIndex(PortfolioBlockType.BOND_CHART)">
                     <template #header>Состав портфеля облигаций</template>
                     <template #customMenu>
-                        <chart-export-menu @print="print('bondPieChart')" @exportTo="exportTo('bondPieChart', $event)" class="exp-panel-menu"></chart-export-menu>
+                        <chart-export-menu @print="print(ChartType.BOND_CHART)" @exportTo="exportTo(ChartType.BOND_CHART, $event)"
+                                           class="exp-panel-menu"></chart-export-menu>
                     </template>
                     <v-card-text>
-                        <pie-chart ref="bondPieChart" :data="bondPieChartData" :view-currency="viewCurrency" v-tariff-expired-hint></pie-chart>
+                        <pie-chart :ref="ChartType.BOND_CHART" :data="bondPieChartData" :view-currency="viewCurrency" v-tariff-expired-hint></pie-chart>
+                    </v-card-text>
+                </expanded-panel>
+
+                <expanded-panel v-if="blockNotEmpty(emptyBlockType.ASSETS)" :value="$uistate.assetGraph" :state="$uistate.ASSET_CHART_PANEL" customMenu class="mt-3"
+                                :data-v-step="getTourStepIndex(PortfolioBlockType.ASSETS_CHART)">
+                    <template #header>Состав портфеля активов</template>
+                    <template #customMenu>
+                        <chart-export-menu @print="print(ChartType.ASSETS_CHART)" @exportTo="exportTo(ChartType.ASSETS_CHART, $event)"
+                                           class="exp-panel-menu"></chart-export-menu>
+                    </template>
+                    <v-card-text>
+                        <pie-chart :ref="ChartType.ASSETS_CHART" :data="assetsPieChartData" :balloon-title="portfolioName" v-tariff-expired-hint></pie-chart>
                     </v-card-text>
                 </expanded-panel>
 
@@ -153,17 +193,18 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                                 :data-v-step="getTourStepIndex(PortfolioBlockType.SECTORS_CHART)">
                     <template #header>Состав портфеля по секторам</template>
                     <template #customMenu>
-                        <chart-export-menu @print="print('sectorsChart')" @exportTo="exportTo('sectorsChart', $event)" class="exp-panel-menu"></chart-export-menu>
+                        <chart-export-menu @print="print(ChartType.SECTORS_CHART)" @exportTo="exportTo(ChartType.SECTORS_CHART, $event)"
+                                           class="exp-panel-menu"></chart-export-menu>
                     </template>
                     <v-card-text>
-                        <pie-chart v-if="sectorsChartData" ref="sectorsChart" v-tariff-expired-hint
+                        <pie-chart v-if="sectorsChartData" :ref="ChartType.SECTORS_CHART" v-tariff-expired-hint
                                    :data="sectorsChartData.data" :balloon-title="portfolioName" :view-currency="viewCurrency"></pie-chart>
                     </v-card-text>
                 </expanded-panel>
             </v-layout>
         </v-container>
     `,
-    components: {AssetTable, StockTable, BondTable, PortfolioLineChart, PortfolioRowsTableFilter, NegativeBalanceNotification}
+    components: {AggregateAssetTable, StockTable, BondTable, AssetTable, PortfolioLineChart, PortfolioRowsTableFilter, NegativeBalanceNotification}
 })
 export class BasePortfolioPage extends UI {
 
@@ -232,8 +273,12 @@ export class BasePortfolioPage extends UI {
     private StoreKeys = StoreKeys;
     /** Признак закрытой панели Акции */
     private stockTablePanelClosed = true;
+    /** Признак закрытой панели Активы */
+    private assetTablePanelClosed = true;
     /** Признак закрытой панели Облигации */
     private bondTablePanelClosed = true;
+    /** Данные для графика таблицы Агрегированная информация */
+    private aggregatePieChartData: DataPoint[] = [];
     /** Данные для графика таблицы Активы */
     private assetsPieChartData: DataPoint[] = [];
     /** Данные для графика таблицы Акции */
@@ -246,12 +291,16 @@ export class BasePortfolioPage extends UI {
     private stockFilter: PortfolioRowFilter = {};
     /** Фильтр таблицы Облигации */
     private bondFilter: PortfolioRowFilter = {};
+    /** Фильтр таблицы Активы */
+    private assetFilter: PortfolioRowFilter = {};
     /** Типы возможных пустых блоков */
     private emptyBlockType = BlockType;
     /** Типы возможных пустых блоков */
     private PortfolioBlockType = PortfolioBlockType;
     /** Индексы блоков */
     private blockIndexes: { [key: string]: number } = {};
+    /** Типы круговых диаграмм */
+    private ChartType = ChartType;
 
     /**
      * Инициализация данных компонента
@@ -260,17 +309,21 @@ export class BasePortfolioPage extends UI {
     async created(): Promise<void> {
         this.stockTablePanelClosed = UiStateHelper.stocksTablePanel[0] === 0;
         this.bondTablePanelClosed = UiStateHelper.bondsTablePanel[0] === 0;
+        this.assetTablePanelClosed = UiStateHelper.assetsTablePanel[0] === 0;
+        this.aggregatePieChartData = this.doAggregatePieChartData();
         this.assetsPieChartData = this.doAssetsPieChartData();
         this.stockPieChartData = this.doStockPieChartData();
         this.bondPieChartData = this.doBondPieChartData();
         this.sectorsChartData = this.doSectorsChartData();
         this.stockFilter = this.storageService.get(StoreKeys.STOCKS_TABLE_FILTER_KEY, {});
         this.bondFilter = this.storageService.get(StoreKeys.BONDS_TABLE_FILTER_KEY, {});
+        this.assetFilter = this.storageService.get(StoreKeys.ASSETS_TABLE_FILTER_KEY, {});
         this.blockIndexes = PortfolioUtils.getShowedBlocks(this.overview);
     }
 
     @Watch("overview")
     private async onPortfolioChange(): Promise<void> {
+        this.aggregatePieChartData = this.doAggregatePieChartData();
         this.assetsPieChartData = this.doAssetsPieChartData();
         this.stockPieChartData = this.doStockPieChartData();
         this.bondPieChartData = this.doBondPieChartData();
@@ -281,7 +334,7 @@ export class BasePortfolioPage extends UI {
     private blockNotEmpty(type: BlockType): boolean {
         switch (type) {
             case BlockType.HISTORY_PANEL:
-                return this.overview.bondPortfolio.rows.length !== 0 || this.overview.stockPortfolio.rows.length !== 0;
+                return this.overview.bondPortfolio.rows.length !== 0 || this.overview.stockPortfolio.rows.length !== 0 || this.overview.assetPortfolio.rows.length !== 0;
             case BlockType.BOND_PORTFOLIO:
                 return this.overview.bondPortfolio.rows.length > 0;
             case BlockType.STOCK_PORTFOLIO:
@@ -291,8 +344,10 @@ export class BasePortfolioPage extends UI {
                 return this.overview.stockPortfolio.rows.some(row => row.quantity !== 0);
             case BlockType.BOND_PIE:
                 return this.overview.bondPortfolio.rows.some(row => row.quantity !== 0);
-            case BlockType.ASSETS:
+            case BlockType.AGGREGATE:
                 return this.overview.totalTradesCount > 0;
+            case BlockType.ASSETS:
+                return this.overview.assetPortfolio.rows.length > 0;
             case BlockType.EMPTY:
                 return this.overview.totalTradesCount === 0;
         }
@@ -304,6 +359,10 @@ export class BasePortfolioPage extends UI {
 
     private doBondPieChartData(): DataPoint[] {
         return ChartUtils.doBondPieChartData(this.overview);
+    }
+
+    private doAggregatePieChartData(): DataPoint[] {
+        return ChartUtils.doAggregatePieChartData(this.overview);
     }
 
     private doAssetsPieChartData(): DataPoint[] {
@@ -320,6 +379,10 @@ export class BasePortfolioPage extends UI {
 
     private onStockTablePanelClick(): void {
         this.stockTablePanelClosed = UiStateHelper.stocksTablePanel[0] === 0;
+    }
+
+    private onAssetTablePanelClick(): void {
+        this.assetTablePanelClosed = UiStateHelper.assetsTablePanel[0] === 0;
     }
 
     private onBondTablePanelClick(): void {
@@ -341,11 +404,11 @@ export class BasePortfolioPage extends UI {
         this.$emit(EventType.exportTable, exportType);
     }
 
-    private async print(chart: string): Promise<void> {
+    private async print(chart: ChartType): Promise<void> {
         ((this.$refs as any)[chart] as PieChart).chart.print();
     }
 
-    private async exportTo(chart: string, type: string): Promise<void> {
+    private async exportTo(chart: ChartType, type: string): Promise<void> {
         ((this.$refs as any)[chart] as PieChart).chart.exportChart({type: ChartUtils.EXPORT_TYPES[type], filename: `${chart}_${this.portfolioId || "combined"}`});
     }
 
@@ -355,6 +418,10 @@ export class BasePortfolioPage extends UI {
 
     private get stockRows(): StockPortfolioRow[] {
         return [...this.overview.stockPortfolio.rows, this.overview.stockPortfolio.sumRow as StockPortfolioRow];
+    }
+
+    private get assetRows(): AssetPortfolioRow[] {
+        return [...this.overview.assetPortfolio.rows, this.overview.assetPortfolio.sumRow as AssetPortfolioRow];
     }
 
     private get bondRows(): BondPortfolioRow[] {
@@ -368,6 +435,11 @@ export class BasePortfolioPage extends UI {
     private get stockRowsCountLabel(): string {
         const count = this.overview.stockPortfolio.rows.filter(row => row.quantity !== 0).length;
         return `${count} ${Filters.declension(count, "акция", "акции", "акций")}`;
+    }
+
+    private get assetRowsCountLabel(): string {
+        const count = this.overview.assetPortfolio.rows.filter(row => row.quantity !== 0).length;
+        return `${count} ${Filters.declension(count, "актив", "актива", "активов")}`;
     }
 
     private get bondRowsCountLabel(): string {

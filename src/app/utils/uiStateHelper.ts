@@ -6,10 +6,12 @@ const localStorage: Storage = Container.get(Storage);
 export class UiStateHelper {
 
     static readonly STOCKS = "stocks_panel";
+    static readonly ASSET_TABLE = "assets_table";
     static readonly HISTORY_PANEL = "history_chart";
     static readonly STOCK_CHART_PANEL = "stocksChartPanel";
     static readonly BOND_CHART_PANEL = "bondsChartPanel";
     static readonly ASSET_CHART_PANEL = "assetChartPanel";
+    static readonly AGGREGATE_CHART_PANEL = "aggregateChartPanel";
     static readonly SECTORS_PANEL = "sectorsPanel";
     static readonly BONDS = "bonds_panel";
     static readonly YEAR_DIV_LIST = "yearDivListAccordion";
@@ -40,6 +42,14 @@ export class UiStateHelper {
 
     static get bondsTablePanel(): number[] {
         return [localStorage.get(UiStateHelper.BONDS, 0)];
+    }
+
+    static set assetsTablePanel(value: number[]) {
+        localStorage.set(UiStateHelper.ASSET_TABLE, value);
+    }
+
+    static get assetsTablePanel(): number[] {
+        return [localStorage.get(UiStateHelper.ASSET_TABLE, 0)];
     }
 
     static set yearDivsTablePanel(value: number[]) {
@@ -136,6 +146,14 @@ export class UiStateHelper {
 
     static get assetGraph(): number[] {
         return [localStorage.get(UiStateHelper.ASSET_CHART_PANEL, 0)];
+    }
+
+    static set aggregateGraph(value: number[]) {
+        localStorage.set(UiStateHelper.AGGREGATE_CHART_PANEL, value);
+    }
+
+    static get aggregateGraph(): number[] {
+        return [localStorage.get(UiStateHelper.AGGREGATE_CHART_PANEL, 0)];
     }
 
     static set sectorsGraph(value: number[]) {

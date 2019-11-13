@@ -1,24 +1,40 @@
+/*
+ * STRICTLY CONFIDENTIAL
+ * TRADE SECRET
+ * PROPRIETARY:
+ *       "Intelinvest" Ltd, TIN 1655386205
+ *       420107, REPUBLIC OF TATARSTAN, KAZAN CITY, SPARTAKOVSKAYA STREET, HOUSE 2, ROOM 119
+ * (c) "Intelinvest" Ltd, 2019
+ *
+ * СТРОГО КОНФИДЕНЦИАЛЬНО
+ * КОММЕРЧЕСКАЯ ТАЙНА
+ * СОБСТВЕННИК:
+ *       ООО "Интеллектуальные инвестиции", ИНН 1655386205
+ *       420107, РЕСПУБЛИКА ТАТАРСТАН, ГОРОД КАЗАНЬ, УЛИЦА СПАРТАКОВСКАЯ, ДОМ 2, ПОМЕЩЕНИЕ 119
+ * (c) ООО "Интеллектуальные инвестиции", 2019
+ */
+
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {Prop, Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class";
-import {UI} from "../app/ui";
-import {Filters} from "../platform/filters/Filters";
-import {ClientInfo, ClientService} from "../services/clientService";
-import {TableHeadersState, TABLES_NAME, TablesService} from "../services/tablesService";
-import {TradeFields, TradeType} from "../services/tradeService";
-import {AssetType} from "../types/assetType";
-import {BigMoney} from "../types/bigMoney";
-import {Operation} from "../types/operation";
-import {Pagination, Portfolio, TableHeader, TablePagination, TradeRow} from "../types/types";
-import {CommonUtils} from "../utils/commonUtils";
-import {DateFormat} from "../utils/dateUtils";
-import {TradeUtils} from "../utils/tradeUtils";
-import {MutationType} from "../vuex/mutationType";
-import {StoreType} from "../vuex/storeType";
-import {AddTradeDialog} from "./dialogs/addTradeDialog";
-import {ChoosePortfolioDialog} from "./dialogs/choosePortfolioDialog";
-import {TradesTableExtInfo} from "./tradesTableExtInfo";
+import {UI} from "../../app/ui";
+import {Filters} from "../../platform/filters/Filters";
+import {ClientInfo, ClientService} from "../../services/clientService";
+import {TableHeadersState, TABLES_NAME, TablesService} from "../../services/tablesService";
+import {TradeFields, TradeType} from "../../services/tradeService";
+import {AssetType} from "../../types/assetType";
+import {BigMoney} from "../../types/bigMoney";
+import {Operation} from "../../types/operation";
+import {Pagination, Portfolio, TableHeader, TablePagination, TradeRow} from "../../types/types";
+import {CommonUtils} from "../../utils/commonUtils";
+import {DateFormat} from "../../utils/dateUtils";
+import {TradeUtils} from "../../utils/tradeUtils";
+import {MutationType} from "../../vuex/mutationType";
+import {StoreType} from "../../vuex/storeType";
+import {AddTradeDialog} from "../dialogs/addTradeDialog";
+import {ChoosePortfolioDialog} from "../dialogs/choosePortfolioDialog";
+import {TradesTableExtInfo} from "../tradesTableExtInfo";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -38,13 +54,14 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-layout>
                     <td v-if="tableHeadersState.ticker" class="text-xs-left">
                         <stock-link v-if="props.item.asset === tradeType.STOCK.code" :ticker="props.item.ticker"></stock-link>
+                        <asset-link v-if="props.item.asset === tradeType.ASSET.code" :ticker="props.item.shareId">{{ props.item.ticker }}</asset-link>
                         <bond-link v-if="props.item.asset === tradeType.BOND.code" :ticker="props.item.ticker"></bond-link>
                         <span v-if="props.item.asset === tradeType.MONEY.code">{{ props.item.ticker }}</span>
                     </td>
                     <td v-if="tableHeadersState.name" class="text-xs-left">{{ props.item.companyName }}</td>
                     <td v-if="tableHeadersState.operationLabel" class="text-xs-left">{{ props.item.operationLabel }}</td>
                     <td v-if="tableHeadersState.date" class="text-xs-center">{{ getTradeDate(props.item) }}</td>
-                    <td v-if="tableHeadersState.quantity" class="text-xs-right ii-number-cell">{{ props.item.quantity }}</td>
+                    <td v-if="tableHeadersState.quantity" class="text-xs-right ii-number-cell">{{ props.item.quantity | quantity }}</td>
                     <td v-if="tableHeadersState.price" :class="['text-xs-right', 'ii-number-cell']">
                         {{ getPrice(props.item) }}&nbsp;<span class="second-value">{{ currencyForPrice(props.item) }}</span>
                     </td>
@@ -130,7 +147,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             Расход
                                         </v-list-tile-title>
                                     </v-list-tile>
-                                    <v-list-tile v-if="isStockTrade(props.item)" @click="openTradeDialog(props.item, operation.DIVIDEND)">
+                                    <v-list-tile v-if="isStockOrAssetTrade(props.item)" @click="openTradeDialog(props.item, operation.DIVIDEND)">
                                         <v-list-tile-title>
                                             Дивиденд
                                         </v-list-tile-title>
@@ -153,7 +170,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     <v-divider v-if="!props.item.parentTradeId"></v-divider>
                                     <!-- Связанную сделку удалить можно только удалив родительскую -->
                                     <v-list-tile v-if="!props.item.parentTradeId" @click="deleteTrade(props.item)">
-                                        <v-list-tile-title>
+                                        <v-list-tile-title class="delete-btn">
                                             Удалить
                                         </v-list-tile-title>
                                     </v-list-tile>
@@ -239,6 +256,7 @@ export class TradesTable extends UI {
             router: this.$router,
             share: null,
             ticker: trade.ticker,
+            shareId: trade.shareId,
             operation,
             quantity: this.getQuantity(trade),
             assetType: AssetType.valueByName(trade.asset)
@@ -266,6 +284,7 @@ export class TradesTable extends UI {
 
     private getTradeFields(trade: TradeRow): TradeFields {
         return {
+            shareId: trade.shareId,
             ticker: trade.ticker,
             date: trade.date,
             quantity: trade.quantity,
@@ -310,15 +329,7 @@ export class TradesTable extends UI {
     }
 
     private getTradeType(tradeType: string): string {
-        switch (tradeType) {
-            case TradeType.STOCK.code:
-                return TradeType.STOCK.description;
-            case TradeType.BOND.code:
-                return TradeType.BOND.description;
-            case TradeType.MONEY.code:
-                return TradeType.MONEY.description;
-        }
-        throw new Error(`Неизвестный тип сделки ${tradeType}`);
+        return TradeType.valueByName(tradeType).color;
     }
 
     private getTradeDate(trade: TradeRow): string {
@@ -347,8 +358,8 @@ export class TradesTable extends UI {
         return AssetType.valueByName(trade.asset) === AssetType.BOND;
     }
 
-    private isStockTrade(trade: TradeRow): boolean {
-        return AssetType.valueByName(trade.asset) === AssetType.STOCK;
+    private isStockOrAssetTrade(trade: TradeRow): boolean {
+        return [AssetType.ASSET, AssetType.STOCK].includes(AssetType.valueByName(trade.asset));
     }
 
     private isMoneyTrade(trade: TradeRow): boolean {

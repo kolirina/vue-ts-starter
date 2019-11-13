@@ -3,7 +3,7 @@ import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {Http} from "../platform/services/http";
 import {LineChartItem} from "../types/charts/types";
-import {Bond, BondHistoryResponse, Stock, StockHistoryResponse} from "../types/types";
+import {Asset, AssetHistoryResponse, Bond, BondHistoryResponse, Stock, StockHistoryResponse} from "../types/types";
 
 @Service("MarketHistoryService")
 @Singleton
@@ -13,6 +13,7 @@ export class MarketHistoryService {
     private http: Http;
 
     private stockCache: { [key: string]: Stock } = {};
+    private assetCache: { [key: string]: Asset } = {};
     private bondCache: { [key: string]: Bond } = {};
 
     /**
@@ -28,6 +29,21 @@ export class MarketHistoryService {
         const response = await this.http.get<StockHistoryResponse>(`/history/stock/${ticker}`, {date: date});
         this.stockCache[`${ticker}:${date}`] = response.stock;
         return response.stock;
+    }
+
+    /**
+     * Получение исторических данных по активу на дату
+     * @param assetId идентификатор актива
+     * @param date дата
+     */
+    async getAssetHistory(assetId: string, date: string): Promise<Asset> {
+        const asset = this.assetCache[`${assetId}:${date}`];
+        if (asset) {
+            return asset;
+        }
+        const response = await this.http.get<AssetHistoryResponse>(`/history/asset/${assetId}`, {date: date});
+        this.assetCache[`${assetId}:${date}`] = response.asset;
+        return response.asset;
     }
 
     /**

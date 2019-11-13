@@ -1,6 +1,8 @@
 import {AssetType} from "../assetType";
 import {Operation} from "../operation";
 import {AmortizationTrade} from "./amortizationTrade";
+import {AssetBuyTrade} from "./assetBuyTrade";
+import {AssetSellTrade} from "./assetSellTrade";
 import {BondBuyTrade} from "./bondBuyTrade";
 import {BondSellTrade} from "./bondSellTrade";
 import {CouponTrade} from "./couponTrade";
@@ -31,6 +33,23 @@ export class TradeMap {
                 [TradeValue.TOTAL]: new StockSellTrade().total,
                 [TradeValue.TOTAL_WF]: new StockSellTrade().totalWithoutFee,
                 [TradeValue.TOTAL_SIGN]: new StockSellTrade().signedTotal
+            },
+            [Operation.DIVIDEND.enumName]: {
+                [TradeValue.TOTAL]: new DividendTrade().total,
+                [TradeValue.TOTAL_WF]: new DividendTrade().totalWithoutFee,
+                [TradeValue.TOTAL_SIGN]: new DividendTrade().signedTotal
+            }
+        },
+        [AssetType.ASSET.enumName]: {
+            [Operation.BUY.enumName]: {
+                [TradeValue.TOTAL]: new AssetBuyTrade().total,
+                [TradeValue.TOTAL_WF]: new AssetBuyTrade().totalWithoutFee,
+                [TradeValue.TOTAL_SIGN]: new AssetBuyTrade().signedTotal
+            },
+            [Operation.SELL.enumName]: {
+                [TradeValue.TOTAL]: new AssetSellTrade().total,
+                [TradeValue.TOTAL_WF]: new AssetSellTrade().totalWithoutFee,
+                [TradeValue.TOTAL_SIGN]: new AssetSellTrade().signedTotal
             },
             [Operation.DIVIDEND.enumName]: {
                 [TradeValue.TOTAL]: new DividendTrade().total,

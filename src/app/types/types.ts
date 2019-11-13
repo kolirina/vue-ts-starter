@@ -61,6 +61,8 @@ export type TradeRow = {
     totalWithoutFee: string,
     /** Тикер */
     ticker?: string,
+    /** Идентификатор ценной бумаги/актива (Для замены тикера) */
+    shareId?: string,
     /** Название компании */
     companyName?: string,
     /** Количество */
@@ -129,7 +131,7 @@ export type _shareRow = _portfolioRow & {
     decimals: string
 };
 
-export type StockPortfolioSumRow = _shareRow & {
+export type SharePortfolioSumRow = _shareRow & {
     /**
      * Текущая цена. Храним именно значение, а не используем из сущности Stock, чтобы не было расхождений, потому что кэш бумаг обновляется чаще
      * чем кэш портфеля
@@ -157,24 +159,37 @@ export type BondPortfolioSumRow = _shareRow & {
     sellNkd: string
 };
 
-export type StockPortfolioRow = StockPortfolioSumRow & {
-
-    // private StockTarget stockTarget = new StockTarget();
+export type SharePortfolioRow = SharePortfolioSumRow & {
+    /** Используется в качестве ключа в таблицах и все. */
     id: string,
-    stock: Stock,
+    /** Количество */
     quantity: number,
     /** Средняя цена покупки */
     avgBuy: string,
-
+    /** Чистая цена по бумаге */
     avgBuyClean: string,
-
+    /** Дата первой сделки */
     firstBuy: string,
-
+    /** Дата последенй сделки */
     lastBuy: string,
     /** Признак того, что позиция по бумаге короткая */
     isShort: string,
     /** Количество полных лотов по бумаге в портфеле */
     lotCounts: string
+};
+
+export type StockPortfolioSumRow = SharePortfolioSumRow & {};
+
+export type StockPortfolioRow = SharePortfolioRow & {
+    stock: Stock,
+    share: Stock | Asset
+};
+
+export type AssetPortfolioSumRow = SharePortfolioSumRow & {};
+
+export type AssetPortfolioRow = SharePortfolioRow & {
+    asset: Asset,
+    share: Stock | Asset,
 };
 
 export type BondPortfolioRow = BondPortfolioSumRow & {
@@ -221,6 +236,8 @@ export interface Overview {
     assetRows: AssetRow[];
     /** Данные таблицы Акции */
     stockPortfolio: StockPortfolio;
+    /** Данные таблицы Активы */
+    assetPortfolio: AssetPortfolio;
     /** Данные таблицы Облигации */
     bondPortfolio: BondPortfolio;
     /** Общее количество сделок в портфеле */
@@ -234,8 +251,13 @@ export interface Overview {
 }
 
 export type StockPortfolio = {
-    sumRow: StockPortfolioSumRow,
+    sumRow: SharePortfolioSumRow,
     rows: StockPortfolioRow[]
+};
+
+export type AssetPortfolio = {
+    sumRow: AssetPortfolioSumRow,
+    rows: AssetPortfolioRow[]
 };
 
 export type BondPortfolio = {
@@ -267,16 +289,30 @@ export type TableHeader = {
 };
 
 export type DashboardData = {
+    /** Текущая суммарная стоимость */
     currentCost: string,
+    /** Текущая суммарная стоимость */
     currentCostInAlternativeCurrency: string,
+    /** Суммарный доход за исключением дивидендов и купонов */
     profitWithoutDividendsAndCoupons: string,
+    /** Суммарный доход */
     profit: string,
+    /** Суммарный доход в процентах */
     percentProfit: string,
+    /** Суммарный доход без учета комиссий */
     profitWithoutFees: string,
+    /** Годовая доходность портфеля */
     yearYield: string,
+    /** Годовая доходность за исключением дивидендов и купонов */
     yearYieldWithoutDividendsAndCoupons: string,
+    /** Изменение за день */
     dailyChanges: string,
+    /** Изменение за день в процентах */
     dailyChangesPercent: string
+    /** Общая сумма пользовательских прибылей */
+    usersIncomes: string;
+    /** Общая сумма пользовательских убытков */
+    usersLosses: string;
 };
 
 export type DashboardBrick = {
@@ -291,7 +327,8 @@ export type DashboardBrick = {
     mainCurrency: string,
     secondCurrency: string,
     tooltip?: string,
-    secondTooltip?: string
+    secondTooltip?: string;
+    mainValueTooltip?: string;
 };
 
 /** Описание бэкапа портфеля */
@@ -306,7 +343,8 @@ export interface PortfolioBackup {
 
 export enum ShareType {
     STOCK = "STOCK",
-    BOND = "BOND"
+    BOND = "BOND",
+    ASSET = "ASSET",
 }
 
 export type Share = {
@@ -373,6 +411,7 @@ export type Stock = Share & {
     color: string;
     /** Признак что акция привилегированная */
     privileged: string;
+    /** Сектор */
     sector: Sector;
     /** Кол-во акций в обращении */
     issueSize: string;
@@ -382,8 +421,27 @@ export type Stock = Share & {
     moexId: string;
 };
 
+export type Asset = Share & {
+    /** Тип актива */
+    category: string;
+    /** Url по которму можно парсить цену */
+    source?: string;
+    /** Регулярное выражение для парсинга цены */
+    regex?: string;
+    /** Список тэгов */
+    tags?: string;
+    /** Заметка */
+    note?: string;
+    /** Идентификатор пользователя (владельца), может не быть, если это общесистемный актив */
+    userId?: string;
+    /** Текущая цена */
+    price: string;
+    /** Сектор */
+    sector: Sector;
+};
+
 /** Информация по динамике ценной бумаги */
-export type StockDynamic = {
+export type ShareDynamic = {
     /** Минимальная за год */
     minYearPrice: string;
     /** Максимальная за год */
@@ -398,12 +456,15 @@ export type StockDynamic = {
     yearHistory: BasePriceDot[];
     /** Текущая цена */
     current: string;
-    /** Сдвиг для линейного графика */
-    shift: string;
 };
 
 export type StockHistoryResponse = {
     stock: Stock;
+    date: string;
+};
+
+export type AssetHistoryResponse = {
+    asset: Asset;
     date: string;
 };
 
@@ -452,15 +513,29 @@ export type BondHistoryResponse = {
 /** Информация по акции */
 export type StockInfo = {
     /** Акция */
-    stock: Stock;
+    share: Stock;
     /** История цены */
     history: Dot[];
     /** Дивиденды */
     dividends: BaseChartDot[];
     /** Динамика */
-    stockDynamic: StockDynamic;
+    shareDynamic: ShareDynamic;
     /** События. В данном случае дивиденды */
     events: HighStockEventsGroup;
+};
+
+/** Информация по активу */
+export type AssetInfo = {
+    /** Актив */
+    share: Asset;
+    /** Информация по динамике ценной бумаги */
+    shareDynamic: ShareDynamic;
+    /** История цены */
+    history: Dot[];
+    /** Дивиденды */
+    dividends?: BaseChartDot[];
+    /** События. В данном случае дивиденды */
+    events?: HighStockEventsGroup;
 };
 
 /** Информация по облигации */
@@ -581,6 +656,7 @@ export enum EventType {
 
 export enum BlockType {
     EMPTY = "empty",
+    AGGREGATE = "aggreagate",
     ASSETS = "assets",
     HISTORY_PANEL = "historyPanel",
     STOCK_PORTFOLIO = "stockPortfolio",

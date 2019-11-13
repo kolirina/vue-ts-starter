@@ -1,6 +1,5 @@
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
-import {Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
 import {AdditionalPagination} from "../../components/additionalPagination";
@@ -9,9 +8,11 @@ import {EmptySearchResult} from "../../components/emptySearchResult";
 import {QuotesFilterTable} from "../../components/quotesFilterTable";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {Storage} from "../../platform/services/storage";
+import {FiltersService} from "../../services/filtersService";
 import {MarketService, QuotesFilter} from "../../services/marketService";
 import {AssetType} from "../../types/assetType";
 import {Operation} from "../../types/operation";
+import {StoreKeys} from "../../types/storeKeys";
 import {Bond, Pagination, Portfolio, TableHeader} from "../../types/types";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
@@ -25,8 +26,8 @@ const MainStore = namespace(StoreType.MAIN);
             <div class="additional-pagination-quotes-table">
                 <additional-pagination :pagination="pagination" @update:pagination="onTablePaginationChange"></additional-pagination>
             </div>
-            <quotes-filter-table :filter="filter" @input="tableSearch" @changeShowUserShares="changeShowUserShares" :min-length="3"
-                                 placeholder="Поиск"></quotes-filter-table>
+            <quotes-filter-table :filter="filter" @input="tableSearch" @changeShowUserShares="changeShowUserShares" @filter="onFilterChange" :min-length="3" placeholder="Поиск"
+                                 :store-key="StoreKeys.BOND_QUOTES_FILTER_KEY"></quotes-filter-table>
             <empty-search-result v-if="isEmptySearchResult" @resetFilter="resetFilter"></empty-search-result>
             <v-data-table v-else
                           :headers="headers" :items="bonds" item-key="id" :pagination="pagination" @update:pagination="onTablePaginationChange"
@@ -45,18 +46,17 @@ const MainStore = namespace(StoreType.MAIN);
                         <td class="text-xs-right">{{ props.item.couponvalue | amount(true) }}</td>
                         <td class="text-xs-center">{{ props.item.nextcoupon }}</td>
                         <td class="text-xs-center">{{ props.item.facevalue | amount(true) }}</td>
+                        <td class="text-xs-center">{{ props.item.currency }}</td>
                         <td class="text-xs-center">{{ props.item.duration }}</td>
                         <td class="text-xs-center">
-                            <span>
-                                <v-btn v-if="props.item.currency === 'RUB'" :href="'http://moex.com/ru/issue.aspx?code=' + props.item.ticker" target="_blank"
-                                :title="'Профиль эмитента ' + props.item.name + ' на сайте биржи'" icon>
-                                    <img src="img/quotes/share.svg">
-                                </v-btn>
-                                <v-btn v-if="props.item.currency !== 'RUB'" :href="'https://finance.yahoo.com/quote/' + props.item.ticker" target="_blank"
-                                :title="'Профиль эмитента ' + props.item.name + ' на сайте Yahoo Finance'" icon>
-                                    <img src="img/quotes/share.svg">
-                                </v-btn>
-                            </span>
+                            <v-btn v-if="props.item.currency === 'RUB'" :href="'http://moex.com/ru/issue.aspx?code=' + props.item.ticker" target="_blank"
+                                   :title="'Профиль эмитента ' + props.item.name + ' на сайте биржи'" icon>
+                                <img src="img/quotes/share.svg">
+                            </v-btn>
+                            <v-btn v-if="props.item.currency !== 'RUB'" :href="'https://finance.yahoo.com/quote/' + props.item.ticker" target="_blank"
+                                   :title="'Профиль эмитента ' + props.item.name + ' на сайте Yahoo Finance'" icon>
+                                <img src="img/quotes/share.svg">
+                            </v-btn>
                         </td>
                         <td class="justify-center layout px-0" @click.stop>
                             <v-menu transition="slide-y-transition" bottom left nudge-bottom="25">
@@ -111,14 +111,19 @@ export class BondQuotes extends UI {
     private marketservice: MarketService;
     @Inject
     private localStorage: Storage;
+    @Inject
+    private filtersService: FiltersService;
 
+    /** Признак что ничего не найдено */
     private isEmptySearchResult: boolean = false;
+    /** Ключи для сохранения информации */
+    private StoreKeys = StoreKeys;
 
     /** Фильтр котировок */
-    private filter: QuotesFilter = {
+    private filter: QuotesFilter = this.filtersService.getFilter<QuotesFilter>(StoreKeys.BOND_QUOTES_FILTER_KEY, {
         searchQuery: "",
         showUserShares: false
-    };
+    });
 
     private headers: TableHeader[] = [
         {text: "ISIN", align: "left", value: "isin"},
@@ -130,6 +135,7 @@ export class BondQuotes extends UI {
         {text: "Купон", align: "right", value: "couponvalue"},
         {text: "След. купон", align: "center", value: "nextcoupon"},
         {text: "Номинал", align: "center", value: "facevalue"},
+        {text: "Валюта", align: "center", value: "currency", width: "50"},
         {text: "Дюрация", align: "center", value: "duration"},
         {text: "Профиль эмитента", align: "center", value: "profile", sortable: false},
         {text: "Меню", value: "", align: "center", sortable: false}
@@ -153,6 +159,7 @@ export class BondQuotes extends UI {
     private async resetFilter(): Promise<void> {
         this.filter.searchQuery = "";
         this.filter.showUserShares = false;
+        this.filter.currency = null;
         await this.loadBonds();
     }
 
@@ -170,6 +177,13 @@ export class BondQuotes extends UI {
         await this.loadBonds();
     }
 
+    /**
+     * Обрабатывает изменение фильтра
+     */
+    private async onFilterChange(): Promise<void> {
+        await this.loadBonds();
+    }
+
     private async changeShowUserShares(showUserShares: boolean): Promise<void> {
         this.localStorage.set<boolean>("showUserBonds", showUserShares);
         this.filter.showUserShares = showUserShares;
@@ -178,8 +192,7 @@ export class BondQuotes extends UI {
 
     @ShowProgress
     private async loadBonds(): Promise<void> {
-        const response = await this.marketservice.loadBonds(this.pagination.rowsPerPage * (this.pagination.page - 1),
-            this.pagination.rowsPerPage, this.pagination.sortBy, this.pagination.descending, this.filter.searchQuery, this.filter.showUserShares);
+        const response = await this.marketservice.loadBonds(this.pagination, this.filter);
         this.bonds = response.content;
         this.pagination.totalItems = response.totalItems;
         this.pagination.pages = response.pages;

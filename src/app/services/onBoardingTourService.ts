@@ -169,9 +169,11 @@ export interface TourEvent {
 /** Блоки портфеля к которым необходимо отобразить подсказку */
 export enum PortfolioBlockType {
     DASHBOARD = "DASHBOARD",
-    ASSETS = "ASSETS",
+    AGGREGATE_TABLE = "ASSETS",
     ASSETS_CHART = "ASSETS_CHART",
+    AGGREGATE_CHART = "AGGREGATE_CHART",
     STOCK_TABLE = "STOCK_TABLE",
+    ASSET_TABLE = "ASSET_TABLE",
     BOND_TABLE = "BOND_TABLE",
     HISTORY_CHART = "HISTORY_CHART",
     STOCK_CHART = "STOCK_CHART",
@@ -399,7 +401,7 @@ export const TOURS_BY_PORTFOLIO_BLOCK: { [key: string]: TourStep } = {
             placement: "bottom"
         }
     },
-    [PortfolioBlockType.ASSETS]: {
+    [PortfolioBlockType.AGGREGATE_TABLE]: {
         target: `[data-v-step="$0"]`,
         content: "Это таблица с активами находящимися в вашем портфеле. На ее основе вы можете, например, быстро оценить какой размер занимает отдельный актив в портфеле.",
         params: {
