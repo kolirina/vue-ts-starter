@@ -49,7 +49,7 @@ const MainStore = namespace(StoreType.MAIN);
                       expand must-sort>
             <template #items="props">
                 <tr class="selectable" @dblclick="props.expanded = !props.expanded">
-                    <v-layout justify-center align-center :class="['h48', getTradeType(props.item.asset)]">
+                    <v-layout justify-center align-center :class="['h40', getTradeType(props.item.asset)]">
                         <span @click="props.expanded = !props.expanded" class="data-table-cell" :class="{'data-table-cell-open': props.expanded, 'path': true}"></span>
                     </v-layout>
                     <td v-if="tableHeadersState.ticker" class="text-xs-left">
