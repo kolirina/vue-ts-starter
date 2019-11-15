@@ -19,8 +19,7 @@ import {EditShareNoteDialogData} from "../components/dialogs/editShareNoteDialog
 import {Service} from "../platform/decorators/service";
 import {Enum, EnumType, IStaticEnum} from "../platform/enum";
 import {Http} from "../platform/services/http";
-import {Portfolio, PortfolioBackup} from "../types/types";
-import {MoneyResiduals} from "./portfolioService";
+import {PortfolioBackup} from "../types/types";
 
 @Service("PortfolioService")
 @Singleton

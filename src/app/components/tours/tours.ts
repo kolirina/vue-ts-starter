@@ -138,10 +138,12 @@ export class Tours extends UI {
         this.stop();
         this.tourSteps = [];
         this.tourName = null;
-        const meta: RouteMeta = this.$router.currentRoute.meta;
+        const currentRoute = this.$router.currentRoute;
+        const meta: RouteMeta = currentRoute.meta;
         if (meta.tourName) {
-            this.tourName = meta.tourName;
-            this.tourSteps = await this.onBoardingTourService.getTourSteps(meta.tourName, this.portfolio.overview);
+            const tabName = currentRoute.params.tab ?? "";
+            this.tourName = `${meta.tourName}${tabName ? "_" + tabName : ""}`;
+            this.tourSteps = await this.onBoardingTourService.getTourSteps(this.tourName, this.portfolio.overview);
             if (this.tourSteps.length) {
                 this.start();
             }
