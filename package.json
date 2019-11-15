@@ -67,7 +67,7 @@
     "stylus-loader": "^3.0.2",
     "ts-loader": "^5.3.3",
     "tslint": "^5.13.1",
-    "typescript": "^3.3.3333",
+    "typescript": "3.7.2",
     "vue-loader": "^15.4.2",
     "vue-template-compiler": "^2.5.17",
     "webpack": "^4.20.2",

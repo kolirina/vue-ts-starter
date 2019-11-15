@@ -136,9 +136,10 @@ export enum TourName {
     IMPORT = "import",
     PORTFOLIO_MANAGEMENT = "portfolio_management",
     NOTIFICATIONS = "notifications",
-    QUOTES = "quotes",
+    QUOTES = "quotes_stock",
     STOCK_INFO = "stock_info",
     COMBINED_PORTFOLIO = "combined_portfolio",
+    USER_ASSETS = "quotes_user-assets",
 }
 
 /** Сущность шага */
@@ -240,6 +241,23 @@ export const TOUR_STEPS: { [key: string]: TourStep[] } = {
                 "Поддерживается пользовательский фильтр, который позволяет быстро отобразить в таблице только те бумаги, которые есть у вас в портфеле.",
             params: {
                 placement: "bottom",
+                enableScrolling: false
+            }
+        }
+    ],
+    [TourName.USER_ASSETS]: [
+        {
+            target: `[data-v-step="0"]`,
+            content: "В этом разделе будут отображаться созданные вами произвольные активы. <br/>" +
+                "Вы можете добавить любой произвольный актив, который не поддерживается системой.<br/>" +
+                "Например, учесть квартиру, которую вы сдаете и получаете с нее доход," +
+                "учесть структурный продукт или часть портфеля у доверительного управляюещго.<br/>" +
+                "Любой инструмент, который вы хотите учитывать в составе своего портфеля." +
+                "<br/><br/>" +
+                "Если вы хотите подробнее узнать как работать " +
+                "с произвольными активами, перейдите в раздел Справка - Произвольные активы.",
+            params: {
+                placement: "top",
                 enableScrolling: false
             }
         }
