@@ -18,6 +18,7 @@ import Decimal from "decimal.js";
 import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {Http} from "../platform/services/http";
+import {BigMoney} from "../types/bigMoney";
 
 @Service("RebalancingService")
 @Singleton
@@ -43,16 +44,14 @@ export class RebalancingService {
     private calculateByAmount(rows: CalculateRow[], totalAmountString: string): void {
         const totalAmount = totalAmountString ? new Decimal(totalAmountString) : this.ZERO;
         rows.forEach(row => {
-            const currentAmount = row.currentAmount ? new Decimal(row.currentAmount) : this.ZERO;
             const currentPercent = row.currentPercent ? new Decimal(row.currentPercent) : this.ZERO;
             const amount = totalAmount.mul(currentPercent).mul(this._001).toDP(2, Decimal.ROUND_HALF_UP);
-            const price = new Decimal(row.price);
+            const price = new BigMoney(row.price).amount;
             const lotSize = new Decimal(row.lotSize);
             const lots = amount.dividedBy(price.mul(lotSize)).toDP(0, Decimal.ROUND_FLOOR);
             const pieces = amount.dividedBy(price.mul(lotSize)).mul(lotSize).toDP(0, Decimal.ROUND_FLOOR);
             const amountForLots = lots.mul(price).mul(lotSize).toDP(2, Decimal.ROUND_HALF_UP);
             const amountForPieces = pieces.mul(price).toDP(2, Decimal.ROUND_HALF_UP);
-            console.log(JSON.stringify({currentAmount, currentPercent, amount, lots, pieces}));
 
             row.pieces = pieces.toString();
             row.lots = lots.toNumber();
@@ -66,31 +65,39 @@ export class RebalancingService {
 
     private calculateByPercent(rows: CalculateRow[], totalAmountString: string, onlyBuyTrades: boolean = true): void {
         const totalAmount = totalAmountString ? new Decimal(totalAmountString) : this.ZERO;
+        // общая сумма по всем бумагам в расчете
+        const rowsTotalAmount = rows.map(row => new Decimal(row.currentAmount)).reduce((result: Decimal, current: Decimal) => result.add(current), this.ZERO).plus(totalAmount);
         rows.forEach(row => {
             const currentAmount = row.currentAmount ? new Decimal(row.currentAmount) : this.ZERO;
             let currentPercent = row.currentPercent ? new Decimal(row.currentPercent) : this.ZERO;
             const targetPercent = row.targetPercent ? new Decimal(row.targetPercent) : this.ZERO;
             if (currentPercent.comparedTo(targetPercent) === 0 && totalAmount.isZero()) {
+                row.amountForLots = this.ZERO.toString();
+                row.amountForPieces = this.ZERO.toString();
+                row.amountAfterByLots = currentAmount.toString();
+                row.amountAfterByPieces = currentAmount.toString();
                 return;
             }
             const isSell = targetPercent.minus(currentPercent).isNegative();
             currentPercent = onlyBuyTrades && isSell ? this.ZERO : targetPercent;
-            const amount = currentAmount.mul(isSell ? currentPercent.abs().negated() : currentPercent).mul(this._001).toDP(2, Decimal.ROUND_HALF_UP);
-            const price = new Decimal(row.price);
+            let amount = rowsTotalAmount.mul(currentPercent.abs()).mul(this._001).minus(currentAmount).toDP(2, Decimal.ROUND_HALF_UP);
+            amount = currentPercent.abs().isZero() ? this.ZERO : amount;
+            amount = isSell ? amount.abs().negated() : amount;
+            const price = new BigMoney(row.price).amount;
             const lotSize = new Decimal(row.lotSize);
             const lots = amount.dividedBy(price.mul(lotSize)).toDP(0, Decimal.ROUND_FLOOR);
             const pieces = amount.dividedBy(price.mul(lotSize)).mul(lotSize).toDP(0, Decimal.ROUND_FLOOR);
             const amountForLots = lots.mul(price).mul(lotSize).toDP(2, Decimal.ROUND_HALF_UP);
             const amountForPieces = pieces.mul(price).toDP(2, Decimal.ROUND_HALF_UP);
-            row.targetPercent = targetPercent.toString();
 
+            row.targetPercent = targetPercent.toString();
             row.pieces = pieces.toString();
             row.lots = lots.toNumber();
             if (!onlyBuyTrades && isSell) {
-                row.amountForLots = currentAmount.plus(amountForLots).negated().toString();
-                row.amountForPieces = currentAmount.plus(amountForPieces).negated().toString();
-                row.amountAfterByLots = amountForLots.abs().toString();
-                row.amountAfterByPieces = amountForPieces.abs().toString();
+                row.amountForLots = amountForLots.toString();
+                row.amountForPieces = amountForPieces.toString();
+                row.amountAfterByLots = currentAmount.plus(amountForLots).toString();
+                row.amountAfterByPieces = currentAmount.plus(amountForPieces).toString();
             } else {
                 row.amountForLots = amountForLots.toString();
                 row.amountForPieces = amountForPieces.toString();

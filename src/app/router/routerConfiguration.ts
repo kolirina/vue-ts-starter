@@ -5,7 +5,7 @@ import {RouteConfig} from "vue-router/types/router";
 import {Resolver} from "../../../typings/vue";
 import {AuthComponent} from "../app/authComponent";
 import {TariffExpiredDialog} from "../components/dialogs/tariffExpiredDialog";
-import {AdviserPage} from "../pages/adviser/adviserPage";
+import {AnalyticsPage} from "../pages/analytics/analyticsPage";
 import {AssetInfoPage} from "../pages/assetInfoPage";
 import {BalancesPage} from "../pages/balancesPage";
 import {BondInfoPage} from "../pages/bondInfoPage";
@@ -128,7 +128,7 @@ export class RouterConfiguration {
                     tariffAllowed: true,
                     title: "Аналитика"
                 },
-                component: AdviserPage,
+                component: AnalyticsPage,
             },
             {
                 name: "events",

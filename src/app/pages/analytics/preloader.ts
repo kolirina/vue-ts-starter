@@ -8,8 +8,8 @@ import {UI} from "../../app/ui";
             <v-progress-circular
                     :size="50"
                     color="primary"
-                    indeterminate
-            ></v-progress-circular>
+                    indeterminate>
+            </v-progress-circular>
         </v-layout>
     `
 })
