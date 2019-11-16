@@ -137,6 +137,9 @@ export enum TourName {
     PORTFOLIO_MANAGEMENT = "portfolio_management",
     NOTIFICATIONS = "notifications",
     QUOTES = "quotes_stock",
+    QUOTES_BOND = "quotes_bond",
+    QUOTES_CURRENCY = "quotes_currency",
+    QUOTES_COMMON = "quotes_common-assets",
     STOCK_INFO = "stock_info",
     COMBINED_PORTFOLIO = "combined_portfolio",
     USER_ASSETS = "quotes_user-assets",
@@ -182,6 +185,19 @@ export enum PortfolioBlockType {
     SECTORS_CHART = "SECTORS_CHART",
     EMPTY = "EMPTY"
 }
+
+const QUOTES_TOUR: TourStep[] = [
+    {
+        target: `[data-v-step="0"]`,
+        content: "В этом разделе вы можете ознакомиться со всеми бумагами доступными на сервисе. Быстро найти и отфильтровать бумаги по ценам, изменению, " +
+            "рейтингу и т.д. Быстро перейти к профилю эмитента на сайте биржи.<br>" +
+            "Поддерживается пользовательский фильтр, который позволяет быстро отобразить в таблице только те бумаги, которые есть у вас в портфеле.",
+        params: {
+            placement: "bottom",
+            enableScrolling: false
+        }
+    }
+];
 
 /**
  * Набор всех шагов в разбивке по турам
@@ -233,18 +249,10 @@ export const TOUR_STEPS: { [key: string]: TourStep[] } = {
             }
         },
     ],
-    [TourName.QUOTES]: [
-        {
-            target: `[data-v-step="0"]`,
-            content: "В этом разделе вы можете ознакомиться со всеми бумагами доступными на сервисе. Быстро найти и отфильтровать бумаги по ценам, изменению, " +
-                "рейтингу и т.д. Быстро перейти к профилю эмитента на сайте биржи.<br>" +
-                "Поддерживается пользовательский фильтр, который позволяет быстро отобразить в таблице только те бумаги, которые есть у вас в портфеле.",
-            params: {
-                placement: "bottom",
-                enableScrolling: false
-            }
-        }
-    ],
+    [TourName.QUOTES]: QUOTES_TOUR,
+    [TourName.QUOTES_BOND]: QUOTES_TOUR,
+    [TourName.QUOTES_CURRENCY]: QUOTES_TOUR,
+    [TourName.QUOTES_COMMON]: QUOTES_TOUR,
     [TourName.USER_ASSETS]: [
         {
             target: `[data-v-step="0"]`,
