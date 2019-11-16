@@ -9,10 +9,13 @@ import {QuotesFilterTable} from "../../components/quotesFilterTable";
 import {StockRate} from "../../components/stockRate";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {Storage} from "../../platform/services/storage";
+import {FiltersService} from "../../services/filtersService";
 import {MarketService, QuotesFilter} from "../../services/marketService";
 import {AssetType} from "../../types/assetType";
 import {Operation} from "../../types/operation";
+import {StoreKeys} from "../../types/storeKeys";
 import {Pagination, Portfolio, Stock, TableHeader} from "../../types/types";
+import {TradeUtils} from "../../utils/tradeUtils";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 
@@ -25,34 +28,37 @@ const MainStore = namespace(StoreType.MAIN);
             <div class="additional-pagination-quotes-table">
                 <additional-pagination :pagination="pagination" @update:pagination="onTablePaginationChange"></additional-pagination>
             </div>
-            <quotes-filter-table :filter="filter" @input="tableSearch" @changeShowUserShares="changeShowUserShares" :min-length="1"
-                                 placeholder="Поиск"></quotes-filter-table>
+            <quotes-filter-table :filter="filter" @input="tableSearch" @changeShowUserShares="changeShowUserShares" @filter="onFilterChange" :min-length="1" placeholder="Поиск"
+                                 :store-key="StoreKeys.STOCK_QUOTES_FILTER_KEY"></quotes-filter-table>
             <empty-search-result v-if="isEmptySearchResult" @resetFilter="resetFilter"></empty-search-result>
             <v-data-table v-else
                           :headers="headers" :items="stocks" item-key="id" :pagination="pagination" @update:pagination="onTablePaginationChange"
                           :rows-per-page-items="[25, 50, 100, 200]"
-                          :total-items="pagination.totalItems" class="data-table quotes-table" must-sort>
+                          :total-items="pagination.totalItems" class="data-table quotes-table normalize-table" must-sort>
                 <template #items="props">
                     <tr class="selectable">
                         <td class="text-xs-left">
                             <stock-link :ticker="props.item.ticker"></stock-link>
                         </td>
                         <td class="text-xs-left">{{ props.item.shortname }}</td>
-                        <td class="text-xs-center ii-number-cell">{{ props.item.price | amount(false, null, false, false) }}</td>
+                        <td class="text-xs-center ii-number-cell">
+                            {{ props.item.price | amount(false, null, false) }} <span class="second-value">{{ currencyForPrice(props.item) }}</span>
+                        </td>
                         <td :class="[( Number(props.item.change) >= 0 ) ? 'ii--green-markup' : 'ii--red-markup', 'ii-number-cell', 'text-xs-center']">
                             {{ props.item.change }}&nbsp;%
                         </td>
                         <td class="text-xs-center ii-number-cell">{{ props.item.lotsize }}</td>
+                        <td class="text-xs-center">{{ props.item.currency }}</td>
                         <td class="text-xs-center">
                             <stock-rate :share="props.item"></stock-rate>
                         </td>
                         <td class="text-xs-center">
                             <v-btn v-if="props.item.currency === 'RUB'" :href="'http://moex.com/ru/issue.aspx?code=' + props.item.ticker" target="_blank"
-                                :title="'Профиль эмитента ' + props.item.name + ' на сайте биржи'" icon>
+                                   :title="'Профиль эмитента ' + props.item.name + ' на сайте биржи'" icon>
                                 <i class="quotes-share"></i>
                             </v-btn>
                             <v-btn v-if="props.item.currency !== 'RUB'" :href="'https://finance.yahoo.com/quote/' + props.item.ticker" target="_blank"
-                                :title="'Профиль эмитента ' + props.item.name + ' на сайте Yahoo Finance'" icon>
+                                   :title="'Профиль эмитента ' + props.item.name + ' на сайте Yahoo Finance'" icon>
                                 <i class="quotes-share"></i>
                             </v-btn>
                         </td>
@@ -99,13 +105,18 @@ export class StockQuotes extends UI {
     private marketservice: MarketService;
     @Inject
     private localStorage: Storage;
+    @Inject
+    private filtersService: FiltersService;
 
     /** Фильтр котировок */
-    private filter: QuotesFilter = {
+    private filter: QuotesFilter = this.filtersService.getFilter<QuotesFilter>(StoreKeys.STOCK_QUOTES_FILTER_KEY, {
         searchQuery: "",
         showUserShares: false
-    };
+    });
 
+    /** Ключи для сохранения информации */
+    private StoreKeys = StoreKeys;
+    /** Признак что ничего не найдено */
     private isEmptySearchResult: boolean = false;
 
     private headers: TableHeader[] = [
@@ -114,6 +125,7 @@ export class StockQuotes extends UI {
         {text: "Цена", align: "center", value: "price"},
         {text: "Изменение", align: "center", value: "change"},
         {text: "Размер лота", align: "center", value: "lotsize", sortable: false},
+        {text: "Валюта", align: "center", value: "currency", width: "50"},
         {text: "Рейтинг", align: "center", value: "rating"},
         {text: "Профиль эмитента", align: "center", value: "profile", sortable: false},
         {text: "", value: "", align: "center", sortable: false}
@@ -137,6 +149,7 @@ export class StockQuotes extends UI {
     private async resetFilter(): Promise<void> {
         this.filter.searchQuery = "";
         this.filter.showUserShares = false;
+        this.filter.currency = null;
         await this.loadStocks();
     }
 
@@ -155,6 +168,13 @@ export class StockQuotes extends UI {
         await this.loadStocks();
     }
 
+    /**
+     * Обрабатывает изменение фильтра
+     */
+    private async onFilterChange(): Promise<void> {
+        await this.loadStocks();
+    }
+
     private async tableSearch(search: string): Promise<void> {
         this.filter.searchQuery = search;
         await this.loadStocks();
@@ -162,8 +182,7 @@ export class StockQuotes extends UI {
 
     @ShowProgress
     private async loadStocks(): Promise<void> {
-        const response = await this.marketservice.loadStocks(this.pagination.rowsPerPage * (this.pagination.page - 1),
-            this.pagination.rowsPerPage, this.pagination.sortBy, this.pagination.descending, this.filter.searchQuery, this.filter.showUserShares);
+        const response = await this.marketservice.loadStocks(this.pagination, this.filter);
         this.stocks = response.content;
         this.pagination.totalItems = response.totalItems;
         this.pagination.pages = response.pages;
@@ -181,5 +200,9 @@ export class StockQuotes extends UI {
         if (result) {
             await this.reloadPortfolio(this.portfolio.id);
         }
+    }
+
+    private currencyForPrice(stock: Stock): string {
+        return TradeUtils.currencySymbolByAmount(stock.price).toLowerCase();
     }
 }

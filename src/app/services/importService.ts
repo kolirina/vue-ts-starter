@@ -3,7 +3,6 @@ import {Service} from "../platform/decorators/service";
 import {Enum, EnumType, IStaticEnum} from "../platform/enum";
 import {Http} from "../platform/services/http";
 import {Status} from "../types/types";
-import {ImportProviderFeaturesByProvider} from "./importService";
 
 @Service("ImportService")
 @Singleton

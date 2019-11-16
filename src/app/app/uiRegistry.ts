@@ -14,6 +14,7 @@ import Snotify, {SnotifyPosition} from "vue-snotify";
 import VueTour from "vue-tour";
 import vuescroll from "vuescroll";
 import Vuetify from "vuetify";
+import {AssetLink} from "../components/assetLink";
 import {BondLink} from "../components/bondLink";
 import {ChartExportMenu} from "../components/charts/chartExportMenu";
 import {LineChart} from "../components/charts/lineChart";
@@ -108,6 +109,7 @@ export class UIRegistry {
         UI.component("image-dialog", ImageDialog);
         UI.component("inplace-input", InplaceInput);
         UI.component("stock-link", StockLink);
+        UI.component("asset-link", AssetLink);
         UI.component("bond-link", BondLink);
         /* Компонент с маской для десятичных дробей */
         UI.component("ii-number-field", IINumberField);
@@ -121,6 +123,7 @@ export class UIRegistry {
         UI.filter("amount", Filters.formatMoneyAmount);
         UI.filter("assetDesc", Filters.assetDesc);
         UI.filter("number", Filters.formatNumber);
+        UI.filter("quantity", Filters.formatQuantity);
         UI.filter("integer", Filters.formatInteger);
         UI.filter("date", Filters.formatDate);
         UI.filter("declension", Filters.declension);

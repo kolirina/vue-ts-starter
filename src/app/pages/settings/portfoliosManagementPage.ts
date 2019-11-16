@@ -18,7 +18,7 @@ import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
 import {PortfolioEditDialog} from "../../components/dialogs/portfolioEditDialog";
-import {PortfoliosTable} from "../../components/portfoliosTable";
+import {PortfoliosTable} from "../../components/tables/portfoliosTable";
 import {ClientInfo} from "../../services/clientService";
 import {PortfolioParams} from "../../services/portfolioService";
 import {EventType} from "../../types/eventType";

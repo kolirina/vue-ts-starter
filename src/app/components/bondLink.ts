@@ -1,9 +1,7 @@
 /**
  * Компонент для отображения ссылки на просмотр информации по облигации
  */
-import Component from "vue-class-component";
-import {Prop} from "vue-property-decorator";
-import {UI} from "../app/ui";
+import {Component, Prop, UI} from "../app/ui";
 
 @Component({
     // language=Vue

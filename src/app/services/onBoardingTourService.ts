@@ -136,9 +136,13 @@ export enum TourName {
     IMPORT = "import",
     PORTFOLIO_MANAGEMENT = "portfolio_management",
     NOTIFICATIONS = "notifications",
-    QUOTES = "quotes",
+    QUOTES = "quotes_stock",
+    QUOTES_BOND = "quotes_bond",
+    QUOTES_CURRENCY = "quotes_currency",
+    QUOTES_COMMON = "quotes_common-assets",
     STOCK_INFO = "stock_info",
     COMBINED_PORTFOLIO = "combined_portfolio",
+    USER_ASSETS = "quotes_user-assets",
 }
 
 /** Сущность шага */
@@ -169,9 +173,11 @@ export interface TourEvent {
 /** Блоки портфеля к которым необходимо отобразить подсказку */
 export enum PortfolioBlockType {
     DASHBOARD = "DASHBOARD",
-    ASSETS = "ASSETS",
+    AGGREGATE_TABLE = "ASSETS",
     ASSETS_CHART = "ASSETS_CHART",
+    AGGREGATE_CHART = "AGGREGATE_CHART",
     STOCK_TABLE = "STOCK_TABLE",
+    ASSET_TABLE = "ASSET_TABLE",
     BOND_TABLE = "BOND_TABLE",
     HISTORY_CHART = "HISTORY_CHART",
     STOCK_CHART = "STOCK_CHART",
@@ -179,6 +185,19 @@ export enum PortfolioBlockType {
     SECTORS_CHART = "SECTORS_CHART",
     EMPTY = "EMPTY"
 }
+
+const QUOTES_TOUR: TourStep[] = [
+    {
+        target: `[data-v-step="0"]`,
+        content: "В этом разделе вы можете ознакомиться со всеми бумагами доступными на сервисе. Быстро найти и отфильтровать бумаги по ценам, изменению, " +
+            "рейтингу и т.д. Быстро перейти к профилю эмитента на сайте биржи.<br>" +
+            "Поддерживается пользовательский фильтр, который позволяет быстро отобразить в таблице только те бумаги, которые есть у вас в портфеле.",
+        params: {
+            placement: "bottom",
+            enableScrolling: false
+        }
+    }
+];
 
 /**
  * Набор всех шагов в разбивке по турам
@@ -230,14 +249,23 @@ export const TOUR_STEPS: { [key: string]: TourStep[] } = {
             }
         },
     ],
-    [TourName.QUOTES]: [
+    [TourName.QUOTES]: QUOTES_TOUR,
+    [TourName.QUOTES_BOND]: QUOTES_TOUR,
+    [TourName.QUOTES_CURRENCY]: QUOTES_TOUR,
+    [TourName.QUOTES_COMMON]: QUOTES_TOUR,
+    [TourName.USER_ASSETS]: [
         {
             target: `[data-v-step="0"]`,
-            content: "В этом разделе вы можете ознакомиться со всеми бумагами доступными на сервисе. Быстро найти и отфильтровать бумаги по ценам, изменению, " +
-                "рейтингу и т.д. Быстро перейти к профилю эмитента на сайте биржи.<br>" +
-                "Поддерживается пользовательский фильтр, который позволяет быстро отобразить в таблице только те бумаги, которые есть у вас в портфеле.",
+            content: "В этом разделе будут отображаться созданные вами произвольные активы. <br/>" +
+                "Вы можете добавить любой произвольный актив, который не поддерживается системой.<br/>" +
+                "Например, учесть квартиру, которую вы сдаете и получаете с нее доход," +
+                "учесть структурный продукт или часть портфеля у доверительного управляюещго.<br/>" +
+                "Любой инструмент, который вы хотите учитывать в составе своего портфеля." +
+                "<br/><br/>" +
+                "Если вы хотите подробнее узнать как работать " +
+                "с произвольными активами, перейдите в раздел Справка - Произвольные активы.",
             params: {
-                placement: "bottom",
+                placement: "top",
                 enableScrolling: false
             }
         }
@@ -399,7 +427,7 @@ export const TOURS_BY_PORTFOLIO_BLOCK: { [key: string]: TourStep } = {
             placement: "bottom"
         }
     },
-    [PortfolioBlockType.ASSETS]: {
+    [PortfolioBlockType.AGGREGATE_TABLE]: {
         target: `[data-v-step="$0"]`,
         content: "Это таблица с активами находящимися в вашем портфеле. На ее основе вы можете, например, быстро оценить какой размер занимает отдельный актив в портфеле.",
         params: {

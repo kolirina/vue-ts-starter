@@ -1,5 +1,67 @@
 .theme--light.v-data-iterator .v-data-iterator__actions,
 .theme--light.v-expansion-panel .v-expansion-panel__container .v-expansion-panel__header .v-expansion-panel__header__icon .v-icon,
+.data-table {
+  thead {
+    background: #DEE2F0;
+    tr{
+      &:first-child {
+        height: 32px !important;
+        th {
+          font-size: 12px !important;
+          color: #51545f !important;
+          background: #DEE2F0 !important;
+          &:first-child {
+            padding-left: 20px !important;
+          }
+          &:last-child {
+            padding-right: 20px !important;
+          }
+        }
+      }
+    }
+  }
+  tbody {
+    .selectable {
+      &:first-child {
+        td {
+          height: 40px !important;
+        }
+      }
+      &:last-child .bold-row {
+        td {
+          height: 46px !important;
+        }
+      }
+      td {
+        height: 40px !important;
+        font-size: 13px !important;
+        color: #040427;
+        &:first-child {
+          padding-left: 20px !important;
+        }
+        &:last-child {
+          padding-right: 20px !important;
+        }
+      }
+    }
+    .v-btn {
+      height: 40px !important;
+      margin: 0px 10px !important;
+    }
+  }
+}
+.normalize-table {
+  tbody {
+    .selectable {
+      td {
+        height: 39px !important;
+      }
+    }
+    .v-btn {
+      height: 39px !important;
+    }
+  }
+}
 .theme--light.v-table thead th {
   color: $table--header--font-color;
 }
@@ -19,12 +81,12 @@
 
 .ii--red-markup {
   font-family: "OpenSans Semibold";
-  color: $table--num--red-color;
+  color: $table--num--red-color !important;
 }
 
 .ii--green-markup {
   font-family: "OpenSans Semibold";
-  color: $table--num--green-color;
+  color: $table--num--green-color !important;
 }
 
 .ii-number-cell {
@@ -35,7 +97,7 @@
 
   tr {
     + .bold-row {
-      // background-color: #0404271f !important;
+      height: 46px;
     }
   }
 
@@ -192,6 +254,7 @@ table.v-table tbody td:first-child, table.v-table tbody td:not(:nth-child(1)), t
 table.v-table thead td:first-child, table.v-table thead td:not(:nth-child(1)), table.v-table thead th:first-child, table.v-table thead th:not(:nth-child(1)) {
   padding: 0 10px 0 10px !important;
 }
+
 .table-bottom-pagination {
   thead {
     tr {
@@ -199,11 +262,13 @@ table.v-table thead td:first-child, table.v-table thead td:not(:nth-child(1)), t
         &:first-child {
           padding-left: 31px !important;
         }
+
         &:not([aria-sort=ascending]) {
           .v-icon {
             margin-left: -16px;
           }
         }
+
         &:not(.active) {
           font-size: 12px;
           line-height: 16px;
@@ -212,6 +277,7 @@ table.v-table thead td:first-child, table.v-table thead td:not(:nth-child(1)), t
       }
     }
   }
+
   tbody {
     tr {
       td {
@@ -221,30 +287,42 @@ table.v-table thead td:first-child, table.v-table thead td:not(:nth-child(1)), t
       }
     }
   }
+
   .accent--text {
     color: #A1A6B6 !important;
     caret-color: #A1A6B6 !important;
   }
+
   .v-datatable {
     .v-datatable__actions {
       .v-datatable__actions__select {
-        margin-right: 0px !important;
+        margin-right: 0 !important;
+
+        .v-select {
+          margin: 13px 0 0 34px !important;
+        }
+
         .v-input {
-          margin: 0px 0px 0px 18px !important;
+          margin: 0 0 0 18px !important;
+
           .v-input__append-inner {
-            margin: 0px !important;
-            padding: 0px !important;
+            margin: 0 !important;
+            padding: 0 !important;
           }
         }
       }
+
       .v-datatable__actions__range-controls {
         margin-right: 10px;
+
         .v-datatable__actions__pagination {
           margin-left: 12px !important;
-          margin-right: 0px !important;
+          margin-right: 0 !important;
         }
+
         .v-btn {
-          margin: 0px !important;
+          margin: 0 !important;
+
           &:not(.v-btn--disabled) {
             color: #3B6EC9 !important;
           }
@@ -252,6 +330,7 @@ table.v-table thead td:first-child, table.v-table thead td:not(:nth-child(1)), t
       }
     }
   }
+
   .v-datatable__actions {
     border-top: none !important;
   }

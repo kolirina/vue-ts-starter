@@ -1,7 +1,7 @@
 import Component from "vue-class-component";
+import {Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class";
 import {UI} from "../app/ui";
-import {DividendChart} from "../components/charts/dividendChart";
 import {BigMoney} from "../types/bigMoney";
 import {Portfolio} from "../types/types";
 import {MutationType} from "../vuex/mutationType";
@@ -19,10 +19,6 @@ const MainStore = namespace(StoreType.MAIN);
 })
 export class ShareInfoPage extends UI {
 
-    $refs: {
-        chartComponent: DividendChart
-    };
-
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
     private reloadPortfolio: (id: number) => Promise<void>;
     @MainStore.Getter
@@ -38,12 +34,21 @@ export class ShareInfoPage extends UI {
         this.ticker = this.$route.params.ticker;
     }
 
+    /**
+     * Следит за изменение тикера в url.
+     * Не вызывается при первоначальной загрузке
+     */
+    @Watch("$route.params.ticker")
+    private onRouterChange(): void {
+        this.ticker = this.$route.params.ticker;
+    }
+
     private async onReloadPortfolio(): Promise<void> {
         await this.reloadPortfolio(this.portfolio.id);
     }
 
     private get portfolioAvgPrice(): number {
-        const row = this.portfolio.overview.stockPortfolio.rows.find(r => r.stock.ticker === this.ticker);
+        const row = this.portfolio.overview.stockPortfolio.rows.find(r => r.share.ticker === this.ticker);
         return row ? new BigMoney(row.avgBuy).amount.toNumber() : null;
     }
 

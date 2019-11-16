@@ -1,24 +1,38 @@
-import Component from "vue-class-component";
-import {Prop} from "vue-property-decorator";
+/*
+ * STRICTLY CONFIDENTIAL
+ * TRADE SECRET
+ * PROPRIETARY:
+ *       "Intelinvest" Ltd, TIN 1655386205
+ *       420107, REPUBLIC OF TATARSTAN, KAZAN CITY, SPARTAKOVSKAYA STREET, HOUSE 2, ROOM 119
+ * (c) "Intelinvest" Ltd, 2019
+ *
+ * СТРОГО КОНФИДЕНЦИАЛЬНО
+ * КОММЕРЧЕСКАЯ ТАЙНА
+ * СОБСТВЕННИК:
+ *       ООО "Интеллектуальные инвестиции", ИНН 1655386205
+ *       420107, РЕСПУБЛИКА ТАТАРСТАН, ГОРОД КАЗАНЬ, УЛИЦА СПАРТАКОВСКАЯ, ДОМ 2, ПОМЕЩЕНИЕ 119
+ * (c) ООО "Интеллектуальные инвестиции", 2019
+ */
+
 import {namespace} from "vuex-class";
-import {UI} from "../app/ui";
-import {AssetType} from "../types/assetType";
-import {BigMoney} from "../types/bigMoney";
-import {Operation} from "../types/operation";
-import {PortfolioAssetType} from "../types/portfolioAssetType";
-import {AssetRow, Pagination, Portfolio, TableHeader} from "../types/types";
-import {SortUtils} from "../utils/sortUtils";
-import {TradeUtils} from "../utils/tradeUtils";
-import {MutationType} from "../vuex/mutationType";
-import {StoreType} from "../vuex/storeType";
-import {AddTradeDialog} from "./dialogs/addTradeDialog";
+import {Component, Prop, UI} from "../../app/ui";
+import {AssetType} from "../../types/assetType";
+import {BigMoney} from "../../types/bigMoney";
+import {Operation} from "../../types/operation";
+import {PortfolioAssetType} from "../../types/portfolioAssetType";
+import {AssetRow, Pagination, Portfolio, TableHeader} from "../../types/types";
+import {SortUtils} from "../../utils/sortUtils";
+import {TradeUtils} from "../../utils/tradeUtils";
+import {MutationType} from "../../vuex/mutationType";
+import {StoreType} from "../../vuex/storeType";
+import {AddTradeDialog} from "../dialogs/addTradeDialog";
 
 const MainStore = namespace(StoreType.MAIN);
 
 @Component({
     // language=Vue
     template: `
-        <v-data-table class="data-table" :headers="headers" :items="assets" :custom-sort="customSort" :pagination.sync="pagination" hide-actions must-sort>
+        <v-data-table class="data-table normalize-table" :headers="headers" :items="assets" :custom-sort="customSort" :pagination.sync="pagination" hide-actions must-sort>
             <template #headerCell="props">
                 <v-tooltip v-if="props.header.tooltip" content-class="custom-tooltip-wrap" bottom>
                     <template #activator="{ on }">
@@ -88,7 +102,7 @@ const MainStore = namespace(StoreType.MAIN);
         </v-data-table>
     `
 })
-export class AssetTable extends UI {
+export class AggregateAssetTable extends UI {
 
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
     private reloadPortfolio: (id: number) => Promise<void>;

@@ -36,6 +36,9 @@ const MainStore = namespace(StoreType.MAIN);
                         <a @click.stop="$vuetify.goTo('#trades_add')">Добавление сделок</a>
                     </div>
                     <div class="wrapper-list-reference__item-content-wrapper">
+                        <a @click.stop="$vuetify.goTo('#user_assets')">Произвольные активы</a>
+                    </div>
+                    <div class="wrapper-list-reference__item-content-wrapper">
                         <a @click.stop="$vuetify.goTo('#balances')">Текущие остатки</a>
                     </div>
                     <div class="wrapper-list-reference__item-content-wrapper">
@@ -148,11 +151,12 @@ const MainStore = namespace(StoreType.MAIN);
                             </div>
                         </v-card>
                     </v-expansion-panel-content>
+
                     <v-expansion-panel-content>
-                        <template v-slot:actions>
+                        <template #actions>
                             <i class="custom-action-icon"></i>
                         </template>
-                        <template v-slot:header>
+                        <template #header>
                             <div id="trades_add">Добавление сделок</div>
                         </template>
                         <v-card>
@@ -257,6 +261,108 @@ const MainStore = namespace(StoreType.MAIN);
                             </div>
                         </v-card>
                     </v-expansion-panel-content>
+
+                    <v-expansion-panel-content>
+                        <template #actions>
+                            <i class="custom-action-icon"></i>
+                        </template>
+                        <template #header>
+                            <div id="user_assets">Произвольные активы</div>
+                        </template>
+                        <v-card>
+                            <div class="wrapper-content-panel">
+                                <div class="wrapper-content-panel__paired-section">
+                                    <div class="wrapper-content-panel__paired-section-item">
+                                        <p>
+                                            Если вы не нашли в сервисе определенную бумагу,
+                                            или Вы хотите учитывать свои произвольные активы,
+                                            например, квартиру, акции других бирж,
+                                            и любые другие инструменты, которые приносят вам прибыль.
+                                            Вы можете добавить произвольный актив на странице
+                                            <router-link to="/quotes/user-assets/">Пользовательские активы</router-link>
+                                        </p>
+                                        <p>
+                                            Здесь отображается список всех созданных вами произвольных активов.
+                                            По каждому активу можно быстро добавить сделку, отредактировать или удалить его.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="gif-block">
+                                    <div class="gif-block-item">
+                                        <div class="title-gif-block">
+                                            Пример добавления произвольного актива
+                                        </div>
+                                        <div class="gif-block-item__title" id="buy_stock">
+                                            Добавление актива с ручным указанием цены
+                                        </div>
+                                        <div>
+                                            <img src="./img/help/add_asset.gif" @click.stop="openImageDialog"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="wrapper-content-panel__paired-section">
+                                    <div class="wrapper-content-panel__paired-section-item">
+                                        <p>
+                                            При ручном указании цены произвольного актива,
+                                            вы можете указывать цену самостоятельно,
+                                            когда посчитаете это нужным.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="gif-block">
+                                    <div class="gif-block-item">
+                                        <div class="gif-block-item__title" id="buy_bonds">
+                                            Добавление актива с автоматическим обновлением цены
+                                        </div>
+                                        <div>
+                                            <img src="./img/help/asset_1.png" @click.stop="openImageDialog"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="wrapper-content-panel__paired-section">
+                                    <div class="wrapper-content-panel__paired-section-item">
+                                        <p>
+                                            Для Автоматического обновления цены по произвольному активу
+                                            Включите режим текущей цены в "Получение с web-страницы",
+                                            заполните поля Источинк (url страницы) и Регулярное выражение.
+                                            Регулярное выражение может быть как валидным регулярным выражением
+                                            так и css-селектором.
+                                        </p>
+                                        <p>
+                                            Цена будет автоматически обновляться каждые 10 минут.
+                                            Время последнего обновления можно посмотреть на странице Информации об активе.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="gif-block">
+                                    <div class="gif-block-item">
+                                        <div class="gif-block-item__title" id="buy_bonds">
+                                            Получение регулярного выражения (css-слектора)
+                                        </div>
+                                        <div>
+                                            <img src="./img/help/find-selector.gif" @click.stop="openImageDialog"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="wrapper-content-panel__paired-section">
+                                    <div class="wrapper-content-panel__paired-section-item">
+                                        <p>
+                                            Самый простой способ настроить автоматическое обновление цены:
+                                            использовать встроенные средства браузера, как показано
+                                            на скринкасте.
+                                            Полученный скопированный селектор необходимо подставить
+                                            в диалог создания актива в поле "Регулярное выражение"
+                                            и нажать ссылку Проверить. Если все было введено верно,
+                                            будет отображено найденное значение.
+                                            Если значение не было найдено, отобразится "Ничего не найдено".
+                                            В этом случае вам нужно еще раз проверить url-адрес и селектор.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </v-card>
+                    </v-expansion-panel-content>
+
                     <v-expansion-panel-content>
                         <template v-slot:actions>
                             <i class="custom-action-icon"></i>

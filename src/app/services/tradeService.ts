@@ -50,6 +50,16 @@ export class TradeService {
     }
 
     /**
+     * Загружает и возвращает сделки по тикеру в портфеле
+     * @param {string} id идентификатор портфеля
+     * @param {string} assetId идентификатор актива
+     * @returns {Promise<TradeRow[]>}
+     */
+    async getAssetShareTrades(id: string, assetId: number): Promise<TradeRow[]> {
+        return this.http.get<TradeRow[]>(`/trades/${id}/asset/${assetId}`);
+    }
+
+    /**
      * Возвращает список сделок для комбинированного портфеля
      * @param ticker тикер
      * @param viewCurrency валюта
@@ -67,6 +77,16 @@ export class TradeService {
      */
     async getShareTradesEvent(id: number, ticker: string): Promise<EventChartData[]> {
         return this.http.get<EventChartData[]>(`/trades/${id}/events/${ticker}`);
+    }
+
+    /**
+     * Загружает и возвращает события по сделкам по тикеру в портфеле
+     * @param {string} id идентификатор портфеля
+     * @param {string} shareId идентификатор актива
+     * @returns {Promise<TradeRow[]>}
+     */
+    async getAssetShareTradesEvent(id: number, shareId: string): Promise<EventChartData[]> {
+        return this.http.get<EventChartData[]>(`/trades/${id}/asset/events/${shareId}`);
     }
 
     /**
@@ -110,17 +130,26 @@ export class TradeService {
     }
 
     /**
+     * Отправляет запрос на удаление всех сделок по активу
+     * @param deleteTradeRequest запрос на удаление всех сделок по активу
+     */
+    async deleteAllAssetTrades(deleteTradeRequest: DeleteAllAssetTradeRequest): Promise<void> {
+        await this.http.post("/trades/asset/deleteAll", deleteTradeRequest);
+    }
+
+    /**
      * Загружает и возвращает сделки по тикеру в портфеле
      * @param portfolioId идентификатор портфеля
      * @param asset тип актива
      * @param operation тип операции
      * @param ticker тикер
+     * @param shareId Идентификатор ценной бумаги/актива (Для замены тикера)
      * @param date дата
      * @returns данные с суммной начисления и количеством
      */
-    async getSuggestedInfo(portfolioId: number, asset: string, operation: string, ticker: string, date: string): Promise<SuggestedQuantityResponse> {
+    async getSuggestedInfo(portfolioId: number, asset: string, operation: string, ticker: string, shareId: string, date: string): Promise<SuggestedQuantityResponse> {
         const request: SuggestedQuantityRequest = {
-            portfolioId, asset, operation, ticker, date
+            portfolioId, asset, operation, ticker, shareId, date
         };
         return this.http.post<SuggestedQuantityResponse>("/trades/suggest", request);
     }
@@ -145,10 +174,11 @@ export class TradeService {
 export class TradeType extends (EnumType as IStaticEnum<TradeType>) {
 
     static readonly STOCK = new TradeType("STOCK", "stock-color");
+    static readonly ASSET = new TradeType("ASSET", "stock-color");
     static readonly BOND = new TradeType("BOND", "bond-color");
     static readonly MONEY = new TradeType("MONEY", "money-color");
 
-    private constructor(public code: string, public description: string) {
+    private constructor(public code: string, public color: string) {
         super();
     }
 }
@@ -181,7 +211,17 @@ export interface DeleteAllTradeRequest {
     portfolioId: number;
 }
 
+/** Поля, содержащие информацию для удаления всех сделок по активу */
+export interface DeleteAllAssetTradeRequest {
+    /** Тикер */
+    assetId: number;
+    /** Идентификатор портфеля */
+    portfolioId: number;
+}
+
 export type TradeFields = {
+    /** Идентификатор ценной бумаги/актива (Для замены тикера) */
+    shareId?: string,
     /** Тикер */
     ticker: string,
     /** Дата */
@@ -263,6 +303,7 @@ export interface EditTradeRequest {
  */
 export enum TableName {
     STOCK_TRADE = "STOCK_TRADE",
+    ASSET_TRADE = "ASSET_TRADE",
     BOND_TRADE = "BOND_TRADE",
     DIVIDEND_TRADE = "DIVIDEND_TRADE"
 }
@@ -301,6 +342,8 @@ export interface SuggestedQuantityRequest {
     portfolioId: number;
     /** Тикер для акции или isin для облигации. Используется для поиска бумаги */
     ticker: string;
+    /** Идентификатор ценной бумаги/актива (Для замены тикера) */
+    shareId?: string;
     /** Дата */
     date: string;
 }

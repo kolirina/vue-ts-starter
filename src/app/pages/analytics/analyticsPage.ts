@@ -69,12 +69,12 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-layout>
             </expanded-panel>
 
-            <rebalancing-component v-show="false"></rebalancing-component>
+            <rebalancing-component v-show="true"></rebalancing-component>
         </v-container>
     `,
     components: {ChooseRisk, Preloader, AnalysisResult, EmptyAdvice, AverageAnnualYieldChart, SimpleLineChart, RebalancingComponent}
 })
-export class AdviserPage extends UI {
+export class AnalyticsPage extends UI {
 
     @Inject
     private localStorage: Storage;

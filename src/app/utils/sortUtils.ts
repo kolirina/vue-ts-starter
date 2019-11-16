@@ -41,23 +41,23 @@ export class SortUtils {
 
     static stockSort(items: StockPortfolioRow[], index: string, isDesc: boolean): StockPortfolioRow[] {
         items.sort((a: StockPortfolioRow, b: StockPortfolioRow): number => {
-            if (!CommonUtils.exists(a.stock)) {
+            if (!CommonUtils.exists(a.share)) {
                 return 1;
             }
-            if (!CommonUtils.exists(b.stock)) {
+            if (!CommonUtils.exists(b.share)) {
                 return -1;
             }
             if (index === TABLE_HEADERS.TICKER) {
                 if (!isDesc) {
-                    return a.stock.ticker.localeCompare(b.stock.ticker);
+                    return a.share.ticker.localeCompare(b.share.ticker);
                 } else {
-                    return b.stock.ticker.localeCompare(a.stock.ticker);
+                    return b.share.ticker.localeCompare(a.share.ticker);
                 }
             } else if (index === TABLE_HEADERS.COMPANY) {
                 if (!isDesc) {
-                    return a.stock.shortname.localeCompare(b.stock.shortname);
+                    return a.share.shortname.localeCompare(b.share.shortname);
                 } else {
-                    return b.stock.shortname.localeCompare(a.stock.shortname);
+                    return b.share.shortname.localeCompare(a.share.shortname);
                 }
             } else {
                 const first = (a as any)[index];

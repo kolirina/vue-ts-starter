@@ -1,12 +1,12 @@
 import dayjs from "dayjs";
 import Decimal from "decimal.js";
 import {Inject} from "typescript-ioc";
-import Component from "vue-class-component";
 import {VueRouter} from "vue-router/types/router";
-import {UI} from "../../app/ui";
+import {Component, UI} from "../../app/ui";
 import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {CustomDialog} from "../../platform/dialogs/customDialog";
+import {AssetCategory, AssetService} from "../../services/assetService";
 import {Client, ClientService} from "../../services/clientService";
 import {DateTimeService} from "../../services/dateTimeService";
 import {EventFields} from "../../services/eventService";
@@ -19,11 +19,11 @@ import {AssetType} from "../../types/assetType";
 import {BigMoney} from "../../types/bigMoney";
 import {AddTradeEvent, EventType} from "../../types/eventType";
 import {Operation} from "../../types/operation";
-import {Tariff} from "../../types/tariff";
+import {Permission} from "../../types/permission";
 import {TradeDataHolder} from "../../types/trade/tradeDataHolder";
 import {TradeMap} from "../../types/trade/tradeMap";
 import {TradeValue} from "../../types/trade/tradeValue";
-import {Bond, CurrencyUnit, ErrorInfo, Portfolio, Share, Stock} from "../../types/types";
+import {Asset, Bond, CurrencyUnit, ErrorInfo, Portfolio, Share, ShareType} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {DateUtils} from "../../utils/dateUtils";
 import {TariffUtils} from "../../utils/tariffUtils";
@@ -75,9 +75,16 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
 
                             <!-- Тикер бумаги -->
                             <v-flex v-if="shareAssetType" xs12 :class="portfolioProModeEnabled ? 'sm6' : 'sm9'">
-                                <share-search :asset-type="assetType" :filtered-shares="filteredShares"
-                                              placeholder="Тикер или название компании" class="required"
+                                <share-search :asset-type="assetType" :filtered-shares="filteredShares" :placeholder="shareSearchPlaceholder" class="required"
+                                              :create-asset-allowed="createAssetAllowed"
                                               @change="onShareSelect" @clear="onShareClear" autofocus></share-search>
+                                <!-- Дополнительная информация -->
+                                <div v-if="isAssetTrade" class="fs12-opacity mt-1">
+                                    <span>
+                                        Более подробную информацию об активах вы можете прочитать в
+                                        <a @click="goToHelp" title="Управление активами">Справке</a>
+                                    </span>
+                                </div>
                             </v-flex>
 
                             <!-- Дата сделки -->
@@ -102,6 +109,34 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                 </v-dialog>
                             </v-flex>
 
+                            <!-- Блок указания данных по добавляемому активу -->
+                            <v-layout v-if="newCustomAsset" class="ma-auto" wrap>
+                                <!-- Категория актива -->
+                                <v-flex xs12 sm6>
+                                    <v-select :items="assetCategories" v-model="assetCategory" :return-object="true" label="Категория актива" item-text="description"
+                                              dense hide-details></v-select>
+                                </v-flex>
+                                <!-- Цена -->
+                                <v-flex xs12 sm3>
+                                    <ii-number-field label="Текущая цена" v-model="assetPrice" class="required" name="assetPrice" v-validate="'required|min_value:0.000001'"
+                                                     :error-messages="errors.collect('assetPrice')">
+                                    </ii-number-field>
+                                </v-flex>
+                                <!-- Влюта -->
+                                <v-flex xs12 sm3>
+                                    <v-select :items="currencyList" v-model="assetCurrency" label="Валюта актива"></v-select>
+                                </v-flex>
+                                <!-- Дополнительная информация -->
+                                <v-flex xs12 sm12>
+                                    <div class="fs12-opacity mt-1">
+                                        <span>
+                                            Вы можете настроить дополнительные параметры позже на
+                                            <a @click="goToUserAssets" title="Управление активами">странице</a> управления вашими активами
+                                        </span>
+                                    </div>
+                                </v-flex>
+                            </v-layout>
+
                             <!-- Цена -->
                             <v-flex v-if="shareAssetType" xs12 sm6>
                                 <ii-number-field :label="priceLabel" v-model="price" class="required" name="price" v-validate="'required|min_value:0.000001'"
@@ -117,10 +152,10 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                 </ii-number-field>
                                 <div class="fs12-opacity mt-1">
                                     <span v-if="showCurrentQuantityLabel">
-                                        Текущее количество {{ isStockTrade ? "акций" : "облигаций" }}
+                                        Текущее количество {{ isStockTrade ? "акций" : isAssetTrade ? "" : "облигаций" }}
                                         <a @click="setToQuantity" title="Подставить в Количество">{{ currentCountShareSearch }} шт.</a>
                                     </span>
-                                    <span v-else>{{ lotSizeHint }}</span>
+                                    <span v-else>{{ isAssetTrade ? "" : lotSizeHint }}</span>
                                 </div>
                             </v-flex>
 
@@ -150,9 +185,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
 
                             <!-- Комиссия -->
                             <v-flex v-if="shareAssetType && !calculationAssetType" xs12>
-                                <ii-number-field label="Комиссия" v-model="fee" :decimals="2" maxLength="11"
-                                                 hint="Для автоматического рассчета комиссии задайте значение в Настройках или введите значение суммарной комиссии">
-                                </ii-number-field>
+                                <ii-number-field label="Комиссия" v-model="fee" :decimals="2" maxLength="11" :hint="feeHint"></ii-number-field>
                             </v-flex>
 
                             <!-- Сумма денег (для денежной сделки) -->
@@ -275,6 +308,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private overviewService: OverviewService;
     @Inject
     private dateTimeService: DateTimeService;
+    @Inject
+    private assetService: AssetService;
     /** Информация о клиенте */
     private clientInfo: Client = null;
     /** Операции начислений */
@@ -283,6 +318,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private portfolio: Portfolio = null;
     /** Типы возможных активов */
     private assetTypes = AssetType.values();
+    /** Типы возможных активов */
+    private assetCategories = AssetCategory.values();
     /** Операции */
     private Operation = Operation;
     /** Тип добавляемого актива */
@@ -305,6 +342,12 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private moneyCurrency = "RUB";
     /** Ценная бумага сделки. Для денег может быть null */
     private share: Share = null;
+    /** Текущая цена актива */
+    private assetPrice = "";
+    /** Тип актива по умолчанию */
+    private assetCategory: AssetCategory = AssetCategory.OTHER;
+    /** Валюта актива по умолчанию */
+    private assetCurrency = "RUB";
     /** Список найденных бумаг для добавления */
     private filteredShares: Share[] = [];
 
@@ -365,14 +408,16 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         this.changedPurchasedCurrencyValue();
     }
 
-    private onAssetTypeChange(): void {
+    private onAssetTypeChange(clearFields: boolean = true): void {
         if (this.data.operation === undefined) {
             this.operation = this.assetType.operations[0];
         } else {
             this.operation = this.data.operation;
         }
-        // исправление бага валидатора https://github.com/logaretm/vee-validate/issues/2109
-        this.$nextTick(() => this.clearFields());
+        if (clearFields) {
+            // исправление бага валидатора https://github.com/logaretm/vee-validate/issues/2109
+            this.$nextTick(() => this.clearFields());
+        }
     }
 
     private changedPurchasedCurrencyValue(): void {
@@ -400,8 +445,12 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         if (this.data.quantity) {
             this.quantity = this.data.quantity;
         }
-        if (this.data.ticker) {
-            await this.setShareFromTicker(this.data.ticker);
+        if (this.data.date) {
+            this.date = TradeUtils.getDateString(this.data.date);
+            this.time = TradeUtils.getTimeString(this.data.date);
+        }
+        if (this.data.ticker || this.data.shareId) {
+            await this.setShareFromTicker(this.isAssetTrade ? this.data.shareId : this.data.ticker);
             this.fillFieldsFromShare();
             this.filteredShares = [this.share];
         } else if (this.data.tradeFields) {
@@ -490,20 +539,24 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         if (!this.date || !this.share || this.processShareEvent) {
             return;
         }
-        const date = DateUtils.parseDate(this.date);
+        // если это операция начисления, просто получаем данные о количестве и начичлеии.
+        const calculationOperation = this.CALCULATION_OPERATIONS.includes(this.operation);
+        if (calculationOperation) {
+            await this.fillFromSuggestedInfo();
+            return;
+        }
         // если дата текущая заполняем поля диалога из бумаги
         // иначе пробуем получить данных за прошлые даты
+        const date = DateUtils.parseDate(this.date);
         if (DateUtils.isCurrentDate(date)) {
             this.fillFieldsFromShare();
         } else if (DateUtils.isBefore(date)) {
-            const calculationOperation = this.CALCULATION_OPERATIONS.includes(this.operation);
-            if (calculationOperation) {
-                await this.fillFromSuggestedInfo();
-                return;
-            }
             if (this.assetType === AssetType.STOCK) {
                 const stock = (await this.marketHistoryService.getStockHistory(this.share.ticker, dayjs(this.date).format("DD.MM.YYYY")));
-                this.fillFieldsFromStock(stock);
+                this.setPriceFromStockTypeShare(stock.price);
+            } else if (this.assetType === AssetType.ASSET && this.share.id) {
+                const asset = (await this.marketHistoryService.getAssetHistory(String(this.share.id), dayjs(this.date).format("DD.MM.YYYY")));
+                this.setPriceFromStockTypeShare(asset.price);
             } else if (this.assetType === AssetType.BOND) {
                 const bond = (await this.marketHistoryService.getBondHistory(this.share.ticker, dayjs(this.date).format("DD.MM.YYYY")));
                 this.fillFieldsFromBond(bond);
@@ -513,7 +566,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     private async fillFromSuggestedInfo(): Promise<void> {
         const suggestedInfo = await this.tradeService.getSuggestedInfo(this.portfolio.id, this.assetType.enumName,
-            this.operation.enumName, this.share.ticker, this.date);
+            this.operation.enumName, this.share.ticker, String(this.share.id), this.date);
         if (suggestedInfo) {
             this.quantity = suggestedInfo.quantity;
             this.price = suggestedInfo.amount || this.price;
@@ -545,6 +598,10 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private async onShareSelect(share: Share): Promise<void> {
+        if (share && share.shareType === ShareType.ASSET && this.assetType !== AssetType.ASSET) {
+            this.assetType = AssetType.ASSET;
+        }
+        this.onAssetTypeChange(false);
         this.share = share;
         this.calculateCurrentShareQuantity();
         this.fillFieldsFromShare();
@@ -554,11 +611,14 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private calculateCurrentShareQuantity(): void {
         this.currentCountShareSearch = null;
         if (this.share) {
-            if (this.isStockTrade) {
-                const row = this.portfolio.overview.stockPortfolio.rows.find(item => item.stock.ticker === this.share.ticker);
+            if (this.isStockTrade || (this.share as Asset).category === "STOCK") {
+                const row = this.portfolio.overview.stockPortfolio.rows.find(item => item.share.ticker === this.share.ticker);
                 this.currentCountShareSearch = row ? row.quantity : null;
             } else if (this.assetType === AssetType.BOND) {
                 const row = this.portfolio.overview.bondPortfolio.rows.find(item => item.bond.ticker === this.share.ticker);
+                this.currentCountShareSearch = row ? row.quantity : null;
+            } else if (this.isAssetTrade) {
+                const row = this.portfolio.overview.assetPortfolio.rows.find(item => item.asset.id === this.share.id);
                 this.currentCountShareSearch = row ? row.quantity : null;
             }
         }
@@ -571,7 +631,9 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         }
         this.currency = this.share.currency;
         if (this.assetType === AssetType.STOCK) {
-            this.fillFieldsFromStock(this.share as Stock);
+            this.setPriceFromStockTypeShare(this.share.price);
+        } else if (this.assetType === AssetType.ASSET) {
+            this.setPriceFromStockTypeShare(this.share.price);
         } else if (this.assetType === AssetType.BOND) {
             this.fillFieldsFromBond(this.share as Bond);
         }
@@ -586,6 +648,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             return;
         }
         const tradeFields: TradeFields = {
+            shareId: this.share ? String(this.share.id) : null,
             ticker: this.shareTicker,
             date: this.getDate(),
             quantity: this.getQuantity(),
@@ -606,6 +669,9 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
                 await this.editTrade(tradeFields);
                 UI.emit(EventType.TRADE_UPDATED);
             } else {
+                if (this.newCustomAsset) {
+                    await this.saveAsset(tradeFields);
+                }
                 await this.saveTrade(tradeFields);
                 UI.emit(EventType.TRADE_CREATED, {portfolioId: this.portfolio.id} as AddTradeEvent);
             }
@@ -624,6 +690,19 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         } finally {
             this.processState = false;
         }
+    }
+
+    private async saveAsset(tradeFields: TradeFields): Promise<void> {
+        const asset = await this.assetService.saveAsset({
+            category: this.assetCategory,
+            currency: this.assetCurrency,
+            ticker: this.share.shortname,
+            name: this.share.shortname,
+            price: this.assetPrice,
+        });
+        this.share.id = asset.id;
+        tradeFields.shareId = String(asset.id);
+        UI.emit(EventType.ASSET_CREATED);
     }
 
     private async saveTrade(tradeFields: TradeFields): Promise<void> {
@@ -674,8 +753,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         }
     }
 
-    private fillFieldsFromStock(stock: Stock): void {
-        this.price = this.CALCULATION_OPERATIONS.includes(this.operation) ? "" : TradeUtils.decimal(stock.price);
+    private setPriceFromStockTypeShare(price: string): void {
+        this.price = this.CALCULATION_OPERATIONS.includes(this.operation) ? "" : TradeUtils.decimal(price);
     }
 
     /**
@@ -724,11 +803,13 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         this.currencyExchangeRate = null;
         this.purchasedCurrency = "USD";
         this.feeCurrency = "RUB";
+        this.assetPrice = "";
+        this.assetCategory = AssetCategory.OTHER;
+        this.assetCurrency = "RUB";
     }
 
     private resetFee(): void {
-        const calculation = [Operation.REPAYMENT, Operation.COUPON, Operation.AMORTIZATION, Operation.DIVIDEND].includes(this.operation);
-        if (calculation) {
+        if (!this.autoFeeApplicable) {
             this.fee = "";
         }
     }
@@ -741,7 +822,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private async setTradeFields(): Promise<void> {
-        await this.setShareFromTicker(this.data.tradeFields.ticker);
+        await this.setShareFromTicker(this.isAssetTrade ? this.data.tradeFields.shareId : this.data.tradeFields.ticker);
         this.filteredShares = [this.share];
 
         this.tradeId = this.data.tradeId;
@@ -761,11 +842,13 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         this.feeCurrency = this.data.tradeFields.feeCurrency;
     }
 
-    private async setShareFromTicker(ticker: string): Promise<void> {
+    private async setShareFromTicker(shareId: string): Promise<void> {
         if (this.assetType === AssetType.STOCK) {
-            this.share = (await this.marketService.getStockInfo(ticker)).stock;
+            this.share = (await this.marketService.getStockInfo(shareId)).share;
+        } else if (this.assetType === AssetType.ASSET) {
+            this.share = (await this.marketService.getAssetInfo(shareId)).share;
         } else if (this.assetType === AssetType.BOND) {
-            this.share = (await this.marketService.getBondInfo(ticker)).bond;
+            this.share = (await this.marketService.getBondInfo(shareId)).bond;
         }
     }
 
@@ -843,6 +926,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private get shareTicker(): string {
         switch (this.assetType) {
             case AssetType.STOCK:
+            case AssetType.ASSET:
                 return this.share ? this.share.ticker : null;
             case AssetType.BOND:
                 return this.share ? (this.share as Bond).isin : null;
@@ -851,11 +935,15 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private get shareAssetType(): boolean {
-        return this.assetType === AssetType.STOCK || this.assetType === AssetType.BOND;
+        return [AssetType.ASSET, AssetType.STOCK, AssetType.BOND].includes(this.assetType);
     }
 
     private get isStockTrade(): boolean {
         return this.assetType === AssetType.STOCK;
+    }
+
+    private get isAssetTrade(): boolean {
+        return this.assetType === AssetType.ASSET;
     }
 
     private get isBondTrade(): boolean {
@@ -891,7 +979,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         }
         switch (this.assetType) {
             case AssetType.STOCK:
-                return this.share && this.date && this.price && this.quantity > 0;
+            case AssetType.ASSET:
+                return this.share && this.date && this.price && this.quantity > 0 && (!this.newCustomAsset || !!this.assetPrice);
             case AssetType.BOND:
                 return this.share && this.date && this.price && (!!this.facevalue || [Operation.COUPON, Operation.AMORTIZATION].includes(this.operation)) && this.quantity > 0;
             case AssetType.MONEY:
@@ -907,10 +996,13 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private get lotSizeHint(): string {
-        return "указывается в штуках." + (this.share && this.assetType === AssetType.STOCK ? " 1 лот = " + this.share.lotsize + " шт." : "");
+        return this.newCustomAsset ? "" : "указывается в штуках." + (this.share && this.assetType === AssetType.STOCK ? " 1 лот = " + this.share.lotsize + " шт." : "");
     }
 
     private get priceLabel(): string {
+        if (this.newCustomAsset) {
+            return "Цена покупки";
+        }
         return [Operation.AMORTIZATION, Operation.COUPON, Operation.DIVIDEND].includes(this.operation) ? "Начисление" : "Цена";
     }
 
@@ -942,8 +1034,32 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         return `${this.editMode ? "Редактирование" : "Добавление"} сделки${this.editMode ? "" : " в"}`;
     }
 
+    private get shareSearchPlaceholder(): string {
+        return this.isAssetTrade ? "Наименование" : "Тикер или название компании";
+    }
+
+    private get feeHint(): string {
+        return this.autoFeeApplicable ? "Для автоматического рассчета комиссии задайте значение в Настройках или введите значение суммарной комиссии" : "";
+    }
+
+    /**
+     * Возвращает признак применимости авторасчета комиссии для выбранного типа актива и операции
+     */
+    private get autoFeeApplicable(): boolean {
+        return this.isStockTrade || (this.isAssetTrade && (this.share && ["STOCK", "BOND", "ETF"].includes((this.share as Asset).category))) ||
+            [Operation.REPAYMENT, Operation.COUPON, Operation.AMORTIZATION, Operation.DIVIDEND].includes(this.operation);
+    }
+
+    private get newCustomAsset(): boolean {
+        return this.isAssetTrade && this.share && this.share.id === null;
+    }
+
     private get showCurrentQuantityLabel(): boolean {
-        return this.currentCountShareSearch && (this.isStockTrade || this.assetType === AssetType.BOND);
+        return this.currentCountShareSearch && (this.isStockTrade || this.assetType === AssetType.BOND || this.isAssetTrade);
+    }
+
+    private get createAssetAllowed(): boolean {
+        return this.clientInfo && this.clientInfo.tariff.hasPermission(Permission.INVESTMENTS);
     }
 
     /**
@@ -954,6 +1070,18 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         if (tariffExpired) {
             this.close();
             await new TariffExpiredDialog().show(this.data.router);
+        }
+    }
+
+    private goToUserAssets(): void {
+        if (this.data.router.currentRoute.path !== "/quotes/user-assets") {
+            this.data.router.push("/quotes/user-assets");
+        }
+    }
+
+    private goToHelp(): void {
+        if (this.data.router.currentRoute.path !== "/help") {
+            this.data.router.push("/help");
         }
     }
 
@@ -1028,7 +1156,9 @@ export type TradeDialogData = {
     tradeFields?: TradeFields,
     share?: Share,
     ticker?: string,
+    shareId?: string,
     quantity?: number,
+    date?: string,
     eventFields?: EventFields,
     operation?: Operation,
     assetType?: AssetType,

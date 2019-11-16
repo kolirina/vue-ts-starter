@@ -93,6 +93,7 @@
 }
 
 .trades-filter-section {
+  padding-right: 10px;
   .up-pagination {
     flex: 0.2 1 auto;
     @media screen and (max-width: 1157px) {
@@ -171,6 +172,13 @@
         width: 50%;
 
         &:nth-child(n + 3) {margin-top: 15px !important;}
+      }
+    }
+
+    &__currencies {
+      .v-input__append-outer {
+        margin: auto;
+        margin-left: 9px;
       }
     }
 

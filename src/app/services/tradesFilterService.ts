@@ -24,9 +24,9 @@ import {TradesFilter, TradesFilterRequest} from "./tradeService";
 /**
  * Сервис по работе с фильтром данных. Позволяет сохранять настройки фильтра в сессионном хранилище
  */
-@Service("FilterService")
+@Service("TradesFilterService")
 @Singleton
-export class FilterService {
+export class TradesFilterService {
 
     @Inject
     private storageService: Storage;
