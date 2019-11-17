@@ -69,7 +69,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-layout>
             </expanded-panel>
 
-            <rebalancing-component v-show="true"></rebalancing-component>
+            <rebalancing-component v-show="false"></rebalancing-component>
         </v-container>
     `,
     components: {ChooseRisk, Preloader, AnalysisResult, EmptyAdvice, AverageAnnualYieldChart, SimpleLineChart, RebalancingComponent}
