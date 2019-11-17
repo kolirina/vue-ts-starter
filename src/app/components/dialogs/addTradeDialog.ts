@@ -265,7 +265,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                             </v-flex>
                             <v-flex xs12 lg6>
                                 <span class="fs14">Доступно: </span><span v-if="moneyResiduals" class="fs14"><span
-                                    class="fs14 bold">{{ moneyResidual | amount }}</span><span class="fs12-non-opacity pl-1">{{ getCurrency() }}</span></span>
+                                    class="fs14 bold">{{ moneyResidual | amount(true, 2, true, true) }}</span><span class="fs12-non-opacity pl-1">{{ getCurrency() }}</span></span>
                                 <v-checkbox :disabled="keepMoneyDisabled" :label="keepMoneyLabel" v-model="keepMoney" hide-details></v-checkbox>
                             </v-flex>
                         </v-layout>

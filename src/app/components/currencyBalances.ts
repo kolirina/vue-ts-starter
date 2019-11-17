@@ -2,6 +2,7 @@ import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {Prop} from "vue-property-decorator";
 import {UI} from "../app/ui";
+import {Filters} from "../platform/filters/Filters";
 import {OverviewService} from "../services/overviewService";
 import {MoneyResiduals, PortfolioService} from "../services/portfolioService";
 import {BigMoney} from "../types/bigMoney";
@@ -64,14 +65,14 @@ export class CurrencyBalances extends UI {
     private numberСonversion(value: string): string {
         const amountOfCurrency = new BigMoney(value).amount;
         if (amountOfCurrency && Number(amountOfCurrency) > 0) {
-            return amountOfCurrency.toString();
+            return Filters.formatMoneyAmount(value, true, 2, false);
         }
         return "0";
     }
 
     private getHint(currency: string): string {
         if ((this.residuals as any)[currency]) {
-            return `Ваш текущий остаток на сервисе ${(this.residuals as any)[currency]}`;
+            return `Ваш текущий остаток на сервисе ${Filters.formatMoneyAmount((this.residuals as any)[currency], true, 2, true)}`;
         } else {
             return `В вашем портфеле не указаны остатки в валюте ${currency}`;
         }
