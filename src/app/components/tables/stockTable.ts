@@ -311,7 +311,7 @@ export class StockTable extends UI {
 
     setFilteredRows(): void {
         if (this.filter.hideSoldRows) {
-            this.filteredRows = [...this.rows.filter(row => row.quantity !== 0)];
+            this.filteredRows = [...this.rows.filter(row => !CommonUtils.exists(row.share) || row.quantity !== 0)];
         } else {
             this.filteredRows = [...this.rows];
         }
