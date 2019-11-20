@@ -1,17 +1,18 @@
 import {Inject} from "typescript-ioc";
-import Component from "vue-class-component";
 import {namespace} from "vuex-class";
-import {UI} from "../app/ui";
+import {Component, UI, Watch} from "../app/ui";
 import {BondPaymentsChart} from "../components/charts/bondPaymentsChart";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
 import {CreateOrEditNotificationDialog} from "../components/dialogs/createOrEditNotificationDialog";
+import {FeedbackDialog} from "../components/dialogs/feedbackDialog";
 import {ShowProgress} from "../platform/decorators/showProgress";
+import {ClientInfo} from "../services/clientService";
 import {MarketService} from "../services/marketService";
 import {NotificationType} from "../services/notificationsService";
 import {AssetType} from "../types/assetType";
 import {ColumnChartData, Dot, HighStockEventsGroup} from "../types/charts/types";
 import {Operation} from "../types/operation";
-import {Portfolio, Share, ShareType} from "../types/types";
+import {ErrorInfo, Portfolio, Share, ShareType} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
@@ -57,8 +58,14 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-layout>
                 </div>
                 <div class="info-share-page__empty" v-else>
-                    <span>
-                        Здесь будет показана информация об интересующих Вас облигациях, а также о доходности по ним.
+                    <span v-if="!shareNotFound">
+                        Здесь будет показана информация об интересующих Вас ценных бумагах, а также о доходности по ним.
+                    </span>
+                    <span v-else>
+                        Бумага не была найдена в системе.
+                        <a @click.stop="openFeedBackDialog">
+                            <span>Напишите нам</span> <i class="fas fa-envelope"></i>
+                        </a> и мы постараемся ее добавить
                     </span>
                 </div>
                 <v-card-text class="info-about-stock" v-if="share">
@@ -68,12 +75,12 @@ const MainStore = namespace(StoreType.MAIN);
                                 Об облигации
                             </div>
                             <table class="info-about-stock__content information-table">
-                                    <thead>
-                                        <tr>
-                                            <th class="indent-between-title-value-200"></th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
+                                <thead>
+                                    <tr>
+                                        <th class="indent-between-title-value-200"></th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
                                 <tbody>
                                     <tr>
                                         <td class="info-about-stock__content-title">Последняя цена</td>
@@ -146,7 +153,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-layout>
                     <div class="info-share-page__footer" v-if="share.currency === 'RUB'">
                         <a class="info-share-page__footer__link" :href="'http://moex.com/ru/issue.aspx?code=' + share.secid" target="_blank"
-                            :title="'Профиль эмитента' + share.shortname + ' на сайте биржи'">
+                           :title="'Профиль эмитента' + share.shortname + ' на сайте биржи'">
                             Перейти на профиль эмитента
                         </a>
                     </div>
@@ -186,46 +193,75 @@ export class BondInfoPage extends UI {
     private reloadPortfolio: (id: number) => Promise<void>;
     @MainStore.Getter
     private portfolio: Portfolio;
+    @MainStore.Getter
+    private clientInfo: ClientInfo;
     @Inject
     private marketService: MarketService;
 
+    private isin: string = null;
     private share: Share = null;
     private history: Dot[] = [];
     private paymentsData: ColumnChartData = null;
     private events: HighStockEventsGroup[] = [];
     private assetType = AssetType;
+    /** Признак, если бумага не была найдена */
+    private shareNotFound = false;
 
     @ShowProgress
     async created(): Promise<void> {
-        const isin = this.$route.params.isin;
-        if (isin) {
-            const result = await this.marketService.getBondInfo(isin);
-            this.share = result.bond;
-            this.history = result.history;
-            this.paymentsData = result.payments;
-            this.events.push(...result.events);
-        }
+        await this.loadBondInfo();
+    }
+
+    /**
+     * Следит за изменение тикера в url.
+     * Не вызывается при первоначальной загрузке
+     */
+    @Watch("$route.params.isin")
+    private async onRouterChange(): Promise<void> {
+        this.isin = this.$route.params.isin;
+        await this.loadBondInfo();
     }
 
     @ShowProgress
     private async onShareSelect(share: Share): Promise<void> {
-        this.share = share;
-        if (this.share) {
-            if (this.share.shareType === ShareType.STOCK) {
+        if (this.$router.currentRoute.params.isin === share?.isin) {
+            this.share = share;
+            return;
+        }
+        if (share) {
+            if (share.shareType === ShareType.STOCK) {
                 this.$router.push(`/share-info/${share.ticker}`);
                 return;
             }
-            if (this.share.shareType === ShareType.ASSET) {
+            if (share.shareType === ShareType.ASSET) {
                 this.$router.push(`/asset-info/${share.id}`);
                 return;
             }
+            this.$router.push(`/bond-info/${share.isin}`);
+        }
+    }
+
+    private async loadBondInfo(): Promise<void> {
+        this.shareNotFound = false;
+        this.isin = this.$route.params.isin;
+        if (!this.isin) {
+            return;
+        }
+        try {
             this.events = [];
-            const result = await this.marketService.getBondInfo(this.share.isin);
+            const result = await this.marketService.getBondInfo(this.isin);
             this.share = result.bond;
             this.history = result.history;
             this.paymentsData = result.payments;
             this.events.push(...result.events);
+        } catch (e) {
+            if ((e as ErrorInfo).errorCode === "NOT_FOUND") {
+                this.shareNotFound = true;
+            } else {
+                throw e;
+            }
         }
+
     }
 
     private async openDialog(): Promise<void> {
@@ -256,5 +292,10 @@ export class BondInfoPage extends UI {
     private get portfolioAvgPrice(): number {
         const row = this.portfolio.overview.bondPortfolio.rows.find(r => r.bond.ticker === this.share.ticker);
         return row ? Number(row.avgBuy) : null;
+    }
+
+    private async openFeedBackDialog(): Promise<void> {
+        const message = `Пожалуйста добавьте бумагу ${this.$route.params.isin} в систему.`;
+        await new FeedbackDialog().show({clientInfo: this.clientInfo, message: message});
     }
 }

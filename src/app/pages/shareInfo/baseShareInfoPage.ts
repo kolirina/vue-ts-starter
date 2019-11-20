@@ -402,7 +402,7 @@ export class BaseShareInfoPage extends UI {
      * Не вызывается при первоначальной загрузке
      */
     @Watch("ticker")
-    private async onRouterChange(): Promise<void> {
+    private async onTickerChange(): Promise<void> {
         await this.loadShareInfo();
     }
 
@@ -464,7 +464,8 @@ export class BaseShareInfoPage extends UI {
     }
 
     private async onShareSelect(share: Share): Promise<void> {
-        if (share && this.share.ticker === share.ticker) {
+        if (this.$router.currentRoute.params.ticker === share?.ticker) {
+            this.share = share;
             return;
         }
         this.share = share;
