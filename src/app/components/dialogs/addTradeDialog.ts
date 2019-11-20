@@ -1046,8 +1046,10 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
      * Возвращает признак применимости авторасчета комиссии для выбранного типа актива и операции
      */
     private get autoFeeApplicable(): boolean {
-        return this.isStockTrade || (this.isAssetTrade && (this.share && ["STOCK", "BOND", "ETF"].includes((this.share as Asset).category))) ||
-            [Operation.REPAYMENT, Operation.COUPON, Operation.AMORTIZATION, Operation.DIVIDEND].includes(this.operation);
+        const allowedOperations = [Operation.BUY, Operation.SELL];
+        return (this.isStockTrade && allowedOperations.includes(this.operation)) ||
+            (this.isAssetTrade && (this.share && ["STOCK", "BOND", "ETF"].includes((this.share as Asset).category))) ||
+            (this.isBondTrade && allowedOperations.includes(this.operation));
     }
 
     private get newCustomAsset(): boolean {
