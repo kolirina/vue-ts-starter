@@ -46,6 +46,6 @@ import {CustomDialog} from "../../platform/dialogs/customDialog";
 export class NewBackendVersionDialog extends CustomDialog<void, void> {
 
     private reload(): void {
-        window.location.replace("/");
+        window.location.reload();
     }
 }
