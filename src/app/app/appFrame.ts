@@ -102,9 +102,6 @@ const MainStore = namespace(StoreType.MAIN);
 })
 export class AppFrame extends UI {
 
-    /** Дата новой версии */
-    private readonly NEW_USERS_DATE = DateUtils.parseDate("2019-05-02");
-
     @Inject
     private localStorage: Storage;
     @Inject
@@ -178,7 +175,7 @@ export class AppFrame extends UI {
 
     @ShowProgress
     async created(): Promise<void> {
-        this.changeSideBarState(this.localStorage.get(StoreKeys.MENU_STATE_KEY, true));
+        this.changeSideBarState(this.localStorage.get(StoreKeys.MENU_STATE_KEY, false));
         await this.checkAuthorized();
         // если удалось восстановить state, значит все уже загружено
         if (this.$store.state[StoreType.MAIN].clientInfo) {
@@ -279,8 +276,8 @@ export class AppFrame extends UI {
     }
 
     private togglePanel(): void {
-        this.changeSideBarState(!this.sideBarOpened);
         this.localStorage.set(StoreKeys.MENU_STATE_KEY, !this.sideBarOpened);
+        this.changeSideBarState(!this.sideBarOpened);
     }
 
     private get settingsSelected(): boolean {
