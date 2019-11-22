@@ -147,8 +147,8 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
 
                             <!-- Количество -->
                             <v-flex v-if="shareAssetType" xs12 sm6>
-                                <ii-number-field label="Количество" v-model="quantity" @keyup="calculateFee" name="quantity" :decimals="0" maxLength="11"
-                                                 v-validate="'required|min_value:1'" :error-messages="errors.collect('quantity')" class="required" browser-autocomplete="false">
+                                <ii-number-field label="Количество" v-model="quantity" @keyup="calculateFee" name="quantity" :decimals="quantityDecimals" maxLength="11"
+                                                 v-validate="quantityValidatationRule" :error-messages="errors.collect('quantity')" class="required" browser-autocomplete="false">
                                 </ii-number-field>
                                 <div class="fs12-opacity mt-1">
                                     <span v-if="showCurrentQuantityLabel">
@@ -1062,6 +1062,14 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     private get createAssetAllowed(): boolean {
         return this.clientInfo && this.clientInfo.tariff.hasPermission(Permission.INVESTMENTS);
+    }
+
+    private get quantityDecimals(): number {
+        return this.isAssetTrade ? 6 : 0;
+    }
+
+    private get quantityValidatationRule(): string {
+        return this.isAssetTrade ? "required|min_value:0.000001" : "required|min_value:1";
     }
 
     /**

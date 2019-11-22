@@ -23,12 +23,12 @@ import {TradeUtils} from "../../utils/tradeUtils";
                                   :custom-sort="customSort" :pagination.sync="pagination" class="data-table" hide-actions must-sort>
                         <template #items="props">
                             <tr class="selectable" @click="props.expanded = !props.expanded">
-                                <td>{{ props.item.operationLabel }}</td>
+                                <td class="text-xs-left">{{ props.item.operationLabel }}</td>
                                 <td class="text-xs-center">{{ props.item.date | date }}</td>
-                                <td class="text-xs-right">{{ props.item.quantity }}</td>
-                                <td class="text-xs-right">{{ getPrice(props.item) }}</td>
-                                <td class="text-xs-right">{{ props.item.fee | amount(true) }}</td>
-                                <td class="text-xs-right">{{ props.item.signedTotal | amount(true) }}</td>
+                                <td class="text-xs-right ii-number-cell">{{ props.item.quantity }}</td>
+                                <td class="text-xs-right ii-number-cell">{{ getPrice(props.item) }}</td>
+                                <td class="text-xs-right ii-number-cell">{{ props.item.fee | amount(true) }}</td>
+                                <td class="text-xs-right ii-number-cell">{{ props.item.signedTotal | amount(true) }}</td>
                             </tr>
                         </template>
 

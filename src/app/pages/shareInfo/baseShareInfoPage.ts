@@ -128,7 +128,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     <td class="info-about-stock__content-title">Последняя цена</td>
                                     <td>
                                         <span class="info-about-stock__content-value" :title="'Время последнего обновления ' + share.lastUpdateTime">
-                                            {{ share.price | amount(false, null, false, false) }}
+                                            {{ share.price | amount(false, null, false, true) }}
                                         </span>
                                         <span class="info-about-stock__content-legend">{{ currencySymbol }}</span>
                                     </td>
