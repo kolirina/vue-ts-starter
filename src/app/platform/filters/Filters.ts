@@ -97,7 +97,7 @@ export class Filters {
             return returnZeros ? "0" : "";
         }
         const amount = new Decimal(value);
-        return Filters.replaceCommaToDot(DF_NO_SCALE.format(amount.toNumber())).replace(".00", "");
+        return Filters.replaceCommaToDot(DF_NO_SCALE.format(amount.toNumber())).replace(new RegExp(".00$", "g"), "");
 
     }
 
