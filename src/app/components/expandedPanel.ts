@@ -45,12 +45,12 @@ export class ExpandedPanel extends UI {
     private value: [];
     @Prop()
     private state: string;
-    @Prop()
+    @Prop({type: String, default: ""})
     private name: string;
-    @Prop()
+    @Prop({type: Boolean, default: false})
     private withMenu: boolean;
     @Prop({type: Boolean, default: false})
     private customMenu: boolean;
-    @Prop()
+    @Prop({type: Boolean, default: false})
     private alwaysOpen: boolean;
 }

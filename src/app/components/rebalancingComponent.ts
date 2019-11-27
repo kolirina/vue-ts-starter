@@ -319,7 +319,7 @@ export class RebalancingComponent extends UI {
             [RebalancingType.BY_AMOUNT]: [],
             [RebalancingType.BY_PERCENT]: []
         };
-        this.portfolio.overview.stockPortfolio.rows.filter(row => row.quantity > 0).forEach(row => {
+        this.portfolio.overview.stockPortfolio.rows.filter(row => Number(row.quantity) > 0).forEach(row => {
             const calculateRow = {
                 amountForLots: "0",
                 amountForPieces: "0",

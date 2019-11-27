@@ -133,7 +133,7 @@ export class BalancesTable extends UI {
                 type: "STOCK",
                 company: row.share.shortname,
                 ticker: row.share.ticker,
-                quantity: row.quantity,
+                quantity: Number(row.quantity),
                 avgBuy: row.avgBuy,
                 currCost: row.currCost
             });

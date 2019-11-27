@@ -613,13 +613,13 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         if (this.share) {
             if (this.isStockTrade || (this.share as Asset).category === "STOCK") {
                 const row = this.portfolio.overview.stockPortfolio.rows.find(item => item.share.ticker === this.share.ticker);
-                this.currentCountShareSearch = row ? row.quantity : null;
+                this.currentCountShareSearch = row ? Number(row.quantity) : null;
             } else if (this.assetType === AssetType.BOND) {
                 const row = this.portfolio.overview.bondPortfolio.rows.find(item => item.bond.ticker === this.share.ticker);
-                this.currentCountShareSearch = row ? row.quantity : null;
+                this.currentCountShareSearch = row ? Number(row.quantity) : null;
             } else if (this.isAssetTrade) {
                 const row = this.portfolio.overview.assetPortfolio.rows.find(item => item.asset.id === this.share.id);
-                this.currentCountShareSearch = row ? row.quantity : null;
+                this.currentCountShareSearch = row ? Number(row.quantity) : null;
             }
         }
     }

@@ -342,7 +342,7 @@ export class BondTable extends UI {
 
     setFilteredRows(): void {
         if (this.filter.hideSoldRows) {
-            this.filteredRows = [...this.rows.filter(row => !CommonUtils.exists(row.bond) || row.quantity !== 0)];
+            this.filteredRows = [...this.rows.filter(row => !CommonUtils.exists(row.bond) || Number(row.quantity) !== 0)];
         } else {
             this.filteredRows = [...this.rows];
         }

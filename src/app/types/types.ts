@@ -163,7 +163,7 @@ export type SharePortfolioRow = SharePortfolioSumRow & {
     /** Используется в качестве ключа в таблицах и все. */
     id: string,
     /** Количество */
-    quantity: number,
+    quantity: string,
     /** Средняя цена покупки */
     avgBuy: string,
     /** Чистая цена по бумаге */
