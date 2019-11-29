@@ -80,6 +80,14 @@ export class ClientService {
     }
 
     /**
+     * Удаляет и отписывать пользователя от рассылок
+     * @returns {Promise<void>}
+     */
+    async deleteProfileAndUnsubscribe(): Promise<void> {
+        await this.http.post(`/user/delete`);
+    }
+
+    /**
      * Сбрасывает кэш информации о пользователе
      */
     resetClientInfo(): void {
