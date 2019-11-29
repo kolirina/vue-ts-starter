@@ -3,7 +3,7 @@ import {Service} from "../platform/decorators/service";
 import {Cache} from "../platform/services/cache";
 import {Http} from "../platform/services/http";
 import {EventChartData, HighStockEventsGroup, LineChartItem} from "../types/charts/types";
-import {CombinedInfoRequest, CurrentMoneyRequest, Overview, Portfolio} from "../types/types";
+import {CombinedInfoRequest, CurrentMoneyRequest, Overview, Portfolio, RebalancingModel} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
 import {IisType, PortfolioAccountType, PortfolioParams, PortfolioParamsResponse} from "./portfolioService";
 
@@ -127,6 +127,14 @@ export class OverviewService {
 
     async saveOrUpdateCurrentMoney(portfolioId: number, currentMoneyRequests: CurrentMoneyRequest[]): Promise<void> {
         await this.http.post(`/portfolios/${portfolioId}/current-money`, currentMoneyRequests);
+    }
+
+    async getPortfolioRebalancing(portfolioId: number): Promise<RebalancingModel> {
+        return this.http.get<RebalancingModel>(`/portfolios/${portfolioId}/rebalancing`);
+    }
+
+    async saveOrUpdatePortfolioRebalancing(portfolioId: number, rebalancingModel: RebalancingModel): Promise<void> {
+        await this.http.post(`/portfolios/${portfolioId}/rebalancing`, rebalancingModel);
     }
 
     /**

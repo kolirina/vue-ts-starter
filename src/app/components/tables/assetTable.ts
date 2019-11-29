@@ -322,7 +322,7 @@ export class AssetTable extends UI {
 
     setFilteredRows(): void {
         if (this.filter.hideSoldRows) {
-            this.filteredRows = [...this.rows.filter(row => !CommonUtils.exists(row.share) || row.quantity !== 0)];
+            this.filteredRows = [...this.rows.filter(row => !CommonUtils.exists(row.share) || Number(row.quantity) !== 0)];
         } else {
             this.filteredRows = [...this.rows];
         }
@@ -396,7 +396,7 @@ export class AssetTable extends UI {
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
             shareId: String(stockRow.share.id),
-            quantity: Math.abs(stockRow.quantity),
+            quantity: Math.abs(Number(stockRow.quantity)),
             operation,
             assetType: AssetType.ASSET
         });
