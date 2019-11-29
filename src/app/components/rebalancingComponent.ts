@@ -18,12 +18,13 @@ import {Decimal} from "decimal.js";
 import {Inject} from "typescript-ioc";
 import {namespace} from "vuex-class";
 import {Component, UI, Watch} from "../app/ui";
+import {OverviewService} from "../services/overviewService";
 import {CalculateRow, RebalancingService, RebalancingType} from "../services/rebalancingService";
 import {TradeService} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
 import {PortfolioAssetType} from "../types/portfolioAssetType";
-import {CurrencyUnit, Pagination, Portfolio, StockPortfolioRow, TableHeader} from "../types/types";
+import {CurrencyUnit, InstrumentRebalancingModel, Pagination, Portfolio, RebalancingModel, TableHeader} from "../types/types";
 import {DateUtils} from "../utils/dateUtils";
 import {SortUtils} from "../utils/sortUtils";
 import {TradeUtils} from "../utils/tradeUtils";
@@ -47,9 +48,13 @@ const MainStore = namespace(StoreType.MAIN);
                 <v-tab :key="1">
                     По доле
                 </v-tab>
+                <v-tab :key="2">
+                    Правила
+                </v-tab>
             </v-tabs>
+
             <v-layout v-if="!emptyRows" wrap align-center row fill-height class="mt-3 ma-auto maxW1100">
-                <v-flex xs12>
+                <v-flex v-if="currentTab !== 2" xs12>
                     <v-layout wrap align-center row fill-height>
                         <v-flex xs12 sm6>
                             <v-layout align-center justify-center row fill-height>
@@ -243,6 +248,61 @@ const MainStore = namespace(StoreType.MAIN);
                                 </v-card-text>
                             </v-card>
                         </v-window-item>
+
+                        <v-window-item :value="2">
+                            <v-card flat>
+                                <v-card-text>
+                                    <v-data-table :headers="headersByRule" :items="currentTypeRows" item-key="id"
+                                                  :custom-sort="customSort" :pagination.sync="pagination" class="data-table" hide-actions must-sort>
+                                        <template #headerCell="props">
+                                        <span>
+                                            <span v-html="props.header.text"></span>
+                                        </span>
+                                        </template>
+                                        <template #items="props">
+                                            <tr class="selectable">
+                                                <td class="text-xs-center">
+                                                     <v-tooltip v-if="isRebalancingNotEmpty(props.item) && !!getRuleText(props.item)" content-class="custom-tooltip-wrap" bottom>
+                                                        <v-icon slot="activator" :color="isRuleApplied(props.item) ? 'green' : 'red'" class="pointer-cursor">
+                                                            {{ getRuleIcon(props.item) }}
+                                                        </v-icon>
+                                                        <span v-html="getRuleText(props.item)"></span>
+                                                    </v-tooltip>
+                                                </td>
+                                                <td class="text-xs-left">
+                                                    <span>{{ props.item.ticker }}</span>
+                                                </td>
+                                                <td class="text-xs-right">
+                                                    <ii-number-field :value="props.item.currentPercent" :decimals="2" maxLength="5" readonly></ii-number-field>
+                                                </td>
+                                                <td class="text-xs-right">
+                                                    <ii-number-field :value="props.item.percCurrShareInWholePortfolio" :decimals="2" maxLength="5" readonly></ii-number-field>
+                                                </td>
+                                                <td class="text-xs-right">
+                                                    <ii-number-field v-model="props.item.minShare" :decimals="2" maxLength="5"></ii-number-field>
+                                                </td>
+                                                <td class="text-xs-right">
+                                                    <ii-number-field v-model="props.item.minShareInWholePortfolio" :decimals="2" maxLength="5"></ii-number-field>
+                                                </td>
+                                                <td class="text-xs-right">
+                                                    <ii-number-field v-model="props.item.maxShare" :decimals="2" maxLength="5"></ii-number-field>
+                                                </td>
+                                                <td class="text-xs-right">
+                                                    <ii-number-field v-model="props.item.maxShareInWholePortfolio" :decimals="2" maxLength="5"></ii-number-field>
+                                                </td>
+                                            </tr>
+                                        </template>
+                                    </v-data-table>
+
+                                    <v-layout class="action-btn mt-4">
+                                        <v-spacer></v-spacer>
+                                        <v-btn @click="saveRules" color="primary" class="btn">
+                                            Сохранить
+                                        </v-btn>
+                                    </v-layout>
+                                </v-card-text>
+                            </v-card>
+                        </v-window-item>
                     </v-window>
                 </v-flex>
             </v-layout>
@@ -259,6 +319,9 @@ export class RebalancingComponent extends UI {
     private rebalancingService: RebalancingService;
     @Inject
     private tradeService: TradeService;
+    @Inject
+    private overviewService: OverviewService;
+    private rebalancingModel: RebalancingModel = null;
 
     @MainStore.Getter
     private portfolio: Portfolio;
@@ -290,6 +353,17 @@ export class RebalancingComponent extends UI {
         {text: "Итоговая ст-ть", align: "right", value: "amountAfterByLots", sortable: true, width: "50"},
     ];
 
+    private headersByRule: TableHeader[] = [
+        {text: "", align: "center", value: "", width: "20", sortable: false},
+        {text: "Тикер", align: "left", value: "ticker", width: "110"},
+        {text: "Текущая<br/> доля", align: "right", value: "currentPercent", width: "120"},
+        {text: "Текущая доля<br/> (В портфеле)", align: "right", value: "percCurrShareInWholePortfolio", width: "120"},
+        {text: "Минимальная<br/> доля", align: "right", value: "minShare", width: "120"},
+        {text: "Минимальная доля<br/> (В портфеле)", align: "right", value: "minShareInWholePortfolio", width: "120"},
+        {text: "Максимальная<br/> доля", align: "right", value: "maxShare", width: "120"},
+        {text: "Максимальная доля<br/> (В портфеле)", align: "right", value: "maxShareInWholePortfolio", width: "120"},
+    ];
+
     private pagination: Pagination = {
         descending: false,
         sortBy: "date",
@@ -300,30 +374,34 @@ export class RebalancingComponent extends UI {
 
     private calculateRows: { [key: string]: CalculateRow[] } = {
         [RebalancingType.BY_AMOUNT]: [],
-        [RebalancingType.BY_PERCENT]: []
+        [RebalancingType.BY_PERCENT]: [],
+        [RebalancingType.RULES]: [],
     };
 
     private currentTab: RebalancingType = RebalancingType.BY_AMOUNT;
 
-    created(): void {
+    async created(): Promise<void> {
+        await this.loadRebalancingModel();
         this.initCalculatedRow();
     }
 
     @Watch("portfolio")
     private async onPortfolioChange(): Promise<void> {
+        await this.loadRebalancingModel();
         this.initCalculatedRow();
     }
 
     private initCalculatedRow(): void {
         this.calculateRows = {
             [RebalancingType.BY_AMOUNT]: [],
-            [RebalancingType.BY_PERCENT]: []
+            [RebalancingType.BY_PERCENT]: [],
+            [RebalancingType.RULES]: []
         };
         this.portfolio.overview.stockPortfolio.rows.filter(row => Number(row.quantity) > 0).forEach(row => {
-            const calculateRow = {
+            const calculateRow: CalculateRow = {
                 amountForLots: "0",
                 amountForPieces: "0",
-                lotSize: Number(row.share.lotsize),
+                lotSize: Number(row.share.lotsize) || 1,
                 price: row.currPrice,
                 currentAmount: new BigMoney(row.currCost).amount.toString(),
                 lots: 0,
@@ -332,15 +410,61 @@ export class RebalancingComponent extends UI {
                 targetPercent: row.percCurrShare,
                 amountAfterByLots: "0",
                 amountAfterByPieces: "0",
-                ticker: row.share.ticker
+                ticker: row.share.ticker,
+                shareId: String(row.share.id),
+                assetType: row.share.shareType,
+                percCurrShareInWholePortfolio: row.percCurrShareInWholePortfolio
             };
+            const rebalanceItem = this.findRebalancingItem(calculateRow);
+            if (rebalanceItem) {
+                calculateRow.targetPercent = rebalanceItem.targetShare;
+                calculateRow.minShare = rebalanceItem.minShare;
+                calculateRow.minShareInWholePortfolio = rebalanceItem.minShareInWholePortfolio;
+                calculateRow.maxShare = rebalanceItem.maxShare;
+                calculateRow.maxShareInWholePortfolio = rebalanceItem.maxShareInWholePortfolio;
+            }
             this.calculateRows[RebalancingType.BY_AMOUNT].push({...calculateRow});
             this.calculateRows[RebalancingType.BY_PERCENT].push({...calculateRow});
+            this.calculateRows[RebalancingType.RULES].push({...calculateRow});
         });
     }
 
-    private calculate(): void {
+    private async loadRebalancingModel(): Promise<void> {
+        this.rebalancingModel = await this.overviewService.getPortfolioRebalancing(this.portfolio.id);
+        if (!this.rebalancingModel) {
+            this.rebalancingModel = {
+                instrumentRebalancingModels: [],
+                maxShare: "",
+                minShare: ""
+            };
+        }
+    }
+
+    private async calculate(): Promise<void> {
         this.rebalancingService.calculateRows(this.currentTypeRows, this.moneyAmount, this.onlyBuyTrades, this.currentTab);
+        await this.saveRebalancing(this.currentTypeRows);
+    }
+
+    private async saveRules(): Promise<void> {
+        await this.saveRebalancing(this.currentTypeRows);
+        this.$snotify.info("Правила успешно сохранены");
+    }
+
+    private async saveRebalancing(calculateRow: CalculateRow[]): Promise<void> {
+        this.rebalancingModel.instrumentRebalancingModels = [];
+        calculateRow.forEach(row => {
+            this.rebalancingModel.instrumentRebalancingModels.push({
+                shareId: row.shareId,
+                assetType: row.assetType,
+                targetShare: row.targetPercent,
+                minShare: row.minShare,
+                minShareInWholePortfolio: row.minShareInWholePortfolio,
+                maxShare: row.maxShare,
+                maxShareInWholePortfolio: row.maxShareInWholePortfolio
+            });
+        });
+        await this.overviewService.saveOrUpdatePortfolioRebalancing(this.portfolio.id, this.rebalancingModel);
+        await this.loadRebalancingModel();
     }
 
     private async onCurrencyChange(): Promise<void> {
@@ -349,9 +473,9 @@ export class RebalancingComponent extends UI {
         }
     }
 
-    private setFreeBalanceAndCalculate(): void {
+    private async setFreeBalanceAndCalculate(): Promise<void> {
         this.moneyAmount = new BigMoney(this.freeBalance).amount.toString();
-        this.calculate();
+        await this.calculate();
     }
 
     private customSort(items: CalculateRow[], index: string, isDesc: boolean): CalculateRow[] {
@@ -360,6 +484,60 @@ export class RebalancingComponent extends UI {
 
     private currencyForPrice(row: CalculateRow): string {
         return TradeUtils.currencySymbolByAmount(row.price).toLowerCase();
+    }
+
+    private findRebalancingItem(row: CalculateRow): InstrumentRebalancingModel {
+        return this.rebalancingModel?.instrumentRebalancingModels?.find(item => item.shareId === row.shareId && item.assetType === row.assetType);
+    }
+
+    private isRebalancingNotEmpty(row: CalculateRow): boolean {
+        return !!row.maxShare || !!row.minShare || !!row.minShareInWholePortfolio || !!row.maxShareInWholePortfolio;
+    }
+
+    private isRuleApplied(row: CalculateRow): boolean {
+        return Number(row.currentPercent) > Number(row.minShare) &&
+            Number(row.currentPercent) < Number(row.maxShare) &&
+            Number(row.percCurrShareInWholePortfolio) > Number(row.minShareInWholePortfolio) &&
+            Number(row.percCurrShareInWholePortfolio) < Number(row.maxShareInWholePortfolio);
+    }
+
+    private getRuleIcon(row: CalculateRow): string {
+        return this.isRuleApplied(row) ? "fas fa-check" : "fas fa-times";
+    }
+
+    private getRuleText(row: CalculateRow): string {
+        if (this.isRuleApplied(row)) {
+            return "Все правила по бумаге выполняются";
+        } else {
+            const inShareType = row.assetType;
+            const result: string[] = [];
+            if (Number(row.minShare) !== 0 && Number(row.currentPercent) < Number(row.minShare)) {
+                result.push(`Текущая доля <b>${row.ticker}</b> в ${this.getAssetName(row.assetType)} меньше допустимой`);
+            }
+            if (Number(row.maxShare) !== 0 && Number(row.currentPercent) > Number(row.maxShare)) {
+                result.push(`Текущая доля <b>${row.ticker}</b> в ${this.getAssetName(row.assetType)} больше допустимой`);
+            }
+            if (Number(row.minShareInWholePortfolio) !== 0 && Number(row.percCurrShareInWholePortfolio) < Number(row.minShareInWholePortfolio)) {
+                result.push(`Текущая доля <b>${row.ticker}</b> в портфеле меньше допустимой`);
+            }
+            if (Number(row.maxShareInWholePortfolio) !== 0 && Number(row.percCurrShareInWholePortfolio) > Number(row.maxShareInWholePortfolio)) {
+                result.push(`Текущая доля <b>${row.ticker}</b> в портфеле больше допустимой`);
+            }
+            return result.join("<br/>");
+        }
+    }
+
+    private getAssetName(assetType: string): string {
+        switch (assetType) {
+            case AssetType.STOCK.enumName:
+                return "Акциях";
+            case AssetType.BOND.enumName:
+                return "Облигациях";
+            case AssetType.ASSET.enumName:
+                return "Активах";
+            default:
+                return "";
+        }
     }
 
     private get totalAmount(): string {
@@ -412,7 +590,3 @@ export class RebalancingComponent extends UI {
         return this.currentTab === RebalancingType.BY_PERCENT ? "" : "required";
     }
 }
-
-export type RebalancingDialogData = {
-    stockRows: StockPortfolioRow[],
-};

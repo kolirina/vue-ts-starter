@@ -19,6 +19,7 @@ import {EditShareNoteDialogData} from "../components/dialogs/editShareNoteDialog
 import {Service} from "../platform/decorators/service";
 import {Enum, EnumType, IStaticEnum} from "../platform/enum";
 import {Http} from "../platform/services/http";
+import {BigMoney} from "../types/bigMoney";
 import {PortfolioBackup} from "../types/types";
 
 @Service("PortfolioService")
@@ -179,6 +180,15 @@ export class PortfolioService {
      */
     async getMoneyResiduals(portfolioId: number): Promise<MoneyResiduals> {
         return this.http.get<MoneyResiduals>(`/${this.ENDPOINT_BASE}/money-residuals/${portfolioId}`);
+    }
+
+    /**
+     * Отправляет запрос на получение суммы пополнений портфеля в рублях в текущем году
+     * @param portfolioId идентификатор портфеля
+     */
+    async totalDepositInCurrentYear(portfolioId: number): Promise<BigMoney> {
+        const total = await this.http.get<string>(`/${this.ENDPOINT_BASE}/total-deposit-current-year/${portfolioId}`);
+        return total ? new BigMoney(total) : null;
     }
 }
 

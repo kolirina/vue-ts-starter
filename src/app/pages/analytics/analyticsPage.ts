@@ -1,3 +1,4 @@
+import Decimal from "decimal.js";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
@@ -9,6 +10,8 @@ import {Storage} from "../../platform/services/storage";
 import {AdviceService} from "../../services/adviceService";
 import {AnalyticsService} from "../../services/analyticsService";
 import {ClientInfo, ClientService} from "../../services/clientService";
+import {PortfolioAccountType, PortfolioService} from "../../services/portfolioService";
+import {BigMoney} from "../../types/bigMoney";
 import {SimpleChartData, YieldCompareData} from "../../types/charts/types";
 import {Portfolio} from "../../types/types";
 import {ChartUtils} from "../../utils/chartUtils";
@@ -59,7 +62,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         <v-icon v-on="on" class="ml-2">far fa-question-circle</v-icon>
                                     </template>
                                     <span>
-                                        Информация по ставкам депозитов официальная с ЦБР.
+                                        Информация по ставкам депозитов официальная с ЦБ РФ.
                                     </span>
                                 </v-tooltip>
                             </v-layout>
@@ -69,7 +72,45 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-layout>
             </expanded-panel>
 
-            <rebalancing-component v-show="false"></rebalancing-component>
+            <rebalancing-component v-show="true"></rebalancing-component>
+
+            <expanded-panel v-if="showInfoPanel" :value="$uistate.analyticsInfoPanel" :withMenu="false" :state="$uistate.ANALYTICS_INFO_PANEL" class="mt-3">
+                <template #header>Информация</template>
+
+                <v-layout wrap class="adviser-diagram-section mt-3">
+                    <v-flex xs12 sm12 md12 lg6 class="pr-2 left-section">
+                        <v-layout wrap align-center justify-center row fill-height>
+                            <v-flex class="pa-4">
+                                <v-progress-circular :rotate="-90" :size="100" :width="15" :value="currentYearPercent" color="primary">
+                                    <span>{{ currentYearPercent + '%'}}</span>
+                                </v-progress-circular>
+
+                                <span class="ml-2">
+                                    <span>Внесения на ИИС</span>
+                                    <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                                        <sup class="custom-tooltip" slot="activator">
+                                            <v-icon>fas fa-info-circle</v-icon>
+                                        </sup>
+                                        <span>
+                                            <div>Сумма внесенных на ИИС денежных средств с начала года:
+                                                {{ totalDepositInCurrentYear.amount | number }} ₽</div>
+                                            <div>Остаток для внесения на ИИС: {{ getCurrentYearRemainder | number }} ₽</div>
+                                        </span>
+                                    </v-tooltip>
+                                </span>
+                            </v-flex>
+                        </v-layout>
+                    </v-flex>
+
+                    <v-flex xs12 sm12 md12 lg6 class="pl-2 right-section">
+                        <v-layout wrap align-center justify-center row fill-height>
+                            <v-flex style="padding: 62px">
+                                <span>Здесь будет что-то интересное</span>
+                            </v-flex>
+                        </v-layout>
+                    </v-flex>
+                </v-layout>
+            </expanded-panel>
         </v-container>
     `,
     components: {ChooseRisk, Preloader, AnalysisResult, EmptyAdvice, AverageAnnualYieldChart, SimpleLineChart, RebalancingComponent}
@@ -90,6 +131,8 @@ export class AnalyticsPage extends UI {
     private clientService: ClientService;
     @Inject
     private analyticsService: AnalyticsService;
+    @Inject
+    private portfolioService: PortfolioService;
 
     private yieldCompareData: YieldCompareData = null;
 
@@ -97,13 +140,17 @@ export class AnalyticsPage extends UI {
 
     private depositRatesData: SimpleChartData = null;
 
+    private totalDepositInCurrentYear: BigMoney = null;
+
     async created(): Promise<void> {
         await this.loadDiagramData();
+        await this.loadTotalDepositInCurrentYear();
     }
 
     @Watch("portfolio")
     private async onPortfolioChange(): Promise<void> {
         await this.loadDiagramData();
+        await this.loadTotalDepositInCurrentYear();
     }
 
     private async loadDiagramData(): Promise<void> {
@@ -114,5 +161,27 @@ export class AnalyticsPage extends UI {
 
     private get hasTrades(): boolean {
         return this.portfolio.overview.totalTradesCount > 0;
+    }
+
+    private get showInfoPanel(): boolean {
+        return this.portfolio.portfolioParams.accountType === PortfolioAccountType.IIS && this.totalDepositInCurrentYear?.amount.isPositive();
+    }
+
+    private get currentYearPercent(): number {
+        if (!this.totalDepositInCurrentYear) {
+            return null;
+        }
+        return this.totalDepositInCurrentYear.amount.div(new Decimal("10000")).toDP(2, Decimal.ROUND_HALF_UP).toNumber();
+    }
+
+    private get getCurrentYearRemainder(): number {
+        if (!this.totalDepositInCurrentYear) {
+            return null;
+        }
+        return new Decimal("1000000").minus(this.totalDepositInCurrentYear.amount).toDP(2).toNumber();
+    }
+
+    private async loadTotalDepositInCurrentYear(): Promise<void> {
+        this.totalDepositInCurrentYear = await this.portfolioService.totalDepositInCurrentYear(this.portfolio.id);
     }
 }

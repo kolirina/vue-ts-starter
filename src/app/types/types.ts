@@ -7,9 +7,11 @@ export type _portfolioRow = {
     profit: string,
     /** Процентная доля строки в от общего */
     percCurrShare: string,
+    /** Процентная доля строки в от общей стоимости всех активов, входящих в портфель */
+    percCurrShareInWholePortfolio: string,
     /** Текущая стоимость */
     currCost: string,
-
+    /** Тип актива */
     assetType: string
 };
 
@@ -664,6 +666,38 @@ export enum BlockType {
     BOND_PIE = "bondPie",
     STOCK_PIE = "stockPie",
     SECTORS_PIE = "sectorsPie",
+}
+
+/** Информация по ребалансировке */
+export interface InstrumentRebalancingModel {
+    /** Целевая доля внутри актива (Акции, Облиации, Прочие Активы) */
+    shareId: string;
+    /** Целевая доля внутри актива (Акции, Облиации, Прочие Активы) */
+    targetShare: string;
+    /** Минимальная доля внутри актива */
+    minShare?: string;
+    /** Максимальная доля внутри актива */
+    maxShare?: string;
+    /** Целевая доля во всем портфеле */
+    targetShareInWholePortfolio?: string;
+    /** Минимальная доля во всем портфеле */
+    minShareInWholePortfolio?: string;
+    /** Максимальная доля во всем портфеле */
+    maxShareInWholePortfolio?: string;
+    /** Тип актива */
+    assetType: string;
+}
+
+/** Информация по ребалансировке */
+export interface RebalancingModel {
+    /** Идентификатор модели */
+    id?: number;
+    /** Целевая доля внутри актива (Акции, Облиации, Прочие Активы) */
+    instrumentRebalancingModels: InstrumentRebalancingModel[];
+    /** Минимальная доля любого инструмента внутри портфеля */
+    minShare: string;
+    /** Максимальная доля любого инструмента внутри портфеля */
+    maxShare: string;
 }
 
 /** Перечислению доступных валют */

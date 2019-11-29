@@ -27,6 +27,7 @@ export class UiStateHelper {
     static readonly ADVISER_ANALYTICS_PANEL = "adviser_analytics_panel";
     static readonly ADVISER_DIAGRAM_PANEL = "adviser_diagram_panel";
     static readonly REBALANCING_PANEL = "rebalancing_panel";
+    static readonly ANALYTICS_INFO_PANEL = "analytics_info_panel";
 
     static set stocksTablePanel(value: number[]) {
         localStorage.set(UiStateHelper.STOCKS, value);
@@ -98,6 +99,14 @@ export class UiStateHelper {
 
     static get rebalancingPanel(): number[] {
         return [localStorage.get(UiStateHelper.REBALANCING_PANEL, 0)];
+    }
+
+    static set analyticsInfoPanel(value: number[]) {
+        localStorage.set(UiStateHelper.ANALYTICS_INFO_PANEL, value);
+    }
+
+    static get analyticsInfoPanel(): number[] {
+        return [localStorage.get(UiStateHelper.ANALYTICS_INFO_PANEL, 0)];
     }
 
     static set sumDivsTablePanel(value: number[]) {

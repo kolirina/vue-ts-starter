@@ -111,6 +111,10 @@ export class RebalancingService {
 export interface CalculateRow {
     /** Тикер */
     ticker: string;
+    /** Идентификатор бумаги */
+    shareId: string;
+    /** Тип актива */
+    assetType: string;
     /** Текущая доля */
     currentPercent: string;
     /** Целевая доля */
@@ -133,9 +137,22 @@ export interface CalculateRow {
     amountAfterByLots: string;
     /** Стоимость актива после */
     amountAfterByPieces: string;
+    /** Процентная доля строки в от общей стоимости всех активов, входящих в портфель */
+    percCurrShareInWholePortfolio: string;
+    /** Минимальная доля внутри актива */
+    minShare?: string;
+    /** Максимальная доля внутри актива */
+    maxShare?: string;
+    /** Целевая доля во всем портфеле */
+    targetShareInWholePortfolio?: string;
+    /** Минимальная доля во всем портфеле */
+    minShareInWholePortfolio?: string;
+    /** Максимальная доля во всем портфеле */
+    maxShareInWholePortfolio?: string;
 }
 
 export enum RebalancingType {
     BY_AMOUNT,
-    BY_PERCENT
+    BY_PERCENT,
+    RULES
 }
