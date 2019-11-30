@@ -1,8 +1,7 @@
 import {Inject} from "typescript-ioc";
-import Component from "vue-class-component";
-import {Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
-import {UI} from "../../app/ui";
+import {Component, UI} from "../../app/ui";
+import {PartnerProgramRulesDialog} from "../../components/dialogs/partnerProgramRulesDialog";
 import {ExpandedPanel} from "../../components/expandedPanel";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {ClientInfo, ClientService} from "../../services/clientService";
@@ -59,6 +58,9 @@ const MainStore = namespace(StoreType.MAIN);
                                         каждого приглашенного Вами пользователя навсегда.<br>
                                         Вывод от 3000 <span class="rewards-currency rub"></span>, через службу поддержки
                                         <a href="mailto:web@intelinvest.ru" target="_blank" class="decorationNone">web@intelinvest.ru</a>.
+                                    </div>
+                                    <div v-if="clientInfo.user.referralAwardType === 'PAYMENT'" class="mt-3">
+                                        <a @click.stop="openPartnerProgramRulesDialog">Правила Партнерской программы</a>
                                     </div>
                                 </div>
                             </div>
@@ -122,6 +124,10 @@ export class PromoCodesPage extends UI {
     @ShowProgress
     private async onReferralAwardTypeChange(): Promise<void> {
         await this.promoCodeService.changeReferralAwardType(this.clientInfo.user.referralAwardType);
+    }
+
+    private async openPartnerProgramRulesDialog(): Promise<void> {
+        await new PartnerProgramRulesDialog().show();
     }
 
     private copyPromoCode(): void {
