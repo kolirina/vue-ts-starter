@@ -124,7 +124,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                 </v-flex>
                                 <!-- Влюта -->
                                 <v-flex xs12 sm3>
-                                    <v-select :items="currencyList" v-model="assetCurrency" label="Валюта актива"></v-select>
+                                    <v-select :items="currencyList" v-model="assetCurrency" @change="onNewAssetCurrencyChange" label="Валюта актива"></v-select>
                                 </v-flex>
                                 <!-- Дополнительная информация -->
                                 <v-flex xs12 sm12>
@@ -509,6 +509,10 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         }
         await this.fillFields();
         this.calculateFee();
+    }
+
+    private async onNewAssetCurrencyChange(): Promise<void> {
+        this.currency = this.assetCurrency;
     }
 
     private get purchasedCurrencyTitle(): string {
