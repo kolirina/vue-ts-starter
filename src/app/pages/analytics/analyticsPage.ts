@@ -72,9 +72,9 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-layout>
             </expanded-panel>
 
-            <rebalancing-component v-show="true"></rebalancing-component>
+            <rebalancing-component v-show="false"></rebalancing-component>
 
-            <expanded-panel v-if="showInfoPanel" :value="$uistate.analyticsInfoPanel" :withMenu="false" :state="$uistate.ANALYTICS_INFO_PANEL" class="mt-3">
+            <expanded-panel v-if="showInfoPanel && false" :value="$uistate.analyticsInfoPanel" :withMenu="false" :state="$uistate.ANALYTICS_INFO_PANEL" class="mt-3">
                 <template #header>Информация</template>
 
                 <v-layout wrap class="adviser-diagram-section mt-3">
