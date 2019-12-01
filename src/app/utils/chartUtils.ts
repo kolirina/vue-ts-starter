@@ -55,7 +55,7 @@ export class ChartUtils {
         const currentTotalCost = overview.stockPortfolio.rows.map(row => new BigMoney(row.currCost).amount.abs())
             .reduce((result: Decimal, current: Decimal) => result.add(current), new Decimal("0"));
         const rowsBySector: { [sectorName: string]: StockPortfolioRow[] } = {};
-        overview.stockPortfolio.rows.filter(row => row.quantity !== 0).forEach(row => {
+        overview.stockPortfolio.rows.filter(row => Number(row.quantity) !== 0).forEach(row => {
             const sector = row.share.sector;
             const sectorName = sector.root ? sector.name : sector.parent.name;
             if (rowsBySector[sectorName] === undefined) {

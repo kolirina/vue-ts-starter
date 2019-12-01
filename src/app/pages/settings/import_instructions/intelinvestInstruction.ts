@@ -18,8 +18,13 @@ import {UI} from "../../../app/ui";
                 <div class="intel-invest-instruction__values-item">
                     <div class="intel-invest-instruction__values-item__title">STOCKBUY / STOCKSELL</div>
                     <div class="intel-invest-instruction__values-item__content">
-                        Покупка/Продажа Акции. Поля: тикер, дата, количество, цена, комиссия, заметка, валюта, [id
-                        связанной сделки]
+                        Покупка/Продажа Акции. Поля: тикер, дата, количество, цена, комиссия, заметка, валюта, [id связанной сделки]
+                    </div>
+                </div>
+                <div class="intel-invest-instruction__values-item">
+                    <div class="intel-invest-instruction__values-item__title">ASSET_BUY / ASSET_SELL</div>
+                    <div class="intel-invest-instruction__values-item__content">
+                        Покупка/Продажа Произвольного актива. Поля: тикер, дата, количество, цена, комиссия, заметка, валюта, [id связанной сделки]
                     </div>
                 </div>
                 <div class="intel-invest-instruction__values-item">
@@ -46,6 +51,12 @@ import {UI} from "../../../app/ui";
                     <div class="intel-invest-instruction__values-item__title">DIVIDEND</div>
                     <div class="intel-invest-instruction__values-item__content">
                         Выплата Дивиденда. Поля: тикер, дата, количество, сумма выплаты, заметка, валюта, [id связанной сделки]
+                    </div>
+                </div>
+                <div class="intel-invest-instruction__values-item">
+                    <div class="intel-invest-instruction__values-item__title">ASSET_DIVIDEND</div>
+                    <div class="intel-invest-instruction__values-item__content">
+                        Выплата произвольного дохода по активу. Поля: тикер, дата, количество, сумма выплаты, заметка, валюта, [id связанной сделки]
                     </div>
                 </div>
                 <div class="intel-invest-instruction__values-item">
@@ -94,7 +105,7 @@ import {UI} from "../../../app/ui";
             <div class="import-format-requirements-ul">
                 <ul>
                     <li>В заметке, по возможности, не используйте спецсимволы</li>
-                    <li>Проверьте кодировку файла (csv), она должна быть UTF8</li>
+                    <li>Проверьте кодировку файла (csv), она должна быть UTF-8</li>
                     <li>НКД в отчете должен указываться на одну бумагу</li>
                     <li>Количество бумаг должно быть указано в штуках (не в лотах)</li>
                 </ul>

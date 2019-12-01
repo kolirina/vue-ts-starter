@@ -124,7 +124,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                 </v-flex>
                                 <!-- Влюта -->
                                 <v-flex xs12 sm3>
-                                    <v-select :items="currencyList" v-model="assetCurrency" label="Валюта актива"></v-select>
+                                    <v-select :items="currencyList" v-model="assetCurrency" @change="onNewAssetCurrencyChange" label="Валюта актива"></v-select>
                                 </v-flex>
                                 <!-- Дополнительная информация -->
                                 <v-flex xs12 sm12>
@@ -147,8 +147,8 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
 
                             <!-- Количество -->
                             <v-flex v-if="shareAssetType" xs12 sm6>
-                                <ii-number-field label="Количество" v-model="quantity" @keyup="calculateFee" name="quantity" :decimals="0" maxLength="11"
-                                                 v-validate="'required|min_value:1'" :error-messages="errors.collect('quantity')" class="required" browser-autocomplete="false">
+                                <ii-number-field label="Количество" v-model="quantity" @keyup="calculateFee" name="quantity" :decimals="quantityDecimals" maxLength="11"
+                                                 v-validate="quantityValidatationRule" :error-messages="errors.collect('quantity')" class="required" browser-autocomplete="false">
                                 </ii-number-field>
                                 <div class="fs12-opacity mt-1">
                                     <span v-if="showCurrentQuantityLabel">
@@ -511,6 +511,10 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         this.calculateFee();
     }
 
+    private async onNewAssetCurrencyChange(): Promise<void> {
+        this.currency = this.assetCurrency;
+    }
+
     private get purchasedCurrencyTitle(): string {
         return this.isCurrencyBuy ? "Покупаемая валюта" : "Продаваемая валюта";
     }
@@ -613,13 +617,13 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         if (this.share) {
             if (this.isStockTrade || (this.share as Asset).category === "STOCK") {
                 const row = this.portfolio.overview.stockPortfolio.rows.find(item => item.share.ticker === this.share.ticker);
-                this.currentCountShareSearch = row ? row.quantity : null;
+                this.currentCountShareSearch = row ? Number(row.quantity) : null;
             } else if (this.assetType === AssetType.BOND) {
                 const row = this.portfolio.overview.bondPortfolio.rows.find(item => item.bond.ticker === this.share.ticker);
-                this.currentCountShareSearch = row ? row.quantity : null;
+                this.currentCountShareSearch = row ? Number(row.quantity) : null;
             } else if (this.isAssetTrade) {
                 const row = this.portfolio.overview.assetPortfolio.rows.find(item => item.asset.id === this.share.id);
-                this.currentCountShareSearch = row ? row.quantity : null;
+                this.currentCountShareSearch = row ? Number(row.quantity) : null;
             }
         }
     }
@@ -1062,6 +1066,14 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     private get createAssetAllowed(): boolean {
         return this.clientInfo && this.clientInfo.tariff.hasPermission(Permission.INVESTMENTS);
+    }
+
+    private get quantityDecimals(): number {
+        return this.isAssetTrade ? 6 : 0;
+    }
+
+    private get quantityValidatationRule(): string {
+        return this.isAssetTrade ? "required|min_value:0.000001" : "required|min_value:1";
     }
 
     /**

@@ -99,6 +99,19 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-layout>
                     </v-card>
                 </v-layout>
+                <expanded-panel :value="[0]" class="promo-codes__statistics mt-3">
+                    <template #header>Удаление профиля</template>
+                    <v-card flat>
+                        <v-layout wrap>
+                            <div class="fs13 maxW778 mr-4 mt-3">
+                                Внимание! После удаления профиля, вы больше не сможете войти в личный кабинет.
+                            </div>
+                            <v-btn @click.stop="deleteProfileAndUnsubscribe" class="mt-3" color="#EBEFF7">
+                                Удалить профиль
+                            </v-btn>
+                        </v-layout>
+                    </v-card>
+                </expanded-panel>
             </v-layout>
         </v-container>
     `
@@ -214,7 +227,7 @@ export class ProfilePage extends UI {
      */
     private async cancelOrderSchedule(): Promise<void> {
         const result = await new ConfirmDialog().show("Вы уверены, что хотите отменить подписку? Автоматическое продление будет отключено. " +
-            "После окончания подписки некоторые услуги могут стать недоступны.");
+            " После окончания подписки некоторые услуги могут стать недоступны.");
         if (result !== BtnReturn.YES) {
             return;
         }
@@ -229,6 +242,24 @@ export class ProfilePage extends UI {
     @ShowProgress
     private async cancelOrderScheduleConfirmed(request: CancelOrderRequest): Promise<void> {
         await this.tariffService.cancelOrderSchedule(request);
+    }
+
+    /**
+     * Удаляет профиль
+     */
+    private async deleteProfileAndUnsubscribe(): Promise<void> {
+        const result = await new ConfirmDialog().show("Вы уверены, что хотите удалить профиль? " +
+            "Личный кабинет Intelinvest будет недоступен.");
+        if (result !== BtnReturn.YES) {
+            return;
+        }
+        await this.deleteProfileAndUnsubscribeConfirmed();
+        this.$router.push("logout");
+    }
+
+    @ShowProgress
+    private async deleteProfileAndUnsubscribeConfirmed(): Promise<void> {
+        await this.clientService.deleteProfileAndUnsubscribe();
     }
 
     /**

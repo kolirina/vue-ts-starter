@@ -48,15 +48,15 @@ export class PortfolioUtils {
             result[PortfolioBlockType.ASSETS_CHART] = count++;
         }
         // есть акции, не проданные в ноль, отображаем диаграмму круговую и сектора
-        if (overview.stockPortfolio.rows.some(row => row.quantity !== 0)) {
+        if (overview.stockPortfolio.rows.some(row => Number(row.quantity) !== 0)) {
             result[PortfolioBlockType.STOCK_CHART] = count++;
         }
         // есть акции, не проданные в ноль, отображаем диаграмму круговую
-        if (overview.bondPortfolio.rows.some(row => row.quantity !== 0)) {
+        if (overview.bondPortfolio.rows.some(row => Number(row.quantity) !== 0)) {
             result[PortfolioBlockType.BOND_CHART] = count++;
         }
         // есть акции, не проданные в ноль, отображаем диаграмму круговую и сектора
-        if (overview.stockPortfolio.rows.some(row => row.quantity !== 0)) {
+        if (overview.stockPortfolio.rows.some(row => Number(row.quantity) !== 0)) {
             result[PortfolioBlockType.SECTORS_CHART] = count++;
         }
         // если ни одного блока не добавлено, значит портфель пустой
@@ -76,9 +76,9 @@ export class PortfolioUtils {
                 return overview.stockPortfolio.rows.length > 0;
             case PortfolioBlockType.STOCK_CHART:
             case PortfolioBlockType.SECTORS_CHART:
-                return overview.stockPortfolio.rows.some(row => row.quantity !== 0);
+                return overview.stockPortfolio.rows.some(row => Number(row.quantity) !== 0);
             case PortfolioBlockType.BOND_CHART:
-                return overview.bondPortfolio.rows.some(row => row.quantity !== 0);
+                return overview.bondPortfolio.rows.some(row => Number(row.quantity) !== 0);
             case PortfolioBlockType.AGGREGATE_TABLE:
             case PortfolioBlockType.DASHBOARD:
             case PortfolioBlockType.ASSETS_CHART:

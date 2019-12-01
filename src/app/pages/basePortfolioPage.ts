@@ -341,9 +341,9 @@ export class BasePortfolioPage extends UI {
                 return this.overview.stockPortfolio.rows.length > 0;
             case BlockType.STOCK_PIE:
             case BlockType.SECTORS_PIE:
-                return this.overview.stockPortfolio.rows.some(row => row.quantity !== 0);
+                return this.overview.stockPortfolio.rows.some(row => Number(row.quantity) !== 0);
             case BlockType.BOND_PIE:
-                return this.overview.bondPortfolio.rows.some(row => row.quantity !== 0);
+                return this.overview.bondPortfolio.rows.some(row => Number(row.quantity) !== 0);
             case BlockType.AGGREGATE:
                 return this.overview.totalTradesCount > 0;
             case BlockType.ASSETS:
@@ -433,17 +433,17 @@ export class BasePortfolioPage extends UI {
     }
 
     private get stockRowsCountLabel(): string {
-        const count = this.overview.stockPortfolio.rows.filter(row => row.quantity !== 0).length;
+        const count = this.overview.stockPortfolio.rows.filter(row => Number(row.quantity) !== 0).length;
         return `${count} ${Filters.declension(count, "акция", "акции", "акций")}`;
     }
 
     private get assetRowsCountLabel(): string {
-        const count = this.overview.assetPortfolio.rows.filter(row => row.quantity !== 0).length;
+        const count = this.overview.assetPortfolio.rows.filter(row => Number(row.quantity) !== 0).length;
         return `${count} ${Filters.declension(count, "актив", "актива", "активов")}`;
     }
 
     private get bondRowsCountLabel(): string {
-        const count = this.overview.bondPortfolio.rows.filter(row => row.quantity !== 0).length;
+        const count = this.overview.bondPortfolio.rows.filter(row => Number(row.quantity) !== 0).length;
         return `${count} ${Filters.declension(count, "облигация", "облигации", "облигаций")}`;
     }
 }
