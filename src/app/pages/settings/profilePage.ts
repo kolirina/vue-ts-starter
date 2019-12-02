@@ -6,6 +6,7 @@ import {UI} from "../../app/ui";
 import {ChangePasswordDialog} from "../../components/dialogs/changePasswordDialog";
 import {ConfirmDialog} from "../../components/dialogs/confirmDialog";
 import {UnsubscribedAnswerDialog} from "../../components/dialogs/UnsubscribedAnswerDialog";
+import {ThemeSwitcher} from "../../components/themeSwitcher";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {ClientInfo, ClientService} from "../../services/clientService";
@@ -99,6 +100,18 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-layout>
                     </v-card>
                 </v-layout>
+                <v-layout wrap align-center class="mt-3">
+                    <v-card flat>
+                        <span class="profile__subtitle">
+                            Цветовая тема интерфейса
+                        </span>
+                        <v-layout wrap>
+                            <div class="fs13 maxW778 mr-4 mt-3">
+                                <theme-switcher></theme-switcher>
+                            </div>
+                        </v-layout>
+                    </v-card>
+                </v-layout>
                 <expanded-panel :value="[0]" class="promo-codes__statistics mt-3">
                     <template #header>Удаление профиля</template>
                     <v-card flat>
@@ -114,7 +127,8 @@ const MainStore = namespace(StoreType.MAIN);
                 </expanded-panel>
             </v-layout>
         </v-container>
-    `
+    `,
+    components: {ThemeSwitcher}
 })
 export class ProfilePage extends UI {
 

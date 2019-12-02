@@ -26,7 +26,6 @@ export type NavBarItem = {
     /** routing, для корневых элементов может не заполнен */
     action?: string,
     path?: string,
-    icon?: string,
     active?: boolean,
     subMenu?: NavBarItem[],
     params?: { [key: string]: string }

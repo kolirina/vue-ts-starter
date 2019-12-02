@@ -1,5 +1,4 @@
 import {Component, UI} from "../../app/ui";
-import {ThemeSwitcher} from "../themeSwitcher";
 
 @Component({
     // language=Vue
@@ -17,12 +16,13 @@ import {ThemeSwitcher} from "../themeSwitcher";
                     </v-btn>
                 </div>
                 <div class="mt-1 mb-3">
-                    <theme-switcher></theme-switcher>
+                    <v-btn flat icon dark :to="{name: 'logout'}" title="Выход" active-class="active-btn-link" class="link-icon-btn">
+                        <span class="logout-icon"></span>
+                    </v-btn>
                 </div>
             </v-layout>
         </v-layout>
-    `,
-    components: {ThemeSwitcher}
+    `
 })
 export class MenuBottomNavigation extends UI {
 }
