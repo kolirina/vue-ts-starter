@@ -55,7 +55,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 <v-icon dark>keyboard_arrow_left</v-icon>
                             </v-btn>
                         </div>
-                        <navigation-list :mainSection="mainSection" :side-bar-opened="sideBarOpened" :settingsSelected="settingsSelected"
+                        <navigation-list :mainSection="mainSection" :side-bar-opened="sideBarOpened"
                                          @openDialog="openDialog" :number-of-events="eventsCount"></navigation-list>
                     </div>
                     <menu-bottom-navigation></menu-bottom-navigation>
@@ -63,7 +63,7 @@ const MainStore = namespace(StoreType.MAIN);
                 <v-content>
                     <div class="mobile-wrapper-menu">
                         <menu-header :side-bar-opened="sideBarOpened" :isMobile="true" :portfolio="portfolio" :clientInfo="clientInfo" @togglePanel="togglePanel"></menu-header>
-                        <navigation-list :mainSection="mainSection" :sideBarOpened="sideBarOpened" :settingsSelected="settingsSelected"
+                        <navigation-list :mainSection="mainSection" :sideBarOpened="sideBarOpened"
                                          @openDialog="openDialog" :class="sideBarOpened ? 'part-mobile-menu' : ''"></navigation-list>
                         <menu-bottom-navigation :class="sideBarOpened ? 'part-mobile-menu' : ''"></menu-bottom-navigation>
                     </div>
@@ -150,27 +150,34 @@ export class AppFrame extends UI {
     private loading = false;
 
     private mainSection: NavBarItem[] = [
-        {title: "Портфель", action: "portfolio", icon: "fas fa-briefcase"},
+        {title: "Портфель", action: "portfolio"},
         {title: "Аналитика", action: "adviser"},
-        {title: "Сделки", action: "trades", icon: "fas fa-list-alt"},
-        {title: "События", action: "events", icon: "far fa-calendar-check"},
-        {title: "Дивиденды", action: "dividends", icon: "far fa-calendar-plus"},
-        {title: "Составной портфель", action: "combined-portfolio", icon: "fas fa-object-group"},
-        {title: "Котировки", path: "/quotes", icon: "fas fa-chart-area"},
-        {title: "Информация", path: "/share-info", icon: "fas fa-info"},
+        {title: "Сделки", action: "trades"},
+        {title: "События", action: "events"},
         {
-            title: "Настройки", icon: "fas fa-cog", action: "settings", subMenu: [
-                {title: "Управление портфелями", action: "portfolio-management", icon: "fas fa-suitcase"},
-                {title: "Профиль", action: "profile", icon: "fas fa-user"},
-                {title: "Импорт сделок", action: "import", icon: "fas fa-download"},
-                {title: "Экспорт сделок", action: "export", icon: "fas fa-upload"},
-                {title: "Тарифы", action: "tariffs", icon: "fas fa-credit-card"},
-                {title: "Партнерская программа", action: "promo-codes", icon: "fas fa-heart"},
-                {title: "Уведомления", action: "notifications", icon: "fas fa-bell"}
+            title: "Инструменты", subMenu: [
+                {title: "Дивиденды", action: "dividends"},
+                {title: "Составной портфель", action: "combined-portfolio"},
+                {title: "Уведомления", action: "notifications"}
             ]
         },
-        {title: "Справка", action: "help", icon: "far fa-question-circle"},
-        {title: "Выход", action: "logout", icon: "exit_to_app"}
+        {
+            title: "Рынок", subMenu: [
+                {title: "Котировки", path: "/quotes"},
+                {title: "Информация", path: "/share-info"},
+            ]
+        },
+        {
+            title: "Настройки", action: "settings", subMenu: [
+                {title: "Управление портфелями", action: "portfolio-management"},
+                {title: "Профиль", action: "profile"},
+                {title: "Импорт сделок", action: "import"},
+                {title: "Экспорт сделок", action: "export"},
+                {title: "Тарифы", action: "tariffs"},
+                {title: "Партнерская программа", action: "promo-codes"},
+            ]
+        },
+        {title: "Помощь", action: "help"}
     ];
 
     @ShowProgress
@@ -278,9 +285,5 @@ export class AppFrame extends UI {
     private togglePanel(): void {
         this.localStorage.set(StoreKeys.MENU_STATE_KEY, !this.sideBarOpened);
         this.changeSideBarState(!this.sideBarOpened);
-    }
-
-    private get settingsSelected(): boolean {
-        return this.$route.path.indexOf("settings") !== -1;
     }
 }
