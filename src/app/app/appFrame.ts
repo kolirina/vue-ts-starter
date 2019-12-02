@@ -164,7 +164,7 @@ export class AppFrame extends UI {
         {
             title: "Рынок", subMenu: [
                 {title: "Котировки", path: "/quotes"},
-                {title: "Информация", path: "/share-info"},
+                {title: "Поиск бумаги", path: "/share-info"},
             ]
         },
         {
