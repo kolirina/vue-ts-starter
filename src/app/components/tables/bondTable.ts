@@ -70,10 +70,10 @@ const MainStore = namespace(StoreType.MAIN);
                               :class="{'data-table-cell-open': props.expanded, 'path': true, 'data-table-cell': true}"></span>
                     </td>
                     <td v-if="tableHeadersState.company" class="text-xs-left">
-                        <bond-link v-if="props.item.bond" :class="props.item.quantity !== 0 ? '' : 'line-through'"
+                        <bond-link v-if="props.item.bond" :class="props.item.quantity !== '0' ? '' : 'line-through'"
                                    :ticker="props.item.bond.ticker">{{ props.item.bond.shortname }}</bond-link>
                         &nbsp;
-                        <span v-if="props.item.bond && props.item.quantity !== 0"
+                        <span v-if="props.item.bond && props.item.quantity !== '0'"
                               :class="markupClasses(Number(props.item.bond.change))">{{ props.item.bond.change }}&nbsp;%</span>
                     </td>
                     <td v-if="tableHeadersState.ticker" class="text-xs-left">
