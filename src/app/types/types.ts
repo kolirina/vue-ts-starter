@@ -501,7 +501,7 @@ export type Bond = Share & {
     /** Отформатированное значение номинала */
     formattedFacevalue: string;
     /** Признак что облигация уже погашена на данный момент */
-    isRepaid: boolean;
+    repaid: boolean;
     /** Абсолютная текущая цена облигации без учета НКД */
     absolutePrice: string;
 };
