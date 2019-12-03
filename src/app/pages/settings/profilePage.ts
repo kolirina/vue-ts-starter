@@ -38,14 +38,14 @@ const MainStore = namespace(StoreType.MAIN);
                         Детали профиля
                     </div>
                     <div class="profile__subtitle margT0">Email</div>
-                    <inplace-input name="email" :value="email" @input="onEmailChange">
+                    <inplace-input name="email" :value="email" :max-length="120" @input="onEmailChange">
                         <v-tooltip content-class="custom-tooltip-wrap" max-width="250px" slot="afterText" top>
                             <v-icon slot="activator" v-if="!clientInfo.user.emailConfirmed" class="profile-not-confirmed-email">fas fa-exclamation-triangle</v-icon>
                             <span>Адрес не подтвержден. Пожалуйста подтвердите Ваш адрес эл.почты что воспользоваться всеми функциями сервиса.</span>
                         </v-tooltip>
                     </inplace-input>
                     <div class="profile__subtitle mt-2">Имя пользователя</div>
-                    <inplace-input name="username" :value="username" @input="onUserNameChange"></inplace-input>
+                    <inplace-input name="username" :value="username" :max-length="120" @input="onUserNameChange"></inplace-input>
                 </v-card>
                 <v-layout class="wrapper-payment-info mt-5 margB20" wrap>
                     <v-card flat class="mr-5">

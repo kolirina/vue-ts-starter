@@ -71,7 +71,8 @@ const MainStore = namespace(StoreType.MAIN);
                     </td>
                     <td v-if="tableHeadersState.company" class="text-xs-left">
                         <bond-link v-if="props.item.bond" :class="props.item.quantity !== '0' ? '' : 'line-through'"
-                                   :ticker="props.item.bond.ticker">{{ props.item.bond.shortname }}</bond-link>
+                                   :ticker="props.item.bond.ticker">{{ props.item.bond.shortname }}
+                        </bond-link>
                         &nbsp;
                         <span v-if="props.item.bond && props.item.quantity !== '0'"
                               :class="markupClasses(Number(props.item.bond.change))">{{ props.item.bond.change }}&nbsp;%</span>
@@ -97,13 +98,17 @@ const MainStore = namespace(StoreType.MAIN);
                         {{ props.item.profitFromCouponsPercent }}
                     </td>
                     <td v-if="tableHeadersState.exchangeProfit" :class="markupClasses(amount(props.item.exchangeProfit))"
-                        v-tariff-expired-hint>{{props.item.exchangeProfit | amount(true) }}</td>
+                        v-tariff-expired-hint>{{props.item.exchangeProfit | amount(true) }}
+                    </td>
                     <td v-if="tableHeadersState.exchangeProfitPercent" :class="markupClasses(Number(props.item.exchangeProfitPercent))"
-                        v-tariff-expired-hint>{{ props.item.exchangeProfitPercent }}</td>
+                        v-tariff-expired-hint>{{ props.item.exchangeProfitPercent }}
+                    </td>
                     <td v-if="tableHeadersState.rateProfit" :class="markupClasses(amount(props.item.rateProfit))"
-                        v-tariff-expired-hint>{{ props.item.rateProfit | amount(true) }}</td>
+                        v-tariff-expired-hint>{{ props.item.rateProfit | amount(true) }}
+                    </td>
                     <td v-if="tableHeadersState.rateProfitPercent" :class="markupClasses(Number(props.item.rateProfitPercent))"
-                        v-tariff-expired-hint>{{ props.item.rateProfitPercent }}</td>
+                        v-tariff-expired-hint>{{ props.item.rateProfitPercent }}
+                    </td>
                     <td v-if="tableHeadersState.buyNkd" :class="markupClasses(amount(props.item.buyNkd))" v-tariff-expired-hint>{{ props.item.buyNkd | amount(true) }}</td>
                     <td v-if="tableHeadersState.sellNkd" :class="markupClasses(amount(props.item.sellNkd))" v-tariff-expired-hint>{{ props.item.sellNkd | amount(true) }}</td>
                     <td v-if="tableHeadersState.profit" :class="markupClasses(amount(props.item.profit))" v-tariff-expired-hint>{{ props.item.profit | amount(true) }}</td>
@@ -186,13 +191,15 @@ const MainStore = namespace(StoreType.MAIN);
                             <div class="ext-info__item">
                                 Номинал покупки {{ props.item.nominal | amount(true) }} <span>{{ portfolioCurrency }}</span><br>
                                 Дисконт {{ props.item.amortization | amount(true) }} <span>{{ props.item.bond.currency }}</span><br>
-                                <template v-if="!props.item.bond.isRepaid">Купон {{ props.item.bond.couponvalue | amount(true) }}
-                                    <span>{{ props.item.bond.currency }}</span></template>
-                                <br>
-                                <template v-if="!props.item.bond.isRepaid">След купон {{ props.item.bond.nextcoupon | date }}
-                                    <span>{{ props.item.bond.currency }}</span></template>
-                                <br>
-                                <template v-if="props.item.bond.isRepaid">Статус Погашена</template>
+                                <template v-if="!props.item.bond.repaid">
+                                    Купон {{ props.item.bond.couponvalue | amount(true) }}<span>{{ props.item.bond.currency }}</span><br>
+                                </template>
+
+                                <template v-if="!props.item.bond.repaid">
+                                    След купон {{ props.item.bond.nextcoupon | date }}<br>
+                                </template>
+
+                                <template v-if="props.item.bond.repaid">Статус Погашена</template>
                             </div>
                         </td>
                         <td>
@@ -227,8 +234,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <tr>
                         <td>
                             <div class="ext-info__item">
-                                <template v-if="!props.item.bond.isRepaid">НКД {{ props.item.bond.accruedint | amount(true) }}</template>
-                                <br>
+                                <template v-if="!props.item.bond.repaid">НКД {{ props.item.bond.accruedint | amount(true) }}<br></template>
                                 Выплаченный НКД {{ props.item.buyNkd | amount }} <span>{{ portfolioCurrency }}</span><br>
                                 Полученный НКД {{ props.item.sellNkd | amount }} <span>{{ portfolioCurrency }}</span><br>
                                 <template v-if="shareNotes && shareNotes[props.item.bond.ticker]">Заметка {{ shareNotes[props.item.bond.ticker] }}</template>
