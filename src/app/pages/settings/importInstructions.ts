@@ -12,6 +12,7 @@ import {BcsInstruction} from "./import_instructions/bcsInstruction";
 import {FinamInstruction} from "./import_instructions/finamInstruction";
 import {FreedomFinanceInstruction} from "./import_instructions/freedomFinanceInstruction";
 import {IntelinvestInstruction} from "./import_instructions/intelinvestInstruction";
+import {InteractiveBrokersInstruction} from "./import_instructions/InteractiveBrokersInstruction";
 import {ItInvestInstruction} from "./import_instructions/itInvestInstruction";
 import {OtkrytieInstruction} from "./import_instructions/otkrytieInstruction";
 import {PsbInstruction} from "./import_instructions/psbInstruction";
@@ -100,10 +101,7 @@ const MainStore = namespace(StoreType.MAIN);
 
                 <!-- Interactive brokers -->
                 <div v-if="provider === providers.INTERACTIVE_BROKERS">
-                    <p class="import-default-text">
-                        Используйте для импорта отчеты в формате cpt, xls, csv. Форматы отчетов указаны в порядке предпочтительности.
-                        Если отчет не пройдет импорт, попробуйте пересохранить файл в кодировке UTF-8 или windows-1251
-                    </p>
+                    <InteractiveBrokersInstruction></InteractiveBrokersInstruction>
                 </div>
 
                 <!-- Tinkoff -->
@@ -147,7 +145,8 @@ const MainStore = namespace(StoreType.MAIN);
     `,
     components: {
         AlfadirectInstruction, ItInvestInstruction, OtkrytieInstruction, PsbInstruction, BcsInstruction, BcsCyprusInstruction, ZerichInstruction, FinamInstruction,
-        UralsibInstruction, TinkoffInstruction, QuikInstruction, IntelinvestInstruction, VtbInstruction, AlfaCapitalInstruction, FreedomFinanceInstruction
+        UralsibInstruction, TinkoffInstruction, QuikInstruction, IntelinvestInstruction, VtbInstruction, AlfaCapitalInstruction, FreedomFinanceInstruction,
+        InteractiveBrokersInstruction
     }
 })
 export class ImportInstructions extends UI {
