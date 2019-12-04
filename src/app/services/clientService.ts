@@ -1,5 +1,6 @@
 import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
+import {Enum, EnumType, IStaticEnum} from "../platform/enum";
 import {Http} from "../platform/services/http";
 import {Tariff} from "../types/tariff";
 import {LoginRequest} from "../types/types";
@@ -80,11 +81,11 @@ export class ClientService {
     }
 
     /**
-     * Удаляет и отписывать пользователя от рассылок
+     * Удаляет и отписывает пользователя от рассылок
      * @returns {Promise<void>}
      */
-    async deleteProfileAndUnsubscribe(): Promise<void> {
-        await this.http.post(`/user/delete`);
+    async deleteProfileAndUnsubscribe(deleteProfileRequest: DeleteProfileRequest): Promise<void> {
+        await this.http.post(`/user/delete`, deleteProfileRequest);
     }
 
     /**
@@ -267,4 +268,29 @@ export interface PromoCode {
     payToReferrer: boolean;
     /** Тариф устанавливаемый пользователю */
     tariff: string;
+}
+
+/** Сущность с данными при удалении профиля */
+export interface DeleteProfileRequest {
+    /** Тип ответа */
+    reason: string;
+    /** Комментарий к ответу */
+    comment?: string;
+}
+
+/** Перечисление возможных типов ответов при удалении профиля */
+@Enum("code")
+export class DeleteProfileReason extends (EnumType as IStaticEnum<DeleteProfileReason>) {
+
+    static readonly REDUCE_INVEST_ACTIVITY = new DeleteProfileReason("REDUCE_INVEST_ACTIVITY", "Прекратил или уменьшил инвесторскую деятельность");
+    static readonly ABSENT_FUNCTIONALITY = new DeleteProfileReason("ABSENT_FUNCTIONALITY", "Нет нужной мне функционаьности");
+    static readonly ERRORS = new DeleteProfileReason("ERRORS", "Ошибки в сервисе");
+    static readonly EXPENSIVE_TARIFFS = new DeleteProfileReason("EXPENSIVE_TARIFFS", "Дорогие тарифные планы");
+    static readonly GO_TO_EXCEL = new DeleteProfileReason("GO_TO_EXCEL", "Буду вести учет в Excel");
+    static readonly GO_TO_OTHER_SERVICE = new DeleteProfileReason("GO_TO_OTHER_SERVICE", "Буду вести учет в другом сервисе");
+    static readonly OTHER = new DeleteProfileReason("OTHER", "Другое");
+
+    private constructor(public code: string, public description: string) {
+        super();
+    }
 }

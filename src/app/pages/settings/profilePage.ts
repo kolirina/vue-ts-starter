@@ -1,15 +1,14 @@
-import dayjs from "dayjs";
 import {Inject} from "typescript-ioc";
-import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
-import {UI} from "../../app/ui";
+import {Component, UI} from "../../app/ui";
 import {ChangePasswordDialog} from "../../components/dialogs/changePasswordDialog";
 import {ConfirmDialog} from "../../components/dialogs/confirmDialog";
+import {DeleteProfileReasonDialog} from "../../components/dialogs/DeleteProfileReasonDialog";
 import {UnsubscribedAnswerDialog} from "../../components/dialogs/UnsubscribedAnswerDialog";
 import {ThemeSwitcher} from "../../components/themeSwitcher";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
-import {ClientInfo, ClientService} from "../../services/clientService";
+import {ClientInfo, ClientService, DeleteProfileRequest} from "../../services/clientService";
 import {CancelOrderRequest, TariffService, UserPaymentInfo} from "../../services/tariffService";
 import {Tariff} from "../../types/tariff";
 import {CommonUtils} from "../../utils/commonUtils";
@@ -267,13 +266,16 @@ export class ProfilePage extends UI {
         if (result !== BtnReturn.YES) {
             return;
         }
-        await this.deleteProfileAndUnsubscribeConfirmed();
-        this.$router.push("logout");
+        const request = await new DeleteProfileReasonDialog().show();
+        if (request) {
+            await this.deleteProfileAndUnsubscribeConfirmed(request);
+            this.$router.push("logout");
+        }
     }
 
     @ShowProgress
-    private async deleteProfileAndUnsubscribeConfirmed(): Promise<void> {
-        await this.clientService.deleteProfileAndUnsubscribe();
+    private async deleteProfileAndUnsubscribeConfirmed(deleteProfileRequest: DeleteProfileRequest): Promise<void> {
+        await this.clientService.deleteProfileAndUnsubscribe(deleteProfileRequest);
     }
 
     /**
