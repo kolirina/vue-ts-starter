@@ -17,6 +17,7 @@
 import Decimal from "decimal.js";
 import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
+import {Enum, EnumType, IStaticEnum} from "../platform/enum";
 import {Http} from "../platform/services/http";
 import {BigMoney} from "../types/bigMoney";
 
@@ -111,6 +112,8 @@ export class RebalancingService {
 export interface CalculateRow {
     /** Тикер */
     ticker: string;
+    /** Тикер */
+    name?: string;
     /** Идентификатор бумаги */
     shareId: string;
     /** Тип актива */
@@ -151,8 +154,14 @@ export interface CalculateRow {
     maxShareInWholePortfolio?: string;
 }
 
-export enum RebalancingType {
-    BY_AMOUNT,
-    BY_PERCENT,
-    RULES
+@Enum("code")
+export class RebalancingType extends (EnumType as IStaticEnum<RebalancingType>) {
+
+    static readonly BY_AMOUNT = new RebalancingType("BY_AMOUNT", "Сохранить текущие доли");
+    static readonly BY_PERCENT = new RebalancingType("BY_PERCENT", "Задать доли вручную");
+    static readonly RULES = new RebalancingType("RULES", "Правила");
+
+    private constructor(public code: string, public description: string) {
+        super();
+    }
 }
