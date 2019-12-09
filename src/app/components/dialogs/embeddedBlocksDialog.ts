@@ -70,7 +70,7 @@ export class EmbeddedBlocksDialog extends CustomDialog<string, BtnReturn> {
     private embeddedOption = this.embeddedOptions[0];
 
     private get embeddedCode(): string {
-        return `<iframe src="${window.location.protocol}//${window.location.host}/${this.data}/${this.embeddedOption.value}"` +
+        return `<iframe src="${window.location.protocol}//${window.location.host}/public-portfolio/${this.data}/${this.embeddedOption.value}"` +
         `style="height: 600px; width: 100%; margin: 10px 0; display: block;" frameborder="0"></iframe>`;
     }
 
