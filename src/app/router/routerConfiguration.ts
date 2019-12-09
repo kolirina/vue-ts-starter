@@ -317,11 +317,16 @@ export class RouterConfiguration {
                 component: ProfilePage
             },
             {
-                name: "help",
                 path: "/help",
+                name: "help",
+                meta: {tariffAllowed: true},
+                redirect: "/help/contents"
+            },
+            {
+                path: "/help/:section",
                 meta: {
                     tariffAllowed: true,
-                    title: "Справка"
+                    title: "Помощь"
                 },
                 component: HelpPage
             },

@@ -5,7 +5,6 @@ import {namespace} from "vuex-class/lib/bindings";
 import {UI, Watch} from "../../app/ui";
 import {AverageAnnualYieldChart} from "../../components/charts/averageAnnualYield";
 import {SimpleLineChart} from "../../components/charts/simpleLineChart";
-import {RebalancingComponent} from "../../components/rebalancingComponent";
 import {Storage} from "../../platform/services/storage";
 import {AdviceService} from "../../services/adviceService";
 import {AnalyticsService} from "../../services/analyticsService";
@@ -72,8 +71,6 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-layout>
             </expanded-panel>
 
-            <rebalancing-component v-show="false"></rebalancing-component>
-
             <expanded-panel v-if="showInfoPanel && false" :value="$uistate.analyticsInfoPanel" :withMenu="false" :state="$uistate.ANALYTICS_INFO_PANEL" class="mt-3">
                 <template #header>Информация</template>
 
@@ -113,7 +110,7 @@ const MainStore = namespace(StoreType.MAIN);
             </expanded-panel>
         </v-container>
     `,
-    components: {ChooseRisk, Preloader, AnalysisResult, EmptyAdvice, AverageAnnualYieldChart, SimpleLineChart, RebalancingComponent}
+    components: {ChooseRisk, Preloader, AnalysisResult, EmptyAdvice, AverageAnnualYieldChart, SimpleLineChart}
 })
 export class AnalyticsPage extends UI {
 
