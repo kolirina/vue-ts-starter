@@ -32,6 +32,7 @@ input[type="search"] {
 
 .margR8 {margin-right: 8px}
 .margR16 {margin-right: 16px}
+.margR28 {margin-right: 28px}
 .margR60 {margin-right: 60px}
 .margR100 {margin-right: 100px}
 
@@ -50,6 +51,7 @@ input[type="search"] {
 // Паддинги =============================================================================================================
 
 .paddT0 {padding-top: 0 !important}
+.paddL0 {padding-left: 0 !important}
 .paddB0 {padding-bottom: 0 !important}
 .paddB128 {padding-bottom: 128px}
 
@@ -61,7 +63,7 @@ input[type="search"] {
 // Ширина ==============================================================================================================
 
 .maxW778 {max-width: 778px}
-.maxW778 {max-width: 520px}
+.maxW520 {max-width: 520px}
 .maxW275 {max-width: 275px}
 .maxW50 {max-width: 50% !important}
 .maxW500 {max-width: 500px !important}
@@ -82,7 +84,7 @@ input[type="search"] {
 .w200 {width: 200px}
 .w140 {width: 140px}
 .w180 {width: 180px}
-.w100 {width: 100%;}
+.w100 {width: 100px;}
 .w90 {width: 90%}
 .w80 {width: 80%}
 .w70 {width: 70%}
