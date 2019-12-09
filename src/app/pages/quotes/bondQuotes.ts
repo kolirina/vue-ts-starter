@@ -49,12 +49,8 @@ const MainStore = namespace(StoreType.MAIN);
                         <td class="text-xs-center">{{ props.item.currency }}</td>
                         <td class="text-xs-center">{{ props.item.duration }}</td>
                         <td class="text-xs-center">
-                            <v-btn v-if="props.item.currency === 'RUB'" :href="'http://moex.com/ru/issue.aspx?code=' + props.item.ticker" target="_blank"
+                            <v-btn :href="'http://moex.com/ru/issue.aspx?code=' + props.item.ticker" target="_blank"
                                    :title="'Профиль эмитента ' + props.item.name + ' на сайте биржи'" icon>
-                                <img src="img/quotes/share.svg">
-                            </v-btn>
-                            <v-btn v-if="props.item.currency !== 'RUB'" :href="'https://finance.yahoo.com/quote/' + props.item.ticker" target="_blank"
-                                   :title="'Профиль эмитента ' + props.item.name + ' на сайте Yahoo Finance'" icon>
                                 <img src="img/quotes/share.svg">
                             </v-btn>
                         </td>

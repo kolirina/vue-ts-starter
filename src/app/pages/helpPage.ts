@@ -1,10 +1,4 @@
-/*
- * TODO: Исправить скринкасты
- */
-
-import Component from "vue-class-component";
-import {namespace} from "vuex-class";
-import {UI} from "../app/ui";
+import {Component, namespace, UI} from "../app/ui";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
 import {FeedbackDialog} from "../components/dialogs/feedbackDialog";
 import {ImageDialog} from "../components/dialogs/imageDialog";
@@ -19,7 +13,7 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-container fluid class="selectable" id="up">
+        <v-container fluid class="selectable" id="contents">
             <v-card flat class="header-first-card">
                 <v-card-title class="header-first-card__wrapper-title">
                     <div class="section-title header-first-card__title-text">
@@ -30,73 +24,73 @@ const MainStore = namespace(StoreType.MAIN);
             <v-layout class="wrapper-list-reference" wrap>
                 <div class="wrapper-list-reference__item">
                     <div class="wrapper-list-reference__item-content-wrapper">
-                        <a @click.stop="$vuetify.goTo('#about')">О сервисе</a>
+                        <a @click.stop="scrollTo('about')">О сервисе</a>
                     </div>
                     <div class="wrapper-list-reference__item-content-wrapper">
-                        <a @click.stop="$vuetify.goTo('#trades_add')">Добавление сделок</a>
+                        <a @click.stop="scrollTo('trades_add')">Добавление сделок</a>
                     </div>
                     <div class="wrapper-list-reference__item-content-wrapper">
-                        <a @click.stop="$vuetify.goTo('#user_assets')">Произвольные активы</a>
+                        <a @click.stop="scrollTo('user_assets')">Произвольные активы</a>
                     </div>
                     <div class="wrapper-list-reference__item-content-wrapper">
-                        <a @click.stop="$vuetify.goTo('#balances')">Текущие остатки</a>
+                        <a @click.stop="scrollTo('balances')">Текущие остатки</a>
                     </div>
                     <div class="wrapper-list-reference__item-content-wrapper">
-                        <a @click.stop="$vuetify.goTo('#import')">Импорт сделок</a>
+                        <a @click.stop="scrollTo('import')">Импорт сделок</a>
                     </div>
                     <div class="wrapper-list-reference__item-content-wrapper">
-                        <a @click.stop="$vuetify.goTo('#export')">Экспорт данных</a>
-                    </div>
-                </div>
-                <div class="wrapper-list-reference__item">
-                    <div class="wrapper-list-reference__item-content-wrapper">
-                        <a @click.stop="$vuetify.goTo('#portfolio')">Портфель</a>
-                    </div>
-                    <div class="wrapper-list-reference__item-content-wrapper">
-                        <a @click.stop="$vuetify.goTo('#trades')">Сделки</a>
-                    </div>
-                    <div class="wrapper-list-reference__item-content-wrapper">
-                        <a @click.stop="$vuetify.goTo('#trades')">Комисии, расходы</a>
-                    </div>
-                    <div class="wrapper-list-reference__item-content-wrapper">
-                        <a @click.stop="$vuetify.goTo('#events')">Страница События</a>
-                    </div>
-                    <div class="wrapper-list-reference__item-content-wrapper">
-                        <a @click.stop="$vuetify.goTo('#combined_portfolio')">Составной портфель</a>
+                        <a @click.stop="scrollTo('export')">Экспорт данных</a>
                     </div>
                 </div>
                 <div class="wrapper-list-reference__item">
                     <div class="wrapper-list-reference__item-content-wrapper">
-                        <a @click.stop="$vuetify.goTo('#dividends')">Дивиденды</a>
+                        <a @click.stop="scrollTo('portfolio')">Портфель</a>
                     </div>
                     <div class="wrapper-list-reference__item-content-wrapper">
-                        <a @click.stop="$vuetify.goTo('#quotes')">Котировки</a>
+                        <a @click.stop="scrollTo('trades')">Сделки</a>
                     </div>
                     <div class="wrapper-list-reference__item-content-wrapper">
-                        <a @click.stop="$vuetify.goTo('#settings')">Настройки</a>
+                        <a @click.stop="scrollTo('commissions')">Комисии, расходы</a>
                     </div>
                     <div class="wrapper-list-reference__item-content-wrapper">
-                        <a @click.stop="$vuetify.goTo('#settings_portfolio')">Управление портфелями</a>
+                        <a @click.stop="scrollTo('events')">Страница События</a>
                     </div>
                     <div class="wrapper-list-reference__item-content-wrapper">
-                        <a @click.stop="$vuetify.goTo('#settings_public')">Публичный доступ</a>
+                        <a @click.stop="scrollTo('combined_portfolio')">Составной портфель</a>
                     </div>
                 </div>
                 <div class="wrapper-list-reference__item">
                     <div class="wrapper-list-reference__item-content-wrapper">
-                        <a @click.stop="$vuetify.goTo('#tariffs_public')">Тарифы</a>
+                        <a @click.stop="scrollTo('dividends')">Дивиденды</a>
                     </div>
                     <div class="wrapper-list-reference__item-content-wrapper">
-                        <a @click.stop="$vuetify.goTo('#settings_promo_codes')">Партнерская программа</a>
+                        <a @click.stop="scrollTo('quotes')">Котировки</a>
                     </div>
                     <div class="wrapper-list-reference__item-content-wrapper">
-                        <a @click.stop="$vuetify.goTo('#settings_notifications')">Уведомления</a>
+                        <a @click.stop="scrollTo('settings')">Настройки</a>
                     </div>
                     <div class="wrapper-list-reference__item-content-wrapper">
-                        <a @click.stop="$vuetify.goTo('#help')">Вопросы и помощь</a>
+                        <a @click.stop="scrollTo('settings_portfolio')">Управление портфелями</a>
                     </div>
                     <div class="wrapper-list-reference__item-content-wrapper">
-                        <a @click.stop="$vuetify.goTo('#privacy')">Соглашение</a>
+                        <a @click.stop="scrollTo('settings_public')">Публичный доступ</a>
+                    </div>
+                </div>
+                <div class="wrapper-list-reference__item">
+                    <div class="wrapper-list-reference__item-content-wrapper">
+                        <a @click.stop="scrollTo('tariffs_public')">Тарифы</a>
+                    </div>
+                    <div class="wrapper-list-reference__item-content-wrapper">
+                        <a @click.stop="scrollTo('settings_promo_codes')">Партнерская программа</a>
+                    </div>
+                    <div class="wrapper-list-reference__item-content-wrapper">
+                        <a @click.stop="scrollTo('settings_notifications')">Уведомления</a>
+                    </div>
+                    <div class="wrapper-list-reference__item-content-wrapper">
+                        <a @click.stop="scrollTo('help')">Вопросы и помощь</a>
+                    </div>
+                    <div class="wrapper-list-reference__item-content-wrapper">
+                        <a @click.stop="scrollTo('privacy')">Соглашение</a>
                     </div>
                 </div>
             </v-layout>
@@ -114,8 +108,8 @@ const MainStore = namespace(StoreType.MAIN);
                                 <div class="wrapper-content-panel__paired-section">
                                     <div class="wrapper-content-panel__paired-section-item">
                                         <p>
-                                            Сервис позволяет учитывать <a @click.stop="$vuetify.goTo('#buy_stock')">акции</a>,
-                                            <a @click.stop="$vuetify.goTo('#buy_bonds')">облигации</a>, ETF, валюты и другие виды активов.
+                                            Сервис позволяет учитывать <a @click.stop="scrollTo('buy_stock')">акции</a>,
+                                            <a @click.stop="scrollTo('buy_bonds')">облигации</a>, ETF, валюты и другие виды активов.
                                         </p>
                                         <p>
                                             Предоставляет информацию и оценку эффективности ваших инвестиций в сравнении с доходностью индекса ММВБ, инфляции, ставок по депозитам.
@@ -716,13 +710,13 @@ const MainStore = namespace(StoreType.MAIN);
                                     <div class="wrapper-content-panel__paired-section-item">
                                         <p>
                                             Существует два основных вида сделок:
-                                            <a @click.stop="openDialog(assetType.MONEY, operation.INCOME)"><span>Доход</span></a>
+                                            <a @click.stop="openDialog(AssetType.MONEY, Operation.INCOME)"><span>Доход</span></a>
                                             /
-                                            <a @click.stop="openDialog(assetType.MONEY, operation.LOSS)"><span>Расход</span></a>
+                                            <a @click.stop="openDialog(AssetType.MONEY, Operation.LOSS)"><span>Расход</span></a>
                                             или
-                                            <a @click.stop="openDialog(assetType.MONEY, operation.DEPOSIT)"><span>Внести</span></a>
+                                            <a @click.stop="openDialog(AssetType.MONEY, Operation.DEPOSIT)"><span>Внести</span></a>
                                             /
-                                            <a @click.stop="openDialog(assetType.MONEY, operation.WITHDRAW)"><span>Вывести</span></a>
+                                            <a @click.stop="openDialog(AssetType.MONEY, Operation.WITHDRAW)"><span>Вывести</span></a>
                                             . Сделки Доход / Расход влияют на прибыль, и отражаются на
                                             доходности портфеля.
                                         </p>
@@ -752,8 +746,8 @@ const MainStore = namespace(StoreType.MAIN);
                                         </p>
                                         <p>
                                             Также существует еще два вида сделок, это
-                                            <a @click.stop="openDialog(assetType.MONEY, operation.CURRENCY_BUY)">Покупка валюты</a> и
-                                            <a @click.stop="openDialog(assetType.MONEY, operation.CURRENCY_SELL)">Продажа валюты.</a>
+                                            <a @click.stop="openDialog(AssetType.MONEY, Operation.CURRENCY_BUY)">Покупка валюты</a> и
+                                            <a @click.stop="openDialog(AssetType.MONEY, Operation.CURRENCY_SELL)">Продажа валюты.</a>
                                             Данные сделки позволяют отобразить в вашем портфеле сделки по конвертации валют.
                                         </p>
                                     </div>
@@ -1104,7 +1098,9 @@ const MainStore = namespace(StoreType.MAIN);
                                             <a @click.stop="openFeedBackDialog">web@intelinvest.ru</a> или
                                             задать вопрос на канале
                                             <a href="https://telegram.me/intelinvestSupportBot" title="Задайте вопрос в Telegram" target="_blank">telegram</a>
-                                            наши специалисты с радостью вам ответят и помогут.
+                                            наши специалисты с радостью вам ответят и помогут.<br/>
+                                            Также вы можете присоединиться к общению с нами и пользователями сервиса в чате
+                                            <a href="https://t.me/intelinvest_chat" title="Чат в Telegram" target="_blank">чат в telegram</a>
                                         </p>
                                     </div>
                                 </div>
@@ -1131,7 +1127,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-expansion-panel>
             </div>
             <div>
-                <v-btn depressed fixed fab bottom right color="#F0F3F8" @click.stop="$vuetify.goTo('#up')" class="wrapper-content-panel__privacy-section-up-page-btn">
+                <v-btn depressed fixed fab bottom right color="#F0F3F8" @click.stop="$vuetify.goTo('#contents')" class="wrapper-content-panel__privacy-section-up-page-btn">
                     <v-icon color="#8a98af">keyboard_arrow_up</v-icon>
                 </v-btn>
             </div>
@@ -1145,8 +1141,8 @@ export class HelpPage extends UI {
     @MainStore.Getter
     private portfolio: Portfolio;
 
-    private assetType = AssetType;
-    private operation = Operation;
+    private AssetType = AssetType;
+    private Operation = Operation;
     /* Управление какие блоки открыты при загрузке страницы */
     private configExpansionPanel: boolean[] = [
         true,
@@ -1163,8 +1159,44 @@ export class HelpPage extends UI {
         true,
         true,
         true,
-        true
+        true,
+        true,
+        true,
+        true,
     ];
+
+    /**
+     * Осуществляет переход к заданной секции, если она указана в роутинге
+     */
+    async mounted(): Promise<void> {
+        const section = this.$route.params.section;
+        if (!section) {
+            return;
+        }
+        if (section !== "contents") {
+            setTimeout(async () => {
+                await this.scrollTo(section);
+            }, 800);
+        }
+    }
+
+    /**
+     * Осуществляет скрол к заданной секции
+     * @param section секция для перехода
+     */
+    private async scrollTo(section: string): Promise<void> {
+        try {
+            if (this.$route.params.section !== section) {
+                await this.$router.push(`/help/${section}`);
+            }
+            await this.$vuetify.goTo(`#${section}`, {
+                duration: 300,
+                offset: 20,
+                easing: "easeInOutCubic"
+            });
+        } catch (ignored) {
+        }
+    }
 
     /* Диалог добавления сделок */
     private async openDialog(assetType: AssetType, operation: Operation): Promise<void> {

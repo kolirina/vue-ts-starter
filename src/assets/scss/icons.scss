@@ -135,6 +135,11 @@
   background: url('../img/sidebar/account.svg') no-repeat center;
 }
 
+.logout-icon {
+  @extend .icon;
+  background: url('../img/common/logout.svg') no-repeat center;
+}
+
 .sidebar-icon {
   @extend .icon;
   background: url('../img/sidebar/logo.svg') no-repeat center;

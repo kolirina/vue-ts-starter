@@ -29,6 +29,7 @@ import {CommonUtils} from "../utils/commonUtils";
                 <v-icon v-if="nightTheme" light>far fa-moon</v-icon>
                 <v-icon v-else light>far fa-lightbulb</v-icon>
             </v-btn>
+            <span>{{ nightTheme ? 'Темная тема' : 'Светлая тема' }}</span>
         </div>
     `
 })

@@ -19,14 +19,14 @@ import {PortfolioSwitcher} from "../portfolioSwitcher";
                 <div v-for="item in mainSection">
                     <template v-if="item.subMenu">
                         <v-menu transition="slide-y-transition" bottom left class="submenu-item-list" content-class="submenu-v-menu" nudge-bottom="47">
-                            <v-list-tile slot="activator" :class="{'active-link': settingsSelected}">
+                            <v-list-tile slot="activator" :class="{'active-link': subMenuRouteSelected(item)}">
                                 <v-list-tile-title>{{ item.title }}</v-list-tile-title>
                                 <v-list-tile-action>
                                     <v-icon color="grey lighten-1">keyboard_arrow_down</v-icon>
                                 </v-list-tile-action>
                             </v-list-tile>
                             <v-list-tile active-class="active-link" v-for="subItem in item.subMenu" :key="subItem.action"
-                                         :to="{name: subItem.action, params: item.params}">
+                                         :to="{path: subItem.path, name: subItem.action, params: subItem.params}">
                                 <v-list-tile-content>
                                     <v-list-tile-title>{{ subItem.title }}</v-list-tile-title>
                                 </v-list-tile-content>
@@ -35,7 +35,7 @@ import {PortfolioSwitcher} from "../portfolioSwitcher";
                     </template>
                     <v-list-tile v-else :key="item.action" active-class="active-link"
                                  :to="{path: item.path, name: item.action, params: item.params}">
-                        <v-list-tile-content v-if="item.action === linkAdditionalFunctionality.EVENTS && numberOfEvents" class="badge-link">
+                        <v-list-tile-content v-if="item.action === LinkAdditionalFunctionality.EVENTS && numberOfEvents" class="badge-link">
                             <v-badge color="primary">
                                 <template #badge>
                                     <span title="У вас есть новые события по портфелю!">{{ numberOfEvents >= 100 ? "99+" : numberOfEvents }}</span>
@@ -58,9 +58,6 @@ export class NavigationList extends UI {
     @Prop({type: Boolean, required: true})
     private sideBarOpened: boolean;
 
-    @Prop({type: Boolean, required: true})
-    private settingsSelected: boolean;
-
     @Prop({required: true})
     private mainSection: NavBarItem[];
 
@@ -68,12 +65,19 @@ export class NavigationList extends UI {
     private numberOfEvents: number;
 
     /** Список ссылок с доп. функционалом */
-    private linkAdditionalFunctionality = LinkAdditionalFunctionality;
+    private LinkAdditionalFunctionality = LinkAdditionalFunctionality;
 
     private openDialog(): void {
         this.$emit("openDialog");
     }
+
+    private subMenuRouteSelected(item: NavBarItem): boolean {
+        const path = this.$route.path;
+        const subMenu = item.subMenu.map(menu => menu.action || menu.path);
+        return subMenu.some(menu => path.includes(menu));
+    }
 }
+
 export enum LinkAdditionalFunctionality {
     EVENTS = "events"
 }

@@ -5,10 +5,12 @@
   display: flex;
   padding: 5px 5px 5px 20px;
   height: 60px;
-  width: 247px;
+  min-width: 247px;
+  max-width: 327px;
   cursor: default;
   input {
     max-width: 160px;
+    min-width: 240px;
     cursor: default;
     outline: none;
     font-size: 14px !important;
@@ -17,7 +19,6 @@
 }
 .active-inplace-custom-input {
   border-bottom: 2px solid #3B6EC9;
-  cursor: initial !important;
   cursor: text !important;
   input {
     cursor: text;
@@ -25,7 +26,7 @@
 }
 .btn-action-section {
   button {
-    margin: 0px !important;
+    margin: 0 !important;
     i {
       font-size: 18px !important;
     }

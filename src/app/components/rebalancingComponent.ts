@@ -373,9 +373,9 @@ export class RebalancingComponent extends UI {
     private moneyAmount = "";
 
     private calculateRows: { [key: string]: CalculateRow[] } = {
-        [RebalancingType.BY_AMOUNT]: [],
-        [RebalancingType.BY_PERCENT]: [],
-        [RebalancingType.RULES]: [],
+        [RebalancingType.BY_AMOUNT.code]: [],
+        [RebalancingType.BY_PERCENT.code]: [],
+        [RebalancingType.RULES.code]: [],
     };
 
     private currentTab: RebalancingType = RebalancingType.BY_AMOUNT;
@@ -393,9 +393,9 @@ export class RebalancingComponent extends UI {
 
     private initCalculatedRow(): void {
         this.calculateRows = {
-            [RebalancingType.BY_AMOUNT]: [],
-            [RebalancingType.BY_PERCENT]: [],
-            [RebalancingType.RULES]: []
+            [RebalancingType.BY_AMOUNT.code]: [],
+            [RebalancingType.BY_PERCENT.code]: [],
+            [RebalancingType.RULES.code]: []
         };
         this.portfolio.overview.stockPortfolio.rows.filter(row => Number(row.quantity) > 0).forEach(row => {
             const calculateRow: CalculateRow = {
@@ -423,9 +423,9 @@ export class RebalancingComponent extends UI {
                 calculateRow.maxShare = rebalanceItem.maxShare;
                 calculateRow.maxShareInWholePortfolio = rebalanceItem.maxShareInWholePortfolio;
             }
-            this.calculateRows[RebalancingType.BY_AMOUNT].push({...calculateRow});
-            this.calculateRows[RebalancingType.BY_PERCENT].push({...calculateRow});
-            this.calculateRows[RebalancingType.RULES].push({...calculateRow});
+            this.calculateRows[RebalancingType.BY_AMOUNT.code].push({...calculateRow});
+            this.calculateRows[RebalancingType.BY_PERCENT.code].push({...calculateRow});
+            this.calculateRows[RebalancingType.RULES.code].push({...calculateRow});
         });
     }
 
@@ -557,7 +557,7 @@ export class RebalancingComponent extends UI {
     }
 
     private get currentTypeRows(): CalculateRow[] {
-        return this.calculateRows ? this.calculateRows[this.currentTab] : null;
+        return this.calculateRows ? this.calculateRows[this.currentTab.code] : null;
     }
 
     private get freeBalance(): string {

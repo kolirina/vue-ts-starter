@@ -79,7 +79,7 @@ export class OnBoardingTourService {
                     const emptyPortfolio = PortfolioUtils.isBlockShowed(overview, PortfolioBlockType.EMPTY);
                     return emptyPortfolio ? TOUR_STEPS[TourName.INTRO_TRADES] : steps;
                 default:
-                    return steps;
+                    return steps || [];
             }
         }
         return [];

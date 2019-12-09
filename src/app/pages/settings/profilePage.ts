@@ -1,14 +1,14 @@
-import dayjs from "dayjs";
 import {Inject} from "typescript-ioc";
-import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
-import {UI} from "../../app/ui";
+import {Component, UI} from "../../app/ui";
 import {ChangePasswordDialog} from "../../components/dialogs/changePasswordDialog";
 import {ConfirmDialog} from "../../components/dialogs/confirmDialog";
+import {DeleteProfileReasonDialog} from "../../components/dialogs/DeleteProfileReasonDialog";
 import {UnsubscribedAnswerDialog} from "../../components/dialogs/UnsubscribedAnswerDialog";
+import {ThemeSwitcher} from "../../components/themeSwitcher";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
-import {ClientInfo, ClientService} from "../../services/clientService";
+import {ClientInfo, ClientService, DeleteProfileRequest} from "../../services/clientService";
 import {CancelOrderRequest, TariffService, UserPaymentInfo} from "../../services/tariffService";
 import {Tariff} from "../../types/tariff";
 import {CommonUtils} from "../../utils/commonUtils";
@@ -37,14 +37,14 @@ const MainStore = namespace(StoreType.MAIN);
                         Детали профиля
                     </div>
                     <div class="profile__subtitle margT0">Email</div>
-                    <inplace-input name="email" :value="email" @input="onEmailChange">
+                    <inplace-input name="email" :value="email" :max-length="120" @input="onEmailChange">
                         <v-tooltip content-class="custom-tooltip-wrap" max-width="250px" slot="afterText" top>
                             <v-icon slot="activator" v-if="!clientInfo.user.emailConfirmed" class="profile-not-confirmed-email">fas fa-exclamation-triangle</v-icon>
                             <span>Адрес не подтвержден. Пожалуйста подтвердите Ваш адрес эл.почты что воспользоваться всеми функциями сервиса.</span>
                         </v-tooltip>
                     </inplace-input>
                     <div class="profile__subtitle mt-2">Имя пользователя</div>
-                    <inplace-input name="username" :value="username" @input="onUserNameChange"></inplace-input>
+                    <inplace-input name="username" :value="username" :max-length="120" @input="onUserNameChange"></inplace-input>
                 </v-card>
                 <v-layout class="wrapper-payment-info mt-5 margB20" wrap>
                     <v-card flat class="mr-5">
@@ -99,6 +99,18 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-layout>
                     </v-card>
                 </v-layout>
+                <v-layout wrap align-center class="mt-3">
+                    <v-card flat>
+                        <span class="profile__subtitle">
+                            Цветовая тема интерфейса
+                        </span>
+                        <v-layout wrap>
+                            <div class="fs13 maxW778 mr-4 mt-3">
+                                <theme-switcher></theme-switcher>
+                            </div>
+                        </v-layout>
+                    </v-card>
+                </v-layout>
                 <expanded-panel :value="[0]" class="promo-codes__statistics mt-3">
                     <template #header>Удаление профиля</template>
                     <v-card flat>
@@ -114,7 +126,8 @@ const MainStore = namespace(StoreType.MAIN);
                 </expanded-panel>
             </v-layout>
         </v-container>
-    `
+    `,
+    components: {ThemeSwitcher}
 })
 export class ProfilePage extends UI {
 
@@ -253,13 +266,16 @@ export class ProfilePage extends UI {
         if (result !== BtnReturn.YES) {
             return;
         }
-        await this.deleteProfileAndUnsubscribeConfirmed();
-        this.$router.push("logout");
+        const request = await new DeleteProfileReasonDialog().show();
+        if (request) {
+            await this.deleteProfileAndUnsubscribeConfirmed(request);
+            this.$router.push("logout");
+        }
     }
 
     @ShowProgress
-    private async deleteProfileAndUnsubscribeConfirmed(): Promise<void> {
-        await this.clientService.deleteProfileAndUnsubscribe();
+    private async deleteProfileAndUnsubscribeConfirmed(deleteProfileRequest: DeleteProfileRequest): Promise<void> {
+        await this.clientService.deleteProfileAndUnsubscribe(deleteProfileRequest);
     }
 
     /**

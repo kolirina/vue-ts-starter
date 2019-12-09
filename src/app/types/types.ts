@@ -26,7 +26,6 @@ export type NavBarItem = {
     /** routing, для корневых элементов может не заполнен */
     action?: string,
     path?: string,
-    icon?: string,
     active?: boolean,
     subMenu?: NavBarItem[],
     params?: { [key: string]: string }
@@ -502,7 +501,7 @@ export type Bond = Share & {
     /** Отформатированное значение номинала */
     formattedFacevalue: string;
     /** Признак что облигация уже погашена на данный момент */
-    isRepaid: boolean;
+    repaid: boolean;
     /** Абсолютная текущая цена облигации без учета НКД */
     absolutePrice: string;
 };
@@ -704,11 +703,11 @@ export interface RebalancingModel {
 @Enum("code")
 export class CurrencyUnit extends (EnumType as IStaticEnum<CurrencyUnit>) {
 
-    static readonly RUB = new CurrencyUnit("RUB", "Рубль");
-    static readonly USD = new CurrencyUnit("USD", "Доллар");
-    static readonly EUR = new CurrencyUnit("EUR", "Евро");
+    static readonly RUB = new CurrencyUnit("RUB", "Рубль", "₽");
+    static readonly USD = new CurrencyUnit("USD", "Доллар", "$");
+    static readonly EUR = new CurrencyUnit("EUR", "Евро", "€");
 
-    private constructor(public code: string, public description: string) {
+    private constructor(public code: string, public description: string, public symbol: string) {
         super();
     }
 }

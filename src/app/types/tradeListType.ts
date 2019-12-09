@@ -4,6 +4,7 @@ import {Enum, EnumType, IStaticEnum} from "../platform/enum";
 export class TradeListType extends (EnumType as IStaticEnum<TradeListType>) {
     static readonly FULL = new TradeListType("Все");
     static readonly STOCK = new TradeListType("Акции");
+    static readonly ASSET = new TradeListType("Прочие активы");
     static readonly BOND = new TradeListType("Облигации");
     static readonly MONEY = new TradeListType("Денежные средства");
 
