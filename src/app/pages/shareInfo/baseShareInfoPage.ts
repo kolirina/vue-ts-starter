@@ -464,7 +464,7 @@ export class BaseShareInfoPage extends UI {
     }
 
     private async onShareSelect(share: Share): Promise<void> {
-        if (this.$router.currentRoute.params.ticker === share?.ticker) {
+        if ([share?.ticker, String(share?.id)].includes(this.$router.currentRoute.params.ticker)) {
             this.share = share;
             return;
         }
