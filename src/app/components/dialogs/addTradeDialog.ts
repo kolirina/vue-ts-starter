@@ -77,7 +77,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                             <v-flex v-if="shareAssetType" xs12 :class="portfolioProModeEnabled ? 'sm6' : 'sm9'">
                                 <share-search :asset-type="assetType" :filtered-shares="filteredShares" :placeholder="shareSearchPlaceholder" class="required"
                                               :create-asset-allowed="createAssetAllowed"
-                                              @change="onShareSelect" @clear="onShareClear" autofocus></share-search>
+                                              @change="onShareSelect" @clear="onShareClear" autofocus ellipsis></share-search>
                                 <!-- Дополнительная информация -->
                                 <div v-if="isAssetTrade" class="fs12-opacity mt-1">
                                     <span>
