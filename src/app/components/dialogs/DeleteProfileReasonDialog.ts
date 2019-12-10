@@ -17,7 +17,7 @@ import {DeleteProfileReason, DeleteProfileRequest} from "../../services/clientSe
                             <v-radio v-for="answer in DeleteProfileReason.values()" :key="answer.code" :label="answer.description" :value="answer"></v-radio>
                         </v-radio-group>
                         <v-layout v-if="deleteProfileReason">
-                            <v-text-field v-model="comment" box counter="255" label="Комментарий" type="text" class="other-answer-area"></v-text-field>
+                            <v-text-field v-model="comment" box counter="255" maxlength="255" label="Комментарий" type="text" class="other-answer-area"></v-text-field>
                         </v-layout>
                     </v-layout>
                 </v-card-text>
