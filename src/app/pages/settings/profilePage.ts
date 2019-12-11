@@ -2,8 +2,9 @@ import {Inject} from "typescript-ioc";
 import {namespace} from "vuex-class/lib/bindings";
 import {Component, UI} from "../../app/ui";
 import {ChangePasswordDialog} from "../../components/dialogs/changePasswordDialog";
+import {ConfirmDeleteProfileDialog} from "../../components/dialogs/confirmDeleteProfileDialog";
 import {ConfirmDialog} from "../../components/dialogs/confirmDialog";
-import {DeleteProfileReasonDialog} from "../../components/dialogs/DeleteProfileReasonDialog";
+import {DeleteProfileReasonDialog} from "../../components/dialogs/deleteProfileReasonDialog";
 import {UnsubscribedAnswerDialog} from "../../components/dialogs/UnsubscribedAnswerDialog";
 import {ThemeSwitcher} from "../../components/themeSwitcher";
 import {ShowProgress} from "../../platform/decorators/showProgress";
@@ -261,8 +262,7 @@ export class ProfilePage extends UI {
      * Удаляет профиль
      */
     private async deleteProfileAndUnsubscribe(): Promise<void> {
-        const result = await new ConfirmDialog().show("Вы уверены, что хотите удалить профиль? " +
-            "Личный кабинет Intelinvest будет недоступен.");
+        const result = await new ConfirmDeleteProfileDialog().show(this.$router);
         if (result !== BtnReturn.YES) {
             return;
         }

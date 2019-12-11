@@ -31,7 +31,7 @@ import {Asset, Bond, Share, ShareType} from "../types/types";
                         :loading="shareSearch" no-data-text="Ничего не найдено" clearable :required="required" :rules="rules"
                         dense :hide-no-data="hideNoDataLabel" :no-filter="true" :search-input.sync="searchQuery" :autofocus="autofocus">
             <template #selection="data">
-                {{ shareLabelSelected(data.item) }}
+                <span :class="{ellipsis: ellipsis, 'mw218': ellipsis}" :title="shareLabelSelected(data.item)">{{ shareLabelSelected(data.item) }}</span>
             </template>
             <template #item="data">
                 <span v-html="shareLabelListItem(data.item)"></span>
@@ -80,6 +80,8 @@ export class ShareSearchComponent extends UI {
     private required: boolean;
     @Prop({required: false, type: Array, default: (): any[] => []})
     private rules: any[];
+    @Prop({required: false, type: Boolean, default: false})
+    private ellipsis: boolean;
     /** Отфильтрованные данные */
     private filteredSharesMutated: Share[] = [];
     /** Тип актива бумаги */
