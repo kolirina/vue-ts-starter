@@ -52,3 +52,8 @@ input.highcharts-range-selector:focus {
     width: 100% !important;
   }
 }
+
+.dividing-line {
+  border-bottom: 1px solid $sidebar-hr-color;
+  margin: 24px 0;
+}

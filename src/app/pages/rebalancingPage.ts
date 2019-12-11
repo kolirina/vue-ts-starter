@@ -20,26 +20,25 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-container class="adviser-wrap">
-            <expanded-panel :value="$uistate.rebalancingPanel" :withMenu="false" :state="$uistate.REBALANCING_PANEL">
-                <template #header>Ребалансировка портфеля</template>
+        <v-container class="rebalancing">
+            <div class="section-title">Ребалансировка</div>
+                <v-card v-if="!emptyRows">
+                    <div class="section-padding">
+                        <div v-if="isStepVisible(0)" class="info-block">
+                            <b>Ребалансировка</b> - это процедура, позволяющаяя увеличить доходность портфеля.
+                            Вы продаете подорожавшие активы и покупаете подешевевшие.<br/>
+                            Сохраняя при этом заранее выбранные доли в портфеле.
+                            <br/><br/>
+                            Возможна также только покупка активов для выправления долей,
+                            если вы не хотите продавать активы, а только распределить денежные средства.
+                            <br/>
+                            Следуйте инструкциям на экране для ребанасировки вашего портфеля акций.
+                        </div>
+                        <div v-if="isStepVisible(0)" class="dividing-line"></div>
 
-                <v-layout v-if="!emptyRows" wrap align-center row fill-height class="mt-3 ma-auto maxW1100">
-                    <v-flex v-if="isStepVisible(0)" xs12 class="mt-4 mb-5 fs14">
-                        <b>Ребалансировка</b> - это процедура, позволяющаяя увеличить доходность портфеля.
-                        Вы продаете подорожавшие активы и покупаете подешевевшие.<br/>
-                        Сохраняя при этом заранее выбранные доли в портфеле.
-                        <br/>
-                        Возможна также только покупка активов для выправления долей,
-                        если вы не хотите продавать активы, а только распределить денежные средства.
-                        <br/>
-                        Следуйте инструкциям на экране для ребанасировки вашего портфеля акций.
-                    </v-flex>
-
-                    <v-flex v-if="isStepVisible(0)" xs12>
-                        <v-layout wrap align-center row fill-height>
-                            <v-flex xs12 sm3>
-                                <span class="fs14">Свободные денежные средства</span>
+                        <v-flex v-if="isStepVisible(0)" xs12>
+                            <v-card-title class="paddT0 paddL0">
+                                <span>Свободные денежные средства</span>
                                 <v-tooltip content-class="custom-tooltip-wrap" bottom>
                                     <sup class="custom-tooltip" slot="activator">
                                         <v-icon>fas fa-info-circle</v-icon>
@@ -50,33 +49,37 @@ const MainStore = namespace(StoreType.MAIN);
                                         просто узнать сколько вам необходимо купить, введите свое значение.
                                     </span>
                                 </v-tooltip>
-                            </v-flex>
-
-                            <v-flex xs12 sm6>
-                                <v-layout align-center justify-center row fill-height>
-                                    <v-flex xs12 sm10>
-                                        <ii-number-field label="Сумма" v-model="moneyAmount" :decimals="2" name="money_amount" v-validate="required + '|min_value:0.01'"
-                                                         :error-messages="errors.collect('money_amount')" :class="required" key="money-amount" maxLength="18"></ii-number-field>
-                                    </v-flex>
-                                    <v-flex xs12 sm2 class="pl-2">
-                                        <v-text-field :value="currency" label="Валюта" disabled></v-text-field>
-                                    </v-flex>
-                                </v-layout>
-                                <div>
-                            <span v-if="showFreeBalanceHint">
-                                <span class="fs12-opacity mt-1">В портфеле сейчас:</span>
-                                <a class="fs12" @click="setFreeBalanceAndCalculate" title="Распределить">{{ freeBalance | amount(true) }} {{ freeBalance | currencySymbol }}</a>
-                            </span>
-                                </div>
-                            </v-flex>
-                        </v-layout>
-                    </v-flex>
-
-                    <v-fade-transition>
-                        <v-flex v-if="isStepVisible(1)" xs12>
+                            </v-card-title>
                             <v-layout wrap align-center row fill-height>
-                                <v-flex xs12 sm3>
-                                    <span class="fs14">Распределение долей</span>
+                                <v-flex xs12>
+                                    <v-layout row fill-height>
+                                        <v-flex class="sumField">
+                                            <ii-number-field label="Сумма" v-model="moneyAmount" :decimals="2" name="money_amount"
+                                                             v-validate="required + '|min_value:0.01'" :error-messages="errors.collect('money_amount')"
+                                                             :class="required" key="money-amount" maxLength="18"></ii-number-field>
+                                        </v-flex>
+                                        <div class="w100 pl-2">
+                                            <v-text-field :value="currency" label="Валюта" disabled class="currencyField"></v-text-field>
+                                        </div>
+                                        <v-btn v-if="!isStepVisible(1)" @click="nextStep" color="primary" class="btn margL16">
+                                            Далее
+                                        </v-btn>
+                                    </v-layout>
+                                    <div>
+                                        <span v-if="showFreeBalanceHint" class="margL16">
+                                            <span class="fs12-opacity mt-1">В портфеле сейчас:</span>
+                                            <a class="fs12" @click="setFreeBalanceAndCalculate" title="Распределить">{{ freeBalance | amount(true) }} {{ freeBalance | currencySymbol }}</a>
+                                        </span>
+                                    </div>
+                                </v-flex>
+                            </v-layout>
+                        </v-flex>
+                        <div v-if="isStepVisible(1)" class="dividing-line"></div>
+
+                        <v-fade-transition>
+                            <v-flex v-if="isStepVisible(1)" xs12>
+                                <v-card-title class="paddT0 paddL0">
+                                    <span>Распределение долей</span>
                                     <v-tooltip content-class="custom-tooltip-wrap" bottom>
                                         <sup class="custom-tooltip" slot="activator">
                                             <v-icon>fas fa-info-circle</v-icon>
@@ -86,118 +89,110 @@ const MainStore = namespace(StoreType.MAIN);
                                         к которым хотите привести активы.
                                     </span>
                                     </v-tooltip>
-                                </v-flex>
-
+                                </v-card-title>
                                 <v-flex xs12 sm6>
-                                    <v-radio-group v-model="rebalancingType">
+                                    <v-radio-group v-model="rebalancingType" class="margT0">
                                         <v-radio v-for="type in [RebalancingType.BY_AMOUNT, RebalancingType.BY_PERCENT]" :key="type.code" :label="type.description"
                                                  :value="type"></v-radio>
                                     </v-radio-group>
                                 </v-flex>
+                                <v-btn v-if="!isStepVisible(2)" @click="nextStep" color="primary" class="btn">
+                                    Далее
+                                </v-btn>
+                            </v-flex>
+                        </v-fade-transition>
+                    </div>
+
+                    <v-fade-transition>
+                        <v-flex v-if="isStepVisible(2)" xs12 class="rebalancingTbl">
+                            <p class="text-xs-right fs14 margR28">
+                                <v-menu v-model="menu" :close-on-content-click="false" :nudge-width="80" :nudge-bottom="25" bottom>
+                                    <a slot="activator">Расширенные настройки</a>
+
+                                    <v-card class="portfolio-rows-filter__settings" style="box-shadow: none !important;">
+                                        <v-layout justify-center column fill-height>
+                                            <v-switch v-model="calculationsInLots" class="ml-3">
+                                                <template #label>
+                                                    <span>Расчеты в лотах</span>
+                                                    <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" bottom>
+                                                        <sup class="custom-tooltip" slot="activator">
+                                                            <v-icon>fas fa-info-circle</v-icon>
+                                                        </sup>
+                                                        <span>
+                                                            Включите, если хотите чтобы количество расчитывалось в лотах, а не в штуках.
+                                                        </span>
+                                                    </v-tooltip>
+                                                </template>
+                                            </v-switch>
+
+                                            <v-switch v-if="showTargetColumn" v-model="onlyBuyTrades" @change="calculate" class="ml-3">
+                                                <template #label>
+                                                    <span>Только покупки</span>
+                                                    <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" bottom>
+                                                        <sup class="custom-tooltip" slot="activator">
+                                                            <v-icon>fas fa-info-circle</v-icon>
+                                                        </sup>
+                                                        <span>
+                                                            Включите, если хотите чтобы ребалансировка произвоидалась только с учетом сделок на покупку
+                                                        </span>
+                                                    </v-tooltip>
+                                                </template>
+                                            </v-switch>
+                                        </v-layout>
+                                    </v-card>
+                                </v-menu>
+                            </p>
+                            <v-data-table :headers="getHeaders" :items="calculateRows" item-key="id"
+                                          :custom-sort="customSort" :pagination.sync="pagination" class="data-table" hide-actions must-sort>
+                                <template #headerCell="props">
+                                    <span>{{ props.header.text }}</span>
+                                </template>
+                                <template #items="props">
+                                    <tr class="selectable">
+                                        <td class="text-xs-left">{{ props.item.name }}</td>
+                                        <td class="text-xs-right ii-number-cell">
+                                            {{ props.item.price | amount }}&nbsp;<span class="second-value">{{ currencyForPrice(props.item) }}</span>
+                                        </td>
+                                        <td class="text-xs-right">{{ props.item.currentPercent }}</td>
+                                        <td v-if="showTargetColumn" class="text-xs-right">
+                                            <ii-number-field v-model="props.item.targetPercent" :decimals="2" maxLength="5"></ii-number-field>
+                                        </td>
+                                        <td class="text-xs-left">
+                                            <span class="ml-2" v-html="getAction(props.item)"></span>
+                                        </td>
+                                    </tr>
+                                </template>
+
+                                <template #footer>
+                                    <tr class="fs14">
+                                        <td class="text-xs-left"><b>Итого:</b></td>
+                                        <td colspan="2" class="text-xs-right pr-0">
+                                            <span class="pr-1">
+                                                <b>{{ totalCurrentPercent | number }} %</b>
+                                            </span>
+                                        </td>
+                                        <td v-if="showTargetColumn" class="text-xs-right pr-3">
+                                            <span>
+                                                <b>{{ totalTargetPercent | number }} %</b>
+                                            </span>
+                                        </td>
+                                        <td class="text-xs-right pl-2">
+                                            <div class="totalInfo" v-html="totalInfo"></div>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </v-data-table>
+
+                            <v-layout align-center justify-center row fill-heigh class="mt-3 mb-4">
+                                <v-btn @click="calculate" color="primary" class="btn">
+                                    Сформировать
+                                </v-btn>
                             </v-layout>
                         </v-flex>
                     </v-fade-transition>
-
-                    <v-layout v-if="(isStepVisible(0) || isStepVisible(1)) && !isStepVisible(2)" align-center justify-center row fill-heigh class="mt-3 mb-4">
-                        <v-btn @click="nextStep" color="primary" class="btn">
-                            Далее
-                        </v-btn>
-                    </v-layout>
-
-                    <v-fade-transition>
-                        <v-flex v-if="isStepVisible(2)" xs12>
-                            <v-card flat>
-                                <v-card-text class="pa-0">
-                                    <p class="text-xs-right fs14">
-                                        <v-menu v-model="menu" :close-on-content-click="false" :nudge-width="80" :nudge-bottom="25" bottom>
-                                            <a slot="activator">Расширенные настройки</a>
-
-                                            <v-card class="portfolio-rows-filter__settings" style="box-shadow: none !important;">
-                                                <v-layout justify-center column fill-height>
-                                                    <v-switch v-model="calculationsInLots" class="ml-3">
-                                                        <template #label>
-                                                            <span>Расчеты в лотах</span>
-                                                            <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" bottom>
-                                                                <sup class="custom-tooltip" slot="activator">
-                                                                    <v-icon>fas fa-info-circle</v-icon>
-                                                                </sup>
-                                                                <span>
-                                                                    Включите, если хотите чтобы количество расчитывалось в лотах, а не в штуках.
-                                                                </span>
-                                                            </v-tooltip>
-                                                        </template>
-                                                    </v-switch>
-
-                                                    <v-switch v-if="showTargetColumn" v-model="onlyBuyTrades" @change="calculate" class="ml-3">
-                                                        <template #label>
-                                                            <span>Только покупки</span>
-                                                            <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" bottom>
-                                                                <sup class="custom-tooltip" slot="activator">
-                                                                    <v-icon>fas fa-info-circle</v-icon>
-                                                                </sup>
-                                                                <span>
-                                                                    Включите, если хотите чтобы ребалансировка произвоидалась только с учетом сделок на покупку
-                                                                </span>
-                                                            </v-tooltip>
-                                                        </template>
-                                                    </v-switch>
-                                                </v-layout>
-                                            </v-card>
-                                        </v-menu>
-                                    </p>
-                                    <v-data-table :headers="getHeaders" :items="calculateRows" item-key="id"
-                                                  :custom-sort="customSort" :pagination.sync="pagination" class="data-table" hide-actions must-sort>
-                                        <template #headerCell="props">
-                                            <span>{{ props.header.text }}</span>
-                                        </template>
-                                        <template #items="props">
-                                            <tr class="selectable">
-                                                <td class="text-xs-left">{{ props.item.name }}</td>
-                                                <td class="text-xs-right ii-number-cell">
-                                                    {{ props.item.price | amount }}&nbsp;<span class="second-value">{{ currencyForPrice(props.item) }}</span>
-                                                </td>
-                                                <td class="text-xs-right">{{ props.item.currentPercent }}</td>
-                                                <td v-if="showTargetColumn" class="text-xs-right">
-                                                    <ii-number-field v-model="props.item.targetPercent" :decimals="2" maxLength="5"></ii-number-field>
-                                                </td>
-                                                <td class="text-xs-left">
-                                                    <span class="ml-2" v-html="getAction(props.item)"></span>
-                                                </td>
-                                            </tr>
-                                        </template>
-
-                                        <template #footer>
-                                            <tr class="fs14">
-                                                <td colspan="3" class="text-xs-right">
-                                                    <span class="pr-1">
-                                                        Итого: <b>{{ totalCurrentPercent | number }} %</b>
-                                                    </span>
-                                                </td>
-                                                <td v-if="showTargetColumn" class="text-xs-right">
-                                                    <span>
-                                                        <b>{{ totalTargetPercent | number }} %</b>
-                                                    </span>
-                                                </td>
-                                                <td class="text-xs-left pl-2" style="padding-left: 16px !important;">
-                                                    <span v-html="totalInfo"></span>
-                                                </td>
-                                            </tr>
-                                        </template>
-                                    </v-data-table>
-
-                                    <v-layout align-center justify-center row fill-heigh class="mt-3 mb-4">
-                                        <v-btn @click="calculate" color="primary" class="btn">
-                                            Сформировать
-                                        </v-btn>
-                                    </v-layout>
-                                </v-card-text>
-                            </v-card>
-                        </v-flex>
-                    </v-fade-transition>
-                </v-layout>
+                </v-card>
 
                 <empty-portfolio-stub v-else></empty-portfolio-stub>
-            </expanded-panel>
         </v-container>
     `,
     components: {RebalancingComponent, EmptyPortfolioStub}
@@ -394,9 +389,9 @@ export class RebalancingPage extends UI {
         const sell = this.calculateRows.map(row => new Decimal(this.calculationsInLots ? row.amountForLots : row.amountForPieces))
             .filter(amount => amount.isNegative())
             .reduce((result: Decimal, current: Decimal) => result.add(current), new Decimal("0")).abs().toString();
-        return `<b>${Filters.formatNumber(buy)}</b> - сумма покупок<br/>
-        <b>${Filters.formatNumber(sell)}</b> - сумма продаж<br/>
-        <b>${Filters.formatNumber(this.totalAmount)}</b> - использованные денежные средства`;
+        return `<div><div>Cумма продаж</div><div><b>${Filters.formatNumber(sell)}</b> <span class="currency">${this.currency}</span></div></div>
+                <div><div>Cумма покупок</div><div><b>${Filters.formatNumber(buy)}</b> <span class="currency">${this.currency}</span></div></div>
+                <div><div>Использованные средства</div><div><b>${Filters.formatNumber(this.totalAmount)}</b> <span class="currency">${this.currency}</span></div></div>`;
     }
 
     private get totalAmount(): string {
