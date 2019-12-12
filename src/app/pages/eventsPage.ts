@@ -480,6 +480,7 @@ export class EventsPage extends UI {
             share: event.share,
             eventFields: {
                 amount: event.cleanAmount,
+                amountPerShare: event.amountPerShare,
                 quantity: event.quantity,
                 eventPeriod: event.period,
                 eventDate: event.date,
