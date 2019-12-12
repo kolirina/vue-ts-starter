@@ -209,14 +209,7 @@ export class PortfolioLineChart extends UI {
             (this.seriesFilter as any)[series.code] = this.getStorageValue(series, [ChartSeries.EVENTS, ChartSeries.TOTAL].includes(series));
         });
 
-        [ChartSeries.TOTAL, ChartSeries.STOCKS, ChartSeries.BONDS, ChartSeries.MONEY, ChartSeries.IN_OUT_MONEY].forEach(series => {
-            this.lineChartSeries[series.code] = {
-                data: ChartUtils.convertToDots(this.data, series.fieldName),
-                balloonTitle: series === ChartSeries.TOTAL ? this.balloonTitle : series.description,
-                enabled: (this.seriesFilter as any)[series.code],
-                id: series.code
-            };
-        });
+        this.prepareLineData();
         this.lineChartSeries[ChartSeries.INDEX_STOCK_EXCHANGE.code] = {
             data: this.moexIndexData,
             balloonTitle: ChartSeries.INDEX_STOCK_EXCHANGE.description,
@@ -227,12 +220,13 @@ export class PortfolioLineChart extends UI {
     }
 
     @Watch("eventsChartData")
-    async onDataChange(): Promise<void> {
+    async onEventsChartDataChange(): Promise<void> {
         await this.draw();
     }
 
     @Watch("data")
-    async onEventsChartDataChange(): Promise<void> {
+    async onDataChange(): Promise<void> {
+        this.prepareLineData();
         await this.draw();
     }
 
@@ -281,6 +275,17 @@ export class PortfolioLineChart extends UI {
         const seriesEnabled = (this.seriesFilter as any)[series.code];
         this.localStorage.set<boolean>(`${this.stateKeyPrefix}${series.storagePrefix}`, seriesEnabled);
         this.lineChartSeries[series.code].enabled = seriesEnabled;
+    }
+
+    private prepareLineData(): void {
+        [ChartSeries.TOTAL, ChartSeries.STOCKS, ChartSeries.BONDS, ChartSeries.MONEY, ChartSeries.IN_OUT_MONEY].forEach(series => {
+            this.lineChartSeries[series.code] = {
+                data: ChartUtils.convertToDots(this.data, series.fieldName),
+                balloonTitle: series === ChartSeries.TOTAL ? this.balloonTitle : series.description,
+                enabled: (this.seriesFilter as any)[series.code],
+                id: series.code
+            };
+        });
     }
 
     /**

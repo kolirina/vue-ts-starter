@@ -163,6 +163,7 @@ export interface RejectShareEventRequest {
 export interface EventFields {
     quantity: number;
     amount: string;
+    amountPerShare: string;
     note: string;
     perOne: boolean;
     eventPeriod: string;
