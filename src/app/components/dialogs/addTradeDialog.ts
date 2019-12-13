@@ -160,14 +160,14 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                             </v-flex>
 
                             <!-- Номинал -->
-                            <v-flex v-if="isBondTrade" xs12 sm3>
+                            <v-flex v-if="isBondTrade" xs12 :class="operation === Operation.REPAYMENT ? 'sm6' : 'sm3'">
                                 <ii-number-field label="Номинал" v-model="facevalue" @keyup="calculateFee" :decimals="2" name="facevalue" maxLength="11"
                                                  v-validate="'required|min_value:0.01'" :error-messages="errors.collect('facevalue')" class="required">
                                 </ii-number-field>
                             </v-flex>
 
                             <!-- НКД -->
-                            <v-flex xs12 sm9>
+                            <v-flex v-if="operation !== Operation.REPAYMENT" xs12 sm9>
                                 <v-layout wrap>
                                     <v-flex v-if="isBondTrade" xs12 lg6>
                                         <ii-number-field label="НКД" v-model="nkd" @keyup="calculateFee" :decimals="2" name="nkd" maxLength="11"
@@ -860,7 +860,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         // при погашении нет НКД и комиссий, цена всегда 100%
         if (this.operation === Operation.REPAYMENT) {
             this.price = "100.00";
-            this.facevalue = TradeUtils.decimal(this.data.eventFields.amount);
+            this.facevalue = TradeUtils.decimal(this.data.eventFields.amountPerShare);
             this.nkd = "";
             this.fee = "";
         } else {

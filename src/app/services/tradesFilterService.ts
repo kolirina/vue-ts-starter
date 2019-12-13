@@ -91,7 +91,7 @@ export class TradesFilterService {
         const defaultFilter = this.getDefaultFilter();
         return filter.listType === defaultFilter.listType && filter.showLinkedMoneyTrades === defaultFilter.showLinkedMoneyTrades &&
             filter.showMoneyTrades === defaultFilter.showMoneyTrades && filter.search === defaultFilter.search &&
-            filter.operation.every(operation => this.getDefaultFilter().operation.includes(operation)) && filter.start === defaultFilter.start && filter.end === defaultFilter.end;
+            defaultFilter.operation.every(operation => filter.operation.includes(operation)) && filter.start === defaultFilter.start && filter.end === defaultFilter.end;
     }
 
     private getTradeFilterFromPlainObject(filter: TradesFilterRequest): TradesFilter {

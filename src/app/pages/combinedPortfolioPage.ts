@@ -7,6 +7,7 @@ import {Resolver} from "../../../typings/vue";
 import {Component, UI} from "../app/ui";
 import {BlockByTariffDialog} from "../components/dialogs/blockByTariffDialog";
 import {CompositePortfolioManagement} from "../components/dialogs/compositePortfolioManagement";
+import {Storage} from "../platform/services/storage";
 import {ClientInfo, ClientService} from "../services/clientService";
 import {MarketHistoryService} from "../services/marketHistoryService";
 import {OverviewService} from "../services/overviewService";
@@ -78,6 +79,8 @@ export class CombinedPortfolioPage extends UI {
     @Inject
     private overviewService: OverviewService;
     @Inject
+    private storage: Storage;
+    @Inject
     private marketHistoryService: MarketHistoryService;
     /** Данные комбинированного портфеля */
     private overview: Overview = null;
@@ -99,6 +102,7 @@ export class CombinedPortfolioPage extends UI {
      * @inheritDoc
      */
     async created(): Promise<void> {
+        this.viewCurrency = this.storage.get<string>(StoreKeys.COMBINED_VIEW_CURRENCY_KEY, "RUB");
         this.setIds();
         await this.doCombinedPortfolio();
         UI.on(EventType.TRADE_CREATED, async (event: AddTradeEvent): Promise<void> => {
@@ -152,6 +156,7 @@ export class CombinedPortfolioPage extends UI {
         this.overview = null;
         this.overview = await this.overviewService.getPortfolioOverviewCombined({ids: this.ids, viewCurrency: this.viewCurrency});
         await this.loadPortfolioLineChart();
+        this.storage.set(StoreKeys.COMBINED_VIEW_CURRENCY_KEY, this.viewCurrency);
     }
 
     private blockNotEmpty(): boolean {
