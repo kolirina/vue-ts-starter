@@ -61,7 +61,7 @@ import {MainStore} from "../../vuex/mainStore";
 
                         <v-layout>
                             <v-flex xs12 sm5>
-                                <ii-number-field label="Фиксированная комиссия" v-model="portfolioParams.fixFee"
+                                <ii-number-field label="Фиксированная комиссия в %" v-model="portfolioParams.fixFee"
                                                  hint="Для автоматического рассчета комиссии при внесении сделок." :decimals="5" @keyup.enter="savePortfolio">
                                 </ii-number-field>
                             </v-flex>
