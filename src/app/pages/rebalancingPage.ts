@@ -190,7 +190,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             <b>{{ totalTargetPercent | number }} %</b>
                                         </span>
                                     </td>
-                                    <td class="text-xs-right pl-2">
+                                    <td class="text-xs-left pl-2">
                                         <div class="totalInfo" v-html="totalInfo"></div>
                                     </td>
                                 </tr>
