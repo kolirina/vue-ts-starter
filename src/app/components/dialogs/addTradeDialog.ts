@@ -438,7 +438,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     private async setDialogParams(): Promise<void> {
         this.assetType = this.data.assetType || AssetType.STOCK;
-        this.moneyCurrency = this.data.moneyCurrency || "RUB";
+        this.moneyCurrency = this.data.moneyCurrency || this.portfolio.portfolioParams.viewCurrency;
         this.share = this.data.share || null;
         this.operation = this.data.operation || Operation.BUY;
         await this.updatePortfolioInfo();
