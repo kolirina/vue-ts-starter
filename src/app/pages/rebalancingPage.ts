@@ -53,9 +53,8 @@ const MainStore = namespace(StoreType.MAIN);
                             <v-flex xs12>
                                 <v-layout row fill-height>
                                     <v-flex class="sumField">
-                                        <ii-number-field label="Сумма" v-model="moneyAmount" :decimals="2" name="money_amount"
-                                                         v-validate="required + '|min_value:0.01'" :error-messages="errors.collect('money_amount')"
-                                                         :class="required" key="money-amount" maxLength="18"></ii-number-field>
+                                        <ii-number-field label="Сумма" v-model="moneyAmount" :decimals="2" name="money_amount" :error-messages="errors.collect('money_amount')"
+                                                         key="money-amount" maxLength="18"></ii-number-field>
                                     </v-flex>
                                     <div class="w100 pl-2">
                                         <v-text-field :value="currency" label="Валюта" disabled class="currencyField"></v-text-field>
@@ -67,7 +66,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 <div>
                                     <span v-if="showFreeBalanceHint" class="margL16">
                                         <span class="fs12-opacity mt-1">В портфеле сейчас:</span>
-                                        <a class="fs12" @click="setFreeBalanceAndCalculate"
+                                        <a class="fs12" @click="setFreeBalance"
                                            title="Распределить">{{ freeBalance | amount(true) }} {{ freeBalance | currencySymbol }}</a>
                                     </span>
                                 </div>
@@ -93,7 +92,7 @@ const MainStore = namespace(StoreType.MAIN);
                             <v-flex xs12 sm6>
                                 <v-radio-group v-model="rebalancingType" class="margT0">
                                     <v-radio v-for="type in [RebalancingType.BY_AMOUNT, RebalancingType.BY_PERCENT]" :key="type.code" :label="type.description"
-                                             :value="type"></v-radio>
+                                             :value="type" @change="onRebalancingTypeChange"></v-radio>
                                 </v-radio-group>
                             </v-flex>
                             <v-btn v-if="!isStepVisible(2)" @click="nextStep" color="primary" class="btn">
@@ -106,26 +105,12 @@ const MainStore = namespace(StoreType.MAIN);
                 <v-fade-transition>
                     <v-flex v-if="isStepVisible(2)" xs12 class="rebalancingTbl">
                         <p class="text-xs-right fs14 margR28">
-                            <v-menu v-model="menu" :close-on-content-click="false" :nudge-width="80" :nudge-bottom="25" bottom>
+                            <v-menu v-model="menu" :close-on-content-click="false" :nudge-width="100" :nudge-bottom="25" bottom>
                                 <a slot="activator">Расширенные настройки</a>
 
                                 <v-card class="portfolio-rows-filter__settings" style="box-shadow: none !important;">
                                     <v-layout justify-center column fill-height>
-                                        <v-switch v-model="calculationsInLots" class="ml-3">
-                                            <template #label>
-                                                <span>Расчеты в лотах</span>
-                                                <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" bottom>
-                                                    <sup class="custom-tooltip" slot="activator">
-                                                        <v-icon>fas fa-info-circle</v-icon>
-                                                    </sup>
-                                                    <span>
-                                                            Включите, если хотите чтобы количество расчитывалось в лотах, а не в штуках.
-                                                        </span>
-                                                </v-tooltip>
-                                            </template>
-                                        </v-switch>
-
-                                        <v-switch v-if="showTargetColumn" v-model="onlyBuyTrades" @change="calculate" class="ml-3">
+                                        <v-switch v-model="onlyBuyTrades" @change="calculate" class="ml-3">
                                             <template #label>
                                                 <span>Только покупки</span>
                                                 <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" bottom>
@@ -140,7 +125,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         </v-switch>
 
                                         <div class="mt-3">
-                                            <ii-number-field label="Отклонение целевой доли" v-model="rowLimit" :decimals="2" maxLength="5"></ii-number-field>
+                                            <ii-number-field label="Отклонение целевой доли в %" v-model="rowLimit" :decimals="2" maxLength="5"></ii-number-field>
                                         </div>
                                     </v-layout>
                                 </v-card>
@@ -272,6 +257,12 @@ export class RebalancingPage extends UI {
         this.initCalculatedRow();
     }
 
+    private onRebalancingTypeChange(newType: RebalancingType): void {
+        this.rebalancingType = newType;
+        this.onlyBuyTrades = this.rebalancingType === RebalancingType.BY_AMOUNT;
+        this.initCalculatedRow();
+    }
+
     private initCalculatedRow(): void {
         this.calculateRows = [];
         const filteredRows = this.portfolio.overview.stockPortfolio.rows.filter(row => Number(row.quantity) > 0);
@@ -341,9 +332,11 @@ export class RebalancingPage extends UI {
         await this.loadRebalancingModel();
     }
 
-    private async setFreeBalanceAndCalculate(): Promise<void> {
+    /**
+     * Устанавливает текущий баланс денег в сумму
+     */
+    private async setFreeBalance(): Promise<void> {
         this.moneyAmount = new BigMoney(this.freeBalance).amount.toString();
-        await this.calculate();
     }
 
     private nextStep(): void {
@@ -454,10 +447,6 @@ export class RebalancingPage extends UI {
 
     private get emptyRows(): boolean {
         return this.calculateRows.length === 0;
-    }
-
-    private get required(): string {
-        return this.rebalancingType === RebalancingType.BY_PERCENT ? "" : "required";
     }
 
     private get showTargetColumn(): boolean {

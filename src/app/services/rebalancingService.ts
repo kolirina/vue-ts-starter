@@ -49,8 +49,8 @@ export class RebalancingService {
             .reduce((result: Decimal, current: Decimal) => result.add(current), new Decimal("0"))
             .toDP(2, Decimal.ROUND_HALF_UP);
         console.log(targetPercents.toString(), rowLimit);
-        if (targetPercents.comparedTo(this._100) > 0) {
-            throw Error("Сумма целевых долей не должна превышать 100%");
+        if (targetPercents.comparedTo(this._100) !== 0) {
+            throw Error("Сумма целевых долей должна составлять 100%");
         }
         const totalAmount = incomeAmountString ? new Decimal(incomeAmountString) : this.ZERO;
         this.calculateRowLimits(rows, totalAmount, totalCurrCost, rowLimit);
@@ -172,7 +172,11 @@ export class RebalancingService {
     }
 
     private isRebalancingAllowed(rows: CalculateRow[]): boolean {
-        return rows.every(row => row.max.abs().comparedTo(row.lotPrice) > 0);
+        return rows.every(row => {
+            const lotMin = row.min.div(row.lotPrice).toDP(0, Decimal.ROUND_UP);
+            const lotMax = row.max.div(row.lotPrice).toDP(0, Decimal.ROUND_DOWN);
+            return lotMin.comparedTo(lotMax) <= 0;
+        });
     }
 }
 
