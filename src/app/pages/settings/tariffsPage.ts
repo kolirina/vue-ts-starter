@@ -182,6 +182,9 @@ export class TariffAgreement extends UI {
                         Формирование составного портфеля из портфелей различных брокеров
                     </div>
                     <div class="py-3 fs14">
+                        Автоматическая ребалансировка портфелей
+                    </div>
+                    <div class="py-3 fs14">
                         Мобильное приложение
                     </div>
                 </div>
