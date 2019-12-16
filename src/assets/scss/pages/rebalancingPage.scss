@@ -33,6 +33,16 @@
   .rebalancingTbl {
     margin-top: -48px;
 
+    .v-text-field .v-input__slot {
+      height: 24px;
+      font-size: 12px;
+
+      input {
+        height: 24px;
+        padding: 4px 8px !important;
+      }
+    }
+
     tfoot td {
       vertical-align: top;
       padding-top: 16px !important;
