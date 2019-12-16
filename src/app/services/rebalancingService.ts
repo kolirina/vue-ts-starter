@@ -33,37 +33,26 @@ export class RebalancingService {
     private http: Http;
 
     calculateRows(rows: CalculateRow[], incomeAmountString: string, totalCurrCost: Decimal, rowLimit: number = 5, onlyBuyTrades: boolean = true, type: RebalancingType): void {
-        switch (type) {
-            case RebalancingType.BY_AMOUNT:
-                this.calculateByPercent2(rows, incomeAmountString, totalCurrCost, rowLimit, onlyBuyTrades);
-                break;
-            case RebalancingType.BY_PERCENT:
-                this.calculateByPercent2(rows, incomeAmountString, totalCurrCost, rowLimit, onlyBuyTrades);
-                break;
-        }
-    }
-
-    private calculateByPercent2(rows: CalculateRow[], incomeAmountString: string, totalCurrCost: Decimal, rowLimit: number = 5, onlyBuyTrades: boolean = true): void {
         this.resetRows(rows);
-        const targetPercents = rows.map(row => new Decimal(row.targetPercent || "0.00"))
+        const targetPercents = rows.map(row => new Decimal((type === RebalancingType.BY_PERCENT ? row.targetPercent : row.currentPercent) || "0.00"))
             .reduce((result: Decimal, current: Decimal) => result.add(current), new Decimal("0"))
             .toDP(2, Decimal.ROUND_HALF_UP);
-        console.log(targetPercents.toString(), rowLimit);
+        // console.log(targetPercents.toString(), rowLimit);
         if (targetPercents.comparedTo(this._100) !== 0) {
             throw Error("Сумма целевых долей должна составлять 100%");
         }
         const totalAmount = incomeAmountString ? new Decimal(incomeAmountString) : this.ZERO;
-        this.calculateRowLimits(rows, totalAmount, totalCurrCost, rowLimit);
-        console.log("START", {totalAmount: totalAmount.toString(), totalCurrCost: totalCurrCost.toString()});
-        console.table(rows.map(row => {
-            return {
-                ...row,
-                min: row.min.toString(),
-                max: row.max.toString(),
-                opt: row.opt.toString(),
-                lotPrice: row.lotPrice.toString()
-            };
-        }));
+        this.calculateRowLimits(rows, totalAmount, totalCurrCost, rowLimit, onlyBuyTrades, type);
+        // console.log("START", {totalAmount: totalAmount.toString(), totalCurrCost: totalCurrCost.toString()});
+        // console.table(rows.map(row => {
+        //     return {
+        //         ...row,
+        //         min: row.min.toString(),
+        //         max: row.max.toString(),
+        //         opt: row.opt.toString(),
+        //         lotPrice: row.lotPrice.toString()
+        //     };
+        // }));
         if (!this.isRebalancingAllowed(rows)) {
             throw Error("Попробуйте увеличить сумму внесения или допуск");
         }
@@ -72,6 +61,9 @@ export class RebalancingService {
             const price = new BigMoney(row.price).amount;
             const lotSize = new Decimal(row.lotSize);
             const minLots = row.min.div(row.lotPrice).toDP(0, Decimal.ROUND_UP);
+            if (minLots.comparedTo(this.ZERO) < 0 && onlyBuyTrades) {
+                return;
+            }
             row.lots = minLots.toNumber();
             row.amountForLots = minLots.mul(row.lotPrice).toDP(2, Decimal.ROUND_HALF_UP).toString();
         });
@@ -82,34 +74,35 @@ export class RebalancingService {
         }
         // доводим до оптимума размеры покупок
         let deltaTotalAmount = totalAmount.minus(currentAmounts);
-        console.log(totalAmount.toString(), currentAmounts.toString(), deltaTotalAmount.toString());
+        // console.log(totalAmount.toString(), currentAmounts.toString(), deltaTotalAmount.toString());
         rows.sort((row1: CalculateRow, row2: CalculateRow): number => row2.lotPrice.comparedTo(row1.lotPrice));
         deltaTotalAmount = this.optimizeRebalancing(rows, "opt", deltaTotalAmount);
-        console.table(rows.map(row => {
-            return {
-                ...row,
-                min: row.min.toString(),
-                max: row.max.toString(),
-                opt: row.opt.toString(),
-                lotPrice: row.lotPrice.toString()
-            };
-        }));
+        // console.table(rows.map(row => {
+        //     return {
+        //         ...row,
+        //         min: row.min.toString(),
+        //         max: row.max.toString(),
+        //         opt: row.opt.toString(),
+        //         lotPrice: row.lotPrice.toString()
+        //     };
+        // }));
         // проверяем дальнейшую возможность оптимизации
         // остаток денег должен быть больше чем размер лота хотя бы по одной бумаге
         const continueRebalancing = rows.map(row => new Decimal(row.lotPrice)).some(lotPrice => lotPrice.comparedTo(deltaTotalAmount) <= 0);
         if (continueRebalancing) {
             // если все еще остаток есть, доводим до максимума
             deltaTotalAmount = this.optimizeRebalancing(rows, "max", deltaTotalAmount);
-            console.table(rows.map(row => {
-                return {
-                    ...row,
-                    min: row.min.toString(),
-                    max: row.max.toString(),
-                    opt: row.opt.toString(),
-                    lotPrice: row.lotPrice.toString()
-                };
-            }));
+            // console.table(rows.map(row => {
+            //     return {
+            //         ...row,
+            //         min: row.min.toString(),
+            //         max: row.max.toString(),
+            //         opt: row.opt.toString(),
+            //         lotPrice: row.lotPrice.toString()
+            //     };
+            // }));
         }
+        this.calculateResultPercents(rows, totalAmount.plus(totalCurrCost));
     }
 
     private optimizeRebalancing(rows: CalculateRow[], field: string, deltaTotalAmount: Decimal): Decimal {
@@ -140,7 +133,6 @@ export class RebalancingService {
                             deltaTotalAmountInner = deltaTotalAmountInner.minus(amountForLots);
                         }
                     }
-
                 }
             }
             // console.log("-------------------------------------- AFTER", deltaTotalAmountInner.toString());
@@ -148,15 +140,24 @@ export class RebalancingService {
         return deltaTotalAmountInner;
     }
 
-    private calculateRowLimits(rows: CalculateRow[], totalAmount: Decimal, totalCurrCost: Decimal, rowLimit: number = 5): void {
+    private calculateRowLimits(rows: CalculateRow[], totalAmount: Decimal, totalCurrCost: Decimal, rowLimit: number = 5,
+                               onlyBuyTrades: boolean = true, type: RebalancingType): void {
         const total = totalAmount.plus(totalCurrCost);
         rows.forEach(row => {
             row.amountForLots = "0";
             row.lots = 0;
-            row.min = total.mul(new Decimal(row.targetPercent).minus(new Decimal(rowLimit))).mul(this._001).minus(row.currentCost).toDP(2, Decimal.ROUND_HALF_UP);
-            row.opt = total.mul(new Decimal(row.targetPercent)).mul(this._001).minus(row.currentCost).toDP(2, Decimal.ROUND_HALF_UP);
-            row.max = total.mul(new Decimal(row.targetPercent).plus(new Decimal(rowLimit))).mul(this._001).minus(row.currentCost).toDP(2, Decimal.ROUND_HALF_UP);
+            const percent = new Decimal(type === RebalancingType.BY_PERCENT ? row.targetPercent : row.currentPercent);
+            row.min = total.mul(percent.minus(new Decimal(rowLimit))).mul(this._001).minus(row.currentCost).toDP(2, Decimal.ROUND_HALF_UP);
+            row.opt = total.mul(percent).mul(this._001).minus(row.currentCost).toDP(2, Decimal.ROUND_HALF_UP);
+            row.max = total.mul(percent.plus(new Decimal(rowLimit))).mul(this._001).minus(row.currentCost).toDP(2, Decimal.ROUND_HALF_UP);
             row.lotPrice = new BigMoney(row.price).amount.mul(new Decimal(row.lotSize));
+        });
+    }
+
+    private calculateResultPercents(rows: CalculateRow[], totalAmount: Decimal): void {
+        rows.forEach(row => {
+            const currentCost = row.currentCost.plus(new Decimal(row.amountForLots));
+            row.resultPercent = currentCost.mul(this._100).div(totalAmount).toDP(2, Decimal.ROUND_HALF_UP).toNumber();
         });
     }
 
@@ -193,6 +194,8 @@ export interface CalculateRow {
     currentCost: Decimal;
     /** Текущая доля */
     currentPercent: number;
+    /** Итоговая доля */
+    resultPercent: number;
     /** Целевая доля */
     targetPercent: number;
     /** Размеро лота */
