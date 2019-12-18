@@ -22,11 +22,11 @@ import {OnBoardingTourService} from "../services/onBoardingTourService";
 import {StoreKeys} from "../types/storeKeys";
 import {NavBarItem, Portfolio, SignInData, Theme} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
+import {ThemeUtils} from "../utils/ThemeUtils";
 import {ActionType} from "../vuex/actionType";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {UI} from "./ui";
-import {ThemeUtils} from "../utils/ThemeUtils";
 
 const MainStore = namespace(StoreType.MAIN);
 
