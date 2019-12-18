@@ -18,8 +18,8 @@ import {Inject} from "typescript-ioc";
 import {Component, UI} from "../app/ui";
 import {Storage} from "../platform/services/storage";
 import {StoreKeys} from "../types/storeKeys";
-import {BROWSER} from "../types/types";
-import {CommonUtils} from "../utils/commonUtils";
+import {Theme} from "../types/types";
+import {ThemeUtils} from "../utils/ThemeUtils";
 
 @Component({
     // language=Vue
@@ -38,71 +38,24 @@ export class ThemeSwitcher extends UI {
     @Inject
     private storage: Storage;
 
-    private readonly CSS_STYLES = `
-    :root {
-        background-color: #fefefe;
-        filter: invert(100%);
-    }
-    img:not([src*=\".svg\"]),video {
-        filter: invert(100%);
-    }
-    .dashboard-wrap {
-        filter: invert(100%);
-    }
-    .ii--green-markup {
-        filter: invert(100%);
-    }
-    .ii--red-markup {
-        filter: invert(100%);
-    }
-    a.decorationNone {
-        filter: invert(100%);
-    }
-    .v-overlay--active:before {
-        background-color: #ffffff !important;
-    }`;
-
+    /** Признак темной темы */
     private nightTheme = false;
 
     created(): void {
-        if (!this.invertSupported) {
+        if (!ThemeUtils.invertSupported()) {
             return;
         }
         this.nightTheme = this.storage.get<string>(StoreKeys.THEME, Theme.DAY) === Theme.NIGHT;
-        this.setStyles();
+        ThemeUtils.setStyles(this.nightTheme);
     }
 
     private toggleTheme(): void {
         this.nightTheme = !this.nightTheme;
         this.storage.set(StoreKeys.THEME, this.nightTheme ? Theme.NIGHT : Theme.DAY);
-        this.setStyles();
-    }
-
-    private setStyles(): void {
-        let stylesElement = document.getElementById(StoreKeys.THEME);
-        if (!stylesElement) {
-            stylesElement = document.createElement("style");
-            stylesElement.id = "theme";
-            document.head.appendChild(stylesElement);
-        }
-        stylesElement.innerHTML = this.nightTheme ? this.CSS_STYLES : "";
-        stylesElement.setAttribute("media", this.nightTheme ? "screen" : "none");
+        ThemeUtils.setStyles(this.nightTheme);
     }
 
     private get invertSupported(): boolean {
-        const browserInfo = CommonUtils.detectBrowser();
-        if (browserInfo.name === BROWSER.FIREFOX) {
-            return false;
-        }
-        const prop = "filter";
-        const el = document.createElement("test");
-        const mStyle = el.style;
-        el.style.cssText = prop + ":invert(100%)";
-        return !!(mStyle as any)[prop];
+        return ThemeUtils.invertSupported();
     }
-}
-
-enum Theme {
-    DAY = "DAY",
-    NIGHT = "NIGHT"
 }
