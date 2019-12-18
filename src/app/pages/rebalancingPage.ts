@@ -3,6 +3,7 @@ import {Inject} from "typescript-ioc";
 import {Component, namespace, UI, Watch} from "../app/ui";
 import {EmptyPortfolioStub} from "../components/emptyPortfolioStub";
 import {Filters} from "../platform/filters/Filters";
+import {ClientInfo} from "../services/clientService";
 import {OverviewService} from "../services/overviewService";
 import {CalculateRow, RebalancingService, RebalancingType} from "../services/rebalancingService";
 import {TradeService} from "../services/tradeService";
@@ -11,6 +12,7 @@ import {BigMoney} from "../types/bigMoney";
 import {PortfolioAssetType} from "../types/portfolioAssetType";
 import {CurrencyUnit, InstrumentRebalancingModel, Pagination, Portfolio, RebalancingModel, TableHeader} from "../types/types";
 import {SortUtils} from "../utils/sortUtils";
+import {TariffUtils} from "../utils/tariffUtils";
 import {TradeUtils} from "../utils/tradeUtils";
 import {StoreType} from "../vuex/storeType";
 
@@ -148,7 +150,8 @@ const MainStore = namespace(StoreType.MAIN);
                                                 </span>
                                             </template>
                                             <span>
-                                                Стоимость одного лота: {{ props.item.lotPrice | number }} <br>
+                                                Стоимость одного лота: {{ props.item.lotPrice | number }}
+                                                <span class="second-value">{{ currencyForPrice(props.item) }}</span>
                                             </span>
                                         </v-tooltip>
                                     </td>
@@ -158,6 +161,9 @@ const MainStore = namespace(StoreType.MAIN);
                                     </td>
                                     <td class="text-xs-left">
                                         <span class="ml-2" v-html="getAction(props.item)"></span>
+                                    </td>
+                                    <td class="text-xs-right">
+                                        {{ props.item.resultPercent === 0 ? "" : props.item.resultPercent }}
                                     </td>
                                 </tr>
                             </template>
@@ -175,8 +181,21 @@ const MainStore = namespace(StoreType.MAIN);
                                             <b>{{ totalTargetPercent | number }} %</b>
                                         </span>
                                     </td>
-                                    <td class="text-xs-right pl-2">
-                                        <div class="totalInfo" v-html="totalInfo"></div>
+                                    <td colspan="2" class="text-xs-left pl-2">
+                                        <div class="totalInfo">
+                                            <div>
+                                                <div>Cумма продаж</div>
+                                                <div><b>{{ sell | number }}</b> <span class="currency">{{ currency }}</span></div>
+                                            </div>
+                                            <div>
+                                                <div>Cумма покупок</div>
+                                                <div><b>{{ buy | number }}</b> <span class="currency">{{ currency }}</span></div>
+                                            </div>
+                                            <div>
+                                                <div>Использованные средства</div>
+                                                <div><b>{{ totalAmount | number }}</b> <span class="currency">{{ currency }}</span></div>
+                                            </div>
+                                        </div>
                                     </td>
                                 </tr>
                             </template>
@@ -208,6 +227,8 @@ export class RebalancingPage extends UI {
 
     @MainStore.Getter
     private portfolio: Portfolio;
+    @MainStore.Getter
+    private clientInfo: ClientInfo;
     private calculationsInLots = true;
     private onlyBuyTrades = true;
 
@@ -226,14 +247,15 @@ export class RebalancingPage extends UI {
         {text: "Бумага", align: "left", value: "name", width: "240"},
         {text: "Цена", align: "right", value: "price", sortable: true, width: "120"},
         {text: "Текущая доля", align: "right", value: "currentPercent", width: "120", sortable: true},
-        {text: "Действие", align: "center", value: "action", sortable: false}
+        {text: "Действие", align: "center", value: "action", sortable: false},
+        {text: "Итоговая доля", align: "right", value: "resultPercent", width: "120", sortable: true},
     ];
 
     private targetPercentHeader = {text: "Целевая доля", align: "right", value: "targetPercent", width: "120", sortable: true};
 
     private pagination: Pagination = {
         descending: false,
-        sortBy: "date",
+        sortBy: "currentPercent",
         rowsPerPage: -1
     };
 
@@ -278,6 +300,7 @@ export class RebalancingPage extends UI {
                 currentPercent: Number(row.percCurrShare),
                 currentCost: new BigMoney(row.currCost).amount,
                 targetPercent: Number(row.percCurrShare),
+                resultPercent: 0,
                 ticker: row.share.ticker,
                 name: row.share.name,
                 shareId: String(row.share.id),
@@ -366,6 +389,9 @@ export class RebalancingPage extends UI {
         if (row.lots === 0 && this.calculationsInLots || new Decimal(row.pieces).comparedTo(zero) === 0 && !this.calculationsInLots) {
             return "";
         }
+        if (TariffUtils.isTariffExpired(this.clientInfo.user) && this.calculateRows.indexOf(row) % 2 === 0) {
+            return "Ваш тариф истек. Пожалуйста продлите подписку, чтобы увидеть все данные";
+        }
         const isBuyAction = Number(this.calculationsInLots ? row.lots : row.pieces) > 0;
         const result: string[] = [`<span class="${isBuyAction ? "green--text" : "red--text"}">`];
         result.push(new Decimal(row.amountForLots).comparedTo(zero) > 0 ? "Покупка" : "Продажа");
@@ -379,7 +405,7 @@ export class RebalancingPage extends UI {
         }
         result.push("на сумму:");
         result.push("<b>");
-        result.push(Filters.formatNumber(this.calculationsInLots ? row.amountForLots : row.amountForPieces));
+        result.push(Filters.formatNumber(this.calculationsInLots ? new Decimal(row.amountForLots).abs().toString() : row.amountForPieces));
         result.push("</b>");
         result.push(this.viewCurrency.symbol);
         result.push("<span>");
@@ -395,16 +421,16 @@ export class RebalancingPage extends UI {
         return headers;
     }
 
-    private get totalInfo(): string {
-        const buy = this.calculateRows.map(row => new Decimal(this.calculationsInLots ? row.amountForLots : row.amountForPieces))
-            .filter(amount => amount.isPositive())
-            .reduce((result: Decimal, current: Decimal) => result.add(current), new Decimal("0")).toString();
-        const sell = this.calculateRows.map(row => new Decimal(this.calculationsInLots ? row.amountForLots : row.amountForPieces))
+    private get sell(): string {
+        return this.calculateRows.map(row => new Decimal(this.calculationsInLots ? row.amountForLots : row.amountForPieces))
             .filter(amount => amount.isNegative())
             .reduce((result: Decimal, current: Decimal) => result.add(current), new Decimal("0")).abs().toString();
-        return `<div><div>Cумма продаж</div><div><b>${Filters.formatNumber(sell)}</b> <span class="currency">${this.currency}</span></div></div>
-                <div><div>Cумма покупок</div><div><b>${Filters.formatNumber(buy)}</b> <span class="currency">${this.currency}</span></div></div>
-                <div><div>Использованные средства</div><div><b>${Filters.formatNumber(this.totalAmount)}</b> <span class="currency">${this.currency}</span></div></div>`;
+    }
+
+    private get buy(): string {
+        return this.calculateRows.map(row => new Decimal(this.calculationsInLots ? row.amountForLots : row.amountForPieces))
+            .filter(amount => amount.isPositive())
+            .reduce((result: Decimal, current: Decimal) => result.add(current), new Decimal("0")).toString();
     }
 
     private get totalAmount(): string {
