@@ -762,3 +762,8 @@ export class OverviewPeriod extends (EnumType as IStaticEnum<OverviewPeriod>) {
         super();
     }
 }
+
+export enum Theme {
+    DAY = "DAY",
+    NIGHT = "NIGHT"
+}
