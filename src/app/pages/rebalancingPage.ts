@@ -3,6 +3,7 @@ import {Inject} from "typescript-ioc";
 import {Component, namespace, UI, Watch} from "../app/ui";
 import {EmptyPortfolioStub} from "../components/emptyPortfolioStub";
 import {Filters} from "../platform/filters/Filters";
+import {ClientInfo} from "../services/clientService";
 import {OverviewService} from "../services/overviewService";
 import {CalculateRow, RebalancingService, RebalancingType} from "../services/rebalancingService";
 import {TradeService} from "../services/tradeService";
@@ -11,6 +12,7 @@ import {BigMoney} from "../types/bigMoney";
 import {PortfolioAssetType} from "../types/portfolioAssetType";
 import {CurrencyUnit, InstrumentRebalancingModel, Pagination, Portfolio, RebalancingModel, TableHeader} from "../types/types";
 import {SortUtils} from "../utils/sortUtils";
+import {TariffUtils} from "../utils/tariffUtils";
 import {TradeUtils} from "../utils/tradeUtils";
 import {StoreType} from "../vuex/storeType";
 
@@ -53,9 +55,8 @@ const MainStore = namespace(StoreType.MAIN);
                             <v-flex xs12>
                                 <v-layout row fill-height>
                                     <v-flex class="sumField">
-                                        <ii-number-field label="Сумма" v-model="moneyAmount" :decimals="2" name="money_amount"
-                                                         v-validate="required + '|min_value:0.01'" :error-messages="errors.collect('money_amount')"
-                                                         :class="required" key="money-amount" maxLength="18"></ii-number-field>
+                                        <ii-number-field label="Сумма" v-model="moneyAmount" :decimals="2" name="money_amount" :error-messages="errors.collect('money_amount')"
+                                                         key="money-amount" maxLength="18"></ii-number-field>
                                     </v-flex>
                                     <div class="w100 pl-2">
                                         <v-text-field :value="currency" label="Валюта" disabled class="currencyField"></v-text-field>
@@ -67,7 +68,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 <div>
                                     <span v-if="showFreeBalanceHint" class="margL16">
                                         <span class="fs12-opacity mt-1">В портфеле сейчас:</span>
-                                        <a class="fs12" @click="setFreeBalanceAndCalculate"
+                                        <a class="fs12" @click="setFreeBalance"
                                            title="Распределить">{{ freeBalance | amount(true) }} {{ freeBalance | currencySymbol }}</a>
                                     </span>
                                 </div>
@@ -93,7 +94,7 @@ const MainStore = namespace(StoreType.MAIN);
                             <v-flex xs12 sm6>
                                 <v-radio-group v-model="rebalancingType" class="margT0">
                                     <v-radio v-for="type in [RebalancingType.BY_AMOUNT, RebalancingType.BY_PERCENT]" :key="type.code" :label="type.description"
-                                             :value="type"></v-radio>
+                                             :value="type" @change="onRebalancingTypeChange"></v-radio>
                                 </v-radio-group>
                             </v-flex>
                             <v-btn v-if="!isStepVisible(2)" @click="nextStep" color="primary" class="btn">
@@ -106,26 +107,12 @@ const MainStore = namespace(StoreType.MAIN);
                 <v-fade-transition>
                     <v-flex v-if="isStepVisible(2)" xs12 class="rebalancingTbl">
                         <p class="text-xs-right fs14 margR28">
-                            <v-menu v-model="menu" :close-on-content-click="false" :nudge-width="80" :nudge-bottom="25" bottom>
+                            <v-menu v-model="menu" :close-on-content-click="false" :nudge-width="100" :nudge-bottom="25" bottom>
                                 <a slot="activator">Расширенные настройки</a>
 
                                 <v-card class="portfolio-rows-filter__settings" style="box-shadow: none !important;">
                                     <v-layout justify-center column fill-height>
-                                        <v-switch v-model="calculationsInLots" class="ml-3">
-                                            <template #label>
-                                                <span>Расчеты в лотах</span>
-                                                <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" bottom>
-                                                    <sup class="custom-tooltip" slot="activator">
-                                                        <v-icon>fas fa-info-circle</v-icon>
-                                                    </sup>
-                                                    <span>
-                                                            Включите, если хотите чтобы количество расчитывалось в лотах, а не в штуках.
-                                                        </span>
-                                                </v-tooltip>
-                                            </template>
-                                        </v-switch>
-
-                                        <v-switch v-if="showTargetColumn" v-model="onlyBuyTrades" @change="calculate" class="ml-3">
+                                        <v-switch v-model="onlyBuyTrades" @change="calculate" class="ml-3">
                                             <template #label>
                                                 <span>Только покупки</span>
                                                 <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" bottom>
@@ -140,7 +127,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         </v-switch>
 
                                         <div class="mt-3">
-                                            <ii-number-field label="Отклонение целевой доли" v-model="rowLimit" :decimals="2" maxLength="5"></ii-number-field>
+                                            <ii-number-field label="Отклонение целевой доли в %" v-model="rowLimit" :decimals="2" maxLength="5"></ii-number-field>
                                         </div>
                                     </v-layout>
                                 </v-card>
@@ -163,7 +150,8 @@ const MainStore = namespace(StoreType.MAIN);
                                                 </span>
                                             </template>
                                             <span>
-                                                Стоимость одного лота: {{ props.item.lotPrice | number }} <br>
+                                                Стоимость одного лота: {{ props.item.lotPrice | number }}
+                                                <span class="second-value">{{ currencyForPrice(props.item) }}</span>
                                             </span>
                                         </v-tooltip>
                                     </td>
@@ -173,6 +161,9 @@ const MainStore = namespace(StoreType.MAIN);
                                     </td>
                                     <td class="text-xs-left">
                                         <span class="ml-2" v-html="getAction(props.item)"></span>
+                                    </td>
+                                    <td class="text-xs-right">
+                                        {{ props.item.resultPercent === 0 ? "" : props.item.resultPercent }}
                                     </td>
                                 </tr>
                             </template>
@@ -190,8 +181,21 @@ const MainStore = namespace(StoreType.MAIN);
                                             <b>{{ totalTargetPercent | number }} %</b>
                                         </span>
                                     </td>
-                                    <td class="text-xs-right pl-2">
-                                        <div class="totalInfo" v-html="totalInfo"></div>
+                                    <td colspan="2" class="text-xs-left pl-2">
+                                        <div class="totalInfo">
+                                            <div>
+                                                <div>Cумма продаж</div>
+                                                <div><b>{{ sell | number }}</b> <span class="currency">{{ currency }}</span></div>
+                                            </div>
+                                            <div>
+                                                <div>Cумма покупок</div>
+                                                <div><b>{{ buy | number }}</b> <span class="currency">{{ currency }}</span></div>
+                                            </div>
+                                            <div>
+                                                <div>Использованные средства</div>
+                                                <div><b>{{ totalAmount | number }}</b> <span class="currency">{{ currency }}</span></div>
+                                            </div>
+                                        </div>
                                     </td>
                                 </tr>
                             </template>
@@ -223,6 +227,8 @@ export class RebalancingPage extends UI {
 
     @MainStore.Getter
     private portfolio: Portfolio;
+    @MainStore.Getter
+    private clientInfo: ClientInfo;
     private calculationsInLots = true;
     private onlyBuyTrades = true;
 
@@ -241,14 +247,15 @@ export class RebalancingPage extends UI {
         {text: "Бумага", align: "left", value: "name", width: "240"},
         {text: "Цена", align: "right", value: "price", sortable: true, width: "120"},
         {text: "Текущая доля", align: "right", value: "currentPercent", width: "120", sortable: true},
-        {text: "Действие", align: "center", value: "action", sortable: false}
+        {text: "Действие", align: "center", value: "action", sortable: false},
+        {text: "Итоговая доля", align: "right", value: "resultPercent", width: "120", sortable: true},
     ];
 
     private targetPercentHeader = {text: "Целевая доля", align: "right", value: "targetPercent", width: "120", sortable: true};
 
     private pagination: Pagination = {
         descending: false,
-        sortBy: "date",
+        sortBy: "currentPercent",
         rowsPerPage: -1
     };
 
@@ -272,6 +279,12 @@ export class RebalancingPage extends UI {
         this.initCalculatedRow();
     }
 
+    private onRebalancingTypeChange(newType: RebalancingType): void {
+        this.rebalancingType = newType;
+        this.onlyBuyTrades = this.rebalancingType === RebalancingType.BY_AMOUNT;
+        this.initCalculatedRow();
+    }
+
     private initCalculatedRow(): void {
         this.calculateRows = [];
         const filteredRows = this.portfolio.overview.stockPortfolio.rows.filter(row => Number(row.quantity) > 0);
@@ -287,6 +300,7 @@ export class RebalancingPage extends UI {
                 currentPercent: Number(row.percCurrShare),
                 currentCost: new BigMoney(row.currCost).amount,
                 targetPercent: Number(row.percCurrShare),
+                resultPercent: 0,
                 ticker: row.share.ticker,
                 name: row.share.name,
                 shareId: String(row.share.id),
@@ -341,9 +355,11 @@ export class RebalancingPage extends UI {
         await this.loadRebalancingModel();
     }
 
-    private async setFreeBalanceAndCalculate(): Promise<void> {
+    /**
+     * Устанавливает текущий баланс денег в сумму
+     */
+    private async setFreeBalance(): Promise<void> {
         this.moneyAmount = new BigMoney(this.freeBalance).amount.toString();
-        await this.calculate();
     }
 
     private nextStep(): void {
@@ -373,6 +389,9 @@ export class RebalancingPage extends UI {
         if (row.lots === 0 && this.calculationsInLots || new Decimal(row.pieces).comparedTo(zero) === 0 && !this.calculationsInLots) {
             return "";
         }
+        if (TariffUtils.isTariffExpired(this.clientInfo.user) && this.calculateRows.indexOf(row) % 2 === 0) {
+            return "Ваш тариф истек. Пожалуйста продлите подписку, чтобы увидеть все данные";
+        }
         const isBuyAction = Number(this.calculationsInLots ? row.lots : row.pieces) > 0;
         const result: string[] = [`<span class="${isBuyAction ? "green--text" : "red--text"}">`];
         result.push(new Decimal(row.amountForLots).comparedTo(zero) > 0 ? "Покупка" : "Продажа");
@@ -386,7 +405,7 @@ export class RebalancingPage extends UI {
         }
         result.push("на сумму:");
         result.push("<b>");
-        result.push(Filters.formatNumber(this.calculationsInLots ? row.amountForLots : row.amountForPieces));
+        result.push(Filters.formatNumber(this.calculationsInLots ? new Decimal(row.amountForLots).abs().toString() : row.amountForPieces));
         result.push("</b>");
         result.push(this.viewCurrency.symbol);
         result.push("<span>");
@@ -402,16 +421,16 @@ export class RebalancingPage extends UI {
         return headers;
     }
 
-    private get totalInfo(): string {
-        const buy = this.calculateRows.map(row => new Decimal(this.calculationsInLots ? row.amountForLots : row.amountForPieces))
-            .filter(amount => amount.isPositive())
-            .reduce((result: Decimal, current: Decimal) => result.add(current), new Decimal("0")).toString();
-        const sell = this.calculateRows.map(row => new Decimal(this.calculationsInLots ? row.amountForLots : row.amountForPieces))
+    private get sell(): string {
+        return this.calculateRows.map(row => new Decimal(this.calculationsInLots ? row.amountForLots : row.amountForPieces))
             .filter(amount => amount.isNegative())
             .reduce((result: Decimal, current: Decimal) => result.add(current), new Decimal("0")).abs().toString();
-        return `<div><div>Cумма продаж</div><div><b>${Filters.formatNumber(sell)}</b> <span class="currency">${this.currency}</span></div></div>
-                <div><div>Cумма покупок</div><div><b>${Filters.formatNumber(buy)}</b> <span class="currency">${this.currency}</span></div></div>
-                <div><div>Использованные средства</div><div><b>${Filters.formatNumber(this.totalAmount)}</b> <span class="currency">${this.currency}</span></div></div>`;
+    }
+
+    private get buy(): string {
+        return this.calculateRows.map(row => new Decimal(this.calculationsInLots ? row.amountForLots : row.amountForPieces))
+            .filter(amount => amount.isPositive())
+            .reduce((result: Decimal, current: Decimal) => result.add(current), new Decimal("0")).toString();
     }
 
     private get totalAmount(): string {
@@ -454,10 +473,6 @@ export class RebalancingPage extends UI {
 
     private get emptyRows(): boolean {
         return this.calculateRows.length === 0;
-    }
-
-    private get required(): string {
-        return this.rebalancingType === RebalancingType.BY_PERCENT ? "" : "required";
     }
 
     private get showTargetColumn(): boolean {

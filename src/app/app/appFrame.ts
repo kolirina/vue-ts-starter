@@ -20,10 +20,9 @@ import {Storage} from "../platform/services/storage";
 import {ClientInfo, ClientService} from "../services/clientService";
 import {OnBoardingTourService} from "../services/onBoardingTourService";
 import {StoreKeys} from "../types/storeKeys";
-import {NavBarItem, Portfolio, SignInData} from "../types/types";
+import {NavBarItem, Portfolio, SignInData, Theme} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
-import {DateUtils} from "../utils/dateUtils";
-import {UiStateHelper} from "../utils/uiStateHelper";
+import {ThemeUtils} from "../utils/ThemeUtils";
 import {ActionType} from "../vuex/actionType";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
@@ -182,6 +181,7 @@ export class AppFrame extends UI {
 
     @ShowProgress
     async created(): Promise<void> {
+        this.applyTheme();
         this.changeSideBarState(this.localStorage.get(StoreKeys.MENU_STATE_KEY, false));
         await this.checkAuthorized();
         // если удалось восстановить state, значит все уже загружено
@@ -192,6 +192,13 @@ export class AppFrame extends UI {
             await this.loadOnBoardingTours();
             this.loggedIn = true;
         }
+    }
+
+    private applyTheme(): void {
+        if (!ThemeUtils.invertSupported()) {
+            return;
+        }
+        ThemeUtils.setStyles(this.localStorage.get<string>(StoreKeys.THEME, Theme.DAY) === Theme.NIGHT);
     }
 
     private async checkAuthorized(registration?: boolean): Promise<void> {
