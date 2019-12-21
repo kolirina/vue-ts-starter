@@ -174,6 +174,10 @@ export class Dashboard extends UI {
     }
 
     private setDashboardPosition(e: any): void {
+        if (e.target.scrollingElement.clientHeight < 600) {
+            this.fixedDashboard = false;
+            return;
+        }
         const fixed = e.target.scrollingElement.scrollHeight - e.target.scrollingElement.clientHeight > 155 && e.target.scrollingElement.scrollTop > 50;
         if (fixed && !this.fixedDashboard) {
             this.fixedDashboard = true;
