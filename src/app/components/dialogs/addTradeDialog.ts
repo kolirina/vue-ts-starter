@@ -779,6 +779,12 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
                 this.facevalue = "";
                 this.nkd = "";
                 break;
+            case Operation.REPAYMENT:
+                this.price = "100.00";
+                this.facevalue = facevalue;
+                this.nkd = "";
+                this.fee = "";
+                break;
             default:
                 this.price = bond.prevprice;
                 this.facevalue = facevalue;
