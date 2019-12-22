@@ -605,7 +605,6 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         if (share && share.shareType === ShareType.ASSET && this.assetType !== AssetType.ASSET) {
             this.assetType = AssetType.ASSET;
         }
-        this.onAssetTypeChange(false);
         this.share = share;
         this.calculateCurrentShareQuantity();
         this.fillFieldsFromShare();
