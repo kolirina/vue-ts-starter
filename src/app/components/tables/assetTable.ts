@@ -99,8 +99,10 @@ const MainStore = namespace(StoreType.MAIN);
                                 </span>
                             </template>
                             <span v-if="props.item.share">
-                                Дата последнего обновления 
-                                <template v-if="props.item.share.lastUpdateTime">{{ props.item.share.lastUpdateTime | date("DD.MM.YYYY HH:mm:ss") }}</template>
+                                Дата последнего обновления
+                                <template v-if="props.item.share.lastUpdateTime">
+                                    {{ props.item.share.lastUpdateTime | date("DD.MM.YYYY HH:mm:ss") }}
+                                </template>
                                 <template v-else>н/д</template>
                             </span>
                         </v-tooltip>
