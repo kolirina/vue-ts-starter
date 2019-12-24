@@ -190,9 +190,9 @@ const MainStore = namespace(StoreType.MAIN);
                         <td>
                             <div class="ext-info__item">
                                 Номинал покупки {{ props.item.nominal | amount(true) }} <span>{{ portfolioCurrency }}</span><br>
-                                Дисконт {{ props.item.amortization | amount(true) }} <span>{{ props.item.bond.currency }}</span><br>
+                                Дисконт {{ props.item.amortization | amount(true) }} <span>{{ portfolioCurrency }}</span><br>
                                 <template v-if="!props.item.bond.repaid">
-                                    Купон {{ props.item.bond.couponvalue | amount(true) }}<span>{{ props.item.bond.currency }}</span><br>
+                                    Купон {{ props.item.bond.couponvalue | amount(true) }}<span>{{ props.item.bond.currency | currencySymbolByCurrency }}</span><br>
                                 </template>
 
                                 <template v-if="!props.item.bond.repaid">
@@ -205,8 +205,8 @@ const MainStore = namespace(StoreType.MAIN);
                         <td>
                             <div class="ext-info__item">
                                 Средняя цена {{ props.item.avgBuy | number }} <span>%</span><br>
-                                Средняя цена {{ props.item.absoluteAvgPrice | amount(false, 2, false) }} <span>{{ props.item.bond.currency }}</span><br>
-                                Средний номинал {{props.item.nominal | amount}} <span>{{ portfolioCurrency }}</span><br>
+                                Средняя цена {{ props.item.absoluteAvgPrice | amount(false, 2, false) }} <span>{{ portfolioCurrency }}</span><br>
+                                Средний номинал {{props.item.nominal | amount(true) }} <span>{{ portfolioCurrency }}</span><br>
                                 Текущая цена {{ props.item.currPrice | number }} <span>%</span>
                             </div>
                         </td>
@@ -220,13 +220,13 @@ const MainStore = namespace(StoreType.MAIN);
                         </td>
                         <td>
                             <div class="ext-info__item">
-                                Прибыль по сделкам {{ props.item.exchangeProfit | amount }} <span>{{ portfolioCurrency }}</span><br>
+                                Прибыль по сделкам {{ props.item.exchangeProfit | amount(true) }} <span>{{ portfolioCurrency }}</span><br>
                                 Прибыль по сделкам {{ props.item.exchangeProfitPercent | number }} <span>%</span>
                             </div>
                         </td>
                         <td>
                             <div class="ext-info__item">
-                                Курс.прибыль {{ props.item.rateProfit | amount }} <span>{{ portfolioCurrency }}</span><br>
+                                Курс.прибыль {{ props.item.rateProfit | amount(true) }} <span>{{ portfolioCurrency }}</span><br>
                                 Курс.прибыль {{ props.item.rateProfitPercent | number }} <span>%</span><br>
                             </div>
                         </td>
@@ -234,24 +234,26 @@ const MainStore = namespace(StoreType.MAIN);
                     <tr>
                         <td>
                             <div class="ext-info__item">
-                                <template v-if="!props.item.bond.repaid">НКД {{ props.item.bond.accruedint | amount(true) }}<br></template>
-                                Выплаченный НКД {{ props.item.buyNkd | amount }} <span>{{ portfolioCurrency }}</span><br>
-                                Полученный НКД {{ props.item.sellNkd | amount }} <span>{{ portfolioCurrency }}</span><br>
+                                <template v-if="!props.item.bond.repaid">
+                                    НКД {{ props.item.bond.accruedint | amount(true) }} <span>{{ props.item.bond.currency | currencySymbolByCurrency }}</span><br>
+                                </template>
+                                Выплаченный НКД {{ props.item.buyNkd | amount(true) }} <span>{{ portfolioCurrency }}</span><br>
+                                Полученный НКД {{ props.item.sellNkd | amount(true) }} <span>{{ portfolioCurrency }}</span><br>
                                 <template v-if="shareNotes && shareNotes[props.item.bond.ticker]">Заметка {{ shareNotes[props.item.bond.ticker] }}</template>
                             </div>
                         </td>
                         <td>
                             <div class="ext-info__item">
                                 Доходность {{ props.item.yearYield | number }} <span>%</span><br>
-                                P/L за день {{ props.item.dailyPl | amount }} <span>{{ portfolioCurrency }}</span><br>
+                                P/L за день {{ props.item.dailyPl | amount(true) }} <span>{{ portfolioCurrency }}</span><br>
                                 P/L за день {{ props.item.dailyPlPercent | number }} <span>%</span><br>
                             </div>
                         </td>
                         <td>
                             <div class="ext-info__item">
-                                Стоимость покупок {{ props.item.bcost | amount }} <span>{{ portfolioCurrency }}</span><br>
-                                Стоимость продаж {{ props.item.scost | amount }} <span>{{ portfolioCurrency }}</span><br>
-                                Комиссия {{ props.item.summFee | amount }} <span>{{ portfolioCurrency }}</span>
+                                Стоимость покупок {{ props.item.bcost | amount(true) }} <span>{{ portfolioCurrency }}</span><br>
+                                Стоимость продаж {{ props.item.scost | amount(true) }} <span>{{ portfolioCurrency }}</span><br>
+                                Комиссия {{ props.item.summFee | amount(true) }} <span>{{ portfolioCurrency }}</span>
                             </div>
                         </td>
                     </tr>
