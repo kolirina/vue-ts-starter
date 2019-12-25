@@ -192,7 +192,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 Номинал покупки {{ props.item.nominal | amount(true) }} <span>{{ portfolioCurrency }}</span><br>
                                 Дисконт {{ props.item.amortization | amount(true) }} <span>{{ portfolioCurrency }}</span><br>
                                 <template v-if="!props.item.bond.repaid">
-                                    Купон {{ props.item.bond.couponvalue | amount(true) }}<span>{{ props.item.bond.currency | currencySymbolByCurrency }}</span><br>
+                                    Купон {{ props.item.bond.couponvalue | amount(true) }} <span>{{ props.item.bond.currency | currencySymbolByCurrency }}</span><br>
                                 </template>
 
                                 <template v-if="!props.item.bond.repaid">
