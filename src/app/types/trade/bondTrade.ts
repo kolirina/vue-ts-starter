@@ -10,16 +10,16 @@ export class BondTrade implements Trade {
     }
 
     totalWithoutFee(holder: TradeDataHolder): string {
-        let nkd = new Decimal("0");
+        let nkdTotal = new Decimal("0");
         if (holder.getNkd()) {
             if (holder.isPerOne()) {
-                nkd = new Decimal(holder.getNkd());
+                nkdTotal = new Decimal(holder.getNkd()).mul(new Decimal(holder.getQuantity()));
             } else if (holder.getQuantity() && holder.getQuantity() !== 0) {
-                nkd = new Decimal(holder.getNkd()).dividedBy(new Decimal(holder.getQuantity())).toDP(2, Decimal.ROUND_HALF_UP);
+                nkdTotal = new Decimal(holder.getNkd());
             }
         }
         return new Decimal(holder.getFacevalue() ? holder.getFacevalue() : "1000").mul(new Decimal(holder.getPrice())).dividedBy(100)
-            .plus(nkd).mul(new Decimal(holder.getQuantity())).toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toString();
+            .mul(new Decimal(holder.getQuantity())).plus(nkdTotal).toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toString();
     }
 
     signedTotal(holder: TradeDataHolder): string {
