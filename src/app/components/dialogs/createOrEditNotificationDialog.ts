@@ -48,7 +48,7 @@ import {CommonUtils} from "../../utils/commonUtils";
                                 </sup>
                                 <span>
                                   Для получения уведомлений задайте целевые цены и допуск. Например, вы хотите получить уведомление
-                                  для покупки акций <b>{{ share ? share.ticker : "SBER" }}</b> про цене <b>{{ sharePrice }}</b> {{ shareCurrency }}.
+                                  для покупки бумаги <b>{{ share ? share.ticker : "SBER" }}</b> про цене <b>{{ sharePrice }}</b> {{ shareCurrency }}.
                                   Для этого укажите в "Целевая цена покупки:" <b>{{ sharePrice }}</b>.
                                   <br/>
                                   <br/>
@@ -79,7 +79,7 @@ import {CommonUtils} from "../../utils/commonUtils";
                                 </sup>
                                 <span>
                                   Для получения уведомлений задайте целевые цены и допуск. Например, вы хотите получить уведомление
-                                  для покупки акций <b>{{ share ? share.ticker : "SBER" }}</b> про цене <b>{{ sharePrice }}</b> {{ shareCurrency }}.
+                                  для покупки бумаги <b>{{ share ? share.ticker : "SBER" }}</b> про цене <b>{{ sharePrice }}</b> {{ shareCurrency }}.
                                   Для этого укажите в "Целевая цена покупки:" <b>{{ sharePrice }}</b>.
                                   <br/>
                                   <br/>
@@ -109,7 +109,7 @@ import {CommonUtils} from "../../utils/commonUtils";
                                     <v-icon>fas fa-info-circle</v-icon>
                                 </sup>
                                 <span>
-                                  Вы будет получать письма обо всех корпоративных событиях эмитента <b>{{ share ? share.ticker : "" }}</b>.
+                                  Вы будет получать письма обо всех корпоративных событиях эмитента <b>{{ share ? share.shortname : "" }}</b>.
                                   Сюда относятся новости о публикациях отчетности,
                                   проведении собраний, о решении собраний, решения о выплате дивидендов, заключение значимых сделок,
                                   о которых эмитент должен отчитываться на сайтах раскрытия информации).
@@ -145,7 +145,7 @@ import {CommonUtils} from "../../utils/commonUtils";
                                     <v-icon>fas fa-info-circle</v-icon>
                                 </sup>
                                 <span>
-                                  Вы будет получать письма как только эмитент <b>{{ share ? share.ticker : "" }}</b>
+                                  Вы будет получать письма как только эмитент <b>{{ share ? share.shortname : "" }}</b>
                                   примет решение о выплате дивидендов.
                                 </span>
                             </v-tooltip>
@@ -160,8 +160,8 @@ import {CommonUtils} from "../../utils/commonUtils";
                                     <v-icon>fas fa-info-circle</v-icon>
                                 </sup>
                                 <span>
-                                  Вы будет получать письма как только эмитент <b>{{ share ? share.ticker : "" }}</b>
-                                  произведет выплату купона, амортизацию или погашение.
+                                  Вы будет получать письма как только по бумаге <b>{{ share ? share.shortname : "" }}</b>
+                                  будет произведена выплата купона, амортизация или погашение.
                                 </span>
                             </v-tooltip>
                         </template>
