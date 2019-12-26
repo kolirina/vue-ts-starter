@@ -84,14 +84,16 @@ const MainStore = namespace(StoreType.MAIN);
                             <span class="notifications-card-body-prices-price">{{ notification.buyPrice | number }}</span>
                             <span v-if="notification.buyVariation" class="notifications-card-body-prices-sign">±</span>
                             <span v-if="notification.buyVariation" class="notifications-card-body-prices-variation">{{ notification.buyVariation | number }}</span>
-                            <i class="notifications-card-body-prices-currency" :class="notification.share.currency.toLowerCase()"></i>
+                            <i v-if="isBondEventNotification(notification)" class="notifications-card-body-prices-currency percent"></i>
+                            <i v-else class="notifications-card-body-prices-currency" :class="notification.share.currency.toLowerCase()"></i>
                         </div>
                         <div v-if="notification.sellPrice">
                             <div class="notifications-card-body-title w180">Целевая цена продажи</div>
                             <span class="notifications-card-body-prices-price">{{notification.sellPrice | number }}</span>
                             <span v-if="notification.sellVariation" class="notifications-card-body-prices-sign">±</span>
                             <span v-if="notification.sellVariation" class="notifications-card-body-prices-variation">{{ notification.sellVariation | number }}</span>
-                            <i class="notifications-card-body-prices-currency" :class="notification.share.currency.toLowerCase()"></i>
+                            <i v-if="isBondEventNotification(notification)" class="notifications-card-body-prices-currency percent"></i>
+                            <i v-else class="notifications-card-body-prices-currency" :class="notification.share.currency.toLowerCase()"></i>
                         </div>
                     </v-flex>
                     <div v-if="hasPriceAndNews(notification)" class="notifications-card-body-line"></div>
