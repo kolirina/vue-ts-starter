@@ -23,7 +23,7 @@ import {Bond} from "../../types/types";
           </span>
                 </div>
                 <div class="remove-notification-text">
-                    <img src="img/notification/blueRemove.png" alt="Remove">
+                    <v-icon small primary>fas fa-trash</v-icon>
                     <span>Удалить уведомления по этой бумаге?</span>
                 </div>
                 <v-card-actions class="btn-group-right">

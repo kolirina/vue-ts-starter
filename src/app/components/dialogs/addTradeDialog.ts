@@ -605,7 +605,6 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         if (share && share.shareType === ShareType.ASSET && this.assetType !== AssetType.ASSET) {
             this.assetType = AssetType.ASSET;
         }
-        this.onAssetTypeChange(false);
         this.share = share;
         this.calculateCurrentShareQuantity();
         this.fillFieldsFromShare();
@@ -844,6 +843,11 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         this.facevalue = TradeUtils.decimal(this.data.tradeFields.facevalue);
         this.nkd = TradeUtils.decimal(this.data.tradeFields.nkd);
         this.perOne = true;
+        if (this.isBondTrade && new Decimal(this.nkd).comparedTo(new Decimal("0.01")) < 0) {
+            const nkdValue = new Decimal(this.nkd);
+            this.perOne = false;
+            this.nkd = nkdValue.mul(new Decimal(this.quantity).toDP(2, Decimal.ROUND_HALF_UP)).toString();
+        }
         this.fee = TradeUtils.decimal(this.data.tradeFields.fee);
         this.note = this.data.tradeFields.note;
         this.keepMoney = this.data.tradeFields.keepMoney;
