@@ -20,6 +20,7 @@ import {BigMoney} from "../../types/bigMoney";
 import {AddTradeEvent, EventType} from "../../types/eventType";
 import {Operation} from "../../types/operation";
 import {Permission} from "../../types/permission";
+import {PortfolioAssetType} from "../../types/portfolioAssetType";
 import {TradeDataHolder} from "../../types/trade/tradeDataHolder";
 import {TradeMap} from "../../types/trade/tradeMap";
 import {TradeValue} from "../../types/trade/tradeValue";
@@ -148,7 +149,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                             <!-- Количество -->
                             <v-flex v-if="shareAssetType" xs12 sm6>
                                 <ii-number-field label="Количество" v-model="quantity" @keyup="calculateFee" name="quantity" :decimals="quantityDecimals" maxLength="11"
-                                                 v-validate="quantityValidatationRule" :error-messages="errors.collect('quantity')" class="required" browser-autocomplete="false">
+                                                 v-validate="quantityValidationRule" :error-messages="errors.collect('quantity')" class="required" browser-autocomplete="false">
                                 </ii-number-field>
                                 <div class="fs12-opacity mt-1">
                                     <span v-if="showCurrentQuantityLabel">
@@ -243,6 +244,13 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                     <v-flex xs12 lg8>
                                         <ii-number-field label="Сумма" v-model="moneyAmount" :decimals="2" name="money_amount" v-validate="'required|min_value:0.01'"
                                                          :error-messages="errors.collect('money_amount')" class="required" key="money-amount" maxLength="18"></ii-number-field>
+                                        <div v-if="showFreeBalance" class="fs12-opacity mt-1">
+                                            <span>
+                                                <span class="fs12-opacity mt-1">В портфеле сейчас:</span>
+                                                <a class="fs12" @click="setFreeBalance"
+                                                   title="Указать">{{ freeBalance | amount(true) }} {{ freeBalance | currencySymbol }}</a>
+                                            </span>
+                                        </div>
                                     </v-flex>
                                     <v-flex xs12 lg4>
                                         <v-select :items="currencyList" v-model="moneyCurrency" label="Валюта сделки"></v-select>
@@ -929,6 +937,41 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         return this.debitCurrencyValue;
     }
 
+    /**
+     * Устанавливает текущий баланс денег в сумму
+     */
+    private setFreeBalance(): void {
+        this.moneyAmount = new BigMoney(this.freeBalance).amount.toString();
+    }
+
+    /**
+     * Проверяет тариф на активность
+     */
+    private async checkAllowedAddTrade(): Promise<void> {
+        const tariffExpired = TariffUtils.isTariffExpired(this.clientInfo);
+        if (tariffExpired) {
+            this.close();
+            await new TariffExpiredDialog().show(this.data.router);
+        }
+    }
+
+    private goToUserAssets(): void {
+        if (this.data.router.currentRoute.path !== "/quotes/user-assets") {
+            this.data.router.push("/quotes/user-assets");
+        }
+    }
+
+    private goToHelp(): void {
+        if (this.data.router.currentRoute.path !== "/help") {
+            this.data.router.push("/help");
+        }
+    }
+
+    private get showFreeBalance(): boolean {
+        return this.isMoneyTrade && this.operation === Operation.WITHDRAW && this.freeBalance &&
+            new BigMoney(this.freeBalance).amount.comparedTo(new Decimal("0")) > 0;
+    }
+
     private get purchasedCurrencies(): string[] {
         return this.currencyList.filter(currency => currency !== this.debitCurrency);
     }
@@ -1082,31 +1125,22 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         return this.isAssetTrade ? 6 : 0;
     }
 
-    private get quantityValidatationRule(): string {
+    private get quantityValidationRule(): string {
         return this.isAssetTrade ? "required|min_value:0.000001" : "required|min_value:1";
     }
 
-    /**
-     * Проверяет тариф на активность
-     */
-    private async checkAllowedAddTrade(): Promise<void> {
-        const tariffExpired = TariffUtils.isTariffExpired(this.clientInfo);
-        if (tariffExpired) {
-            this.close();
-            await new TariffExpiredDialog().show(this.data.router);
+    private get freeBalance(): string {
+        if (!this.portfolio) {
+            return null;
         }
-    }
-
-    private goToUserAssets(): void {
-        if (this.data.router.currentRoute.path !== "/quotes/user-assets") {
-            this.data.router.push("/quotes/user-assets");
-        }
-    }
-
-    private goToHelp(): void {
-        if (this.data.router.currentRoute.path !== "/help") {
-            this.data.router.push("/help");
-        }
+        const freeBalanceRow = this.portfolio ? this.portfolio.overview.assetRows.find(row => {
+            const type = PortfolioAssetType.valueByName(row.type);
+            if (type.assetType === AssetType.MONEY && type.currency.code === this.moneyCurrency) {
+                return row;
+            }
+            return null;
+        }) : null;
+        return freeBalanceRow ? freeBalanceRow.currCost : null;
     }
 
     // tslint:disable
