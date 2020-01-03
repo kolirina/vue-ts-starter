@@ -268,12 +268,14 @@ export class RebalancingPage extends UI {
     private rowLimit: string = "1";
 
     async created(): Promise<void> {
+        this.currency = this.portfolio.portfolioParams.viewCurrency;
         await this.loadRebalancingModel();
         this.initCalculatedRow();
     }
 
     @Watch("portfolio")
     private async onPortfolioChange(): Promise<void> {
+        this.currency = this.portfolio.portfolioParams.viewCurrency;
         this.passedSteps = [Step.FIRST];
         await this.loadRebalancingModel();
         this.initCalculatedRow();
@@ -331,6 +333,9 @@ export class RebalancingPage extends UI {
         this.totalCurrAmount = filteredRows.map(row => new BigMoney(row.currCost).amount).reduce((result: Decimal, current: Decimal) => result.add(current), new Decimal("0"));
         this.rebalancingService.calculateRows(this.calculateRows, this.moneyAmount, this.totalCurrAmount, Number(this.rowLimit), this.onlyBuyTrades, this.rebalancingType);
         await this.saveRebalancing(this.calculateRows);
+        if (this.buy === "0" && this.sell === "0" && this.totalAmount === "0") {
+            this.$snotify.info("Изменений не требуется");
+        }
     }
 
     private async saveRules(): Promise<void> {
