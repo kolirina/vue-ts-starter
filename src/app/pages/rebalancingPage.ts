@@ -133,7 +133,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 </v-card>
                             </v-menu>
                         </p>
-                        <v-data-table :headers="getHeaders" :items="calculateRows" item-key="id"
+                        <v-data-table :headers="getHeaders" :items="calculateRows" item-key="name"
                                       :custom-sort="customSort" :pagination.sync="pagination" class="data-table" hide-actions must-sort>
                             <template #headerCell="props">
                                 <span>{{ props.header.text }}</span>
@@ -163,7 +163,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         <span class="ml-2" v-html="getAction(props.item)"></span>
                                     </td>
                                     <td class="text-xs-right">
-                                        {{ props.item.resultPercent === 0 ? "" : props.item.resultPercent }}
+                                        {{ props.item.resultPercent }}
                                     </td>
                                 </tr>
                             </template>
@@ -404,9 +404,9 @@ export class RebalancingPage extends UI {
         result.push(String(Math.abs(Number(this.calculationsInLots ? row.lots : row.pieces))));
         result.push("</b>");
         if (this.calculationsInLots) {
-            result.push(Filters.declension(row.lots, "лота", "лотов", "лотов"));
+            result.push(Filters.declension(Math.abs(row.lots), "лота", "лотов", "лотов"));
         } else {
-            result.push(Filters.declension(new BigMoney(row.price).amount.toNumber(), "штуки", "штук", "штук"));
+            result.push(Filters.declension(new BigMoney(row.price).amount.abs().toNumber(), "штуки", "штук", "штук"));
         }
         result.push("на сумму:");
         result.push("<b>");
