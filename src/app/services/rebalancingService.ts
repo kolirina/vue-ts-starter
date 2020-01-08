@@ -172,9 +172,16 @@ export class RebalancingService {
                 .plus(row.amountForLots)
                 .mul(row.targetPercent === 0 ? this.ZERO : this.ONE)
             ).reduce((result: Decimal, current: Decimal) => result.add(current), new Decimal("0"));
+        if (rows.every(row => row.currentPercent === row.targetPercent)) {
+            rows.forEach(row => {
+                if (Math.abs(Number(row.amountForLots)) === 0) {
+                    row.resultPercent = row.currentPercent;
+                }
+            });
+        }
         rows.forEach(row => {
-            if (Math.abs(Number(row.amountForLots)) === 0) {
-                row.resultPercent = row.currentPercent;
+            if (row.targetPercent === 0) {
+                row.resultPercent = 0;
                 return;
             }
             const currentCost = row.currentCost.plus(new Decimal(row.amountForLots));

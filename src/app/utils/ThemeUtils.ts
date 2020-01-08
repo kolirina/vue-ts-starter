@@ -37,6 +37,12 @@ export class ThemeUtils {
     .ii--red-markup {
         filter: invert(100%);
     }
+    .green--text {
+        filter: invert(100%);
+    }
+    .red--text {
+        filter: invert(100%);
+    }
     a.decorationNone {
         filter: invert(100%);
     }
