@@ -331,10 +331,15 @@ export class RebalancingPage extends UI {
     private async calculate(): Promise<void> {
         const filteredRows = this.portfolio.overview.stockPortfolio.rows.filter(row => Number(row.quantity) > 0);
         this.totalCurrAmount = filteredRows.map(row => new BigMoney(row.currCost).amount).reduce((result: Decimal, current: Decimal) => result.add(current), new Decimal("0"));
+        if (this.rebalancingType === RebalancingType.BY_PERCENT && this.totalCurrAmount.comparedTo(new Decimal("0.00")) === 0 &&
+            this.calculateRows.every(row => row.currentPercent === row.targetPercent)) {
+            this.$snotify.info("Изменения не требуются");
+            return;
+        }
         this.rebalancingService.calculateRows(this.calculateRows, this.moneyAmount, this.totalCurrAmount, Number(this.rowLimit), this.onlyBuyTrades, this.rebalancingType);
         await this.saveRebalancing(this.calculateRows);
         if (this.buy === "0" && this.sell === "0" && this.totalAmount === "0") {
-            this.$snotify.info("Изменений не требуется");
+            this.$snotify.info("Изменения не требуются");
         }
     }
 

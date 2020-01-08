@@ -15,7 +15,7 @@ import {PortfolioSwitcher} from "../portfolioSwitcher";
                 </v-btn>
                 <span v-else class="sidebar-icon sidebar-logo"></span>
             </v-layout>
-            <portfolio-switcher v-if="clientInfo && portfolio" :side-bar-opened="sideBarOpened" :isMobile="isMobile"></portfolio-switcher>
+            <portfolio-switcher v-if="clientInfo && portfolio" :side-bar-opened="sideBarOpened" :is-mobile="isMobile"></portfolio-switcher>
             <v-layout v-if="isMobile" justify-end class="w100pc">
                 <v-btn @click="togglePanel" v-if="!sideBarOpened && isMobile" flat icon dark class="mobile-menu-close-btn">
                     <v-icon>close</v-icon>
