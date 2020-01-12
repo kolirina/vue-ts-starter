@@ -14,7 +14,7 @@ import {UpdateServiceInfo} from "../updateServiceInfo";
                 </v-card-title>
 
                 <v-card-text>
-                    <update-service-info @openFeedBackDialog="openFeedBackDialog" :isLogin="true" class="pl-3 py-0"></update-service-info>
+                    <update-service-info @openFeedBackDialog="openFeedBackDialog" is-login class="pl-3 py-0"></update-service-info>
                 </v-card-text>
                 <v-card-actions class="pr-3 pb-3">
                     <v-spacer></v-spacer>
@@ -31,7 +31,7 @@ import {UpdateServiceInfo} from "../updateServiceInfo";
 })
 export class NotificationUpdateDialog extends CustomDialog<void, BtnReturn> {
 
-    static readonly DATE: string = "2019-12-29";
+    static readonly DATE: string = "2020-01-12";
 
     private acceptAndClose(): void {
         this.close(BtnReturn.YES);

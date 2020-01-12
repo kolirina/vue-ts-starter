@@ -27,6 +27,7 @@ export class RebalancingService {
 
     readonly _001 = new Decimal("0.01");
     readonly ZERO = new Decimal("0.00");
+    readonly ONE = new Decimal("1");
     readonly _100 = new Decimal("100.00");
 
     @Inject
@@ -50,6 +51,7 @@ export class RebalancingService {
         //         min: row.min.toString(),
         //         max: row.max.toString(),
         //         opt: row.opt.toString(),
+        //         currentCost: row.currentCost.toString(),
         //         lotPrice: row.lotPrice.toString()
         //     };
         // }));
@@ -70,7 +72,7 @@ export class RebalancingService {
         const currentAmounts = rows.map(row => new Decimal(row.amountForLots)).reduce((result: Decimal, current: Decimal) => result.add(current), new Decimal("0"));
         // проверяем что минимальная сумма меньше или равна вносимой
         if (currentAmounts.comparedTo(totalAmount) > 0) {
-            throw Error("Попробуйте увеличить сумму снесения или допуск");
+            throw Error("Попробуйте увеличить сумму внесения или допуск");
         }
         // доводим до оптимума размеры покупок
         let deltaTotalAmount = totalAmount.minus(currentAmounts);
@@ -83,6 +85,7 @@ export class RebalancingService {
         //         min: row.min.toString(),
         //         max: row.max.toString(),
         //         opt: row.opt.toString(),
+        //         currentCost: row.currentCost.toString(),
         //         lotPrice: row.lotPrice.toString()
         //     };
         // }));
@@ -98,11 +101,12 @@ export class RebalancingService {
             //         min: row.min.toString(),
             //         max: row.max.toString(),
             //         opt: row.opt.toString(),
+            //         currentCost: row.currentCost.toString(),
             //         lotPrice: row.lotPrice.toString()
             //     };
             // }));
         }
-        this.calculateResultPercents(rows, totalAmount.plus(totalCurrCost));
+        this.calculateResultPercents(rows);
     }
 
     private optimizeRebalancing(rows: CalculateRow[], field: string, deltaTotalAmount: Decimal): Decimal {
@@ -147,6 +151,14 @@ export class RebalancingService {
             row.amountForLots = "0";
             row.lots = 0;
             const percent = new Decimal(type === RebalancingType.BY_PERCENT ? row.targetPercent : row.currentPercent);
+            if (percent.comparedTo(this.ZERO) === 0) {
+                const currentCost = new Decimal(row.currentCost).abs().negated();
+                row.min = currentCost;
+                row.opt = currentCost;
+                row.max = currentCost;
+                row.lotPrice = new BigMoney(row.price).amount.mul(new Decimal(row.lotSize));
+                return;
+            }
             row.min = total.mul(percent.minus(new Decimal(rowLimit))).mul(this._001).minus(row.currentCost).toDP(2, Decimal.ROUND_HALF_UP);
             row.opt = total.mul(percent).mul(this._001).minus(row.currentCost).toDP(2, Decimal.ROUND_HALF_UP);
             row.max = total.mul(percent.plus(new Decimal(rowLimit))).mul(this._001).minus(row.currentCost).toDP(2, Decimal.ROUND_HALF_UP);
@@ -154,8 +166,24 @@ export class RebalancingService {
         });
     }
 
-    private calculateResultPercents(rows: CalculateRow[], totalAmount: Decimal): void {
+    private calculateResultPercents(rows: CalculateRow[]): void {
+        const totalAmount: Decimal = rows
+            .map(row => row.currentCost
+                .plus(row.amountForLots)
+                .mul(row.targetPercent === 0 ? this.ZERO : this.ONE)
+            ).reduce((result: Decimal, current: Decimal) => result.add(current), new Decimal("0"));
+        if (rows.every(row => row.currentPercent === row.targetPercent)) {
+            rows.forEach(row => {
+                if (Math.abs(Number(row.amountForLots)) === 0) {
+                    row.resultPercent = row.currentPercent;
+                }
+            });
+        }
         rows.forEach(row => {
+            if (row.targetPercent === 0) {
+                row.resultPercent = 0;
+                return;
+            }
             const currentCost = row.currentCost.plus(new Decimal(row.amountForLots));
             row.resultPercent = currentCost.mul(this._100).div(totalAmount).toDP(2, Decimal.ROUND_HALF_UP).toNumber();
         });

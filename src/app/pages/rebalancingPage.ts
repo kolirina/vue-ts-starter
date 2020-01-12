@@ -133,7 +133,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 </v-card>
                             </v-menu>
                         </p>
-                        <v-data-table :headers="getHeaders" :items="calculateRows" item-key="id"
+                        <v-data-table :headers="getHeaders" :items="calculateRows" item-key="name"
                                       :custom-sort="customSort" :pagination.sync="pagination" class="data-table" hide-actions must-sort>
                             <template #headerCell="props">
                                 <span>{{ props.header.text }}</span>
@@ -163,7 +163,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         <span class="ml-2" v-html="getAction(props.item)"></span>
                                     </td>
                                     <td class="text-xs-right">
-                                        {{ props.item.resultPercent === 0 ? "" : props.item.resultPercent }}
+                                        {{ props.item.resultPercent }}
                                     </td>
                                 </tr>
                             </template>
@@ -268,12 +268,14 @@ export class RebalancingPage extends UI {
     private rowLimit: string = "1";
 
     async created(): Promise<void> {
+        this.currency = this.portfolio.portfolioParams.viewCurrency;
         await this.loadRebalancingModel();
         this.initCalculatedRow();
     }
 
     @Watch("portfolio")
     private async onPortfolioChange(): Promise<void> {
+        this.currency = this.portfolio.portfolioParams.viewCurrency;
         this.passedSteps = [Step.FIRST];
         await this.loadRebalancingModel();
         this.initCalculatedRow();
@@ -329,8 +331,16 @@ export class RebalancingPage extends UI {
     private async calculate(): Promise<void> {
         const filteredRows = this.portfolio.overview.stockPortfolio.rows.filter(row => Number(row.quantity) > 0);
         this.totalCurrAmount = filteredRows.map(row => new BigMoney(row.currCost).amount).reduce((result: Decimal, current: Decimal) => result.add(current), new Decimal("0"));
+        if (this.rebalancingType === RebalancingType.BY_PERCENT && this.totalCurrAmount.comparedTo(new Decimal("0.00")) === 0 &&
+            this.calculateRows.every(row => row.currentPercent === row.targetPercent)) {
+            this.$snotify.info("Изменения не требуются");
+            return;
+        }
         this.rebalancingService.calculateRows(this.calculateRows, this.moneyAmount, this.totalCurrAmount, Number(this.rowLimit), this.onlyBuyTrades, this.rebalancingType);
         await this.saveRebalancing(this.calculateRows);
+        if (this.buy === "0" && this.sell === "0" && this.totalAmount === "0") {
+            this.$snotify.info("Изменения не требуются");
+        }
     }
 
     private async saveRules(): Promise<void> {
@@ -399,9 +409,9 @@ export class RebalancingPage extends UI {
         result.push(String(Math.abs(Number(this.calculationsInLots ? row.lots : row.pieces))));
         result.push("</b>");
         if (this.calculationsInLots) {
-            result.push(Filters.declension(row.lots, "лота", "лотов", "лотов"));
+            result.push(Filters.declension(Math.abs(row.lots), "лота", "лотов", "лотов"));
         } else {
-            result.push(Filters.declension(new BigMoney(row.price).amount.toNumber(), "штуки", "штук", "штук"));
+            result.push(Filters.declension(new BigMoney(row.price).amount.abs().toNumber(), "штуки", "штук", "штук"));
         }
         result.push("на сумму:");
         result.push("<b>");

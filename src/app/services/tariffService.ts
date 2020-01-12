@@ -136,7 +136,7 @@ export interface CancelOrderRequest {
 export class UnLinkCardAnswer extends (EnumType as IStaticEnum<UnLinkCardAnswer>) {
 
     static readonly REDUCE_INVEST_ACTIVITY = new UnLinkCardAnswer("REDUCE_INVEST_ACTIVITY", "Прекратил или уменьшил инвесторскую деятельность");
-    static readonly ABSENT_FUNCTIONALITY = new UnLinkCardAnswer("ABSENT_FUNCTIONALITY", "Нет нужной мне функционаьности");
+    static readonly ABSENT_FUNCTIONALITY = new UnLinkCardAnswer("ABSENT_FUNCTIONALITY", "Нет нужной мне функциональности");
     static readonly ERRORS = new UnLinkCardAnswer("ERRORS", "Ошибки в сервисе");
     static readonly SUPPORT_QUALITY = new UnLinkCardAnswer("SUPPORT_QUALITY", "Не устроило качество обратной связи от тех. поддержки");
     static readonly EXPENSIVE_TARIFFS = new UnLinkCardAnswer("EXPENSIVE_TARIFFS", "Дорогие тарифные планы");
