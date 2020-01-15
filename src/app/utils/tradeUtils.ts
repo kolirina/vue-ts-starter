@@ -13,6 +13,9 @@ import {DateUtils} from "./dateUtils";
 
 export class TradeUtils {
 
+    /** Операции начислений */
+    static readonly CALCULATION_OPERATIONS = [Operation.COUPON, Operation.DIVIDEND, Operation.AMORTIZATION];
+
     private constructor() {
     }
 
@@ -136,5 +139,9 @@ export class TradeUtils {
 
     static markupClasses(amount: number): string[] {
         return [amount > 0 ? "ii--green-markup" : amount < 0 ? "ii--red-markup" : "", "ii-number-cell", "text-xs-right"];
+    }
+
+    static isCalculationAssetType(operation: Operation): boolean {
+        return TradeUtils.CALCULATION_OPERATIONS.includes(operation);
     }
 }

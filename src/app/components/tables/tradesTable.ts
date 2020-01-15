@@ -63,7 +63,9 @@ const MainStore = namespace(StoreType.MAIN);
                     <td v-if="tableHeadersState.date" class="text-xs-center">{{ getTradeDate(props.item) }}</td>
                     <td v-if="tableHeadersState.quantity" class="text-xs-right ii-number-cell">{{ props.item.quantity | quantity }}</td>
                     <td v-if="tableHeadersState.price" :class="['text-xs-right', 'ii-number-cell']">
-                        {{ getPrice(props.item) }}&nbsp;<span class="second-value">{{ currencyForPrice(props.item) }}</span>
+                        <template v-if="!calculationAssetType(props.item.operation)">
+                            {{ getPrice(props.item) }}&nbsp;<span class="second-value">{{ currencyForPrice(props.item) }}</span>
+                        </template>
                     </td>
                     <td v-if="tableHeadersState.facevalue" :class="['text-xs-right', 'ii-number-cell']">
                         {{ props.item.facevalue | amount(false, null, false) }}&nbsp;<span class="second-value">{{ props.item.facevalue | currencySymbol }}</span>
@@ -75,7 +77,19 @@ const MainStore = namespace(StoreType.MAIN);
                         {{ getFee(props.item) }}&nbsp;<span class="second-value">{{ props.item.fee | currencySymbol }}</span>
                     </td>
                     <td v-if="tableHeadersState.signedTotal" :class="['text-xs-right', 'ii-number-cell']">
-                        {{ props.item.signedTotal | amount(true) }}&nbsp;<span class="second-value">{{ props.item.signedTotal | currencySymbol }}</span>
+                        <v-tooltip v-if="calculationAssetType(props.item.operation)" content-class="custom-tooltip-wrap" bottom>
+                            <template #activator="{ on }">
+                                <span class="data-table__header-with-tooltip" v-on="on">
+                                    {{ props.item.signedTotal | amount(true) }}&nbsp;<span class="second-value">{{ props.item.signedTotal | currencySymbol }}</span>
+                                </span>
+                            </template>
+                            <span>
+                                На одну бумагу: {{ props.item.moneyPrice | amount(true) }}&nbsp;<span class="second-value">{{ currencyForPrice(props.item) }}</span>
+                            </span>
+                        </v-tooltip>
+                        <template v-else>
+                            {{ props.item.signedTotal | amount(true) }}&nbsp;<span class="second-value">{{ props.item.signedTotal | currencySymbol }}</span>
+                        </template>
                     </td>
                     <td v-if="tableHeadersState.totalWithoutFee" :class="['text-xs-right', 'ii-number-cell']">
                         {{ props.item.totalWithoutFee | amount }}&nbsp;<span class="second-value">{{ props.item.totalWithoutFee | currencySymbol }}</span>
@@ -384,5 +398,9 @@ export class TradesTable extends UI {
 
     private customSort(items: TradeRow[], index: string, isDesc: boolean): TradeRow[] {
         return items;
+    }
+
+    private calculationAssetType(operation: string): boolean {
+        return TradeUtils.isCalculationAssetType(Operation.valueByName(operation));
     }
 }
