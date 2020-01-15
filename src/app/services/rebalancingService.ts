@@ -197,6 +197,7 @@ export class RebalancingService {
             row.opt = this.ZERO;
             row.max = this.ZERO;
             row.lotPrice = this.ZERO;
+            row.resultPercent = 0;
         });
     }
 

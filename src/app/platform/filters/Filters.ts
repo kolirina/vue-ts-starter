@@ -44,8 +44,12 @@ export class Filters {
         }
         const amount = new BigMoney(value);
         if (needRound) {
-            const am = amount.amount.toDecimalPlaces(DEFAULT_SCALE, Decimal.ROUND_HALF_UP).toNumber();
-            return Filters.replaceCommaToDot(DF.format(am));
+            let roundingScale = DEFAULT_SCALE;
+            if (amount.amount.comparedTo(new Decimal("1.00")) < 0) {
+                roundingScale = NO_SCALE;
+            }
+            const am = amount.amount.toDecimalPlaces(roundingScale, Decimal.ROUND_HALF_UP).toNumber();
+            return Filters.replaceCommaToDot(roundingScale === NO_SCALE ? DF_MAX_SCALE.format(am) : DF.format(am));
         } else {
             return Filters.replaceCommaToDot(needFormat ? DF_MAX_SCALE.format(scale ? amount.amount.toDecimalPlaces(scale, Decimal.ROUND_HALF_UP).toNumber() :
                 amount.amount.toNumber()) : String(amount.amount.toNumber()));
