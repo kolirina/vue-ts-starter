@@ -22,6 +22,8 @@ import {UI} from "../../app/ui";
 import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
+import {Filters} from "../../platform/filters/Filters";
+import {ClientService} from "../../services/clientService";
 import {DividendInfo, DividendService} from "../../services/dividendService";
 import {TradeFields, TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
@@ -29,6 +31,7 @@ import {BigMoney} from "../../types/bigMoney";
 import {Operation} from "../../types/operation";
 import {Portfolio, TableHeader} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
+import {DateFormat} from "../../utils/dateUtils";
 import {SortUtils} from "../../utils/sortUtils";
 import {TradeUtils} from "../../utils/tradeUtils";
 import {MutationType} from "../../vuex/mutationType";
@@ -65,7 +68,7 @@ const MainStore = namespace(StoreType.MAIN);
                         <stock-link :ticker="props.item.ticker"></stock-link>
                     </td>
                     <td class="text-xs-left">{{ props.item.shortName }}</td>
-                    <td class="text-xs-right">{{ props.item.date | date }}</td>
+                    <td class="text-xs-right">{{ getTradeDate(props.item.date) }}</td>
                     <td class="text-xs-right ii-number-cell">{{ props.item.quantity | integer }}</td>
                     <td class="text-xs-right ii-number-cell">
                         {{ props.item.perOne | amount(true) }}&nbsp;<span class="second-value">{{ props.item.perOne | currencySymbol }}
@@ -111,6 +114,8 @@ export class DividendTradesTable extends UI {
     private dividendService: DividendService;
     @Inject
     private tradesService: TradeService;
+    @Inject
+    private clientService: ClientService;
 
     private headers: TableHeader[] = [
         {text: "Тикер", align: "left", value: "ticker", width: "45"},
@@ -129,6 +134,17 @@ export class DividendTradesTable extends UI {
 
     @Prop({default: [], required: true})
     private rows: DividendInfo[];
+    /** Признак доступности профессионального режима */
+    private portfolioProModeEnabled = false;
+
+    /**
+     * Инициализация данных
+     * @inheritDoc
+     */
+    async created(): Promise<void> {
+        const clientInfo = await this.clientService.getClientInfo();
+        this.portfolioProModeEnabled = TradeUtils.isPortfolioProModeEnabled(this.portfolio, clientInfo);
+    }
 
     private async openEditTradeDialog(trade: DividendInfo): Promise<void> {
         const currency = new BigMoney(trade.amount).currency;
@@ -178,5 +194,11 @@ export class DividendTradesTable extends UI {
 
     private customSort(items: DividendInfo[], index: string, isDesc: boolean): DividendInfo[] {
         return SortUtils.simpleSort(items, index, isDesc);
+    }
+
+    private getTradeDate(dateString: string): string {
+        const date = TradeUtils.getDateString(dateString);
+        const time = TradeUtils.getTimeString(dateString);
+        return this.portfolioProModeEnabled && !!time ? Filters.formatDate(`${date} ${time}`, DateFormat.DATE_TIME) : Filters.formatDate(date, DateFormat.DATE);
     }
 }

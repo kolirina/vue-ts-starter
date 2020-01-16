@@ -247,6 +247,8 @@ export class ImportPage extends UI {
 
     /** Текст ошибки о дублировании сделки */
     private static readonly DUPLICATE_MSG = "Сделка уже была импортирована ранее";
+    /** Ошибка о репо */
+    private static readonly REPO_TRADE_MSG = "Импорт сделки РЕПО не производится.";
     /** Максимальный размер загружаемого файла 10 Мб */
     readonly MAX_SIZE = 1024 * 1024 * 10;
     @MainStore.Getter
@@ -374,7 +376,8 @@ export class ImportPage extends UI {
         let duplicateTradeErrorCount = 0;
         if (response.errors && response.errors.length) {
             const duplicateTradeErrors = response.errors.filter(error => error.message === ImportPage.DUPLICATE_MSG);
-            const errors = response.errors.filter(error => !duplicateTradeErrors.includes(error));
+            const repoTradeErrors = response.errors.filter(error => error.message === ImportPage.REPO_TRADE_MSG);
+            const errors = response.errors.filter(error => !duplicateTradeErrors.includes(error) && !repoTradeErrors.includes(error));
             duplicateTradeErrorCount = duplicateTradeErrors.length;
             // если после удаления ошибки все еще остались, отображаем диалог
             // отображаем диалог с ошибками, но информацию по портфелю надо перезагрузить если были успешно импортированы сделки
@@ -383,7 +386,8 @@ export class ImportPage extends UI {
                     errors: errors,
                     router: this.$router,
                     validatedTradesCount: response.validatedTradesCount,
-                    duplicateTradeErrorCount
+                    duplicateTradeErrorCount,
+                    repoTradeErrorsCount: repoTradeErrors.length
                 });
                 if (response.validatedTradesCount) {
                     await this.reloadPortfolio(this.portfolio.id);
