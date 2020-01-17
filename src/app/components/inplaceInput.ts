@@ -26,6 +26,9 @@ import {UI} from "../app/ui";
                     <v-icon>clear</v-icon>
                 </v-btn>
             </v-layout>
+            <v-layout v-if="$slots['afterText']" align-center justify-end row fill-height>
+                <slot name="afterText"></slot>
+            </v-layout>
         </v-layout>
     `
 })
