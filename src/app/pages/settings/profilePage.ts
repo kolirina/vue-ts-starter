@@ -38,12 +38,18 @@ const MainStore = namespace(StoreType.MAIN);
                         Детали профиля
                     </div>
                     <div class="profile__subtitle margT0">Email</div>
-                    <inplace-input name="email" :value="email" :max-length="120" @input="onEmailChange">
-                        <v-tooltip content-class="custom-tooltip-wrap" max-width="250px" slot="afterText" top>
-                            <v-icon slot="activator" v-if="!clientInfo.user.emailConfirmed" class="profile-not-confirmed-email">fas fa-exclamation-triangle</v-icon>
-                            <span>Адрес не подтвержден. Пожалуйста подтвердите Ваш адрес эл.почты что воспользоваться всеми функциями сервиса.</span>
-                        </v-tooltip>
-                    </inplace-input>
+                    <v-layout align-center justify-start row fill-height wrap>
+                        <inplace-input name="email" :value="email" :max-length="120" @input="onEmailChange" class="mr-3 mb-2">
+                            <v-tooltip content-class="custom-tooltip-wrap" max-width="250px" slot="afterText" top>
+                                <v-icon slot="activator" v-if="!clientInfo.user.emailConfirmed" class="profile-not-confirmed-email">fas fa-exclamation-triangle</v-icon>
+                                <span>Адрес не подтвержден. Пожалуйста подтвердите Ваш адрес эл.почты что бы воспользоваться всеми функциями сервиса.</span>
+                            </v-tooltip>
+                        </inplace-input>
+                        <v-btn v-if="!clientInfo.user.emailConfirmed" @click="verifyEmail" color="#EBEFF7">
+                            Подтвердить почту
+                        </v-btn>
+                    </v-layout>
+
                     <div class="profile__subtitle mt-2">Имя пользователя</div>
                     <inplace-input name="username" :value="username" :max-length="120" @input="onUserNameChange"></inplace-input>
                 </v-card>
@@ -256,6 +262,15 @@ export class ProfilePage extends UI {
     @ShowProgress
     private async cancelOrderScheduleConfirmed(request: CancelOrderRequest): Promise<void> {
         await this.tariffService.cancelOrderSchedule(request);
+    }
+
+    /**
+     * Отправляет запрос на подтверждение E-mail
+     * @returns {Promise<void>}
+     */
+    @ShowProgress
+    private async verifyEmail(): Promise<void> {
+        await this.clientService.verifyEmail();
     }
 
     /**

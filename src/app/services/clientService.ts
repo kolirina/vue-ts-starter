@@ -72,6 +72,14 @@ export class ClientService {
     }
 
     /**
+     * Отправляет запрос на подтверждение E-mail
+     * @returns {Promise<void>}
+     */
+    async verifyEmail(): Promise<void> {
+        return this.http.post(`/user/verify-email`);
+    }
+
+    /**
      * Обновляет дату уведомления об обнвлениях
      * @param date дата уведомления об обновлениях
      * @returns {Promise<void>}
