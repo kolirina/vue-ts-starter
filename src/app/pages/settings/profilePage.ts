@@ -40,8 +40,8 @@ const MainStore = namespace(StoreType.MAIN);
                     <div class="profile__subtitle margT0">Email</div>
                     <v-layout align-center justify-start row fill-height wrap>
                         <inplace-input name="email" :value="email" :max-length="120" @input="onEmailChange" class="mr-3 mb-2">
-                            <v-tooltip content-class="custom-tooltip-wrap" max-width="250px" slot="afterText" top>
-                                <v-icon slot="activator" v-if="!clientInfo.user.emailConfirmed" class="profile-not-confirmed-email">fas fa-exclamation-triangle</v-icon>
+                            <v-tooltip v-if="!clientInfo.user.emailConfirmed" content-class="custom-tooltip-wrap" max-width="250px" slot="afterText" top>
+                                <v-icon slot="activator" class="profile-not-confirmed-email">fas fa-exclamation-triangle</v-icon>
                                 <span>Адрес не подтвержден. Пожалуйста подтвердите Ваш адрес эл.почты что бы воспользоваться всеми функциями сервиса.</span>
                             </v-tooltip>
                         </inplace-input>
