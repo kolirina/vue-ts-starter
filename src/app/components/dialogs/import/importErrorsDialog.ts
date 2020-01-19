@@ -36,7 +36,7 @@ import {TableHeader} from "../../../types/types";
                         </v-card-title>
                         <v-card-text class="import-dialog-wrapper__description selectable">
                             <div class="import-dialog-wrapper__description-text import-default-text">
-                                При импортировании отчета возникли ошибки, портфель не был импортирован полностью. Чтобы завершить формирование пожалуйста внесите остатки вручную.
+                                При импортировании отчета возникли ошибки, отчет не был импортирован полностью. Чтобы завершить формирование пожалуйста внесите остатки вручную.
                             </div>
                             <video-link class="margB20 fs13">
                                 <template #foreword>
@@ -52,6 +52,27 @@ import {TableHeader} from "../../../types/types";
                                     , <span class="amount-deals">{{ data.duplicateTradeErrorCount }}</span>
                                     {{ data.duplicateTradeErrorCount | declension("сделка", "сделки", "сделок") }}
                                     из отчета уже были загружены ранее.
+                                </template>
+                                <template v-if="data.repoTradeErrorsCount">
+                                    , <span class="amount-deals">{{ data.repoTradeErrorsCount }}</span>
+                                    {{ data.repoTradeErrorsCount | declension("сделка", "сделки", "сделок") }}
+                                    из отчета имеют тип РЕПО и не были загружены, (если вы производили их самостоятельно, добавьте их вручную).
+                                    <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" bottom>
+                                        <sup class="custom-tooltip" slot="activator">
+                                            <v-icon>fas fa-info-circle</v-icon>
+                                        </sup>
+                                        <span>
+                                            РЕПО сделки могут быть совершены вашим брокером, если вы давали согласие на займы своих бумаг.
+                                            Брокер может занимать и отдавать бумаги в течение дня, при этом в отчете такие сделки
+                                            будут отображаться, например, как РЕПО часть 1 и РЕПО часть 2, и по своей сути,
+                                            такие операции не должны влиять на расчет доходности вашего портфеля и попадать в список сделок,
+                                            потому что вы их не совершали.
+                                            <br/>
+                                            <br/>
+                                            Если сделки РЕПО совершали вы самостоятельно, и хотите их учесть,
+                                            рекомендуем внести их через диалог добавления сделки.
+                                        </span>
+                                    </v-tooltip>
                                 </template>
                             </div>
                         </v-card-text>
@@ -96,5 +117,6 @@ export type ImportErrorsDialogData = {
     errors: DealImportError[],
     validatedTradesCount: number,
     duplicateTradeErrorCount: number,
+    repoTradeErrorsCount: number,
     router: VueRouter
 };

@@ -320,8 +320,6 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private assetService: AssetService;
     /** Информация о клиенте */
     private clientInfo: Client = null;
-    /** Операции начислений */
-    private readonly CALCULATION_OPERATIONS = [Operation.COUPON, Operation.DIVIDEND, Operation.AMORTIZATION];
     /** Выбранный портфель для добавления сделки. По умолчанию текущий */
     private portfolio: Portfolio = null;
     /** Типы возможных активов */
@@ -552,7 +550,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             return;
         }
         // если это операция начисления, просто получаем данные о количестве и начичлеии.
-        const calculationOperation = this.CALCULATION_OPERATIONS.includes(this.operation);
+        const calculationOperation = TradeUtils.isCalculationAssetType(this.operation);
         if (calculationOperation) {
             await this.fillFromSuggestedInfo();
             return;
@@ -765,7 +763,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private setPriceFromStockTypeShare(price: string): void {
-        this.price = this.CALCULATION_OPERATIONS.includes(this.operation) ? "" : TradeUtils.decimal(price);
+        this.price = TradeUtils.isCalculationAssetType(this.operation) ? "" : TradeUtils.decimal(price);
     }
 
     /**
@@ -1012,7 +1010,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private get calculationAssetType(): boolean {
-        return [Operation.DIVIDEND, Operation.COUPON, Operation.AMORTIZATION].includes(this.operation);
+        return TradeUtils.isCalculationAssetType(this.operation);
     }
 
     private get total(): string {

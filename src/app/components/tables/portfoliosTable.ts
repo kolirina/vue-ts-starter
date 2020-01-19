@@ -108,7 +108,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     </v-list-tile-title>
                                 </v-list-tile>
                                 <v-divider v-if="!props.item.parentTradeId"></v-divider>
-                                <v-list-tile @click="clearPortfolio(props.item.id)">
+                                <v-list-tile @click="clearPortfolio(props.item)">
                                     <v-list-tile-title class="delete-btn">
                                         Очистить
                                     </v-list-tile-title>
@@ -239,7 +239,7 @@ export class PortfoliosTable extends UI {
     }
 
     private async deletePortfolio(portfolio: PortfolioParams): Promise<void> {
-        const result = await new ConfirmDialog().show(`Вы собираетесь удалить портфель ${portfolio.name}.
+        const result = await new ConfirmDialog().show(`Вы собираетесь удалить портфель "${portfolio.name}".
                                               Все сделки по акциям, облигациям и дивиденды,
                                               связанные с этим портфелем будут удалены.`);
         if (result === BtnReturn.YES) {
@@ -270,8 +270,9 @@ export class PortfoliosTable extends UI {
         UI.emit(EventType.PORTFOLIO_CREATED);
     }
 
-    private async clearPortfolio(portfolioId: number): Promise<void> {
-        const result = await new ConfirmDialog().show(`Вы уверены, что хотите удалить все сделки в портфеле`);
+    private async clearPortfolio(portfolio: PortfolioParams): Promise<void> {
+        const portfolioId = portfolio.id;
+        const result = await new ConfirmDialog().show(`Данная операция удалит все сделки в портфеле "${portfolio.name}".`);
         if (result === BtnReturn.YES) {
             await this.portfolioService.clearPortfolio(portfolioId);
             this.overviewService.resetCacheForId(portfolioId);

@@ -13,6 +13,9 @@ import {UI} from "../app/ui";
                    :readonly="!editMode"
                    @keyup.esc="dismissChanges" :maxlength="maxLength" :placeholder="placeholder"
                    v-click-outside="dismissChanges">
+            <v-layout v-if="$slots['afterText']" align-center justify-end row fill-height>
+                <slot name="afterText"></slot>
+            </v-layout>
             <v-layout v-show="!editMode" class="initial-flex btn-action-section" align-center justify-end>
                 <v-btn @click.stop="onEdit" flat icon color="indigo">
                     <i class="profile-edit"></i>
