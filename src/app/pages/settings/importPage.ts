@@ -1,7 +1,6 @@
 import {Inject} from "typescript-ioc";
-import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
-import {UI} from "../../app/ui";
+import {Component, UI, Watch} from "../../app/ui";
 import {ConfirmDialog} from "../../components/dialogs/confirmDialog";
 import {ImportErrorsDialog} from "../../components/dialogs/import/importErrorsDialog";
 import {ImportGeneralErrorDialog} from "../../components/dialogs/import/importGeneralErrorDialog";
@@ -289,6 +288,22 @@ export class ImportPage extends UI {
     async created(): Promise<void> {
         this.importProviderFeaturesByProvider = await this.importService.getImportProviderFeatures();
         this.portfolioParams = {...this.portfolio.portfolioParams};
+        this.selectUserProvider();
+    }
+
+    @Watch("portfolio")
+    @ShowProgress
+    private async onPortfolioChange(): Promise<void> {
+        this.selectUserProvider();
+    }
+
+    private selectUserProvider(): void {
+        const userProvider = DealsImportProvider.values().find(provider => provider.id === this.portfolio.portfolioParams.brokerId);
+        if (userProvider) {
+            this.onSelectProvider(userProvider);
+        } else {
+            this.selectedProvider = null;
+        }
     }
 
     /**

@@ -33,7 +33,7 @@ const MainStore = namespace(StoreType.MAIN);
             </p>
             <p v-if="foreignShares">
                 В ваших портфелях имеются сделки с валютой или по иностранным ценным бумагам<br>
-                Тариф {{ tariffForeignShares ? "" : "не " }}позволяет учитывать сделки по ценным бумагам в долларах.
+                Тариф {{ tariffForeignShares ? "" : "не " }}позволяет учитывать сделки по ценным бумагам в долларах или евро.
             </p>
         </span>
     `
@@ -143,20 +143,35 @@ export class TariffAgreement extends UI {
                         </div>
                     </div>
                 </div>
-                <v-tooltip v-if="!available || isTariffsDifferent" :content-class="classPaymentBtn" bottom>
-                    <v-btn slot="activator" @click.stop="makePayment(tariff)"
-                           :class="{'big_btn': true, 'selected': selected || agreementState[tariff.name]}"
-                           :disabled="disabled">
+                <v-tooltip v-if="!isMobile && (!available || isTariffsDifferent)" :content-class="classPaymentBtn" bottom>
+                    <v-btn slot="activator" @click.stop="makePayment(tariff)" :class="{'big_btn': true, 'selected': selected || agreementState[tariff.name]}" :disabled="disabled">
                         <span v-if="!busyState[tariff.name]">{{ buttonLabel }}</span>
                         <v-progress-circular v-if="busyState[tariff.name]" indeterminate color="white" :size="20"></v-progress-circular>
                     </v-btn>
                     <tariff-limit-exceed-info v-if="!available" :portfolios-count="clientInfo.user.portfoliosCount" :tariff="tariff"
                                               :shares-count="clientInfo.user.sharesCount" :foreign-shares="clientInfo.user.foreignShares">
                     </tariff-limit-exceed-info>
-                    <div v-else>
+                    <div v-else class="pa-3">
                         При переходе на данный тарифный план, остаток неиспользованных дней текущего тарифа пересчитаются согласно новому тарифу и продлит срок его действия
                     </div>
                 </v-tooltip>
+                <template v-if="isMobile && (!available || isTariffsDifferent)">
+                    <v-btn slot="activator" @click.stop="makePayment(tariff)" :class="{'big_btn': true, 'selected': selected || agreementState[tariff.name]}" :disabled="disabled">
+                        <span v-if="!busyState[tariff.name]">{{ buttonLabel }}</span>
+                        <v-progress-circular v-if="busyState[tariff.name]" indeterminate color="white" :size="20"></v-progress-circular>
+                    </v-btn>
+                    <expanded-panel :value="notAvailablePanelState" class="promo-codes__statistics w100pc">
+                        <template #header>{{ available ? 'Подробнее' : 'Почему мне недоступен тариф?' }}</template>
+                        <div class="statistics">
+                            <tariff-limit-exceed-info v-if="!available" :portfolios-count="clientInfo.user.portfoliosCount" :tariff="tariff"
+                                                      :shares-count="clientInfo.user.sharesCount" :foreign-shares="clientInfo.user.foreignShares">
+                            </tariff-limit-exceed-info>
+                            <div v-else>
+                                При переходе на данный тарифный план, остаток неиспользованных дней текущего тарифа пересчитаются согласно новому тарифу и продлит срок его действия
+                            </div>
+                        </div>
+                    </expanded-panel>
+                </template>
                 <v-btn v-if="available && !isTariffsDifferent" @click.stop="makePayment(tariff)"
                        :class="{'big_btn': true, 'selected': selected || agreementState[tariff.name]}"
                        :style="disabled ? 'opacity: 0.7;' : ''"
@@ -182,7 +197,7 @@ export class TariffAgreement extends UI {
                         Формирование составного портфеля из портфелей различных брокеров
                     </div>
                     <!--<div class="py-3 fs14">-->
-                        <!--Автоматическая ребалансировка портфелей-->
+                    <!--Автоматическая ребалансировка портфелей-->
                     <!--</div>-->
                     <div class="py-3 fs14">
                         Мобильное приложение
@@ -260,6 +275,8 @@ export class TariffBlock extends UI {
     /** Платежная информация пользователя */
     @Prop({required: false, type: Object})
     private paymentInfo: UserPaymentInfo;
+    /** Панель с отображением подробностей о недоступном тарифе (для мобилы онли) */
+    private notAvailablePanelState = [0];
 
     @MainStore.Getter
     private expiredTariff: boolean;
@@ -372,6 +389,10 @@ export class TariffBlock extends UI {
 
     private get classPaymentBtn(): string {
         return `custom-tooltip-wrap ${this.available ? "pa-0" : ""}`;
+    }
+
+    private get isMobile(): boolean {
+        return CommonUtils.isMobile();
     }
 }
 
