@@ -270,10 +270,10 @@ export class SharePortfolioDialog extends CustomDialog<SharePortfolioDialogData,
 
     private get link(): string {
         if (this.shareOption === PortfoliosDialogType.DEFAULT_ACCESS) {
-            return `${window.location.protocol}//${window.location.host}/public-portfolio/${this.data.portfolio.id}/?ref=${this.data.clientInfo.user.id}`;
+            return `${window.location.protocol}//${window.location.host}/public-portfolio/${this.data.portfolio.id}/`;
         }
         const link = this.shareUrlsCache[this.shareOption.code];
-        return link ? `${this.shareUrlsCache[this.shareOption.code]}?ref=${this.data.clientInfo.user.id}` : null;
+        return link ? `${this.shareUrlsCache[this.shareOption.code]}` : null;
     }
 
     private copyLink(): void {

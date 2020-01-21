@@ -285,7 +285,7 @@ export class PortfoliosTable extends UI {
     }
 
     private publicLink(id: string): string {
-        return `${window.location.protocol}//${window.location.host}/public-portfolio/${id}/?ref=${this.clientInfo.user.id}`;
+        return `${window.location.protocol}//${window.location.host}/public-portfolio/${id}/`;
     }
 
     private informerV(id: string): string {
