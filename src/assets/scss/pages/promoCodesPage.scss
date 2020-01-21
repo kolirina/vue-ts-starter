@@ -103,6 +103,9 @@
       }
     }
 
+    .v-card {
+        background: inherit;
+    }
     .v-expansion-panel__container--active .v-expansion-panel__header__icon {transform: rotate(0deg)}
   }
 }
