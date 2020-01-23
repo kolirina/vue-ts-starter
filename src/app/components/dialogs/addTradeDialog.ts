@@ -162,8 +162,8 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
 
                             <!-- Номинал -->
                             <v-flex v-if="isBondTrade" xs12 :class="operation === Operation.REPAYMENT ? 'sm6' : 'sm3'">
-                                <ii-number-field label="Номинал" v-model="facevalue" @keyup="calculateFee" :decimals="2" name="facevalue" maxLength="11"
-                                                 v-validate="'required|min_value:0.01'" :error-messages="errors.collect('facevalue')" class="required">
+                                <ii-number-field label="Номинал" v-model="facevalue" @keyup="calculateFee" :decimals="3" name="facevalue" maxLength="11"
+                                                 v-validate="'required|min_value:0.001'" :error-messages="errors.collect('facevalue')" class="required">
                                 </ii-number-field>
                             </v-flex>
 

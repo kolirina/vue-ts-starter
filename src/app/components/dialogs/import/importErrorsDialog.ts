@@ -18,7 +18,7 @@ import Component from "vue-class-component";
 import {VueRouter} from "vue-router/types/router";
 import {CustomDialog} from "../../../platform/dialogs/customDialog";
 import {DealImportError} from "../../../services/importService";
-import {TableHeader} from "../../../types/types";
+import {Share, TableHeader} from "../../../types/types";
 
 /**
  * Диалог получения кода для встраиваемого блока
@@ -77,7 +77,7 @@ import {TableHeader} from "../../../types/types";
                             </div>
                         </v-card-text>
                         <v-card-text class="import-dialog-wrapper__content import-dialog-wrapper__error-table selectable">
-                            <v-data-table :headers="headers" :items="data.errors" class="data-table" hide-actions must-sort>
+                            <v-data-table v-if="otherErrors.length" :headers="headers" :items="otherErrors" class="data-table" hide-actions must-sort>
                                 <template #items="props">
                                     <tr class="selectable">
                                         <td class="text-xs-center"><span v-if="props.item.dealDate">{{ props.item.dealDate | date }}</span></td>
@@ -86,6 +86,19 @@ import {TableHeader} from "../../../types/types";
                                     </tr>
                                 </template>
                             </v-data-table>
+                            <!--<div v-for="aliasItem in shareAliases" :key="aliasItem.alias">-->
+                            <!--<v-layout wrap>-->
+                            <!--&lt;!&ndash; Тип актива &ndash;&gt;-->
+                            <!--<v-flex xs12 sm3>-->
+                            <!--<p class="text-center">{{ aliasItem.alias }}</p>-->
+                            <!--</v-flex>-->
+
+                            <!--&lt;!&ndash; Операция &ndash;&gt;-->
+                            <!--<v-flex xs12 sm9>-->
+                            <!--<share-search @change="onShareSelect($event, aliasItem)" @clear="onShareClear(aliasItem)" autofocus ellipsis></share-search>-->
+                            <!--</v-flex>-->
+                            <!--</v-layout>-->
+                            <!--</div>-->
                         </v-card-text>
                     </div>
                     <v-card-actions class="import-dialog-wrapper__actions">
@@ -107,9 +120,32 @@ export class ImportErrorsDialog extends CustomDialog<ImportErrorsDialogData, voi
         {text: "Ошибка", align: "center", value: "message", sortable: false}
     ];
 
+    private shareAliases: ShareAliasItem[] = [];
+
+    private otherErrors: DealImportError[] = [];
+
+    mounted(): void {
+        this.shareAliases = this.data.errors.filter(error => error.shareNotFound).map(error => {
+            return {
+                alias: error.dealTicker,
+                share: null
+            } as ShareAliasItem;
+        });
+        // this.otherErrors = this.data.errors.filter(error => !error.shareNotFound);
+        this.otherErrors = this.data.errors;
+    }
+
     private goToBalances(): void {
         this.data.router.push({name: "balances"});
         this.close();
+    }
+
+    private onShareSelect(share: Share, aliasItem: ShareAliasItem): void {
+        aliasItem.share = share;
+    }
+
+    private onShareClear(aliasItem: ShareAliasItem): void {
+        aliasItem.share = null;
     }
 }
 
@@ -120,3 +156,13 @@ export type ImportErrorsDialogData = {
     repoTradeErrorsCount: number,
     router: VueRouter
 };
+
+interface ShareAliasItem {
+    alias: string;
+    share: Share;
+}
+
+//
+// export interface ImportErrorsDialogReturn {
+//     shareAliases:
+// }
