@@ -77,7 +77,7 @@ import {Share, TableHeader} from "../../../types/types";
                             </div>
                         </v-card-text>
                         <v-card-text class="import-dialog-wrapper__content import-dialog-wrapper__error-table selectable">
-                            <v-data-table v-if="otherErrors.length" :headers="headers" :items="data.otherErrors" class="data-table" hide-actions must-sort>
+                            <v-data-table v-if="otherErrors.length" :headers="headers" :items="otherErrors" class="data-table" hide-actions must-sort>
                                 <template #items="props">
                                     <tr class="selectable">
                                         <td class="text-xs-center"><span v-if="props.item.dealDate">{{ props.item.dealDate | date }}</span></td>
@@ -86,19 +86,19 @@ import {Share, TableHeader} from "../../../types/types";
                                     </tr>
                                 </template>
                             </v-data-table>
-                            <div v-for="aliasItem in shareAliases" :key="aliasItem.alias">
-                                <v-layout wrap>
-                                    <!-- Тип актива -->
-                                    <v-flex xs12 sm3>
-                                        <p class="text-center">{{ aliasItem.alias }}</p>
-                                    </v-flex>
+                            <!--<div v-for="aliasItem in shareAliases" :key="aliasItem.alias">-->
+                            <!--<v-layout wrap>-->
+                            <!--&lt;!&ndash; Тип актива &ndash;&gt;-->
+                            <!--<v-flex xs12 sm3>-->
+                            <!--<p class="text-center">{{ aliasItem.alias }}</p>-->
+                            <!--</v-flex>-->
 
-                                    <!-- Операция -->
-                                    <v-flex xs12 sm9>
-                                        <share-search @change="onShareSelect($event, aliasItem)" @clear="onShareClear(aliasItem)" autofocus ellipsis></share-search>
-                                    </v-flex>
-                                </v-layout>
-                            </div>
+                            <!--&lt;!&ndash; Операция &ndash;&gt;-->
+                            <!--<v-flex xs12 sm9>-->
+                            <!--<share-search @change="onShareSelect($event, aliasItem)" @clear="onShareClear(aliasItem)" autofocus ellipsis></share-search>-->
+                            <!--</v-flex>-->
+                            <!--</v-layout>-->
+                            <!--</div>-->
                         </v-card-text>
                     </div>
                     <v-card-actions class="import-dialog-wrapper__actions">
@@ -131,7 +131,8 @@ export class ImportErrorsDialog extends CustomDialog<ImportErrorsDialogData, voi
                 share: null
             } as ShareAliasItem;
         });
-        this.otherErrors = this.data.errors.filter(error => !error.shareNotFound);
+        // this.otherErrors = this.data.errors.filter(error => !error.shareNotFound);
+        this.otherErrors = this.data.errors;
     }
 
     private goToBalances(): void {
