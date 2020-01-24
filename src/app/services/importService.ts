@@ -2,7 +2,7 @@ import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {Enum, EnumType, IStaticEnum} from "../platform/enum";
 import {Http} from "../platform/services/http";
-import {Status} from "../types/types";
+import {Share, Status} from "../types/types";
 
 @Service("ImportService")
 @Singleton
@@ -34,17 +34,25 @@ export class ImportService {
     }
 
     /**
-     * Загружает настройки провайдеров импорта
+     * Сохраняет алиасы бумаг
      */
-    private async loadImportProviderFeatures(): Promise<ImportProviderFeaturesByProvider> {
-        return await this.http.get<ImportProviderFeaturesByProvider>("/import/providers");
+    async saveShareAliases(shareAliases: ShareAliasItem[]): Promise<void> {
+        const request: SaveShareAliasesRequest[] = shareAliases.map(shareAlias => {
+            return {
+                alias: shareAlias.alias,
+                currency: shareAlias.share.currency,
+                ticker: shareAlias.share.ticker,
+                type: shareAlias.share.shareType
+            } as SaveShareAliasesRequest;
+        });
+        return this.http.post("/import/share-aliases", request);
     }
 
     /**
-     * Сохраняет алиасы бумаг
+     * Загружает настройки провайдеров импорта
      */
-    private async saveShareAliases(shareAliases: SaveShareAliasesRequest[]): Promise<void> {
-        return await this.http.post("/import/share-aliases", shareAliases);
+    private async loadImportProviderFeatures(): Promise<ImportProviderFeaturesByProvider> {
+        return this.http.get<ImportProviderFeaturesByProvider>("/import/providers");
     }
 }
 
@@ -94,7 +102,7 @@ export interface DealImportError {
     /** Сообщение валидатора */
     message: string;
     /** Дата сделки */
-    dealDate: string;
+    dealDate?: string;
     /** Тикер бумаги сделки */
     dealTicker: string;
     /** Признак не найденного тикера, только если указан тикер */
@@ -121,9 +129,7 @@ export interface ImportProviderFeatures {
 }
 
 /** Информация об алиасе бумаги */
-export interface SaveShareAliasesRequest {
-    /** Идентификатор алиаса */
-    id: string;
+interface SaveShareAliasesRequest {
     /** Алиас */
     alias: string;
     /** Тикер или исин код бумаги в системе */
@@ -132,6 +138,9 @@ export interface SaveShareAliasesRequest {
     currency: string;
     /** Тип бумаги в системе */
     type: string;
-    /** Идентификаторы пользователей утвердивших алиас */
-    userIds: string[];
+}
+
+export interface ShareAliasItem {
+    alias: string;
+    share: Share;
 }

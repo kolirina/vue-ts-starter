@@ -356,8 +356,12 @@ export class ImportPage extends UI {
             if (this.isFinam && this.portfolioParams.fixFee !== this.portfolio.portfolioParams.fixFee) {
                 await this.portfolioService.createOrUpdatePortfolio(this.portfolioParams);
             }
-            const response = await this.importReport();
-            await this.handleUploadResponse(response);
+            let response = await this.importReport();
+            const needUploadAgain = await this.handleUploadResponse(response);
+            if (needUploadAgain) {
+                response = await this.importReport();
+                await this.handleUploadResponse(response);
+            }
             this.clearFiles();
         }
     }
@@ -372,6 +376,7 @@ export class ImportPage extends UI {
      */
     @ShowProgress
     private async importReport(): Promise<ImportResponse> {
+        console.log(this.files);
         return this.importService.importReport(this.selectedProvider.code, this.portfolio.id, this.files, this.importProviderFeatures);
     }
 
@@ -379,14 +384,14 @@ export class ImportPage extends UI {
      * Обрабатывает ответ от сервера после импорта отчета
      * @param response
      */
-    private async handleUploadResponse(response: ImportResponse): Promise<void> {
+    private async handleUploadResponse(response: ImportResponse): Promise<boolean> {
         if (response.status === Status.ERROR && CommonUtils.isBlank(response.generalError)) {
             this.$snotify.error(response.message);
-            return;
+            return false;
         }
         if (response.generalError) {
             await new ImportGeneralErrorDialog().show({generalError: response.generalError, router: this.$router});
-            return;
+            return false;
         }
         let duplicateTradeErrorCount = 0;
         if (response.errors && response.errors.length) {
@@ -397,17 +402,20 @@ export class ImportPage extends UI {
             // если после удаления ошибки все еще остались, отображаем диалог
             // отображаем диалог с ошибками, но информацию по портфелю надо перезагрузить если были успешно импортированы сделки
             if (errors.length) {
-                await new ImportErrorsDialog().show({
+                const shareAliases = await new ImportErrorsDialog().show({
                     errors: errors,
                     router: this.$router,
                     validatedTradesCount: response.validatedTradesCount,
                     duplicateTradeErrorCount,
                     repoTradeErrorsCount: repoTradeErrors.length
                 });
+                if (shareAliases) {
+                    await this.importService.saveShareAliases(shareAliases);
+                }
                 if (response.validatedTradesCount) {
                     await this.reloadPortfolio(this.portfolio.id);
                 }
-                return;
+                return shareAliases?.length > 0;
             }
         }
         if (response.validatedTradesCount) {
@@ -432,6 +440,7 @@ export class ImportPage extends UI {
         } else {
             this.$snotify.warning("Импорт завершен. В отчете не содержится информации по сделкам.");
         }
+        return false;
     }
 
     /**
