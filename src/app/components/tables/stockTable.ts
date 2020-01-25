@@ -67,9 +67,12 @@ const MainStore = namespace(StoreType.MAIN);
                               :class="{'data-table-cell-open': props.expanded, 'path': true, 'data-table-cell': true}"></span>
                     </td>
                     <td v-if="tableHeadersState.company" class="text-xs-left">
-                        <stock-link v-if="props.item.share" :class="props.item.quantity !== '0' ? '' : 'line-through'"
+                        <stock-link v-if="props.item.share && props.item.assetType === 'STOCK'" :class="props.item.quantity !== '0' ? '' : 'line-through'"
                                     :ticker="props.item.share.ticker">{{ props.item.share.shortname }}
                         </stock-link>
+                        <asset-link v-if="props.item.share && props.item.assetType === 'ASSET'" :class="props.item.quantity !== '0' ? '' : 'line-through'"
+                                    :ticker="String(props.item.share.id)">{{ props.item.share.shortname }}
+                        </asset-link>
                         &nbsp;
                         <span v-if="props.item.share && props.item.quantity !== '0'"
                               :class="markupClasses(Number(props.item.share.change))">{{ props.item.share.change }}&nbsp;%</span>

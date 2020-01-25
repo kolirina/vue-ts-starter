@@ -39,6 +39,13 @@ export class ImportService {
     private async loadImportProviderFeatures(): Promise<ImportProviderFeaturesByProvider> {
         return await this.http.get<ImportProviderFeaturesByProvider>("/import/providers");
     }
+
+    /**
+     * Сохраняет алиасы бумаг
+     */
+    private async saveShareAliases(shareAliases: SaveShareAliasesRequest[]): Promise<void> {
+        return await this.http.post("/import/share-aliases", shareAliases);
+    }
 }
 
 /** Форматы поддерживаемых брокеров и отчетов */
@@ -90,6 +97,8 @@ export interface DealImportError {
     dealDate: string;
     /** Тикер бумаги сделки */
     dealTicker: string;
+    /** Признак не найденного тикера, только если указан тикер */
+    shareNotFound: boolean;
 }
 
 /** Параметры для импорта отчетов */
@@ -109,4 +118,20 @@ export interface ImportProviderFeatures {
     confirmMoneyBalance: boolean;
     /** Признак импорта сделок по денежным средствам */
     importMoneyTrades: boolean;
+}
+
+/** Информация об алиасе бумаги */
+export interface SaveShareAliasesRequest {
+    /** Идентификатор алиаса */
+    id: string;
+    /** Алиас */
+    alias: string;
+    /** Тикер или исин код бумаги в системе */
+    ticker: string;
+    /** Валюта бумаги в системе */
+    currency: string;
+    /** Тип бумаги в системе */
+    type: string;
+    /** Идентификаторы пользователей утвердивших алиас */
+    userIds: string[];
 }
