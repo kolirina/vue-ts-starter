@@ -213,7 +213,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-layout>
                         <v-layout class="margT20" align-center justify-space-between>
                             <div>
-                                <file-link @select="onFileAdd" :accept="allowedExtensions" v-if="importProviderFeatures && !files.length" class="select-file-btn">
+                                <file-link v-if="importProviderFeatures && !files.length" @select="onFileAdd" :accept="allowedExtensions" class="select-file-btn">
                                     Выбрать файл
                                 </file-link>
                             </div>
@@ -279,6 +279,8 @@ export class ImportPage extends UI {
     /** Отображение инструкции к провайдеру */
     private showInstruction: boolean = true;
     private portfolioParams: PortfolioParams = null;
+    /** Признак процесса импорта, чтобы не очищались файлы */
+    private importInProgress = false;
 
     /**
      * Инициализирует необходимые для работы данные
@@ -294,6 +296,9 @@ export class ImportPage extends UI {
     @Watch("portfolio")
     @ShowProgress
     private async onPortfolioChange(): Promise<void> {
+        if (this.importInProgress) {
+            return;
+        }
         this.selectUserProvider();
     }
 
@@ -344,6 +349,7 @@ export class ImportPage extends UI {
      */
     private async uploadFile(): Promise<void> {
         if (this.files && this.files.length && this.selectedProvider) {
+            this.importInProgress = true;
             if (this.portfolio.portfolioParams.brokerId && this.portfolio.portfolioParams.brokerId !== this.selectedProvider.id) {
                 const result = await new ConfirmDialog().show(`Внимание! Вы загружаете отчет брокера ${this.selectedProvider.description} в портфель,
                     в который ранее были загружены отчеты брокера ${this.getNameCurrentBroker}.
@@ -465,6 +471,7 @@ export class ImportPage extends UI {
 
     private clearFiles(): void {
         this.files = [];
+        this.importInProgress = false;
     }
 
     private get isFinam(): boolean {
