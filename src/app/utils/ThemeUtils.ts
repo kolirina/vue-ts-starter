@@ -21,26 +21,6 @@ import {CommonUtils} from "./commonUtils";
 export class ThemeUtils {
 
     private static readonly CSS_STYLES = `
-    img:not([src*=\".svg\"]),video {
-        filter: invert(100%);
-    }
-    .ii--green-markup {
-        filter: invert(100%);
-    }
-    .ii--red-markup {
-        filter: invert(100%);
-    }
-    .green--text {
-        filter: invert(100%);
-    }
-    .red--text {
-        filter: invert(100%);
-    }
-    .v-overlay--active:before {
-        background-color: #ffffff !important;
-    }
-
-    /* new */
     .dashboard-wrap,
     .profile,
     .theme--light.v-navigation-drawer,
@@ -48,9 +28,12 @@ export class ThemeUtils {
     .theme--light.v-table tbody tr,
     .adviser-wrap .adviser-diagram-section,
     .trades-filter,
-     .v-calendar-weekly__day {
-        background: #2C3040 !important;
-    }
+    .v-calendar-weekly__day,
+    .v-radio .v-input--selection-controls__input:before,
+    .wrapper-list-reference,
+    .theme--light.v-picker__body,
+    .theme--light.v-datatable .v-datatable__actions,
+    .v-overlay--active:before {background: #2C3040 !important;}
 
     .v-content__wrap,
     .header-first-card,
@@ -59,8 +42,13 @@ export class ThemeUtils {
     .custom-tooltip-wrap,
     .theme--light.v-list,
     .v-input--switch__track,
-     .v-calendar-weekly__head,
-       .events-calendar-wrap .v-calendar-weekly__head .v-outside {background: #21232F !important}
+    .v-calendar-weekly__head,
+    .events-calendar-wrap .v-calendar-weekly__head .v-outside,
+    .theme--light.v-sheet.notifications-card.notifications-card-main,
+    .v-menu__content.theme--light.bg-white,
+    .header-first-card.v-card.v-card--flat.v-sheet.theme--light,
+    .tariff-most-popular,
+    .v-picker__title.primary {background: #21232F !important}
 
     .active-link, .wrap-list-menu .v-list__tile:hover,
     .header-first-card__title-text,
@@ -74,7 +62,11 @@ export class ThemeUtils {
     .data-table thead tr:first-child th,
     .theme--light.v-data-iterator .v-data-iterator__actions thead tr:first-child th,
     .theme--light.v-expansion-panel .v-expansion-panel__container .v-expansion-panel__header .v-expansion-panel__header__icon .v-icon thead tr:first-child th,
-    .inplace-custom-input input, .portfolio-rows-filter__settings .theme--light.v-label, .portfolio-rows-filter__settings .v-label{color: #fff !important}
+    .inplace-custom-input input, .portfolio-rows-filter__settings .theme--light.v-label, .portfolio-rows-filter__settings .v-label,
+    .v-radio .v-label,
+    .chart-title, .info-share-page .info-about-stock__content-title,
+    .portfolio-default-text label,
+    .theme--light.v-label:not(.v-label--active) {color: #fff !important}
 
     .data-table tbody .selectable td,
     .custom-tooltip-wrap,
@@ -89,9 +81,29 @@ export class ThemeUtils {
     .theme--light.v-sheet,
     .events-calendar-wrap .calendar-events-title,
     .theme--light.v-calendar-weekly .v-calendar-weekly__day,
-    .theme--light.v-calendar-weekly .v-calendar-weekly__head-weekday.v-past {color: #fff}
+    .theme--light.v-calendar-weekly .v-calendar-weekly__head-weekday.v-past,
+    .checkbox-setings span, .dialog-setings-menu .title-setings,
+    .control-porfolios-title,
+    .export-page .info-block,
+    .promo-codes .rewards,
+    .statistics,
+    .gif-block .title-gif-block,
+    .gif-block-item__title,
+    .tariff, .theme--light.v-btn,
+    .theme--light.v-date-picker-header .v-date-picker-header__value:not(.v-date-picker-header__value--disabled) button:not(:hover):not(:focus),
+    .theme--light.v-input:not(.v-input--is-disabled) input, .theme--light.v-input:not(.v-input--is-disabled) textarea,
+    .theme--light.v-select .v-select__selections, .dialog-header-text,
+    .theme--light.v-date-picker-table .v-date-picker-table--date__week, .theme--light.v-date-picker-table th,
+    .theme--light.v-datatable .v-datatable__actions,
+    .info-share-page__name-stock-block__title, .info-share-page__name-stock-block__subtitle,
+    .info-share-page .info-about-stock__content-value,
+    .import-wrapper-header__title,
+    .import-wrapper-content .intelinvest-section__description,
+    .providers .item-text {color: #fff}
 
-    .theme--light.v-label {color: #fff; opacity: 0.7}
+    .theme--light.v-label,
+    .fs12-opacity,
+    .theme--light.v-counter {color: #fff; opacity: 0.7}
 
     .active-link, .wrap-list-menu .v-list__tile:hover,
     .theme--dark.v-btn:not(.v-btn--icon):not(.v-btn--flat),
@@ -99,25 +111,25 @@ export class ThemeUtils {
     .theme--light.v-data-iterator .v-data-iterator__actions thead tr:first-child th,
     .theme--light.v-expansion-panel .v-expansion-panel__container .v-expansion-panel__header .v-expansion-panel__header__icon .v-icon thead tr:first-child th,
     .adviser-wrap .adviser-diagram-section .left-section .flex, .adviser-wrap .adviser-diagram-section .right-section .flex,
-     .eventsAggregateInfo .item-block,
-      .events-calendar-wrap .calendar-events-title {background: #252A35 !important}
+    .eventsAggregateInfo .item-block,
+    .events-calendar-wrap .calendar-events-title,
+    .tariff-item,
+    .v-text-field .v-input__slot, .v-text-field__slot input:-internal-autofill-selected {background: #252A35 !important}
 
     .theme--light.v-table tbody tr:not(:last-child),
-     .theme--light.v-calendar-weekly .v-calendar-weekly__head-weekday,
-      .theme--light.v-calendar-weekly .v-calendar-weekly__day {border-color: #181a33;}
+    .theme--light.v-calendar-weekly .v-calendar-weekly__head-weekday,
+    .theme--light.v-calendar-weekly .v-calendar-weekly__day,
+    .events-calendar-wrap .v-calendar-weekly__head {border-color: #181a33;}
 
     .theme--light.v-table tbody tr:hover:not(.v-datatable__expand-row) {background: #3b6ec9;}
 
-    .arrow-up .dashboard-summary-income-icon {
-        background: #405242;
-    }
-
-    .arrow-down .dashboard-summary-income-icon {
-        background: #61343f;
-    }
+    .arrow-up .dashboard-summary-income-icon {background: #405242}
+    .arrow-down .dashboard-summary-income-icon {background: #61343f}
 
     .highcharts-legend text,
-    .highcharts-axis-labels text {fill: #fff !important}
+    .highcharts-axis-labels text,
+    .highcharts-label text,
+    .highcharts-plot-line-label {fill: #fff !important}
     .highcharts-background {fill: #252A35 !important}
     .highcharts-markers.highcharts-spline-series path {fill: #3B6EC9 !important}
     .highcharts-graph {stroke: #3B6EC9 !important}
