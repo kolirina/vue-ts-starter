@@ -129,16 +129,21 @@ export class ThemeUtils {
     .highcharts-legend text,
     .highcharts-axis-labels text,
     .highcharts-label text,
-    .highcharts-plot-line-label {fill: #fff !important}
+    .highcharts-plot-line-label,
+    .averageAnnualYieldChart text tspan {fill: #fff !important}
     .highcharts-background {fill: #252A35 !important}
-    .highcharts-markers.highcharts-spline-series path {fill: #3B6EC9 !important}
+    .highcharts-markers.highcharts-spline-series path,
+    .simple-line .highcharts-label-box.highcharts-tooltip-box {fill: #3B6EC9 !important}
     .highcharts-graph {stroke: #3B6EC9 !important}
+    .simple-line .highcharts-label-box.highcharts-tooltip-box,
+    .averageAnnualYieldChart .highcharts-label-box.highcharts-tooltip-box {stroke: none}
+
+    .averageAnnualYieldChart .highcharts-label-box.highcharts-tooltip-box {fill: #474d67}
 
     .highcharts-series .highcharts-point:nth-child(1) {fill: #4E4FA4 !important}
     .highcharts-series .highcharts-point:nth-child(2) {fill: #6B75C6 !important}
     .highcharts-series .highcharts-point:nth-child(3) {fill: #74D1F4 !important}
     .highcharts-series .highcharts-point:nth-child(4) {fill: #178BC6 !important}
-    
     `;
 
     static setStyles(nightTheme: boolean): void {
