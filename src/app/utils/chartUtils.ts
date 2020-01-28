@@ -592,16 +592,7 @@ export class ChartUtils {
                 const pt = eventItem.description.substring(0, eventItem.description.indexOf(":"));
                 if (key === pt) {
                     const amount = parseFloat(eventItem.description.substring(eventItem.description.indexOf(" ") + 1, eventItem.description.length));
-                    // если Амортизация и она последняя, значит это Погашение
-                    const repaymentKey = Operation.REPAYMENT.description;
-                    result[repaymentKey] = result[repaymentKey] || {name: repaymentKey, data: []};
-                    if (pt === Operation.AMORTIZATION.description && i === data.length - 1) {
-                        result[repaymentKey].data.push(amount);
-                        result[key].data.push(null);
-                    } else {
-                        result[key].data.push(amount);
-                        result[repaymentKey].data.push(null);
-                    }
+                    result[key].data.push(amount);
                 } else {
                     result[key].data.push(null);
                 }

@@ -66,9 +66,9 @@ export class CalendarEventType extends (EnumType as IStaticEnum<CalendarEventTyp
 
     static readonly COUPON = new CalendarEventType("coupon", "Купон");
     static readonly AMORTIZATION = new CalendarEventType("amortization", "Амортизация");
+    static readonly REPAYMENT = new CalendarEventType("repayment", "Погашение");
     static readonly DIVIDEND_HISTORY = new CalendarEventType("dividend_history", "Дивиденд (История)");
     static readonly DIVIDEND_NEWS = new CalendarEventType("dividend_news", "Дивиденды (Новости)");
-    static readonly REPAYMENT = new CalendarEventType("repayment", "Погашение");
     static readonly USER = new CalendarEventType("user", "Пользовательские");
 
     private constructor(public code: string, public description: string) {
