@@ -56,11 +56,20 @@ const MainStore = namespace(StoreType.MAIN);
                                     <div v-if="clientInfo.user.referralAwardType === 'PAYMENT'">
                                         Вы будете получать 30% от суммы всех оплат<br>
                                         каждого приглашенного Вами пользователя навсегда.<br>
-                                        Вывод от 3000 <span class="rewards-currency rub"></span>, через службу поддержки
-                                        <a href="mailto:web@intelinvest.ru" target="_blank" class="decorationNone">web@intelinvest.ru</a>.
+                                        Вывод от 3000 <span class="rewards-currency rub"></span>, через Вашего менеджера
                                     </div>
                                     <div v-if="clientInfo.user.referralAwardType === 'PAYMENT'" class="mt-3">
                                         <a @click.stop="openPartnerProgramRulesDialog">Правила Партнерской программы</a>
+                                    </div>
+                                    <div v-if="clientInfo.user.referralAwardType === 'PAYMENT'" class="mt-3">
+                                        <div>
+                                            <div class="promo-codes__subtitle mb-2">Связаться по вопросам сотрудничества</div>
+                                            <div>Ваш менеджер: Евгений</div>
+                                            Telegram: <a href="https://telegram.me/intelinvest_partner" title="Задайте вопрос в Telegram"
+                                                         target="_blank" class="decorationNone">@intelinvest_partner</a><br/>
+                                            ВК: <a href="https://vk.com/intelinvest_partner" target="_blank" class="decorationNone">https://vk.com/intelinvest_partner</a><br/>
+                                            Email: <a href="mailto:partner@intelinvest.ru" target="_blank" class="decorationNone">partner@intelinvest.ru</a><br/>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

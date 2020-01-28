@@ -195,7 +195,8 @@ const MainStore = namespace(StoreType.MAIN);
                                     <stock-link v-if="props.item.assetType === 'STOCK'" :ticker="props.item.share.ticker"></stock-link>
                                     <asset-link v-if="props.item.assetType === 'ASSET'" :ticker="String(props.item.share.id)">{{ props.item.share.ticker }}</asset-link>
                                 </span><br>
-                                В портфеле {{ props.item.ownedDays }} {{ props.item.ownedDays | declension("день", "дня", "дней") }}, c {{ props.item.firstBuy | date }}<br>
+                                Время с первой сделки {{ props.item.ownedDays }} {{ props.item.ownedDays | declension("день", "дня", "дней") }},
+                                от {{ props.item.firstBuy | date }}<br>
                                 Всего {{ props.item.quantity | quantity(true) }} <span>шт.</span>
                             </div>
                         </td>

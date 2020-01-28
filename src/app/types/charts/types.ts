@@ -1,4 +1,10 @@
+import {DataPoint} from "highcharts";
 import {Enum, EnumType, IStaticEnum} from "../../platform/enum";
+
+export interface CustomDataPoint extends DataPoint {
+    profit: string;
+    currencySymbol: string;
+}
 
 export interface YieldCompareData {
     depositYearYield: string;
@@ -101,7 +107,8 @@ export type ColumnChartData = {
 
 export enum PieChartTooltipFormat {
     COMMON = "COMMON",
-    ASSETS = "ASSETS"
+    ASSETS = "ASSETS",
+    YIELDS = "YIELDS"
 }
 
 export interface LineChartSeries {
@@ -150,5 +157,6 @@ export enum ChartType {
     BOND_CHART = "bondPieChart",
     SECTORS_CHART = "sectorsChart",
     AGGREGATE_CHART = "aggregatePieChart",
+    YIELD_CONTRIBUTORS_CHART = "yieldContributorsChart",
     PORTFOLIO_LINE_CHART = "portfolioLineChart",
 }
