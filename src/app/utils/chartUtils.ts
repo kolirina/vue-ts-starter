@@ -133,6 +133,7 @@ export class ChartUtils {
                 y: new Decimal(new BigMoney(row.currCost).amount.abs().toString()).toDP(2, Decimal.ROUND_HALF_UP).toNumber()
             });
         });
+        data.sort((a, b) => b.y - a.y);
         return data;
     }
 
@@ -165,6 +166,7 @@ export class ChartUtils {
                 y: profit.toNumber()
             });
         });
+        data.sort((a, b) => b.y - a.y);
         return data;
     }
 
@@ -176,6 +178,7 @@ export class ChartUtils {
                 y: new Decimal(new BigMoney(row.currCost).amount.abs().toString()).toDP(2, Decimal.ROUND_HALF_UP).toNumber()
             });
         });
+        data.sort((a, b) => b.y - a.y);
         return data;
     }
 
@@ -187,6 +190,7 @@ export class ChartUtils {
                 y: new Decimal(new BigMoney(row.currCost).amount.abs().toString()).toDP(2, Decimal.ROUND_HALF_UP).toNumber()
             });
         });
+        data.sort((a, b) => b.y - a.y);
         return data;
     }
 
@@ -201,6 +205,7 @@ export class ChartUtils {
                 y: Number(row.percCurrShare)
             });
         });
+        data.sort((a, b) => b.y - a.y);
         return data;
     }
 
@@ -516,6 +521,10 @@ export class ChartUtils {
             },
             title: {
                 text: title
+            },
+            legend: {
+                maxHeight: 100,
+                itemMarginTop: 2
             },
             tooltip: {
                 pointFormat: this.PIE_CHART_TOOLTIP_FORMAT[tooltipFormat],

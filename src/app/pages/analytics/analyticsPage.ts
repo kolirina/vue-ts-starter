@@ -74,7 +74,17 @@ const MainStore = namespace(StoreType.MAIN);
 
             <expanded-panel v-if="yieldContributorsChartData.length" :value="$uistate.yieldContributorsChart" :state="$uistate.YIELD_CONTRIBUTORS_CHART_PANEL"
                             customMenu class="mt-3">
-                <template #header>Эффективность бумаг в портфеле</template>
+                <template #header>
+                    Эффективность бумаг в портфеле
+                    <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                        <template #activator="{ on }">
+                            <v-icon v-on="on" class="fs12 vAlignSuper">far fa-question-circle</v-icon>
+                        </template>
+                        <span>
+                            Диаграмма бумаг, оказавших максимальный эффект на доходность портфеля
+                        </span>
+                    </v-tooltip>
+                </template>
                 <template #customMenu>
                     <chart-export-menu @print="print(ChartType.YIELD_CONTRIBUTORS_CHART)" @exportTo="exportTo(ChartType.YIELD_CONTRIBUTORS_CHART, $event)"
                                        class="exp-panel-menu"></chart-export-menu>
