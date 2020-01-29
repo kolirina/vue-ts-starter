@@ -12,6 +12,7 @@ export class UiStateHelper {
     static readonly BOND_CHART_PANEL = "bondsChartPanel";
     static readonly ASSET_CHART_PANEL = "assetChartPanel";
     static readonly AGGREGATE_CHART_PANEL = "aggregateChartPanel";
+    static readonly YIELD_CONTRIBUTORS_CHART_PANEL = "yieldContributorsChartPanel";
     static readonly SECTORS_PANEL = "sectorsPanel";
     static readonly BONDS = "bonds_panel";
     static readonly YEAR_DIV_LIST = "yearDivListAccordion";
@@ -163,6 +164,14 @@ export class UiStateHelper {
 
     static get aggregateGraph(): number[] {
         return [localStorage.get(UiStateHelper.AGGREGATE_CHART_PANEL, 0)];
+    }
+
+    static set yieldContributorsChart(value: number[]) {
+        localStorage.set(UiStateHelper.YIELD_CONTRIBUTORS_CHART_PANEL, value);
+    }
+
+    static get yieldContributorsChart(): number[] {
+        return [localStorage.get(UiStateHelper.YIELD_CONTRIBUTORS_CHART_PANEL, 0)];
     }
 
     static set sectorsGraph(value: number[]) {

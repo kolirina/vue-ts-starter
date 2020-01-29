@@ -133,17 +133,18 @@ import {UI} from "../app/ui";
             </div>
             <div>
                 <div v-if="isLogin">
-                    Желаем вам доходных инвестиций, команда Intelinvest.
-                    Все вопросы и предложения, как всегда, через форму
-                    <a @click="openFeedBackDialog">
-                        обратной связи.
-                    </a>
-                    <br/>
-                    <br/>
+                    Желаем вам доходных инвестиций, команда Intelinvest.<br/>
+                    Все вопросы и предложения, через форму
+                    <a @click="openFeedBackDialog">обратной связи.</a><br/><br/>
                 </div>
-                Почитать о всех обновлениях сервиса более подробно вы можете в нашем блоге
-                <a href="http://blog.intelinvest.ru/" target="_blank" class="decorationNone">blog.intelinvest.ru</a>
-                Оперативно получить поддержку можно в группе <a href="https://vk.com/intelinvest" target="_blank" class="decorationNone">VK</a>
+                Почитать обо всех обновлениях сервиса более подробно вы можете на нашем блоге
+                <a href="http://blog.intelinvest.ru/" target="_blank" class="decorationNone">blog.intelinvest.ru</a><br/>
+                Оперативно получить поддержку можно через
+                <a href="https://telegram.me/intelinvestSupportBot" title="Задайте вопрос в Telegram" target="_blank">telegram</a>,
+                наши специалисты с радостью вам ответят и помогут.<br/>
+                Также вы можете присоединиться к общению с нами и пользователями сервиса в
+                <a href="https://t.me/intelinvest_chat" title="Чат в Telegram" target="_blank">чате telegram</a><br/>
+                Подписывайтесь на обновления в группе <a href="https://vk.com/intelinvest" target="_blank" class="decorationNone">VK</a>
                 или <a href="https://www.facebook.com/intelinvest.ru/" target="_blank" class="decorationNone">facebook</a>
             </div>
         </div>

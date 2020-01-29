@@ -181,7 +181,8 @@ const MainStore = namespace(StoreType.MAIN);
                                 <span class="ext-info__ticker">
                                     <bond-link :ticker="props.item.bond.ticker"></bond-link>
                                 </span><br>
-                                В портфеле {{ props.item.ownedDays }} {{ props.item.ownedDays | declension("день", "дня", "дней")}}, c {{ props.item.firstBuy | date }}<br>
+                                Время с первой сделки {{ props.item.ownedDays }} {{ props.item.ownedDays | declension("день", "дня", "дней") }},
+                                от {{ props.item.firstBuy | date }}<br>
                                 Дата погашения {{ props.item.bond.matdate }}<br>
                                 Количество {{ props.item.quantity | quantity(true) }}
                                 <span>{{ props.item.quantity | declension("облигация", "облигации", "облигаций") }}</span>

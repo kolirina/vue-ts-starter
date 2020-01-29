@@ -161,8 +161,8 @@ input[type="search"] {
 }
 
 .fs12 {
-  font-size: 12px;
-  line-height: 12px;
+  font-size: 12px !important;
+  line-height: 12px !important;
 }
 
 .fs12-opacity {
@@ -196,3 +196,4 @@ input[type="search"] {
 .zi-102 {z-index: 102 !important}
 .initial-flex {flex: initial !important}
 .rotate-icons {transform: rotate(90deg)}
+.vAlignSuper {vertical-align: super !important;}
