@@ -112,7 +112,7 @@ import {ConfirmDialog} from "../confirmDialog";
                                 <v-layout align-center justify-start wrap row fill-height class="mt-2 mb-2">
                                     <!-- Алиас бумаги -->
                                     <v-flex xs12 sm4>
-                                        <span class="fs14 ellipsis" :title="aliasItem.alias">{{ aliasItem.alias }}</span>
+                                        <span class="fs12" :title="aliasItem.alias">{{ aliasItem.alias }}</span>
                                     </v-flex>
 
                                     <!-- Выбранная бумага -->
@@ -173,7 +173,8 @@ export class ImportErrorsDialog extends CustomDialog<ImportErrorsDialogData, Sha
     }
 
     private async closeDialog(): Promise<void> {
-        const allFilled = this.shareAliases.filter(shareAlias => !!shareAlias.share).length === this.shareAliases.length;
+        const filled = this.shareAliases.filter(shareAlias => !!shareAlias.share);
+        const allFilled = filled.length === this.shareAliases.length;
         if (!allFilled) {
             const answer = await new ConfirmDialog().show("Вы не указали соответствия для всех нераспознанных бумаг." +
                 "Если продолжить, будут импортированы только сделки по тем бумагам, которые вы указали.");
@@ -181,7 +182,7 @@ export class ImportErrorsDialog extends CustomDialog<ImportErrorsDialogData, Sha
                 return;
             }
         }
-        this.close(this.shareAliases);
+        this.close(filled);
     }
 }
 
