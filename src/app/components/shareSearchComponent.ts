@@ -170,15 +170,17 @@ export class ShareSearchComponent extends UI {
         if ((share as any) === this.notFoundLabel) {
             return this.notFoundLabel;
         }
-        if ([AssetType.STOCK, AssetType.ASSET].includes(this.assetTypeMutated)) {
+        const shareType = AssetType.valueByName(share.shareType);
+        if ([AssetType.STOCK, AssetType.ASSET].includes(this.assetTypeMutated || shareType)) {
             if (share.price !== null) {
                 const price = new BigMoney(share.price);
                 return `${share.ticker} (${share.shortname}), <b>${Filters.formatNumber(price.amount.toString())}</b> ${price.currencySymbol}`;
             }
             return `Создать актив "${share.shortname}"`;
-        } else if (this.assetTypeMutated === AssetType.BOND) {
+        } else if ((this.assetTypeMutated || shareType) === AssetType.BOND) {
             return `${share.ticker} (${share.shortname}), <b>${(share as Bond).prevprice}</b> %`;
         }
+
         return `${share.ticker} (${share.shortname})`;
     }
 

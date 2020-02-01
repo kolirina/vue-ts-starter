@@ -213,7 +213,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-layout>
                         <v-layout class="margT20" align-center justify-space-between>
                             <div>
-                                <file-link @select="onFileAdd" :accept="allowedExtensions" v-if="importProviderFeatures && !files.length" class="select-file-btn">
+                                <file-link v-if="importProviderFeatures && !files.length" @select="onFileAdd" :accept="allowedExtensions" class="select-file-btn">
                                     Выбрать файл
                                 </file-link>
                             </div>
@@ -279,6 +279,8 @@ export class ImportPage extends UI {
     /** Отображение инструкции к провайдеру */
     private showInstruction: boolean = true;
     private portfolioParams: PortfolioParams = null;
+    /** Признак процесса импорта, чтобы не очищались файлы */
+    private importInProgress = false;
 
     /**
      * Инициализирует необходимые для работы данные
@@ -294,6 +296,9 @@ export class ImportPage extends UI {
     @Watch("portfolio")
     @ShowProgress
     private async onPortfolioChange(): Promise<void> {
+        if (this.importInProgress) {
+            return;
+        }
         this.selectUserProvider();
     }
 
@@ -344,6 +349,7 @@ export class ImportPage extends UI {
      */
     private async uploadFile(): Promise<void> {
         if (this.files && this.files.length && this.selectedProvider) {
+            this.importInProgress = true;
             if (this.portfolio.portfolioParams.brokerId && this.portfolio.portfolioParams.brokerId !== this.selectedProvider.id) {
                 const result = await new ConfirmDialog().show(`Внимание! Вы загружаете отчет брокера ${this.selectedProvider.description} в портфель,
                     в который ранее были загружены отчеты брокера ${this.getNameCurrentBroker}.
@@ -356,8 +362,12 @@ export class ImportPage extends UI {
             if (this.isFinam && this.portfolioParams.fixFee !== this.portfolio.portfolioParams.fixFee) {
                 await this.portfolioService.createOrUpdatePortfolio(this.portfolioParams);
             }
-            const response = await this.importReport();
-            await this.handleUploadResponse(response);
+            let response = await this.importReport();
+            const needUploadAgain = await this.handleUploadResponse(response);
+            if (needUploadAgain) {
+                response = await this.importReport();
+                await this.handleUploadResponse(response);
+            }
             this.clearFiles();
         }
     }
@@ -372,6 +382,7 @@ export class ImportPage extends UI {
      */
     @ShowProgress
     private async importReport(): Promise<ImportResponse> {
+        console.log(this.files);
         return this.importService.importReport(this.selectedProvider.code, this.portfolio.id, this.files, this.importProviderFeatures);
     }
 
@@ -379,14 +390,14 @@ export class ImportPage extends UI {
      * Обрабатывает ответ от сервера после импорта отчета
      * @param response
      */
-    private async handleUploadResponse(response: ImportResponse): Promise<void> {
+    private async handleUploadResponse(response: ImportResponse): Promise<boolean> {
         if (response.status === Status.ERROR && CommonUtils.isBlank(response.generalError)) {
             this.$snotify.error(response.message);
-            return;
+            return false;
         }
         if (response.generalError) {
             await new ImportGeneralErrorDialog().show({generalError: response.generalError, router: this.$router});
-            return;
+            return false;
         }
         let duplicateTradeErrorCount = 0;
         if (response.errors && response.errors.length) {
@@ -397,17 +408,20 @@ export class ImportPage extends UI {
             // если после удаления ошибки все еще остались, отображаем диалог
             // отображаем диалог с ошибками, но информацию по портфелю надо перезагрузить если были успешно импортированы сделки
             if (errors.length) {
-                await new ImportErrorsDialog().show({
+                const shareAliases = await new ImportErrorsDialog().show({
                     errors: errors,
                     router: this.$router,
                     validatedTradesCount: response.validatedTradesCount,
                     duplicateTradeErrorCount,
                     repoTradeErrorsCount: repoTradeErrors.length
                 });
+                if (shareAliases) {
+                    await this.importService.saveShareAliases(shareAliases);
+                }
                 if (response.validatedTradesCount) {
                     await this.reloadPortfolio(this.portfolio.id);
                 }
-                return;
+                return shareAliases?.length > 0;
             }
         }
         if (response.validatedTradesCount) {
@@ -432,6 +446,7 @@ export class ImportPage extends UI {
         } else {
             this.$snotify.warning("Импорт завершен. В отчете не содержится информации по сделкам.");
         }
+        return false;
     }
 
     /**
@@ -456,6 +471,7 @@ export class ImportPage extends UI {
 
     private clearFiles(): void {
         this.files = [];
+        this.importInProgress = false;
     }
 
     private get isFinam(): boolean {
