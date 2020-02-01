@@ -12,7 +12,7 @@ import {UI} from "../app/ui";
                     стал еще удобнее, быстрее и появились новые возможности.
                 </p>
 
-                <div class="update-service-dialog__date">31.01.2020</div>
+                <div class="update-service-dialog__date">01.02.2020</div>
                 <ul>
                     <li>Добавили диаграмму эффективности бумаг в портфеле (Раздел Аналитика)</li>
                     <li>Обновили события по облигациям</li>
