@@ -24,25 +24,25 @@ export class ThemeUtils {
      .data-table a,
      .v-card a,
      .items-dialog-title {color: #75b2ef}
-      
+
      .add-notification .v-input--is-label-active label, .data-table thead th.active, .v-label.v-label--active.theme--light {color: #75b2ef !important}
-     
+
      .v-input--switch__thumb.accent--text {background-color: #82b1ff}
-     
+
      .v-input--switch .accent--text,
      .v-input--checkbox .theme--light.accent--text,
      .v-input--checkbox .theme--light.v-icon {
         border-color: #82b1ff;
         color: #82b1ff !important;
      }
-     
+
      .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light,
      .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).v-btn--disabled {
         background-color: #3b6ec9 !important;
         color: #fff !important;
         border-color: transparent !important;
      }
-     
+
      .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).v-btn--disabled {opacity: 0.5}
 
     .dashboard-wrap,
@@ -144,9 +144,9 @@ export class ThemeUtils {
     .fs12-opacity,
     .theme--light.v-counter,
     .theme--light.v-messages {color: #fff; opacity: 0.7}
-    
+
     .import-wrapper-content .intelinvest-section .v-btn {color: rgba(0,0,0,.87) !important;}
-    
+
     .theme--light.v-pagination .v-pagination__navigation {background: none}
 
     .active-link, .wrap-list-menu .v-list__tile:hover,
@@ -184,15 +184,15 @@ export class ThemeUtils {
     .import-wrapper-content .setings-menu .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
     .v-btn.portfolio-rows-filter__button:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro):hover,
     .import-wrapper-content .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro):hover {border-color: #fff !important}
-    
+
     .import-wrapper-content .setings-menu .v-btn {background-image: url("../img/fileimport/settings-light.svg")}
 
     .theme--light.v-table tbody tr.selectable:hover:not(.v-datatable__expand-row) {background: #3b6ec9 !important;}
-    
+
     .search-section .v-text-field .v-input__slot {background: none !important}
-    
+
     .qr-code-section .v-list {background-color: #fff !important}
-    
+
     .settings-icon, .profile-icon, .logout-icon, .custom-action-icon, .exp-panel-arrow {filter: brightness(2)}
 
     .arrow-up .dashboard-summary-income-icon {background: #405242}
@@ -216,13 +216,13 @@ export class ThemeUtils {
     .highcharts-series .highcharts-point:nth-child(2) {fill: #6B75C6 !important}
     .highcharts-series .highcharts-point:nth-child(3) {fill: #74D1F4 !important}
     .highcharts-series .highcharts-point:nth-child(4) {fill: #178BC6 !important}
-    
+
     .portfolio-rows-filter__button__icon {filter: invert(100%)}
-    
+
     .providers .item-img-block {filter: none}
-    
+
     .content-loader stop {stop-color: #2c3040}
-    
+
     .v-select__selection--comma {margin-left: 16px}
     `;
 
