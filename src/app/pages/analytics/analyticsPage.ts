@@ -4,6 +4,7 @@ import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI, Watch} from "../../app/ui";
 import {AverageAnnualYieldChart} from "../../components/charts/averageAnnualYield";
+import {PieChart} from "../../components/charts/pieChart";
 import {SimpleLineChart} from "../../components/charts/simpleLineChart";
 import {Storage} from "../../platform/services/storage";
 import {AdviceService} from "../../services/adviceService";
@@ -11,8 +12,8 @@ import {AnalyticsService} from "../../services/analyticsService";
 import {ClientInfo, ClientService} from "../../services/clientService";
 import {PortfolioAccountType, PortfolioService} from "../../services/portfolioService";
 import {BigMoney} from "../../types/bigMoney";
-import {SimpleChartData, YieldCompareData} from "../../types/charts/types";
-import {Portfolio} from "../../types/types";
+import {ChartType, CustomDataPoint, SimpleChartData, YieldCompareData} from "../../types/charts/types";
+import {CurrencyUnit, Portfolio} from "../../types/types";
 import {ChartUtils} from "../../utils/chartUtils";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
@@ -27,7 +28,7 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-container class="adviser-wrap">
-            <expanded-panel :value="$uistate.adviserDiagramPanel" :withMenu="false" :state="$uistate.ADVISER_DIAGRAM_PANEL">
+            <expanded-panel :value="$uistate.adviserDiagramPanel" :with-menu="false" :state="$uistate.ADVISER_DIAGRAM_PANEL">
                 <template #header>Аналитическая сводка по портфелю</template>
                 <v-layout wrap class="adviser-diagram-section mt-3">
                     <v-flex xs12 sm12 md12 lg6 class="pr-2 left-section">
@@ -69,6 +70,29 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-flex>
                     </v-flex>
                 </v-layout>
+            </expanded-panel>
+
+            <expanded-panel v-if="yieldContributorsChartData.length" :value="$uistate.yieldContributorsChart" :state="$uistate.YIELD_CONTRIBUTORS_CHART_PANEL"
+                            customMenu class="mt-3">
+                <template #header>
+                    Эффективность бумаг в портфеле
+                    <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                        <template #activator="{ on }">
+                            <v-icon v-on="on" class="fs12 vAlignSuper">far fa-question-circle</v-icon>
+                        </template>
+                        <span>
+                            Диаграмма бумаг, оказавших максимальный эффект на доходность портфеля
+                        </span>
+                    </v-tooltip>
+                </template>
+                <template #customMenu>
+                    <chart-export-menu @print="print(ChartType.YIELD_CONTRIBUTORS_CHART)" @exportTo="exportTo(ChartType.YIELD_CONTRIBUTORS_CHART, $event)"
+                                       class="exp-panel-menu"></chart-export-menu>
+                </template>
+                <v-card-text>
+                    <pie-chart :ref="ChartType.YIELD_CONTRIBUTORS_CHART" :data="yieldContributorsChartData" :view-currency="viewCurrency"
+                               balloon-title="Эффективность бумаг в портфеле" tooltip-format="YIELDS" v-tariff-expired-hint></pie-chart>
+                </v-card-text>
             </expanded-panel>
 
             <expanded-panel v-if="showInfoPanel && false" :value="$uistate.analyticsInfoPanel" :withMenu="false" :state="$uistate.ANALYTICS_INFO_PANEL" class="mt-3">
@@ -114,6 +138,10 @@ const MainStore = namespace(StoreType.MAIN);
 })
 export class AnalyticsPage extends UI {
 
+    $refs: {
+        yieldContributorsChart: PieChart,
+    };
+
     @Inject
     private localStorage: Storage;
     @MainStore.Getter
@@ -130,30 +158,40 @@ export class AnalyticsPage extends UI {
     private analyticsService: AnalyticsService;
     @Inject
     private portfolioService: PortfolioService;
-
+    /** Данные для сравнения доходностей */
     private yieldCompareData: YieldCompareData = null;
-
+    /** Ставки по инфляции */
     private monthlyInflationData: SimpleChartData = null;
-
+    /** Ставки по депозитам */
     private depositRatesData: SimpleChartData = null;
-
+    /** Всего внесений в текущем году */
     private totalDepositInCurrentYear: BigMoney = null;
+    /** Данные для диаграммы эффективности бумаг */
+    private yieldContributorsChartData: CustomDataPoint[] = [];
+    /** Типы круговых диаграмм */
+    private ChartType = ChartType;
 
     async created(): Promise<void> {
         await this.loadDiagramData();
         await this.loadTotalDepositInCurrentYear();
+        this.yieldContributorsChartData = await this.doYieldContributorsChartData();
     }
 
     @Watch("portfolio")
     private async onPortfolioChange(): Promise<void> {
         await this.loadDiagramData();
         await this.loadTotalDepositInCurrentYear();
+        this.yieldContributorsChartData = await this.doYieldContributorsChartData();
     }
 
     private async loadDiagramData(): Promise<void> {
         this.yieldCompareData = await this.analyticsService.getComparedYields(this.portfolio.id.toString());
         this.monthlyInflationData = ChartUtils.makeSimpleChartData(await this.analyticsService.getInflationForLastSixMonths());
         this.depositRatesData = ChartUtils.makeSimpleChartData(await this.analyticsService.getRatesForLastSixMonths());
+    }
+
+    private get viewCurrency(): string {
+        return CurrencyUnit.valueByName(this.portfolio.portfolioParams.viewCurrency).symbol;
     }
 
     private get hasTrades(): boolean {
@@ -171,6 +209,10 @@ export class AnalyticsPage extends UI {
         return this.totalDepositInCurrentYear.amount.div(new Decimal("10000")).toDP(2, Decimal.ROUND_HALF_UP).toNumber();
     }
 
+    private doYieldContributorsChartData(): CustomDataPoint[] {
+        return ChartUtils.doYieldContributorsPieChartData(this.portfolio.overview, this.viewCurrency);
+    }
+
     private get getCurrentYearRemainder(): number {
         if (!this.totalDepositInCurrentYear) {
             return null;
@@ -181,4 +223,13 @@ export class AnalyticsPage extends UI {
     private async loadTotalDepositInCurrentYear(): Promise<void> {
         this.totalDepositInCurrentYear = await this.portfolioService.totalDepositInCurrentYear(this.portfolio.id);
     }
+
+    private async exportTo(chart: ChartType, type: string): Promise<void> {
+        ((this.$refs as any)[chart] as PieChart).chart.exportChart({type: ChartUtils.EXPORT_TYPES[type], filename: "Эффективность бумаг в портфеле"});
+    }
+
+    private async print(chart: ChartType): Promise<void> {
+        ((this.$refs as any)[chart] as PieChart).chart.print();
+    }
+
 }
