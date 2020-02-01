@@ -139,6 +139,7 @@ import {ConfirmDialog} from "../confirmDialog";
 })
 export class ImportErrorsDialog extends CustomDialog<ImportErrorsDialogData, ShareAliasItem[]> {
 
+    /** Заголовки таблицы с ошибками */
     private headers: TableHeader[] = [
         {text: "Дата", align: "center", value: "dealDate", sortable: false},
         {text: "Тикер", align: "left", value: "dealTicker", sortable: false},
