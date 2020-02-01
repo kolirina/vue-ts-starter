@@ -25,7 +25,7 @@ export class ThemeUtils {
      .v-card a,
      .items-dialog-title {color: #75b2ef}
       
-      .add-notification .v-input--is-label-active label, .data-table thead th.active, .v-label.v-label--active.theme--light {color: #75b2ef !important}
+     .add-notification .v-input--is-label-active label, .data-table thead th.active, .v-label.v-label--active.theme--light {color: #75b2ef !important}
      
      .v-input--switch__thumb.accent--text {background-color: #82b1ff}
      
@@ -35,6 +35,15 @@ export class ThemeUtils {
         border-color: #82b1ff;
         color: #82b1ff !important;
      }
+     
+     .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light,
+     .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).v-btn--disabled {
+        background-color: #3b6ec9 !important;
+        color: #fff !important;
+        border-color: transparent !important;
+     }
+     
+     .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).v-btn--disabled {opacity: 0.5}
 
     .dashboard-wrap,
     .profile,
@@ -51,9 +60,9 @@ export class ThemeUtils {
     .v-overlay--active:before,
     .info-about-event,
     .theme--light.v-table,
-     .data-table thead, .theme--light.v-data-iterator .v-data-iterator__actions thead,
-     .theme--light.v-expansion-panel .v-expansion-panel__container .v-expansion-panel__header .v-expansion-panel__header__icon .v-icon thead,
-      .theme--light.v-btn-toggle {background: #2C3040 !important;}
+    .data-table thead, .theme--light.v-data-iterator .v-data-iterator__actions thead,
+    .theme--light.v-expansion-panel .v-expansion-panel__container .v-expansion-panel__header .v-expansion-panel__header__icon .v-icon thead,
+    .theme--light.v-btn-toggle {background: #2C3040 !important;}
 
     .v-content__wrap,
     .header-first-card,
@@ -70,7 +79,7 @@ export class ThemeUtils {
     .tariff-most-popular,
     .v-picker__title.primary,
     .portfolio-rows-filter__button:hover,
-     .v-tooltip__content.menu-icons{background: #21232F !important}
+    .v-tooltip__content.menu-icons{background: #21232F !important}
 
     .active-link, .wrap-list-menu .v-list__tile:hover,
     .header-first-card__title-text,
@@ -126,13 +135,15 @@ export class ThemeUtils {
     .dialog-default-text,
     .v-btn.portfolio-rows-filter__button:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
     .import-wrapper-content .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
-     .v-tooltip__content.menu-icons, .hint-text-for-setings,
-     .import-format-requirements-ul, .intel-invest-instruction__title, .intel-invest-instruction__format-text, .intel-invest-instruction__title-values,
-      .intel-invest-instruction__values, .intel-invest-instruction__template-requirements, .import-default-text, .tooltip-text {color: #fff}
+    .v-tooltip__content.menu-icons, .hint-text-for-setings,
+    .import-format-requirements-ul, .intel-invest-instruction__title, .intel-invest-instruction__format-text, .intel-invest-instruction__title-values,
+    .intel-invest-instruction__values, .intel-invest-instruction__template-requirements, .import-default-text, .tooltip-text,
+    .snotifyToast__body, .info-share-page__empty {color: #fff}
 
     .theme--light.v-label,
     .fs12-opacity,
-    .theme--light.v-counter {color: #fff; opacity: 0.7}
+    .theme--light.v-counter,
+    .theme--light.v-messages {color: #fff; opacity: 0.7}
     
     .import-wrapper-content .intelinvest-section .v-btn {color: rgba(0,0,0,.87) !important;}
     
@@ -148,13 +159,29 @@ export class ThemeUtils {
     .events-calendar-wrap .calendar-events-title,
     .tariff-item,
     .v-text-field .v-input__slot, .v-text-field__slot input:-internal-autofill-selected,
-    .portfolio-rows-filter__button, .import-wrapper-content .setings-menu .v-btn{background-color: #252A35 !important}
+    .v-btn.portfolio-rows-filter__button:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light,
+    .v-btn.portfolio-rows-filter__button:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
+    .portfolio-rows-filter__button, .import-wrapper-content .setings-menu .v-btn,
+    .snotifyToast, .theme--light.v-chip, .chart-filter-btn,
+    .v-btn.chart-filter-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light,
+    .v-btn.chart-filter-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
+    .import-wrapper-content .setings-menu .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light,
+    .import-wrapper-content .setings-menu .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
+    .wrapper-content-panel__privacy-section-up-page-btn {background-color: #252A35 !important}
 
     .theme--light.v-table tbody tr:not(:last-child),
     .theme--light.v-calendar-weekly .v-calendar-weekly__head-weekday,
     .theme--light.v-calendar-weekly .v-calendar-weekly__day,
     .events-calendar-wrap .v-calendar-weekly__head {border-color: #181a33;}
-    
+
+    .v-btn.portfolio-rows-filter__button:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light,
+    .v-btn.portfolio-rows-filter__button:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
+    .import-wrapper-content .v-btn.portfolio-rows-filter__button:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light,
+    .import-wrapper-content .v-btn.portfolio-rows-filter__button:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
+    .v-btn.chart-filter-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light,
+    .v-btn.chart-filter-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
+    .import-wrapper-content .setings-menu .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light,
+    .import-wrapper-content .setings-menu .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
     .v-btn.portfolio-rows-filter__button:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro):hover,
     .import-wrapper-content .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro):hover {border-color: #fff !important}
     
@@ -162,7 +189,11 @@ export class ThemeUtils {
 
     .theme--light.v-table tbody tr.selectable:hover:not(.v-datatable__expand-row) {background: #3b6ec9 !important;}
     
+    .search-section .v-text-field .v-input__slot {background: none !important}
+    
     .qr-code-section .v-list {background-color: #fff !important}
+    
+    .settings-icon, .profile-icon, .logout-icon, .custom-action-icon, .exp-panel-arrow {filter: brightness(2)}
 
     .arrow-up .dashboard-summary-income-icon {background: #405242}
     .arrow-down .dashboard-summary-income-icon {background: #61343f}
@@ -187,6 +218,10 @@ export class ThemeUtils {
     .highcharts-series .highcharts-point:nth-child(4) {fill: #178BC6 !important}
     
     .portfolio-rows-filter__button__icon {filter: invert(100%)}
+    
+    .providers .item-img-block {filter: none}
+    
+    .content-loader stop {stop-color: #2c3040}
     
     .v-select__selection--comma {margin-left: 16px}
     `;

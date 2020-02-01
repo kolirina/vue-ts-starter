@@ -58,7 +58,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </base-portfolio-page>
             </template>
             <template v-else>
-                <content-loader :height="800" :width="800" :speed="1" primaryColor="#f3f3f3" secondaryColor="#ecebeb">
+                <content-loader class="content-loader" :height="800" :width="800" :speed="1" primaryColor="#f3f3f3" secondaryColor="#ecebeb">
                     <rect x="0" y="20" rx="5" ry="5" width="801.11" height="80"/>
                     <rect x="0" y="120" rx="5" ry="5" width="801.11" height="30"/>
                     <rect x="0" y="170" rx="5" ry="5" width="801.11" height="180"/>

@@ -109,6 +109,7 @@
   }
 
   &-not-confirmed-email {
+    display: flex !important;
     color: red !important;
     font-size: 12px !important;
   }
