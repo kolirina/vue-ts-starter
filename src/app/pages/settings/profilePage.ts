@@ -5,7 +5,7 @@ import {ChangePasswordDialog} from "../../components/dialogs/changePasswordDialo
 import {ConfirmDeleteProfileDialog} from "../../components/dialogs/confirmDeleteProfileDialog";
 import {ConfirmDialog} from "../../components/dialogs/confirmDialog";
 import {DeleteProfileReasonDialog} from "../../components/dialogs/deleteProfileReasonDialog";
-import {UnsubscribedAnswerDialog} from "../../components/dialogs/UnsubscribedAnswerDialog";
+import {UnsubscribedAnswerDialog} from "../../components/dialogs/unsubscribedAnswerDialog";
 import {ThemeSwitcher} from "../../components/themeSwitcher";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
