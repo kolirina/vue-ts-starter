@@ -2,7 +2,7 @@ import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {Enum, EnumType, IStaticEnum} from "../platform/enum";
 import {Http} from "../platform/services/http";
-import {Status} from "../types/types";
+import {Share, Status} from "../types/types";
 
 @Service("ImportService")
 @Singleton
@@ -34,10 +34,25 @@ export class ImportService {
     }
 
     /**
+     * Сохраняет алиасы бумаг
+     */
+    async saveShareAliases(shareAliases: ShareAliasItem[]): Promise<void> {
+        const request: SaveShareAliasesRequest[] = shareAliases.map(shareAlias => {
+            return {
+                alias: shareAlias.alias,
+                currency: shareAlias.share.currency,
+                ticker: shareAlias.share.ticker,
+                type: shareAlias.share.shareType
+            } as SaveShareAliasesRequest;
+        });
+        return this.http.post("/import/share-aliases", request);
+    }
+
+    /**
      * Загружает настройки провайдеров импорта
      */
     private async loadImportProviderFeatures(): Promise<ImportProviderFeaturesByProvider> {
-        return await this.http.get<ImportProviderFeaturesByProvider>("/import/providers");
+        return this.http.get<ImportProviderFeaturesByProvider>("/import/providers");
     }
 }
 
@@ -87,9 +102,11 @@ export interface DealImportError {
     /** Сообщение валидатора */
     message: string;
     /** Дата сделки */
-    dealDate: string;
+    dealDate?: string;
     /** Тикер бумаги сделки */
     dealTicker: string;
+    /** Признак не найденного тикера, только если указан тикер */
+    shareNotFound: boolean;
 }
 
 /** Параметры для импорта отчетов */
@@ -109,4 +126,21 @@ export interface ImportProviderFeatures {
     confirmMoneyBalance: boolean;
     /** Признак импорта сделок по денежным средствам */
     importMoneyTrades: boolean;
+}
+
+/** Информация об алиасе бумаги */
+interface SaveShareAliasesRequest {
+    /** Алиас */
+    alias: string;
+    /** Тикер или исин код бумаги в системе */
+    ticker: string;
+    /** Валюта бумаги в системе */
+    currency: string;
+    /** Тип бумаги в системе */
+    type: string;
+}
+
+export interface ShareAliasItem {
+    alias: string;
+    share: Share;
 }

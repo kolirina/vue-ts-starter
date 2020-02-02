@@ -12,21 +12,32 @@ import {UI} from "../app/ui";
                     стал еще удобнее, быстрее и появились новые возможности.
                 </p>
 
-                <div class="update-service-dialog__date">12.01.2020</div>
+                <div class="update-service-dialog__date">01.02.2020</div>
                 <ul>
-                    <li>Отображение и быстрая подстановка текущего остатка при Выводе средств</li>
-                    <li>Дополнили историю цен по всем ПИФам, теперь внесение сделок будет еще удобнее</li>
-                    <li>Добавили еще около 1500 зарубежных тикеров</li>
-                    <li>Улучшили и исправили импорт Тинькофф</li>
-                    <li>Улучшили и исправили импорт ВТБ</li>
-                    <li>Улучшили и исправили импорт БКС</li>
-                    <li>Исправили график стоимости (учет произвольных активов)</li>
+                    <li>Добавили диаграмму эффективности бумаг в портфеле (Раздел Аналитика)</li>
+                    <li>Обновили события по облигациям</li>
+                    <li>Улучшили импорт Тинькофф (теперь поддерживается импорт всех сделок из отчета, включая начисления)</li>
+                    <li>Сделали учет дробного количества дивидендов</li>
+                    <li>Отображение времени сделки для Дивидендов (при условии Профессионального режима)</li>
+                    <li>Добавили в Профиль кнопку подтверждения почты</li>
                     <li>Мелкие исправления и доработки, о которых Вы нам сообщали</li>
                 </ul>
 
                 <template v-if="isLogin">
                     <expanded-panel :value="oldUpdatesPanelState" class="promo-codes__statistics">
                         <template #header>Предыдущие обновления</template>
+                        <div class="update-service-dialog__date">12.01.2020</div>
+                        <ul>
+                            <li>Отображение и быстрая подстановка текущего остатка при Выводе средств</li>
+                            <li>Дополнили историю цен по всем ПИФам, теперь внесение сделок будет еще удобнее</li>
+                            <li>Добавили еще около 1500 зарубежных тикеров</li>
+                            <li>Улучшили и исправили импорт Тинькофф</li>
+                            <li>Улучшили и исправили импорт ВТБ</li>
+                            <li>Улучшили и исправили импорт БКС</li>
+                            <li>Исправили график стоимости (учет произвольных активов)</li>
+                            <li>Мелкие исправления и доработки, о которых Вы нам сообщали</li>
+                        </ul>
+
                         <div class="update-service-dialog__date">30.12.2019</div>
                         <p>
                             Это больше техническое обновление для устранения недочетов.<br/>
@@ -133,17 +144,18 @@ import {UI} from "../app/ui";
             </div>
             <div>
                 <div v-if="isLogin">
-                    Желаем вам доходных инвестиций, команда Intelinvest.
-                    Все вопросы и предложения, как всегда, через форму
-                    <a @click="openFeedBackDialog">
-                        обратной связи.
-                    </a>
-                    <br/>
-                    <br/>
+                    Желаем вам доходных инвестиций, команда Intelinvest.<br/>
+                    Все вопросы и предложения, через форму
+                    <a @click="openFeedBackDialog">обратной связи.</a><br/><br/>
                 </div>
-                Почитать о всех обновлениях сервиса более подробно вы можете в нашем блоге
-                <a href="http://blog.intelinvest.ru/" target="_blank" class="decorationNone">blog.intelinvest.ru</a>
-                Оперативно получить поддержку можно в группе <a href="https://vk.com/intelinvest" target="_blank" class="decorationNone">VK</a>
+                Почитать обо всех обновлениях сервиса более подробно вы можете на нашем блоге
+                <a href="http://blog.intelinvest.ru/" target="_blank" class="decorationNone">blog.intelinvest.ru</a><br/>
+                Оперативно получить поддержку можно через
+                <a href="https://telegram.me/intelinvestSupportBot" title="Задайте вопрос в Telegram" target="_blank">telegram</a>,
+                наши специалисты с радостью вам ответят и помогут.<br/>
+                Также вы можете присоединиться к общению с нами и пользователями сервиса в
+                <a href="https://t.me/intelinvest_chat" title="Чат в Telegram" target="_blank">чате telegram</a><br/>
+                Подписывайтесь на обновления в группе <a href="https://vk.com/intelinvest" target="_blank" class="decorationNone">VK</a>
                 или <a href="https://www.facebook.com/intelinvest.ru/" target="_blank" class="decorationNone">facebook</a>
             </div>
         </div>

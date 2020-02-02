@@ -10,6 +10,7 @@ import {
     BasePriceDot,
     ColumnChartData,
     ColumnDataSeries,
+    CustomDataPoint,
     EventChartData,
     HighStockEventData,
     HighStockEventsGroup,
@@ -30,7 +31,8 @@ export class ChartUtils {
     /** Типы форматов для тултипа */
     static PIE_CHART_TOOLTIP_FORMAT = {
         COMMON: "<b>{point.y}, ({point.percentage:.2f} %)</b> <br/>{point.tickers}",
-        ASSETS: "<b>{point.y:.2f} % ({point.description})</b>"
+        ASSETS: "<b>{point.y:.2f} % ({point.description})</b>",
+        YIELDS: "<b>Прибыль: {point.profit} {point.currencySymbol} ({point.description})</b>"
     };
     /** Цвета операций */
     static OPERATION_COLORS: { [key: string]: string } = {
@@ -131,6 +133,40 @@ export class ChartUtils {
                 y: new Decimal(new BigMoney(row.currCost).amount.abs().toString()).toDP(2, Decimal.ROUND_HALF_UP).toNumber()
             });
         });
+        data.sort((a, b) => b.y - a.y);
+        return data;
+    }
+
+    /**
+     * Возвращает набор для графика эффективности бумаг в портфеле
+     * @param overview данные по портфелю
+     * @param currencySymbol символ валюты
+     */
+    static doYieldContributorsPieChartData(overview: Overview, currencySymbol: string): CustomDataPoint[] {
+        const data: CustomDataPoint[] = [];
+        const rows: Array<{ shareName: string, yearYield: string, profit: string }> = [
+            ...overview.stockPortfolio.rows.map(row => {
+                return {shareName: row.share.shortname, yearYield: row.yearYield, profit: row.profit};
+            }),
+            ...overview.bondPortfolio.rows.map(row => {
+                return {shareName: row.bond.shortname, yearYield: row.yearYield, profit: row.profit};
+            }),
+            ...overview.assetPortfolio.rows.map(row => {
+                return {shareName: row.share.shortname, yearYield: row.yearYield, profit: row.profit};
+            })
+        ];
+        rows.filter(value => new BigMoney(value.profit).amount.comparedTo(new Decimal("0")) > 0).forEach(row => {
+            const yieldValue = Filters.formatNumber(row.yearYield);
+            const profit = new BigMoney(row.profit).amount.abs().toDP(2, Decimal.ROUND_HALF_UP);
+            data.push({
+                name: row.shareName,
+                description: `Доходность ${yieldValue} %`,
+                profit: Filters.formatNumber(profit.toString()),
+                currencySymbol: currencySymbol,
+                y: profit.toNumber()
+            });
+        });
+        data.sort((a, b) => b.y - a.y);
         return data;
     }
 
@@ -142,6 +178,7 @@ export class ChartUtils {
                 y: new Decimal(new BigMoney(row.currCost).amount.abs().toString()).toDP(2, Decimal.ROUND_HALF_UP).toNumber()
             });
         });
+        data.sort((a, b) => b.y - a.y);
         return data;
     }
 
@@ -153,6 +190,7 @@ export class ChartUtils {
                 y: new Decimal(new BigMoney(row.currCost).amount.abs().toString()).toDP(2, Decimal.ROUND_HALF_UP).toNumber()
             });
         });
+        data.sort((a, b) => b.y - a.y);
         return data;
     }
 
@@ -167,6 +205,7 @@ export class ChartUtils {
                 y: Number(row.percCurrShare)
             });
         });
+        data.sort((a, b) => b.y - a.y);
         return data;
     }
 
@@ -483,6 +522,10 @@ export class ChartUtils {
             title: {
                 text: title
             },
+            legend: {
+                maxHeight: 100,
+                itemMarginTop: 2
+            },
             tooltip: {
                 pointFormat: this.PIE_CHART_TOOLTIP_FORMAT[tooltipFormat],
                 valueSuffix: `${viewCurrency ? ` ${TradeUtils.getCurrencySymbol(viewCurrency)}` : ""}`
@@ -592,16 +635,7 @@ export class ChartUtils {
                 const pt = eventItem.description.substring(0, eventItem.description.indexOf(":"));
                 if (key === pt) {
                     const amount = parseFloat(eventItem.description.substring(eventItem.description.indexOf(" ") + 1, eventItem.description.length));
-                    // если Амортизация и она последняя, значит это Погашение
-                    const repaymentKey = Operation.REPAYMENT.description;
-                    result[repaymentKey] = result[repaymentKey] || {name: repaymentKey, data: []};
-                    if (pt === Operation.AMORTIZATION.description && i === data.length - 1) {
-                        result[repaymentKey].data.push(amount);
-                        result[key].data.push(null);
-                    } else {
-                        result[key].data.push(amount);
-                        result[repaymentKey].data.push(null);
-                    }
+                    result[key].data.push(amount);
                 } else {
                     result[key].data.push(null);
                 }

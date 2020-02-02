@@ -29,7 +29,7 @@ import {UI} from "../app/ui";
                         <slot name="header"></slot>
                     </div>
 
-                    <v-card style="overflow: auto;" @click.stop>
+                    <v-card style="overflow: auto" @click.stop>
                         <slot></slot>
                     </v-card>
 

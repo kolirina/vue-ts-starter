@@ -271,6 +271,7 @@ export class ProfilePage extends UI {
     @ShowProgress
     private async verifyEmail(): Promise<void> {
         await this.clientService.verifyEmail();
+        this.$snotify.info("Письмо с подтверждением отправлено на почту");
     }
 
     /**

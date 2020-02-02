@@ -67,9 +67,12 @@ const MainStore = namespace(StoreType.MAIN);
                               :class="{'data-table-cell-open': props.expanded, 'path': true, 'data-table-cell': true}"></span>
                     </td>
                     <td v-if="tableHeadersState.company" class="text-xs-left">
-                        <stock-link v-if="props.item.share" :class="props.item.quantity !== '0' ? '' : 'line-through'"
+                        <stock-link v-if="props.item.share && props.item.assetType === 'STOCK'" :class="props.item.quantity !== '0' ? '' : 'line-through'"
                                     :ticker="props.item.share.ticker">{{ props.item.share.shortname }}
                         </stock-link>
+                        <asset-link v-if="props.item.share && props.item.assetType === 'ASSET'" :class="props.item.quantity !== '0' ? '' : 'line-through'"
+                                    :ticker="String(props.item.share.id)">{{ props.item.share.shortname }}
+                        </asset-link>
                         &nbsp;
                         <span v-if="props.item.share && props.item.quantity !== '0'"
                               :class="markupClasses(Number(props.item.share.change))">{{ props.item.share.change }}&nbsp;%</span>
@@ -177,7 +180,8 @@ const MainStore = namespace(StoreType.MAIN);
                                     <stock-link v-if="props.item.assetType === 'STOCK'" :ticker="props.item.share.ticker"></stock-link>
                                     <asset-link v-if="props.item.assetType === 'ASSET'" :ticker="String(props.item.share.id)">{{ props.item.share.ticker }}</asset-link>
                                 </span><br>
-                                В портфеле {{ props.item.ownedDays }} {{ props.item.ownedDays | declension("день", "дня", "дней") }}, c {{ props.item.firstBuy | date }}<br>
+                                Время с первой сделки {{ props.item.ownedDays }} {{ props.item.ownedDays | declension("день", "дня", "дней") }},
+                                от {{ props.item.firstBuy | date }}<br>
                                 Кол-во полных лотов {{ props.item.lotCounts | number }} <span>шт.</span><br>
                                 Всего {{ props.item.quantity | quantity(true) }} <span>{{ props.item.quantity | declension("акция", "акции", "акций") }}</span>
                             </div>

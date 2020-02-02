@@ -16,9 +16,10 @@
 
 import Component from "vue-class-component";
 import {VueRouter} from "vue-router/types/router";
-import {CustomDialog} from "../../../platform/dialogs/customDialog";
-import {DealImportError} from "../../../services/importService";
-import {TableHeader} from "../../../types/types";
+import {BtnReturn, CustomDialog} from "../../../platform/dialogs/customDialog";
+import {DealImportError, ShareAliasItem} from "../../../services/importService";
+import {Share, TableHeader} from "../../../types/types";
+import {ConfirmDialog} from "../confirmDialog";
 
 /**
  * Диалог получения кода для встраиваемого блока
@@ -76,8 +77,27 @@ import {TableHeader} from "../../../types/types";
                                 </template>
                             </div>
                         </v-card-text>
+                        <v-card-text class="import-dialog-wrapper__description selectable">
+                            <div class="import-dialog-wrapper__description-text import-default-text">
+                                Мы не смогли распознать следующие бумаги из отчета, пожалуйста укажите соответствие каждого названия к бумаге на сервисе,
+                                и тогда ваш отчет будет импортирован полностью.
+                                <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" bottom>
+                                    <sup class="custom-tooltip" slot="activator">
+                                        <v-icon>fas fa-info-circle</v-icon>
+                                    </sup>
+                                    <span>
+                                        Такие ситуации возникают когда брокер использует нестандартные названия для ценных бумаг в своих отчетах,
+                                        или не указывает уникальный идентификатор бумаги, по которому ее можно распознать.<br/>
+                                        Просто соотнесите название бумаги из отчета с ценной бумагой на сервисе.<br/>
+                                        Для этого в строке напротив нужного названия найдите нужную бумаги и выберите ее.<br/>
+                                        Например:<br/>
+                                        "ПАО Газпром-ао" -&gt; GAZP
+                                    </span>
+                                </v-tooltip>
+                            </div>
+                        </v-card-text>
                         <v-card-text class="import-dialog-wrapper__content import-dialog-wrapper__error-table selectable">
-                            <v-data-table :headers="headers" :items="data.errors" class="data-table" hide-actions must-sort>
+                            <v-data-table v-if="otherErrors.length" :headers="headers" :items="otherErrors" class="data-table" hide-actions must-sort>
                                 <template #items="props">
                                     <tr class="selectable">
                                         <td class="text-xs-center"><span v-if="props.item.dealDate">{{ props.item.dealDate | date }}</span></td>
@@ -87,10 +107,28 @@ import {TableHeader} from "../../../types/types";
                                 </template>
                             </v-data-table>
                         </v-card-text>
+                        <v-card-text v-if="shareAliases.length" class="selectable">
+                            <div v-for="aliasItem in shareAliases" :key="aliasItem.alias">
+                                <v-layout align-center justify-start wrap row fill-height class="mt-2 mb-2">
+                                    <!-- Алиас бумаги -->
+                                    <v-flex xs12 sm4>
+                                        <span class="fs12" :title="aliasItem.alias">{{ aliasItem.alias }}</span>
+                                    </v-flex>
+
+                                    <!-- Выбранная бумага -->
+                                    <v-flex xs12 sm8>
+                                        <share-search @change="onShareSelect($event, aliasItem)" @clear="onShareClear(aliasItem)" autofocus ellipsis></share-search>
+                                    </v-flex>
+                                </v-layout>
+                            </div>
+                        </v-card-text>
                     </div>
                     <v-card-actions class="import-dialog-wrapper__actions">
                         <v-spacer></v-spacer>
-                        <v-btn color="big_btn primary" @click.native="goToBalances" dark>
+                        <v-btn v-if="shareAliases.length" color="big_btn primary" @click.native="closeDialog" dark>
+                            Указать названия
+                        </v-btn>
+                        <v-btn v-else color="big_btn primary" @click.native="goToBalances" dark>
                             Указать текущие остатки
                         </v-btn>
                     </v-card-actions>
@@ -99,17 +137,53 @@ import {TableHeader} from "../../../types/types";
         </v-dialog>
     `
 })
-export class ImportErrorsDialog extends CustomDialog<ImportErrorsDialogData, void> {
+export class ImportErrorsDialog extends CustomDialog<ImportErrorsDialogData, ShareAliasItem[]> {
 
+    /** Заголовки таблицы с ошибками */
     private headers: TableHeader[] = [
         {text: "Дата", align: "center", value: "dealDate", sortable: false},
         {text: "Тикер", align: "left", value: "dealTicker", sortable: false},
         {text: "Ошибка", align: "center", value: "message", sortable: false}
     ];
 
+    private shareAliases: ShareAliasItem[] = [];
+
+    private otherErrors: DealImportError[] = [];
+
+    mounted(): void {
+        this.shareAliases = this.data.errors.filter(error => error.shareNotFound).map(error => {
+            return {
+                alias: error.dealTicker,
+                share: null
+            } as ShareAliasItem;
+        });
+        this.otherErrors = this.data.errors.filter(error => !error.shareNotFound);
+    }
+
     private goToBalances(): void {
         this.data.router.push({name: "balances"});
         this.close();
+    }
+
+    private onShareSelect(share: Share, aliasItem: ShareAliasItem): void {
+        aliasItem.share = share;
+    }
+
+    private onShareClear(aliasItem: ShareAliasItem): void {
+        aliasItem.share = null;
+    }
+
+    private async closeDialog(): Promise<void> {
+        const filled = this.shareAliases.filter(shareAlias => !!shareAlias.share);
+        const allFilled = filled.length === this.shareAliases.length;
+        if (!allFilled) {
+            const answer = await new ConfirmDialog().show("Вы не указали соответствия для всех нераспознанных бумаг." +
+                "Если продолжить, будут импортированы только сделки по тем бумагам, которые вы указали.");
+            if (answer !== BtnReturn.YES) {
+                return;
+            }
+        }
+        this.close(filled);
     }
 }
 

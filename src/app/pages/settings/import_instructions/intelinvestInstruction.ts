@@ -18,81 +18,81 @@ import {UI} from "../../../app/ui";
                 <div class="intel-invest-instruction__values-item">
                     <div class="intel-invest-instruction__values-item__title">STOCKBUY / STOCKSELL</div>
                     <div class="intel-invest-instruction__values-item__content">
-                        Покупка/Продажа Акции. Поля: тикер, дата, количество, цена, комиссия, заметка, валюта, [id связанной сделки]
+                        Покупка/Продажа Акции. Поля: тикер, дата, количество, цена, комиссия, [заметка], валюта, [id связанной сделки]
                     </div>
                 </div>
                 <div class="intel-invest-instruction__values-item">
                     <div class="intel-invest-instruction__values-item__title">ASSET_BUY / ASSET_SELL</div>
                     <div class="intel-invest-instruction__values-item__content">
-                        Покупка/Продажа Произвольного актива. Поля: тикер, дата, количество, цена, комиссия, заметка, валюта, [id связанной сделки]
+                        Покупка/Продажа Произвольного актива. Поля: тикер, дата, количество, цена, комиссия, [заметка], валюта, [id связанной сделки]
                     </div>
                 </div>
                 <div class="intel-invest-instruction__values-item">
                     <div class="intel-invest-instruction__values-item__title">BONDBUY / BONDSELL</div>
                     <div class="intel-invest-instruction__values-item__content">
                         Покупка/Продажа Облигации. Поля: secid, дата, количество, цена в %, комиссия, НКД, номинал,
-                        Заметка, валюта, [id связанной сделки]
+                        [заметка], валюта, [id связанной сделки]
                     </div>
                 </div>
                 <div class="intel-invest-instruction__values-item">
                     <div class="intel-invest-instruction__values-item__title">COUPON</div>
                     <div class="intel-invest-instruction__values-item__content">
-                        Выплата купона. Поля: тикер, дата, количество, сумма выплаты, заметка, валюта, [id связанной сделки]
+                        Выплата купона. Поля: тикер, дата, количество, сумма выплаты, [заметка], валюта, [id связанной сделки]
                     </div>
                 </div>
                 <div class="intel-invest-instruction__values-item">
                     <div class="intel-invest-instruction__values-item__title">AMORTIZATION</div>
                     <div class="intel-invest-instruction__values-item__content">
-                        Выплата амортизации. Поля: тикер, дата, количество, сумма выплаты, заметка, валюта, [id связанной
+                        Выплата амортизации. Поля: тикер, дата, количество, сумма выплаты, [заметка], валюта, [id связанной
                         сделки]
                     </div>
                 </div>
                 <div class="intel-invest-instruction__values-item">
                     <div class="intel-invest-instruction__values-item__title">DIVIDEND</div>
                     <div class="intel-invest-instruction__values-item__content">
-                        Выплата Дивиденда. Поля: тикер, дата, количество, сумма выплаты, заметка, валюта, [id связанной сделки]
+                        Выплата Дивиденда. Поля: тикер, дата, количество, сумма выплаты, [заметка], валюта, [id связанной сделки]
                     </div>
                 </div>
                 <div class="intel-invest-instruction__values-item">
                     <div class="intel-invest-instruction__values-item__title">ASSET_DIVIDEND</div>
                     <div class="intel-invest-instruction__values-item__content">
-                        Выплата произвольного дохода по активу. Поля: тикер, дата, количество, сумма выплаты, заметка, валюта, [id связанной сделки]
+                        Выплата произвольного дохода по активу. Поля: тикер, дата, количество, сумма выплаты, [заметка], валюта, [id связанной сделки]
                     </div>
                 </div>
                 <div class="intel-invest-instruction__values-item">
                     <div class="intel-invest-instruction__values-item__title">MONEYDEPOSIT</div>
                     <div class="intel-invest-instruction__values-item__content">
-                        Зачисление денежных средств на счет. Поля: дата, сумма, заметка, валюта, [id связанной сделки]
+                        Зачисление денежных средств на счет. Поля: дата, сумма, [заметка], валюта, [id связанной сделки]
                     </div>
                 </div>
                 <div class="intel-invest-instruction__values-item">
                     <div class="intel-invest-instruction__values-item__title">MONEYWITHDRAW</div>
                     <div class="intel-invest-instruction__values-item__content">
-                        Вывод денежных средств со счета. Поля: дата, сумма, заметка, валюта, [id связанной сделки]
+                        Вывод денежных средств со счета. Поля: дата, сумма, [заметка], валюта, [id связанной сделки]
                     </div>
                 </div>
                 <div class="intel-invest-instruction__values-item">
                     <div class="intel-invest-instruction__values-item__title">INCOME</div>
                     <div class="intel-invest-instruction__values-item__content">
-                        Произвольный доход. Поля: дата, сумма, заметка, валюта, [id связанной сделки]
+                        Произвольный доход. Поля: дата, сумма, [заметка], валюта, [id связанной сделки]
                     </div>
                 </div>
                 <div class="intel-invest-instruction__values-item">
                     <div class="intel-invest-instruction__values-item__title">LOSS</div>
                     <div class="intel-invest-instruction__values-item__content">
-                        Произвольный расход. Поля: дата, сумма, заметка, валюта, [id связанной сделки]
+                        Произвольный расход. Поля: дата, сумма, [заметка], валюта, [id связанной сделки]
                     </div>
                 </div>
                 <div class="intel-invest-instruction__values-item">
                     <div class="intel-invest-instruction__values-item__title">CURRENCY_BUY</div>
                     <div class="intel-invest-instruction__values-item__content">
-                        Обмен валюты (Покупка). Поля: дата, сумма, заметка, валюта, id связанной сделки
+                        Обмен валюты (Покупка). Поля: дата, сумма, [заметка], валюта, id связанной сделки
                     </div>
                 </div>
                 <div class="intel-invest-instruction__values-item">
                     <div class="intel-invest-instruction__values-item__title">CURRENCY_SELL</div>
                     <div class="intel-invest-instruction__values-item__content">
-                        Обмен валюты (Продажа). Поля: дата, сумма, заметка, валюта, id связанной сделки
+                        Обмен валюты (Продажа). Поля: дата, сумма, [заметка], валюта, id связанной сделки
                     </div>
                 </div>
                 <div class="intel-invest-instruction__values-l-section">
@@ -108,6 +108,9 @@ import {UI} from "../../../app/ui";
                     <li>Проверьте кодировку файла (csv), она должна быть UTF-8</li>
                     <li>НКД в отчете должен указываться на одну бумагу</li>
                     <li>Количество бумаг должно быть указано в штуках (не в лотах)</li>
+                    <li>Формат даты должен быть либо короткий 15.01.2018, либо полный 15.01.2018 12:55:07</li>
+                    <li>Колонка FEE_CURRENCY может быть не заполнена, если комиссия не указывается</li>
+                    <li>Для каждого типа сделки указан набор обязательных полей, необязательные поля, отмечены квадратными скобками [заметка]</li>
                 </ul>
             </div>
 

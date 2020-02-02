@@ -162,8 +162,8 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
 
                             <!-- Номинал -->
                             <v-flex v-if="isBondTrade" xs12 :class="operation === Operation.REPAYMENT ? 'sm6' : 'sm3'">
-                                <ii-number-field label="Номинал" v-model="facevalue" @keyup="calculateFee" :decimals="2" name="facevalue" maxLength="11"
-                                                 v-validate="'required|min_value:0.01'" :error-messages="errors.collect('facevalue')" class="required">
+                                <ii-number-field label="Номинал" v-model="facevalue" @keyup="calculateFee" :decimals="3" name="facevalue" maxLength="11"
+                                                 v-validate="'required|min_value:0.001'" :error-messages="errors.collect('facevalue')" class="required">
                                 </ii-number-field>
                             </v-flex>
 
@@ -1120,11 +1120,11 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private get quantityDecimals(): number {
-        return this.isAssetTrade ? 6 : 0;
+        return this.isAssetTrade || this.operation === Operation.DIVIDEND ? 6 : 0;
     }
 
     private get quantityValidationRule(): string {
-        return this.isAssetTrade ? "required|min_value:0.000001" : "required|min_value:1";
+        return this.isAssetTrade || this.operation === Operation.DIVIDEND ? "required|min_value:0.000001" : "required|min_value:1";
     }
 
     private get freeBalance(): string {
