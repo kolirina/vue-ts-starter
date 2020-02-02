@@ -84,7 +84,8 @@ export class ThemeUtils {
     .v-picker__title.primary,
     .portfolio-rows-filter__button:hover,
     .v-tooltip__content.menu-icons,
-     .theme--light.application {background: #21232F !important}
+    .theme--light.application,
+    .custom-v-menu .v-menu-content{background: #21232F !important}
 
     .active-link, .wrap-list-menu .v-list__tile:hover,
     .header-first-card__title-text,
@@ -144,7 +145,8 @@ export class ThemeUtils {
     .import-format-requirements-ul, .intel-invest-instruction__title, .intel-invest-instruction__format-text, .intel-invest-instruction__title-values,
     .intel-invest-instruction__values, .intel-invest-instruction__template-requirements, .import-default-text, .tooltip-text,
     .snotifyToast__body, .info-share-page__empty, .import-dialog-wrapper__title-text, .fs18, .fs36,
-    .snotifyToast__buttons button, .update-service-dialog__content {color: #fff}
+    .snotifyToast__buttons button, .update-service-dialog__content,
+    .custom-v-menu .v-menu-content {color: #fff}
 
     .theme--light.v-label,
     .fs12-opacity,
