@@ -23,7 +23,8 @@ export class ThemeUtils {
     private static readonly CSS_STYLES = `
      .data-table a,
      .v-card a,
-     .items-dialog-title {color: #75b2ef}
+     .items-dialog-title,
+     .item-files__name {color: #75b2ef}
 
      .add-notification .v-input--is-label-active label, .data-table thead th.active, .v-label.v-label--active.theme--light {color: #75b2ef !important}
 
@@ -37,7 +38,8 @@ export class ThemeUtils {
      }
 
      .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light,
-     .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).v-btn--disabled {
+     .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).v-btn--disabled,
+     .import-wrapper-content .section-upload-file .reselect-file-btn .file-link__text {
         background-color: #3b6ec9 !important;
         color: #fff !important;
         border-color: transparent !important;
@@ -62,7 +64,9 @@ export class ThemeUtils {
     .theme--light.v-table,
     .data-table thead, .theme--light.v-data-iterator .v-data-iterator__actions thead,
     .theme--light.v-expansion-panel .v-expansion-panel__container .v-expansion-panel__header .v-expansion-panel__header__icon .v-icon thead,
-    .theme--light.v-btn-toggle {background: #2C3040 !important;}
+    .theme--light.v-btn-toggle,
+    .negative-balance-notification,
+    .sing-in-wrap .paired-section__left-section {background: #2C3040 !important;}
 
     .v-content__wrap,
     .header-first-card,
@@ -79,7 +83,8 @@ export class ThemeUtils {
     .tariff-most-popular,
     .v-picker__title.primary,
     .portfolio-rows-filter__button:hover,
-    .v-tooltip__content.menu-icons{background: #21232F !important}
+    .v-tooltip__content.menu-icons,
+     .theme--light.application {background: #21232F !important}
 
     .active-link, .wrap-list-menu .v-list__tile:hover,
     .header-first-card__title-text,
@@ -138,7 +143,8 @@ export class ThemeUtils {
     .v-tooltip__content.menu-icons, .hint-text-for-setings,
     .import-format-requirements-ul, .intel-invest-instruction__title, .intel-invest-instruction__format-text, .intel-invest-instruction__title-values,
     .intel-invest-instruction__values, .intel-invest-instruction__template-requirements, .import-default-text, .tooltip-text,
-    .snotifyToast__body, .info-share-page__empty {color: #fff}
+    .snotifyToast__body, .info-share-page__empty, .import-dialog-wrapper__title-text, .fs18, .fs36,
+    .snotifyToast__buttons button, .update-service-dialog__content {color: #fff}
 
     .theme--light.v-label,
     .fs12-opacity,
@@ -167,7 +173,8 @@ export class ThemeUtils {
     .v-btn.chart-filter-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
     .import-wrapper-content .setings-menu .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light,
     .import-wrapper-content .setings-menu .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
-    .wrapper-content-panel__privacy-section-up-page-btn {background-color: #252A35 !important}
+    .wrapper-content-panel__privacy-section-up-page-btn,
+    .sing-in-wrap .pre-footer {background-color: #252A35 !important}
 
     .theme--light.v-table tbody tr:not(:last-child),
     .theme--light.v-calendar-weekly .v-calendar-weekly__head-weekday,
@@ -181,9 +188,7 @@ export class ThemeUtils {
     .v-btn.chart-filter-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light,
     .v-btn.chart-filter-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
     .import-wrapper-content .setings-menu .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light,
-    .import-wrapper-content .setings-menu .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
-    .v-btn.portfolio-rows-filter__button:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro):hover,
-    .import-wrapper-content .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro):hover {border-color: #fff !important}
+    .import-wrapper-content .setings-menu .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro) {border-color: #fff !important}
 
     .import-wrapper-content .setings-menu .v-btn {background-image: url("../img/fileimport/settings-light.svg")}
 
@@ -224,6 +229,12 @@ export class ThemeUtils {
     .content-loader stop {stop-color: #2c3040}
 
     .v-select__selection--comma {margin-left: 16px}
+
+    .sing-in-wrap .paired-section__right-section {background-image: url(../img/sign_in/bg-dark.svg)}
+
+    .v-input input::-webkit-input-placeholder {color: #cfd0d4 !important}
+    .v-input input::-ms-input-placeholder {color: #cfd0d4 !important}
+    .v-input input::-moz-placeholder {color: #cfd0d4 !important}
     `;
 
     static setStyles(nightTheme: boolean): void {
