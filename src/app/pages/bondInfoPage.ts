@@ -76,44 +76,44 @@ const MainStore = namespace(StoreType.MAIN);
                             </div>
                             <table class="info-about-stock__content information-table">
                                 <thead>
-                                    <tr>
-                                        <th class="indent-between-title-value-200"></th>
-                                        <th></th>
-                                    </tr>
+                                <tr>
+                                    <th class="indent-between-title-value-200"></th>
+                                    <th></th>
+                                </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td class="info-about-stock__content-title">Последняя цена</td>
-                                        <td>
-                                            <span class="info-about-stock__content-value">
-                                                {{ share.prevprice }}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="info-about-stock__content-title">Номинал</td>
-                                        <td>
-                                            <span class="info-about-stock__content-value">
-                                                {{ share.formattedFacevalue }}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="info-about-stock__content-title">НКД</td>
-                                        <td>
-                                            <span class="info-about-stock__content-value">
-                                                {{ share.accruedint | amount }}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="info-about-stock__content-title">Валюта</td>
-                                        <td>
-                                            <span class="info-about-stock__content-value">
-                                                {{ share.currency }}
-                                            </span>
-                                        </td>
-                                    </tr>
+                                <tr>
+                                    <td class="info-about-stock__content-title">Последняя цена</td>
+                                    <td>
+                                        <span class="info-about-stock__content-value">
+                                            {{ share.prevprice }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="info-about-stock__content-title">Номинал</td>
+                                    <td>
+                                        <span class="info-about-stock__content-value">
+                                            {{ share.formattedFacevalue }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="info-about-stock__content-title">НКД</td>
+                                    <td>
+                                        <span class="info-about-stock__content-value">
+                                            {{ share.accruedint | amount }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="info-about-stock__content-title">Валюта</td>
+                                    <td>
+                                        <span class="info-about-stock__content-value">
+                                            {{ share.currency }}
+                                        </span>
+                                    </td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -125,28 +125,28 @@ const MainStore = namespace(StoreType.MAIN);
                             </div>
                             <table class="info-about-stock__content information-table">
                                 <thead>
-                                    <tr>
-                                        <th class="indent-between-title-value-200"></th>
-                                        <th></th>
-                                    </tr>
+                                <tr>
+                                    <th class="indent-between-title-value-200"></th>
+                                    <th></th>
+                                </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td class="info-about-stock__content-title">Следующий купон</td>
-                                        <td>
-                                            <span class="info-about-stock__content-value">
-                                                {{ share.nextcoupon }}, {{ share.couponvalue | amount }}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="info-about-stock__content-title">Дата погашения</td>
-                                        <td>
-                                            <span class="info-about-stock__content-value">
-                                                {{ share.matdate }}
-                                            </span>
-                                        </td>
-                                    </tr>
+                                <tr>
+                                    <td class="info-about-stock__content-title">Следующий купон</td>
+                                    <td>
+                                        <span class="info-about-stock__content-value">
+                                            {{ share.nextcoupon }}, {{ share.couponvalue | amount }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="info-about-stock__content-title">Дата погашения</td>
+                                    <td>
+                                        <span class="info-about-stock__content-value">
+                                            {{ share.matdate }}
+                                        </span>
+                                    </td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -169,7 +169,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-card-text>
             </v-card>
             <div class="space-between-blocks"></div>
-            <v-card v-if="share" class="chart-overflow dividends-chart" flat>
+            <v-card v-if="paymentsData && paymentsData.series.length" class="chart-overflow dividends-chart" flat>
                 <v-card-title class="chart-title">
                     Начисления
                     <v-spacer></v-spacer>
