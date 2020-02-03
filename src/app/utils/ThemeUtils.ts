@@ -166,7 +166,7 @@ export class ThemeUtils {
     .eventsAggregateInfo .item-block,
     .events-calendar-wrap .calendar-events-title,
     .tariff-item,
-    .v-text-field .v-input__slot, .v-text-field__slot input:-internal-autofill-selected,
+    .v-text-field .v-input__slot,
     .v-btn.portfolio-rows-filter__button:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light,
     .v-btn.portfolio-rows-filter__button:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
     .portfolio-rows-filter__button, .import-wrapper-content .setings-menu .v-btn,
@@ -192,7 +192,8 @@ export class ThemeUtils {
     .import-wrapper-content .setings-menu .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light,
     .import-wrapper-content .setings-menu .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro) {border-color: #fff !important}
 
-    .import-wrapper-content .setings-menu .v-btn {background-image: url("../img/fileimport/settings-light.svg")}
+    .import-wrapper-content .setings-menu .v-btn,
+    .portfolio-rows-filter__button__icon {background-image: url("../img/fileimport/settings-light.svg")}
 
     .theme--light.v-table tbody tr.selectable:hover:not(.v-datatable__expand-row) {background: #3b6ec9 !important;}
 
@@ -224,8 +225,6 @@ export class ThemeUtils {
     .highcharts-series .highcharts-point:nth-child(3) {fill: #74D1F4 !important}
     .highcharts-series .highcharts-point:nth-child(4) {fill: #178BC6 !important}
 
-    .portfolio-rows-filter__button__icon {filter: invert(100%)}
-
     .providers .item-img-block {filter: none}
 
     .content-loader stop {stop-color: #2c3040}
@@ -248,17 +247,5 @@ export class ThemeUtils {
         }
         stylesElement.innerHTML = nightTheme ? ThemeUtils.CSS_STYLES : "";
         stylesElement.setAttribute("media", nightTheme ? "screen" : "none");
-    }
-
-    static invertSupported(): boolean {
-        const browserInfo = CommonUtils.detectBrowser();
-        if (browserInfo.name === BROWSER.FIREFOX) {
-            return false;
-        }
-        const prop = "filter";
-        const el = document.createElement("test");
-        const mStyle = el.style;
-        el.style.cssText = prop + ":invert(100%)";
-        return !!(mStyle as any)[prop];
     }
 }
