@@ -54,7 +54,8 @@ export class AverageAnnualYieldChart extends UI {
         this.chart = Highcharts.chart(this.$refs.container, {
             chart: {
                 backgroundColor: "#F7F9FB",
-                type: "column"
+                type: "column",
+                className: "averageAnnualYieldChart"
             },
             title: {
                 text: ""
