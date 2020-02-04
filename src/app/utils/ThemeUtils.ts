@@ -66,7 +66,8 @@ export class ThemeUtils {
     .theme--light.v-expansion-panel .v-expansion-panel__container .v-expansion-panel__header .v-expansion-panel__header__icon .v-icon thead,
     .theme--light.v-btn-toggle,
     .negative-balance-notification,
-    .sing-in-wrap .paired-section__left-section {background: #2C3040 !important;}
+    .sing-in-wrap .paired-section__left-section,
+     .empty-station {background: #2C3040 !important;}
 
     .v-content__wrap,
     .header-first-card,
@@ -146,7 +147,8 @@ export class ThemeUtils {
     .intel-invest-instruction__values, .intel-invest-instruction__template-requirements, .import-default-text, .tooltip-text,
     .snotifyToast__body, .info-share-page__empty, .import-dialog-wrapper__title-text, .fs18, .fs36,
     .snotifyToast__buttons button, .update-service-dialog__content,
-    .custom-v-menu .v-menu-content {color: #fff}
+    .custom-v-menu .v-menu-content,
+    .v-date-picker-years, .empty-station__description {color: #fff}
 
     .theme--light.v-label,
     .fs12-opacity,
@@ -176,7 +178,8 @@ export class ThemeUtils {
     .import-wrapper-content .setings-menu .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light,
     .import-wrapper-content .setings-menu .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
     .wrapper-content-panel__privacy-section-up-page-btn,
-    .sing-in-wrap .pre-footer {background-color: #252A35 !important}
+    .sing-in-wrap .pre-footer, .promo-codes__steps,
+     input.highcharts-range-selector:focus, .inplace-custom-input, .currency-card.v-card {background-color: #252A35 !important}
 
     .theme--light.v-table tbody tr:not(:last-child),
     .theme--light.v-calendar-weekly .v-calendar-weekly__head-weekday,
@@ -201,7 +204,7 @@ export class ThemeUtils {
 
     .qr-code-section .v-list {background-color: #fff !important}
 
-    .settings-icon, .profile-icon, .logout-icon, .custom-action-icon, .exp-panel-arrow {filter: brightness(2)}
+    .settings-icon, .profile-icon, .logout-icon, .custom-action-icon, .exp-panel-arrow, .profile-edit {filter: brightness(2)}
 
     .arrow-up .dashboard-summary-income-icon {background: #405242}
     .arrow-down .dashboard-summary-income-icon {background: #61343f}
@@ -210,10 +213,26 @@ export class ThemeUtils {
     .highcharts-axis-labels text,
     .highcharts-label text,
     .highcharts-plot-line-label,
-    .averageAnnualYieldChart text tspan {fill: #fff !important}
+    .averageAnnualYieldChart text tspan,
+    .highcharts-label.highcharts-data-label tspan,
+    .highcharts-label.highcharts-tooltip-box tspan {
+        fill: #fff !important;
+        stroke-width: 0;
+        font-weight: normal !important;
+    }
     .highcharts-background {fill: #252A35 !important}
     .highcharts-markers.highcharts-spline-series path,
-    .simple-line .highcharts-label-box.highcharts-tooltip-box {fill: #3B6EC9 !important}
+    .simple-line .highcharts-label-box.highcharts-tooltip-box,
+    .highcharts-tooltip .highcharts-label-box {fill: #3B6EC9 !important}
+
+    .highcharts-tooltip .highcharts-label-box {
+        stroke: none
+    }
+
+    .highcharts-grid.highcharts-xaxis-grid path,
+    .highcharts-grid.highcharts-yaxis-grid path,
+    .highcharts-axis-line, .highcharts-axis.highcharts-xaxis path, .highcharts-navigator-outline {stroke: #3c4450}
+
     .highcharts-graph {stroke: #3B6EC9 !important}
     .simple-line .highcharts-label-box.highcharts-tooltip-box,
     .averageAnnualYieldChart .highcharts-label-box.highcharts-tooltip-box {stroke: none}
