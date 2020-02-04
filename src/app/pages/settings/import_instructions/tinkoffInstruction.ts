@@ -5,8 +5,22 @@ import {UI} from "../../../app/ui";
     // language=Vue
     template: `
         <div class="tinkoff-instruction">
-            <div class="import-default-text">
+            <div class="import-format-requirements-ul">
+                <div class="import-default-text-margin-t">
+                    Вы можете загружать отчеты как за весь период, так и за отдельные месяцы.<br/>
+                    Получить отчет за весь период в формате xls/xlsx можно двумя способами:
+                </div>
+                <ul>
+                    <li>Запросить отчет в чате техподдержки через личный кабинет</li>
+                    <li>Запросить отчет в чате техподдержки через мобильное приложение</li>
+                </ul>
                 <div>
+                    Полученный файл используйте для импорта.
+                </div>
+            </div>
+            <div class="import-default-text mt-4">
+                <div>
+                    Для получения отчета за конкретный месяц используйте инструкцию ниже.<br/>
                     Перейдите на сайт <a href="https://www.tinkoff.ru/" target="_blank">https://www.tinkoff.ru</a>,
                     <div>
                         в верхнем меню перейдите <b>Инвестиции</b> - <b>Портфель</b>
