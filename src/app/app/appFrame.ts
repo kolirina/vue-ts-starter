@@ -195,9 +195,6 @@ export class AppFrame extends UI {
     }
 
     private applyTheme(): void {
-        if (!ThemeUtils.invertSupported()) {
-            return;
-        }
         ThemeUtils.setStyles(this.localStorage.get<string>(StoreKeys.THEME, Theme.DAY) === Theme.NIGHT);
     }
 
