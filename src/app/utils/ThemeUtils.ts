@@ -47,7 +47,6 @@ export class ThemeUtils {
 
      .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).v-btn--disabled {opacity: 0.5}
 
-    .dashboard-wrap,
     .profile,
     .theme--light.v-navigation-drawer,
     .theme--light.v-sheet,
@@ -172,14 +171,14 @@ export class ThemeUtils {
     .v-btn.portfolio-rows-filter__button:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light,
     .v-btn.portfolio-rows-filter__button:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
     .portfolio-rows-filter__button, .import-wrapper-content .setings-menu .v-btn,
-    .snotifyToast, .theme--light.v-chip, .chart-filter-btn,
-    .v-btn.chart-filter-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light,
-    .v-btn.chart-filter-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
+    .snotifyToast, .theme--light.v-chip,
     .import-wrapper-content .setings-menu .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light,
     .import-wrapper-content .setings-menu .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
     .wrapper-content-panel__privacy-section-up-page-btn,
     .sing-in-wrap .pre-footer, .promo-codes__steps,
-     input.highcharts-range-selector:focus, .inplace-custom-input, .currency-card.v-card {background-color: #252A35 !important}
+    input.highcharts-range-selector:focus, .inplace-custom-input, .currency-card.v-card {background-color: #252A35 !important}
+
+    .dashboard-wrap {background-color: #0a0d19;}
 
     .theme--light.v-table tbody tr:not(:last-child),
     .theme--light.v-calendar-weekly .v-calendar-weekly__head-weekday,
@@ -190,13 +189,11 @@ export class ThemeUtils {
     .v-btn.portfolio-rows-filter__button:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
     .import-wrapper-content .v-btn.portfolio-rows-filter__button:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light,
     .import-wrapper-content .v-btn.portfolio-rows-filter__button:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
-    .v-btn.chart-filter-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light,
-    .v-btn.chart-filter-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
     .import-wrapper-content .setings-menu .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light,
     .import-wrapper-content .setings-menu .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro) {border-color: #fff !important}
 
     .import-wrapper-content .setings-menu .v-btn,
-    .portfolio-rows-filter__button__icon {background-image: url("../img/fileimport/settings-light.svg")}
+    .portfolio-rows-filter__button__icon {background-image: url("./img/fileimport/settings-light.svg")}
 
     .theme--light.v-table tbody tr.selectable:hover:not(.v-datatable__expand-row) {background: #3b6ec9 !important;}
 
@@ -239,10 +236,10 @@ export class ThemeUtils {
 
     .averageAnnualYieldChart .highcharts-label-box.highcharts-tooltip-box {fill: #474d67}
 
-    .highcharts-series .highcharts-point:nth-child(1) {fill: #4E4FA4 !important}
-    .highcharts-series .highcharts-point:nth-child(2) {fill: #6B75C6 !important}
-    .highcharts-series .highcharts-point:nth-child(3) {fill: #74D1F4 !important}
-    .highcharts-series .highcharts-point:nth-child(4) {fill: #178BC6 !important}
+    .profitability-diagram .highcharts-series .highcharts-point:nth-child(1) {fill: #4E4FA4 !important}
+    .profitability-diagram .highcharts-series .highcharts-point:nth-child(2) {fill: #6B75C6 !important}
+    .profitability-diagram .highcharts-series .highcharts-point:nth-child(3) {fill: #74D1F4 !important}
+    .profitability-diagram .highcharts-series .highcharts-point:nth-child(4) {fill: #178BC6 !important}
 
     .providers .item-img-block {filter: none}
 

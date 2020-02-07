@@ -31,7 +31,7 @@ const MainStore = namespace(StoreType.MAIN);
             <expanded-panel :value="$uistate.adviserDiagramPanel" :with-menu="false" :state="$uistate.ADVISER_DIAGRAM_PANEL">
                 <template #header>Аналитическая сводка по портфелю</template>
                 <v-layout wrap class="adviser-diagram-section mt-3">
-                    <v-flex xs12 sm12 md12 lg6 class="pr-2 left-section">
+                    <v-flex xs12 sm12 md12 lg6 class="pr-2 left-section profitability-diagram">
                         <v-flex v-if="yieldCompareData" class="margT30 pa-2">
                             <v-layout class="item-header">
                                 <span class="fs13">Сравнение среднегодовой доходности</span>
