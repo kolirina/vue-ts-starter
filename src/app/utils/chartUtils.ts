@@ -82,7 +82,7 @@ export class ChartUtils {
     }
 
     static processEventsChartData(data: EventChartData[], flags: string = "flags", onSeries: string = "totalChart",
-                                  shape: string = "circlepin", width: number = 10): HighStockEventsGroup[] {
+                                  shape: string = "circlepin", width: number = 10, color: string = "rgba(5,0,217,0.4)"): HighStockEventsGroup[] {
         const eventsGroups: HighStockEventsGroup[] = [];
         const eventsByCount: { [key: string]: HighStockEventData[] } = {};
         const mapped = data.map(item => {
@@ -94,12 +94,12 @@ export class ChartUtils {
         eventsGroups.push({
             type: flags,
             data: grouped,
-            name: `events`,
+            name: name,
             onSeries: onSeries,
             stackDistance: 20,
             shape: shape,
             color: "rgba(5,0,217,0.4)",
-            fillColor: "rgba(5,0,217,0.4)",
+            fillColor: color,
             width: width
         });
         return eventsGroups;
