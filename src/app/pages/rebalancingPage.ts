@@ -140,7 +140,7 @@ const MainStore = namespace(StoreType.MAIN);
                             </template>
                             <template #items="props">
                                 <tr class="selectable">
-                                    <td class="text-xs-left">{{ props.item.name }}</td>
+                                    <td class="text-xs-left">{{ props.item.name }} ({{ props.item.ticker }})</td>
                                     <td class="text-xs-right ii-number-cell">
                                         <v-tooltip content-class="custom-tooltip-wrap" bottom>
                                             <template #activator="{ on }">
@@ -244,7 +244,7 @@ export class RebalancingPage extends UI {
     private menu = false;
 
     private headers: TableHeader[] = [
-        {text: "Бумага", align: "left", value: "name", width: "240"},
+        {text: "Бумага", align: "left", value: "name", width: "320"},
         {text: "Цена", align: "right", value: "price", sortable: true, width: "120"},
         {text: "Текущая доля", align: "right", value: "currentPercent", width: "120", sortable: true},
         {text: "Действие", align: "center", value: "action", sortable: false},
@@ -410,6 +410,9 @@ export class RebalancingPage extends UI {
         result.push("</b>");
         if (this.calculationsInLots) {
             result.push(Filters.declension(Math.abs(row.lots), "лота", "лотов", "лотов"));
+            const quantity = row.lotSize * row.lots;
+            result.push(` (${quantity} `);
+            result.push(`${Filters.declension(Math.abs(quantity), "шутка", "штуки", "штук")})`);
         } else {
             result.push(Filters.declension(new BigMoney(row.price).amount.abs().toNumber(), "штуки", "штук", "штук"));
         }

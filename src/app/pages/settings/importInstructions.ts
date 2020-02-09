@@ -1,10 +1,6 @@
-import Component from "vue-class-component";
-import {Prop} from "vue-property-decorator";
-import {namespace} from "vuex-class/lib/bindings";
-import {UI} from "../../app/ui";
+import {Component, Prop, UI} from "../../app/ui";
 import {DealsImportProvider} from "../../services/importService";
 import {PortfolioParams} from "../../services/portfolioService";
-import {StoreType} from "../../vuex/storeType";
 import {AlfaCapitalInstruction} from "./import_instructions/alfaCapitalInstruction";
 import {AlfadirectInstruction} from "./import_instructions/alfadirectInstruction";
 import {BcsCyprusInstruction} from "./import_instructions/bcsCyprusInstruction";
@@ -17,12 +13,11 @@ import {ItInvestInstruction} from "./import_instructions/itInvestInstruction";
 import {OtkrytieInstruction} from "./import_instructions/otkrytieInstruction";
 import {PsbInstruction} from "./import_instructions/psbInstruction";
 import {QuikInstruction} from "./import_instructions/quikInstruction";
+import {SberbankInstruction} from "./import_instructions/sberbankInstruction";
 import {TinkoffInstruction} from "./import_instructions/tinkoffInstruction";
 import {UralsibInstruction} from "./import_instructions/uralsibInstruction";
 import {VtbInstruction} from "./import_instructions/vtbInstruction";
 import {ZerichInstruction} from "./import_instructions/zerichInstruction";
-
-const MainStore = namespace(StoreType.MAIN);
 
 @Component({
     // language=Vue
@@ -89,9 +84,7 @@ const MainStore = namespace(StoreType.MAIN);
 
                 <!-- SBERBANK -->
                 <div v-if="provider === providers.SBERBANK">
-                    <p class="import-default-text">
-                        Используйте для импорта отчеты в формате html, которые брокер присылает вам на почту.
-                    </p>
+                    <SberbankInstruction></SberbankInstruction>
                 </div>
 
                 <!-- VTB24 -->
@@ -146,7 +139,7 @@ const MainStore = namespace(StoreType.MAIN);
     components: {
         AlfadirectInstruction, ItInvestInstruction, OtkrytieInstruction, PsbInstruction, BcsInstruction, BcsCyprusInstruction, ZerichInstruction, FinamInstruction,
         UralsibInstruction, TinkoffInstruction, QuikInstruction, IntelinvestInstruction, VtbInstruction, AlfaCapitalInstruction, FreedomFinanceInstruction,
-        InteractiveBrokersInstruction
+        InteractiveBrokersInstruction, SberbankInstruction
     }
 })
 export class ImportInstructions extends UI {
