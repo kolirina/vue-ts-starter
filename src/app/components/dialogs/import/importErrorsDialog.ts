@@ -27,7 +27,7 @@ import {ConfirmDialog} from "../confirmDialog";
 @Component({
     // language=Vue
     template: `
-        <v-dialog v-model="showed" max-width="600px" content-class="import-errors-dialog-scroll">
+        <v-dialog v-model="showed" ref="dialog" max-width="600px" content-class="import-errors-dialog-scroll" persistent>
             <v-card class="dialog-wrap import-dialog-wrapper">
                 <v-layout column justify-space-between class="min-height-wrapper">
                     <div>

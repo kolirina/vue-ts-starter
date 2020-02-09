@@ -382,7 +382,6 @@ export class ImportPage extends UI {
      */
     @ShowProgress
     private async importReport(): Promise<ImportResponse> {
-        console.log(this.files);
         return this.importService.importReport(this.selectedProvider.code, this.portfolio.id, this.files, this.importProviderFeatures);
     }
 
