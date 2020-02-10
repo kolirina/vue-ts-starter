@@ -282,7 +282,7 @@ export class AppFrame extends UI {
             this.clientInfo.user.updateNotificationConfirmDate = NotificationUpdateDialog.DATE;
             this.isNotifyAccepted = true;
         } else if (dlgReturn === BtnReturn.SHOW_FEEDBACK) {
-            await new FeedbackDialog().show({clientInfo: this.clientInfo});
+            await new FeedbackDialog().show({clientInfo: this.clientInfo.user});
         }
     }
 

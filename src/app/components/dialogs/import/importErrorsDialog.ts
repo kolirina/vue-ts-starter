@@ -17,9 +17,11 @@
 import Component from "vue-class-component";
 import {VueRouter} from "vue-router/types/router";
 import {BtnReturn, CustomDialog} from "../../../platform/dialogs/customDialog";
+import {Client} from "../../../services/clientService";
 import {DealImportError, ShareAliasItem} from "../../../services/importService";
 import {Share, TableHeader} from "../../../types/types";
 import {ConfirmDialog} from "../confirmDialog";
+import {FeedbackDialog} from "../feedbackDialog";
 
 /**
  * Диалог получения кода для встраиваемого блока
@@ -117,7 +119,8 @@ import {ConfirmDialog} from "../confirmDialog";
 
                                     <!-- Выбранная бумага -->
                                     <v-flex xs12 sm8>
-                                        <share-search @change="onShareSelect($event, aliasItem)" @clear="onShareClear(aliasItem)" autofocus ellipsis></share-search>
+                                        <share-search @change="onShareSelect($event, aliasItem)" @clear="onShareClear(aliasItem)" @requestNewShare="onRequestNewShare"
+                                                      autofocus ellipsis allow-request></share-search>
                                     </v-flex>
                                 </v-layout>
                             </div>
@@ -173,6 +176,15 @@ export class ImportErrorsDialog extends CustomDialog<ImportErrorsDialogData, Sha
         aliasItem.share = null;
     }
 
+    /**
+     * Вызывает диалог обратной связи для добавления новой бумаги в систему
+     * @param newTicket название новой бумаги из компонента поиска
+     */
+    private async onRequestNewShare(newTicket: string): Promise<void> {
+        const message = `Пожалуйста добавьте бумагу ${newTicket} в систему.`;
+        await new FeedbackDialog().show({clientInfo: this.data.clientInfo, message: message});
+    }
+
     private async closeDialog(): Promise<void> {
         const filled = this.shareAliases.filter(shareAlias => !!shareAlias.share);
         const allFilled = filled.length === this.shareAliases.length;
@@ -192,5 +204,6 @@ export type ImportErrorsDialogData = {
     validatedTradesCount: number,
     duplicateTradeErrorCount: number,
     repoTradeErrorsCount: number,
-    router: VueRouter
+    router: VueRouter,
+    clientInfo: Client
 };
