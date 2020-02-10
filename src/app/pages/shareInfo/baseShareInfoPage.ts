@@ -47,7 +47,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-card-title>
             </v-card>
             <v-card flat class="info-share-page">
-                <share-search @change="onShareSelect"></share-search>
+                <share-search @change="onShareSelect" @requestNewShare="onRequestNewShare" allow-request></share-search>
                 <div v-if="share && (share.shareType === 'STOCK' || share.shareType === 'ASSET')" data-v-step="0">
                     <v-layout class="info-share-page__name-stock-block" justify-space-between align-center wrap>
                         <div>
@@ -503,8 +503,17 @@ export class BaseShareInfoPage extends UI {
         return this.assetType === AssetType.STOCK;
     }
 
+    /**
+     * Вызывает диалог обратной связи для добавления новой бумаги в систему
+     * @param newTicket название новой бумаги из компонента поиска
+     */
+    private async onRequestNewShare(newTicket: string): Promise<void> {
+        const message = `Пожалуйста добавьте бумагу ${newTicket} в систему.`;
+        await new FeedbackDialog().show({clientInfo: this.clientInfo.user, message: message});
+    }
+
     private async openFeedBackDialog(): Promise<void> {
         const message = `Пожалуйста добавьте бумагу ${this.$route.params.ticker} в систему.`;
-        await new FeedbackDialog().show({clientInfo: this.clientInfo, message: message});
+        await new FeedbackDialog().show({clientInfo: this.clientInfo.user, message: message});
     }
 }

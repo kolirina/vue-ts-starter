@@ -2,6 +2,7 @@ import {Component, namespace, UI} from "../app/ui";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
 import {FeedbackDialog} from "../components/dialogs/feedbackDialog";
 import {ImageDialog} from "../components/dialogs/imageDialog";
+import {ClientInfo} from "../services/clientService";
 import {AssetType} from "../types/assetType";
 import {Operation} from "../types/operation";
 import {Portfolio} from "../types/types";
@@ -1127,8 +1128,11 @@ export class HelpPage extends UI {
     private reloadPortfolio: (id: number) => Promise<void>;
     @MainStore.Getter
     private portfolio: Portfolio;
-
+    @MainStore.Getter
+    private clientInfo: ClientInfo;
+    /** Типы активов */
     private AssetType = AssetType;
+    /** Типы операций */
     private Operation = Operation;
     /* Управление какие блоки открыты при загрузке страницы */
     private configExpansionPanel: boolean[] = [
@@ -1204,6 +1208,6 @@ export class HelpPage extends UI {
 
     /* Диалог обратной связи */
     private async openFeedBackDialog(): Promise<void> {
-        await new FeedbackDialog().show(this.$root.$store.state[StoreType.MAIN].clientInfo);
+        await new FeedbackDialog().show({clientInfo: this.clientInfo.user});
     }
 }

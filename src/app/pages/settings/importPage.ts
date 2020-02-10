@@ -412,7 +412,8 @@ export class ImportPage extends UI {
                     router: this.$router,
                     validatedTradesCount: response.validatedTradesCount,
                     duplicateTradeErrorCount,
-                    repoTradeErrorsCount: repoTradeErrors.length
+                    repoTradeErrorsCount: repoTradeErrors.length,
+                    clientInfo: this.clientInfo.user
                 });
                 if (shareAliases) {
                     await this.importService.saveShareAliases(shareAliases);

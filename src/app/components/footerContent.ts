@@ -37,6 +37,6 @@ export class FooterContent extends UI {
     }
 
     private async openFeedBackDialog(): Promise<void> {
-        await new FeedbackDialog().show({clientInfo: this.clientInfo});
+        await new FeedbackDialog().show({clientInfo: this.clientInfo.user});
     }
 }

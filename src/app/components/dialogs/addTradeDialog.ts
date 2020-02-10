@@ -30,6 +30,7 @@ import {DateUtils} from "../../utils/dateUtils";
 import {TariffUtils} from "../../utils/tariffUtils";
 import {TradeUtils} from "../../utils/tradeUtils";
 import {MainStore} from "../../vuex/mainStore";
+import {FeedbackDialog} from "./feedbackDialog";
 import {TariffExpiredDialog} from "./tariffExpiredDialog";
 
 @Component({
@@ -78,7 +79,8 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                             <v-flex v-if="shareAssetType" xs12 :class="portfolioProModeEnabled ? 'sm6' : 'sm9'">
                                 <share-search :asset-type="assetType" :filtered-shares="filteredShares" :placeholder="shareSearchPlaceholder" class="required"
                                               :create-asset-allowed="createAssetAllowed"
-                                              @change="onShareSelect" @clear="onShareClear" autofocus ellipsis></share-search>
+                                              @change="onShareSelect" @clear="onShareClear" @requestNewShare="onRequestNewShare"
+                                              autofocus ellipsis allow-request></share-search>
                                 <!-- Дополнительная информация -->
                                 <div v-if="isAssetTrade" class="fs12-opacity mt-1">
                                     <span>
@@ -965,6 +967,15 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         }
     }
 
+    /**
+     * Вызывает диалог обратной связи для добавления новой бумаги в систему
+     * @param newTicket название новой бумаги из компонента поиска
+     */
+    private async onRequestNewShare(newTicket: string): Promise<void> {
+        const message = `Пожалуйста добавьте бумагу ${newTicket} в систему.`;
+        await new FeedbackDialog().show({clientInfo: this.clientInfo, message: message});
+    }
+
     private get showFreeBalance(): boolean {
         return this.isMoneyTrade && this.operation === Operation.WITHDRAW && this.freeBalance &&
             new BigMoney(this.freeBalance).amount.comparedTo(new Decimal("0")) > 0;
@@ -1090,7 +1101,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private get shareSearchPlaceholder(): string {
-        return this.isAssetTrade ? "Наименование" : "Тикер или название компании";
+        return this.isAssetTrade ? "Наименование" : "Код или название бумаги (компании)";
     }
 
     private get feeHint(): string {
