@@ -3,7 +3,7 @@ import Component from "vue-class-component";
 import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {CustomDialog} from "../../platform/dialogs/customDialog";
-import {ClientInfo} from "../../services/clientService";
+import {Client} from "../../services/clientService";
 import {FeedbackService, FeedbackType} from "../../services/feedbackService";
 
 /**
@@ -23,11 +23,11 @@ import {FeedbackService, FeedbackType} from "../../services/feedbackService";
                     <v-container grid-list-md>
                         <v-layout wrap>
                             <v-flex xs12 sm12>
-                                <v-text-field label="От кого" v-model.trim="data.clientInfo.user.username" :readonly="isDemoUser()"></v-text-field>
+                                <v-text-field label="От кого" v-model.trim="data.clientInfo.username" :readonly="isDemoUser()"></v-text-field>
                             </v-flex>
 
                             <v-flex xs12 sm12>
-                                <v-text-field label="Email" v-model.trim="data.clientInfo.user.email" :readonly="isDemoUser()"></v-text-field>
+                                <v-text-field label="Email" v-model.trim="data.clientInfo.email" :readonly="isDemoUser()"></v-text-field>
                             </v-flex>
 
                             <v-flex xs12 sm12>
@@ -78,8 +78,8 @@ export class FeedbackDialog extends CustomDialog<FeedbackDialogData, void> {
      * @inheritDoc
      */
     mounted(): void {
-        this.username = this.data.clientInfo.user.username;
-        this.email = this.data.clientInfo.user.email;
+        this.username = this.data.clientInfo?.username;
+        this.email = this.data.clientInfo?.email;
         this.message = this.data.message;
     }
 
@@ -107,6 +107,6 @@ export class FeedbackDialog extends CustomDialog<FeedbackDialogData, void> {
 }
 
 export interface FeedbackDialogData {
-    clientInfo: ClientInfo;
+    clientInfo: Client;
     message?: string;
 }

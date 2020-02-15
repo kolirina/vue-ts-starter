@@ -9,6 +9,7 @@ import {ShowProgress} from "../platform/decorators/showProgress";
 import {ClientInfo} from "../services/clientService";
 import {MarketService} from "../services/marketService";
 import {NotificationType} from "../services/notificationsService";
+import {TradeService} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
 import {ColumnChartData, Dot, HighStockEventsGroup} from "../types/charts/types";
 import {Operation} from "../types/operation";
@@ -29,7 +30,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-card-title>
             </v-card>
             <v-card flat class="info-share-page">
-                <share-search @change="onShareSelect"></share-search>
+                <share-search @change="onShareSelect" @requestNewShare="onRequestNewShare" allow-request></share-search>
                 <div v-if="share">
                     <v-layout wrap class="info-share-page__name-stock-block" justify-space-between align-center>
                         <div>
@@ -76,44 +77,44 @@ const MainStore = namespace(StoreType.MAIN);
                             </div>
                             <table class="info-about-stock__content information-table">
                                 <thead>
-                                    <tr>
-                                        <th class="indent-between-title-value-200"></th>
-                                        <th></th>
-                                    </tr>
+                                <tr>
+                                    <th class="indent-between-title-value-200"></th>
+                                    <th></th>
+                                </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td class="info-about-stock__content-title">Последняя цена</td>
-                                        <td>
-                                            <span class="info-about-stock__content-value">
-                                                {{ share.prevprice }}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="info-about-stock__content-title">Номинал</td>
-                                        <td>
-                                            <span class="info-about-stock__content-value">
-                                                {{ share.formattedFacevalue }}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="info-about-stock__content-title">НКД</td>
-                                        <td>
-                                            <span class="info-about-stock__content-value">
-                                                {{ share.accruedint | amount }}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="info-about-stock__content-title">Валюта</td>
-                                        <td>
-                                            <span class="info-about-stock__content-value">
-                                                {{ share.currency }}
-                                            </span>
-                                        </td>
-                                    </tr>
+                                <tr>
+                                    <td class="info-about-stock__content-title">Последняя цена</td>
+                                    <td>
+                                        <span class="info-about-stock__content-value">
+                                            {{ share.prevprice }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="info-about-stock__content-title">Номинал</td>
+                                    <td>
+                                        <span class="info-about-stock__content-value">
+                                            {{ share.formattedFacevalue }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="info-about-stock__content-title">НКД</td>
+                                    <td>
+                                        <span class="info-about-stock__content-value">
+                                            {{ share.accruedint | amount }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="info-about-stock__content-title">Валюта</td>
+                                    <td>
+                                        <span class="info-about-stock__content-value">
+                                            {{ share.currency }}
+                                        </span>
+                                    </td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -125,28 +126,28 @@ const MainStore = namespace(StoreType.MAIN);
                             </div>
                             <table class="info-about-stock__content information-table">
                                 <thead>
-                                    <tr>
-                                        <th class="indent-between-title-value-200"></th>
-                                        <th></th>
-                                    </tr>
+                                <tr>
+                                    <th class="indent-between-title-value-200"></th>
+                                    <th></th>
+                                </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td class="info-about-stock__content-title">Следующий купон</td>
-                                        <td>
-                                            <span class="info-about-stock__content-value">
-                                                {{ share.nextcoupon }}, {{ share.couponvalue | amount }}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="info-about-stock__content-title">Дата погашения</td>
-                                        <td>
-                                            <span class="info-about-stock__content-value">
-                                                {{ share.matdate }}
-                                            </span>
-                                        </td>
-                                    </tr>
+                                <tr>
+                                    <td class="info-about-stock__content-title">Следующий купон</td>
+                                    <td>
+                                        <span class="info-about-stock__content-value">
+                                            {{ share.nextcoupon }}, {{ share.couponvalue | amount }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="info-about-stock__content-title">Дата погашения</td>
+                                    <td>
+                                        <span class="info-about-stock__content-value">
+                                            {{ share.matdate }}
+                                        </span>
+                                    </td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -169,7 +170,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-card-text>
             </v-card>
             <div class="space-between-blocks"></div>
-            <v-card v-if="share" class="chart-overflow dividends-chart" flat>
+            <v-card v-if="paymentsData && paymentsData.series.length" class="chart-overflow dividends-chart" flat>
                 <v-card-title class="chart-title">
                     Начисления
                     <v-spacer></v-spacer>
@@ -197,17 +198,30 @@ export class BondInfoPage extends UI {
     private clientInfo: ClientInfo;
     @Inject
     private marketService: MarketService;
+    @Inject
+    private tradeService: TradeService;
 
+    /** Идентификатор бумаги */
     private isin: string = null;
+    /** Ценная бумага */
     private share: Share = null;
+    /** История цены по бумаге */
     private history: Dot[] = [];
+    /** Платежи по бумаге */
     private paymentsData: ColumnChartData = null;
+    /** События по бумаге */
     private events: HighStockEventsGroup[] = [];
-    private assetType = AssetType;
+    /** События по бумаге */
+    private shareEvents: HighStockEventsGroup[] = [];
+    /** Типы активов */
+    private AssetType = AssetType;
     /** Признак, если бумага не была найдена */
     private shareNotFound = false;
 
-    @ShowProgress
+    /**
+     * Инициализация данных
+     * @inheritDoc
+     */
     async created(): Promise<void> {
         await this.loadBondInfo();
     }
@@ -222,7 +236,16 @@ export class BondInfoPage extends UI {
         await this.loadBondInfo();
     }
 
+    @Watch("portfolio")
     @ShowProgress
+    private async onPortfolioChange(): Promise<void> {
+        if (this.share) {
+            this.events = [];
+            this.events.push(...this.shareEvents);
+            await this.loadTradeEvents();
+        }
+    }
+
     private async onShareSelect(share: Share): Promise<void> {
         if (this.$router.currentRoute.params.isin === share?.isin) {
             this.share = share;
@@ -241,6 +264,7 @@ export class BondInfoPage extends UI {
         }
     }
 
+    @ShowProgress
     private async loadBondInfo(): Promise<void> {
         this.shareNotFound = false;
         this.isin = this.$route.params.isin;
@@ -249,11 +273,14 @@ export class BondInfoPage extends UI {
         }
         try {
             this.events = [];
+            this.shareEvents = [];
             const result = await this.marketService.getBondInfo(this.isin);
             this.share = result.bond;
             this.history = result.history;
             this.paymentsData = result.payments;
             this.events.push(...result.events);
+            this.shareEvents.push(...result.events);
+            await this.loadTradeEvents();
         } catch (e) {
             if ((e as ErrorInfo).errorCode === "NOT_FOUND") {
                 this.shareNotFound = true;
@@ -261,7 +288,11 @@ export class BondInfoPage extends UI {
                 throw e;
             }
         }
+    }
 
+    private async loadTradeEvents(): Promise<void> {
+        const tradeEvents = await this.tradeService.getShareTradesEvent(this.portfolio.id, this.share.ticker);
+        this.events.push(...ChartUtils.processEventsChartData(tradeEvents, "flags", "dataseries", "circlepin", 10, "rgba(20,140,0,0.45)"));
     }
 
     private async openDialog(): Promise<void> {
@@ -294,8 +325,17 @@ export class BondInfoPage extends UI {
         return row ? Number(row.avgBuy) : null;
     }
 
+    /**
+     * Вызывает диалог обратной связи для добавления новой бумаги в систему
+     * @param newTicket название новой бумаги из компонента поиска
+     */
+    private async onRequestNewShare(newTicket: string): Promise<void> {
+        const message = `Пожалуйста добавьте бумагу ${newTicket} в систему.`;
+        await new FeedbackDialog().show({clientInfo: this.clientInfo.user, message: message});
+    }
+
     private async openFeedBackDialog(): Promise<void> {
         const message = `Пожалуйста добавьте бумагу ${this.$route.params.isin} в систему.`;
-        await new FeedbackDialog().show({clientInfo: this.clientInfo, message: message});
+        await new FeedbackDialog().show({clientInfo: this.clientInfo.user, message: message});
     }
 }

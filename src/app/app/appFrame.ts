@@ -85,7 +85,7 @@ const MainStore = namespace(StoreType.MAIN);
                 <v-content>
                     <div class="mobile-wrapper-menu"></div>
                     <v-container fluid :class="['paddT0', 'fb-0', sideBarOpened ? '' : 'hide-main-content']">
-                        <content-loader :height="800" :width="800" :speed="1" primaryColor="#f3f3f3" secondaryColor="#ecebeb">
+                        <content-loader class="content-loader" :height="800" :width="800" :speed="1" primaryColor="#f3f3f3" secondaryColor="#ecebeb">
                             <rect x="0" y="20" rx="5" ry="5" width="801.11" height="80"/>
                             <rect x="0" y="120" rx="5" ry="5" width="801.11" height="30"/>
                             <rect x="0" y="170" rx="5" ry="5" width="801.11" height="180"/>
@@ -195,9 +195,6 @@ export class AppFrame extends UI {
     }
 
     private applyTheme(): void {
-        if (!ThemeUtils.invertSupported()) {
-            return;
-        }
         ThemeUtils.setStyles(this.localStorage.get<string>(StoreKeys.THEME, Theme.DAY) === Theme.NIGHT);
     }
 
@@ -285,7 +282,7 @@ export class AppFrame extends UI {
             this.clientInfo.user.updateNotificationConfirmDate = NotificationUpdateDialog.DATE;
             this.isNotifyAccepted = true;
         } else if (dlgReturn === BtnReturn.SHOW_FEEDBACK) {
-            await new FeedbackDialog().show({clientInfo: this.clientInfo});
+            await new FeedbackDialog().show({clientInfo: this.clientInfo.user});
         }
     }
 

@@ -2,6 +2,7 @@ import {Component, namespace, UI} from "../app/ui";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
 import {FeedbackDialog} from "../components/dialogs/feedbackDialog";
 import {ImageDialog} from "../components/dialogs/imageDialog";
+import {ClientInfo} from "../services/clientService";
 import {AssetType} from "../types/assetType";
 import {Operation} from "../types/operation";
 import {Portfolio} from "../types/types";
@@ -45,6 +46,9 @@ const MainStore = namespace(StoreType.MAIN);
                 <div class="wrapper-list-reference__item">
                     <div class="wrapper-list-reference__item-content-wrapper">
                         <a @click.stop="scrollTo('portfolio')">Портфель</a>
+                    </div>
+                    <div class="wrapper-list-reference__item-content-wrapper">
+                        <a @click.stop="scrollTo('analytics')">Аналитика</a>
                     </div>
                     <div class="wrapper-list-reference__item-content-wrapper">
                         <a @click.stop="scrollTo('trades')">Сделки</a>
@@ -132,12 +136,12 @@ const MainStore = namespace(StoreType.MAIN);
                                             <a href="https://itunes.apple.com/ru/app/intelinvest-%D1%83%D1%87%D0%B5%D1%82-
                                                 %D0%B8%D0%BD%D0%B2%D0%B5%D1%81%D1%82%D0%B8%D1%86%D0%B8%D0%B9
                                                 /id1422478197?mt=8" title="Загрузите приложение в App Store" target="_blank">
-                                                <img src="./img/help/app-store-badge2.svg" alt="pic" @click.stop="openImageDialog"/>
+                                                <img src="./img/help/app-store-badge2.svg" alt="App Store"/>
                                             </a>
                                             <a href="https://play.google.com/store/apps/details?id=ru.intelinvest.portfolio"
                                                title="Загрузите приложение в Google Play"
                                                target="_blank">
-                                                <img src="./img/help/google-play-badge2.svg" alt="pic" @click.stop="openImageDialog"/>
+                                                <img src="./img/help/google-play-badge2.svg" alt="Google Play"/>
                                             </a>
                                         </div>
                                     </div>
@@ -405,9 +409,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         </p>
                                         <div class="gif-block-item  border-block-in-paired-section">
                                             <p>
-                                            <div>
                                                 <img src="./img/help/import_1.png" @click.stop="openImageDialog"/>
-                                            </div>
                                             </p>
                                             <div>
                                                 Что делать, если отчет не загружается?
@@ -417,9 +419,7 @@ const MainStore = namespace(StoreType.MAIN);
                                                 описаны инструкции по форматам.
                                             </p>
                                             <p>
-                                            <div>
                                                 <img src="./img/help/import_2.png" @click.stop="openImageDialog"/>
-                                            </div>
                                             </p>
                                             <p>
                                                 Внимательно прочитайте информацию во всплывающем окне.
@@ -542,9 +542,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             портфеля за текущий день.
                                         </p>
                                         <p>
-                                        <div>
                                             <img src="./img/help/portfolio_1.png" @click.stop="openImageDialog"/>
-                                        </div>
                                         </p>
                                         <p>
                                             Ниже расположена таблица с основными типами активов
@@ -560,9 +558,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             доступные с ней действия.
                                         </p>
                                         <p>
-                                        <div>
                                             <img src="./img/help/portfolio_2.png" @click.stop="openImageDialog"/>
-                                        </div>
                                         </p>
                                         <p>
                                             Можно быстро купить, продать или внести начисление по
@@ -571,9 +567,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             удаления всех бумаг, вы можете быстро очистить весь портфель.
                                         </p>
                                         <p>
-                                        <div>
                                             <img src="./img/help/portfolio_3.png" @click.stop="openImageDialog"/>
-                                        </div>
                                         </p>
                                     </div>
                                     <div class="wrapper-content-panel__paired-section-item">
@@ -584,9 +578,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             слева.
                                         </p>
                                         <p>
-                                        <div>
                                             <img src="./img/help/portfolio_4.png" @click.stop="openImageDialog"/>
-                                        </div>
                                         </p>
                                         <p>
                                             Для каждой таблицы предусмотрена диаграмма распределения
@@ -599,14 +591,10 @@ const MainStore = namespace(StoreType.MAIN);
                                             каждой отрасли.
                                         </p>
                                         <p>
-                                        <div>
                                             <img src="./img/help/portfolio_5.png" @click.stop="openImageDialog"/>
-                                        </div>
                                         </p>
                                         <p>
-                                        <div>
                                             <img src="./img/help/portfolio_6.png" @click.stop="openImageDialog"/>
-                                        </div>
                                         </p>
                                         <p>
                                             Для таблиц предусмотрена возможность фильтрации,
@@ -1140,8 +1128,11 @@ export class HelpPage extends UI {
     private reloadPortfolio: (id: number) => Promise<void>;
     @MainStore.Getter
     private portfolio: Portfolio;
-
+    @MainStore.Getter
+    private clientInfo: ClientInfo;
+    /** Типы активов */
     private AssetType = AssetType;
+    /** Типы операций */
     private Operation = Operation;
     /* Управление какие блоки открыты при загрузке страницы */
     private configExpansionPanel: boolean[] = [
@@ -1217,6 +1208,6 @@ export class HelpPage extends UI {
 
     /* Диалог обратной связи */
     private async openFeedBackDialog(): Promise<void> {
-        await new FeedbackDialog().show(this.$root.$store.state[StoreType.MAIN].clientInfo);
+        await new FeedbackDialog().show({clientInfo: this.clientInfo.user});
     }
 }

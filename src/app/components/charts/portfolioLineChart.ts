@@ -14,7 +14,7 @@ import {ChartUtils} from "../../utils/chartUtils";
             <span v-if="!isDefault" class="chart-custom-filter" title="Настроен фильтр"></span>
             <v-menu :close-on-content-click="false" :nudge-width="294" :nudge-bottom="40" bottom>
                 <div class="pl-3" slot="activator">
-                    <v-btn round class="chart-filter-btn">
+                    <v-btn round class="portfolio-rows-filter__button">
                         Фильтры
                         <span class="portfolio-rows-filter__button__icon"></span>
                     </v-btn>

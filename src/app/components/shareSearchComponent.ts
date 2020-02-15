@@ -26,7 +26,7 @@ import {Asset, Bond, Share, ShareType} from "../types/types";
 @Component({
     // language=Vue
     template: `
-        <v-autocomplete :items="filteredSharesMutated" v-model="share" @change="onShareSelect" @click:clear="onSearchClear"
+        <v-autocomplete ref="shareSearch" :items="filteredSharesMutated" v-model="share" @change="onShareSelect" @click:clear="onSearchClear"
                         :label="placeholder"
                         :loading="shareSearch" no-data-text="Ничего не найдено" clearable :required="required" :rules="rules"
                         dense :hide-no-data="hideNoDataLabel" :no-filter="true" :search-input.sync="searchQuery" :autofocus="autofocus">
@@ -36,29 +36,25 @@ import {Asset, Bond, Share, ShareType} from "../types/types";
             <template #item="data">
                 <span v-html="shareLabelListItem(data.item)"></span>
             </template>
+            <template slot="no-data">
+                <v-list-tile>
+                    <v-list-tile-title>
+                        <span v-if="allowRequest">Бумага не найдена. <a @click="requestNewShare">Отправить запрос</a> на добавление</span>
+                        <span v-else>{{ notFoundLabel }}</span>
+                    </v-list-tile-title>
+                </v-list-tile>
+            </template>
         </v-autocomplete>
     `
 })
 export class ShareSearchComponent extends UI {
 
-    private NEW_CUSTOM_ASSET: Asset = {
-        id: null,
-        shortname: "",
-        price: null,
-        lotsize: "",
-        decimals: "",
-        currency: "RUB",
-        isin: "",
-        change: "",
-        boardName: "",
-        name: "",
-        ticker: "",
-        shareType: ShareType.ASSET,
-        rating: "0",
-        ratingCount: "0",
-        category: AssetCategory.OTHER.code,
-        sector: null
+    $refs: {
+        shareSearch: any;
     };
+
+    @Inject
+    private marketService: MarketService;
 
     @Prop({required: false})
     private assetType: AssetType;
@@ -82,22 +78,43 @@ export class ShareSearchComponent extends UI {
     private rules: any[];
     @Prop({required: false, type: Boolean, default: false})
     private ellipsis: boolean;
+    @Prop({required: false, type: Boolean, default: false})
+    private allowRequest: boolean;
     /** Отфильтрованные данные */
     private filteredSharesMutated: Share[] = [];
     /** Тип актива бумаги */
     private assetTypeMutated: AssetType = null;
-
-    @Inject
-    private marketService: MarketService;
-
     /** Текущий объект таймера */
     private currentTimer: number = null;
+    /** Поисковый запрос */
     private searchQuery: string = null;
-
+    /** Выбранная бумага */
     private share: Share = null;
+    /** Прогресс поиска */
     private shareSearch = false;
+    /** Метка для опеределения что бумага не найдена */
     private notFoundLabel = "Ничего не найдено";
+    /** Признак скрытия пункта если ничего не найдено */
     private hideNoDataLabel = true;
+    /** Новый актив */
+    private NEW_CUSTOM_ASSET: Asset = {
+        id: null,
+        shortname: "",
+        price: null,
+        lotsize: "",
+        decimals: "",
+        currency: "RUB",
+        isin: "",
+        change: "",
+        boardName: "",
+        name: "",
+        ticker: "",
+        shareType: ShareType.ASSET,
+        rating: "0",
+        ratingCount: "0",
+        category: AssetCategory.OTHER.code,
+        sector: null
+    };
 
     created(): void {
         this.assetTypeMutated = this.assetType;
@@ -170,15 +187,17 @@ export class ShareSearchComponent extends UI {
         if ((share as any) === this.notFoundLabel) {
             return this.notFoundLabel;
         }
-        if ([AssetType.STOCK, AssetType.ASSET].includes(this.assetTypeMutated)) {
+        const shareType = AssetType.valueByName(share.shareType);
+        if ([AssetType.STOCK, AssetType.ASSET].includes(this.assetTypeMutated || shareType)) {
             if (share.price !== null) {
                 const price = new BigMoney(share.price);
                 return `${share.ticker} (${share.shortname}), <b>${Filters.formatNumber(price.amount.toString())}</b> ${price.currencySymbol}`;
             }
             return `Создать актив "${share.shortname}"`;
-        } else if (this.assetTypeMutated === AssetType.BOND) {
+        } else if ((this.assetTypeMutated || shareType) === AssetType.BOND) {
             return `${share.ticker} (${share.shortname}), <b>${(share as Bond).prevprice}</b> %`;
         }
+
         return `${share.ticker} (${share.shortname})`;
     }
 
@@ -187,8 +206,13 @@ export class ShareSearchComponent extends UI {
         this.$emit("clear");
     }
 
-    private async onShareSelect(share: Share): Promise<void> {
+    private onShareSelect(share: Share): void {
         this.share = share;
         this.$emit("change", this.share);
+    }
+
+    private requestNewShare(): void {
+        this.$refs.shareSearch.blur();
+        this.$emit("requestNewShare", this.searchQuery);
     }
 }
