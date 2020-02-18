@@ -107,7 +107,8 @@ export class CommonUtils {
      * @param error ошибка
      */
     static skipSendToSentry(error: Error | any): boolean {
-        return !error || this.isUserError(error) || "Не удалось выполнить запрос, повторите позже" === error.message;
+        return !error || this.isUserError(error) || this.isTariffExceededError(error) || "Не удалось выполнить запрос, повторите позже" === error.message ||
+            "Внутренняя ошибка сервера" === error.message || error.captured === "true";
     }
 
     /**
@@ -116,5 +117,13 @@ export class CommonUtils {
      */
     static isUserError(userError: any): boolean {
         return userError.hasOwnProperty("errorCode") && userError.hasOwnProperty("message") && userError.hasOwnProperty("fields");
+    }
+
+    /**
+     * Проверяет объект на то что это ошибка об ограничении
+     * @param userError ошибка об ограничении
+     */
+    static isTariffExceededError(userError: any): boolean {
+        return ["LIMIT_EXCEEDED", "SUBSCRIPTION_EXPIRED", "PERMISSION_DENIED", "CURRENCY_PERMISSION_DENIED"].includes(userError?.message);
     }
 }

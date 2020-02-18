@@ -2,9 +2,12 @@ import Component from "vue-class-component";
 import {UI} from "../app/ui";
 import {EventType} from "../types/eventType";
 import {ErrorInfo} from "../types/types";
+import {CommonUtils} from "../utils/commonUtils";
 
 @Component({
-    template: `<div></div>`
+    // language=Vue
+    template: `
+        <div></div>`
 })
 export class ErrorHandler extends UI {
 
@@ -15,7 +18,9 @@ export class ErrorHandler extends UI {
     created(): void {
         UI.on(EventType.HANDLE_ERROR, (error: Error | string) => {
             const message = error instanceof Error ? (window.console.error(error), error.message) : this.getErrorMessage(error) || error;
-            this.$snotify.error(message);
+            if (!CommonUtils.isTariffExceededError(error)) {
+                this.$snotify.error(message);
+            }
         });
     }
 
