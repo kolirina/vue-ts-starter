@@ -45,7 +45,7 @@ export class Filters {
         const amount = new BigMoney(value);
         if (needRound) {
             let roundingScale = DEFAULT_SCALE;
-            if (amount.amount.comparedTo(new Decimal("1.00")) < 0) {
+            if (amount.amount.abs().comparedTo(new Decimal("1.00")) < 0) {
                 roundingScale = NO_SCALE;
             }
             const am = amount.amount.toDecimalPlaces(roundingScale, Decimal.ROUND_HALF_UP).toNumber();
