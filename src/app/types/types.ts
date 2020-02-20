@@ -478,6 +478,8 @@ export type Sector = {
 export type Bond = Share & {
     /** Идентификатор облигации */
     secid: string;
+    /** Название типа облигации */
+    typeName: string;
     /** Доходность облигации */
     yield: string;
     /** Размер купона */
@@ -665,6 +667,7 @@ export enum BlockType {
     BOND_PIE = "bondPie",
     STOCK_PIE = "stockPie",
     SECTORS_PIE = "sectorsPie",
+    BOND_SECTORS_PIE = "bondSectorsPie",
 }
 
 /** Информация по ребалансировке */

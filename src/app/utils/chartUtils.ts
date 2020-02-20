@@ -21,7 +21,7 @@ import {
     SimpleChartData
 } from "../types/charts/types";
 import {Operation} from "../types/operation";
-import {Overview, StockPortfolioRow} from "../types/types";
+import {BondPortfolioRow, Overview, StockPortfolioRow} from "../types/types";
 import {CommonUtils} from "./commonUtils";
 import {DateFormat, DateUtils} from "./dateUtils";
 import {TradeUtils} from "./tradeUtils";
@@ -78,6 +78,34 @@ export class ChartUtils {
             });
         });
         const categoryNames = Object.keys(rowsBySector);
+        return {data, categories: categoryNames};
+    }
+
+    static doBondSectorsChartData(overview: Overview): SectorChartData {
+        const data: any[] = [];
+        const currentTotalCost = overview.bondPortfolio.rows.map(row => new BigMoney(row.currCost).amount.abs())
+            .reduce((result: Decimal, current: Decimal) => result.add(current), new Decimal("0"));
+        const rowsByType: { [sectorName: string]: BondPortfolioRow[] } = {};
+        overview.bondPortfolio.rows.filter(row => Number(row.quantity) !== 0 && !!row.bond.typeName).forEach(row => {
+            const sectorName = row.bond.typeName;
+            if (rowsByType[sectorName] === undefined) {
+                rowsByType[sectorName] = [];
+            }
+            rowsByType[sectorName].push(row);
+        });
+        Object.keys(rowsByType).forEach(key => {
+            const sumAmount = rowsByType[key].map(row => new BigMoney(row.currCost).amount.abs())
+                .reduce((result: Decimal, current: Decimal) => result.add(current), new Decimal("0"));
+            const shortNames = rowsByType[key].map(row => row.bond.shortname).join(", ");
+            const percentage = new Decimal(sumAmount).mul(100).dividedBy(currentTotalCost).toDP(2, Decimal.ROUND_HALF_UP).toString();
+            data.push({
+                name: key,
+                y: sumAmount.toDP(2, Decimal.ROUND_HALF_UP).toNumber(),
+                percentage,
+                tickers: shortNames
+            });
+        });
+        const categoryNames = Object.keys(rowsByType);
         return {data, categories: categoryNames};
     }
 

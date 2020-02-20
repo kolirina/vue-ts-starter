@@ -39,6 +39,7 @@ const MainStore = namespace(StoreType.MAIN);
                             <bond-link :ticker="props.item.ticker"></bond-link>
                         </td>
                         <td class="text-xs-left">{{ props.item.shortname }}</td>
+                        <td class="text-xs-left">{{ props.item.typeName }}</td>
                         <td class="text-xs-right">{{ props.item.prevprice }}%</td>
                         <td class="text-xs-center">{{ props.item.change }}%</td>
                         <td class="text-xs-center">{{ props.item.yield }}%</td>
@@ -124,6 +125,7 @@ export class BondQuotes extends UI {
     private headers: TableHeader[] = [
         {text: "ISIN", align: "left", value: "isin"},
         {text: "Компания", align: "left", value: "shortname"},
+        {text: "Тип", align: "left", value: "typeName"},
         {text: "Цена", align: "right", value: "prevprice"},
         {text: "Изменение", align: "center", value: "change"},
         {text: "Доходность", align: "center", value: "yield"},
