@@ -156,6 +156,7 @@ export enum ChartType {
     STOCK_CHART = "stockPieChart",
     BOND_CHART = "bondPieChart",
     SECTORS_CHART = "sectorsChart",
+    BOND_SECTORS_CHART = "bondSectorsChart",
     AGGREGATE_CHART = "aggregatePieChart",
     YIELD_CONTRIBUTORS_CHART = "yieldContributorsChart",
     PORTFOLIO_LINE_CHART = "portfolioLineChart",

@@ -183,6 +183,7 @@ export enum PortfolioBlockType {
     STOCK_CHART = "STOCK_CHART",
     BOND_CHART = "BOND_CHART",
     SECTORS_CHART = "SECTORS_CHART",
+    BOND_SECTORS_CHART = "BOND_SECTORS_CHART",
     EMPTY = "EMPTY"
 }
 
@@ -466,6 +467,14 @@ export const TOURS_BY_PORTFOLIO_BLOCK: { [key: string]: TourStep } = {
         target: `[data-v-step="$0"]`,
         content: "Диаграмма распределения облигаций в портфеле, доли считаются относительно стоимости облигаций. " +
             "Можно сразу понять какая бумага стала занимать слишком много в портфеле.",
+        params: {
+            placement: "top"
+        }
+    },
+    [PortfolioBlockType.BOND_SECTORS_CHART]: {
+        target: `[data-v-step="$0"]`,
+        content: "Диаграмма распределения облигаций в портфеле по ее типу. " +
+            "Полезно, если придерживаетесь диверсификации по разным типам облигаций в портфеле (ОФЗ, Муниципальные, Корпоративные и т.д.).",
         params: {
             placement: "top"
         }

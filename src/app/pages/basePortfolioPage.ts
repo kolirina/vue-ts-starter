@@ -201,6 +201,19 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                                    :data="sectorsChartData.data" :balloon-title="portfolioName" :view-currency="viewCurrency"></pie-chart>
                     </v-card-text>
                 </expanded-panel>
+
+                <expanded-panel v-if="blockNotEmpty(emptyBlockType.BOND_SECTORS_PIE)" :value="$uistate.bondSectorsPanel" :state="$uistate.BOND_SECTORS_PANEL" customMenu
+                                class="mt-3" :data-v-step="getTourStepIndex(PortfolioBlockType.BOND_SECTORS_CHART)">
+                    <template #header>Распределение облигаций по типу</template>
+                    <template #customMenu>
+                        <chart-export-menu @print="print(ChartType.BOND_SECTORS_CHART)" @exportTo="exportTo(ChartType.BOND_SECTORS_CHART, $event)"
+                                           class="exp-panel-menu"></chart-export-menu>
+                    </template>
+                    <v-card-text>
+                        <pie-chart v-if="bondSectorsChartData" :ref="ChartType.BOND_SECTORS_CHART" v-tariff-expired-hint
+                                   :data="bondSectorsChartData.data" :balloon-title="portfolioName" :view-currency="viewCurrency"></pie-chart>
+                    </v-card-text>
+                </expanded-panel>
             </v-layout>
         </v-container>
     `,
@@ -287,6 +300,8 @@ export class BasePortfolioPage extends UI {
     private bondPieChartData: DataPoint[] = [];
     /** Данные для графика секторов */
     private sectorsChartData: SectorChartData = null;
+    /** Данные для графика секторов */
+    private bondSectorsChartData: SectorChartData = null;
     /** Фильтр таблицы Акции */
     private stockFilter: PortfolioRowFilter = {};
     /** Фильтр таблицы Облигации */
@@ -315,6 +330,7 @@ export class BasePortfolioPage extends UI {
         this.stockPieChartData = this.doStockPieChartData();
         this.bondPieChartData = this.doBondPieChartData();
         this.sectorsChartData = this.doSectorsChartData();
+        this.bondSectorsChartData = this.doBondSectorsChartData();
         this.stockFilter = this.storageService.get(StoreKeys.STOCKS_TABLE_FILTER_KEY, {});
         this.bondFilter = this.storageService.get(StoreKeys.BONDS_TABLE_FILTER_KEY, {});
         this.assetFilter = this.storageService.get(StoreKeys.ASSETS_TABLE_FILTER_KEY, {});
@@ -328,6 +344,7 @@ export class BasePortfolioPage extends UI {
         this.stockPieChartData = this.doStockPieChartData();
         this.bondPieChartData = this.doBondPieChartData();
         this.sectorsChartData = this.doSectorsChartData();
+        this.bondSectorsChartData = this.doBondSectorsChartData();
         this.blockIndexes = PortfolioUtils.getShowedBlocks(this.overview);
     }
 
@@ -344,6 +361,8 @@ export class BasePortfolioPage extends UI {
                 return this.overview.stockPortfolio.rows.some(row => Number(row.quantity) !== 0);
             case BlockType.BOND_PIE:
                 return this.overview.bondPortfolio.rows.some(row => Number(row.quantity) !== 0);
+            case BlockType.BOND_SECTORS_PIE:
+                return this.overview.bondPortfolio.rows.some(row => Number(row.quantity) !== 0 && !!row.bond.typeName);
             case BlockType.AGGREGATE:
                 return this.overview.totalTradesCount > 0;
             case BlockType.ASSETS:
@@ -371,6 +390,10 @@ export class BasePortfolioPage extends UI {
 
     private doSectorsChartData(): SectorChartData {
         return ChartUtils.doSectorsChartData(this.overview);
+    }
+
+    private doBondSectorsChartData(): SectorChartData {
+        return ChartUtils.doBondSectorsChartData(this.overview);
     }
 
     private getHeaders(name: string): TableHeader[] {
