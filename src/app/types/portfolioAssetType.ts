@@ -16,7 +16,7 @@
 
 import {Enum, EnumType, IStaticEnum} from "../platform/enum";
 import {AssetType} from "./assetType";
-import {CurrencyUnit} from "./types";
+import {CurrencyUnit} from "./currency";
 
 /**
  * Тип актива, используемый в таблице "Активы" представления портфеля
@@ -29,6 +29,7 @@ export class PortfolioAssetType extends (EnumType as IStaticEnum<PortfolioAssetT
     static readonly RUBLES = new PortfolioAssetType("Рубли", AssetType.MONEY, CurrencyUnit.RUB);
     static readonly DOLLARS = new PortfolioAssetType("Доллары", AssetType.MONEY, CurrencyUnit.USD);
     static readonly EURO = new PortfolioAssetType("Евро", AssetType.MONEY, CurrencyUnit.EUR);
+    static readonly GBP = new PortfolioAssetType("Фунты", AssetType.MONEY, CurrencyUnit.GBP);
     static readonly ETF = new PortfolioAssetType("ETF/ПИФ", AssetType.STOCK, null);
     static readonly METALL = new PortfolioAssetType("Драгметаллы", AssetType.ASSET, null);
     static readonly REALTY = new PortfolioAssetType("Недвижимость", AssetType.ASSET, null);

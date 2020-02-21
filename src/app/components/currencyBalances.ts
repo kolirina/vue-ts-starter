@@ -6,6 +6,7 @@ import {Filters} from "../platform/filters/Filters";
 import {OverviewService} from "../services/overviewService";
 import {MoneyResiduals, PortfolioService} from "../services/portfolioService";
 import {BigMoney} from "../types/bigMoney";
+import {Currency} from "../types/currency";
 
 @Component({
     // language=Vue
@@ -25,6 +26,11 @@ import {BigMoney} from "../types/bigMoney";
                 <div class="maxW275 w100pc margT24">
                     <ii-number-field @keydown.enter="specifyResidues" :decimals="2" :suffix="'EUR'" label="Текущий остаток в EUR"
                                      v-model="currencyEur" persistent-hint :hint="getHint('EUR')" :rules="rulesMoney" name="currency_eur" v-validate="'required'">
+                    </ii-number-field>
+                </div>
+                <div class="maxW275 w100pc margT24">
+                    <ii-number-field @keydown.enter="specifyResidues" :decimals="2" :suffix="'GBP'" label="Текущий остаток в GBP"
+                                     v-model="currencyGbp" persistent-hint :hint="getHint('GBP')" :rules="rulesMoney" name="currency_gbp" v-validate="'required'">
                     </ii-number-field>
                 </div>
                 <div class="maxW275 margT24 btn-section">
@@ -49,6 +55,7 @@ export class CurrencyBalances extends UI {
     private currencyRub: string = "";
     private currencyUsd: string = "";
     private currencyEur: string = "";
+    private currencyGbp: string = "";
     private residuals: MoneyResiduals = null;
 
     async created(): Promise<void> {
@@ -60,6 +67,7 @@ export class CurrencyBalances extends UI {
         this.currencyRub = this.numberСonversion(this.residuals.RUB);
         this.currencyUsd = this.numberСonversion(this.residuals.USD);
         this.currencyEur = this.numberСonversion(this.residuals.EUR);
+        this.currencyGbp = this.numberСonversion(this.residuals.GBP);
     }
 
     private numberСonversion(value: string): string {
@@ -84,9 +92,10 @@ export class CurrencyBalances extends UI {
             return;
         }
         await this.overviewService.saveOrUpdateCurrentMoney(this.portfolioId, [
-            {currentMoney: this.currencyRub, currency: "RUB"},
-            {currentMoney: this.currencyUsd, currency: "USD"},
-            {currentMoney: this.currencyEur, currency: "EUR"}
+            {currentMoney: this.currencyRub, currency: Currency.RUB},
+            {currentMoney: this.currencyUsd, currency: Currency.USD},
+            {currentMoney: this.currencyEur, currency: Currency.EUR},
+            {currentMoney: this.currencyGbp, currency: Currency.GBP}
         ]);
         await this.loadSetCashBalances();
         this.$emit("specifyResidues");

@@ -12,6 +12,7 @@ import {ClientInfo, ClientService} from "../services/clientService";
 import {MarketHistoryService} from "../services/marketHistoryService";
 import {OverviewService} from "../services/overviewService";
 import {HighStockEventsGroup} from "../types/charts/types";
+import {Currency} from "../types/currency";
 import {AddTradeEvent, EventType} from "../types/eventType";
 import {Permission} from "../types/permission";
 import {StoreKeys} from "../types/storeKeys";
@@ -85,7 +86,7 @@ export class CombinedPortfolioPage extends UI {
     /** Данные комбинированного портфеля */
     private overview: Overview = null;
     /** Валюта просмотра портфеля */
-    private viewCurrency: string = "RUB";
+    private viewCurrency: string = Currency.RUB;
     /** Данные графика стоимости портфеля */
     private lineChartData: any[] = null;
     /** Данные по событиям для графика стоимости */
@@ -102,7 +103,7 @@ export class CombinedPortfolioPage extends UI {
      * @inheritDoc
      */
     async created(): Promise<void> {
-        this.viewCurrency = this.storage.get<string>(StoreKeys.COMBINED_VIEW_CURRENCY_KEY, "RUB");
+        this.viewCurrency = this.storage.get<string>(StoreKeys.COMBINED_VIEW_CURRENCY_KEY, Currency.RUB);
         this.setIds();
         await this.doCombinedPortfolio();
         UI.on(EventType.TRADE_CREATED, async (event: AddTradeEvent): Promise<void> => {

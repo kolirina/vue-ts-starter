@@ -13,9 +13,10 @@ import {MarketService} from "../services/marketService";
 import {TradeFields, TradeService} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
+import {ALLOWED_CURRENCIES, Currency} from "../types/currency";
 import {Operation} from "../types/operation";
 import {TradeDataHolder} from "../types/trade/tradeDataHolder";
-import {CurrencyUnit, ErrorInfo, Portfolio, Share} from "../types/types";
+import {ErrorInfo, Portfolio, Share} from "../types/types";
 import {DateUtils} from "../utils/dateUtils";
 import {TradeUtils} from "../utils/tradeUtils";
 import {MutationType} from "../vuex/mutationType";
@@ -167,9 +168,9 @@ export class BalancesPage extends UI implements TradeDataHolder {
 
     private closePrice: BigMoney = null;
 
-    private currency = "RUB";
+    private currency: string = Currency.RUB;
     /** Список валют */
-    private currencyList = CurrencyUnit.values().map(c => c.code);
+    private currencyList = ALLOWED_CURRENCIES;
 
     private date = DateUtils.currentDate();
 

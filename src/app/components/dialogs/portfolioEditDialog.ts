@@ -7,8 +7,8 @@ import {DisableConcurrentExecution} from "../../platform/decorators/disableConcu
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {CustomDialog} from "../../platform/dialogs/customDialog";
 import {IisType, PortfolioAccountType, PortfolioParams, PortfolioService} from "../../services/portfolioService";
+import {ALLOWED_CURRENCIES, Currency} from "../../types/currency";
 import {EventType} from "../../types/eventType";
-import {CurrencyUnit} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {DateFormat, DateUtils} from "../../utils/dateUtils";
 import {MainStore} from "../../vuex/mainStore";
@@ -142,7 +142,7 @@ export class PortfolioEditDialog extends CustomDialog<PortfolioDialogData, boole
 
     private dateMenuValue = false;
     /** Список валют */
-    private currencyList = CurrencyUnit.values().map(c => c.code);
+    private currencyList = ALLOWED_CURRENCIES;
     private accessTypes = [AccessTypes.PRIVATE, AccessTypes.PUBLIC];
     private iisTypes = IisType.values();
     private accountType = PortfolioAccountType;
@@ -162,7 +162,7 @@ export class PortfolioEditDialog extends CustomDialog<PortfolioDialogData, boole
             this.portfolioParams = {
                 name: "",
                 access: false,
-                viewCurrency: "RUB",
+                viewCurrency: Currency.RUB,
                 openDate: DateUtils.formatDate(dayjs(), DateFormat.DATE2),
                 accountType: PortfolioAccountType.BROKERAGE
             };

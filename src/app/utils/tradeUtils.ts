@@ -118,18 +118,6 @@ export class TradeUtils {
             dayjs().isBefore(DateUtils.parseDate(clientInfo.paidTill));
     }
 
-    static getCurrencySymbol(currencyCode: string): string {
-        switch (currencyCode) {
-            case "RUB":
-                return "₽";
-            case "USD":
-                return "$";
-            case "EUR":
-                return "€";
-        }
-        return currencyCode;
-    }
-
     static currencySymbolByAmount(value: string): string {
         if (value) {
             return new BigMoney(value).currencySymbol;

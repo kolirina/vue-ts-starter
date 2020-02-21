@@ -9,8 +9,9 @@ import {CalculateRow, RebalancingService, RebalancingType} from "../services/reb
 import {TradeService} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
+import {Currency, CurrencyUnit} from "../types/currency";
 import {PortfolioAssetType} from "../types/portfolioAssetType";
-import {CurrencyUnit, InstrumentRebalancingModel, Pagination, Portfolio, RebalancingModel, TableHeader} from "../types/types";
+import {InstrumentRebalancingModel, Pagination, Portfolio, RebalancingModel, TableHeader} from "../types/types";
 import {SortUtils} from "../utils/sortUtils";
 import {TariffUtils} from "../utils/tariffUtils";
 import {TradeUtils} from "../utils/tradeUtils";
@@ -233,7 +234,7 @@ export class RebalancingPage extends UI {
     private onlyBuyTrades = true;
 
     private rebalancingModel: RebalancingModel = null;
-    private currency = CurrencyUnit.RUB.code;
+    private currency: string = Currency.RUB;
 
     private rebalancingType: RebalancingType = RebalancingType.BY_AMOUNT;
 

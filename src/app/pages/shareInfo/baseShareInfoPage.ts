@@ -23,6 +23,7 @@ import {CreateOrEditNotificationDialog} from "../../components/dialogs/createOrE
 import {FeedbackDialog} from "../../components/dialogs/feedbackDialog";
 import {StockRate} from "../../components/stockRate";
 import {ShowProgress} from "../../platform/decorators/showProgress";
+import {Filters} from "../../platform/filters/Filters";
 import {ClientInfo} from "../../services/clientService";
 import {MarketService} from "../../services/marketService";
 import {NotificationType} from "../../services/notificationsService";
@@ -496,7 +497,7 @@ export class BaseShareInfoPage extends UI {
     }
 
     private get currencySymbol(): string {
-        return TradeUtils.getCurrencySymbol(this.share.currency);
+        return Filters.currencySymbolByCurrency(this.share.currency);
     }
 
     private get isStockAsset(): boolean {

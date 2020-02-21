@@ -8,6 +8,7 @@ import {MarketService} from "../../services/marketService";
 import {KeyWordsSearchType, Notification, NotificationsService, NotificationType} from "../../services/notificationsService";
 import {AssetType} from "../../types/assetType";
 import {BigMoney} from "../../types/bigMoney";
+import {Currency} from "../../types/currency";
 import {Bond, Share} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 
@@ -323,12 +324,14 @@ export class CreateOrEditNotificationDialog extends CustomDialog<Notification, b
             return "%";
         }
         switch (this.share.currency) {
-            case "RUB":
+            case Currency.RUB:
                 return "рублей";
-            case "USD":
+            case Currency.USD:
                 return "долларов";
-            case "EUR":
+            case Currency.EUR:
                 return "евро";
+            case Currency.GBP:
+                return "фунтов";
         }
         return "рублей";
     }

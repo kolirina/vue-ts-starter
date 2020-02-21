@@ -624,22 +624,6 @@ export interface PageableResponse<T> {
     offset: number;
 }
 
-/** Информация о валюте */
-export interface Currency {
-    /** Идентификатор */
-    id: string;
-    /** Числовой код валюты */
-    numCode: string;
-    /** Буквенный код валюты */
-    charCode: string;
-    /** Номинал валюты */
-    nominal: string;
-    /** Название валюты */
-    name: string;
-    /** Курс валюты */
-    value: string;
-}
-
 export interface BrowserInfo {
     name: string;
     version?: string;
@@ -700,19 +684,6 @@ export interface RebalancingModel {
     minShare: string;
     /** Максимальная доля любого инструмента внутри портфеля */
     maxShare: string;
-}
-
-/** Перечислению доступных валют */
-@Enum("code")
-export class CurrencyUnit extends (EnumType as IStaticEnum<CurrencyUnit>) {
-
-    static readonly RUB = new CurrencyUnit("RUB", "Рубль", "₽");
-    static readonly USD = new CurrencyUnit("USD", "Доллар", "$");
-    static readonly EUR = new CurrencyUnit("EUR", "Евро", "€");
-
-    private constructor(public code: string, public description: string, public symbol: string) {
-        super();
-    }
 }
 
 export interface MapType {

@@ -24,9 +24,10 @@ import {CustomDialog} from "../../platform/dialogs/customDialog";
 import {AssetCategory, AssetModel, AssetService} from "../../services/assetService";
 import {Client, ClientService} from "../../services/clientService";
 import {BigMoney} from "../../types/bigMoney";
+import {ALLOWED_CURRENCIES, Currency} from "../../types/currency";
 import {EventType} from "../../types/eventType";
 import {Permission} from "../../types/permission";
-import {CurrencyUnit, ErrorInfo} from "../../types/types";
+import {ErrorInfo} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {TextUtils} from "../../utils/textUtils";
 import {TradeUtils} from "../../utils/tradeUtils";
@@ -203,7 +204,7 @@ export class AssetEditDialog extends CustomDialog<AssetEditDialogData, AssetEdit
      */
     async mounted(): Promise<void> {
         this.clientInfo = await this.clientService.getClientInfo();
-        this.currencyList = CurrencyUnit.values().map(c => c.code).filter(code => this.foreignCurrencyAllowed || code === "RUB");
+        this.currencyList = ALLOWED_CURRENCIES.filter(code => this.foreignCurrencyAllowed || code === Currency.RUB);
         await this.setDialogParams();
         this.autoPrice = !!this.asset.source && !!this.asset.regex;
     }
@@ -212,7 +213,7 @@ export class AssetEditDialog extends CustomDialog<AssetEditDialogData, AssetEdit
         if (!this.data.asset) {
             this.asset = {
                 category: AssetCategory.OTHER,
-                currency: "RUB",
+                currency: Currency.RUB,
                 ticker: "",
                 name: "",
                 source: "",

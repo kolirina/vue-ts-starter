@@ -556,7 +556,7 @@ export class ChartUtils {
             },
             tooltip: {
                 pointFormat: this.PIE_CHART_TOOLTIP_FORMAT[tooltipFormat],
-                valueSuffix: `${viewCurrency ? ` ${TradeUtils.getCurrencySymbol(viewCurrency)}` : ""}`
+                valueSuffix: `${viewCurrency ? ` ${Filters.currencySymbolByCurrency(viewCurrency)}` : ""}`
             },
             colors: ChartUtils.getColors(chartData.length),
             plotOptions: {
