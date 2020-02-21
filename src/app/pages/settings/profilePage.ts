@@ -119,14 +119,14 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-card>
                 </v-layout>
                 <expanded-panel :value="[0]" class="promo-codes__statistics mt-3">
-                    <template #header>Удаление профиля</template>
+                    <template #header>Удаление аккаунта</template>
                     <v-card flat>
                         <v-layout wrap>
                             <div class="fs13 maxW778 mr-4 mt-3">
-                                Внимание! После удаления профиля, вы больше не сможете войти в личный кабинет.
+                                Внимание! После удаления аккаунта, вы больше не сможете войти в личный кабинет.
                             </div>
                             <v-btn @click.stop="deleteProfileAndUnsubscribe" class="mt-3" color="#EBEFF7">
-                                Удалить профиль
+                                Удалить аккаунт
                             </v-btn>
                         </v-layout>
                     </v-card>
