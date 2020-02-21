@@ -1132,7 +1132,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private get quantityDecimals(): number {
-        return this.isAssetTrade || this.operation === Operation.DIVIDEND ? 6 : 0;
+        return this.isAssetTrade || this.isStockTrade || this.operation === Operation.DIVIDEND ? 6 : 0;
     }
 
     private get quantityValidationRule(): string {

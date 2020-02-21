@@ -12,20 +12,20 @@ import {BtnReturn, CustomDialog} from "../../platform/dialogs/customDialog";
             <v-card class="dialog-wrap">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
                 <div>
-                    <v-card-title class="dialog-header-text">Удалить профиль?</v-card-title>
+                    <v-card-title class="dialog-header-text">Удалить аккаунт?</v-card-title>
                     <v-card-text>
-                        <div class="headline font-weight-bold">
-                            Вы уверены, что хотите удалить профиль?<br/>
+                        <div>
+                            Вы уверены, что хотите удалить аккаунт?<br/>
                             Личный кабинет Intelinvest будет недоступен.<br/>
                             Вы не сможете войти или зарегистрировать новый аккаунт с той же почтой.
                         </div>
                         <br/>
-                        <div class="subheading font-weight-bold">
+                        <div>
                             Для очистки портфеля воспользуйтесь разделом <a @click="goToPortfolioManagement">Управление портфелями</a>,
                             меню таблицы - пункт Очистить
                         </div>
                         <br/>
-                        <div class="mt-2 headline font-weight-bold">Продолжить?</div>
+                        <div class="mt-2">Продолжить?</div>
                     </v-card-text>
                     <v-card-actions>
                         <v-btn color="primary" @click.native="close('YES')">Да</v-btn>
