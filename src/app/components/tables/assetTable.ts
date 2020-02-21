@@ -17,6 +17,7 @@ import {Inject} from "typescript-ioc";
 import {Component, namespace, Prop, UI, Watch} from "../../app/ui";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
+import {Filters} from "../../platform/filters/Filters";
 import {Storage} from "../../platform/services/storage";
 import {AssetCategory} from "../../services/assetService";
 import {ClientInfo} from "../../services/clientService";
@@ -464,7 +465,7 @@ export class AssetTable extends UI {
     }
 
     private getHeaderText(header: TableHeader): string {
-        return header.currency ? `${header.text} ${TradeUtils.getCurrencySymbol(this.portfolioCurrency)}` : header.text;
+        return header.currency ? `${header.text} ${this.portfolioCurrency}` : header.text;
     }
 
     private markupClasses(amount: number): string[] {
@@ -478,6 +479,6 @@ export class AssetTable extends UI {
     }
 
     private get portfolioCurrency(): string {
-        return TradeUtils.getCurrencySymbol(this.viewCurrency);
+        return Filters.currencySymbolByCurrency(this.viewCurrency);
     }
 }

@@ -17,6 +17,7 @@ import {MoneyResiduals, PortfolioParams, PortfolioService} from "../../services/
 import {TradeFields, TradeRequest, TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
 import {BigMoney} from "../../types/bigMoney";
+import {ALLOWED_CURRENCIES, Currency} from "../../types/currency";
 import {AddTradeEvent, EventType} from "../../types/eventType";
 import {Operation} from "../../types/operation";
 import {Permission} from "../../types/permission";
@@ -24,7 +25,7 @@ import {PortfolioAssetType} from "../../types/portfolioAssetType";
 import {TradeDataHolder} from "../../types/trade/tradeDataHolder";
 import {TradeMap} from "../../types/trade/tradeMap";
 import {TradeValue} from "../../types/trade/tradeValue";
-import {Asset, Bond, CurrencyUnit, ErrorInfo, Portfolio, Share, ShareType} from "../../types/types";
+import {Asset, Bond, ErrorInfo, Portfolio, Share, ShareType} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {DateUtils} from "../../utils/dateUtils";
 import {TariffUtils} from "../../utils/tariffUtils";
@@ -335,19 +336,19 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     /** Текущий курс для обменной сделки */
     private currencyExchangeRate: string = "";
     /** Покупаемая валюта */
-    private purchasedCurrency: string = "USD";
+    private purchasedCurrency: string = Currency.USD;
     /** Валюта списания для валютной сделки */
-    private debitCurrency: string = "RUB";
+    private debitCurrency: string = Currency.RUB;
     /** Валюта комисии для валютной сделки */
-    private feeCurrency: string = "RUB";
+    private feeCurrency: string = Currency.RUB;
     /** Сумма списания по валютной сделке */
     private debitCurrencyValue: string = "";
     /** Операция сделки */
     private operation = Operation.BUY;
     /** Список валют */
-    private currencyList = CurrencyUnit.values().map(c => c.code);
+    private currencyList = ALLOWED_CURRENCIES;
     /** Валюта сделки по деньгам */
-    private moneyCurrency = "RUB";
+    private moneyCurrency: string = Currency.RUB;
     /** Ценная бумага сделки. Для денег может быть null */
     private share: Share = null;
     /** Текущая цена актива */
@@ -355,7 +356,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     /** Тип актива по умолчанию */
     private assetCategory: AssetCategory = AssetCategory.OTHER;
     /** Валюта актива по умолчанию */
-    private assetCurrency = "RUB";
+    private assetCurrency = Currency.RUB;
     /** Список найденных бумаг для добавления */
     private filteredShares: Share[] = [];
 
@@ -393,7 +394,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private keepMoneyValue = true;
     private perOne = true;
 
-    private currency = "RUB";
+    private currency: string = Currency.RUB;
     private processState = false;
 
     private moneyResiduals: MoneyResiduals = null;
@@ -816,13 +817,13 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         this.eventPeriod = null;
         this.processShareEvent = false;
         this.debitCurrencyValue = null;
-        this.debitCurrency = "RUB";
+        this.debitCurrency = Currency.RUB;
         this.currencyExchangeRate = null;
-        this.purchasedCurrency = "USD";
-        this.feeCurrency = "RUB";
+        this.purchasedCurrency = Currency.USD;
+        this.feeCurrency = Currency.RUB;
         this.assetPrice = "";
         this.assetCategory = AssetCategory.OTHER;
-        this.assetCurrency = "RUB";
+        this.assetCurrency = Currency.RUB;
     }
 
     private resetFee(): void {

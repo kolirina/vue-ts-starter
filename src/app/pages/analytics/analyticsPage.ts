@@ -6,6 +6,7 @@ import {UI, Watch} from "../../app/ui";
 import {AverageAnnualYieldChart} from "../../components/charts/averageAnnualYield";
 import {PieChart} from "../../components/charts/pieChart";
 import {SimpleLineChart} from "../../components/charts/simpleLineChart";
+import {Filters} from "../../platform/filters/Filters";
 import {Storage} from "../../platform/services/storage";
 import {AdviceService} from "../../services/adviceService";
 import {AnalyticsService} from "../../services/analyticsService";
@@ -13,7 +14,7 @@ import {ClientInfo, ClientService} from "../../services/clientService";
 import {PortfolioAccountType, PortfolioService} from "../../services/portfolioService";
 import {BigMoney} from "../../types/bigMoney";
 import {ChartType, CustomDataPoint, SimpleChartData, YieldCompareData} from "../../types/charts/types";
-import {CurrencyUnit, Portfolio} from "../../types/types";
+import {Portfolio} from "../../types/types";
 import {ChartUtils} from "../../utils/chartUtils";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
@@ -191,7 +192,7 @@ export class AnalyticsPage extends UI {
     }
 
     private get viewCurrency(): string {
-        return CurrencyUnit.valueByName(this.portfolio.portfolioParams.viewCurrency).symbol;
+        return Filters.currencySymbolByCurrency(this.portfolio.portfolioParams.viewCurrency);
     }
 
     private get hasTrades(): boolean {

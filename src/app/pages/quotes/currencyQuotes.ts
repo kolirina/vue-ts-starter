@@ -3,7 +3,7 @@ import Component from "vue-class-component";
 import {UI} from "../../app/ui";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {MarketService} from "../../services/marketService";
-import {Currency} from "../../types/types";
+import {Currency, CurrencyItem} from "../../types/currency";
 
 @Component({
     // language=Vue
@@ -26,7 +26,7 @@ export class CurrencyQuotes extends UI {
     @Inject
     private marketservice: MarketService;
 
-    private currencies: Currency[] = [];
+    private currencies: CurrencyItem[] = [];
 
     /**
      * Загрузка данных для компонента
@@ -35,7 +35,7 @@ export class CurrencyQuotes extends UI {
     @ShowProgress
     async created(): Promise<void> {
         const array = await this.marketservice.loadCurrencies();
-        const sortBy = ["EUR", "USD"];
+        const sortBy: string[] = [Currency.EUR, Currency.USD, Currency.GBP];
         this.currencies = array.sort((a, b) => sortBy.indexOf(b.charCode) - sortBy.indexOf(a.charCode));
     }
 }

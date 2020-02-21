@@ -4,6 +4,7 @@ import {ShowProgress} from "../../platform/decorators/showProgress";
 import {CustomDialog} from "../../platform/dialogs/customDialog";
 import {OverviewService} from "../../services/overviewService";
 import {PortfolioParams} from "../../services/portfolioService";
+import {ALLOWED_CURRENCIES, Currency} from "../../types/currency";
 import {CombinedData} from "../../types/eventObjects";
 import {CombinedPortfoliosTable} from "../combinedPortfoliosTable";
 
@@ -24,7 +25,7 @@ import {CombinedPortfoliosTable} from "../combinedPortfoliosTable";
                         Выберите валюту просмотра
                     </div>
                     <v-flex class="select-section">
-                        <v-select :items="['RUB', 'USD', 'EUR']" v-model="viewCurrency" label="Валюта представления" single-line></v-select>
+                        <v-select :items="currencyList" v-model="viewCurrency" label="Валюта представления" single-line></v-select>
                     </v-flex>
                 </div>
                 <v-layout class="action-btn">
@@ -40,8 +41,9 @@ import {CombinedPortfoliosTable} from "../combinedPortfoliosTable";
 })
 export class CompositePortfolioManagement extends CustomDialog<PortfolioManagementParams, string> {
     /** Валюта просмотра портфеля */
-    private viewCurrency: string = "RUB";
-
+    private viewCurrency: string = Currency.RUB;
+    /** Список валют */
+    private currencyList = ALLOWED_CURRENCIES;
     @Inject
     private overviewService: OverviewService;
 

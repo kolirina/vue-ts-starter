@@ -19,8 +19,8 @@ import {Component, Prop, UI} from "../app/ui";
 import {AssetCategory} from "../services/assetService";
 import {FiltersService} from "../services/filtersService";
 import {AssetQuotesFilter} from "../services/marketService";
+import {ALLOWED_CURRENCIES} from "../types/currency";
 import {StoreKeys} from "../types/storeKeys";
-import {CurrencyUnit} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
 import {TableFilterBase} from "./tableFilterBase";
 
@@ -69,7 +69,7 @@ export class CommonAssetQuotesFilter extends UI {
 
     private categories = AssetCategory.values();
     /** Список валют */
-    private currencyList = CurrencyUnit.values().map(c => c.code);
+    private currencyList = ALLOWED_CURRENCIES;
 
     private onCategoryChange(checked: boolean, category: AssetCategory): void {
         if (checked) {

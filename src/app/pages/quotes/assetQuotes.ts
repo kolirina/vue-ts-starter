@@ -75,7 +75,7 @@ const MainStore = namespace(StoreType.MAIN);
             <template v-else>
                 <empty-search-result v-if="filteredAssets.length === 0 && assets.length !== 0" @resetFilter="resetFilter"></empty-search-result>
 
-                <v-data-table v-else :headers="headers" :items="filteredAssets" item-key="id" class="data-table quotes-table" must-sort expand hide-actions>
+                <v-data-table v-else :headers="headers" :items="filteredAssets" item-key="id" class="data-table quotes-table table-bottom-pagination" must-sort expand hide-actions>
                     <template #items="props">
                         <tr class="selectable" @dblclick="props.expanded = !props.expanded">
                             <td>

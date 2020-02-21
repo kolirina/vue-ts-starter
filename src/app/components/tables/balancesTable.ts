@@ -20,9 +20,11 @@ import {Component, Prop, UI, Watch} from "../../app/ui";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {TradeService} from "../../services/tradeService";
 import {BigMoney} from "../../types/bigMoney";
+import {CurrencyUnit} from "../../types/currency";
 import {Operation} from "../../types/operation";
 import {AssetRow, Pagination, Portfolio, StockPortfolioRow, TableHeader} from "../../types/types";
 import {SortUtils} from "../../utils/sortUtils";
+import {TradeUtils} from "../../utils/tradeUtils";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 import {ConfirmDialog} from "../dialogs/confirmDialog";
@@ -41,9 +43,9 @@ const MainStore = namespace(StoreType.MAIN);
                     <td class="text-xs-left">
                         <stock-link v-if="props.item.ticker" :ticker="props.item.ticker"></stock-link>
                     </td>
-                    <td class="text-xs-right">{{ props.item.quantity | quantity(true) }}</td>
-                    <td class="text-xs-right"><span v-if="props.item.type === 'STOCK'">{{ props.item.avgBuy | amount }}</span></td>
-                    <td class="text-xs-right">{{ props.item.currCost | amount(true)}}</td>
+                    <td class="ii-number-cell text-xs-right">{{ props.item.quantity | quantity }}</td>
+                    <td class="ii-number-cell text-xs-right"><span v-if="props.item.type === 'STOCK'">{{ props.item.avgBuy | amount }}</span></td>
+                    <td :class="markupClasses(amount(props.item.currCost), false)">{{ props.item.currCost | amount(true)}}</td>
                     <td class="justify-center layout px-0" @click.stop>
                         <v-menu transition="slide-y-transition" bottom left min-width="173" nudge-bottom="30">
                             <v-btn slot="activator" flat icon dark>
@@ -126,9 +128,8 @@ export class BalancesTable extends UI {
     }
 
     private prepareRows(): void {
-        this.balancesTableRow = [];
-        for (const row of this.stocks) {
-            this.balancesTableRow.push({
+        this.balancesTableRow = this.stocks.map(row => {
+            return {
                 id: row.id,
                 type: "STOCK",
                 company: row.share.shortname,
@@ -136,48 +137,37 @@ export class BalancesTable extends UI {
                 quantity: Number(row.quantity),
                 avgBuy: row.avgBuy,
                 currCost: row.currCost
+            } as BalancesTableRow;
+        });
+        this.assets.filter(row => row.assetType === "MONEY").forEach(row => {
+            const currCost = new BigMoney(row.currCost);
+            const currency = CurrencyUnit.valueByName(currCost.currency);
+            this.balancesTableRow.push({
+                id: "",
+                type: currency.serverCode,
+                company: currency.description,
+                ticker: "",
+                quantity: null,
+                avgBuy: "",
+                currCost: row.currCost
             });
-        }
-        for (const row of this.assets) {
-            if (row.assetType === "MONEY") {
-                const currCost = new BigMoney(row.currCost);
-                if (currCost.currency === "EUR") {
-                    this.balancesTableRow.push({
-                        id: "",
-                        type: "EURO",
-                        company: "Евро",
-                        ticker: "",
-                        quantity: null,
-                        avgBuy: "",
-                        currCost: row.currCost
-                    });
-                } else if (currCost.currency === "RUB") {
-                    this.balancesTableRow.push({
-                        id: "",
-                        type: "RUBLE",
-                        company: "Рубль",
-                        ticker: "",
-                        quantity: null,
-                        avgBuy: "",
-                        currCost: row.currCost
-                    });
-                } else if (currCost.currency === "USD") {
-                    this.balancesTableRow.push({
-                        id: "",
-                        type: "DOLLAR",
-                        company: "Доллар США",
-                        ticker: "",
-                        quantity: null,
-                        avgBuy: "",
-                        currCost: row.currCost
-                    });
-                }
-            }
-        }
+        });
     }
 
     private customSort(items: BalancesTableRow[], index: string, isDesc: boolean): BalancesTableRow[] {
         return SortUtils.simpleSort(items, index, isDesc);
+    }
+
+    private amount(value: string): number {
+        if (!value) {
+            return 0.00;
+        }
+        const amount = new BigMoney(value);
+        return amount.amount.toNumber();
+    }
+
+    private markupClasses(amount: number, highlightPositive: boolean = true): string[] {
+        return TradeUtils.markupClasses(amount, highlightPositive);
     }
 }
 
