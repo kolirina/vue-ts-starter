@@ -20,6 +20,7 @@ import {FiltersService} from "../services/filtersService";
 import {QuotesFilter} from "../services/marketService";
 import {ALLOWED_CURRENCIES} from "../types/currency";
 import {StoreKeys} from "../types/storeKeys";
+import {BondType} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
 import {TableFilterBase} from "./tableFilterBase";
 
@@ -38,6 +39,17 @@ import {TableFilterBase} from "./tableFilterBase";
                         </v-select>
                     </div>
 
+                    <template v-if="showTypes">
+                        <div class="trades-filter__label mb-0">Тип бумаги</div>
+                        <div class="trades-filter__currencies">
+                            <v-select :items="bondTypes" v-model="filter.bondType" :return-object="true" item-text="description" label="Тип бумаги" @change="onTypeChange">
+                                <template #append-outer>
+                                    <v-icon small @click="resetType">clear</v-icon>
+                                </template>
+                            </v-select>
+                        </div>
+                    </template>
+
                     <div class="trades-filter__label">Категория актива</div>
                     <div class="trades-filter__operations">
                         <v-switch v-model="filter.showUserShares" @change="onChange">
@@ -47,9 +59,7 @@ import {TableFilterBase} from "./tableFilterBase";
                                     <sup class="custom-tooltip" slot="activator">
                                         <v-icon>fas fa-info-circle</v-icon>
                                     </sup>
-                                    <span>
-                                Включите, если хотите увидеть только свои бумаги
-                            </span>
+                                    <span>Включите, если хотите увидеть только свои бумаги</span>
                                 </v-tooltip>
                             </template>
                         </v-switch>
@@ -73,11 +83,16 @@ export class QuotesFilterTable extends UI {
     /** Ключ для хранения состояния */
     @Prop({required: true, type: String})
     private storeKey: StoreKeys;
+    /** Признак отображения фильтра (пока только облигации) */
+    @Prop({default: false, type: Boolean})
+    private showTypes: boolean;
     @Inject
     private filtersService: FiltersService;
 
     /** Список валют */
     private currencyList = ALLOWED_CURRENCIES;
+    /** Типы облигаций */
+    private bondTypes = BondType.values();
 
     private onChange(): void {
         this.$emit("changeShowUserShares", this.filter.showUserShares);
@@ -94,8 +109,19 @@ export class QuotesFilterTable extends UI {
         this.saveFilter();
     }
 
+    private onTypeChange(): void {
+        this.$emit("filter", this.filter);
+        this.saveFilter();
+    }
+
     private resetCurrency(): void {
         this.filter.currency = null;
+        this.$emit("filter", this.filter);
+        this.saveFilter();
+    }
+
+    private resetType(): void {
+        this.filter.bondType = null;
         this.$emit("filter", this.filter);
         this.saveFilter();
     }
@@ -106,6 +132,6 @@ export class QuotesFilterTable extends UI {
 
     private get isDefaultFilter(): boolean {
         return (!CommonUtils.exists(this.filter.showUserShares) || this.filter.showUserShares === false) && CommonUtils.isBlank(this.filter.searchQuery)
-            && !CommonUtils.exists(this.filter.currency);
+            && !CommonUtils.exists(this.filter.currency) && !CommonUtils.exists(this.filter.bondType);
     }
 }

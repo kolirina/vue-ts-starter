@@ -480,6 +480,8 @@ export type Bond = Share & {
     secid: string;
     /** Название типа облигации */
     typeName: string;
+    /** Тип облигации */
+    type: string;
     /** Доходность облигации */
     yield: string;
     /** Размер купона */
@@ -731,6 +733,24 @@ export class OverviewPeriod extends (EnumType as IStaticEnum<OverviewPeriod>) {
     static readonly PREVIOUS_HALF_YEAR = new OverviewPeriod("PREVIOUS_HALF_YEAR", "Прошлое полугодие");
     static readonly PREVIOUS_YEAR = new OverviewPeriod("PREVIOUS_YEAR", "Прошлый год");
     static readonly TOTAL = new OverviewPeriod("TOTAL", "За все время");
+
+    private constructor(public code: string, public description: string) {
+        super();
+    }
+}
+
+@Enum("code")
+export class BondType extends (EnumType as IStaticEnum<BondType>) {
+
+    static readonly EXCHANGE_BOND = new BondType("EXCHANGE_BOND", "Корпоративная облигация");
+    static readonly OFZ_BOND = new BondType("OFZ_BOND", "ОФЗ");
+    static readonly CORPORATE_BOND = new BondType("CORPORATE_BOND", "Корпоративная облигация");
+    static readonly SUBFEDERAL_BOND = new BondType("SUBFEDERAL_BOND", "Региональная облигация");
+    static readonly MUNICIPAL_BOND = new BondType("MUNICIPAL_BOND", "Муниципальная облигация");
+    static readonly IFI_BOND = new BondType("IFI_BOND", "Облигация МФО");
+    static readonly PUBLIC_PPIF = new BondType("PUBLIC_PPIF", "Пай открытого ПИФа");
+    static readonly EURO_BOND = new BondType("EURO_BOND", "Еврооблигации");
+    static readonly CB_BOND = new BondType("CB_BOND", "Облигация центрального банка");
 
     private constructor(public code: string, public description: string) {
         super();
