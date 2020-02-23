@@ -31,7 +31,7 @@ import {UpdateServiceInfo} from "../updateServiceInfo";
 })
 export class NotificationUpdateDialog extends CustomDialog<void, BtnReturn> {
 
-    static readonly DATE: string = "2020-01-31";
+    static readonly DATE: string = "2020-02-23";
 
     private acceptAndClose(): void {
         this.close(BtnReturn.YES);

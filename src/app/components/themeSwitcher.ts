@@ -24,13 +24,11 @@ import {ThemeUtils} from "../utils/ThemeUtils";
 @Component({
     // language=Vue
     template: `
-        <div>
-            <v-btn flat icon round @click="toggleTheme" :title="nightTheme ? 'Выключить Ночную тему' : 'Включить Ночную тему'" class="link-icon-btn">
-                <v-icon v-if="nightTheme" light>far fa-moon</v-icon>
-                <v-icon v-else light>far fa-lightbulb</v-icon>
-            </v-btn>
-            <span>{{ nightTheme ? 'Темная тема' : 'Светлая тема' }}</span>
-        </div>
+        <v-btn flat @click="toggleTheme" :title="nightTheme ? 'Выключить Ночную тему' : 'Включить Ночную тему'" class="btn">
+            <v-icon v-if="nightTheme" light>far fa-moon</v-icon>
+            <v-icon v-else light>far fa-lightbulb</v-icon>
+            <span class="ml-2">{{ nightTheme ? 'Темная тема' : 'Светлая тема' }}</span>
+        </v-btn>
     `
 })
 export class ThemeSwitcher extends UI {

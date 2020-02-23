@@ -118,18 +118,6 @@ export class TradeUtils {
             dayjs().isBefore(DateUtils.parseDate(clientInfo.paidTill));
     }
 
-    static getCurrencySymbol(currencyCode: string): string {
-        switch (currencyCode) {
-            case "RUB":
-                return "₽";
-            case "USD":
-                return "$";
-            case "EUR":
-                return "€";
-        }
-        return currencyCode;
-    }
-
     static currencySymbolByAmount(value: string): string {
         if (value) {
             return new BigMoney(value).currencySymbol;
@@ -137,8 +125,13 @@ export class TradeUtils {
         return null;
     }
 
-    static markupClasses(amount: number): string[] {
-        return [amount > 0 ? "ii--green-markup" : amount < 0 ? "ii--red-markup" : "", "ii-number-cell", "text-xs-right"];
+    /**
+     * Возвращает набор классов для ячейки таблицы содержищим числовое значение
+     * @param amount отображаемая сумма
+     * @param highlightPositive признак подсвечивания положительной суммы
+     */
+    static markupClasses(amount: number, highlightPositive: boolean = true): string[] {
+        return [amount > 0 && highlightPositive ? "ii--green-markup" : amount < 0 ? "ii--red-markup" : "", "ii-number-cell", "text-xs-right"];
     }
 
     static isCalculationAssetType(operation: Operation): boolean {

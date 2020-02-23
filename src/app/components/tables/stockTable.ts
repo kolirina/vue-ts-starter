@@ -18,6 +18,7 @@ import {namespace} from "vuex-class/lib/bindings";
 import {Component, Prop, UI, Watch} from "../../app/ui";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
+import {Filters} from "../../platform/filters/Filters";
 import {Storage} from "../../platform/services/storage";
 import {PortfolioService} from "../../services/portfolioService";
 import {TableHeadersState, TABLES_NAME, TablesService} from "../../services/tablesService";
@@ -429,7 +430,7 @@ export class StockTable extends UI {
     }
 
     private getHeaderText(header: TableHeader): string {
-        return header.currency ? `${header.text} ${TradeUtils.getCurrencySymbol(this.portfolioCurrency)}` : header.text;
+        return header.currency ? `${header.text} ${this.portfolioCurrency}` : header.text;
     }
 
     private markupClasses(amount: number): string[] {
@@ -437,6 +438,6 @@ export class StockTable extends UI {
     }
 
     private get portfolioCurrency(): string {
-        return TradeUtils.getCurrencySymbol(this.viewCurrency);
+        return Filters.currencySymbolByCurrency(this.viewCurrency);
     }
 }

@@ -1,4 +1,5 @@
 import {Decimal} from "decimal.js";
+import {Filters} from "../platform/filters/Filters";
 
 export class BigMoney {
 
@@ -31,8 +32,6 @@ export class BigMoney {
     }
 
     get currencySymbol(): string {
-        return this.currencyValue === "RUB" ? "₽" :
-            this.currencyValue === "EUR" ? "€" :
-                this.currencyValue === "USD" ? "$" : "";
+        return Filters.currencySymbolByCurrency(this.currency);
     }
 }

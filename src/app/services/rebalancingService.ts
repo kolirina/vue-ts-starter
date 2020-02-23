@@ -39,7 +39,7 @@ export class RebalancingService {
             .reduce((result: Decimal, current: Decimal) => result.add(current), new Decimal("0"))
             .toDP(2, Decimal.ROUND_HALF_UP);
         // console.log(targetPercents.toString(), rowLimit);
-        if (targetPercents.comparedTo(this._100) !== 0) {
+        if (!targetPercents.equals(this._100)) {
             throw Error("Сумма целевых долей должна составлять 100%");
         }
         const totalAmount = incomeAmountString ? new Decimal(incomeAmountString) : this.ZERO;
@@ -63,7 +63,7 @@ export class RebalancingService {
             const price = new BigMoney(row.price).amount;
             const lotSize = new Decimal(row.lotSize);
             const minLots = row.min.div(row.lotPrice).toDP(0, Decimal.ROUND_UP);
-            if (minLots.comparedTo(this.ZERO) < 0 && onlyBuyTrades) {
+            if (minLots.lessThan(this.ZERO) && onlyBuyTrades) {
                 return;
             }
             row.lots = minLots.toNumber();
@@ -71,7 +71,7 @@ export class RebalancingService {
         });
         const currentAmounts = rows.map(row => new Decimal(row.amountForLots)).reduce((result: Decimal, current: Decimal) => result.add(current), new Decimal("0"));
         // проверяем что минимальная сумма меньше или равна вносимой
-        if (currentAmounts.comparedTo(totalAmount) > 0) {
+        if (currentAmounts.greaterThan(totalAmount)) {
             throw Error("Попробуйте увеличить сумму внесения или допуск");
         }
         // доводим до оптимума размеры покупок
@@ -91,7 +91,7 @@ export class RebalancingService {
         // }));
         // проверяем дальнейшую возможность оптимизации
         // остаток денег должен быть больше чем размер лота хотя бы по одной бумаге
-        const continueRebalancing = rows.map(row => new Decimal(row.lotPrice)).some(lotPrice => lotPrice.comparedTo(deltaTotalAmount) <= 0);
+        const continueRebalancing = rows.map(row => new Decimal(row.lotPrice)).some(lotPrice => lotPrice.lessThanOrEqualTo(deltaTotalAmount));
         if (continueRebalancing) {
             // если все еще остаток есть, доводим до максимума
             deltaTotalAmount = this.optimizeRebalancing(rows, "max", deltaTotalAmount);
@@ -113,25 +113,25 @@ export class RebalancingService {
         let deltaTotalAmountInner = deltaTotalAmount;
         rows.forEach(row => {
             // console.log("-------------------------------------- BEFORE", deltaTotalAmountInner.toString());
-            if (deltaTotalAmountInner.comparedTo(this.ZERO) <= 0) {
+            if (deltaTotalAmountInner.lessThanOrEqualTo(this.ZERO)) {
                 return;
             }
             let lots = (row as any)[field].minus(row.amountForLots).div(row.lotPrice).abs().toDP(0, Decimal.ROUND_DOWN);
-            if (lots.comparedTo(this.ZERO) > 0) {
+            if (lots.greaterThan(this.ZERO)) {
                 let amountForLots = lots.mul(row.lotPrice).toDP(2, Decimal.ROUND_HALF_UP);
                 let newDeltaDiff = deltaTotalAmountInner.minus(amountForLots);
                 // console.log(field, row.ticker, amountForLots.toString(), lots.toString());
-                if (newDeltaDiff.comparedTo(this.ZERO) >= 0) {
+                if (newDeltaDiff.greaterThanOrEqualTo(this.ZERO)) {
                     row.lots = Number(row.lots) + lots.toNumber();
                     row.amountForLots = new Decimal(row.amountForLots).plus(amountForLots).toString();
                     deltaTotalAmountInner = deltaTotalAmountInner.minus(amountForLots);
-                } else if (newDeltaDiff.comparedTo(this.ZERO) < 0 && deltaTotalAmountInner.comparedTo(this.ZERO) > 0) {
+                } else if (newDeltaDiff.lessThan(this.ZERO) && deltaTotalAmountInner.greaterThan(this.ZERO)) {
                     // если размер оптимизанной покупки больше остатка, пробуем купить на остаток
                     lots = deltaTotalAmountInner.div(row.lotPrice).abs().toDP(0, Decimal.ROUND_DOWN);
-                    if (lots.comparedTo(this.ZERO) > 0) {
+                    if (lots.greaterThan(this.ZERO)) {
                         amountForLots = lots.mul(row.lotPrice).toDP(2, Decimal.ROUND_HALF_UP);
                         newDeltaDiff = deltaTotalAmountInner.minus(amountForLots);
-                        if (newDeltaDiff.comparedTo(this.ZERO) >= 0) {
+                        if (newDeltaDiff.greaterThanOrEqualTo(this.ZERO)) {
                             row.lots = Number(row.lots) + lots.toNumber();
                             row.amountForLots = new Decimal(row.amountForLots).plus(amountForLots).toString();
                             deltaTotalAmountInner = deltaTotalAmountInner.minus(amountForLots);
@@ -151,7 +151,7 @@ export class RebalancingService {
             row.amountForLots = "0";
             row.lots = 0;
             const percent = new Decimal(type === RebalancingType.BY_PERCENT ? row.targetPercent : row.currentPercent);
-            if (percent.comparedTo(this.ZERO) === 0) {
+            if (percent.equals(this.ZERO)) {
                 const currentCost = new Decimal(row.currentCost).abs().negated();
                 row.min = currentCost;
                 row.opt = currentCost;
@@ -205,7 +205,7 @@ export class RebalancingService {
         return rows.every(row => {
             const lotMin = row.min.div(row.lotPrice).toDP(0, Decimal.ROUND_UP);
             const lotMax = row.max.div(row.lotPrice).toDP(0, Decimal.ROUND_DOWN);
-            return lotMin.comparedTo(lotMax) <= 0;
+            return lotMin.lessThanOrEqualTo(lotMax);
         });
     }
 }

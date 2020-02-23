@@ -21,6 +21,7 @@ import {AssetCategory} from "../services/assetService";
 import {MarketService} from "../services/marketService";
 import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
+import {Currency} from "../types/currency";
 import {Asset, Bond, Share, ShareType} from "../types/types";
 
 @Component({
@@ -103,7 +104,7 @@ export class ShareSearchComponent extends UI {
         price: null,
         lotsize: "",
         decimals: "",
-        currency: "RUB",
+        currency: Currency.RUB,
         isin: "",
         change: "",
         boardName: "",

@@ -51,9 +51,13 @@ export class PortfolioUtils {
         if (overview.stockPortfolio.rows.some(row => Number(row.quantity) !== 0)) {
             result[PortfolioBlockType.STOCK_CHART] = count++;
         }
-        // есть акции, не проданные в ноль, отображаем диаграмму круговую
+        // есть обигации, не проданные в ноль, отображаем диаграмму распределения облигаций
         if (overview.bondPortfolio.rows.some(row => Number(row.quantity) !== 0)) {
             result[PortfolioBlockType.BOND_CHART] = count++;
+        }
+        // есть обигации, не проданные в ноль, отображаем диаграмму распределения облигаций по типам
+        if (overview.bondPortfolio.rows.some(row => Number(row.quantity) !== 0 && !!row.bond.typeName)) {
+            result[PortfolioBlockType.BOND_SECTORS_CHART] = count++;
         }
         // есть акции, не проданные в ноль, отображаем диаграмму круговую и сектора
         if (overview.stockPortfolio.rows.some(row => Number(row.quantity) !== 0)) {
@@ -79,6 +83,8 @@ export class PortfolioUtils {
                 return overview.stockPortfolio.rows.some(row => Number(row.quantity) !== 0);
             case PortfolioBlockType.BOND_CHART:
                 return overview.bondPortfolio.rows.some(row => Number(row.quantity) !== 0);
+            case PortfolioBlockType.BOND_SECTORS_CHART:
+                return overview.bondPortfolio.rows.some(row => Number(row.quantity) !== 0 && !!row.bond.typeName);
             case PortfolioBlockType.AGGREGATE_TABLE:
             case PortfolioBlockType.DASHBOARD:
             case PortfolioBlockType.ASSETS_CHART:

@@ -1,7 +1,8 @@
 import {Decimal} from "decimal.js";
 import {BigMoney} from "../../types/bigMoney";
+import {CurrencyUnit, isCurrencyAllowed} from "../../types/currency";
+import {PortfolioAssetType} from "../../types/portfolioAssetType";
 import {DateFormat, DateUtils} from "../../utils/dateUtils";
-import {TradeUtils} from "../../utils/tradeUtils";
 
 const DEFAULT_SCALE = 2;
 const MAX_SCALE = 3;
@@ -15,27 +16,7 @@ export class Filters {
     private static readonly UNITS = ["Б", "Кб", "Мб", "Гб", "Тб", "Пб", "Эб", "Зб", "Йб"];
 
     static assetDesc(type: string): string {
-        switch (type) {
-            case "STOCK":
-                return "Акции";
-            case "BOND":
-                return "Облигации";
-            case "RUBLES":
-                return "Рубли";
-            case "DOLLARS":
-                return "Доллары";
-            case "EURO":
-                return "Евро";
-            case "ETF":
-                return "ETF";
-            case "OTHER":
-                return "Прочие активы";
-            case "METALL":
-                return "Драгметаллы";
-            case "REALTY":
-                return "Недвижимость";
-        }
-        throw new Error("Неизвестный тип актива: " + type);
+        return PortfolioAssetType.valueByName(type)?.description;
     }
 
     static formatMoneyAmount(value: string, needRound?: boolean, scale?: number, returnZeros: boolean = true, needFormat: boolean = true): string {
@@ -45,7 +26,7 @@ export class Filters {
         const amount = new BigMoney(value);
         if (needRound) {
             let roundingScale = DEFAULT_SCALE;
-            if (amount.amount.comparedTo(new Decimal("1.00")) < 0) {
+            if (amount.amount.abs().comparedTo(new Decimal("1.00")) < 0) {
                 roundingScale = NO_SCALE;
             }
             const am = amount.amount.toDecimalPlaces(roundingScale, Decimal.ROUND_HALF_UP).toNumber();
@@ -60,7 +41,7 @@ export class Filters {
         if (!value) {
             return "";
         }
-        return TradeUtils.getCurrencySymbol(value);
+        return isCurrencyAllowed(value) ? CurrencyUnit.valueByName(value).symbol : value;
     }
 
     static currencySymbol(value: string): string {

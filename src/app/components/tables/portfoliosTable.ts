@@ -32,7 +32,6 @@ import {Portfolio, TableHeader} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {ExportUtils} from "../../utils/exportUtils";
 import {SortUtils} from "../../utils/sortUtils";
-import {TradeUtils} from "../../utils/tradeUtils";
 import {ActionType} from "../../vuex/actionType";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
@@ -78,7 +77,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-layout>
                     </td>
                     <td class="text-xs-right">{{ props.item.fixFee }}&nbsp;<span class="second-value">%</span></td>
-                    <td class="text-xs-center">{{ getCurrencySymbol(props.item.viewCurrency) }}</td>
+                    <td class="text-xs-center">{{ props.item.viewCurrency | currencySymbolByCurrency }}</td>
                     <td class="text-xs-left">{{ props.item.accountType.description }}</td>
                     <td class="text-xs-right">{{ props.item.openDate }}</td>
                     <td class="justify-center layout px-0" @click.stop data-v-step="1">
@@ -309,10 +308,6 @@ export class PortfoliosTable extends UI {
         const result = await this.portfolioService.updatePortfolio(portfolio);
         this.$snotify.info(`Профессиональный режим для портфеля ${result.professionalMode ? "включен" : "выключен"}`);
         UI.emit(EventType.PORTFOLIO_UPDATED, result);
-    }
-
-    private getCurrencySymbol(currency: string): string {
-        return TradeUtils.getCurrencySymbol(currency);
     }
 
     private customSort(items: PortfolioParams[], index: string, isDesc: boolean): PortfolioParams[] {

@@ -276,6 +276,9 @@ export class Http {
             if (responseError.code) {
                 error.code = responseError.code;
             }
+            if (responseError.captured) {
+                error.captured = responseError.captured;
+            }
         } catch (e) {
             // пришел ответ, отличный от json
         }

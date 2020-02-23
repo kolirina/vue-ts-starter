@@ -2,7 +2,8 @@ import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {Http, UrlParams} from "../platform/services/http";
 import {BaseChartDot, Dot, EventChartData, HighStockEventData, HighStockEventsGroup} from "../types/charts/types";
-import {Asset, AssetInfo, Bond, BondInfo, Currency, PageableResponse, Pagination, Share, ShareDynamic, Stock, StockInfo} from "../types/types";
+import {CurrencyItem} from "../types/currency";
+import {Asset, AssetInfo, Bond, BondInfo, BondType, PageableResponse, Pagination, Share, ShareDynamic, Stock, StockInfo} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
 import {CommonUtils} from "../utils/commonUtils";
 import {AssetCategory} from "./assetService";
@@ -106,8 +107,8 @@ export class MarketService {
     /**
      * Загружает и возвращает список валюты
      */
-    async loadCurrencies(): Promise<Currency[]> {
-        return this.http.get<Currency[]>(`/market/currency`);
+    async loadCurrencies(): Promise<CurrencyItem[]> {
+        return this.http.get<CurrencyItem[]>(`/market/currency`);
     }
 
     /**
@@ -128,6 +129,9 @@ export class MarketService {
         const urlParams: UrlParams = {offset, pageSize, search, showUserShares};
         if (sortColumn) {
             urlParams.sortColumn = sortColumn.toUpperCase();
+        }
+        if (filter.bondType) {
+            urlParams.bondType = filter.bondType.code;
         }
         if (CommonUtils.exists(descending)) {
             urlParams.descending = descending;
@@ -168,6 +172,7 @@ export interface QuotesFilter {
     searchQuery?: string;
     showUserShares?: boolean;
     currency?: string;
+    bondType?: BondType;
 }
 
 export interface AssetQuotesFilter {

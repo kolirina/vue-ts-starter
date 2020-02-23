@@ -51,10 +51,8 @@ const MainStore = namespace(StoreType.MAIN);
             <template #items="props">
                 <tr class="selectable">
                     <td class="text-xs-left">{{ props.item.type | assetDesc }}</td>
-                    <td class="text-xs-right ii-number-cell" v-tariff-expired-hint>{{ props.item.currCost | amount(true) }}</td>
-                    <td :class="markupClasses(amount(props.item.profit))" v-tariff-expired-hint>
-                        {{ props.item.profit | amount(true) }}
-                    </td>
+                    <td :class="markupClasses(amount(props.item.currCost), false)" v-tariff-expired-hint>{{ props.item.currCost | amount(true) }}</td>
+                    <td :class="markupClasses(amount(props.item.profit))" v-tariff-expired-hint>{{ props.item.profit | amount(true) }}</td>
                     <td :class="markupClasses(amount(props.item.dailyPl))" v-tariff-expired-hint>{{ props.item.dailyPl | amount(true) }}</td>
                     <td :class="markupClasses(Number(props.item.dailyPlPercent))" v-tariff-expired-hint>{{ props.item.dailyPlPercent | number }}</td>
                     <td class="text-xs-right ii-number-cell">{{ props.item.percCurrShare | number }}</td>
@@ -175,7 +173,7 @@ export class AggregateAssetTable extends UI {
         return SortUtils.simpleSort(items, index, isDesc);
     }
 
-    private markupClasses(amount: number): string[] {
-        return TradeUtils.markupClasses(amount);
+    private markupClasses(amount: number, highlightPositive: boolean = true): string[] {
+        return TradeUtils.markupClasses(amount, highlightPositive);
     }
 }

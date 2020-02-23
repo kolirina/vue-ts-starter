@@ -46,6 +46,9 @@ const MainStore = namespace(StoreType.MAIN);
                                 <span>
                                     ISIN: ({{ share.isin }})
                                 </span>
+                                <span v-if="share.typeName">
+                                    Тип: ({{ share.typeName }})
+                                </span>
                             </div>
                         </div>
                         <div>

@@ -59,6 +59,11 @@
   content: "\f153";
 }
 
+.gbp:after {
+  @extend .intel-icon;
+  content: "\e900";
+}
+
 .usd:after {
   @extend .intel-icon;
   content: "\f155";

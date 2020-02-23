@@ -362,4 +362,5 @@ export interface MoneyResiduals {
     EUR: string;
     USD: string;
     RUB: string;
+    GBP: string;
 }

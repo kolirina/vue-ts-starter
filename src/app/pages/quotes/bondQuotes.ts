@@ -27,7 +27,7 @@ const MainStore = namespace(StoreType.MAIN);
                 <additional-pagination :pagination="pagination" @update:pagination="onTablePaginationChange"></additional-pagination>
             </div>
             <quotes-filter-table :filter="filter" @input="tableSearch" @changeShowUserShares="changeShowUserShares" @filter="onFilterChange" :min-length="3" placeholder="Поиск"
-                                 :store-key="StoreKeys.BOND_QUOTES_FILTER_KEY"></quotes-filter-table>
+                                 :store-key="StoreKeys.BOND_QUOTES_FILTER_KEY" show-types></quotes-filter-table>
             <empty-search-result v-if="isEmptySearchResult" @resetFilter="resetFilter"></empty-search-result>
             <v-data-table v-else
                           :headers="headers" :items="bonds" item-key="id" :pagination="pagination" @update:pagination="onTablePaginationChange"
@@ -39,6 +39,7 @@ const MainStore = namespace(StoreType.MAIN);
                             <bond-link :ticker="props.item.ticker"></bond-link>
                         </td>
                         <td class="text-xs-left">{{ props.item.shortname }}</td>
+                        <td class="text-xs-left">{{ props.item.typeName }}</td>
                         <td class="text-xs-right">{{ props.item.prevprice }}%</td>
                         <td class="text-xs-center">{{ props.item.change }}%</td>
                         <td class="text-xs-center">{{ props.item.yield }}%</td>
@@ -124,6 +125,7 @@ export class BondQuotes extends UI {
     private headers: TableHeader[] = [
         {text: "ISIN", align: "left", value: "isin"},
         {text: "Компания", align: "left", value: "shortname"},
+        {text: "Тип", align: "left", value: "typeName"},
         {text: "Цена", align: "right", value: "prevprice"},
         {text: "Изменение", align: "center", value: "change"},
         {text: "Доходность", align: "center", value: "yield"},
