@@ -1136,7 +1136,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private get quantityValidationRule(): string {
-        return this.isAssetTrade || this.operation === Operation.DIVIDEND ? "required|min_value:0.000001" : "required|min_value:1";
+        return this.isAssetTrade || this.isStockTrade || this.operation === Operation.DIVIDEND ? "required|min_value:0.000001" : "required|min_value:1";
     }
 
     private get freeBalance(): string {

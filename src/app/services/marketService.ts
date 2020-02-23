@@ -3,7 +3,7 @@ import {Service} from "../platform/decorators/service";
 import {Http, UrlParams} from "../platform/services/http";
 import {BaseChartDot, Dot, EventChartData, HighStockEventData, HighStockEventsGroup} from "../types/charts/types";
 import {CurrencyItem} from "../types/currency";
-import {Asset, AssetInfo, Bond, BondInfo, PageableResponse, Pagination, Share, ShareDynamic, Stock, StockInfo} from "../types/types";
+import {Asset, AssetInfo, Bond, BondInfo, BondType, PageableResponse, Pagination, Share, ShareDynamic, Stock, StockInfo} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
 import {CommonUtils} from "../utils/commonUtils";
 import {AssetCategory} from "./assetService";
@@ -130,6 +130,9 @@ export class MarketService {
         if (sortColumn) {
             urlParams.sortColumn = sortColumn.toUpperCase();
         }
+        if (filter.bondType) {
+            urlParams.bondType = filter.bondType.code;
+        }
         if (CommonUtils.exists(descending)) {
             urlParams.descending = descending;
         }
@@ -169,6 +172,7 @@ export interface QuotesFilter {
     searchQuery?: string;
     showUserShares?: boolean;
     currency?: string;
+    bondType?: BondType;
 }
 
 export interface AssetQuotesFilter {
