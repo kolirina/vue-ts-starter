@@ -3,6 +3,7 @@ import {Service} from "../platform/decorators/service";
 import {Enum, EnumType, IStaticEnum} from "../platform/enum";
 import {Http} from "../platform/services/http";
 import {Share} from "../types/types";
+import {DateFormat, DateUtils} from "../utils/dateUtils";
 
 @Service("EventService")
 @Singleton
@@ -24,7 +25,13 @@ export class EventService {
      * @param dateParams даты начала и конца месяца
      */
     async getCalendarEvents(dateParams: CalendarDateParams): Promise<CalendarEvent[]> {
-        return this.http.post<CalendarEvent[]>(`/events/calendar`, dateParams);
+        const events = await this.http.post<CalendarEvent[]>(`/events/calendar`, dateParams);
+        return events.map(event => {
+            return {
+                ...event,
+                date: DateUtils.formatDate(DateUtils.parseDate(event.date), DateFormat.DATE2)
+            } as CalendarEvent;
+        });
     }
 
     /**

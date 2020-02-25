@@ -360,9 +360,12 @@ export class EventsPage extends UI {
     }
 
     private async loadAllData(): Promise<void> {
-        await this.updateEvents();
-        await this.loadDividendNews();
-        await this.loadCalendarEvents();
+        await Promise.all([
+                await this.updateEvents(),
+                await this.loadDividendNews(),
+                await this.loadCalendarEvents(),
+            ]
+        );
     }
 
     @Watch("portfolio")
