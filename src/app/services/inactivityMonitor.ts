@@ -96,7 +96,7 @@ export class InactivityMonitor {
         setInterval(async () => {
             const version = await this.applicationService.getBackendVersion();
             const versionFromLocalStorage = this.storage.get<AppVersion>(StoreKeys.BACKEND_VERSION_KEY, null);
-            if (version && versionFromLocalStorage && version.version !== versionFromLocalStorage.version && version.build !== versionFromLocalStorage.build) {
+            if (version && versionFromLocalStorage && version.build !== versionFromLocalStorage.build) {
                 await new NewBackendVersionDialog().show();
             }
         }, 1000 * 60 * 10);
