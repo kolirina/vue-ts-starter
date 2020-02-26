@@ -16,13 +16,14 @@ import {
     CalendarType,
     DividendNewsItem,
     EventsAggregateInfo,
-    EventService, EventsResponse,
+    EventService,
+    EventsResponse,
     ShareEvent
 } from "../services/eventService";
 import {AssetType} from "../types/assetType";
 import {EventType} from "../types/eventType";
 import {Operation} from "../types/operation";
-import {Pagination, Portfolio, TableHeader} from "../types/types";
+import {Pagination, Portfolio, ShareType, TableHeader} from "../types/types";
 import {DateUtils} from "../utils/dateUtils";
 import {SortUtils} from "../utils/sortUtils";
 import {TradeUtils} from "../utils/tradeUtils";
@@ -484,7 +485,7 @@ export class EventsPage extends UI {
             eventFields: {
                 amount: event.cleanAmount,
                 amountPerShare: event.amountPerShare,
-                quantity: event.quantity,
+                quantity: event.share?.shareType === ShareType.BOND ? Number(event.quantity) : event.quantity,
                 eventPeriod: event.period,
                 eventDate: event.date,
                 note: TradeUtils.eventNote(event),
