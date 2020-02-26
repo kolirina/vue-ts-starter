@@ -14,7 +14,7 @@ export class BondTrade implements Trade {
         if (holder.getNkd()) {
             if (holder.isPerOne()) {
                 nkdTotal = new Decimal(holder.getNkd()).mul(new Decimal(holder.getQuantity()));
-            } else if (holder.getQuantity() && holder.getQuantity() !== 0) {
+            } else if (holder.getQuantity() && !new Decimal(holder.getQuantity()).isZero()) {
                 nkdTotal = new Decimal(holder.getNkd());
             }
         }

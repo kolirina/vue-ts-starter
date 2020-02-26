@@ -206,7 +206,7 @@ export class BalancesPage extends UI implements TradeDataHolder {
 
     private stockFormIsValid = true;
 
-    private quantity: number = null;
+    private quantity: string = null;
 
     private share: Share = null;
 
@@ -405,7 +405,7 @@ export class BalancesPage extends UI implements TradeDataHolder {
         return this.date;
     }
 
-    getQuantity(): number {
+    getQuantity(): string {
         return this.quantity;
     }
 

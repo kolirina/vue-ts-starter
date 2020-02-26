@@ -13,6 +13,7 @@
  *       420107, РЕСПУБЛИКА ТАТАРСТАН, ГОРОД КАЗАНЬ, УЛИЦА СПАРТАКОВСКАЯ, ДОМ 2, ПОМЕЩЕНИЕ 119
  * (c) ООО "Интеллектуальные инвестиции", 2018
  */
+import Decimal from "decimal.js";
 import {Inject} from "typescript-ioc";
 import {namespace} from "vuex-class/lib/bindings";
 import {Component, Prop, UI, Watch} from "../../app/ui";
@@ -358,7 +359,7 @@ export class StockTable extends UI {
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
             share: stockRow.share,
-            quantity: Math.abs(Number(stockRow.quantity)),
+            quantity: new Decimal(stockRow.quantity).abs().toString(),
             operation,
             assetType: AssetType.valueByName(stockRow.share.shareType)
         });

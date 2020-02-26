@@ -9,7 +9,7 @@ export class CalculationTrade implements Trade {
     }
 
     totalWithoutFee(holder: TradeDataHolder): string {
-        if (holder.getPrice() && holder.getQuantity() && holder.getQuantity() !== 0) {
+        if (holder.getPrice() && holder.getQuantity() && !new Decimal(holder.getQuantity()).isZero()) {
             let amount = new Decimal(holder.getPrice());
             const quantity = new Decimal(holder.getQuantity());
             if (!holder.isPerOne()) {

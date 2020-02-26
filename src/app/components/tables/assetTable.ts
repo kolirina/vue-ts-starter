@@ -13,6 +13,7 @@
  *       420107, РЕСПУБЛИКА ТАТАРСТАН, ГОРОД КАЗАНЬ, УЛИЦА СПАРТАКОВСКАЯ, ДОМ 2, ПОМЕЩЕНИЕ 119
  * (c) ООО "Интеллектуальные инвестиции", 2018
  */
+import Decimal from "decimal.js";
 import {Inject} from "typescript-ioc";
 import {Component, namespace, Prop, UI, Watch} from "../../app/ui";
 import {ShowProgress} from "../../platform/decorators/showProgress";
@@ -402,7 +403,7 @@ export class AssetTable extends UI {
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
             shareId: String(stockRow.share.id),
-            quantity: Math.abs(Number(stockRow.quantity)),
+            quantity: new Decimal(stockRow.quantity).abs().toString(),
             operation,
             assetType: AssetType.ASSET
         });
