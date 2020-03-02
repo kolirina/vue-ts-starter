@@ -122,7 +122,7 @@ export class ChartUtils {
         eventsGroups.push({
             type: flags,
             data: grouped,
-            name: name,
+            name: "events",
             onSeries: onSeries,
             stackDistance: 20,
             shape: shape,
