@@ -139,7 +139,7 @@ export class PortfolioPage extends UI {
 
     @ShowProgress
     private async onPeriodChange(): Promise<void> {
-        this.loadOverview(this.selectedPeriod.code);
+        await this.loadOverview(this.selectedPeriod.code);
     }
 
     private async loadOverview(period: string): Promise<void> {

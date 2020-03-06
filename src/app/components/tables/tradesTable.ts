@@ -26,7 +26,7 @@ import {TradeFields, TradeType} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
 import {BigMoney} from "../../types/bigMoney";
 import {Operation} from "../../types/operation";
-import {Pagination, Portfolio, TableHeader, TablePagination, TradeRow} from "../../types/types";
+import {Pagination, Portfolio, TableHeader, TradeRow} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {DateFormat} from "../../utils/dateUtils";
 import {TradeUtils} from "../../utils/tradeUtils";
@@ -380,7 +380,7 @@ export class TradesTable extends UI {
         return AssetType.valueByName(trade.asset) === AssetType.MONEY;
     }
 
-    private getQuantity(trade: TradeRow): number {
+    private getQuantity(trade: TradeRow): string {
         if (!this.isMoneyTrade(trade)) {
             return trade.quantity;
         }

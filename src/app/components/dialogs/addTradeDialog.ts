@@ -370,7 +370,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     private price: string = null;
 
-    private quantity: number = null;
+    private quantity: string = null;
 
     private facevalue: string = null;
 
@@ -401,7 +401,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     /** Признак доступности профессионального режима */
     private portfolioProModeEnabled = false;
     /** Текущее количество бумаг по которой идёт добавление сделки */
-    private currentCountShareSearch: number = null;
+    private currentCountShareSearch: string = null;
 
     async mounted(): Promise<void> {
         this.clientInfo = await this.clientService.getClientInfo();
@@ -581,7 +581,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         const suggestedInfo = await this.tradeService.getSuggestedInfo(this.portfolio.id, this.assetType.enumName,
             this.operation.enumName, this.share.ticker, String(this.share.id), this.date);
         if (suggestedInfo) {
-            this.quantity = suggestedInfo.quantity;
+            this.quantity = this.isBondTrade ? Number(suggestedInfo.quantity).toString() : suggestedInfo.quantity;
             this.price = suggestedInfo.amount || this.price;
         }
     }
@@ -625,13 +625,13 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         if (this.share) {
             if (this.isStockTrade || (this.share as Asset).category === "STOCK") {
                 const row = this.portfolio.overview.stockPortfolio.rows.find(item => item.share.ticker === this.share.ticker);
-                this.currentCountShareSearch = row ? Number(row.quantity) : null;
+                this.currentCountShareSearch = row ? row.quantity : null;
             } else if (this.assetType === AssetType.BOND) {
                 const row = this.portfolio.overview.bondPortfolio.rows.find(item => item.bond.ticker === this.share.ticker);
-                this.currentCountShareSearch = row ? Number(row.quantity) : null;
+                this.currentCountShareSearch = row ? String(row.quantity) : null;
             } else if (this.isAssetTrade) {
                 const row = this.portfolio.overview.assetPortfolio.rows.find(item => item.asset.id === this.share.id);
-                this.currentCountShareSearch = row ? Number(row.quantity) : null;
+                this.currentCountShareSearch = row ? row.quantity : null;
             }
         }
     }
@@ -1047,9 +1047,10 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         switch (this.assetType) {
             case AssetType.STOCK:
             case AssetType.ASSET:
-                return this.share && this.date && this.price && this.quantity > 0 && (!this.newCustomAsset || !!this.assetPrice);
+                return this.share && this.date && this.price && this.quantity && !new Decimal(this.quantity).isZero() && (!this.newCustomAsset || !!this.assetPrice);
             case AssetType.BOND:
-                return this.share && this.date && this.price && (!!this.facevalue || [Operation.COUPON, Operation.AMORTIZATION].includes(this.operation)) && this.quantity > 0;
+                return this.share && this.date && this.price && (!!this.facevalue || [Operation.COUPON, Operation.AMORTIZATION].includes(this.operation)) &&
+                    this.quantity && !new Decimal(this.quantity).isZero();
             case AssetType.MONEY:
                 return this.date && (this.isCurrencyConversion ? !!this.currencyExchangeRate && !!this.debitCurrencyValue && !!this.moneyAmount : !!this.moneyAmount);
         }
@@ -1163,7 +1164,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         return this.portfolioProModeEnabled ? `${this.date} ${this.time}` : `${this.date} ${time}`;
     }
 
-    getQuantity(): number {
+    getQuantity(): string {
         return this.quantity;
     }
 
@@ -1225,7 +1226,7 @@ export type TradeDialogData = {
     share?: Share,
     ticker?: string,
     shareId?: string,
-    quantity?: number,
+    quantity?: string,
     date?: string,
     eventFields?: EventFields,
     operation?: Operation,
