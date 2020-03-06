@@ -318,6 +318,10 @@ table.v-table thead td:first-child, table.v-table thead td:not(:nth-child(1)), t
         .v-input {
           margin: 0 0 0 18px !important;
 
+          &__slot {
+            background: none;
+          }
+
           .v-input__append-inner {
             margin: 0 !important;
             padding: 0 !important;
@@ -347,4 +351,8 @@ table.v-table thead td:first-child, table.v-table thead td:not(:nth-child(1)), t
   .v-datatable__actions {
     border-top: none !important;
   }
+}
+
+.hovered {
+  background: #eee;
 }

@@ -245,8 +245,6 @@ export class ThemeUtils {
 
     .content-loader stop {stop-color: #2c3040}
 
-    .v-select__selection--comma {margin-left: 16px}
-
     .sing-in-wrap .paired-section__right-section {background-image: url(../img/sign_in/bg-dark.svg)}
 
     .v-input input::-webkit-input-placeholder {color: #cfd0d4 !important}
