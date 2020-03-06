@@ -378,7 +378,7 @@ export class BondTable extends UI {
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
             share: bondRow.bond,
-            quantity: Math.abs(Number(bondRow.quantity)),
+            quantity: new Decimal(bondRow.quantity).abs().toString(),
             operation,
             assetType: AssetType.BOND
         });
