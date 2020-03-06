@@ -65,7 +65,7 @@ export interface DividendInfo {
     /** Сумма сделки */
     amount: string;
     /** Количество */
-    quantity: number;
+    quantity: string;
     /** Сумма на одну бумагу */
     perOne: string;
     /** Дивидендная доходность по тикеру */

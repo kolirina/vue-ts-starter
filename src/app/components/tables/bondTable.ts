@@ -14,6 +14,7 @@
  * (c) ООО "Интеллектуальные инвестиции", 2019
  */
 
+import Decimal from "decimal.js";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {Prop, Watch} from "vue-property-decorator";
@@ -377,7 +378,7 @@ export class BondTable extends UI {
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
             share: bondRow.bond,
-            quantity: Math.abs(Number(bondRow.quantity)),
+            quantity: new Decimal(bondRow.quantity).abs().toString(),
             operation,
             assetType: AssetType.BOND
         });

@@ -67,7 +67,7 @@ export type TradeRow = {
     /** Название компании */
     companyName?: string,
     /** Количество */
-    quantity: number,
+    quantity: string,
     /** Номинал */
     facevalue: string,
     /** НКД */

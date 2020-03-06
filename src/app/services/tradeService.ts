@@ -227,7 +227,7 @@ export type TradeFields = {
     /** Дата */
     date: string,
     /** Количество */
-    quantity: number,
+    quantity: string,
     /** Цена */
     price: string,
     /** Номинал */
@@ -350,9 +350,8 @@ export interface SuggestedQuantityRequest {
 
 /** Сущность ответа на запрос количества бумаг в портфеле для опереденного актива на дату */
 export interface SuggestedQuantityResponse {
-
     /** Размер начисления */
     amount: string;
     /** Количество */
-    quantity: number;
+    quantity: string;
 }

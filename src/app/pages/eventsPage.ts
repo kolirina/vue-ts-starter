@@ -1,3 +1,4 @@
+import Decimal from "decimal.js";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {Watch} from "vue-property-decorator";
@@ -485,7 +486,7 @@ export class EventsPage extends UI {
             eventFields: {
                 amount: event.cleanAmount,
                 amountPerShare: event.amountPerShare,
-                quantity: event.share?.shareType === ShareType.BOND ? Number(event.quantity) : event.quantity,
+                quantity: event.share?.shareType === ShareType.BOND ? new Decimal(event.quantity).abs().toString() : event.quantity,
                 eventPeriod: event.period,
                 eventDate: event.date,
                 note: TradeUtils.eventNote(event),

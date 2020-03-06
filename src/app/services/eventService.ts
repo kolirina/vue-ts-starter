@@ -127,7 +127,7 @@ export interface ShareEvent {
     /** Начисление на одну бумагу за вычетом налога */
     cleanAmountPerShare: string;
     /** Количество бумаг события */
-    quantity: number;
+    quantity: string;
     /** Идентификатор портфеля */
     portfolioId: number;
     /** Признак исполненного события */
@@ -155,7 +155,7 @@ export interface RejectShareEventRequest {
     /** Дата наступления события */
     date: string;
     /** Количество бумаг события */
-    quantity: number;
+    quantity: string;
     /** Идентификатор портфеля */
     portfolioId: number;
     /** Итоговая сумма начисления (включая налог) */
@@ -168,7 +168,7 @@ export interface RejectShareEventRequest {
 
 /** Поля события, необходимые для диа */
 export interface EventFields {
-    quantity: number;
+    quantity: string;
     amount: string;
     amountPerShare: string;
     note: string;
