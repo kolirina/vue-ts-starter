@@ -6,7 +6,7 @@ export interface TradeDataHolder {
 
     getDate(): string;
 
-    getQuantity(): number;
+    getQuantity(): string;
 
     getPrice(): string;
 
