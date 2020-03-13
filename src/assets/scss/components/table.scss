@@ -276,7 +276,7 @@ table.v-table thead td:first-child, table.v-table thead td:not(:nth-child(1)), t
           padding-left: 31px !important;
         }
 
-        &:not([aria-sort=ascending]) {
+        &:not([aria-sort=ascending]) :not([aria-sort=descending]) {
           .v-icon {
             margin-left: -16px;
           }
