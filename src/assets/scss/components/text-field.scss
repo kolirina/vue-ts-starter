@@ -105,14 +105,13 @@
   &.v-select:not(.v-autocomplete) {
     .v-input__slot {
       align-items: center;
-      background: none;
 
       &:before,
       &:after {content: none}
     }
 
     .v-select__selections {
-      padding-left: 0;
+      padding-left: 16px;
 
       input {display: none}
     }

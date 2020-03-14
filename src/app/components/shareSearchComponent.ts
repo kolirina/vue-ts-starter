@@ -35,7 +35,7 @@ import {Asset, Bond, Share, ShareType} from "../types/types";
                 <span :class="{ellipsis: ellipsis, 'mw218': ellipsis}" :title="shareLabelSelected(data.item)">{{ shareLabelSelected(data.item) }}</span>
             </template>
             <template #item="data">
-                <span v-html="shareLabelListItem(data.item)"></span>
+                <span v-html="shareLabelListItem(data.item)" :title="shareLabelSelected(data.item)"></span>
             </template>
             <template slot="no-data">
                 <v-list-tile>
@@ -181,7 +181,7 @@ export class ShareSearchComponent extends UI {
     }
 
     private shareLabelSelected(share: Share): string {
-        return share.shareType === ShareType.STOCK ? `${share.ticker} (${share.shortname})` : share.shortname;
+        return `${share.shareType === ShareType.STOCK ? share.ticker : ""} (${share.shortname} (${AssetType.valueByName(share.shareType).description})`;
     }
 
     private shareLabelListItem(share: Share): string {
