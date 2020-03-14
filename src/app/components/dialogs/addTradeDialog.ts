@@ -64,21 +64,9 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                 <v-card-text class="paddT0 paddB0">
                     <v-container grid-list-md class="paddT0 paddB0">
                         <v-layout wrap>
-                            <!-- Тип актива -->
-                            <v-flex xs12 sm6>
-                                <v-select :items="assetTypes" v-model="assetType" :return-object="true" label="Тип актива" item-text="description" dense
-                                          hide-details @change="onAssetTypeChange"></v-select>
-                            </v-flex>
-
-                            <!-- Операция -->
-                            <v-flex xs12 sm6>
-                                <v-select :items="assetType.operations" v-model="operation" :return-object="true" label="Операция" dense hide-details
-                                          item-text="description" @change="onOperationChange"></v-select>
-                            </v-flex>
-
                             <!-- Тикер бумаги -->
-                            <v-flex v-if="shareAssetType" xs12 :class="portfolioProModeEnabled ? 'sm6' : 'sm9'">
-                                <share-search :asset-type="assetType" :filtered-shares="filteredShares" :placeholder="shareSearchPlaceholder" class="required"
+                            <v-flex v-if="shareAssetType" xs12 sm8>
+                                <share-search :filtered-shares="filteredShares" :placeholder="shareSearchPlaceholder" class="required"
                                               :create-asset-allowed="createAssetAllowed"
                                               @change="onShareSelect" @clear="onShareClear" @requestNewShare="onRequestNewShare"
                                               autofocus ellipsis allow-request></share-search>
@@ -91,8 +79,20 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                 </div>
                             </v-flex>
 
+                            <!-- Тип актива -->
+                            <v-flex xs12 :class="isMoneyTrade ? 'sm6' : 'sm4'">
+                                <v-select :items="assetTypes" v-model="assetType" :return-object="true" label="Тип актива" item-text="description" dense
+                                          hide-details @change="onAssetTypeChange"></v-select>
+                            </v-flex>
+
+                            <!-- Операция -->
+                            <v-flex xs12 sm6>
+                                <v-select :items="assetType.operations" v-model="operation" :return-object="true" label="Операция" dense hide-details
+                                          item-text="description" @change="onOperationChange"></v-select>
+                            </v-flex>
+
                             <!-- Дата сделки -->
-                            <v-flex xs12 :class="isMoneyTrade ? portfolioProModeEnabled ? 'sm6' : '' : 'sm3'">
+                            <v-flex xs12 :class="isMoneyTrade ? 'sm6' : portfolioProModeEnabled ? 'sm3' : 'sm6'">
                                 <v-menu ref="dateMenu" :close-on-content-click="false" v-model="dateMenuValue" :nudge-right="40" :return-value.sync="date"
                                         lazy transition="scale-transition" offset-y full-width min-width="290px">
                                     <v-text-field name="date" slot="activator" v-model="date" label="Дата" v-validate="'required'"
@@ -180,7 +180,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                     </v-flex>
                                     <v-flex v-if="calculationAssetType || isBondTrade" xs12 lg6>
                                         <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" top>
-                                            <v-checkbox slot="activator" label="Начисление на одну бумагу" v-model="perOne"></v-checkbox>
+                                            <v-checkbox slot="activator" label="Начисление на одну бумагу" v-model="perOne" hide-details></v-checkbox>
                                             <span>Отключите если вносите сумму начисления</span>
                                         </v-tooltip>
                                     </v-flex>
@@ -613,11 +613,18 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private async onShareSelect(share: Share): Promise<void> {
         if (share && share.shareType === ShareType.ASSET && this.assetType !== AssetType.ASSET) {
             this.assetType = AssetType.ASSET;
+        } else {
+            this.assetType = AssetType.valueByName(share?.shareType);
         }
+        this.onAssetTypeChange(false);
         this.share = share;
         this.calculateCurrentShareQuantity();
         this.fillFieldsFromShare();
         await this.onTickerOrDateChange();
+        // исправление бага валидатора https://github.com/logaretm/vee-validate/issues/2109
+        this.$nextTick(() => {
+            this.$validator.errors.clear();
+        });
     }
 
     private calculateCurrentShareQuantity(): void {
