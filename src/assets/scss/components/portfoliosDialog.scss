@@ -33,6 +33,7 @@
     max-width: fit-content;
     .v-input__slot {
         height: 100%;
+        background: none;
     }
     .v-select__selections {
         max-width: fit-content;
@@ -53,6 +54,12 @@
 }
 .embedded-dialog-select {
     margin: 34px 0px 28px;
+
+    .v-input {
+        &__slot {
+            background: none;
+        }
+    }
 }
 .section-portfolio-name {
     margin-top: 30px;
@@ -71,6 +78,13 @@
 }
 .select-option-wrap {
     margin: 27px 0px;
+
+    .v-input {
+        &__slot {
+            background: none;
+        }
+    }
+
     .select-section {
         margin-right: 10px;
         &:last-child {

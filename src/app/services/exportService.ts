@@ -1,6 +1,7 @@
 import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {Http} from "../platform/services/http";
+import {CombinedInfoRequest} from "../types/types";
 
 @Service("ExportService")
 @Singleton
@@ -15,18 +16,8 @@ export class ExportService {
      */
     async exportTrades(portfolioId: number): Promise<any> {
         const response = await this.http.get<Response>(`/export/${portfolioId}`);
-        if (!window.navigator.msSaveOrOpenBlob) {
-            const blob = await response.blob();
-            const binaryData = [];
-            binaryData.push(blob);
-            const link = document.createElement("a");
-            link.href = (window.URL || (window as any).webkitURL).createObjectURL(new Blob(binaryData, {type: "application/octet-stream"}));
-            link.download = `trades_portfolio_${portfolioId}.csv`;
-            link.dispatchEvent(new MouseEvent("click", {bubbles: true, cancelable: true, view: window}));
-        } else {
-            // BLOB FOR EXPLORER 11
-            window.navigator.msSaveOrOpenBlob(await response.blob(), `trades_portfolio_${portfolioId}.csv`);
-        }
+        const fileName = this.getFileName(response.headers, portfolioId, ExportType.TRADES);
+        await this.download(response, fileName);
     }
 
     /**
@@ -37,6 +28,20 @@ export class ExportService {
     async exportReport(portfolioId: number, exportType: ExportType): Promise<any> {
         const response = await this.http.get<Response>(`/export/${exportType}/${portfolioId}`);
         const fileName = this.getFileName(response.headers, portfolioId, exportType);
+        await this.download(response, fileName);
+    }
+
+    /**
+     * Скачивает файл с отчетом в формате xlsx
+     * @param request запрос экспорта комбинированного портфеля
+     */
+    async exportCombinedReport(request: CombinedInfoRequest): Promise<any> {
+        const response = await this.http.post<Response>("/export/combined", request);
+        const fileName = this.getCombinedFileName(response.headers, request.ids);
+        await this.download(response, fileName);
+    }
+
+    private async download(response: Response, fileName: string): Promise<void> {
         if (!window.navigator.msSaveOrOpenBlob) {
             const blob = await response.blob();
             const binaryData = [];
@@ -47,7 +52,7 @@ export class ExportService {
             link.dispatchEvent(new MouseEvent("click", {bubbles: true, cancelable: true, view: window}));
         } else {
             // BLOB FOR EXPLORER 11
-            window.navigator.msSaveOrOpenBlob(response.blob(), fileName);
+            window.navigator.msSaveOrOpenBlob(await response.blob(), fileName);
         }
     }
 
@@ -62,7 +67,21 @@ export class ExportService {
             const contentDisposition = (headers as any)["content-disposition"];
             return contentDisposition.substring(contentDisposition.indexOf("=") + 1).trim();
         } catch (e) {
-            return `${exportType.toLowerCase()}_portfolio_${portfolioId}.xlsx`;
+            return `${exportType.toLowerCase()}_portfolio_${portfolioId}.${exportType === ExportType.TRADES ? "csv" : "xlsx"}`;
+        }
+    }
+
+    /**
+     * Возвращает имя файла
+     * @param headers заголовки ответа
+     * @param portfolioIds идентификаторы портфелей
+     */
+    private getCombinedFileName(headers: Headers, portfolioIds: number[]): string {
+        try {
+            const contentDisposition = (headers as any)["content-disposition"];
+            return contentDisposition.substring(contentDisposition.indexOf("=") + 1).trim();
+        } catch (e) {
+            return `combined_portfolio_[${portfolioIds.join(",")}].xlsx`;
         }
     }
 }

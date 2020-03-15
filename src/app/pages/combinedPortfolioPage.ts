@@ -9,6 +9,7 @@ import {BlockByTariffDialog} from "../components/dialogs/blockByTariffDialog";
 import {CompositePortfolioManagement} from "../components/dialogs/compositePortfolioManagement";
 import {Storage} from "../platform/services/storage";
 import {ClientInfo, ClientService} from "../services/clientService";
+import {ExportService} from "../services/exportService";
 import {MarketHistoryService} from "../services/marketHistoryService";
 import {OverviewService} from "../services/overviewService";
 import {HighStockEventsGroup} from "../types/charts/types";
@@ -39,6 +40,9 @@ const MainStore = namespace(StoreType.MAIN);
                             </div>
                             <v-spacer></v-spacer>
                             <div v-if="blockNotEmpty()">
+                                <v-btn class="btn" color="primary" @click="exportPortfolio">
+                                    Экспорт в xlsx
+                                </v-btn>
                                 <v-btn class="btn" color="primary" @click.stop="showDialogCompositePortfolio">
                                     Сформировать
                                 </v-btn>
@@ -50,6 +54,9 @@ const MainStore = namespace(StoreType.MAIN);
                                 состав и доли каждой акции, если, например, она входит в состав нескольких портфелей.
                             </div>
                             <div class="mt-4">
+                                <v-btn class="btn" color="primary" @click="exportPortfolio">
+                                    Экспорт в xlsx
+                                </v-btn>
                                 <v-btn class="btn" color="primary" @click.stop="showDialogCompositePortfolio">
                                     Сформировать
                                 </v-btn>
@@ -83,6 +90,8 @@ export class CombinedPortfolioPage extends UI {
     private storage: Storage;
     @Inject
     private marketHistoryService: MarketHistoryService;
+    @Inject
+    private exportService: ExportService;
     /** Данные комбинированного портфеля */
     private overview: Overview = null;
     /** Валюта просмотра портфеля */
@@ -160,8 +169,15 @@ export class CombinedPortfolioPage extends UI {
         this.storage.set(StoreKeys.COMBINED_VIEW_CURRENCY_KEY, this.viewCurrency);
     }
 
+    /**
+     * Экспортирует данные комбинированного портфеля в xlsx
+     */
+    private async exportPortfolio(): Promise<void> {
+        await this.exportService.exportCombinedReport({ids: this.ids, viewCurrency: this.viewCurrency});
+    }
+
     private blockNotEmpty(): boolean {
-        return this.overview.bondPortfolio.rows.length !== 0 || this.overview.stockPortfolio.rows.length !== 0;
+        return this.overview.totalTradesCount !== 0;
     }
 
     private async loadPortfolioLineChart(): Promise<void> {
