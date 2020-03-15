@@ -181,7 +181,7 @@ export class ShareSearchComponent extends UI {
     }
 
     private shareLabelSelected(share: Share): string {
-        return `${share.shareType === ShareType.STOCK ? share.ticker : ""} (${share.shortname} (${AssetType.valueByName(share.shareType).description})`;
+        return share.shareType === ShareType.STOCK ? `${share.ticker} (${share.shortname})` : share.shortname;
     }
 
     private shareLabelListItem(share: Share): string {
@@ -192,11 +192,11 @@ export class ShareSearchComponent extends UI {
         if ([AssetType.STOCK, AssetType.ASSET].includes(this.assetTypeMutated || shareType)) {
             if (share.price !== null) {
                 const price = new BigMoney(share.price);
-                return `${share.ticker} (${share.shortname}), <b>${Filters.formatNumber(price.amount.toString())}</b> ${price.currencySymbol}`;
+                return `${share.ticker} (${share.shortname}), <b>${Filters.formatNumber(price.amount.toString())}</b> ${price.currencySymbol} (${AssetType.valueByName(share.shareType).description})`;
             }
             return `Создать актив "${share.shortname}"`;
         } else if ((this.assetTypeMutated || shareType) === AssetType.BOND) {
-            return `${share.ticker} (${share.shortname}), <b>${(share as Bond).prevprice}</b> %`;
+            return `${share.ticker} (${share.shortname}), <b>${(share as Bond).prevprice}</b> % (${AssetType.valueByName(share.shareType).description})`;
         }
 
         return `${share.ticker} (${share.shortname})`;
