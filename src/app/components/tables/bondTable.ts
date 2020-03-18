@@ -194,7 +194,7 @@ const MainStore = namespace(StoreType.MAIN);
                             <div class="ext-info__item">
                                 Номинал покупки {{ props.item.nominal | amount(true) }} <span>{{ portfolioCurrency }}</span><br>
                                 Дисконт {{ props.item.amortization | amount(true) }} <span>{{ portfolioCurrency }}</span><br>
-                                <template v-if="!props.item.bond.repaid">
+                                <template v-if="!props.item.bond.repaid && props.item.bond.currency === viewCurrency">
                                     Купон {{ props.item.bond.couponvalue | amount(true) }} <span>{{ props.item.bond.currency | currencySymbolByCurrency }}</span><br>
                                 </template>
 
@@ -237,7 +237,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <tr>
                         <td>
                             <div class="ext-info__item">
-                                <template v-if="!props.item.bond.repaid">
+                                <template v-if="!props.item.bond.repaid && props.item.bond.currency === viewCurrency">
                                     НКД {{ props.item.bond.accruedint | amount(true) }} <span>{{ props.item.bond.currency | currencySymbolByCurrency }}</span><br>
                                 </template>
                                 Выплаченный НКД {{ props.item.buyNkd | amount(true) }} <span>{{ portfolioCurrency }}</span><br>

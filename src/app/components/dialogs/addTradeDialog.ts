@@ -692,7 +692,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
                     await this.saveAsset(tradeFields);
                 }
                 await this.saveTrade(tradeFields);
-                UI.emit(EventType.TRADE_CREATED, {portfolioId: this.portfolio.id} as AddTradeEvent);
+                UI.emit(EventType.TRADE_CREATED, {portfolioId: this.portfolio.id});
             }
             const msg = this.data.eventFields ? "Событие успешно исполнено" : `Сделка успешно ${this.editMode ? "отредактирована" : "добавлена"}`;
             this.$snotify.info(msg);
