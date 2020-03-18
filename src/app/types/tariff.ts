@@ -8,15 +8,16 @@ export const MAX = 0x7fffffff;
 export class Tariff extends (EnumType as IStaticEnum<Tariff>) {
 
     static readonly STANDARD = new Tariff("STANDARD", "Стандарт", MAX, 2, "199", "99", "2388", "2388",
-        Permission.COMBINED_PORTFOLIO | Permission.INVESTMENTS);
+        Permission.COMBINED_PORTFOLIO | Permission.INVESTMENTS, "Базовый функционал");
 
     static readonly PRO = new Tariff("PRO", "Профессионал", MAX, MAX, "399", "199", "4788", "4788",
-        Permission.FOREIGN_SHARES | Permission.COMBINED_PORTFOLIO | Permission.INVESTMENTS | Permission.PROFF_MODE);
+        Permission.FOREIGN_SHARES | Permission.COMBINED_PORTFOLIO | Permission.INVESTMENTS | Permission.PROFF_MODE, "Расширенный функционал");
 
-    static readonly FREE = new Tariff("FREE", "Бесплатный", 7, 1, "0", "0", "0", "0", 0);
+    static readonly FREE = new Tariff("FREE", "Бесплатный", 7, 1, "0", "0", "0", "0", 0,
+        "Ограниченный функционал");
 
     static readonly TRIAL = new Tariff("TRIAL", "Профессионал (демо)", MAX, MAX, "399", "199", "4788", "4788",
-        Permission.FOREIGN_SHARES | Permission.COMBINED_PORTFOLIO | Permission.INVESTMENTS | Permission.PROFF_MODE);
+        Permission.FOREIGN_SHARES | Permission.COMBINED_PORTFOLIO | Permission.INVESTMENTS | Permission.PROFF_MODE, "");
 
     /** Служебное название тарифа */
     name: string;
@@ -36,9 +37,11 @@ export class Tariff extends (EnumType as IStaticEnum<Tariff>) {
     yearPrice: Decimal;
     /** Цена за один год пользования сервисом без учета скидки */
     yearFullPrice: Decimal;
+    /** Функционал */
+    functional: string;
 
     private constructor(name: string, description: string, maxSharesCount: number, maxPortfoliosCount: number, monthlyPrice: string, monthlyYearPrice: string,
-                        yearPrice: string, yearFullPrice: string, permissions: number) {
+                        yearPrice: string, yearFullPrice: string, permissions: number, functional: string) {
         super();
         this.name = name;
         this.description = description;
@@ -49,6 +52,7 @@ export class Tariff extends (EnumType as IStaticEnum<Tariff>) {
         this.yearPrice = new Decimal(yearPrice);
         this.yearFullPrice = new Decimal(yearFullPrice);
         this.permissions = permissions;
+        this.functional = functional;
     }
 
     hasPermission(perm: Permission): boolean {

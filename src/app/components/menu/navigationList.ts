@@ -16,6 +16,10 @@ import {PortfolioSwitcher} from "../portfolioSwitcher";
                 </div>
             </v-layout>
             <v-layout v-if="!sideBarOpened" column class="wrap-list-menu">
+                <div class="tariff-notification">
+                    <div class="margB8">У Вас бесплатный тариф. Подпишитесь и получите полный набор инструментов для учета активов без ограничений</div>
+                    <a href="#" class="v-btn theme--light big_btn primary">Подписаться</a>
+                </div>
                 <div v-for="item in mainSection">
                     <template v-if="item.subMenu">
                         <v-menu transition="slide-y-transition" bottom left class="submenu-item-list" content-class="submenu-v-menu" nudge-bottom="47">
