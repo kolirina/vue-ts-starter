@@ -1,9 +1,10 @@
+import {Prop} from "vue-property-decorator";
 import {Component, UI} from "../../app/ui";
 
 @Component({
     // language=Vue
     template: `
-        <v-layout column>
+        <v-layout column relative>
             <v-layout class="mini-menu-width" align-center justify-end column>
                 <div>
                     <v-btn flat round icon dark :to="{name: 'portfolio-management'}" title="Управление портфелями" active-class="active-btn-link" class="link-icon-btn">
@@ -21,8 +22,12 @@ import {Component, UI} from "../../app/ui";
                     </v-btn>
                 </div>
             </v-layout>
+            <div v-if="!sideBarOpened" :class="{'subscribe-status': true, 'subscribe-status_warning': false}">Подписка активна</div>
         </v-layout>
     `
 })
 export class MenuBottomNavigation extends UI {
+
+    @Prop({type: Boolean, required: true})
+    private sideBarOpened: boolean;
 }

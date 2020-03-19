@@ -180,6 +180,11 @@ export class TariffAgreement extends UI {
                 <div v-if="selected" class="tariff__plan_expires">
                     {{ expirationDescription }}
                 </div>
+                <div class="tariff-agreement__notification">
+                    <template v-if="tariff !== Tariff.FREE">
+                        Средства списываются регулярно.<br>Отказаться от подписки можно в любой момент
+                    </template>
+                </div>
                 <div v-if="tariff === Tariff.STANDARD" class="tariff-description-wrap">
                     <div>Базовые возможности</div>
                     <div>Возможность учета произвольных инструментов</div>
