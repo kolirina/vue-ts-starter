@@ -125,7 +125,9 @@ export class TariffAgreement extends UI {
                 <div class="tariff-item__description">{{ tariff.functional }}</div>
                 <div>
                     <span v-if="tariff !== Tariff.FREE && discountApplied" class="tariff__plan_old-price">{{ noDiscountPrice }}</span>
-                    <span class="tariff-item__price">&nbsp;{{ price }} <span class="rub"> / </span><span class="margL8">мес.</span></span>
+                    <span :class="{'tariff-item__price': true, 'free-tariff':tariff === Tariff.FREE}">
+                        &nbsp;{{ price }} <span class="rub"> / </span><span class="margL8">мес.</span>
+                    </span>
                     <div v-if="!monthly" class="tariff__plan_year-price">{{ tariff === Tariff.FREE ? "&nbsp;" : "при оплате за год" }}</div>
                     <div v-if="monthly" class="tariff__plan_year-price">&nbsp;</div>
                 </div>

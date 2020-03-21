@@ -237,7 +237,7 @@
   &.pro-tariff {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
-    border: 1px solid $sidebar-blue-color;
+    border: 2px solid $sidebar-blue-color;
   }
 
   &__title {
@@ -263,6 +263,8 @@
     font-size: 44px;
     line-height: 38px;
 
+    &.free-tariff {color: #A1A6B6}
+
     span {
       font-family: "Gilroy Regular";
       font-size: 16px;
@@ -287,9 +289,9 @@
 }
 
 .tariff-most-popular {
-  margin: -52px -1px 0 -1px;
+  margin: -52px -2px 0 -2px;
   border-radius: 8px 8px 0 0;
-  border: 1px solid $sidebar-blue-color;
+  border: 2px solid $sidebar-blue-color;
   padding: 8px 0;
   color: #fff;
   background: $sidebar-blue-color;
