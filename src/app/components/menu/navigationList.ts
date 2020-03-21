@@ -1,8 +1,12 @@
-import Component from "vue-class-component";
-import {Prop} from "vue-property-decorator";
-import {UI} from "../../app/ui";
+import {namespace} from "vuex-class";
+import {Component, Prop, UI} from "../../app/ui";
+import {ClientInfo} from "../../services/clientService";
+import {Tariff} from "../../types/tariff";
 import {NavBarItem} from "../../types/types";
+import {StoreType} from "../../vuex/storeType";
 import {PortfolioSwitcher} from "../portfolioSwitcher";
+
+const MainStore = namespace(StoreType.MAIN);
 
 @Component({
     // language=Vue
@@ -16,9 +20,9 @@ import {PortfolioSwitcher} from "../portfolioSwitcher";
                 </div>
             </v-layout>
             <v-layout v-if="!sideBarOpened" column class="wrap-list-menu">
-                <div class="tariff-notification">
+                <div v-if="showFreeTariffBlock" class="tariff-notification">
                     <div class="margB8">У Вас бесплатный тариф. Подпишитесь и получите полный набор инструментов для учета активов без ограничений</div>
-                    <a href="#" class="v-btn theme--light big_btn primary">Подписаться</a>
+                    <a @click="goToTariffs" class="v-btn theme--light big_btn primary">Подписаться</a>
                 </div>
                 <div v-for="item in mainSection">
                     <template v-if="item.subMenu">
@@ -68,6 +72,9 @@ export class NavigationList extends UI {
     @Prop({type: Number})
     private numberOfEvents: number;
 
+    @MainStore.Getter
+    private clientInfo: ClientInfo;
+
     /** Список ссылок с доп. функционалом */
     private LinkAdditionalFunctionality = LinkAdditionalFunctionality;
 
@@ -79,6 +86,16 @@ export class NavigationList extends UI {
         const path = this.$route.path;
         const subMenu = item.subMenu.map(menu => menu.action || menu.path);
         return subMenu.some(menu => path.includes(menu));
+    }
+
+    private goToTariffs(): void {
+        if (this.$router.currentRoute.path !== "/settings/tariffs") {
+            this.$router.push("/settings/tariffs");
+        }
+    }
+
+    private get showFreeTariffBlock(): boolean {
+        return this.clientInfo.user.tariff === Tariff.FREE;
     }
 }
 

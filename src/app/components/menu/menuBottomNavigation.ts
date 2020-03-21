@@ -1,5 +1,11 @@
-import {Prop} from "vue-property-decorator";
-import {Component, UI} from "../../app/ui";
+import dayjs from "dayjs";
+import {Component, namespace, Prop, UI} from "../../app/ui";
+import {ClientInfo} from "../../services/clientService";
+import {DateUtils} from "../../utils/dateUtils";
+import {TariffUtils} from "../../utils/tariffUtils";
+import {StoreType} from "../../vuex/storeType";
+
+const MainStore = namespace(StoreType.MAIN);
 
 @Component({
     // language=Vue
@@ -22,12 +28,42 @@ import {Component, UI} from "../../app/ui";
                     </v-btn>
                 </div>
             </v-layout>
-            <div v-if="!sideBarOpened" :class="{'subscribe-status': true, 'subscribe-status_warning': false}">Подписка активна</div>
+            <v-tooltip v-if="!sideBarOpened" content-class="custom-tooltip-wrap" max-width="340px" top nudge-right="55">
+                <div slot="activator" :class="{'subscribe-status': true, 'subscribe-status_warning': false}">{{ subscribeDescription }}</div>
+                <span>{{ expirationDescription }}</span>
+            </v-tooltip>
         </v-layout>
     `
 })
 export class MenuBottomNavigation extends UI {
 
-    @Prop({type: Boolean, required: true})
+    @Prop({type: Boolean, default: false})
     private sideBarOpened: boolean;
+
+    @MainStore.Getter
+    private clientInfo: ClientInfo;
+
+    private get subscribeDescription(): string {
+        const paidTill = DateUtils.parseDate(this.clientInfo.user.paidTill);
+        const currentDate = dayjs();
+        const diff = paidTill.get("date") - currentDate.get("date");
+        if (TariffUtils.isTariffExpired(this.clientInfo.user) || diff < 0) {
+            return "Подписка истекла";
+        } else {
+            if (paidTill.isAfter(currentDate) && diff > 5) {
+                return "Подписка активна";
+            } else if (diff <= 5 && diff >= 0) {
+                return "Подписка истекает";
+            }
+        }
+        return "";
+    }
+
+    private get expirationDescription(): string {
+        return `${this.subscribeDescription} ${this.expirationDate}`;
+    }
+
+    private get expirationDate(): string {
+        return DateUtils.formatDate(DateUtils.parseDate(this.clientInfo.user.paidTill));
+    }
 }

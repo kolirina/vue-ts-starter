@@ -118,14 +118,14 @@ export class TariffAgreement extends UI {
     template: `
         <v-layout :class="['tariff-item', 'margB30', tariff === Tariff.PRO ? 'pro-tariff' : '']" column>
             <div v-if="tariff === Tariff.PRO" class="alignC fs13 tariff-most-popular">
-                Выбор 67% инвесторов
+                Выбор инвесторов
             </div>
             <v-layout align-center column class="px-4">
                 <div class="tariff-item__title">{{ tariff.description }}</div>
                 <div class="tariff-item__description">{{ tariff.functional }}</div>
                 <div>
                     <span v-if="tariff !== Tariff.FREE && discountApplied" class="tariff__plan_old-price">{{ noDiscountPrice }}</span>
-                    <span class="tariff-item__price">&nbsp;{{ price }} <span class="rub"> / </span><span class="margL8">мес.<sup>*</sup></span></span>
+                    <span class="tariff-item__price">&nbsp;{{ price }} <span class="rub"> / </span><span class="margL8">мес.<sup v-if="!monthly">*</sup></span></span>
                     <div v-if="!monthly" class="tariff__plan_year-price">{{ tariff === Tariff.FREE ? "&nbsp;" : "* при оплате за год" }}</div>
                     <div v-if="monthly" class="tariff__plan_year-price">&nbsp;</div>
                 </div>
