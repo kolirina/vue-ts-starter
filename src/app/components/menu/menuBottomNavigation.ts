@@ -1,9 +1,16 @@
-import {Component, UI} from "../../app/ui";
+import dayjs from "dayjs";
+import {Component, namespace, Prop, UI} from "../../app/ui";
+import {ClientInfo} from "../../services/clientService";
+import {DateUtils} from "../../utils/dateUtils";
+import {TariffUtils} from "../../utils/tariffUtils";
+import {StoreType} from "../../vuex/storeType";
+
+const MainStore = namespace(StoreType.MAIN);
 
 @Component({
     // language=Vue
     template: `
-        <v-layout column>
+        <v-layout column relative>
             <v-layout class="mini-menu-width" align-center justify-end column>
                 <div>
                     <v-btn flat round icon dark :to="{name: 'portfolio-management'}" title="Управление портфелями" active-class="active-btn-link" class="link-icon-btn">
@@ -21,8 +28,30 @@ import {Component, UI} from "../../app/ui";
                     </v-btn>
                 </div>
             </v-layout>
+            <v-tooltip v-if="!sideBarOpened" content-class="custom-tooltip-wrap" max-width="340px" top nudge-right="55">
+                <div slot="activator" :class="{'subscribe-status': true, 'subscribe-status_warning': false}">{{ subscribeDescription }}</div>
+                <span>{{ expirationDescription }}</span>
+            </v-tooltip>
         </v-layout>
     `
 })
 export class MenuBottomNavigation extends UI {
+
+    @Prop({type: Boolean, default: false})
+    private sideBarOpened: boolean;
+
+    @MainStore.Getter
+    private clientInfo: ClientInfo;
+
+    private get subscribeDescription(): string {
+        return TariffUtils.getSubscribeDescription(this.clientInfo.user);
+    }
+
+    private get expirationDescription(): string {
+        return `${this.subscribeDescription} ${this.expirationDate}`;
+    }
+
+    private get expirationDate(): string {
+        return DateUtils.formatDate(DateUtils.parseDate(this.clientInfo.user.paidTill));
+    }
 }

@@ -57,7 +57,7 @@ const MainStore = namespace(StoreType.MAIN);
                         <navigation-list :mainSection="mainSection" :side-bar-opened="sideBarOpened"
                                          @openDialog="openDialog" :number-of-events="eventsCount"></navigation-list>
                     </div>
-                    <menu-bottom-navigation></menu-bottom-navigation>
+                    <menu-bottom-navigation :side-bar-opened="sideBarOpened"></menu-bottom-navigation>
                 </v-navigation-drawer>
                 <v-content>
                     <div class="mobile-wrapper-menu">
