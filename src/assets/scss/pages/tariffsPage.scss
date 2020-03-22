@@ -229,7 +229,7 @@
   max-width: 300px;
   width: 100%;
   background: #fff;
-  border: 1px solid #EBEEF3;
+  box-shadow: 0 0 0 1px #EBEEF3;
   border-radius: 8px;
   margin-top: 70px;
   padding: 16px 0;
@@ -237,7 +237,7 @@
   &.pro-tariff {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
-    border: 2px solid $sidebar-blue-color;
+    box-shadow: 0 0 0 2px $sidebar-blue-color;
   }
 
   &__title {
@@ -289,9 +289,9 @@
 }
 
 .tariff-most-popular {
-  margin: -52px -2px 0 -2px;
+  margin-top: -52px;
   border-radius: 8px 8px 0 0;
-  border: 2px solid $sidebar-blue-color;
+  box-shadow: 0 0 0 2px $sidebar-blue-color;
   padding: 8px 0;
   color: #fff;
   background: $sidebar-blue-color;
