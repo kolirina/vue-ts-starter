@@ -1,9 +1,8 @@
-import dayjs from "dayjs";
 import Decimal from "decimal.js";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
-import {Prop, UI, Watch} from "../../app/ui";
+import {Prop, UI} from "../../app/ui";
 import {ApplyPromoCodeDialog} from "../../components/dialogs/applyPromoCodeDialog";
 import {ConfirmDialog} from "../../components/dialogs/confirmDialog";
 import {ExpandedPanel} from "../../components/expandedPanel";
@@ -66,56 +65,6 @@ export class TariffLimitExceedInfo extends UI {
 @Component({
     // language=Vue
     template: `
-        <div class="mt-3 alignC">
-            <v-checkbox v-model="mutableValue" @change="onChange" hide-details>
-                <template #label>
-                <span>
-                    Согласие с условиями
-                    <v-tooltip content-class="custom-tooltip-wrap" max-width="340px" bottom>
-                        <sup class="custom-tooltip" slot="activator">
-                            <v-icon>fas fa-info-circle</v-icon>
-                        </sup>
-                        <span>
-                            <p>
-                                Нажимая чекбокс, вы соглашаетесь с условиями <br>
-                                лицензионного соглашения.
-                            </p>
-                            <p>
-                                По истечению оплаченного периода,  <br>
-                                оплата за новый период будет снята <br>
-                                с вашей карты автоматически. <br>
-                                Отписаться от автопродления вы можете<br>
-                                в любой момент в меню "Профиль"
-                            </p>
-                        </span>
-                    </v-tooltip>
-                </span>
-                </template>
-            </v-checkbox>
-            <a href="https://intelinvest.ru/terms-of-use" target="_blank" class="fs12-non-opacity decorationNone link-license-agreement">Лицензионное соглашение</a>
-        </div>
-    `
-})
-export class TariffAgreement extends UI {
-
-    @Prop({required: true, type: Boolean})
-    private value = false;
-
-    private mutableValue: boolean = false;
-
-    @Watch("value")
-    private setMutableValue(): void {
-        this.mutableValue = this.value;
-    }
-
-    private onChange(newValue: boolean): void {
-        this.$emit("agree", newValue);
-    }
-}
-
-@Component({
-    // language=Vue
-    template: `
         <v-layout :class="['tariff-item', 'margB30', tariff === Tariff.PRO ? 'pro-tariff' : '']" column>
             <div v-if="tariff === Tariff.PRO" class="alignC fs13 tariff-most-popular">
                 Выбор инвесторов
@@ -144,7 +93,7 @@ export class TariffAgreement extends UI {
                     </span>
                 </div>
                 <v-tooltip v-if="!isMobile && (!available || isTariffsDifferent)" :content-class="classPaymentBtn" bottom>
-                    <v-btn slot="activator" @click.stop="makePayment(tariff)" :class="{'big_btn margT24': true, 'selected': selected || agreementState[tariff.name]}" :disabled="disabled">
+                    <v-btn slot="activator" @click.stop="makePayment(tariff)" :class="{'big_btn margT24': true, 'selected': selected}" :disabled="disabled">
                         <span v-if="!busyState[tariff.name]">{{ buttonLabel }}</span>
                         <v-progress-circular v-if="busyState[tariff.name]" indeterminate color="white" :size="20"></v-progress-circular>
                     </v-btn>
@@ -156,7 +105,7 @@ export class TariffAgreement extends UI {
                     </div>
                 </v-tooltip>
                 <template v-if="isMobile && (!available || isTariffsDifferent)">
-                    <v-btn slot="activator" @click.stop="makePayment(tariff)" :class="{'big_btn margT24': true, 'selected': selected || agreementState[tariff.name]}" :disabled="disabled">
+                    <v-btn slot="activator" @click.stop="makePayment(tariff)" :class="{'big_btn margT24': true, 'selected': selected}" :disabled="disabled">
                         <span v-if="!busyState[tariff.name]">{{ buttonLabel }}</span>
                         <v-progress-circular v-if="busyState[tariff.name]" indeterminate color="white" :size="20"></v-progress-circular>
                     </v-btn>
@@ -173,7 +122,7 @@ export class TariffAgreement extends UI {
                     </expanded-panel>
                 </template>
                 <v-btn v-if="available && !isTariffsDifferent" @click.stop="makePayment(tariff)"
-                       :class="{'big_btn margT24': true, 'selected': selected || agreementState[tariff.name]}"
+                       :class="{'big_btn margT24': true, 'selected': selected}"
                        :style="disabled ? 'opacity: 0.7;' : ''"
                        :disabled="disabled">
                     <span v-if="!busyState[tariff.name]">{{ buttonLabel }}</span>
@@ -229,9 +178,6 @@ export class TariffBlock extends UI {
     /** Состояния оплат тарифов */
     @Prop({required: true, type: Object})
     private busyState: { [key: string]: boolean };
-    /** Состояния оплат тарифов */
-    @Prop({required: true, type: Object})
-    private agreementState: { [key: string]: boolean };
     /** Состояние прогресса оплаты */
     @Prop({required: true, type: Boolean})
     private isProgress: boolean;
@@ -289,7 +235,7 @@ export class TariffBlock extends UI {
     }
 
     private get expirationDescription(): string {
-        return (this.expiredTariff ? "Истек " : "Действует до ") + this.expirationDate;
+        return `${TariffUtils.getSubscribeDescription(this.clientInfo.user)} ${this.expirationDate}`;
     }
 
     private get expirationDate(): string {
@@ -340,7 +286,7 @@ export class TariffBlock extends UI {
      * Возвращает true если кнопка недоступна для нажатия
      */
     private get disabled(): boolean {
-        return !this.available || this.isProgress || !this.agreementState[this.tariff.name];
+        return !this.available || this.isProgress;
     }
 
     /**
@@ -407,7 +353,7 @@ export class TariffBlock extends UI {
 
                     <v-layout class="wrap-tariffs-sentence justify-space-around" wrap>
                         <tariff-block v-for="item in availableTariffs" :key="item.name" @pay="makePayment" :tariff="item" :client-info="clientInfo" :monthly="monthly"
-                                      :agreement-state="agreementState" :busy-state="busyState" :is-progress="isProgress" :payment-info="paymentInfo"></tariff-block>
+                                      :busy-state="busyState" :is-progress="isProgress" :payment-info="paymentInfo"></tariff-block>
                     </v-layout>
                 </div>
                 <div class="free-subscribe">
@@ -443,10 +389,6 @@ export class TariffsPage extends UI {
     private busyState: { [key: string]: boolean } = {
         FREE: false, STANDARD: false, PRO: false
     };
-    /** Состояния оплат тарифов */
-    private agreementState: { [key: string]: boolean } = {
-        FREE: false, STANDARD: false, PRO: false
-    };
     /** Состояние прогресса оплаты */
     private isProgress = false;
     /** Платежная информация пользователя */
@@ -461,7 +403,6 @@ export class TariffsPage extends UI {
         await this.reloadUser();
         if (![Tariff.FREE, Tariff.TRIAL].includes(this.clientInfo.user.tariff)) {
             this.paymentInfo = await this.tariffService.getPaymentInfo();
-            this.agreementState[this.clientInfo.user.tariff.name] = this.activeSubscription;
         }
         if (this.$route.params.status) {
             this.$snotify.info("Оплата заказа успешно завершена");
