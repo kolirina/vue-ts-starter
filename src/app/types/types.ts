@@ -130,6 +130,12 @@ export type _shareRow = _portfolioRow & {
      * Для тех случаев когда нет этого значения у самой акции или при конвертации валют
      */
     decimals: string
+    /** Средняя цена по открытой позиции */
+    openPositionAvgPrice: string;
+    /** Средняя цена по открытой позиции (чистая) */
+    openPositionAvgPriceClean: string;
+    /** Комиссия по открытой позиции */
+    openPositionFee: string;
 };
 
 export type SharePortfolioSumRow = _shareRow & {
