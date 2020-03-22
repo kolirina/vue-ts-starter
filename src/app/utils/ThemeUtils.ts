@@ -39,7 +39,8 @@ export class ThemeUtils {
 
      .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light,
      .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).v-btn--disabled,
-     .import-wrapper-content .section-upload-file .reselect-file-btn .file-link__text {
+     .import-wrapper-content .section-upload-file .reselect-file-btn .file-link__text,
+     .free-subscribe a {
         background-color: #3b6ec9 !important;
         color: #fff !important;
         border-color: transparent !important;
@@ -66,7 +67,7 @@ export class ThemeUtils {
     .theme--light.v-btn-toggle,
     .negative-balance-notification,
     .sing-in-wrap .paired-section__left-section,
-     .empty-station {background: #2C3040 !important;}
+    .empty-station, .tariff-description-wrap div:nth-child(even) {background: #2C3040 !important;}
 
     .v-content__wrap,
     .header-first-card,
@@ -174,8 +175,8 @@ export class ThemeUtils {
     .snotifyToast, .theme--light.v-chip,
     .import-wrapper-content .setings-menu .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light,
     .import-wrapper-content .setings-menu .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
-    .wrapper-content-panel__privacy-section-up-page-btn,
-    .sing-in-wrap .pre-footer, .promo-codes__steps,
+    .wrapper-content-panel__privacy-section-up-page-btn, .free-subscribe,
+    .sing-in-wrap .pre-footer, .promo-codes__steps, .tariff-notification,
     input.highcharts-range-selector:focus, .inplace-custom-input, .currency-card.v-card {background-color: #252A35 !important}
 
     .dashboard-wrap {background-color: #0a0d19;}

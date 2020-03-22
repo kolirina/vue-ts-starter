@@ -43,4 +43,20 @@ export class TariffUtils {
         const currentDate = dayjs();
         return clientInfo.tariff !== Tariff.FREE && paidTill.isBefore(currentDate) && !paidTill.isSame(currentDate, "date");
     }
+
+    static getSubscribeDescription(clientInfo: Client): string {
+        const paidTill = DateUtils.parseDate(clientInfo.paidTill);
+        const currentDate = dayjs();
+        const diff = paidTill.get("date") - currentDate.get("date");
+        if (TariffUtils.isTariffExpired(clientInfo) || diff < 0) {
+            return "Подписка истекла";
+        } else {
+            if (paidTill.isAfter(currentDate) && diff > 5) {
+                return "Подписка активна";
+            } else if (diff <= 5 && diff >= 0) {
+                return "Подписка истекает";
+            }
+        }
+        return "";
+    }
 }
