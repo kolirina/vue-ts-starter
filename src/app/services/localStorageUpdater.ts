@@ -47,9 +47,6 @@ export class LocalStorageUpdater {
     updateLocalStorage(): void {
         if (versionConfig.date !== this.localStorage.get<string>(StoreKeys.LOCAL_STORAGE_LAST_UPDATE_DATE_KEY, versionConfig.date)) {
             this.updateTableColumns();
-            this.turnOffNightTheme();
-            this.updateChartsStorage();
-            this.updateTradeFilterSetting();
             this.localStorage.delete("last_update_notification");
             this.localStorage.set<string>(StoreKeys.LOCAL_STORAGE_LAST_UPDATE_DATE_KEY, versionConfig.date);
         }
@@ -60,42 +57,8 @@ export class LocalStorageUpdater {
      */
     private updateTableColumns(): void {
         const needUpdate = this.needUpdate();
-        const headersFromStorage = this.localStorage.get<TableHeaders>("tableHeadersParams", null);
-        if (needUpdate && headersFromStorage) {
-            const assetColumns: TableHeader[] = this.tableService.HEADERS[TABLES_NAME.ASSET];
-            headersFromStorage[TABLES_NAME.ASSET] = assetColumns;
-            this.localStorage.set<TableHeaders>("tableHeadersParams", {...headersFromStorage});
-        }
-    }
-
-    /**
-     * Обновляет настройки графиков
-     */
-    private updateChartsStorage(): void {
-        const needUpdate = this.needUpdate();
         if (needUpdate) {
-            this.localStorage.delete(`${StoreKeys.PORTFOLIO_CHART}_SHOW_EVENTS`);
-            this.localStorage.delete(`${StoreKeys.PORTFOLIO_CHART}_SHOW_INDEX_STOCK_EXCHANGE`);
-        }
-    }
-
-    /**
-     * Обновляет настройки фильтра сделок
-     */
-    private updateTradeFilterSetting(): void {
-        const needUpdate = this.needUpdate();
-        if (needUpdate) {
-            this.localStorage.delete(StoreKeys.TRADES_FILTER_SETTINGS_KEY);
-        }
-    }
-
-    /**
-     * Обновляет настройки фильтра сделок
-     */
-    private turnOffNightTheme(): void {
-        const browserInfo = CommonUtils.detectBrowser();
-        if (browserInfo.name === BROWSER.FIREFOX) {
-            this.localStorage.delete(StoreKeys.THEME);
+            this.localStorage.delete("tableHeadersParams");
         }
     }
 

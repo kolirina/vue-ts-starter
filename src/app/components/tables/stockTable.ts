@@ -84,6 +84,19 @@ const MainStore = namespace(StoreType.MAIN);
                         <asset-link v-if="props.item.share && props.item.assetType === 'ASSET'" :ticker="String(props.item.share.id)">{{ props.item.share.ticker }}</asset-link>
                     </td>
                     <td v-if="tableHeadersState.quantity" class="text-xs-right ii-number-cell">{{props.item.quantity | quantity(!!props.item.share) }}</td>
+                    <td v-if="tableHeadersState.openPositionAvgPrice" class="text-xs-right ii-number-cell">
+                        <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                            <template #activator="{ on }">
+                                <span class="data-table__header-with-tooltip" v-on="on">
+                                    {{ props.item.openPositionAvgPrice | amount(false, null, false, false) }}
+                                </span>
+                            </template>
+                            <span>
+                                Комиссии суммарные {{ props.item.openPositionFee | amount(true) }} <br>
+                                Средняя без учета комиссий {{ props.item.openPositionAvgPriceClean | amount(false, null, false, false) }}
+                            </span>
+                        </v-tooltip>
+                    </td>
                     <td v-if="tableHeadersState.avgBuy" class="text-xs-right ii-number-cell">
                         <v-tooltip content-class="custom-tooltip-wrap" bottom>
                             <template #activator="{ on }">
