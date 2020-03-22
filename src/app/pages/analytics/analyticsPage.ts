@@ -36,6 +36,16 @@ const MainStore = namespace(StoreType.MAIN);
                         <v-flex v-if="yieldCompareData" class="margT30 pa-2">
                             <v-layout class="item-header">
                                 <span class="fs13">Сравнение среднегодовой доходности</span>
+                                <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                                    <template #activator="{ on }">
+                                        <v-icon v-on="on" class="ml-2">far fa-question-circle</v-icon>
+                                    </template>
+                                    <span>
+                                        Сравнение доходности портфеля с доходностью Индекса MOEX, инфляцией и
+                                        ставкой по депозиту рассчитаными за период с даты первой сделки по текущий день
+                                        в процентах годовых.
+                                    </span>
+                                </v-tooltip>
                             </v-layout>
                             <average-annual-yield-chart :data="yieldCompareData"></average-annual-yield-chart>
                         </v-flex>

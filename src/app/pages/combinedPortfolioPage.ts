@@ -54,9 +54,6 @@ const MainStore = namespace(StoreType.MAIN);
                                 состав и доли каждой акции, если, например, она входит в состав нескольких портфелей.
                             </div>
                             <div class="mt-4">
-                                <v-btn class="btn" color="primary" @click="exportPortfolio">
-                                    Экспорт в xlsx
-                                </v-btn>
                                 <v-btn class="btn" color="primary" @click.stop="showDialogCompositePortfolio">
                                     Сформировать
                                 </v-btn>

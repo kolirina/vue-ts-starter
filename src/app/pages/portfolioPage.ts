@@ -8,6 +8,7 @@ import {ExportService, ExportType} from "../services/exportService";
 import {MarketHistoryService} from "../services/marketHistoryService";
 import {OverviewService} from "../services/overviewService";
 import {HighStockEventsGroup, LineChartItem} from "../types/charts/types";
+import {EventType} from "../types/eventType";
 import {StoreKeys} from "../types/storeKeys";
 import {Overview, OverviewPeriod, Portfolio} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
@@ -101,10 +102,19 @@ export class PortfolioPage extends UI {
         }));
         // по умолчанию выбран за весь период
         this.selectedPeriod = this.periods[this.periods.length - 1];
+        UI.on(EventType.TRADE_CREATED, async () => await this.loadPortfolioData());
+    }
+
+    beforeDestroy(): void {
+        UI.off(EventType.TRADE_CREATED);
     }
 
     @Watch("portfolio")
     private async onPortfolioChange(): Promise<void> {
+        await this.loadPortfolioData();
+    }
+
+    private async loadPortfolioData(): Promise<void> {
         this.lineChartData = null;
         this.lineChartEvents = null;
         this.overview = this.portfolio.overview;
