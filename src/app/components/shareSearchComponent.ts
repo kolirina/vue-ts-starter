@@ -81,6 +81,8 @@ export class ShareSearchComponent extends UI {
     private ellipsis: boolean;
     @Prop({required: false, type: Boolean, default: false})
     private allowRequest: boolean;
+    @Prop({required: false, type: Boolean, default: false})
+    private ignoreAssetType: boolean;
     /** Отфильтрованные данные */
     private filteredSharesMutated: Share[] = [];
     /** Тип актива бумаги */
@@ -145,14 +147,18 @@ export class ShareSearchComponent extends UI {
         }
         await this.setTimeout(1000);
         try {
-            if (this.assetType === AssetType.STOCK) {
-                this.filteredSharesMutated = await this.marketService.searchStocks(this.searchQuery);
-            } else if (this.assetType === AssetType.BOND) {
-                this.filteredSharesMutated = await this.marketService.searchBonds(this.searchQuery);
-            } else if (this.assetType === AssetType.ASSET) {
-                this.filteredSharesMutated = await this.marketService.searchAssets(this.searchQuery);
-            } else {
+            if (this.ignoreAssetType) {
                 this.filteredSharesMutated = await this.marketService.searchShares(this.searchQuery);
+            } else {
+                if (this.assetType === AssetType.STOCK) {
+                    this.filteredSharesMutated = await this.marketService.searchStocks(this.searchQuery);
+                } else if (this.assetType === AssetType.BOND) {
+                    this.filteredSharesMutated = await this.marketService.searchBonds(this.searchQuery);
+                } else if (this.assetType === AssetType.ASSET) {
+                    this.filteredSharesMutated = await this.marketService.searchAssets(this.searchQuery);
+                } else {
+                    this.filteredSharesMutated = await this.marketService.searchShares(this.searchQuery);
+                }
             }
             // не нашли кастомный актив, предлагаем добавить его
             if (this.assetType === AssetType.ASSET && this.filteredSharesMutated.length === 0 && this.createAssetAllowed) {
@@ -189,13 +195,17 @@ export class ShareSearchComponent extends UI {
             return this.notFoundLabel;
         }
         const shareType = AssetType.valueByName(share.shareType);
-        if ([AssetType.STOCK, AssetType.ASSET].includes(this.assetTypeMutated || shareType)) {
+        if ([AssetType.STOCK, AssetType.ASSET].includes(shareType)) {
             if (share.price !== null) {
                 const price = new BigMoney(share.price);
-                return `${share.ticker} (${share.shortname}), <b>${Filters.formatNumber(price.amount.toString())}</b> ${price.currencySymbol} (${AssetType.valueByName(share.shareType).description})`;
+                let assetDescription = shareType.description;
+                if (shareType === AssetType.ASSET) {
+                    assetDescription = AssetCategory.valueByName((share as Asset).category).description;
+                }
+                return `${share.ticker} (${share.shortname}), <b>${Filters.formatNumber(price.amount.toString())}</b> ${price.currencySymbol} (${assetDescription})`;
             }
             return `Создать актив "${share.shortname}"`;
-        } else if ((this.assetTypeMutated || shareType) === AssetType.BOND) {
+        } else if (shareType === AssetType.BOND) {
             return `${share.ticker} (${share.shortname}), <b>${(share as Bond).prevprice}</b> % (${AssetType.valueByName(share.shareType).description})`;
         }
 
