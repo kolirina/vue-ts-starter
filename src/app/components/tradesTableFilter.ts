@@ -26,6 +26,7 @@ import {TableFilterBase} from "./tableFilterBase";
         <v-layout align-center wrap>
             <table-filter-base @search="onSearch" :search-query="filter.search" :search-label="searchLabel" :min-length="2" :is-default="isDefault"
                                :start-date="filter.start" :end-date="filter.end" @startDateChanged="onStartDateChanged" @endDateChanged="onEndDateChanged"
+                               :search-timeout="500"
                                :is-date-filter-show="true">
                 <v-switch v-model="filter.showLinkedMoneyTrades" @change="onChange" class="margT0">
                     <template #label>
