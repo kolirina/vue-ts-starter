@@ -45,15 +45,16 @@ export class TariffUtils {
     }
 
     static getSubscribeDescription(clientInfo: Client): string {
-        const paidTill = DateUtils.parseDate(clientInfo.paidTill);
-        const currentDate = dayjs();
-        const diff = paidTill.get("date") - currentDate.get("date");
-        if (TariffUtils.isTariffExpired(clientInfo) || diff < 0) {
+        if (TariffUtils.isTariffExpired(clientInfo)) {
             return "Подписка истекла";
         } else {
-            if (paidTill.isAfter(currentDate) && diff > 5) {
+            const paidTill = DateUtils.parseDate(clientInfo.paidTill);
+            const currentDate = dayjs();
+            const diff = paidTill.get("date") - currentDate.get("date");
+            const isCurrentMonthAndYear = paidTill.get("month") === currentDate.get("month") && paidTill.get("year") === currentDate.get("year");
+            if (paidTill.isAfter(currentDate) && (!isCurrentMonthAndYear || diff > 5)) {
                 return "Подписка активна";
-            } else if (diff <= 5 && diff >= 0) {
+            } else if (isCurrentMonthAndYear && diff <= 5 && diff >= 0) {
                 return "Подписка истекает";
             }
         }

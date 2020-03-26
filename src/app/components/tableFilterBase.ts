@@ -68,18 +68,21 @@ export class TableFilterBase extends UI {
     /** Признак дефолтного фильтра */
     @Prop({default: false, type: Boolean})
     private isDefault: boolean;
-
+    /** Признак отображения блока с выбором дат */
     @Prop({default: false, type: Boolean})
     private isDateFilterShow: boolean;
     /** Поисковая строка */
     @Prop({default: "", type: String})
     private searchQuery: string;
-
+    /** Дата начала выборки */
     @Prop({default: "", type: String})
     private startDate: string;
-
+    /** Дата окончания выборки */
     @Prop({default: "", type: String})
     private endDate: string;
+    /** Задержка поиска */
+    @Prop({default: 0, type: Number, required: false})
+    private searchTimeout: number;
     /** Строка для работы внутри компонента */
     private searchQueryMutated: string = "";
     private menu = false;
@@ -134,7 +137,7 @@ export class TableFilterBase extends UI {
             } else if (this.searchQueryMutated.length >= this.minLength) {
                 this.emitSearch();
             }
-        }, 1000);
+        }, this.searchTimeout);
     }
 
     private onClear(): void {
