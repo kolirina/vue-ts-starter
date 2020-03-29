@@ -88,7 +88,7 @@ const MainStore = namespace(StoreType.MAIN);
                             <td class="text-xs-left">{{ props.item.name }}</td>
                             <td class="text-xs-left">{{ props.item.category.description }}</td>
                             <td class="text-xs-center ii-number-cell">
-                                {{ props.item.price | amount(false, null, false) }} <span class="second-value">{{ currencyForPrice(props.item) }}</span>
+                                {{ props.item.price | amount(true, null, true, false) }} <span class="second-value">{{ currencyForPrice(props.item) }}</span>
                             </td>
                             <td class="text-xs-left">{{ props.item.source }}</td>
                             <td class="text-xs-left">{{ props.item.regex }}</td>

@@ -71,7 +71,10 @@ const MainStore = namespace(StoreType.MAIN);
                               :class="{'data-table-cell-open': props.expanded, 'path': true, 'data-table-cell': true}"></span>
                     </td>
                     <td v-if="tableHeadersState.company" class="text-xs-left">
-                        <span v-if="props.item.share" :class="props.item.quantity !== '0' ? '' : 'line-through'">{{ props.item.share.shortname }}</span>&nbsp;
+                        <asset-link v-if="props.item.share" :class="props.item.quantity !== '0' ? '' : 'line-through'"
+                                    :ticker="String(props.item.share.id)">{{ props.item.share.shortname }}
+                        </asset-link>
+                        &nbsp;
                         <span v-if="props.item.share && props.item.quantity !== '0'"
                               :class="markupClasses(Number(props.item.share.change))">{{ props.item.share.change }}&nbsp;%</span>
                     </td>
@@ -80,16 +83,29 @@ const MainStore = namespace(StoreType.MAIN);
                         <asset-link v-if="props.item.share && props.item.assetType === 'ASSET'" :ticker="String(props.item.share.id)">{{ props.item.share.ticker }}</asset-link>
                     </td>
                     <td v-if="tableHeadersState.quantity" class="text-xs-right ii-number-cell">{{props.item.quantity | quantity(!!props.item.share) }}</td>
+                    <td v-if="tableHeadersState.openPositionAvgPrice" class="text-xs-right ii-number-cell">
+                        <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                            <template #activator="{ on }">
+                                <span class="data-table__header-with-tooltip" v-on="on">
+                                    {{ props.item.openPositionAvgPrice | amount(true, null, !!props.item.share, false) }}
+                                </span>
+                            </template>
+                            <span>
+                                Комиссии суммарные {{ props.item.openPositionFee | amount(true) }} <br>
+                                Средняя без учета комиссий {{ props.item.openPositionAvgPriceClean | amount(true, null, !!props.item.share, false) }}
+                            </span>
+                        </v-tooltip>
+                    </td>
                     <td v-if="tableHeadersState.avgBuy" class="text-xs-right ii-number-cell">
                         <v-tooltip content-class="custom-tooltip-wrap" bottom>
                             <template #activator="{ on }">
                                 <span class="data-table__header-with-tooltip" v-on="on">
-                                    {{ props.item.avgBuy | amount(false, null, false, false) }}
+                                    {{ props.item.avgBuy | amount(true, null, !!props.item.share, false) }}
                                 </span>
                             </template>
                             <span>
                                 Комиссии суммарные {{ props.item.summFee | amount(true) }} <br>
-                                Средняя без учета комиссий {{ props.item.avgBuyClean | amount(false, null, false, false) }}
+                                Средняя без учета комиссий {{ props.item.avgBuyClean | amount(true, null, !!props.item.share, false) }}
                             </span>
                         </v-tooltip>
                     </td>
@@ -97,7 +113,7 @@ const MainStore = namespace(StoreType.MAIN);
                         <v-tooltip content-class="custom-tooltip-wrap" bottom>
                             <template #activator="{ on }">
                                 <span class="data-table__header-with-tooltip" v-on="on">
-                                    <template>{{ props.item.currPrice | amount(false, null, false, false) }}</template>
+                                    <template>{{ props.item.currPrice | amount(true, null, !!props.item.share, false) }}</template>
                                 </span>
                             </template>
                             <span v-if="props.item.share">
@@ -119,21 +135,25 @@ const MainStore = namespace(StoreType.MAIN);
                         {{ props.item.profitFromDividendsPercent }}
                     </td>
                     <td v-if="tableHeadersState.rateProfit" :class="markupClasses(amount(props.item.rateProfit))"
-                        v-tariff-expired-hint>{{ props.item.rateProfit | amount(true) }}
+                        v-tariff-expired-hint>{{ props.item.rateProfit | amount(true, 2, true, true) }}
                     </td>
                     <td v-if="tableHeadersState.rateProfitPercent" :class="markupClasses(Number(props.item.rateProfitPercent))"
                         v-tariff-expired-hint>{{ props.item.rateProfitPercent }}
                     </td>
                     <td v-if="tableHeadersState.exchangeProfit" :class="markupClasses(amount(props.item.exchangeProfit))"
-                        v-tariff-expired-hint>{{ props.item.exchangeProfit | amount(true) }}
+                        v-tariff-expired-hint>{{ props.item.exchangeProfit | amount(true, 2, true, true) }}
                     </td>
                     <td v-if="tableHeadersState.exchangeProfitPercent" :class="markupClasses(Number(props.item.exchangeProfitPercent))"
                         v-tariff-expired-hint>{{ props.item.exchangeProfitPercent }}
                     </td>
-                    <td v-if="tableHeadersState.profit" :class="markupClasses(amount(props.item.profit))" v-tariff-expired-hint>{{ props.item.profit| amount(true) }}</td>
+                    <td v-if="tableHeadersState.profit" :class="markupClasses(amount(props.item.profit))" v-tariff-expired-hint>
+                        {{ props.item.profit| amount(true, 2, true, true) }}
+                    </td>
                     <td v-if="tableHeadersState.percProfit" :class="markupClasses(Number(props.item.percProfit))" v-tariff-expired-hint>{{ props.item.percProfit | number }}</td>
                     <td v-if="tableHeadersState.yearYield" :class="markupClasses(Number(props.item.yearYield))" v-tariff-expired-hint>{{ props.item.yearYield }}</td>
-                    <td v-if="tableHeadersState.dailyPl" :class="markupClasses(amount(props.item.dailyPl))" v-tariff-expired-hint>{{ props.item.dailyPl | amount(true) }}</td>
+                    <td v-if="tableHeadersState.dailyPl" :class="markupClasses(amount(props.item.dailyPl))" v-tariff-expired-hint>
+                        {{ props.item.dailyPl | amount(true, 2, true, true) }}
+                    </td>
                     <td v-if="tableHeadersState.dailyPlPercent" :class="markupClasses(Number(props.item.dailyPlPercent))" v-tariff-expired-hint>{{ props.item.dailyPlPercent }}</td>
                     <td v-if="tableHeadersState.summFee" class="text-xs-right ii-number-cell">{{ props.item.summFee | amount(true) }}</td>
                     <td v-if="tableHeadersState.percCurrShare" class="text-xs-right ii-number-cell">{{ props.item.percCurrShare | number }}</td>

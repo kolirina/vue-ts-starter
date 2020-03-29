@@ -24,10 +24,13 @@ export class Filters {
             return returnZeros ? "0.00" : "";
         }
         const amount = new BigMoney(value);
+        if (amount.amount.isZero()) {
+            return returnZeros ? "0.00" : "";
+        }
         if (needRound) {
             let roundingScale = DEFAULT_SCALE;
             if (amount.amount.abs().comparedTo(new Decimal("1.00")) < 0) {
-                roundingScale = NO_SCALE;
+                roundingScale = scale || NO_SCALE;
             }
             const am = amount.amount.toDecimalPlaces(roundingScale, Decimal.ROUND_HALF_UP).toNumber();
             return Filters.replaceCommaToDot(roundingScale === NO_SCALE ? DF_MAX_SCALE.format(am) : DF.format(am));
@@ -67,6 +70,9 @@ export class Filters {
             return returnZeros ? "0.00" : "";
         }
         const amount = new Decimal(value);
+        if (amount.isZero()) {
+            return returnZeros ? "0.00" : "";
+        }
         return Filters.replaceCommaToDot(needFormat ? DF_NO_SCALE.format(scale ? amount.toDecimalPlaces(scale, Decimal.ROUND_HALF_UP).toNumber() :
             amount.toNumber()) : String(amount.toNumber()));
 

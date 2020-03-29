@@ -40,7 +40,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </td>
                         <td class="text-xs-left">{{ props.item.shortname }}</td>
                         <td class="text-xs-left">{{ props.item.typeName }}</td>
-                        <td class="text-xs-right">{{ props.item.prevprice }}%</td>
+                        <td class="text-xs-right ii-number-cell">{{ props.item.prevprice }}%</td>
                         <td class="text-xs-center">{{ props.item.change }}%</td>
                         <td class="text-xs-center">{{ props.item.yield }}%</td>
                         <td class="text-xs-center">{{ props.item.accruedint | amount(true) }}</td>

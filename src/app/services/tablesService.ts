@@ -22,11 +22,20 @@ export class TablesService {
         {
             text: "Ср. цена",
             align: "right",
-            value: TABLE_HEADERS.AVG_BUY,
+            value: TABLE_HEADERS.OPEN_POSITION_AVG_PRICE,
             sortable: false,
             active: true,
             width: "65",
-            tooltip: StockTooltips[TABLE_HEADERS.AVG_BUY]
+            tooltip: StockTooltips[TABLE_HEADERS.OPEN_POSITION_AVG_PRICE]
+        },
+        {
+            text: "Ср. цена (Все сделки)",
+            align: "right",
+            value: TABLE_HEADERS.AVG_PRICE,
+            sortable: false,
+            active: false,
+            width: "65",
+            tooltip: StockTooltips[TABLE_HEADERS.AVG_PRICE]
         },
         {
             text: "Тек. цена",
@@ -143,11 +152,11 @@ export class TablesService {
             {
                 text: "Ср. цена",
                 align: "right",
-                value: TABLE_HEADERS.AVG_BUY,
+                value: TABLE_HEADERS.AVG_PRICE,
                 sortable: false,
                 active: true,
                 width: "65",
-                tooltip: BondTooltips[TABLE_HEADERS.AVG_BUY]
+                tooltip: BondTooltips[TABLE_HEADERS.AVG_PRICE]
             },
             {
                 text: "Тек. цена",
@@ -313,7 +322,8 @@ export enum TABLE_HEADERS {
     COMPANY = "company",
     TICKER = "ticker",
     QUANTITY = "quantity",
-    AVG_BUY = "avgBuy",
+    OPEN_POSITION_AVG_PRICE = "openPositionAvgPrice",
+    AVG_PRICE = "avgBuy",
     CURR_PRICE = "currPrice",
     B_COST = "bcost",
     S_COST = "scost",
@@ -404,8 +414,11 @@ export const CommonTooltips: { [key: string]: string } = {
 
 /** Тултипы для акций */
 export const StockTooltips: { [key: string]: string } = {
-    [TABLE_HEADERS.AVG_BUY]: "Средняя цена покупки. Если акция несколько раз покупалась и продавалась, " +
+    [TABLE_HEADERS.OPEN_POSITION_AVG_PRICE]: "Средняя цена открытой позиции. Если акция несколько раз покупалась и продавалась, " +
     "                        то средняя цена будет посчитана среди тех бумаг, которые остались сейчас в портфеле. " +
+    "                        Учет оставшихся в портфеле бумаг ведется по методу FIFO (первая купленная бумага продается в первую очередь).",
+    [TABLE_HEADERS.AVG_PRICE]: "Средняя цена по всем позициям. Если акция несколько раз покупалась и продавалась, " +
+    "                        то средняя цена будет посчитана по всем сделкам (покупкам, если это была длинная позиция, или продажам, если короткая). " +
     "                        Учет оставшихся в портфеле бумаг ведется по методу FIFO (первая купленная бумага продается в первую очередь).",
     [TABLE_HEADERS.CURR_PRICE]: "Текущая биржевая цена акции. Если торги завершились, то отображается цена закрытия. " +
     "                        Данные предоставляются с задержкой в 15 минут. Для архивных (неторгуемых) акций текущая цена будет всегда 0.",
@@ -438,7 +451,7 @@ export const StockTooltips: { [key: string]: string } = {
 
 /** Тултипы для облигаций */
 export const BondTooltips: { [key: string]: string } = {
-    [TABLE_HEADERS.AVG_BUY]: "Средняя цена покупки облигации.",
+    [TABLE_HEADERS.AVG_PRICE]: "Средняя цена покупки облигации.",
     [TABLE_HEADERS.CURR_PRICE]: "Текущая биржевая цена облигации. Если торги завершились, то отображается цена закрытия. " +
     "                        Данные предоставляются с задержкой в 15 минут. Для погашенных облигаций текущая цена будет всегда 0.",
     [TABLE_HEADERS.B_COST]: "Сумма всех денежных средств, затраченных на покупку облигации в портфель за все время. " +

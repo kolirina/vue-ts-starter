@@ -43,4 +43,21 @@ export class TariffUtils {
         const currentDate = dayjs();
         return clientInfo.tariff !== Tariff.FREE && paidTill.isBefore(currentDate) && !paidTill.isSame(currentDate, "date");
     }
+
+    static getSubscribeDescription(clientInfo: Client): string {
+        if (TariffUtils.isTariffExpired(clientInfo)) {
+            return "Подписка истекла";
+        } else {
+            const paidTill = DateUtils.parseDate(clientInfo.paidTill);
+            const currentDate = dayjs();
+            const diff = paidTill.get("date") - currentDate.get("date");
+            const isCurrentMonthAndYear = paidTill.get("month") === currentDate.get("month") && paidTill.get("year") === currentDate.get("year");
+            if (paidTill.isAfter(currentDate) && (!isCurrentMonthAndYear || diff > 5)) {
+                return "Подписка активна";
+            } else if (isCurrentMonthAndYear && diff <= 5 && diff >= 0) {
+                return "Подписка истекает";
+            }
+        }
+        return "";
+    }
 }

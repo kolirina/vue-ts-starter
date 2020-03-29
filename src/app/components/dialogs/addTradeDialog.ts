@@ -18,14 +18,14 @@ import {TradeFields, TradeRequest, TradeService} from "../../services/tradeServi
 import {AssetType} from "../../types/assetType";
 import {BigMoney} from "../../types/bigMoney";
 import {ALLOWED_CURRENCIES, Currency} from "../../types/currency";
-import {AddTradeEvent, EventType} from "../../types/eventType";
+import {EventType} from "../../types/eventType";
 import {Operation} from "../../types/operation";
 import {Permission} from "../../types/permission";
 import {PortfolioAssetType} from "../../types/portfolioAssetType";
 import {TradeDataHolder} from "../../types/trade/tradeDataHolder";
 import {TradeMap} from "../../types/trade/tradeMap";
 import {TradeValue} from "../../types/trade/tradeValue";
-import {Asset, Bond, ErrorInfo, Portfolio, Share, ShareType} from "../../types/types";
+import {Asset, Bond, ErrorInfo, Portfolio, Share} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {DateUtils} from "../../utils/dateUtils";
 import {TariffUtils} from "../../utils/tariffUtils";
@@ -68,6 +68,8 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                             <v-flex v-if="shareAssetType" xs12 sm8>
                                 <share-search :filtered-shares="filteredShares" :placeholder="shareSearchPlaceholder" class="required"
                                               :create-asset-allowed="createAssetAllowed"
+                                              :ignore-asset-type="true"
+                                              :asset-type="assetType"
                                               @change="onShareSelect" @clear="onShareClear" @requestNewShare="onRequestNewShare"
                                               autofocus ellipsis allow-request></share-search>
                                 <!-- Дополнительная информация -->
@@ -611,10 +613,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private async onShareSelect(share: Share): Promise<void> {
-        if (share && share.shareType === ShareType.ASSET && this.assetType !== AssetType.ASSET) {
-            this.assetType = AssetType.ASSET;
-        } else {
-            this.assetType = AssetType.valueByName(share?.shareType);
+        if (share) {
+            this.assetType = AssetType.valueByName(share.shareType);
         }
         this.onAssetTypeChange(false);
         this.share = share;

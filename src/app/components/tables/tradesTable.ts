@@ -64,14 +64,14 @@ const MainStore = namespace(StoreType.MAIN);
                     <td v-if="tableHeadersState.quantity" class="text-xs-right ii-number-cell">{{ props.item.quantity | quantity }}</td>
                     <td v-if="tableHeadersState.price" :class="['text-xs-right', 'ii-number-cell']">
                         <template v-if="!calculationAssetType(props.item.operation)">
-                            {{ getPrice(props.item) }}&nbsp;<span class="second-value">{{ currencyForPrice(props.item) }}</span>
+                            {{ getPrice(props.item) | number(false, null, true) }}&nbsp;<span class="second-value">{{ currencyForPrice(props.item) }}</span>
                         </template>
                     </td>
                     <td v-if="tableHeadersState.facevalue" :class="['text-xs-right', 'ii-number-cell']">
-                        {{ props.item.facevalue | amount(false, null, false) }}&nbsp;<span class="second-value">{{ props.item.facevalue | currencySymbol }}</span>
+                        {{ props.item.facevalue | amount(true, null, false, true) }}&nbsp;<span class="second-value">{{ props.item.facevalue | currencySymbol }}</span>
                     </td>
                     <td v-if="tableHeadersState.nkd" :class="['text-xs-right', 'ii-number-cell']">
-                        {{ props.item.nkd | amount(false, null, false) }}&nbsp;<span class="second-value">{{ props.item.nkd | currencySymbol }}</span>
+                        {{ props.item.nkd | amount(true, null, false, true) }}&nbsp;<span class="second-value">{{ props.item.nkd | currencySymbol }}</span>
                     </td>
                     <td v-if="tableHeadersState.fee" :class="['text-xs-right', 'ii-number-cell']">
                         {{ getFee(props.item) }}&nbsp;<span class="second-value">{{ props.item.fee | currencySymbol }}</span>
