@@ -14,6 +14,7 @@ import {CancelOrderRequest, TariffService, UserPaymentInfo} from "../../services
 import {Tariff} from "../../types/tariff";
 import {CommonUtils} from "../../utils/commonUtils";
 import {DateUtils} from "../../utils/dateUtils";
+import {HelpDeskUtils} from "../../utils/HelpDeskUtils";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 
@@ -118,6 +119,24 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-layout>
                     </v-card>
                 </v-layout>
+                <expanded-panel :value="widgetPanel" class="promo-codes__statistics mt-3">
+                    <template #header>Виджет помощи</template>
+                    <v-card flat @click.stop>
+                        <v-layout wrap @click.stop>
+                            <v-switch v-model="clientInfo.user.needShowHelpDeskWidget" @change="onShowHelpDeskWidgetChange" class="ml-3">
+                                <template #label>
+                                    <span>Отображать виджет помощи</span>
+                                    <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                                        <sup class="custom-tooltip" slot="activator">
+                                            <v-icon>fas fa-info-circle</v-icon>
+                                        </sup>
+                                        <span>Скрывает виджет помощи в правом нижнем углу.</span>
+                                    </v-tooltip>
+                                </template>
+                            </v-switch>
+                        </v-layout>
+                    </v-card>
+                </expanded-panel>
                 <expanded-panel :value="[0]" class="promo-codes__statistics mt-3">
                     <template #header>Удаление аккаунта</template>
                     <v-card flat>
@@ -156,6 +175,8 @@ export class ProfilePage extends UI {
     private email = "";
     /** Платежная информация пользователя */
     private paymentInfo: UserPaymentInfo = null;
+    /** Индикатор панели управления виджетом */
+    private widgetPanel = [0];
 
     /**
      * Инициализирует данные компонента
@@ -194,6 +215,15 @@ export class ProfilePage extends UI {
      */
     private async changePassword(): Promise<void> {
         await new ChangePasswordDialog().show(this.clientInfo);
+    }
+
+    /**
+     * Обновляет признак тображения виджета помощи
+     */
+    @ShowProgress
+    private async onShowHelpDeskWidgetChange(): Promise<void> {
+        await this.clientService.setNeedShowHelpDeskWidget(this.clientInfo.user.needShowHelpDeskWidget);
+        HelpDeskUtils.toggleWidget(this.clientInfo.user.needShowHelpDeskWidget, this.clientInfo.user);
     }
 
     /**

@@ -67,7 +67,9 @@ export class ThemeUtils {
     .theme--light.v-btn-toggle,
     .negative-balance-notification,
     .sing-in-wrap .paired-section__left-section,
-    .empty-station, .tariff-description-wrap div:nth-child(even) {background: #2C3040 !important;}
+    .empty-station {background: #2C3040 !important;}
+
+    .tariff-description-wrap div:nth-child(even) {background-color: #2C3040}
 
     .v-content__wrap,
     .header-first-card,

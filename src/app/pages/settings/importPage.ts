@@ -41,8 +41,7 @@ const MainStore = namespace(StoreType.MAIN);
             <v-card flat class="px-0 py-0" data-v-step="0">
                 <v-card-text class="import-wrapper-content">
                     <div class="providers">
-                        <div v-for="provider in providers.values()" :key="provider.code" @click="onSelectProvider(provider)"
-                             v-if="provider !== providers.INTELINVEST" class="item">
+                        <div v-for="provider in providers.values()" :key="provider.code" @click="onSelectProvider(provider)" class="item">
                             <div :class="['w100pc', 'alignC', selectedProvider === provider ? 'active' : '']">
                                 <div :class="['item-img-block', provider.code.toLowerCase()]">
                                 </div>
@@ -56,18 +55,6 @@ const MainStore = namespace(StoreType.MAIN);
             </v-card>
             <v-card flat class="import-wrapper">
                 <v-card-text class="import-wrapper-content">
-                    <v-layout justify-space-between wrap class="intelinvest-section">
-                        <div class="intelinvest-section__description">
-                            Если в списке нет вашего брокера или терминала, вы всегда можете осуществить импорт через универсальный формат
-                            <a @click="showIntelinvestInstruction">CSV</a>
-                            или обратиться к нам через обратную связь, по <a href="mailto:web@intelinvest.ru">почте</a> или
-                            в группе <a href="http://vk.com/intelinvest" target="_blank">вконтакте</a>.
-                        </div>
-                        <v-btn class="btn" @click="onSelectProvider(providers.INTELINVEST)">
-                            Формат Intelinvest
-                        </v-btn>
-                    </v-layout>
-
                     <v-menu content-class="dialog-setings-menu"
                             transition="slide-y-transition"
                             nudge-bottom="36" right class="setings-menu"
@@ -176,8 +163,8 @@ const MainStore = namespace(StoreType.MAIN);
 
                     <div class="attachments" v-if="importProviderFeatures">
                         <file-drop-area @drop="onFileAdd" class="attachments-file-drop">
-                            <div class="attachments-file-drop__content">
-                                Перетащите файл
+                            <div v-if="selectedProvider" class="attachments-file-drop__content">
+                                Перетащите файл. Допустимые расширения файлов: <b>{{ selectedProvider.allowedExtensions.join(", ") }}</b>
                             </div>
                         </file-drop-area>
                     </div>
@@ -211,11 +198,17 @@ const MainStore = namespace(StoreType.MAIN);
                                 </file-link>
                             </div>
                         </v-layout>
+                        <div v-if="importProviderFeatures && files.length" class="fs12-opacity mt-4">
+                            Допустимые расширения файлов: {{ selectedProvider.allowedExtensions.join(", ") }}
+                        </div>
                         <v-layout class="margT20" align-center justify-space-between>
                             <div>
                                 <file-link v-if="importProviderFeatures && !files.length" @select="onFileAdd" :accept="allowedExtensions" class="select-file-btn">
                                     Выбрать файл
                                 </file-link>
+                                <div v-if="importProviderFeatures && !files.length" class="fs12-opacity mt-4">
+                                    Допустимые расширения файлов: {{ selectedProvider.allowedExtensions.join(", ") }}
+                                </div>
                             </div>
 
                             <div @click="showInstruction = !showInstruction" class="btn-show-instruction" v-if="importProviderFeatures">

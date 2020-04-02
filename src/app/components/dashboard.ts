@@ -1,9 +1,13 @@
-import Component from "vue-class-component";
-import {Prop, Watch} from "vue-property-decorator";
-import {UI} from "../app/ui";
+import {namespace} from "vuex-class";
+import {Component, Prop, UI, Watch} from "../app/ui";
 import {Filters} from "../platform/filters/Filters";
+import {ClientInfo} from "../services/clientService";
 import {BigMoney} from "../types/bigMoney";
 import {DashboardBrick, DashboardData} from "../types/types";
+import {DateUtils} from "../utils/dateUtils";
+import {StoreType} from "../vuex/storeType";
+
+const MainStore = namespace(StoreType.MAIN);
 
 @Component({
     // language=Vue
@@ -34,8 +38,16 @@ import {DashboardBrick, DashboardData} from "../types/types";
                                     <v-icon>{{ block.isSummaryIncome.isUpward ? 'arrow_upward' : 'arrow_downward' }}</v-icon>
                                 </div>
                                 <div class="dashboard-summary-income-text dashboard-currency" :class="block.secondCurrency">
-                                    <span>{{ block.secondValue }}</span>
+                                    <span>{{ block.secondValue }} </span>
                                 </div>
+                                <v-tooltip v-if="block.secondTooltip" content-class="custom-tooltip-wrap dashboard-tooltip" class="ml-1" :max-width="450" bottom right>
+                                    <sup slot="activator">
+                                        <v-icon slot="activator" style="font-size: 12px" :class="block.isSummaryIncome.isUpward ? 'arrow-up' : 'arrow-down'">far
+                                            fa-question-circle
+                                        </v-icon>
+                                    </sup>
+                                    <span v-html="block.secondTooltip"></span>
+                                </v-tooltip>
                             </div>
                         </template>
 
@@ -64,7 +76,7 @@ export class DashboardBrickComponent extends UI {
 @Component({
     // language=Vue
     template: `
-        <v-container v-if="data" px-0 grid-list-md text-xs-center fluid :class="{'fixed-dashboard': fixedDashboard}" v-scroll="setDashboardPosition">
+        <v-container v-if="data" px-0 grid-list-md text-xs-center fluid>
             <v-layout class="dashboard-wrap px-4 selectable" row wrap :class="{'menu-open': !sideBarOpened}">
                 <v-flex class="dashboard-item" xl3 lg3 md6 sm12 xs12>
                     <dashboard-brick-component :block="blocks[0]"></dashboard-brick-component>
@@ -94,10 +106,12 @@ export class Dashboard extends UI {
     /** Данные по дашборду */
     @Prop({required: true})
     private data: DashboardData;
+    @MainStore.Getter
+    private clientInfo: ClientInfo;
     /** Блоки для отображения дашборда */
     private blocks: DashboardBrick[] = [];
-    /** Признак зафиксированного дашборда */
-    private fixedDashboard = false;
+    /** Дата, начиная с которой для новых пользователей будет отображаться показатель Прибыль в процентах рассчитаная относительно текущей стоимости */
+    private readonly NEW_USERS_DATE = DateUtils.parseDate("2020-04-01");
 
     /**
      * Инициализация данных
@@ -132,9 +146,9 @@ export class Dashboard extends UI {
         this.blocks[1] = {
             name: "Суммарная прибыль",
             mainValue: Filters.formatMoneyAmount(newValue.profit, true),
-            secondValue: newValue.percentProfit,
+            secondValue: this.percentProfitBySummary ? newValue.percentProfitBySummaryCost : newValue.percentProfit,
             isSummaryIncome: {
-                isUpward: parseFloat(newValue.percentProfit) > 0
+                isUpward: parseFloat(this.percentProfitBySummary ? newValue.percentProfitBySummaryCost : newValue.percentProfit) > 0
             },
             mainCurrency,
             secondCurrency: "percent",
@@ -142,10 +156,13 @@ export class Dashboard extends UI {
                 "                                Она включает в себя: прибыль от совершенных ранее сделок (бумага куплена дешевле и продана дороже)," +
                 "                                выплаченные дивиденды и купоны, курсовую прибыль (бумага куплена дешевле и подорожала, но еще не продана).<br/>" +
                 "                                Сумму по сделкам с типом Расход и Доход.<br/>" +
-                "                                Ввод и вывод денежных средств на прибыль портфеля не влияют. <br/>" +
-                "                                Ниже указана прибыль портфеля в отношении к его средневзвешенной стоимости вложений с учетом денег.",
+                "                                Ввод и вывод денежных средств на прибыль портфеля не влияют. <br/>",
             mainValueTooltip: `Пользовательская прибыль: ${Filters.formatMoneyAmount(newValue.usersIncomes)}<br/>
-                            Пользовательские убытки: ${Filters.formatMoneyAmount(newValue.usersLosses)}<br/>`
+                            Пользовательские убытки: ${Filters.formatMoneyAmount(newValue.usersLosses)}<br/>`,
+            secondTooltip:
+                `Прибыль портфеля в отношении к его ${this.percentProfitBySummary ? "суммарной текущей стоимости" : "средневзвешенной стоимости вложений"} с учетом денег.<br/>
+Прибыль портфеля посчитанная относительно ${this.percentProfitBySummary ? "средневзвешенной стоимости вложений" : "суммарной текущей стоимости"} ` +
+                `равна <b>${this.percentProfitBySummary ? newValue.percentProfit : newValue.percentProfitBySummaryCost} %</b>`
         };
         this.blocks[2] = {
             name: "Среднегодовая доходность",
@@ -169,21 +186,15 @@ export class Dashboard extends UI {
             mainCurrency,
             secondCurrency: "percent",
             tooltip: "Показывает на сколько изменилась курсовая суммарная стоимость портфеля за последний торговый день." +
-                "                                Эта разница возникает за счет изменения биржевой цены входящих в портфель активов."
+                "                                Эта разница возникает за счет изменения биржевой цены входящих в портфель активов.",
+            secondTooltip: "Изменение за день в процентах, посчитанное относительно стоимости портфеля за предыдущий день, без учета денежных средств"
         };
     }
 
-    private setDashboardPosition(e: any): void {
-        if (e.target.scrollingElement.clientHeight < 600) {
-            this.fixedDashboard = false;
-            return;
-        }
-        const fixed = e.target.scrollingElement.scrollHeight - e.target.scrollingElement.clientHeight > 155 && e.target.scrollingElement.scrollTop > 50;
-        if (fixed && !this.fixedDashboard) {
-            this.fixedDashboard = true;
-        }
-        if (e.target.scrollingElement.scrollTop === 0) {
-            this.fixedDashboard = false;
-        }
+    /**
+     * Возвращает признак отображать ли Премиум тариф
+     */
+    private get percentProfitBySummary(): boolean {
+        return DateUtils.parseDate(this.clientInfo.user.regDate).isAfter(this.NEW_USERS_DATE);
     }
 }

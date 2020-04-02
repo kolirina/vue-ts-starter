@@ -58,7 +58,7 @@ export class DashboardBrickComponent extends UI {
 @Component({
     // language=Vue
     template: `
-        <v-container v-if="data" px-0 grid-list-md text-xs-center fluid :class="{'fixed-dashboard': fixedDashboard}" v-scroll="setDashboardPosition">
+        <v-container v-if="data" px-0 grid-list-md text-xs-center fluid>
             <v-layout class="dashboard-wrap px-4 selectable" row wrap :class="{'menu-open': !sideBarOpened}">
                 <v-flex xl6 lg6 md6 sm12 xs12>
                     <dashboard-brick-component :block="blocks[0]"></dashboard-brick-component>
@@ -84,8 +84,6 @@ export class DividendDashboardComponent extends UI {
     private data: DividendDashboard;
     /** Блоки для отображения дашборда */
     private blocks: DashboardBrick[] = [];
-    /** Признак зафиксированного дашборда */
-    private fixedDashboard = false;
 
     created(): void {
         this.fillBricks(this.data);
@@ -119,15 +117,5 @@ export class DividendDashboardComponent extends UI {
             tooltip: "Дивидендная доходность выраженная в процентах годовых, по отношению " +
                 "к текущей стоимости инвестиций."
         };
-    }
-
-    private setDashboardPosition(e: any): void {
-        const fixed = e.target.scrollingElement.scrollHeight - e.target.scrollingElement.clientHeight > 155 && e.target.scrollingElement.scrollTop > 50;
-        if (fixed && !this.fixedDashboard) {
-            this.fixedDashboard = true;
-        }
-        if (e.target.scrollingElement.scrollTop === 0) {
-            this.fixedDashboard = false;
-        }
     }
 }

@@ -1,7 +1,5 @@
-import Component from "vue-class-component";
-import {Prop} from "vue-property-decorator";
 import * as versionConfig from "../../version.json";
-import {UI} from "../app/ui";
+import {Component, Prop, UI} from "../app/ui";
 import {ClientInfo} from "../services/clientService";
 import {FeedbackDialog} from "./dialogs/feedbackDialog";
 
@@ -11,12 +9,12 @@ import {FeedbackDialog} from "./dialogs/feedbackDialog";
         <v-layout class="wrap-content" wrap align-center justify-space-between>
             <div class="fs14"><i class="far fa-copyright"></i> {{ copyrightInfo }}</div>
 
-            <div>
+            <div v-if="!clientInfo.user.needShowHelpDeskWidget">
                 <a v-if="clientInfo" @click.stop="openFeedBackDialog" class="fs14 mr-3 decorationNone">
                     <span>Напишите нам</span> <i class="fas fa-envelope"></i>
                 </a>
 
-                <a class="fs14 decorationNone" href="https://telegram.me/intelinvestSupportBot">
+                <a class="fs14 decorationNone" href="https://tlgg.ru/intelinvestSupportBot">
                     <span>Telegram</span> <i class="fab fa-telegram"></i>
                 </a>
             </div>

@@ -304,8 +304,10 @@ export type DashboardData = {
     profitWithoutDividendsAndCoupons: string,
     /** Суммарный доход */
     profit: string,
-    /** Суммарный доход в процентах */
+    /** Прибыль в процентах, посчитанная относительно средневзвешенной стоимости */
     percentProfit: string,
+    /** Прибыль в процентах, посчитанная относительно суммарной стоимости */
+    percentProfitBySummaryCost: string,
     /** Суммарный доход без учета комиссий */
     profitWithoutFees: string,
     /** Годовая доходность портфеля */

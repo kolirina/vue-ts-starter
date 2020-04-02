@@ -56,31 +56,38 @@ export class ImportService {
     }
 }
 
+const XLS = "xls";
+const XLSX = "xlsx";
+const XML = "xml";
+const CSV = "csv";
+const HTML = "html";
+const HTM = "htm";
+
 /** Форматы поддерживаемых брокеров и отчетов */
 @Enum("code")
 export class DealsImportProvider extends (EnumType as IStaticEnum<DealsImportProvider>) {
 
-    static readonly SBERBANK = new DealsImportProvider("SBERBANK", "Сбербанк", 400);
-    static readonly BCS = new DealsImportProvider("BCS", "БКС", 193);
-    static readonly TINKOFF = new DealsImportProvider("TINKOFF", "Тинькофф", 585);
-    static readonly PSBANK = new DealsImportProvider("PSBANK", "ПромСвязьБанк", 337);
-    static readonly VTB24 = new DealsImportProvider("VTB24", "ВТБ 24", 103);
-    static readonly OTKRYTIE = new DealsImportProvider("OTKRYTIE", "Открытие", 304);
-    static readonly QUIK = new DealsImportProvider("QUIK", "QUIK", -2);
-    static readonly FINAM = new DealsImportProvider("FINAM", "Финам", 487);
-    static readonly ALFADIRECT = new DealsImportProvider("ALFADIRECT", "Альфа-директ", 34);
-    static readonly URALSIB = new DealsImportProvider("URALSIB", "Уралсиб", 480);
-    static readonly KITFINANCE = new DealsImportProvider("KITFINANCE", "КИТфинанс", 189);
-    static readonly INTERACTIVE_BROKERS = new DealsImportProvider("INTERACTIVE_BROKERS", "Interactive brokers", 544);
-    static readonly ZERICH = new DealsImportProvider("ZERICH", "Церих", 513);
-    static readonly BCS_CYPRUS = new DealsImportProvider("BCS_CYPRUS", "BCScyprus", 193);
-    static readonly FREEDOM_FINANCE = new DealsImportProvider("FREEDOM_FINANCE", "Freedom Finance", 501);
-    static readonly ITINVEST = new DealsImportProvider("ITINVEST", "ITIcapital", 15);
-    static readonly ATON = new DealsImportProvider("ATON", "Атон", 45);
-    static readonly ALFACAPITAL = new DealsImportProvider("ALFACAPITAL", "Альфа-Капитал", 474);
-    static readonly INTELINVEST = new DealsImportProvider("INTELINVEST", "Intelinvest", -1);
+    static readonly SBERBANK = new DealsImportProvider("SBERBANK", "Сбербанк", 400, [XLS, XLSX, HTML, HTM]);
+    static readonly BCS = new DealsImportProvider("BCS", "БКС", 193, [XLS, XLSX]);
+    static readonly TINKOFF = new DealsImportProvider("TINKOFF", "Тинькофф", 458, [XLS, XLSX]);
+    static readonly PSBANK = new DealsImportProvider("PSBANK", "ПромСвязьБанк", 337, [XLS, XLSX]);
+    static readonly VTB24 = new DealsImportProvider("VTB24", "ВТБ 24", 103, [XLS, XLSX]);
+    static readonly OTKRYTIE = new DealsImportProvider("OTKRYTIE", "Открытие", 304, [XML]);
+    static readonly QUIK = new DealsImportProvider("QUIK", "QUIK", -2, [XLS, XLSX, HTML, HTM]);
+    static readonly FINAM = new DealsImportProvider("FINAM", "Финам", 487, [XML]);
+    static readonly ALFADIRECT = new DealsImportProvider("ALFADIRECT", "Альфа-директ", 34, [XLS, XLSX, XML]);
+    static readonly URALSIB = new DealsImportProvider("URALSIB", "Уралсиб", 480, [XLS, XLSX]);
+    static readonly KITFINANCE = new DealsImportProvider("KITFINANCE", "КИТфинанс", 189, [XLS, XLSX]);
+    static readonly INTERACTIVE_BROKERS = new DealsImportProvider("INTERACTIVE_BROKERS", "Interactive brokers", 544, [CSV]);
+    static readonly ZERICH = new DealsImportProvider("ZERICH", "Церих", 513, [XML]);
+    static readonly BCS_CYPRUS = new DealsImportProvider("BCS_CYPRUS", "BCScyprus", 193, [XLS, XLSX]);
+    static readonly FREEDOM_FINANCE = new DealsImportProvider("FREEDOM_FINANCE", "Freedom Finance", 501, [XLS, XLSX]);
+    static readonly ITINVEST = new DealsImportProvider("ITINVEST", "ITIcapital", 15, [CSV]);
+    static readonly ATON = new DealsImportProvider("ATON", "Атон", 45, [XML]);
+    static readonly ALFACAPITAL = new DealsImportProvider("ALFACAPITAL", "Альфа-Капитал", 474, [XLS, XLSX]);
+    static readonly INTELINVEST = new DealsImportProvider("INTELINVEST", "Intelinvest", -1, [CSV]);
 
-    private constructor(public code: string, public description: string, public id: number) {
+    private constructor(public code: string, public description: string, public id: number, public allowedExtensions: string[]) {
         super();
     }
 }
