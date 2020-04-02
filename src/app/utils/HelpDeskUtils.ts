@@ -43,7 +43,7 @@ export class HelpDeskUtils {
     }
 
     private static initCallback(user: Client): void {
-        window.__widgetInitCallback = (widget: UseDeskWidget) => {
+        window.__widgetInitCallback = (widget: UseDeskWidget): void => {
             const expectedWidget = window.usedeskMessenger;
             expectedWidget.identify({
                 email: user.email,
