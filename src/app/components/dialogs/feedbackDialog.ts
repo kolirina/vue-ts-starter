@@ -40,7 +40,7 @@ import {FeedbackService, FeedbackType} from "../../services/feedbackService";
                         </v-layout>
                         <span class="fs12">
                             Для более оперативной связи, пожалуйста, напишите нам в
-                        <a href="https://telegram.me/intelinvestSupportBot">Telegram</a>
+                        <a href="https://tlgg.ru/intelinvestSupportBot">Telegram</a>
                         <i class="fab fa-telegram"></i>
                     </span>
                     </v-container>

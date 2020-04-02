@@ -1085,7 +1085,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             вы можете написать нам по эл.почте
                                             <a @click.stop="openFeedBackDialog">web@intelinvest.ru</a> или
                                             задать вопрос на канале
-                                            <a href="https://telegram.me/intelinvestSupportBot" title="Задайте вопрос в Telegram" target="_blank">telegram</a>
+                                            <a href="https://tlgg.ru/intelinvestSupportBot" title="Задайте вопрос в Telegram" target="_blank">telegram</a>
                                             наши специалисты с радостью вам ответят и помогут.<br/>
                                             Также вы можете присоединиться к общению с нами и пользователями сервиса в чате
                                             <a href="https://t.me/intelinvest_chat" title="Чат в Telegram" target="_blank">чат в telegram</a>
