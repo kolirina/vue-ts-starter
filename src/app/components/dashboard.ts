@@ -161,8 +161,8 @@ export class Dashboard extends UI {
                             Пользовательские убытки: ${Filters.formatMoneyAmount(newValue.usersLosses)}<br/>`,
             secondTooltip:
                 `Прибыль портфеля в отношении к его ${this.percentProfitBySummary ? "суммарной текущей стоимости" : "средневзвешенной стоимости вложений"} с учетом денег.<br/>
-Прибыль портфеля посчитанная относительно ${this.percentProfitBySummary ? "средневзвешенной стоимости вложений" : "суммарной текущей стоимости"} ` +
-                `равна <b>${this.percentProfitBySummary ? newValue.percentProfit : newValue.percentProfitBySummaryCost} %</b>`
+Прибыль портфеля посчитанная относительно ${this.percentProfitBySummary ? "средневзвешенной стоимости вложений" : "суммарной текущей стоимости"}: ` +
+                ` <b>${this.percentProfitBySummary ? newValue.percentProfit : newValue.percentProfitBySummaryCost} %</b>`
         };
         this.blocks[2] = {
             name: "Среднегодовая доходность",
