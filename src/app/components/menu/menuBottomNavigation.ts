@@ -1,4 +1,3 @@
-import dayjs from "dayjs";
 import {Component, namespace, Prop, UI} from "../../app/ui";
 import {ClientInfo} from "../../services/clientService";
 import {DateUtils} from "../../utils/dateUtils";
@@ -29,7 +28,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </div>
             </v-layout>
             <v-tooltip v-if="!sideBarOpened" content-class="custom-tooltip-wrap" max-width="340px" top nudge-right="55">
-                <div slot="activator" :class="{'subscribe-status': true, 'subscribe-status_warning': false}">{{ subscribeDescription }}</div>
+                <div slot="activator" @click="goToTariffs" :class="{'subscribe-status': true, 'subscribe-status_warning': false}">{{ subscribeDescription }}</div>
                 <span>{{ expirationDescription }}</span>
             </v-tooltip>
         </v-layout>
@@ -48,10 +47,16 @@ export class MenuBottomNavigation extends UI {
     }
 
     private get expirationDescription(): string {
-        return `${this.subscribeDescription} ${this.expirationDate}`;
+        return `${TariffUtils.getSubscribeDescription(this.clientInfo.user, true)} ${this.expirationDate}`;
     }
 
     private get expirationDate(): string {
         return DateUtils.formatDate(DateUtils.parseDate(this.clientInfo.user.paidTill));
+    }
+
+    private goToTariffs(): void {
+        if (this.$router.currentRoute.name !== "tariffs") {
+            this.$router.push({name: "tariffs"});
+        }
     }
 }

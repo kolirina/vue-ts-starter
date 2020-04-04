@@ -44,7 +44,7 @@ export class TariffUtils {
         return clientInfo.tariff !== Tariff.FREE && paidTill.isBefore(currentDate) && !paidTill.isSame(currentDate, "date");
     }
 
-    static getSubscribeDescription(clientInfo: Client): string {
+    static getSubscribeDescription(clientInfo: Client, appendToSuffix: boolean = false): string {
         if (TariffUtils.isTariffExpired(clientInfo)) {
             return "Подписка истекла";
         } else {
@@ -53,7 +53,7 @@ export class TariffUtils {
             const diff = paidTill.get("date") - currentDate.get("date");
             const isCurrentMonthAndYear = paidTill.get("month") === currentDate.get("month") && paidTill.get("year") === currentDate.get("year");
             if (paidTill.isAfter(currentDate) && (!isCurrentMonthAndYear || diff > 5)) {
-                return "Подписка активна";
+                return `Подписка активна${appendToSuffix ? " до" : ""}`;
             } else if (isCurrentMonthAndYear && diff <= 5 && diff >= 0) {
                 return "Подписка истекает";
             }
