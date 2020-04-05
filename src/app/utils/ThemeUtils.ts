@@ -177,7 +177,7 @@ export class ThemeUtils {
     .snotifyToast, .theme--light.v-chip,
     .import-wrapper-content .setings-menu .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light,
     .import-wrapper-content .setings-menu .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
-    .wrapper-content-panel__privacy-section-up-page-btn, .free-subscribe,
+    .wrapper-content-panel__privacy-section-up-page-btn, .free-subscribe, .events__info-panel,
     .sing-in-wrap .pre-footer, .promo-codes__steps, .tariff-notification,
     input.highcharts-range-selector:focus, .inplace-custom-input, .currency-card.v-card {background-color: #252A35 !important}
 
@@ -204,7 +204,7 @@ export class ThemeUtils {
 
     .qr-code-section .v-list {background-color: #fff !important}
 
-    .settings-icon, .profile-icon, .logout-icon, .custom-action-icon, .exp-panel-arrow, .profile-edit {filter: brightness(2)}
+    .custom-action-icon, .exp-panel-arrow, .profile-edit {filter: brightness(2)}
 
     .arrow-up .dashboard-summary-income-icon {background: #405242}
     .arrow-down .dashboard-summary-income-icon {background: #61343f}
