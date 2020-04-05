@@ -50,6 +50,16 @@ const MainStore = namespace(StoreType.MAIN);
             </v-card>
 
             <v-card class="events__card" flat data-v-step="0">
+                <div v-if="showHintPanel" class="events__info-panel">
+                    Данный раздел является местом аккумуляции нескольких источников информации о таких начислениях, как дивиденды, купоны, амортизация и погашение.<br>
+                    Все используемые источники являются официальными каналами предоставления информации, однако это не исключает, что:<br>
+                    <b>- по отдельным активам в разделе нет Событий;<br>
+                        - некоторые События предоставлены с ошибкой.</b><br><br>
+                    Поэтому обращаем ваше внимание, что <b>перед исполнением начислений проверяйте пожалуйста правильность данных.</b><br>
+                    Это позволит сохранять данные портфеля корректными.<br>
+                    Если же по какой-либо из ваших бумаг нет события в календаре или новостях, добавьте сделку по начислению вручную.<br>
+                    <a @click="hideHintsPanel">Больше не показывать</a>
+                </div>
                 <v-card-title class="events__card-title">
                     Новые события
                     <v-spacer></v-spacer>
@@ -342,6 +352,8 @@ export class EventsPage extends UI {
         sortBy: "date",
         rowsPerPage: -1
     });
+    /** Признак отображения панели с подсказкой */
+    private showHintPanel = this.localStorage.get("eventsHintPanel", true);
 
     /**
      * Инициализация данных
@@ -384,6 +396,11 @@ export class EventsPage extends UI {
     @Watch("eventsPagination")
     private paginationChange(): void {
         this.localStorage.set("eventsPagination", this.eventsPagination);
+    }
+
+    private hideHintsPanel(): void {
+        this.localStorage.set("eventsHintPanel", false);
+        this.showHintPanel = false;
     }
 
     /**

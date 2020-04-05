@@ -335,12 +335,10 @@
 }
 
 .free-subscribe {
+  @extend %info-panel;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #F7F9FB;
-  border-radius: 4px;
-  border-left: 3px solid $sidebar-blue-color;
   font-size: 14px;
   line-height: 44px;
   padding: 12px 24px;
