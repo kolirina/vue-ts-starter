@@ -8,6 +8,7 @@ import {FeedbackDialog} from "../components/dialogs/feedbackDialog";
 import {NotificationUpdateDialog} from "../components/dialogs/notificationUpdateDialog";
 import {ErrorHandler} from "../components/errorHandler";
 import {FooterContent} from "../components/footerContent";
+import {HelpDeskWidget} from "../components/helpDeskWidget";
 import {MenuBottomNavigation} from "../components/menu/menuBottomNavigation";
 import {MenuHeader} from "../components/menu/menuHeader";
 import {NavigationList} from "../components/menu/navigationList";
@@ -78,6 +79,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-footer>
                     <!-- Туры пользователя -->
                     <tours></tours>
+                    <help-desk-widget></help-desk-widget>
                 </v-content>
             </template>
 
@@ -97,7 +99,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-content>
             </template>
         </v-app>`,
-    components: {ContentLoader, ErrorHandler, FeedbackDialog, SignIn, FooterContent, MenuHeader, NavigationList, MenuBottomNavigation, TariffExpiredHint, Tours}
+    components: {ContentLoader, ErrorHandler, FeedbackDialog, SignIn, FooterContent, MenuHeader, NavigationList, MenuBottomNavigation, TariffExpiredHint, Tours, HelpDeskWidget}
 })
 export class AppFrame extends UI {
 

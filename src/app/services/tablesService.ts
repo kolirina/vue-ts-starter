@@ -88,7 +88,7 @@ export class TablesService {
             text: "Курс. прибыль, %",
             align: "right",
             value: TABLE_HEADERS.RATE_PROFIT_PERCENT,
-            active: false,
+            active: true,
             width: "80",
             tooltip: StockTooltips[TABLE_HEADERS.RATE_PROFIT_PERCENT]
         },
@@ -114,7 +114,7 @@ export class TablesService {
             text: "Прибыль, %",
             align: "right",
             value: TABLE_HEADERS.PERC_PROFIT,
-            active: true,
+            active: false,
             width: "60",
             tooltip: StockTooltips[TABLE_HEADERS.PERC_PROFIT]
         },
@@ -227,14 +227,14 @@ export class TablesService {
                 text: "Курс. прибыль, %",
                 align: "right",
                 value: TABLE_HEADERS.RATE_PROFIT_PERCENT,
-                active: false,
+                active: true,
                 width: "65",
                 tooltip: BondTooltips[TABLE_HEADERS.RATE_PROFIT_PERCENT]
             },
             {text: "Выплаченный НКД", align: "right", value: TABLE_HEADERS.BUY_NKD, active: false, width: "85", tooltip: BondTooltips[TABLE_HEADERS.BUY_NKD], currency: true},
             {text: "Полученный НКД", align: "right", value: TABLE_HEADERS.SELL_NKD, active: false, width: "85", tooltip: BondTooltips[TABLE_HEADERS.SELL_NKD], currency: true},
             {text: "Прибыль", align: "right", value: TABLE_HEADERS.PROFIT, active: true, width: "80", tooltip: BondTooltips[TABLE_HEADERS.PROFIT], currency: true},
-            {text: "Прибыль, %", align: "right", value: TABLE_HEADERS.PERC_PROFIT, active: true, width: "65", tooltip: BondTooltips[TABLE_HEADERS.PERC_PROFIT]},
+            {text: "Прибыль, %", align: "right", value: TABLE_HEADERS.PERC_PROFIT, active: false, width: "65", tooltip: BondTooltips[TABLE_HEADERS.PERC_PROFIT]},
             {text: "Доходность, %", align: "right", value: TABLE_HEADERS.YEAR_YIELD, active: false, width: "65", tooltip: BondTooltips[TABLE_HEADERS.YEAR_YIELD]},
             {text: "P/L за день", align: "right", value: TABLE_HEADERS.DAILY_PL, active: false, width: "60", tooltip: CommonTooltips[TABLE_HEADERS.DAILY_PL], currency: true},
             {

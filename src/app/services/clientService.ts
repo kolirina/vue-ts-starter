@@ -89,6 +89,15 @@ export class ClientService {
     }
 
     /**
+     * Обновляет признак отображения виджета помощи
+     * @param flag признак отображения виджета помощи
+     * @returns {Promise<void>}
+     */
+    async setNeedShowHelpDeskWidget(flag: boolean): Promise<void> {
+        await this.http.post(`/user/show-help-desk-widget/${flag}`);
+    }
+
+    /**
      * Удаляет и отписывает пользователя от рассылок
      * @returns {Promise<void>}
      */
@@ -204,6 +213,8 @@ export interface BaseClient {
     updateNotificationConfirmDate?: string;
     /** Признак необходимости отображения привественного тура пользователю */
     needShowTour: boolean;
+    /** Признак необходимости отображения привественного тура пользователю */
+    needShowHelpDeskWidget: boolean;
 }
 
 export interface ClientResponse extends BaseClient {
