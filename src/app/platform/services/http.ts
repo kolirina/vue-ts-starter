@@ -226,7 +226,7 @@ export class Http {
      * @return {Promise<T | undefined>} преобразованный ответа сервиса в зависимости от его контента или {@code undefined}
      */
     private async parseResult<T>(response: Response): Promise<T | undefined> {
-        this.reNewRefreshToken(response);
+        await this.reNewRefreshToken(response);
         const contentType = response.headers.get("Content-Type");
         // Код 204 - запрос успешно выполнился, контента нет
         if (response.status === 204 || contentType === null) {
