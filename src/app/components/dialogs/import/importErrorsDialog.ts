@@ -19,6 +19,7 @@ import {VueRouter} from "vue-router/types/router";
 import {BtnReturn, CustomDialog} from "../../../platform/dialogs/customDialog";
 import {Client} from "../../../services/clientService";
 import {DealImportError, ShareAliasItem} from "../../../services/importService";
+import {CurrencyUnit} from "../../../types/currency";
 import {Share, TableHeader} from "../../../types/types";
 import {ConfirmDialog} from "../confirmDialog";
 import {FeedbackDialog} from "../feedbackDialog";
@@ -114,7 +115,7 @@ import {FeedbackDialog} from "../feedbackDialog";
                                 <v-layout align-center justify-start wrap row fill-height class="mt-2 mb-2">
                                     <!-- Алиас бумаги -->
                                     <v-flex xs12 sm4>
-                                        <span class="fs12" :title="aliasItem.alias">{{ aliasItem.alias }}</span>
+                                        <span class="fs12" :title="aliasItem.alias">{{ aliasDescription(aliasItem) }}</span>
                                     </v-flex>
 
                                     <!-- Выбранная бумага -->
@@ -157,6 +158,7 @@ export class ImportErrorsDialog extends CustomDialog<ImportErrorsDialogData, Sha
         this.shareAliases = this.data.errors.filter(error => error.shareNotFound).map(error => {
             return {
                 alias: error.dealTicker,
+                currency: error.currency,
                 share: null
             } as ShareAliasItem;
         });
@@ -196,6 +198,10 @@ export class ImportErrorsDialog extends CustomDialog<ImportErrorsDialogData, Sha
             }
         }
         this.close(filled);
+    }
+
+    private aliasDescription(shareAlias: ShareAliasItem): string {
+        return `${shareAlias.alias}${shareAlias.currency ? ", " + CurrencyUnit.valueByCode(shareAlias.currency).symbol : ""}`;
     }
 }
 
