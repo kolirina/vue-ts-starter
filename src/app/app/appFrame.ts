@@ -215,7 +215,7 @@ export class AppFrame extends UI {
         this.loading = true;
         try {
             const client = await this.clientService.getClientInfo();
-            await this.loadUser({token: this.localStorage.get(StoreKeys.TOKEN_KEY, null), user: client});
+            await this.loadUser({token: this.localStorage.get(StoreKeys.TOKEN_KEY, null), refreshToken: this.localStorage.get(StoreKeys.REFRESH_TOKEN, null), user: client});
             await this.setCurrentPortfolio(this.$store.state[StoreType.MAIN].clientInfo.user.currentPortfolioId);
             await this.loadOnBoardingTours();
             this.loggedIn = true;

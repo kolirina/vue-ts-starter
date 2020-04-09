@@ -108,6 +108,7 @@ const Actions = {
     /** Дейстие проставляющие информацию о клиенте */
     [MutationType.SET_CLIENT_INFO](context: ActionContext<StateHolder, void>, clientInfo: ClientInfo): void {
         localStorage.set(StoreKeys.TOKEN_KEY, clientInfo.token);
+        localStorage.set(StoreKeys.REFRESH_TOKEN, clientInfo.refreshToken);
         context.commit(MutationType.SET_CLIENT_INFO, clientInfo);
     },
     [MutationType.SET_CURRENT_PORTFOLIO](context: ActionContext<StateHolder, void>, id: number): Promise<Portfolio> {

@@ -1,6 +1,8 @@
 export enum StoreKeys {
     /** Ключ под которым хранится токен пользователя */
     TOKEN_KEY = "INTELINVEST_TOKEN",
+    /** Ключ под которым хранится токен для обновления */
+    REFRESH_TOKEN = "INTELINVEST_REFRESH_TOKEN",
     /** Ключ под которым хранится версия бэкэнда */
     BACKEND_VERSION_KEY = "BACKEND_VERSION",
     /** Ключ под которым хранится признак "Запомнить меня" */

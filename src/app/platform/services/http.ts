@@ -19,7 +19,7 @@ import {Inject, Singleton} from "typescript-ioc";
 import {BlockByTariffDialog} from "../../components/dialogs/blockByTariffDialog";
 import {ForbiddenDialog} from "../../components/dialogs/forbiddenDialog";
 import {StoreKeys} from "../../types/storeKeys";
-import {ErrorInfo, ForbiddenCode} from "../../types/types";
+import {ErrorInfo, ForbiddenCode, MapType} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {Service} from "../decorators/service";
 import {Storage} from "./storage";
@@ -38,12 +38,20 @@ export class Http {
     @Inject
     private localStorage: Storage;
 
+    /** Ключ заголовка в ответе для необходимости обновления однодневного токена */
+    private readonly NEED_TO_REFRESH_TOKEN_HEADER = "__CALL_REFRESH_TOKEN__";
+
     private readonly BASE_URL: string = `${window.location.protocol}//${window.location.host}/api`;
 
-    get importHeaders(): any {
+    get importHeaders(): MapType {
         const token = this.localStorage.get(StoreKeys.TOKEN_KEY, null);
         if (!CommonUtils.isBlank(token)) {
-            return {"Authorization": `Bearer ${token}`};
+            const headers: MapType = {"Authorization": `Bearer ${token}`};
+            const refreshToken = this.localStorage.get(StoreKeys.REFRESH_TOKEN, null);
+            if (!CommonUtils.isBlank(refreshToken)) {
+                headers[StoreKeys.REFRESH_TOKEN] = refreshToken;
+            }
+            return headers;
         }
         return {};
     }
@@ -138,6 +146,10 @@ export class Http {
         if (!CommonUtils.isBlank(token)) {
             requestParams.headers.Authorization = `Bearer ${token}`;
         }
+        const refreshToken = this.localStorage.get<string>(StoreKeys.REFRESH_TOKEN, null);
+        if (!CommonUtils.isBlank(refreshToken)) {
+            requestParams.headers[StoreKeys.REFRESH_TOKEN] = refreshToken;
+        }
 
         if (params.options) {
             this.setRequestInitOptions(requestParams, params.options);
@@ -214,6 +226,7 @@ export class Http {
      * @return {Promise<T | undefined>} преобразованный ответа сервиса в зависимости от его контента или {@code undefined}
      */
     private async parseResult<T>(response: Response): Promise<T | undefined> {
+        this.reNewRefreshToken(response);
         const contentType = response.headers.get("Content-Type");
         // Код 204 - запрос успешно выполнился, контента нет
         if (response.status === 204 || contentType === null) {
@@ -231,6 +244,20 @@ export class Http {
         }
 
         throw new Error("Неподдерживаемый тип контента " + contentType);
+    }
+
+    private async reNewRefreshToken(response: Response): Promise<void> {
+        const needToReNewRefreshToken = response.headers.get(this.NEED_TO_REFRESH_TOKEN_HEADER) === "true";
+        if (needToReNewRefreshToken) {
+            try {
+                const paramsInit = this.prepareRequestParams("GET", "/user/refresh-token/WEB", {options: null}, false);
+                const tokenResponse = await fetch(paramsInit.url, paramsInit.params);
+                const refreshToken = await tokenResponse.text();
+                this.localStorage.set(StoreKeys.REFRESH_TOKEN, refreshToken);
+            } catch (networkError) {
+                throw new Error("Не удалось выполнить запрос, повторите позже");
+            }
+        }
     }
 
     /**
