@@ -65,7 +65,7 @@ export class AuthComponent extends UI {
         const token = this.$route.params.token;
         this.localStorage.set(StoreKeys.TOKEN_KEY, token);
         const client = await this.clientService.getClientInfo();
-        await this.loadUser({token: token, user: client});
+        await this.loadUser({token: token, refreshToken: this.localStorage.get(StoreKeys.REFRESH_TOKEN, null), user: client});
         await this.setCurrentPortfolio(this.$store.state[StoreType.MAIN].clientInfo.user.currentPortfolioId);
         this.$router.push("/portfolio");
 
