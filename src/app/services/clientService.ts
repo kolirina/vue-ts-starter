@@ -158,11 +158,13 @@ export interface RegistrationRequest {
 
 export interface ClientInfo {
     token: string;
+    refreshToken: string;
     user: Client;
 }
 
 export interface ClientInfoResponse {
     token: string;
+    refreshToken: string;
     user: ClientResponse;
 }
 
