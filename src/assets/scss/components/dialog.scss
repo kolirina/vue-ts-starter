@@ -15,6 +15,10 @@
 
 .dialog-wrap {
   position: relative;
+
+  @media only screen and (max-width: 959px) {
+    &.pa-5 {padding: 0 !important;}
+  }
 }
 
 .dialog-actions {
@@ -40,9 +44,10 @@
     line-height: 22px;
     letter-spacing: -0.3px;
     color: #040427;
-    a {
-      color: #3b6ec9;
-    }
+
+    a {color: #3b6ec9}
+
+    @media only screen and (max-width: 959px) {font-size: 15px}
   }
 
   &__date {

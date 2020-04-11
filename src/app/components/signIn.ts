@@ -50,9 +50,9 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-layout>
                         <v-layout class="paired-section__right-section" column>
                             <div class="logo-wrap">
-                                <a href="https://intelinvest.ru/prices" target="_blank" class="fs14 decorationNone bold mr-5">Тарифы</a>
-                                <a href="https://blog.intelinvest.ru/" target="_blank" class="fs14 decorationNone bold mr-5">Блог</a>
-                                <a href="https://tlgg.ru/intelinvestSupportBot" target="_blank" class="fs14 decorationNone bold mr-5">Поддержка</a>
+                                <a href="https://intelinvest.ru/prices" target="_blank" class="fs14 decorationNone bold">Тарифы</a>
+                                <a href="https://blog.intelinvest.ru/" target="_blank" class="fs14 decorationNone bold">Блог</a>
+                                <a href="https://tlgg.ru/intelinvestSupportBot" target="_blank" class="fs14 decorationNone bold">Поддержка</a>
                             </div>
                             <div class="bold fs16">Обновления сервиса</div>
                             <update-service-info></update-service-info>
@@ -63,13 +63,13 @@ const MainStore = namespace(StoreType.MAIN);
                             OOO "Интелинвест" использует файлы «cookie», с целью улучшения качества продукта. «Cookie» это небольшие файлы,
                             содержащие информацию о предыдущих посещениях веб-сайта. Если вы не хотите использовать файлы «cookie», измените настройки браузера.
                         </div>
-                        <div>
+                        <div class="app-btns">
                             <a href="https://itunes.apple.com/ru/app/intelinvest-%D1%83%D1%87%D0%B5%D1%82-%D0%B8%D0%BD%D0%B2%D0%B5%D1%81%D1%82%D0%B8%D1%86%D0%B8%D0%B9
-                                /id1422478197?mt=8" title="Загрузите приложение в App Store" target="_blank" class="mr-1">
+                                /id1422478197?mt=8" title="Загрузите приложение в App Store" target="_blank">
                                 <img src="./img/help/app-store-badge2.svg" alt="pic">
                             </a>
                             <a href="https://play.google.com/store/apps/details?id=ru.intelinvest.portfolio" title="Загрузите приложение в Google Play"
-                                target="_blank" class="ml-2">
+                                target="_blank">
                                 <img src="./img/help/google-play-badge2.svg" alt="pic">
                             </a>
                         </div>

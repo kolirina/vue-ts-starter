@@ -109,3 +109,18 @@
     margin-left: 10px !important;
   }
 }
+
+// Кнопки скачивания приложений из app store и google play
+.app-btns {
+  margin: 16px 0 24px;
+
+  a + a {margin-left: 12px}
+
+  @media only screen and (max-width: 959px) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {height: 50px}
+  }
+}
