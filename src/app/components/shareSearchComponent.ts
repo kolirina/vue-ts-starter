@@ -30,7 +30,7 @@ import {Asset, Bond, Share, ShareType} from "../types/types";
         <v-autocomplete ref="shareSearch" :items="filteredSharesMutated" v-model="share" @change="onShareSelect" @click:clear="onSearchClear"
                         :label="placeholder"
                         :loading="shareSearch" no-data-text="Ничего не найдено" clearable :required="required" :rules="rules"
-                        dense :hide-no-data="hideNoDataLabel" :no-filter="true" :search-input.sync="searchQuery" :autofocus="autofocus">
+                        dense :hide-no-data="hideNoDataLabel" :no-filter="true" :search-input.trim.sync="searchQuery" :autofocus="autofocus">
             <template #selection="data">
                 <span :class="{ellipsis: ellipsis, 'mw218': ellipsis}" :title="shareLabelSelected(data.item)">{{ shareLabelSelected(data.item) }}</span>
             </template>

@@ -92,7 +92,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </template>
                     </td>
                     <td v-if="tableHeadersState.totalWithoutFee" :class="['text-xs-right', 'ii-number-cell']">
-                        {{ props.item.totalWithoutFee | amount }}&nbsp;<span class="second-value">{{ props.item.totalWithoutFee | currencySymbol }}</span>
+                        {{ props.item.totalWithoutFee | amount(true) }}&nbsp;<span class="second-value">{{ props.item.totalWithoutFee | currencySymbol }}</span>
                     </td>
                     <td class="px-0" style="text-align: center" @click.stop>
                         <v-layout align-center justify-center v-if="props.item.parentTradeId">

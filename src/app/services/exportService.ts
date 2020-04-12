@@ -90,6 +90,7 @@ export class ExportService {
 export enum ExportType {
     TRADES = "TRADES",
     STOCKS = "STOCKS",
+    ETF = "ETF",
     BONDS = "BONDS",
     ASSETS = "ASSETS",
     DIVIDENDS = "DIVIDENDS",

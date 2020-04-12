@@ -199,6 +199,10 @@ export type AssetPortfolioRow = SharePortfolioRow & {
     share: Stock | Asset,
 };
 
+export type StockTypePortfolioRow = SharePortfolioRow & {
+    share: Stock | Asset,
+};
+
 export type BondPortfolioRow = BondPortfolioSumRow & {
     /** Идентификатор */
     id: string,
@@ -243,6 +247,8 @@ export interface Overview {
     assetRows: AssetRow[];
     /** Данные таблицы Акции */
     stockPortfolio: StockPortfolio;
+    /** Данные таблицы ETF */
+    etfPortfolio: StockPortfolio;
     /** Данные таблицы Активы */
     assetPortfolio: AssetPortfolio;
     /** Данные таблицы Облигации */
@@ -259,12 +265,12 @@ export interface Overview {
 
 export type StockPortfolio = {
     sumRow: SharePortfolioSumRow,
-    rows: StockPortfolioRow[]
+    rows: StockTypePortfolioRow[]
 };
 
 export type AssetPortfolio = {
     sumRow: AssetPortfolioSumRow,
-    rows: AssetPortfolioRow[]
+    rows: StockTypePortfolioRow[]
 };
 
 export type BondPortfolio = {
@@ -657,9 +663,11 @@ export enum BlockType {
     ASSETS = "assets",
     HISTORY_PANEL = "historyPanel",
     STOCK_PORTFOLIO = "stockPortfolio",
+    ETF_PORTFOLIO = "etfPortfolio",
     BOND_PORTFOLIO = "bondPortfolio",
     BOND_PIE = "bondPie",
     STOCK_PIE = "stockPie",
+    ETF_PIE = "etfPie",
     SECTORS_PIE = "sectorsPie",
     BOND_SECTORS_PIE = "bondSectorsPie",
 }

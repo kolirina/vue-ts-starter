@@ -65,7 +65,7 @@ export class AssetInfoPage extends UI {
     }
 
     private get portfolioAvgPrice(): number {
-        const row = this.portfolio.overview.assetPortfolio.rows.find(r => String(r.asset.id) === this.ticker);
+        const row = this.portfolio.overview.assetPortfolio.rows.find(row => String(row.share.id) === this.ticker);
         return row ? new BigMoney(row.avgBuy).amount.toNumber() : null;
     }
 

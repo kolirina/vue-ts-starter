@@ -154,6 +154,7 @@ export interface ChartSeriesFilter {
 export enum ChartType {
     ASSETS_CHART = "assetsPieChart",
     STOCK_CHART = "stockPieChart",
+    ETF_CHART = "etfPieChart",
     BOND_CHART = "bondPieChart",
     SECTORS_CHART = "sectorsChart",
     BOND_SECTORS_CHART = "bondSectorsChart",

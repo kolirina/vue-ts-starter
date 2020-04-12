@@ -6,9 +6,11 @@ const localStorage: Storage = Container.get(Storage);
 export class UiStateHelper {
 
     static readonly STOCKS = "stocks_panel";
+    static readonly ETF = "etf_panel";
     static readonly ASSET_TABLE = "assets_table";
     static readonly HISTORY_PANEL = "history_chart";
     static readonly STOCK_CHART_PANEL = "stocksChartPanel";
+    static readonly ETF_CHART_PANEL = "etfChartPanel";
     static readonly BOND_CHART_PANEL = "bondsChartPanel";
     static readonly ASSET_CHART_PANEL = "assetChartPanel";
     static readonly AGGREGATE_CHART_PANEL = "aggregateChartPanel";
@@ -37,6 +39,14 @@ export class UiStateHelper {
 
     static get stocksTablePanel(): number[] {
         return [localStorage.get(UiStateHelper.STOCKS, 0)];
+    }
+
+    static set etfTablePanel(value: number[]) {
+        localStorage.set(UiStateHelper.ETF, value);
+    }
+
+    static get etfTablePanel(): number[] {
+        return [localStorage.get(UiStateHelper.ETF, 0)];
     }
 
     static set bondsTablePanel(value: number[]) {
@@ -141,6 +151,14 @@ export class UiStateHelper {
 
     static get stockGraph(): number[] {
         return [localStorage.get(UiStateHelper.STOCK_CHART_PANEL, 0)];
+    }
+
+    static set etfGraph(value: number[]) {
+        localStorage.set(UiStateHelper.ETF_CHART_PANEL, value);
+    }
+
+    static get etfGraph(): number[] {
+        return [localStorage.get(UiStateHelper.ETF_CHART_PANEL, 0)];
     }
 
     static set bondGraph(value: number[]) {
