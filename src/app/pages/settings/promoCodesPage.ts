@@ -54,9 +54,9 @@ const MainStore = namespace(StoreType.MAIN);
                                         пользователя Вы получите месяц подписки бесплатно.
                                     </div>
                                     <div v-if="clientInfo.user.referralAwardType === 'PAYMENT'">
-                                        Вы будете получать 30% от суммы всех оплат<br>
-                                        каждого приглашенного Вами пользователя навсегда.<br>
-                                        Вывод от 3000 <span class="rewards-currency rub"></span>, через Вашего менеджера
+                                        Вы будете получать 30% от суммы оплат<br>
+                                        каждого приглашенного Вами пользователя.<br>
+                                        Вывод от 5000 <span class="rewards-currency rub"></span>, через Вашего менеджера
                                     </div>
                                     <div v-if="clientInfo.user.referralAwardType === 'PAYMENT'" class="mt-3">
                                         <a @click.stop="openPartnerProgramRulesDialog">Правила Партнерской программы</a>
