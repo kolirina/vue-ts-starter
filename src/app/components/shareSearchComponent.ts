@@ -140,7 +140,8 @@ export class ShareSearchComponent extends UI {
     private async onSearch(): Promise<void> {
         clearTimeout(this.currentTimer);
         this.shareSearch = true;
-        if (!this.searchQuery || this.searchQuery.length < 1) {
+        const trimmedQuery = this.searchQuery?.trim();
+        if (!trimmedQuery || trimmedQuery.length < 1) {
             this.shareSearch = false;
             this.hideNoDataLabel = true;
             return;
@@ -148,22 +149,22 @@ export class ShareSearchComponent extends UI {
         await this.setTimeout(1000);
         try {
             if (this.ignoreAssetType) {
-                this.filteredSharesMutated = await this.marketService.searchShares(this.searchQuery);
+                this.filteredSharesMutated = await this.marketService.searchShares(trimmedQuery);
             } else {
                 if (this.assetType === AssetType.STOCK) {
-                    this.filteredSharesMutated = await this.marketService.searchStocks(this.searchQuery);
+                    this.filteredSharesMutated = await this.marketService.searchStocks(trimmedQuery);
                 } else if (this.assetType === AssetType.BOND) {
-                    this.filteredSharesMutated = await this.marketService.searchBonds(this.searchQuery);
+                    this.filteredSharesMutated = await this.marketService.searchBonds(trimmedQuery);
                 } else if (this.assetType === AssetType.ASSET) {
-                    this.filteredSharesMutated = await this.marketService.searchAssets(this.searchQuery);
+                    this.filteredSharesMutated = await this.marketService.searchAssets(trimmedQuery);
                 } else {
-                    this.filteredSharesMutated = await this.marketService.searchShares(this.searchQuery);
+                    this.filteredSharesMutated = await this.marketService.searchShares(trimmedQuery);
                 }
             }
             // не нашли кастомный актив, предлагаем добавить его
             if (this.assetType === AssetType.ASSET && this.filteredSharesMutated.length === 0 && this.createAssetAllowed) {
                 const newAsset = {...this.NEW_CUSTOM_ASSET};
-                newAsset.shortname = this.searchQuery;
+                newAsset.shortname = trimmedQuery;
                 this.filteredSharesMutated.push(newAsset);
             }
             this.hideNoDataLabel = this.filteredSharesMutated.length > 0;
@@ -224,6 +225,6 @@ export class ShareSearchComponent extends UI {
 
     private requestNewShare(): void {
         this.$refs.shareSearch.blur();
-        this.$emit("requestNewShare", this.searchQuery);
+        this.$emit("requestNewShare", this.searchQuery.trim());
     }
 }
