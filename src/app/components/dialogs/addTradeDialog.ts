@@ -25,7 +25,7 @@ import {PortfolioAssetType} from "../../types/portfolioAssetType";
 import {TradeDataHolder} from "../../types/trade/tradeDataHolder";
 import {TradeMap} from "../../types/trade/tradeMap";
 import {TradeValue} from "../../types/trade/tradeValue";
-import {Asset, Bond, ErrorInfo, Portfolio, Share} from "../../types/types";
+import {Asset, Bond, ErrorInfo, Portfolio, Share, ShareType} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {DateUtils} from "../../utils/dateUtils";
 import {TariffUtils} from "../../utils/tariffUtils";
@@ -566,13 +566,13 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         if (DateUtils.isCurrentDate(date)) {
             this.fillFieldsFromShare();
         } else if (DateUtils.isBefore(date)) {
-            if (this.assetType === AssetType.STOCK) {
+            if (this.share?.shareType === ShareType.STOCK) {
                 const stock = (await this.marketHistoryService.getStockHistory(this.share.ticker, dayjs(this.date).format("DD.MM.YYYY")));
                 this.setPriceFromStockTypeShare(stock.price);
-            } else if (this.assetType === AssetType.ASSET && this.share.id) {
+            } else if (this.share?.shareType === ShareType.ASSET && this.share.id) {
                 const asset = (await this.marketHistoryService.getAssetHistory(String(this.share.id), dayjs(this.date).format("DD.MM.YYYY")));
                 this.setPriceFromStockTypeShare(asset.price);
-            } else if (this.assetType === AssetType.BOND) {
+            } else if (this.share?.shareType === ShareType.BOND) {
                 const bond = (await this.marketHistoryService.getBondHistory(this.share.ticker, dayjs(this.date).format("DD.MM.YYYY")));
                 this.fillFieldsFromBond(bond);
             }
