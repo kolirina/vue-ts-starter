@@ -78,16 +78,16 @@ export class DashboardBrickComponent extends UI {
     template: `
         <v-container v-if="data" px-0 grid-list-md text-xs-center fluid>
             <v-layout class="dashboard-wrap px-4 selectable" row wrap :class="{'menu-open': !sideBarOpened}">
-                <v-flex class="dashboard-item" xl3 lg3 md6 sm12 xs12>
+                <v-flex class="dashboard-item" xl3 lg3 md6 sm6 xs12>
                     <dashboard-brick-component :block="blocks[0]"></dashboard-brick-component>
                 </v-flex>
-                <v-flex class="dashboard-item" xl3 lg3 md6 sm12 xs12 :align-content-start="true">
+                <v-flex class="dashboard-item" xl3 lg3 md6 sm6 xs12 :align-content-start="true">
                     <dashboard-brick-component :block="blocks[1]"></dashboard-brick-component>
                 </v-flex>
-                <v-flex class="dashboard-item" xl3 lg3 md6 sm12 xs12>
+                <v-flex class="dashboard-item" xl3 lg3 md6 sm6 xs12>
                     <dashboard-brick-component :block="blocks[2]"></dashboard-brick-component>
                 </v-flex>
-                <v-flex class="dashboard-item" xl3 lg3 md6 sm12 xs12>
+                <v-flex class="dashboard-item" xl3 lg3 md6 sm6 xs12>
                     <dashboard-brick-component :block="blocks[3]"></dashboard-brick-component>
                 </v-flex>
             </v-layout>

@@ -8,12 +8,8 @@
   .section-padding {padding: 0 28px 0 32px}
 
   .info-block {
-    font-size: 12px;
-    line-height: 20px;
-    background: #F7F9FB;
-    border-radius: 4px;
+    @extend %info-panel;
     padding: 12px;
-    border-left: 3px solid #3B6EC9;
   }
 
   .sumField {

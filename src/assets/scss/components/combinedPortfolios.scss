@@ -1,10 +1,20 @@
-.control-porfolios-title {
+.control-portfolios-title {
     font-weight: bold;
     font-size: 18px;
     line-height: 24px;
     letter-spacing: -0.3px;
     color: #040427;
 }
+
+.control-portfolios__btns {
+  @media only screen and (max-width: $sm-breakpoint) {
+    .btn {
+      min-width: 140px;
+      margin-bottom: 8px !important;
+    }
+  }
+}
+
 .composite-dialog {
     .action-btn {
         padding: 80px 30px 30px 0px;

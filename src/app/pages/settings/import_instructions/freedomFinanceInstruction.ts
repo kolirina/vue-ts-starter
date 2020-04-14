@@ -24,7 +24,7 @@ import {Component, UI} from "../../../app/ui";
                 <div class="import-default-text">
                     Перейдите в online-терминал. Перейдите на вкладку <b>Сделки</b>
                 </div>
-                <v-img :src="IMAGES[0]" height="453" width="980" class="grey darken-4 image"></v-img>
+                <v-img :src="IMAGES[0]" max-width="980" class="grey darken-4 image"></v-img>
                 <div class="import-default-text">
                     Для получения отчета нажмите Экспорт в Excel
                 </div>

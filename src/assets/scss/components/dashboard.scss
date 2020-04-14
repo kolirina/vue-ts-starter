@@ -40,6 +40,8 @@
     font-family: $dashbord--num--font-family !important;
     font-size: $dashbord--num--font-size !important;
     font-weight: $dashbord--num--font-weight !important;
+
+    @media only screen and (max-width: $sm-breakpoint) {text-align: left}
   }
 
   &-second-value-desc {
@@ -103,14 +105,14 @@
         filter: blur(0px) !important;
       }
     }
+    @media only screen and (max-width: $sm-breakpoint) {
+      .v-card__title {padding-top: 0}
+    }
   }
 
-  .arrow-up {
-    color: $dashboard--green-color !important;
-  }
-  .arrow-down {
-    color: $dashboard--red-color !important;
-  }
+  .arrow-up {color: $dashboard--green-color !important;}
+
+  .arrow-down {color: $dashboard--red-color !important;}
 }
 
 .negative-balance-notification {

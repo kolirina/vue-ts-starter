@@ -68,8 +68,13 @@
     &__sector-rating {
       display: flex;
       align-items: flex-end;
-      .rating-section {
-        margin-left: 8px;
+
+      .rating-section {margin-left: 8px}
+
+      @media only screen and (max-width: $sm-breakpoint) {
+        display: block;
+
+        .rating-section {display: none}
       }
     }
   }
@@ -97,12 +102,16 @@
   }
 
   .info-about-stock {
-    padding: 0px 0px 26px 20px;
+    padding: 0 0 26px 20px;
     overflow: auto;
     &__title {
-      margin: 31px 0px 15px 0px;
+      margin: 31px 0 15px 0;
       font-size: 12px;
       color: #A1A6B6;
+
+      @media only screen and (max-width: $sm-breakpoint) {
+        margin: 16px 0 8px;
+      }
     }
 
     &__content-title {
@@ -143,11 +152,24 @@
       width: 100%;
       padding-top: 30px;
     }
+
+    @media only screen and (max-width: $sm-breakpoint) {
+      padding-left: 0;
+
+      &__content {min-width: 0}
+    }
+  }
+
+  @media only screen and (max-width: $sm-breakpoint) {
+    &__btns .btn {min-width: 200px}
   }
 }
 .dividends-chart {
-  .v-card__title {
-    padding: 16px 10px 0px 27px;
+
+  .v-card__title {padding: 16px 10px 0 27px}
+
+  @media only screen and (max-width: $sm-breakpoint) {
+     &__chart-container > div {min-width: 0 !important}
   }
 }
 
@@ -174,3 +196,5 @@
   width: 28px;
   height: 28px;
 }
+
+.portfolioAvgPriceChart > div {min-width: 0 !important;}

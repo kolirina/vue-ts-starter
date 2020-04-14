@@ -544,7 +544,7 @@ export class ChartUtils {
                 backgroundColor: null,
                 style: {
                     fontFamily: "\"OpenSans\" sans-serif",
-                    fontSize: "12px"
+                    fontSize: "12px",
                 }
             },
             title: {

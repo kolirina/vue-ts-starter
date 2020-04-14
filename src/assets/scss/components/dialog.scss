@@ -11,13 +11,21 @@
     background: #0000005c;
     color: #fff !important;
   }
+
+  @media only screen and (max-width: $sm-breakpoint) {
+    position: absolute;
+    color: #000000 !important;
+    padding: 8px;
+  }
 }
 
 .dialog-wrap {
   position: relative;
 
-  @media only screen and (max-width: 959px) {
+  @media only screen and (max-width: $sm-breakpoint) {
     &.pa-5 {padding: 0 !important;}
+
+    .v-card__title {padding-right: 40px}
   }
 }
 

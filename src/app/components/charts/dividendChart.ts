@@ -6,11 +6,12 @@ import {UI} from "../../app/ui";
 import {BaseChartDot} from "../../types/charts/types";
 import {Operation} from "../../types/operation";
 import {ChartUtils} from "../../utils/chartUtils";
+import {CommonUtils} from "../../utils/commonUtils";
 
 @Component({
     // language=Vue
     template: `
-        <div>
+        <div class="dividends-chart__chart-container">
             <v-container grid-list-md text-xs-center v-if="!chart">
                 <v-layout row wrap>
                     <v-flex xs12>
@@ -59,6 +60,9 @@ export class DividendChart extends UI {
         this.data.forEach(dot => {
             this.chartData.push(new Decimal(dot.amount).toNumber());
         });
+        if (CommonUtils.isMobile()) {
+            this.chartData.length = 10;
+        }
         this.categoryNames = this.data.map(dot => dot.date);
     }
 

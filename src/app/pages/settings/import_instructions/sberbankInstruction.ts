@@ -37,13 +37,13 @@ import {Component, UI} from "../../../app/ui";
                         Выберите в выпадающем меню пункт <b>Брокерское обслуживание</b>
                     </div>
                 </div>
-                <v-img :src="IMAGES[0]" height="600" width="800" class="grey darken-4 image"></v-img>
+                <v-img :src="IMAGES[0]" max-width="800" class="grey darken-4 image"></v-img>
             </div>
             <div class="import-format-requirements-ul">
                 <div>
                     Для получения списка сделок по бумагам переключитесь на вкладку <b>Сделки</b>
                 </div>
-                <v-img :src="IMAGES[1]" height="600" width="800" class="grey darken-4 image"></v-img>
+                <v-img :src="IMAGES[1]" max-width="800" class="grey darken-4 image"></v-img>
                 <div class="import-default-text-margin-t">
                     Настройте параметры отчета:
                 </div>
@@ -55,7 +55,7 @@ import {Component, UI} from "../../../app/ui";
                 <div>
                     Отобразится список сделок за выбранный период.
                 </div>
-                <v-img :src="IMAGES[2]" height="900" width="800" class="grey darken-4 image"></v-img>
+                <v-img :src="IMAGES[2]" max-width="800" class="grey darken-4 image"></v-img>
                 <div>
                     Нажмите кнопку <b>Скачать в формате Excel</b>
                 </div>
@@ -82,7 +82,7 @@ import {Component, UI} from "../../../app/ui";
                 <div>
                     Нажмите кнопку <b>Скачать в формате Excel</b>
                 </div>
-                <v-img :src="IMAGES[3]" height="900" width="800" class="grey darken-4 image"></v-img>
+                <v-img :src="IMAGES[3]" max-width="800" class="grey darken-4 image"></v-img>
                 <div>
                     Полученный файл используйте для импорта.
                 </div>
