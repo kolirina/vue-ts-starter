@@ -112,6 +112,8 @@ export interface DealImportError {
     dealDate?: string;
     /** Тикер бумаги сделки */
     dealTicker: string;
+    /** Валюта бумаги сделки */
+    currency?: string;
     /** Признак не найденного тикера, только если указан тикер */
     shareNotFound: boolean;
 }
@@ -149,5 +151,6 @@ interface SaveShareAliasesRequest {
 
 export interface ShareAliasItem {
     alias: string;
+    currency?: string;
     share: Share;
 }
