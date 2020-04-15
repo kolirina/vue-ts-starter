@@ -60,9 +60,6 @@ export class DividendChart extends UI {
         this.data.forEach(dot => {
             this.chartData.push(new Decimal(dot.amount).toNumber());
         });
-        if (CommonUtils.isMobile()) {
-            this.chartData.length = 10;
-        }
         this.categoryNames = this.data.map(dot => dot.date);
     }
 

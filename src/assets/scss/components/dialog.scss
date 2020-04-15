@@ -80,3 +80,24 @@
     margin-bottom: -6px;
   }
 }
+
+/* Диалог с фиксированными хэдером и футером, контент скроллится. Только для мобильных */
+@media only screen and (max-width: $sm-breakpoint) {
+
+  .scroll-dialog {
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh !important;
+
+    &__header {flex: none}
+
+    &__body {
+      overflow-y: auto;
+      flex: auto;
+    }
+
+    &__footer {
+      flex: none;
+    }
+  }
+}
