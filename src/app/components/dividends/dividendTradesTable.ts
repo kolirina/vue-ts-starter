@@ -148,8 +148,9 @@ export class DividendTradesTable extends UI {
 
     private async openEditTradeDialog(trade: DividendInfo): Promise<void> {
         const currency = new BigMoney(trade.amount).currency;
+        const shareType = AssetType.valueByName(trade.shareType);
         const tradeFields: TradeFields = {
-            ticker: trade.ticker,
+            ticker: String(trade.shareId),
             date: trade.date,
             quantity: trade.quantity,
             price: TradeUtils.decimal(trade.perOne),
@@ -166,7 +167,7 @@ export class DividendTradesTable extends UI {
         const result = await new AddTradeDialog().show({
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
-            assetType: AssetType.STOCK,
+            assetType: shareType,
             operation: Operation.DIVIDEND,
             tradeFields: tradeFields,
             tradeId: trade.id,

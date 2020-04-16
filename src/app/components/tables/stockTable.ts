@@ -386,8 +386,11 @@ export class StockTable extends UI {
                 trades = await this.tradeService.getShareTrades(this.portfolioId, share.ticker);
             }
         } else {
-            // todo запрос сделок по комбинированному портфелю
-            trades = await this.tradeService.getTradesCombinedPortfolio(share.ticker, this.viewCurrency, this.ids);
+            if (share.shareType === ShareType.ASSET) {
+                trades = await this.tradeService.getAssetTradesByIdForCombinedPortfolio(String(share.id), this.viewCurrency, this.ids);
+            } else {
+                trades = await this.tradeService.getTradesCombinedPortfolio(share.ticker, this.viewCurrency, this.ids);
+            }
         }
         await new ShareTradesDialog().show({trades, ticker: share.ticker, shareType: ShareType.ASSET});
     }
@@ -446,7 +449,6 @@ export class StockTable extends UI {
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
             share: stockRow.share,
-            // todo оставить только идентификатор
             shareId: String(stockRow.share.id),
             quantity: new Decimal(stockRow.quantity).abs().toString(),
             operation,

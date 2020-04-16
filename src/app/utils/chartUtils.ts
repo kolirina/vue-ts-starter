@@ -153,19 +153,7 @@ export class ChartUtils {
         return eventsGrouped;
     }
 
-    static doStockPieChartData(rows: StockTypePortfolioRow[]): DataPoint[] {
-        const data: DataPoint[] = [];
-        rows.filter(value => new BigMoney(value.currCost).amount.toString() !== "0").forEach(row => {
-            data.push({
-                name: row.share.shortname,
-                y: new Decimal(new BigMoney(row.currCost).amount.abs().toString()).toDP(2, Decimal.ROUND_HALF_UP).toNumber()
-            });
-        });
-        data.sort((a, b) => b.y - a.y);
-        return data;
-    }
-
-    static doEtfPieChartData(rows: StockTypePortfolioRow[]): DataPoint[] {
+    static doStockTypePieChartData(rows: StockTypePortfolioRow[]): DataPoint[] {
         const data: DataPoint[] = [];
         rows.filter(value => new BigMoney(value.currCost).amount.toString() !== "0").forEach(row => {
             data.push({

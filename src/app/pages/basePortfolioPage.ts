@@ -420,11 +420,11 @@ export class BasePortfolioPage extends UI {
     }
 
     private doStockPieChartData(): DataPoint[] {
-        return ChartUtils.doStockPieChartData(this.overview.stockPortfolio.rows);
+        return ChartUtils.doStockTypePieChartData(this.overview.stockPortfolio.rows);
     }
 
     private doEtfPieChartData(): DataPoint[] {
-        return ChartUtils.doEtfPieChartData(this.overview.etfPortfolio.rows);
+        return ChartUtils.doStockTypePieChartData(this.overview.etfPortfolio.rows);
     }
 
     private doBondPieChartData(): DataPoint[] {

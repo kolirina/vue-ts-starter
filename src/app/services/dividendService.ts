@@ -76,6 +76,10 @@ export interface DividendInfo {
     year: string;
     /** Тикер */
     ticker: string;
+    /** Тип актива бумаги */
+    shareType: string;
+    /** Уникальный идентификатор бумаги */
+    shareId: number;
     /** Краткое название эмитента */
     shortName: string;
 }
