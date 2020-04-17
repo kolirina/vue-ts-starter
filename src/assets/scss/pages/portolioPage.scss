@@ -9,3 +9,13 @@
     border: 2px solid #fff;
     z-index: 7;
 }
+
+.pie-chart-wrapper {
+    width: 99%;
+    height: 500px;
+    margin: 0 auto;
+
+    @media only screen and (max-width: $sm-breakpoint) {
+        height: 350px;
+    }
+}

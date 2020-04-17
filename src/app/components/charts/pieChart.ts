@@ -15,7 +15,7 @@ import {ChartUtils} from "../../utils/chartUtils";
                 </v-layout>
             </v-container>
 
-            <div v-show="chart" ref="container" style="width: 99%; height: 500px; margin: 0 auto"></div>
+            <div v-show="chart" ref="container" class="pie-chart-wrapper"></div>
         </div>
     `
 })
