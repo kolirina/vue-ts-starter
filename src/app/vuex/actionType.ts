@@ -18,5 +18,4 @@
  * Перечисление всех типов действий
  */
 export enum ActionType {
-    LOAD_EVENTS = "LOAD_EVENTS",
 }
