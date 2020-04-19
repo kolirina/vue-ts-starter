@@ -35,11 +35,11 @@ const MainStore = namespace(StoreType.MAIN);
                                      @reloadLineChart="loadPortfolioLineChart">
                     <template #afterDashboard>
                         <v-layout align-center>
-                            <div :class="['control-porfolios-title', blockNotEmpty() ? '' : 'pl-3']">
+                            <div :class="['control-portfolios-title', blockNotEmpty() ? '' : 'pl-3']">
                                 Управление составным портфелем
                             </div>
                             <v-spacer></v-spacer>
-                            <div v-if="blockNotEmpty()">
+                            <div v-if="blockNotEmpty()" class="control-portfolios__btns">
                                 <v-btn class="btn" color="primary" @click="exportPortfolio">
                                     Экспорт в xlsx
                                 </v-btn>

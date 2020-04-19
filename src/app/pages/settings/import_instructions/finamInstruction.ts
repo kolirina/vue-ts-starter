@@ -27,7 +27,7 @@ import {PortfolioParams} from "../../../services/portfolioService";
                     Перейдите в личный кабинет брокера. Перейдите на вкладку просмотра <strong>Единой<br>
                     денежной позиции</strong> далее вкладка <strong>Справка по счету.</strong>
                 </div>
-                    <v-img :src="IMAGES[0]" height="350" width="980" class="grey darken-4 image"></v-img>
+                    <v-img :src="IMAGES[0]" max-width="980" class="grey darken-4 image"></v-img>
                 <div class="import-default-text">
                     Настройте параметры отчета:
                 </div>
@@ -38,7 +38,7 @@ import {PortfolioParams} from "../../../services/portfolioService";
                         <li>Нажмите кнопку <b><i>Сформировать</i></b></li>
                     </ul>
                 </div>
-                <v-img :src="IMAGES[1]" height="384" width="980" class="grey darken-4 image"></v-img>
+                <v-img :src="IMAGES[1]" max-width="980" class="grey darken-4 image"></v-img>
                 <div class="import-default-text">
                     После успешного формирования отчета появится запрос на скачивание отчета.<br>
                     Полученный файл используйте для импорта.

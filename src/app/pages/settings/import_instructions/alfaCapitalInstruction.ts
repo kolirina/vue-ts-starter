@@ -38,7 +38,7 @@ import {UI} from "../../../app/ui";
                     </ul>
                 </div>
 
-                <v-img :src="IMAGES[0]" height="396" width="715" class="grey darken-4 image"></v-img>
+                <v-img :src="IMAGES[0]" max-width="715" class="grey darken-4 image"></v-img>
 
                 <div class="import-default-text">
                     Полученный файл используйте для импорта.<br>

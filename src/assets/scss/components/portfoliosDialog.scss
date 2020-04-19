@@ -91,6 +91,13 @@
             margin-right: 0px;
         }
     }
+
+  @media only screen and (max-width: $sm-breakpoint) {
+    margin: 12px 0;
+    flex-wrap: wrap;
+
+    .select-section {padding: 8px 0}
+  }
 }
 .wrap-calendar-section {
     margin-left: 20px;

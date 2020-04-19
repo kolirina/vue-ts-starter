@@ -29,14 +29,14 @@ import {Component, UI} from "../../../app/ui";
                     В боковом меню выберите <b>Отчеты</b>
                 </div>
 
-                <v-img :src="IMAGES[0]" height="567" width="933" class="grey darken-4 image"></v-img>
+                <v-img :src="IMAGES[0]" max-width="933" class="grey darken-4 image"></v-img>
 
                 <div class="import-default-text">
                     Первая вкладка - <b>"Выписки"</b><br/>
                     Формат отчета <b>Активность</b>
                 </div>
 
-                <v-img :src="IMAGES[1]" height="690" width="933" class="grey darken-4 image"></v-img>
+                <v-img :src="IMAGES[1]" max-width="933" class="grey darken-4 image"></v-img>
 
                 <div class="import-default-text">
                     Настройте параметры получаемого отчета
@@ -61,13 +61,13 @@ import {Component, UI} from "../../../app/ui";
                     </ul>
                 </div>
 
-                <v-img :src="IMAGES[2]" height="351" width="802" class="grey darken-4 image"></v-img>
+                <v-img :src="IMAGES[2]" max-width="802" class="grey darken-4 image"></v-img>
 
                 <div class="import-default-text">
                     После этого нажмите кнопку <b>Запустить</b>.<br/>
                 </div>
 
-                <v-img :src="IMAGES[3]" height="320" width="933" class="grey darken-4 image"></v-img>
+                <v-img :src="IMAGES[3]" max-width="933" class="grey darken-4 image"></v-img>
 
                 <div class="import-default-text">
                     Полученный отчет используйте для импорта.<br/>
