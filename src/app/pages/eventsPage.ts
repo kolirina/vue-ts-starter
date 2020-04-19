@@ -28,7 +28,6 @@ import {Pagination, Portfolio, ShareType, TableHeader} from "../types/types";
 import {DateUtils} from "../utils/dateUtils";
 import {SortUtils} from "../utils/sortUtils";
 import {TradeUtils} from "../utils/tradeUtils";
-import {ActionType} from "../vuex/actionType";
 import {GetterType} from "../vuex/getterType";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
@@ -297,16 +296,14 @@ export class EventsPage extends UI {
 
     @MainStore.Getter
     private portfolio: Portfolio;
-    @MainStore.Getter(GetterType.EVENTS)
-    private eventsResponse: EventsResponse;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
     private reloadPortfolio: (id: number) => Promise<void>;
-    @MainStore.Action(ActionType.LOAD_EVENTS)
-    private loadEvents: (id: number) => Promise<void>;
     @Inject
     private eventService: EventService;
     @Inject
     private localStorage: Storage;
+    /** Ответ по событиям */
+    private eventsResponse: EventsResponse = null;
     /** Дивидендные новости */
     private dividendNews: DividendNewsItem[] = [];
     /** Зголовки таблицы События */
@@ -477,7 +474,7 @@ export class EventsPage extends UI {
     }
 
     private async updateEvents(): Promise<void> {
-        await this.loadEvents(this.portfolio.id);
+        this.eventsResponse = await this.eventService.getEvents(this.portfolio.id);
     }
 
     /** События */
