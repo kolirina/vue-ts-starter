@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import Decimal from "decimal.js";
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
@@ -29,7 +30,7 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-container class="adviser-wrap">
-            <expanded-panel :value="$uistate.adviserDiagramPanel" :with-menu="false" :state="$uistate.ADVISER_DIAGRAM_PANEL">
+            <expanded-panel v-show="showAnalyticsPanel" :value="$uistate.adviserDiagramPanel" :with-menu="false" :state="$uistate.ADVISER_DIAGRAM_PANEL">
                 <template #header>Аналитическая сводка по портфелю</template>
                 <v-layout wrap class="adviser-diagram-section mt-3">
                     <v-flex xs12 sm12 md12 lg6 class="pr-2 left-section profitability-diagram">
@@ -243,4 +244,7 @@ export class AnalyticsPage extends UI {
         ((this.$refs as any)[chart] as PieChart).chart.print();
     }
 
+    private get showAnalyticsPanel(): boolean {
+        return Math.abs(dayjs(this.portfolio.overview.firstTradeDate).diff(dayjs(), "day")) > 365;
+    }
 }

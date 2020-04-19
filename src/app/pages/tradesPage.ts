@@ -45,7 +45,7 @@ const MainStore = namespace(StoreType.MAIN);
                                              :is-default="isDefaultFilter" data-v-step="1"></trades-table-filter>
                         <additional-pagination :pagination="pagination" @update:pagination="onTablePaginationChange"></additional-pagination>
                     </v-layout>
-                    <empty-search-result v-if="isEmptySearchResult" @resetFilter="resetFilter"></empty-search-result>
+                    <empty-search-result v-if="emptySearchResult" @resetFilter="resetFilter"></empty-search-result>
                     <trades-table v-else :trades="trades" :pagination="pagination" @copyTrade="copyTrade" @moveTrade="moveTrade"
                                   :headers="getHeaders(TABLES_NAME.TRADE)" @delete="onDelete" @resetFilter="resetFilter" @update:pagination="onTablePaginationChange"
                                   data-v-step="2">
@@ -95,8 +95,6 @@ export class TradesPage extends UI {
     private tradesFilter: TradesFilter = null;
 
     private headers: TableHeaders = this.tablesService.headers;
-
-    private isEmptySearchResult: boolean = false;
 
     private TABLES_NAME = TABLES_NAME;
     private ExportType = ExportType;
@@ -160,7 +158,6 @@ export class TradesPage extends UI {
         await this.loadTrades();
     }
 
-    @ShowProgress
     private async onDelete(tradeRow: TradeRow): Promise<void> {
         await this.tradeService.deleteTrade({portfolioId: this.portfolio.id, tradeId: tradeRow.id});
         await this.reloadPortfolio(this.portfolio.id);
@@ -170,6 +167,7 @@ export class TradesPage extends UI {
             `по ${assetType === AssetType.ASSET ? "активу" : "бумаге"} ${tradeRow.ticker}`} была успешно удалена`);
     }
 
+    @ShowProgress
     private async loadTrades(): Promise<void> {
         const result = await this.tradeService.loadTrades(
             this.portfolio.id,
@@ -182,7 +180,6 @@ export class TradesPage extends UI {
         this.trades = result.content;
         this.pagination.totalItems = result.totalItems;
         this.pagination.pages = result.pages;
-        this.isEmptySearchResult = this.trades.length === 0;
     }
 
     @ShowProgress
@@ -214,5 +211,9 @@ export class TradesPage extends UI {
      */
     private isDownloadNotAllowed(): boolean {
         return ExportUtils.isDownloadNotAllowed(this.clientInfo);
+    }
+
+    private get emptySearchResult(): boolean {
+        return this.trades.length === 0;
     }
 }

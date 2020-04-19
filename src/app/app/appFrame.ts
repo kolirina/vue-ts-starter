@@ -56,7 +56,7 @@ const MainStore = namespace(StoreType.MAIN);
                             </v-btn>
                         </div>
                         <navigation-list :mainSection="mainSection" :side-bar-opened="sideBarOpened"
-                                         @openDialog="openDialog" :number-of-events="eventsCount"></navigation-list>
+                                         @openDialog="openDialog"></navigation-list>
                     </div>
                     <menu-bottom-navigation :side-bar-opened="sideBarOpened"></menu-bottom-navigation>
                 </v-navigation-drawer>
@@ -115,8 +115,6 @@ export class AppFrame extends UI {
     private portfolio: Portfolio;
     @MainStore.Getter
     private sideBarOpened: boolean;
-    @MainStore.Getter
-    private eventsCount: number;
 
     @MainStore.Action(MutationType.SET_CLIENT_INFO)
     private loadUser: (clientInfo: ClientInfo) => Promise<void>;
@@ -129,9 +127,6 @@ export class AppFrame extends UI {
 
     @MainStore.Mutation(MutationType.CHANGE_SIDEBAR_STATE)
     private changeSideBarState: (sideBarState: boolean) => void;
-
-    @MainStore.Action(ActionType.LOAD_EVENTS)
-    private loadEvents: (id: number) => Promise<void>;
 
     /** Признак залогиненного пользователя */
     private loggedIn = false;
@@ -154,11 +149,11 @@ export class AppFrame extends UI {
         {title: "Портфель", action: "portfolio"},
         {title: "Аналитика", action: "adviser"},
         {title: "Сделки", action: "trades"},
-        {title: "События", action: "events"},
         {
             title: "Инструменты", subMenu: [
                 {title: "Дивиденды", action: "dividends"},
                 {title: "Составной портфель", action: "combined-portfolio"},
+                {title: "События", action: "events"},
                 {title: "Уведомления", action: "notifications"}
             ]
         },
@@ -190,7 +185,6 @@ export class AppFrame extends UI {
         if (this.$store.state[StoreType.MAIN].clientInfo) {
             this.isNotifyAccepted = this.clientInfo.user.updateNotificationConfirmDate === NotificationUpdateDialog.DATE;
             this.showUpdatesMessage();
-            await this.loadEvents(this.portfolio.id);
             await this.loadOnBoardingTours();
             this.loggedIn = true;
         }
@@ -235,7 +229,6 @@ export class AppFrame extends UI {
             const clientInfo = await this.clientService.login({username: signInData.username, password: signInData.password});
             await this.loadUser(clientInfo);
             await this.setCurrentPortfolio(this.$store.state[StoreType.MAIN].clientInfo.user.currentPortfolioId);
-            await this.loadEvents(this.portfolio.id);
             await this.loadOnBoardingTours();
             this.loggedIn = true;
             this.$snotify.clear();

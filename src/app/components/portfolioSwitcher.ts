@@ -62,9 +62,6 @@ export class PortfolioSwitcher extends UI {
     @MainStore.Action(MutationType.SET_DEFAULT_PORTFOLIO)
     private setDefaultPortfolio: (id: number) => Promise<void>;
 
-    @MainStore.Action(ActionType.LOAD_EVENTS)
-    private loadEvents: (id: number) => Promise<void>;
-
     @Prop({default: false, required: false})
     private sideBarOpened: boolean;
 
@@ -81,10 +78,6 @@ export class PortfolioSwitcher extends UI {
     private async onSelect(selected: PortfolioParams): Promise<void> {
         await this.setDefaultPortfolio(selected.id);
         await this.setCurrentPortfolio(selected.id);
-        // не вызываем обновление событий если уже находимся на странице Событий, так как там они загрузятся сами
-        if (this.$route.name !== "events") {
-            await this.loadEvents(selected.id);
-        }
         this.selected = selected;
     }
 
