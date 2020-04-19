@@ -27,8 +27,6 @@ const localStorage: Storage = Container.get(Storage);
 export class StateHolder {
     /** Информация о клиенте */
     clientInfo: ClientInfo = null;
-    /** Количество новых событий */
-    eventsResponse: EventsResponse = null;
     /** Текущий выбранный портфель */
     currentPortfolio: Portfolio = null;
     /** Версия стора */
@@ -49,12 +47,6 @@ const Getters = {
     [GetterType.CLIENT_INFO](state: StateHolder): ClientInfo {
         return state.clientInfo;
     },
-    [GetterType.EVENTS_COUNT](state: StateHolder): number {
-        return state.eventsResponse ? state.eventsResponse.events.length : 0;
-    },
-    [GetterType.EVENTS](state: StateHolder): EventsResponse {
-        return state.eventsResponse;
-    },
     [GetterType.SIDEBAR_OPENED](state: StateHolder): boolean {
         return state.sideBarOpened;
     },
@@ -74,9 +66,6 @@ const Mutations = {
     },
     [MutationType.SET_CLIENT](state: StateHolder, client: Client): void {
         state.clientInfo.user = client;
-    },
-    [MutationType.SET_EVENTS](state: StateHolder, eventsResponse: EventsResponse): void {
-        state.eventsResponse = eventsResponse;
     },
     [MutationType.SET_CURRENT_PORTFOLIO](state: StateHolder, portfolio: Portfolio): void {
         state.currentPortfolio = portfolio;
@@ -151,14 +140,6 @@ const Actions = {
             });
         });
     },
-    [ActionType.LOAD_EVENTS](context: ActionContext<StateHolder, void>, id: number): Promise<void> {
-        return new Promise<void>((resolve): void => {
-            eventService.getEvents(id).then((eventsResponse: EventsResponse): void => {
-                context.commit(MutationType.SET_EVENTS, eventsResponse);
-                resolve();
-            });
-        });
-    }
 };
 
 /**

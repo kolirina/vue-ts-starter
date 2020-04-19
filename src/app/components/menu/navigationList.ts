@@ -41,17 +41,8 @@ const MainStore = namespace(StoreType.MAIN);
                             </v-list-tile>
                         </v-menu>
                     </template>
-                    <v-list-tile v-else :key="item.action" active-class="active-link"
-                                 :to="{path: item.path, name: item.action, params: item.params}">
-                        <v-list-tile-content v-if="item.action === LinkAdditionalFunctionality.EVENTS && numberOfEvents" class="badge-link">
-                            <v-badge color="primary">
-                                <template #badge>
-                                    <span title="У вас есть новые события по портфелю!">{{ numberOfEvents >= 100 ? "99+" : numberOfEvents }}</span>
-                                </template>
-                                <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-                            </v-badge>
-                        </v-list-tile-content>
-                        <v-list-tile-content v-else>
+                    <v-list-tile v-else :key="item.action" active-class="active-link" :to="{path: item.path, name: item.action, params: item.params}">
+                        <v-list-tile-content>
                             <v-list-tile-title>{{ item.title }}</v-list-tile-title>
                         </v-list-tile-content>
                     </v-list-tile>
@@ -69,14 +60,8 @@ export class NavigationList extends UI {
     @Prop({required: true})
     private mainSection: NavBarItem[];
 
-    @Prop({type: Number})
-    private numberOfEvents: number;
-
     @MainStore.Getter
     private clientInfo: ClientInfo;
-
-    /** Список ссылок с доп. функционалом */
-    private LinkAdditionalFunctionality = LinkAdditionalFunctionality;
 
     private openDialog(): void {
         this.$emit("openDialog");
@@ -97,8 +82,4 @@ export class NavigationList extends UI {
     private get showFreeTariffBlock(): boolean {
         return this.clientInfo.user.tariff === Tariff.FREE;
     }
-}
-
-export enum LinkAdditionalFunctionality {
-    EVENTS = "events"
 }

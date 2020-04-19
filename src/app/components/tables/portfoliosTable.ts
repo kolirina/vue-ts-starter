@@ -207,8 +207,6 @@ export class PortfoliosTable extends UI {
     private setCurrentPortfolio: (id: number) => Promise<Portfolio>;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
     private reloadPortfolio: (id: number) => Promise<void>;
-    @MainStore.Action(ActionType.LOAD_EVENTS)
-    private loadEvents: (id: number) => Promise<void>;
     /** Сервис по работе с портфелями */
     @Inject
     private portfolioService: PortfolioService;
@@ -277,7 +275,6 @@ export class PortfoliosTable extends UI {
             this.overviewService.resetCacheForId(portfolioId);
             if (this.portfolio.id === portfolioId) {
                 await this.reloadPortfolio(portfolioId);
-                await this.loadEvents(portfolioId);
             }
             this.$snotify.info("Портфель успешно очищен");
         }
