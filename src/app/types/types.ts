@@ -462,7 +462,7 @@ export type StockTypeShare = Share & {
     lotsize: string;
     /** Сектор */
     sector: string;
-}
+};
 
 /** Информация по динамике ценной бумаги */
 export type ShareDynamic = {
