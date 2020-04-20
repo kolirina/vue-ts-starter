@@ -23,7 +23,6 @@ import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog";
 import {NegativeBalanceNotification} from "../components/negativeBalanceNotification";
 import {PortfolioRowFilter, PortfolioRowsTableFilter} from "../components/portfolioRowsTableFilter";
 import {AggregateAssetTable} from "../components/tables/aggregateAssetTable";
-import {AssetTable} from "../components/tables/assetTable";
 import {BondTable} from "../components/tables/bondTable";
 import {StockTable} from "../components/tables/stockTable";
 import {Filters} from "../platform/filters/Filters";
@@ -31,10 +30,10 @@ import {Storage} from "../platform/services/storage";
 import {ExportType} from "../services/exportService";
 import {PortfolioBlockType} from "../services/onBoardingTourService";
 import {OverviewService} from "../services/overviewService";
-import {TableHeaders, TABLES_NAME, TablesService} from "../services/tablesService";
+import {TableHeaders, TABLES_NAME, TablesService, TableType} from "../services/tablesService";
 import {ChartType, HighStockEventsGroup, SectorChartData} from "../types/charts/types";
 import {StoreKeys} from "../types/storeKeys";
-import {AssetPortfolioRow, BlockType, BondPortfolioRow, EventType, Overview, StockPortfolioRow, TableHeader} from "../types/types";
+import {AssetPortfolioRow, BlockType, BondPortfolioRow, EventType, Overview, StockPortfolioRow, StockTypePortfolioRow, TableHeader} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
 import {PortfolioUtils} from "../utils/portfolioUtils";
 import {UiStateHelper} from "../utils/uiStateHelper";
@@ -70,7 +69,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                         <v-list-tile-title v-if="exportable" @click="exportTable(ExportType.STOCKS)">Экспорт в xlsx</v-list-tile-title>
                     </template>
                     <portfolio-rows-table-filter :filter.sync="stockFilter" :store-key="StoreKeys.STOCKS_TABLE_FILTER_KEY"></portfolio-rows-table-filter>
-                    <stock-table :rows="stockRows" :headers="getHeaders(TABLES_NAME.STOCK)" :search="stockFilter.search" :filter="stockFilter"
+                    <stock-table :rows="stockRows" :headers="getHeaders(TABLES_NAME.STOCK)" :search="stockFilter.search" :filter="stockFilter" :table-type="TableType.STOCK"
                                  :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes" :ids="ids"></stock-table>
                 </expanded-panel>
 
@@ -94,6 +93,26 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                                 :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes" :ids="ids"></bond-table>
                 </expanded-panel>
 
+                <expanded-panel v-if="blockNotEmpty(emptyBlockType.ETF_PORTFOLIO)" :value="$uistate.etfTablePanel"
+                                :withMenu="true" name="etf" :state="$uistate.ETF" @click="onEtfTablePanelClick" class="mt-3 selectable"
+                                :data-v-step="getTourStepIndex(PortfolioBlockType.ETF_TABLE)">
+                    <template #header>
+                        <span>ПИФы/ETF</span>
+                        <v-fade-transition mode="out-in">
+                            <span v-if="etfTablePanelClosed" class="v-expansion-panel__header-info">
+                                {{ etfRowsCountLabel }}
+                            </span>
+                        </v-fade-transition>
+                    </template>
+                    <template #list>
+                        <v-list-tile-title @click="openTableHeadersDialog(TABLES_NAME.ETF)">Настроить колонки</v-list-tile-title>
+                        <v-list-tile-title v-if="exportable" @click="exportTable(ExportType.ETF)">Экспорт в xlsx</v-list-tile-title>
+                    </template>
+                    <portfolio-rows-table-filter :filter.sync="etfFilter" :store-key="StoreKeys.ETF_TABLE_FILTER_KEY"></portfolio-rows-table-filter>
+                    <stock-table :rows="etfRows" :headers="getHeaders(TABLES_NAME.ETF)" :search="etfFilter.search" :filter="etfFilter" :table-type="TableType.ETF"
+                                 :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes" :ids="ids"></stock-table>
+                </expanded-panel>
+
                 <expanded-panel v-if="blockNotEmpty(emptyBlockType.ASSETS)" :value="$uistate.assetsTablePanel"
                                 :withMenu="true" name="asset" :state="$uistate.ASSET_TABLE" @click="onAssetTablePanelClick" class="mt-3 selectable"
                                 :data-v-step="getTourStepIndex(PortfolioBlockType.ASSET_TABLE)">
@@ -111,8 +130,8 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                         <v-list-tile-title v-if="exportable" @click="exportTable(ExportType.ASSETS)">Экспорт в xlsx</v-list-tile-title>
                     </template>
                     <portfolio-rows-table-filter :filter.sync="assetFilter" :store-key="StoreKeys.ASSETS_TABLE_FILTER_KEY"></portfolio-rows-table-filter>
-                    <asset-table :rows="assetRows" :headers="getHeaders(TABLES_NAME.ASSET)" :search="assetFilter.search" :filter="assetFilter"
-                                 :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes" :ids="ids"></asset-table>
+                    <stock-table :rows="assetRows" :headers="getHeaders(TABLES_NAME.ASSET)" :search="assetFilter.search" :filter="assetFilter" :table-type="TableType.ASSET"
+                                 :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes" :ids="ids"></stock-table>
                 </expanded-panel>
 
                 <expanded-panel v-if="blockNotEmpty(emptyBlockType.HISTORY_PANEL)" :value="$uistate.historyPanel"
@@ -162,6 +181,18 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                     </template>
                     <v-card-text>
                         <pie-chart :ref="ChartType.STOCK_CHART" :data="stockPieChartData" :view-currency="viewCurrency" v-tariff-expired-hint></pie-chart>
+                    </v-card-text>
+                </expanded-panel>
+
+                <expanded-panel v-if="blockNotEmpty(emptyBlockType.ETF_PIE)" :value="$uistate.etfGraph" :state="$uistate.ETF_CHART_PANEL" customMenu class="mt-3"
+                                :data-v-step="getTourStepIndex(PortfolioBlockType.ETF_CHART)">
+                    <template #header>Состав портфеля ПИФов/ETF</template>
+                    <template #customMenu>
+                        <chart-export-menu @print="print(ChartType.ETF_CHART)" @exportTo="exportTo(ChartType.ETF_CHART, $event)"
+                                           class="exp-panel-menu"></chart-export-menu>
+                    </template>
+                    <v-card-text>
+                        <pie-chart :ref="ChartType.ETF_CHART" :data="etfPieChartData" :view-currency="viewCurrency" v-tariff-expired-hint></pie-chart>
                     </v-card-text>
                 </expanded-panel>
 
@@ -217,7 +248,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
             </v-layout>
         </v-container>
     `,
-    components: {AggregateAssetTable, StockTable, BondTable, AssetTable, PortfolioLineChart, PortfolioRowsTableFilter, NegativeBalanceNotification}
+    components: {AggregateAssetTable, StockTable, BondTable, PortfolioLineChart, PortfolioRowsTableFilter, NegativeBalanceNotification}
 })
 export class BasePortfolioPage extends UI {
 
@@ -286,6 +317,8 @@ export class BasePortfolioPage extends UI {
     private StoreKeys = StoreKeys;
     /** Признак закрытой панели Акции */
     private stockTablePanelClosed = true;
+    /** Признак закрытой панели ETF */
+    private etfTablePanelClosed = true;
     /** Признак закрытой панели Активы */
     private assetTablePanelClosed = true;
     /** Признак закрытой панели Облигации */
@@ -296,6 +329,8 @@ export class BasePortfolioPage extends UI {
     private assetsPieChartData: DataPoint[] = [];
     /** Данные для графика таблицы Акции */
     private stockPieChartData: DataPoint[] = [];
+    /** Данные для графика таблицы ETF */
+    private etfPieChartData: DataPoint[] = [];
     /** Данные для графика таблицы Облигации */
     private bondPieChartData: DataPoint[] = [];
     /** Данные для графика секторов */
@@ -304,6 +339,8 @@ export class BasePortfolioPage extends UI {
     private bondSectorsChartData: SectorChartData = null;
     /** Фильтр таблицы Акции */
     private stockFilter: PortfolioRowFilter = {};
+    /** Фильтр таблицы Акции */
+    private etfFilter: PortfolioRowFilter = {};
     /** Фильтр таблицы Облигации */
     private bondFilter: PortfolioRowFilter = {};
     /** Фильтр таблицы Активы */
@@ -316,6 +353,8 @@ export class BasePortfolioPage extends UI {
     private blockIndexes: { [key: string]: number } = {};
     /** Типы круговых диаграмм */
     private ChartType = ChartType;
+    /** Типы таблиц */
+    private TableType = TableType;
 
     /**
      * Инициализация данных компонента
@@ -323,15 +362,18 @@ export class BasePortfolioPage extends UI {
      */
     async created(): Promise<void> {
         this.stockTablePanelClosed = UiStateHelper.stocksTablePanel[0] === 0;
+        this.etfTablePanelClosed = UiStateHelper.etfTablePanel[0] === 0;
         this.bondTablePanelClosed = UiStateHelper.bondsTablePanel[0] === 0;
         this.assetTablePanelClosed = UiStateHelper.assetsTablePanel[0] === 0;
         this.aggregatePieChartData = this.doAggregatePieChartData();
         this.assetsPieChartData = this.doAssetsPieChartData();
         this.stockPieChartData = this.doStockPieChartData();
+        this.etfPieChartData = this.doEtfPieChartData();
         this.bondPieChartData = this.doBondPieChartData();
         this.sectorsChartData = this.doSectorsChartData();
         this.bondSectorsChartData = this.doBondSectorsChartData();
         this.stockFilter = this.storageService.get(StoreKeys.STOCKS_TABLE_FILTER_KEY, {});
+        this.etfFilter = this.storageService.get(StoreKeys.ETF_TABLE_FILTER_KEY, {});
         this.bondFilter = this.storageService.get(StoreKeys.BONDS_TABLE_FILTER_KEY, {});
         this.assetFilter = this.storageService.get(StoreKeys.ASSETS_TABLE_FILTER_KEY, {});
         this.blockIndexes = PortfolioUtils.getShowedBlocks(this.overview);
@@ -342,6 +384,7 @@ export class BasePortfolioPage extends UI {
         this.aggregatePieChartData = this.doAggregatePieChartData();
         this.assetsPieChartData = this.doAssetsPieChartData();
         this.stockPieChartData = this.doStockPieChartData();
+        this.etfPieChartData = this.doEtfPieChartData();
         this.bondPieChartData = this.doBondPieChartData();
         this.sectorsChartData = this.doSectorsChartData();
         this.bondSectorsChartData = this.doBondSectorsChartData();
@@ -356,9 +399,13 @@ export class BasePortfolioPage extends UI {
                 return this.overview.bondPortfolio.rows.length > 0;
             case BlockType.STOCK_PORTFOLIO:
                 return this.overview.stockPortfolio.rows.length > 0;
+            case BlockType.ETF_PORTFOLIO:
+                return this.overview.etfPortfolio.rows.length > 0;
             case BlockType.STOCK_PIE:
             case BlockType.SECTORS_PIE:
                 return this.overview.stockPortfolio.rows.some(row => Number(row.quantity) !== 0);
+            case BlockType.ETF_PIE:
+                return this.overview.etfPortfolio.rows.some(row => Number(row.quantity) !== 0);
             case BlockType.BOND_PIE:
                 return this.overview.bondPortfolio.rows.some(row => Number(row.quantity) !== 0);
             case BlockType.BOND_SECTORS_PIE:
@@ -373,7 +420,11 @@ export class BasePortfolioPage extends UI {
     }
 
     private doStockPieChartData(): DataPoint[] {
-        return ChartUtils.doStockPieChartData(this.overview);
+        return ChartUtils.doStockTypePieChartData(this.overview.stockPortfolio.rows);
+    }
+
+    private doEtfPieChartData(): DataPoint[] {
+        return ChartUtils.doStockTypePieChartData(this.overview.etfPortfolio.rows);
     }
 
     private doBondPieChartData(): DataPoint[] {
@@ -402,6 +453,10 @@ export class BasePortfolioPage extends UI {
 
     private onStockTablePanelClick(): void {
         this.stockTablePanelClosed = UiStateHelper.stocksTablePanel[0] === 0;
+    }
+
+    private onEtfTablePanelClick(): void {
+        this.etfTablePanelClosed = UiStateHelper.etfTablePanel[0] === 0;
     }
 
     private onAssetTablePanelClick(): void {
@@ -439,11 +494,15 @@ export class BasePortfolioPage extends UI {
         return this.blockIndexes[portfolioBlockType];
     }
 
-    private get stockRows(): StockPortfolioRow[] {
+    private get stockRows(): StockTypePortfolioRow[] {
         return [...this.overview.stockPortfolio.rows, this.overview.stockPortfolio.sumRow as StockPortfolioRow];
     }
 
-    private get assetRows(): AssetPortfolioRow[] {
+    private get etfRows(): StockTypePortfolioRow[] {
+        return [...this.overview.etfPortfolio.rows, this.overview.etfPortfolio.sumRow as StockPortfolioRow];
+    }
+
+    private get assetRows(): StockTypePortfolioRow[] {
         return [...this.overview.assetPortfolio.rows, this.overview.assetPortfolio.sumRow as AssetPortfolioRow];
     }
 
@@ -458,6 +517,11 @@ export class BasePortfolioPage extends UI {
     private get stockRowsCountLabel(): string {
         const count = this.overview.stockPortfolio.rows.filter(row => Number(row.quantity) !== 0).length;
         return `${count} ${Filters.declension(count, "акция", "акции", "акций")}`;
+    }
+
+    private get etfRowsCountLabel(): string {
+        const count = this.overview.etfPortfolio.rows.filter(row => Number(row.quantity) !== 0).length;
+        return `${count} ${Filters.declension(count, "фонд", "фонда", "фондов")}`;
     }
 
     private get assetRowsCountLabel(): string {

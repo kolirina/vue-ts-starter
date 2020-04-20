@@ -17,7 +17,7 @@
 import {DividendNewsItem, ShareEvent} from "../services/eventService";
 import {TABLE_HEADERS} from "../services/tablesService";
 import {BigMoney} from "../types/bigMoney";
-import {BondPortfolioRow, StockPortfolioRow} from "../types/types";
+import {BondPortfolioRow, StockPortfolioRow, StockTypePortfolioRow} from "../types/types";
 import {CommonUtils} from "./commonUtils";
 import {DateUtils} from "./dateUtils";
 
@@ -39,8 +39,8 @@ export class SortUtils {
         return items;
     }
 
-    static stockSort(items: StockPortfolioRow[], index: string, isDesc: boolean): StockPortfolioRow[] {
-        items.sort((a: StockPortfolioRow, b: StockPortfolioRow): number => {
+    static stockSort(items: StockTypePortfolioRow[], index: string, isDesc: boolean): StockTypePortfolioRow[] {
+        items.sort((a: StockTypePortfolioRow, b: StockTypePortfolioRow): number => {
             if (!CommonUtils.exists(a.share)) {
                 return 1;
             }

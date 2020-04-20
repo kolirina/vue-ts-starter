@@ -73,6 +73,19 @@ import {ChartUtils} from "../../utils/chartUtils";
                             </v-tooltip>
                         </template>
                     </v-switch>
+                    <v-switch v-model="seriesFilter.etfChart" @change="toggleChartOption(ChartSeries.ETF)" class="mt-3" hide-details>
+                        <template #label>
+                            <span>{{ ChartSeries.ETF.description }}</span>
+                            <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                                <sup class="custom-tooltip" slot="activator">
+                                    <v-icon>fas fa-info-circle</v-icon>
+                                </sup>
+                                <span>
+                                    Включите, если хотите чтобы на графике отображалось стоимость ПИФов/ETF
+                                </span>
+                            </v-tooltip>
+                        </template>
+                    </v-switch>
                     <v-switch v-model="seriesFilter.bondChart" @change="toggleChartOption(ChartSeries.BONDS)" class="mt-3" hide-details>
                         <template #label>
                             <span>{{ ChartSeries.BONDS.description }}</span>
@@ -192,6 +205,8 @@ export class PortfolioLineChart extends UI {
         inOutMoneyChart: false,
         /** Признак отображения графика стоимости Акций */
         stockChart: false,
+        /** Признак отображения графика стоимости ETF */
+        etfChart: false,
         /** Признак отображения графика стоимости Облигаций */
         bondChart: false,
     };
@@ -278,7 +293,7 @@ export class PortfolioLineChart extends UI {
     }
 
     private prepareLineData(): void {
-        [ChartSeries.TOTAL, ChartSeries.STOCKS, ChartSeries.BONDS, ChartSeries.MONEY, ChartSeries.IN_OUT_MONEY].forEach(series => {
+        [ChartSeries.TOTAL, ChartSeries.STOCKS, ChartSeries.ETF, ChartSeries.BONDS, ChartSeries.MONEY, ChartSeries.IN_OUT_MONEY].forEach(series => {
             this.lineChartSeries[series.code] = {
                 data: ChartUtils.convertToDots(this.data, series.fieldName),
                 balloonTitle: series === ChartSeries.TOTAL ? this.balloonTitle : series.description,
@@ -334,7 +349,7 @@ export class PortfolioLineChart extends UI {
 
     private get isDefault(): boolean {
         return this.seriesFilter.showTrades && this.seriesFilter.totalChart && !this.seriesFilter.showStockExchange && !this.seriesFilter.bondChart &&
-            !this.seriesFilter.stockChart && !this.seriesFilter.moneyChart && !this.seriesFilter.inOutMoneyChart;
+            !this.seriesFilter.stockChart && !this.seriesFilter.etfChart && !this.seriesFilter.moneyChart && !this.seriesFilter.inOutMoneyChart;
     }
 
     private getStorageValue(chartSeries: ChartSeries, defaultValue: boolean = false): boolean {

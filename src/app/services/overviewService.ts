@@ -150,7 +150,7 @@ export class OverviewService {
             iisType: portfolioResponse.iisType ? IisType.valueByName(portfolioResponse.iisType) : null,
             shareNotes: portfolioResponse.shareNotes ? portfolioResponse.shareNotes : {}
         } as PortfolioParams;
-        const overview = await this.http.get<Overview>(`/portfolios/${id}/overview`);
+        const overview = await this.http.get<Overview>(`/portfolios/${id}/overview/new`);
         this.prepareOverview(overview);
         return {id, portfolioParams: portfolio, overview};
     }

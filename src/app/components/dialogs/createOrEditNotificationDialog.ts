@@ -213,9 +213,9 @@ export class CreateOrEditNotificationDialog extends CustomDialog<Notification, b
         }
         if (this.notification.shareId) {
             if (this.notification.type === NotificationType.stock) {
-                this.share = (await this.marketService.getStockById(this.notification.shareId)).share;
+                this.share = (await this.marketService.getStockInfo(String(this.notification.shareId))).share;
             } else if (this.notification.type === NotificationType.bond) {
-                this.share = (await this.marketService.getBondById(this.notification.shareId)).bond;
+                this.share = (await this.marketService.getBondInfo(String(this.notification.shareId))).bond;
             }
             // todo assets уведомления по активам
             this.filteredShares = [this.share];
