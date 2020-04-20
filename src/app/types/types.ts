@@ -455,6 +455,15 @@ export type Asset = Share & {
     sector: Sector;
 };
 
+export type StockTypeShare = Share & {
+    /** Цена актива (текущая) */
+    price: string;
+    /** Размер лота */
+    lotsize: string;
+    /** Сектор */
+    sector: string;
+}
+
 /** Информация по динамике ценной бумаги */
 export type ShareDynamic = {
     /** Минимальная за год */

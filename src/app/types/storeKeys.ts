@@ -11,8 +11,6 @@ export enum StoreKeys {
     LAST_ACTION_TIME = "LAST_ACTION_TIME",
     /** Префикс ключа под которым хранится выбранный период на графике портфеля */
     PORTFOLIO_CHART = "PORTFOLIO_CHART",
-    /** Префикс ключа под которым хранится выбранный период на графике портфеля */
-    PUBLIC_PORTFOLIO_CHART = "PUBLIC_PORTFOLIO_CHART",
     /** Префикс ключа под которым хранится выбранный период на графике комбинированного портфеля */
     PORTFOLIO_COMBINED_CHART = "PORTFOLIO_COMBINED_CHART",
     /** Ключ с настройками фильтра таблицы сделки */
@@ -21,6 +19,8 @@ export enum StoreKeys {
     COMMON_QUOTES_FILTER_KEY = "common_quotes_filter_key",
     /** Ключ с настройками фильтра таблицы кастомных активов */
     CUSTOM_QUOTES_FILTER_KEY = "custom_quotes_filter_key",
+    /** Ключ с настройками фильтра таблицы ETF */
+    ETF_QUOTES_FILTER_KEY = "etf_quotes_filter_key",
     /** Ключ с настройками фильтра таблицы кастомных активов */
     STOCK_QUOTES_FILTER_KEY = "stock_quotes_filter_key",
     /** Ключ с настройками фильтра таблицы кастомных активов */

@@ -3,7 +3,7 @@ import {Service} from "../platform/decorators/service";
 import {Http, UrlParams} from "../platform/services/http";
 import {BaseChartDot, Dot, EventChartData, HighStockEventData, HighStockEventsGroup} from "../types/charts/types";
 import {CurrencyItem} from "../types/currency";
-import {Asset, AssetInfo, Bond, BondInfo, BondType, PageableResponse, Pagination, Share, ShareDynamic, Stock, StockInfo} from "../types/types";
+import {Asset, AssetInfo, Bond, BondInfo, BondType, PageableResponse, Pagination, Share, ShareDynamic, Stock, StockInfo, StockTypeShare} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
 import {CommonUtils} from "../utils/commonUtils";
 import {AssetCategory} from "./assetService";
@@ -58,7 +58,7 @@ export class MarketService {
     }
 
     async getBondInfo(secid: string): Promise<BondInfo> {
-        const result = await this.http.get<_bondInfo>(`/market/bond/${secid}/info`);
+        const result = await this.http.get<BondInfoDto>(`/market/bond/${secid}/info`);
         return {
             bond: result.bond,
             history: this.convertDots(result.history),
@@ -73,6 +73,14 @@ export class MarketService {
     async loadStocks(pagination: Pagination, filter: QuotesFilter): Promise<PageableResponse<Stock>> {
         const urlParams = this.makeFilterRequest(pagination, filter);
         return this.http.get<PageableResponse<Stock>>(`/market/stocks`, urlParams);
+    }
+
+    /**
+     * Загружает и возвращает список акций
+     */
+    async loadEtf(pagination: Pagination, filter: QuotesFilter): Promise<PageableResponse<StockTypeShare>> {
+        const urlParams = this.makeFilterRequest(pagination, filter);
+        return this.http.get<PageableResponse<StockTypeShare>>(`/market/etf`, urlParams);
     }
 
     /**
@@ -121,7 +129,7 @@ export class MarketService {
         return urlParams;
     }
 
-    private convertDots(dots: _baseChartDot[]): Dot[] {
+    private convertDots(dots: BaseChartDotDto[]): Dot[] {
         const result: Dot[] = [];
         dots.forEach(value => {
             result.push([new Date(value.date).getTime(), value.price]);
@@ -165,7 +173,7 @@ type _stockInfo = {
     /** Акция */
     share: Stock;
     /** История цены */
-    history: _baseChartDot[];
+    history: BaseChartDotDto[];
     /** Дивиденды */
     dividends: BaseChartDot[];
     /** Динамика */
@@ -177,7 +185,7 @@ type _assetInfo = {
     /** Актив */
     share: Asset;
     /** История цены */
-    history: _baseChartDot[];
+    history: BaseChartDotDto[];
     /** Дивиденды */
     dividends: BaseChartDot[];
     /** Информация по динамике ценной бумаги */
@@ -185,16 +193,16 @@ type _assetInfo = {
 };
 
 /** Информация по акции */
-type _bondInfo = {
+type BondInfoDto = {
     /** Облигация */
     bond: Bond;
     /** История цены */
-    history: _baseChartDot[];
+    history: BaseChartDotDto[];
     /** Выплаты по бумаге */
     payments: EventChartData[];
 };
 
-export type _baseChartDot = {
+export type BaseChartDotDto = {
     date: string,
     price: number
 };
