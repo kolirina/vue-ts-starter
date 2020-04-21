@@ -14,9 +14,13 @@
  * (c) ООО "Интеллектуальные инвестиции", 2019
  */
 
+import {Inject} from "typescript-ioc";
 import {Component, Prop, UI} from "../app/ui";
 import {TradesFilter} from "../services/tradeService";
+import {TradesFilterService} from "../services/tradesFilterService";
+import {ALLOWED_CURRENCIES} from "../types/currency";
 import {Operation} from "../types/operation";
+import {StoreKeys} from "../types/storeKeys";
 import {TradeListType} from "../types/tradeListType";
 import {TableFilterBase} from "./tableFilterBase";
 
@@ -33,6 +37,15 @@ import {TableFilterBase} from "./tableFilterBase";
                         <span>Связанные сделки</span>
                     </template>
                 </v-switch>
+
+                <div class="trades-filter__label">Валюта сделки</div>
+                <div class="trades-filter__currencies">
+                    <v-select :items="currencyList" v-model="filter.currency" label="Валюта бумаги" @change="onCurrencyChange">
+                        <template #append-outer>
+                            <v-icon small @click="resetCurrency">clear</v-icon>
+                        </template>
+                    </v-select>
+                </div>
 
                 <div class="trades-filter">
                     <div class="trades-filter__label">Тип списка</div>
@@ -57,7 +70,8 @@ export class TradesTableFilter extends UI {
     /** Операции загружаемые по умполчанию */
     static readonly DEFAULT_OPERATIONS = [Operation.BUY, Operation.DIVIDEND, Operation.SELL, Operation.INCOME, Operation.COUPON, Operation.LOSS, Operation.AMORTIZATION,
         Operation.CURRENCY_BUY, Operation.CURRENCY_SELL];
-
+    @Inject
+    private tradesFilterService: TradesFilterService;
     /** Фильтр */
     @Prop({required: true, type: Object})
     private filter: TradesFilter;
@@ -70,6 +84,8 @@ export class TradesTableFilter extends UI {
     private listTypes = [TradeListType.FULL, TradeListType.STOCK, TradeListType.BOND, TradeListType.ASSET, TradeListType.MONEY];
     /** Список операций */
     private operations: Operation[] = TradesTableFilter.DEFAULT_OPERATIONS;
+    /** Список валют */
+    private currencyList = ALLOWED_CURRENCIES;
 
     private onChange(): void {
         this.emitFilterChange();
@@ -92,6 +108,15 @@ export class TradesTableFilter extends UI {
 
     private onListTypeChange(): void {
         this.filter.operation = this.getDefaultOperations();
+        this.emitFilterChange();
+    }
+
+    private onCurrencyChange(): void {
+        this.emitFilterChange();
+    }
+
+    private resetCurrency(): void {
+        this.filter.currency = null;
         this.emitFilterChange();
     }
 
@@ -137,5 +162,6 @@ export class TradesTableFilter extends UI {
 
     private emitFilterChange(): void {
         this.$emit("filter", this.filter);
+        this.tradesFilterService.saveFilter(StoreKeys.TRADES_FILTER_SETTINGS_KEY, this.filter);
     }
 }
