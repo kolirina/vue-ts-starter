@@ -15,6 +15,10 @@
     outline: none;
     font-size: 14px !important;
     color: #3D4656 !important;
+
+    @media only screen and (max-width: $sm-breakpoint) {
+      min-width: auto;
+    }
   }
 }
 .active-inplace-custom-input {
