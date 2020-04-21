@@ -81,7 +81,7 @@ export class TradesTableFilter extends UI {
     /** Плэйсхолдер строки поиска */
     private searchLabel = "Поиск по названию бумаги, по тикеру бумаги, по заметке к сделке";
     /** Список типов */
-    private listTypes = [TradeListType.FULL, TradeListType.STOCK, TradeListType.BOND, TradeListType.ASSET, TradeListType.MONEY];
+    private listTypes = [TradeListType.FULL, TradeListType.STOCK, TradeListType.ETF, TradeListType.BOND, TradeListType.ASSET, TradeListType.MONEY];
     /** Список операций */
     private operations: Operation[] = TradesTableFilter.DEFAULT_OPERATIONS;
     /** Список валют */

@@ -21,10 +21,9 @@ import {
     SimpleChartData
 } from "../types/charts/types";
 import {Operation} from "../types/operation";
-import {BondPortfolioRow, Overview, StockPortfolioRow, StockTypePortfolioRow} from "../types/types";
+import {BondPortfolioRow, Overview, StockTypePortfolioRow} from "../types/types";
 import {CommonUtils} from "./commonUtils";
 import {DateFormat, DateUtils} from "./dateUtils";
-import {TradeUtils} from "./tradeUtils";
 
 export class ChartUtils {
 
@@ -174,6 +173,9 @@ export class ChartUtils {
         const data: CustomDataPoint[] = [];
         const rows: Array<{ shareName: string, yearYield: string, profit: string }> = [
             ...overview.stockPortfolio.rows.map(row => {
+                return {shareName: row.share.shortname, yearYield: row.yearYield, profit: row.profit};
+            }),
+            ...overview.etfPortfolio.rows.map(row => {
                 return {shareName: row.share.shortname, yearYield: row.yearYield, profit: row.profit};
             }),
             ...overview.bondPortfolio.rows.map(row => {
