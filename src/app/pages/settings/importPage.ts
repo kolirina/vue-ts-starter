@@ -410,11 +410,11 @@ export class ImportPage extends UI {
                 });
                 if (shareAliases) {
                     await this.importService.saveShareAliases(shareAliases);
+                    if (response.validatedTradesCount) {
+                        await this.reloadPortfolio(this.portfolio.id);
+                    }
+                    return shareAliases.length > 0;
                 }
-                if (response.validatedTradesCount) {
-                    await this.reloadPortfolio(this.portfolio.id);
-                }
-                return shareAliases?.length > 0;
             }
         }
         if (response.validatedTradesCount) {

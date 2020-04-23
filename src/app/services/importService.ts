@@ -68,23 +68,23 @@ const HTM = "htm";
 export class DealsImportProvider extends (EnumType as IStaticEnum<DealsImportProvider>) {
 
     static readonly SBERBANK = new DealsImportProvider("SBERBANK", "Сбербанк", 400, [XLS, XLSX, HTML, HTM]);
-    static readonly BCS = new DealsImportProvider("BCS", "БКС", 193, [XLS, XLSX]);
     static readonly TINKOFF = new DealsImportProvider("TINKOFF", "Тинькофф", 458, [XLS, XLSX]);
-    static readonly PSBANK = new DealsImportProvider("PSBANK", "ПромСвязьБанк", 337, [XLS, XLSX]);
     static readonly VTB24 = new DealsImportProvider("VTB24", "ВТБ 24", 103, [XLS, XLSX]);
+    static readonly PSBANK = new DealsImportProvider("PSBANK", "ПромСвязьБанк", 337, [XLS, XLSX]);
     static readonly OTKRYTIE = new DealsImportProvider("OTKRYTIE", "Открытие", 304, [XML]);
-    static readonly QUIK = new DealsImportProvider("QUIK", "QUIK", -2, [XLS, XLSX, HTML, HTM]);
+    static readonly BCS = new DealsImportProvider("BCS", "БКС", 193, [XLS, XLSX]);
     static readonly FINAM = new DealsImportProvider("FINAM", "Финам", 487, [XML]);
     static readonly ALFADIRECT = new DealsImportProvider("ALFADIRECT", "Альфа-директ", 34, [XLS, XLSX, XML]);
+    static readonly INTERACTIVE_BROKERS = new DealsImportProvider("INTERACTIVE_BROKERS", "Interactive brokers", 544, [CSV]);
     static readonly URALSIB = new DealsImportProvider("URALSIB", "Уралсиб", 480, [XLS, XLSX]);
     static readonly KITFINANCE = new DealsImportProvider("KITFINANCE", "КИТфинанс", 189, [XLS, XLSX]);
-    static readonly INTERACTIVE_BROKERS = new DealsImportProvider("INTERACTIVE_BROKERS", "Interactive brokers", 544, [CSV]);
     static readonly ZERICH = new DealsImportProvider("ZERICH", "Церих", 513, [XML]);
-    static readonly BCS_CYPRUS = new DealsImportProvider("BCS_CYPRUS", "BCScyprus", 193, [XLS, XLSX]);
     static readonly FREEDOM_FINANCE = new DealsImportProvider("FREEDOM_FINANCE", "Freedom Finance", 501, [XLS, XLSX]);
-    static readonly ITINVEST = new DealsImportProvider("ITINVEST", "ITIcapital", 15, [CSV]);
-    static readonly ATON = new DealsImportProvider("ATON", "Атон", 45, [XML]);
     static readonly ALFACAPITAL = new DealsImportProvider("ALFACAPITAL", "Альфа-Капитал", 474, [XLS, XLSX]);
+    static readonly ATON = new DealsImportProvider("ATON", "Атон", 45, [XML]);
+    static readonly ITINVEST = new DealsImportProvider("ITINVEST", "ITIcapital", 15, [CSV]);
+    static readonly QUIK = new DealsImportProvider("QUIK", "QUIK", -2, [XLS, XLSX, HTML, HTM]);
+    static readonly BCS_CYPRUS = new DealsImportProvider("BCS_CYPRUS", "BCScyprus", 193, [XLS, XLSX]);
     static readonly INTELINVEST = new DealsImportProvider("INTELINVEST", "Intelinvest", -1, [CSV]);
 
     private constructor(public code: string, public description: string, public id: number, public allowedExtensions: string[]) {
