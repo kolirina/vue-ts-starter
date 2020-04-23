@@ -202,6 +202,7 @@ export class TradesPage extends UI {
         await this.loadTrades();
         // при смене фильтра сбрасываем паджинацию чтобы не остаться на несуществующей странице
         this.pagination.page = 1;
+        this.tradesFilterService.saveFilter(StoreKeys.TRADES_FILTER_SETTINGS_KEY, this.tradesFilter);
     }
 
     private get isDefaultFilter(): boolean {
