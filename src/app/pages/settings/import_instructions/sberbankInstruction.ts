@@ -28,6 +28,70 @@ import {Component, UI} from "../../../app/ui";
             </div>
             <div class="import-default-text mt-4">
                 <div>
+                    Для получения отчета по счету или ИИС в новом интерфейсе Сбербанк Онлайн, следуйте инструкции.<br/><br/>
+                    Чтобы получить отчет за весь период в формате <b>xls/xlsx</b>:<br/>
+                    Перейдите на сайт <a href="https://online.sberbank.ru/" target="_blank">https://online.sberbank.ru/</a>,
+                    <div>
+                        в левом боковом меню выберите пункт <b>Инвестиции</b>
+                    </div>
+                    <div>
+                        Выберите в выпадающем меню пункт <b>Брокерское обслуживание</b>
+                    </div>
+                    <div>
+                        Выберите нужный счет (брокерский или ИИС) и нажмите на ссылку <b>Операции по счету</b>
+                    </div>
+                </div>
+                <v-img :src="IMAGES[0]" max-width="800" class="grey darken-4 image"></v-img>
+            </div>
+            <div class="import-format-requirements-ul">
+                <div>
+                    Для получения списка сделок по бумагам переключитесь на вкладку <b>Сделки</b>
+                </div>
+                <div class="import-default-text-margin-t">
+                    Настройте параметры отчета:
+                </div>
+                <ul>
+                    <li>Выберите <b>За период</b></li>
+                    <li>Выберите период отчета (оптимальный вариант: с даты первой сделки по текущий день)</li>
+                </ul>
+                <div>
+                    Отобразится список сделок за выбранный период.
+                </div>
+                <v-img :src="IMAGES[1]" max-width="800" class="grey darken-4 image"></v-img>
+                <div>
+                    Нажмите кнопку <b>Скачать в Excel</b>
+                </div>
+                <div>
+                    Полученный файл используйте для импорта.
+                </div>
+            </div>
+
+            <div class="import-format-requirements-ul mt-5">
+                <div>
+                    Для получения списка сделок по движению денежных средств переключитесь на вкладку <b>Зачисления/Списания</b>
+                </div>
+                <div class="import-default-text-margin-t">
+                    Настройте параметры отчета:
+                </div>
+                <ul>
+                    <li>Выберите <b>За период</b></li>
+                    <li>Выберите период отчета (оптимальный вариант: с даты первой сделки по текущий день)</li>
+                </ul>
+                <div>
+                    Отобразится список зачислений/списаний за выбранный период.
+                </div>
+                <div>
+                    Нажмите кнопку <b>Скачать в Excel</b>
+                </div>
+                <v-img :src="IMAGES[2]" max-width="800" class="grey darken-4 image"></v-img>
+                <div>
+                    Полученный файл используйте для импорта.
+                </div>
+            </div>
+
+            <div class="import-default-text mt-4">
+                <div>
+                    Для получения отчета по счету или ИИС в старом интерфейсе Сбербанк Онлайн, следуйте инструкции.<br/><br/>
                     Чтобы получить отчет за весь период в формате <b>xls/xlsx</b>:<br/>
                     Перейдите на сайт <a href="https://online.sberbank.ru/" target="_blank">https://online.sberbank.ru/</a>,
                     <div>
@@ -37,13 +101,13 @@ import {Component, UI} from "../../../app/ui";
                         Выберите в выпадающем меню пункт <b>Брокерское обслуживание</b>
                     </div>
                 </div>
-                <v-img :src="IMAGES[0]" max-width="800" class="grey darken-4 image"></v-img>
+                <v-img :src="IMAGES[3]" max-width="800" class="grey darken-4 image"></v-img>
             </div>
             <div class="import-format-requirements-ul">
                 <div>
                     Для получения списка сделок по бумагам переключитесь на вкладку <b>Сделки</b>
                 </div>
-                <v-img :src="IMAGES[1]" max-width="800" class="grey darken-4 image"></v-img>
+                <v-img :src="IMAGES[4]" max-width="800" class="grey darken-4 image"></v-img>
                 <div class="import-default-text-margin-t">
                     Настройте параметры отчета:
                 </div>
@@ -55,7 +119,7 @@ import {Component, UI} from "../../../app/ui";
                 <div>
                     Отобразится список сделок за выбранный период.
                 </div>
-                <v-img :src="IMAGES[2]" max-width="800" class="grey darken-4 image"></v-img>
+                <v-img :src="IMAGES[5]" max-width="800" class="grey darken-4 image"></v-img>
                 <div>
                     Нажмите кнопку <b>Скачать в формате Excel</b>
                 </div>
@@ -82,7 +146,7 @@ import {Component, UI} from "../../../app/ui";
                 <div>
                     Нажмите кнопку <b>Скачать в формате Excel</b>
                 </div>
-                <v-img :src="IMAGES[3]" max-width="800" class="grey darken-4 image"></v-img>
+                <v-img :src="IMAGES[6]" max-width="800" class="grey darken-4 image"></v-img>
                 <div>
                     Полученный файл используйте для импорта.
                 </div>
@@ -101,7 +165,10 @@ export class SberbankInstruction extends UI {
         "./img/import_instructions/sberbank/1.png",
         "./img/import_instructions/sberbank/2.png",
         "./img/import_instructions/sberbank/3.png",
-        "./img/import_instructions/sberbank/3.png",
+        "./img/import_instructions/sberbank/old/1.png",
+        "./img/import_instructions/sberbank/old/2.png",
+        "./img/import_instructions/sberbank/old/3.png",
+        "./img/import_instructions/sberbank/old/4.png",
     ];
 
 }
