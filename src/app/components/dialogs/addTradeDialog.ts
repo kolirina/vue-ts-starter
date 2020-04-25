@@ -158,7 +158,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                             </v-flex>
 
                             <!-- Количество -->
-                            <v-flex v-if="shareAssetType" xs12 sm6>
+                            <v-flex v-if="shareAssetType" xs12 :class="isDividendTrade ? 'sm3' : 'sm6'">
                                 <ii-number-field label="Количество" v-model="quantity" @keyup="calculateFee" name="quantity" :decimals="quantityDecimals" maxLength="11"
                                                  v-validate="quantityValidationRule" :error-messages="errors.collect('quantity')" class="required" browser-autocomplete="false">
                                 </ii-number-field>
@@ -169,6 +169,10 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                     </span>
                                     <span v-else>{{ isAssetTrade ? "" : lotSizeHint }}</span>
                                 </div>
+                            </v-flex>
+
+                            <v-flex v-if="isDividendTrade" sm3>
+                                <v-select :items="currencyList" v-model="dividendCurrency" label="Валюта начисления"></v-select>
                             </v-flex>
 
                             <!-- Номинал -->
@@ -357,6 +361,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private currencyList = ALLOWED_CURRENCIES;
     /** Валюта сделки по деньгам */
     private moneyCurrency: string = Currency.RUB;
+    /** Валюта сделки по дивидендам */
+    private dividendCurrency: string = Currency.RUB;
     /** Ценная бумага сделки. Для денег может быть null */
     private share: Share = null;
     /** Текущая цена актива */
@@ -404,7 +410,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     private currency: string = Currency.RUB;
     private processState = false;
-
+    /** Доступные остатки в портфеле */
     private moneyResiduals: MoneyResiduals = null;
     /** Признак доступности профессионального режима */
     private portfolioProModeEnabled = false;
@@ -560,6 +566,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         if (!this.date || !this.share || this.processShareEvent) {
             return;
         }
+        this.dividendCurrency = this.share.currency;
         // если это операция начисления, просто получаем данные о количестве и начичлеии.
         const calculationOperation = TradeUtils.isCalculationAssetType(this.operation);
         if (calculationOperation) {
@@ -1057,6 +1064,10 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         return this.assetType === AssetType.MONEY;
     }
 
+    private get isDividendTrade(): boolean {
+        return this.operation === Operation.DIVIDEND;
+    }
+
     private get calculationAssetType(): boolean {
         return TradeUtils.isCalculationAssetType(this.operation);
     }
@@ -1240,12 +1251,18 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         if (this.isCurrencyConversion) {
             return this.purchasedCurrency;
         }
+        if (this.isDividendTrade) {
+            return this.dividendCurrency;
+        }
         return this.assetType === AssetType.MONEY ? this.moneyCurrency : this.currency;
     }
 
     getFeeCurrency(): string {
         if (this.isCurrencyConversion) {
             return this.feeCurrency;
+        }
+        if (this.isDividendTrade) {
+            return this.dividendCurrency;
         }
         return this.assetType === AssetType.MONEY ? this.moneyCurrency : this.currency;
     }

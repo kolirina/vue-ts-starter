@@ -445,7 +445,7 @@ export class StockTable extends UI {
     }
 
     private async openTradeDialog(stockRow: StockTypePortfolioRow, operation: Operation): Promise<void> {
-        const result = await new AddTradeDialog().show({
+        await new AddTradeDialog().show({
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
             share: stockRow.share,
@@ -454,9 +454,6 @@ export class StockTable extends UI {
             operation,
             assetType: AssetType.valueByName(stockRow.share.shareType)
         });
-        if (result) {
-            await this.reloadPortfolio(CommonUtils.isBlank(this.portfolioId) ? this.portfolio.id : Number(this.portfolioId));
-        }
     }
 
     private async deleteAllTrades(stockRow: StockTypePortfolioRow): Promise<void> {

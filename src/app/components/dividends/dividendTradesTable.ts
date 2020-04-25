@@ -164,7 +164,7 @@ export class DividendTradesTable extends UI {
             currency: currency,
             feeCurrency: currency,
         };
-        const result = await new AddTradeDialog().show({
+        await new AddTradeDialog().show({
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
             assetType: shareType,
@@ -173,9 +173,6 @@ export class DividendTradesTable extends UI {
             tradeId: trade.id,
             editedMoneyTradeId: trade.moneyTradeId
         });
-        if (result) {
-            await this.reloadPortfolio(this.portfolio.id);
-        }
     }
 
     private async deleteDividendTrade(dividendTrade: DividendInfo): Promise<void> {

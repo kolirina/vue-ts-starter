@@ -12,6 +12,7 @@ import {Storage} from "../../platform/services/storage";
 import {FiltersService} from "../../services/filtersService";
 import {MarketService, QuotesFilter} from "../../services/marketService";
 import {AssetType} from "../../types/assetType";
+import {EventType} from "../../types/eventType";
 import {Operation} from "../../types/operation";
 import {StoreKeys} from "../../types/storeKeys";
 import {Pagination, Portfolio, Share, StockTypeShare, TableHeader} from "../../types/types";
@@ -141,6 +142,11 @@ export class EtfQuotes extends UI {
 
     async created(): Promise<void> {
         this.filter.showUserShares = this.localStorage.get<boolean>("showUserStocks", false);
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
+    }
+
+    beforeDestroy(): void {
+        UI.off(EventType.TRADE_CREATED);
     }
 
     private async resetFilter(): Promise<void> {
@@ -187,16 +193,13 @@ export class EtfQuotes extends UI {
     }
 
     private async openTradeDialog(share: Share, operation: Operation): Promise<void> {
-        const result = await new AddTradeDialog().show({
+        await new AddTradeDialog().show({
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
             share: share,
             operation,
             assetType: AssetType.valueByName(share.shareType)
         });
-        if (result) {
-            await this.reloadPortfolio(this.portfolio.id);
-        }
     }
 
     private currencyForPrice(stock: StockTypeShare): string {

@@ -453,16 +453,13 @@ export class BaseShareInfoPage extends UI {
     }
 
     private async openDialog(): Promise<void> {
-        const result = await new AddTradeDialog().show({
+        await new AddTradeDialog().show({
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
             share: this.share,
             operation: Operation.BUY,
             assetType: this.assetType
         });
-        if (result) {
-            await this.$emit("reloadPortfolio");
-        }
     }
 
     private async onShareSelect(share: Share): Promise<void> {

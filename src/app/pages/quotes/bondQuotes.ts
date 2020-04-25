@@ -11,6 +11,7 @@ import {Storage} from "../../platform/services/storage";
 import {FiltersService} from "../../services/filtersService";
 import {MarketService, QuotesFilter} from "../../services/marketService";
 import {AssetType} from "../../types/assetType";
+import {EventType} from "../../types/eventType";
 import {Operation} from "../../types/operation";
 import {StoreKeys} from "../../types/storeKeys";
 import {Bond, Pagination, Portfolio, TableHeader} from "../../types/types";
@@ -152,6 +153,11 @@ export class BondQuotes extends UI {
 
     async created(): Promise<void> {
         this.filter.showUserShares = this.localStorage.get<boolean>("showUserBonds", false);
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
+    }
+
+    beforeDestroy(): void {
+        UI.off(EventType.TRADE_CREATED);
     }
 
     private async resetFilter(): Promise<void> {
@@ -198,15 +204,12 @@ export class BondQuotes extends UI {
     }
 
     private async openTradeDialog(bond: Bond, operation: Operation): Promise<void> {
-        const result = await new AddTradeDialog().show({
+        await new AddTradeDialog().show({
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
             share: bond,
             operation,
             assetType: AssetType.BOND
         });
-        if (result) {
-            await this.reloadPortfolio(this.portfolio.id);
-        }
     }
 }

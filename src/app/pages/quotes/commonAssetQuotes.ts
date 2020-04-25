@@ -26,6 +26,7 @@ import {AssetCategory, AssetModel, AssetService} from "../../services/assetServi
 import {FiltersService} from "../../services/filtersService";
 import {AssetQuotesFilter} from "../../services/marketService";
 import {AssetType} from "../../types/assetType";
+import {EventType} from "../../types/eventType";
 import {Operation} from "../../types/operation";
 import {StoreKeys} from "../../types/storeKeys";
 import {Pagination, Portfolio, TableHeader} from "../../types/types";
@@ -141,6 +142,14 @@ export class CommonAssetQuotes extends UI {
     /** Признак что ничего не найдено */
     private isEmptySearchResult: boolean = false;
 
+    created(): void {
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
+    }
+
+    beforeDestroy(): void {
+        UI.off(EventType.TRADE_CREATED);
+    }
+
     private async resetFilter(): Promise<void> {
         this.filter.searchQuery = "";
         this.filter.categories = [...AssetCategory.values()];
@@ -179,16 +188,13 @@ export class CommonAssetQuotes extends UI {
     }
 
     private async openTradeDialog(asset: AssetModel, operation: Operation): Promise<void> {
-        const result = await new AddTradeDialog().show({
+        await new AddTradeDialog().show({
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
             shareId: String(asset.id),
             operation,
             assetType: AssetType.ASSET
         });
-        if (result) {
-            await this.reloadPortfolio(this.portfolio.id);
-        }
     }
 
     private currencyForPrice(asset: AssetModel): string {

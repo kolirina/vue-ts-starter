@@ -137,16 +137,13 @@ export class AggregateAssetTable extends UI {
 
     private async openTradeDialog(assetRow: AssetRow, operation: Operation): Promise<void> {
         const assetType = PortfolioAssetType.valueByName(assetRow.type);
-        const result = await new AddTradeDialog().show({
+        await new AddTradeDialog().show({
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
             operation,
             moneyCurrency: assetType.currency ? assetType.currency.code : null,
             assetType: assetType.assetType
         });
-        if (result) {
-            await this.reloadPortfolio(this.portfolio.id);
-        }
     }
 
     private amount(value: string): number {

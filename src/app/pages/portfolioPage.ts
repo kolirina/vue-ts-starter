@@ -14,6 +14,7 @@ import {Overview, OverviewPeriod, Portfolio} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
 import {DateUtils} from "../utils/dateUtils";
 import {UiStateHelper} from "../utils/uiStateHelper";
+import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {BasePortfolioPage} from "./basePortfolioPage";
 
@@ -58,6 +59,8 @@ export class PortfolioPage extends UI {
     private portfolio: Portfolio;
     @MainStore.Getter
     private sideBarOpened: boolean;
+    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
+    private reloadPortfolio: (id: number) => Promise<void>;
     @Inject
     private overviewService: OverviewService;
     @Inject
@@ -102,7 +105,10 @@ export class PortfolioPage extends UI {
         }));
         // по умолчанию выбран за весь период
         this.selectedPeriod = this.periods[this.periods.length - 1];
-        UI.on(EventType.TRADE_CREATED, async () => await this.loadPortfolioData());
+        UI.on(EventType.TRADE_CREATED, async () => {
+            await this.reloadPortfolio(this.portfolio.id);
+            await this.loadPortfolioData();
+        });
     }
 
     beforeDestroy(): void {

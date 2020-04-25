@@ -12,6 +12,7 @@ import {NotificationType} from "../services/notificationsService";
 import {TradeService} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
 import {ColumnChartData, Dot, HighStockEventsGroup} from "../types/charts/types";
+import {EventType} from "../types/eventType";
 import {Operation} from "../types/operation";
 import {ErrorInfo, Portfolio, Share, ShareType} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
@@ -227,6 +228,11 @@ export class BondInfoPage extends UI {
      */
     async created(): Promise<void> {
         await this.loadBondInfo();
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
+    }
+
+    beforeDestroy(): void {
+        UI.off(EventType.TRADE_CREATED);
     }
 
     /**
@@ -299,16 +305,13 @@ export class BondInfoPage extends UI {
     }
 
     private async openDialog(): Promise<void> {
-        const result = await new AddTradeDialog().show({
+        await new AddTradeDialog().show({
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
             share: this.share,
             operation: Operation.BUY,
             assetType: AssetType.BOND
         });
-        if (result) {
-            await this.reloadPortfolio(this.portfolio.id);
-        }
     }
 
     private async openCreateNotificationDialog(): Promise<void> {
