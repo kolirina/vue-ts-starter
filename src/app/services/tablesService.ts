@@ -143,6 +143,7 @@ export class TablesService {
     readonly HEADERS: TableHeaders = {
         [TABLES_NAME.STOCK]: [...getHeaders(this.SHARE_TYPES_HEADERS)],
         [TABLES_NAME.ASSET]: [...(getHeaders(this.SHARE_TYPES_HEADERS, true))],
+        [TABLES_NAME.ETF]: [...(getHeaders(this.SHARE_TYPES_HEADERS, true))],
 
         [TABLES_NAME.BOND]: [
             {text: "", align: "left", ghost: true, sortable: false, value: "", active: true, width: "50"},
@@ -359,9 +360,17 @@ export enum TABLE_HEADERS {
 
 export enum TABLES_NAME {
     STOCK = "stockTable",
+    ETF = "etfTable",
     ASSET = "assetTable",
     BOND = "bondTable",
     TRADE = "tradesTable",
+}
+
+export enum TableType {
+    STOCK = "stock",
+    BOND = "bond",
+    ETF = "etf",
+    asset = "asset"
 }
 
 export interface TableHeaders {

@@ -378,7 +378,7 @@ export class BondTable extends UI {
     }
 
     private async openTradeDialog(bondRow: BondPortfolioRow, operation: Operation): Promise<void> {
-        const result = await new AddTradeDialog().show({
+        await new AddTradeDialog().show({
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
             share: bondRow.bond,
@@ -386,9 +386,6 @@ export class BondTable extends UI {
             operation,
             assetType: AssetType.BOND
         });
-        if (result) {
-            await this.reloadPortfolio(CommonUtils.isBlank(this.portfolioId) ? this.portfolio.id : Number(this.portfolioId));
-        }
     }
 
     /**

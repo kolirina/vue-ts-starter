@@ -28,7 +28,6 @@ import {Pagination, Portfolio, ShareType, TableHeader} from "../types/types";
 import {DateUtils} from "../utils/dateUtils";
 import {SortUtils} from "../utils/sortUtils";
 import {TradeUtils} from "../utils/tradeUtils";
-import {GetterType} from "../vuex/getterType";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 
@@ -363,7 +362,10 @@ export class EventsPage extends UI {
         this.typeCalendarEvents = eventsFromStorage ? eventsFromStorage : this.getDefaultFilter();
         this.calendarRequestParams.calendarEventTypes = this.typeCalendarEvents.map(e => e.toUpperCase() as CalendarType);
         await this.loadAllData();
-        UI.on(EventType.TRADE_CREATED, async () => await this.loadAllData());
+        UI.on(EventType.TRADE_CREATED, async () => {
+            await this.reloadPortfolio(this.portfolio.id);
+            await this.loadAllData();
+        });
     }
 
     beforeDestroy(): void {
@@ -493,7 +495,7 @@ export class EventsPage extends UI {
 
     private async openTradeDialog(event: ShareEvent): Promise<void> {
         const operation = Operation.valueByName(event.type);
-        const result = await new AddTradeDialog().show({
+        await new AddTradeDialog().show({
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
             share: event.share,
@@ -509,31 +511,20 @@ export class EventsPage extends UI {
             operation,
             assetType: operation === Operation.DIVIDEND ? AssetType.STOCK : AssetType.BOND
         });
-        if (result) {
-            // только перезагружаем портфель, вотчер перезагрузит события и дивиденды
-            await this.reloadPortfolio(this.portfolio.id);
-        }
     }
 
     private async openTradeDialogForEvent(ticker: string, assetType: AssetType): Promise<void> {
-        const result = await new AddTradeDialog().show({
+        await new AddTradeDialog().show({
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
             ticker: ticker,
             operation: Operation.BUY,
             assetType: assetType
         });
-        if (result) {
-            // только перезагружаем портфель, вотчер перезагрузит события и дивиденды
-            await this.reloadPortfolio(this.portfolio.id);
-        }
     }
 
     private async openDialog(): Promise<void> {
-        const result = await new AddTradeDialog().show({store: this.$store.state[StoreType.MAIN], router: this.$router});
-        if (result) {
-            await this.reloadPortfolio(this.portfolio.id);
-        }
+        await new AddTradeDialog().show({store: this.$store.state[StoreType.MAIN], router: this.$router});
     }
 
     private async confirmDeleteAllEvents(): Promise<void> {

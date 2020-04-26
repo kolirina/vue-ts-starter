@@ -7,7 +7,7 @@ import {AssetType} from "../types/assetType";
 import {EventChartData} from "../types/charts/types";
 import {Operation} from "../types/operation";
 import {TradeListType} from "../types/tradeListType";
-import {PageableResponse, TradeRow} from "../types/types";
+import {MapType, PageableResponse, TradeRow} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
 
 /** Сервис работы с localStorage */
@@ -70,6 +70,16 @@ export class TradeService {
     }
 
     /**
+     * Возвращает список сделок для комбинированного портфеля
+     * @param assetId идентификатор актива
+     * @param viewCurrency валюта
+     * @param ids идентификаторы портфелей
+     */
+    async getAssetTradesByIdForCombinedPortfolio(assetId: string, viewCurrency: string, ids: number[]): Promise<TradeRow[]> {
+        return this.http.post<TradeRow[]>(`/trades/combined/asset/${assetId}`, {ids, viewCurrency});
+    }
+
+    /**
      * Загружает и возвращает события по сделкам по тикеру в портфеле
      * @param {string} id идентификатор портфеля
      * @param {string} ticker тикер
@@ -101,7 +111,14 @@ export class TradeService {
      */
     async loadTrades(id: number, offset: number = 0, limit: number = 50, sortColumn: string, descending: boolean = false,
                      filter: TradesFilterRequest): Promise<PageableResponse<TradeRow>> {
-        const urlParams: UrlParams = {offset, limit, ...filter};
+        const filteredParams: MapType = {};
+        Object.keys(filter).forEach(filterParam => {
+            const filterValue = (filter as MapType)[filterParam];
+            if (CommonUtils.exists(filterValue)) {
+                (filteredParams as MapType)[filterParam] = filterValue;
+            }
+        });
+        const urlParams: UrlParams = {offset, limit, ...filteredParams};
         if (sortColumn) {
             urlParams.sortColumn = sortColumn.toUpperCase();
         }
@@ -317,6 +334,7 @@ export interface TradesFilter {
     showMoneyTrades?: boolean;
     showLinkedMoneyTrades?: boolean;
     search?: string;
+    currency?: string;
     start?: string;
     end?: string;
 }
@@ -327,6 +345,7 @@ export interface TradesFilterRequest {
     showMoneyTrades?: boolean;
     showLinkedMoneyTrades?: boolean;
     search?: string;
+    currency?: string;
     start?: string;
     end?: string;
 }

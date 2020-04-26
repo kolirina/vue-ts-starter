@@ -21,11 +21,11 @@ import {UI} from "../../../app/ui";
                         <li>Нажмите кнопку <strong>Заказать отчет / справку</strong></li>
                     </ul>
                 </div>
-                <v-img :src="IMAGES[0]" height="436" width="933" class="grey darken-4 image"></v-img>
+                <v-img :src="IMAGES[0]" max-width="933" class="grey darken-4 image"></v-img>
                 <div class="import-default-text">
                     После успешного формирования отчета он появится в таблице ниже в статусе "готово".
                 </div>
-                <v-img :src="IMAGES[1]" height="148 " width="724.5" class="grey darken-4 image"></v-img>
+                <v-img :src="IMAGES[1]" max-width="724.5" class="grey darken-4 image"></v-img>
                 <div class="import-default-text">
                     Полученный файл используйте для импорта.
                 </div>

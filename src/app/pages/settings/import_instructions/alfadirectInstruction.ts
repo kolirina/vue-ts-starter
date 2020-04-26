@@ -10,7 +10,7 @@ import {UI} from "../../../app/ui";
                     Перейдите в личный кабинет брокера, и выберите пункт Отчеты.
                 </div>
 
-                <v-img :src="IMAGES[0]" height="479" width="800" class="grey darken-4 image"></v-img>
+                <v-img :src="IMAGES[0]" max-width="800" class="grey darken-4 image"></v-img>
 
                 <div class="import-default-text">
                     Выберите тип отчета <b>Брокерский</b> Настройте параметры отчета:
@@ -24,7 +24,7 @@ import {UI} from "../../../app/ui";
                     </ul>
                 </div>
 
-                <v-img :src="IMAGES[1]" height="697" width="960" class="grey darken-4 image"></v-img>
+                <v-img :src="IMAGES[1]" max-width="960" class="grey darken-4 image"></v-img>
 
                 <div class="import-default-text">
                     Полученный файл используйте для импорта.
@@ -39,7 +39,7 @@ import {UI} from "../../../app/ui";
                     В старой версии ЛК брокера
                 </div>
 
-                <v-img :src="IMAGES[2]" height="297" width="762" class="grey darken-4 image"></v-img>
+                <v-img :src="IMAGES[2]" max-width="762" class="grey darken-4 image"></v-img>
 
                 <div class="import-default-text">
                     Выберите пункт меню Отчеты -> Бухгалтерские отчеты<br>
@@ -56,7 +56,7 @@ import {UI} from "../../../app/ui";
                     </ul>
                 </div>
 
-                <v-img :src="IMAGES[3]" height="264" width="980" class="grey darken-4 image"></v-img>
+                <v-img :src="IMAGES[3]" max-width="980" class="grey darken-4 image"></v-img>
 
                 <div class="import-default-text">
                     После успешного формирования отчета он появится в таблице ниже<br>

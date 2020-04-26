@@ -92,7 +92,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </template>
                     </td>
                     <td v-if="tableHeadersState.totalWithoutFee" :class="['text-xs-right', 'ii-number-cell']">
-                        {{ props.item.totalWithoutFee | amount }}&nbsp;<span class="second-value">{{ props.item.totalWithoutFee | currencySymbol }}</span>
+                        {{ props.item.totalWithoutFee | amount(true) }}&nbsp;<span class="second-value">{{ props.item.totalWithoutFee | currencySymbol }}</span>
                     </td>
                     <td class="px-0" style="text-align: center" @click.stop>
                         <v-layout align-center justify-center v-if="props.item.parentTradeId">
@@ -265,7 +265,7 @@ export class TradesTable extends UI {
     }
 
     private async openTradeDialog(trade: TradeRow, operation: Operation): Promise<void> {
-        const result = await new AddTradeDialog().show({
+        await new AddTradeDialog().show({
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
             share: null,
@@ -275,13 +275,10 @@ export class TradesTable extends UI {
             quantity: this.getQuantity(trade),
             assetType: AssetType.valueByName(trade.asset)
         });
-        if (result) {
-            await this.reloadPortfolio(this.portfolio.id);
-        }
     }
 
     private async openEditTradeDialog(trade: TradeRow): Promise<void> {
-        const result = await new AddTradeDialog().show({
+        await new AddTradeDialog().show({
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
             assetType: AssetType.valueByName(trade.asset),
@@ -291,9 +288,6 @@ export class TradesTable extends UI {
             editedMoneyTradeId: trade.moneyTradeId,
             moneyCurrency: trade.currency
         });
-        if (result) {
-            await this.reloadPortfolio(this.portfolio.id);
-        }
     }
 
     private getTradeFields(trade: TradeRow): TradeFields {

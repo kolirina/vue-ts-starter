@@ -18,6 +18,7 @@ import {namespace} from "vuex-class";
 import {Component, UI, Watch} from "../app/ui";
 import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
+import {EventType} from "../types/eventType";
 import {Portfolio} from "../types/types";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
@@ -28,7 +29,7 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <base-share-info-page :ticker="ticker" :asset-type="AssetType.ASSET" :portfolio-avg-price="portfolioAvgPrice" @reloadPortfolio="onReloadPortfolio"></base-share-info-page>
+        <base-share-info-page :ticker="ticker" :asset-type="AssetType.ASSET" :portfolio-avg-price="portfolioAvgPrice"></base-share-info-page>
     `,
     components: {BaseShareInfoPage}
 })
@@ -49,6 +50,11 @@ export class AssetInfoPage extends UI {
      */
     async created(): Promise<void> {
         this.ticker = this.$route.params.ticker;
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
+    }
+
+    beforeDestroy(): void {
+        UI.off(EventType.TRADE_CREATED);
     }
 
     /**
@@ -60,13 +66,9 @@ export class AssetInfoPage extends UI {
         this.ticker = this.$route.params.ticker;
     }
 
-    private async onReloadPortfolio(): Promise<void> {
-        await this.reloadPortfolio(this.portfolio.id);
-    }
-
     private get portfolioAvgPrice(): number {
-        const row = this.portfolio.overview.assetPortfolio.rows.find(r => String(r.asset.id) === this.ticker);
-        return row ? new BigMoney(row.avgBuy).amount.toNumber() : null;
+        const assetRow = this.portfolio.overview.assetPortfolio.rows.find(row => String(row.share.id) === this.ticker);
+        return assetRow ? new BigMoney(assetRow.avgBuy).amount.toNumber() : null;
     }
 
 }

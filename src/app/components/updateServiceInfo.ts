@@ -184,13 +184,12 @@ import {Component, Prop, UI} from "../app/ui";
                     </expanded-panel>
                 </template>
             </div>
-            <div class="mt-3 mb-4">
+            <div class="app-btns">
                 <a href="https://itunes.apple.com/ru/app/intelinvest-%D1%83%D1%87%D0%B5%D1%82-%D0%B8%D0%BD%D0%B2%D0%B5%D1%81%D1%82%D0%B8%D1%86%D0%B8%D0%B9
-                /id1422478197?mt=8" title="Загрузите приложение в App Store" target="_blank" class="mr-1">
+                /id1422478197?mt=8" title="Загрузите приложение в App Store" target="_blank">
                     <img src="./img/help/app-store-badge2.svg" alt="pic">
                 </a>
-                <a href="https://play.google.com/store/apps/details?id=ru.intelinvest.portfolio" title="Загрузите приложение в Google Play"
-                   target="_blank" class="ml-2">
+                <a href="https://play.google.com/store/apps/details?id=ru.intelinvest.portfolio" title="Загрузите приложение в Google Play" target="_blank">
                     <img src="./img/help/google-play-badge2.svg" alt="pic">
                 </a>
             </div>

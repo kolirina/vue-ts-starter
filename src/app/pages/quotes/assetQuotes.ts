@@ -189,11 +189,13 @@ export class AssetQuotes extends UI {
         await this.loadAssets();
         UI.on(EventType.ASSET_CREATED, async () => await this.loadAssets());
         UI.on(EventType.ASSET_UPDATED, async () => await this.loadAssets());
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
     }
 
     beforeDestroy(): void {
         UI.off(EventType.ASSET_CREATED);
         UI.off(EventType.ASSET_UPDATED);
+        UI.off(EventType.TRADE_CREATED);
     }
 
     private async resetFilter(): Promise<void> {
@@ -225,16 +227,13 @@ export class AssetQuotes extends UI {
     }
 
     private async openTradeDialog(asset: AssetModel, operation: Operation): Promise<void> {
-        const result = await new AddTradeDialog().show({
+        await new AddTradeDialog().show({
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
             shareId: String(asset.id),
             operation,
             assetType: AssetType.ASSET
         });
-        if (result) {
-            await this.reloadPortfolio(this.portfolio.id);
-        }
     }
 
     /**

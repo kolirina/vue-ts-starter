@@ -392,6 +392,7 @@ export class ImportPage extends UI {
             return false;
         }
         let duplicateTradeErrorCount = 0;
+        let needUploadAgain = false;
         if (response.errors && response.errors.length) {
             const duplicateTradeErrors = response.errors.filter(error => error.message === ImportPage.DUPLICATE_MSG);
             const repoTradeErrors = response.errors.filter(error => error.message === ImportPage.REPO_TRADE_MSG);
@@ -410,11 +411,11 @@ export class ImportPage extends UI {
                 });
                 if (shareAliases) {
                     await this.importService.saveShareAliases(shareAliases);
+                    if (response.validatedTradesCount) {
+                        await this.reloadPortfolio(this.portfolio.id);
+                    }
+                    needUploadAgain = shareAliases.length > 0;
                 }
-                if (response.validatedTradesCount) {
-                    await this.reloadPortfolio(this.portfolio.id);
-                }
-                return shareAliases?.length > 0;
             }
         }
         if (response.validatedTradesCount) {
@@ -439,7 +440,7 @@ export class ImportPage extends UI {
         } else {
             this.$snotify.warning("Импорт завершен. В отчете не содержится информации по сделкам.");
         }
-        return false;
+        return needUploadAgain;
     }
 
     /**

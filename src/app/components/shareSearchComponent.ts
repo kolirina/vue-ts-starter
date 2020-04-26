@@ -22,7 +22,7 @@ import {MarketService} from "../services/marketService";
 import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
 import {Currency} from "../types/currency";
-import {Asset, Bond, Share, ShareType} from "../types/types";
+import {Asset, Bond, Share, ShareType, Stock} from "../types/types";
 
 @Component({
     // language=Vue
@@ -30,7 +30,7 @@ import {Asset, Bond, Share, ShareType} from "../types/types";
         <v-autocomplete ref="shareSearch" :items="filteredSharesMutated" v-model="share" @change="onShareSelect" @click:clear="onSearchClear"
                         :label="placeholder"
                         :loading="shareSearch" no-data-text="Ничего не найдено" clearable :required="required" :rules="rules"
-                        dense :hide-no-data="hideNoDataLabel" :no-filter="true" :search-input.sync="searchQuery" :autofocus="autofocus">
+                        dense :hide-no-data="hideNoDataLabel" :no-filter="true" :search-input.trim.sync="searchQuery" :autofocus="autofocus">
             <template #selection="data">
                 <span :class="{ellipsis: ellipsis, 'mw218': ellipsis}" :title="shareLabelSelected(data.item)">{{ shareLabelSelected(data.item) }}</span>
             </template>
@@ -199,10 +199,7 @@ export class ShareSearchComponent extends UI {
         if ([AssetType.STOCK, AssetType.ASSET].includes(shareType)) {
             if (share.price !== null) {
                 const price = new BigMoney(share.price);
-                let assetDescription = shareType.description;
-                if (shareType === AssetType.ASSET) {
-                    assetDescription = AssetCategory.valueByName((share as Asset).category).description;
-                }
+                const assetDescription = this.assetDescription(share);
                 return `${share.ticker} (${share.shortname}), <b>${Filters.formatNumber(price.amount.toString())}</b> ${price.currencySymbol} (${assetDescription})`;
             }
             return `Создать актив "${share.shortname}"`;
@@ -211,6 +208,20 @@ export class ShareSearchComponent extends UI {
         }
 
         return `${share.ticker} (${share.shortname})`;
+    }
+
+    private assetDescription(share: Share): string {
+        switch (share.shareType) {
+            case ShareType.ASSET:
+                const assetCategory = AssetCategory.valueByName((share as Asset).category);
+                const isEtf = assetCategory === AssetCategory.ETF || assetCategory === AssetCategory.STOCK && (share as Asset).sector.name === "ETF";
+                return isEtf ? "ПИФ/ETF" : assetCategory === AssetCategory.STOCK ? (share as Asset).sector.name : AssetType.ASSET.description;
+            case ShareType.STOCK:
+                return (share as Stock).sector.name === "ETF" ? "ПИФ/ETF" : AssetType.STOCK.description;
+            case ShareType.BOND:
+                return AssetType.BOND.description;
+        }
+        return AssetType.valueByName(share.shareType)?.description;
     }
 
     private onSearchClear(): void {

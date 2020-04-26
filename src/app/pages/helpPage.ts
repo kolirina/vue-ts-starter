@@ -4,6 +4,7 @@ import {FeedbackDialog} from "../components/dialogs/feedbackDialog";
 import {ImageDialog} from "../components/dialogs/imageDialog";
 import {ClientInfo} from "../services/clientService";
 import {AssetType} from "../types/assetType";
+import {EventType} from "../types/eventType";
 import {Operation} from "../types/operation";
 import {Portfolio} from "../types/types";
 import {MutationType} from "../vuex/mutationType";
@@ -1169,6 +1170,11 @@ export class HelpPage extends UI {
                 await this.scrollTo(section);
             }, 800);
         }
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
+    }
+
+    beforeDestroy(): void {
+        UI.off(EventType.TRADE_CREATED);
     }
 
     /**
@@ -1191,15 +1197,12 @@ export class HelpPage extends UI {
 
     /* Диалог добавления сделок */
     private async openDialog(assetType: AssetType, operation: Operation): Promise<void> {
-        const result = await new AddTradeDialog().show({
+        await new AddTradeDialog().show({
             store: this.$root.$store.state[StoreType.MAIN],
             router: this.$root.$router,
             operation,
             assetType
         });
-        if (result) {
-            await this.reloadPortfolio(this.portfolio.id);
-        }
     }
 
     private async openImageDialog(): Promise<void> {

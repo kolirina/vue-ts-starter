@@ -83,6 +83,11 @@
 .add-btn-menu {
   background: #F0F3F8 !important;
   color: #96A5BE !important;
+
+  @media only screen and (max-width: $sm-breakpoint) {
+    background: #d4d8df !important;
+    color: #76849d !important;
+  }
 }
 
 .active-link {

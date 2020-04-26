@@ -97,6 +97,10 @@
     opacity: .48;
     margin-bottom: 20px;
   }
+
+  @media only screen and (max-width: $sm-breakpoint) {
+    min-width: 0 !important;
+  }
 }
 .hint-text-for-setings {
   padding: 16px;

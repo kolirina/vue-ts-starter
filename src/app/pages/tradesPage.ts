@@ -18,6 +18,7 @@ import {TableHeaders, TABLES_NAME, TablesService} from "../services/tablesServic
 import {CopyMoveTradeRequest, TradeService, TradesFilter} from "../services/tradeService";
 import {TradesFilterService} from "../services/tradesFilterService";
 import {AssetType} from "../types/assetType";
+import {EventType} from "../types/eventType";
 import {StoreKeys} from "../types/storeKeys";
 import {Pagination, Portfolio, TableHeader, TradeRow} from "../types/types";
 import {ExportUtils} from "../utils/exportUtils";
@@ -107,6 +108,8 @@ export class TradesPage extends UI {
      */
     async created(): Promise<void> {
         this.tradesFilter = this.tradesFilterService.getFilter(StoreKeys.TRADES_FILTER_SETTINGS_KEY);
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
+        UI.on(EventType.TRADE_UPDATED, async () => await this.reloadPortfolio(this.portfolio.id));
     }
 
     getHeaders(name: string): TableHeader[] {

@@ -29,13 +29,13 @@ import {UI} from "../../../app/ui";
                         Выберите в выпадающем меню пункт <b>О счете</b>
                     </div>
                 </div>
-                <v-img :src="IMAGES[0]" height="600" width="800" class="grey darken-4 image"></v-img>
+                <v-img :src="IMAGES[0]" max-width="800" class="grey darken-4 image"></v-img>
             </div>
             <div class="import-format-requirements-ul">
                 <div>
                     Переключите формат отчета в <b>Excel</b>
                 </div>
-                <v-img :src="IMAGES[1]" height="600" width="800" class="grey darken-4 image"></v-img>
+                <v-img :src="IMAGES[1]" max-width="800" class="grey darken-4 image"></v-img>
                 <div class="import-default-text-margin-t">
                     Настройте параметры отчета:
                 </div>
@@ -44,7 +44,7 @@ import {UI} from "../../../app/ui";
                     <li>Год</li>
                     <li>Нажмите кнопку Скачать</li>
                 </ul>
-                <v-img :src="IMAGES[2]" height="600" width="800" class="grey darken-4 image"></v-img>
+                <v-img :src="IMAGES[2]" max-width="800" class="grey darken-4 image"></v-img>
                 <div>
                     Полученный файл используйте для импорта.
                 </div>

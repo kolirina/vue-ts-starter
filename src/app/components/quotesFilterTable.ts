@@ -100,33 +100,29 @@ export class QuotesFilterTable extends UI {
     }
 
     private onSearch(searchQuery: string): void {
-        this.$emit("input", searchQuery);
         this.saveFilter();
     }
 
     private onCurrencyChange(): void {
-        this.$emit("filter", this.filter);
         this.saveFilter();
     }
 
     private onTypeChange(): void {
-        this.$emit("filter", this.filter);
         this.saveFilter();
     }
 
     private resetCurrency(): void {
         this.filter.currency = null;
-        this.$emit("filter", this.filter);
         this.saveFilter();
     }
 
     private resetType(): void {
         this.filter.bondType = null;
-        this.$emit("filter", this.filter);
         this.saveFilter();
     }
 
     private saveFilter(): void {
+        this.$emit("filter", this.filter);
         this.filtersService.saveFilter(this.storeKey, this.filter);
     }
 

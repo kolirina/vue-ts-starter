@@ -122,7 +122,7 @@ export class ThemeUtils {
     .theme--light.v-calendar-weekly .v-calendar-weekly__day,
     .theme--light.v-calendar-weekly .v-calendar-weekly__head-weekday.v-past,
     .checkbox-setings span, .dialog-setings-menu .title-setings,
-    .control-porfolios-title,
+    .control-portfolios-title,
     .export-page .info-block,
     .promo-codes .rewards,
     .statistics,
@@ -149,12 +149,12 @@ export class ThemeUtils {
     .intel-invest-instruction__values, .intel-invest-instruction__template-requirements, .import-default-text, .tooltip-text,
     .snotifyToast__body, .info-share-page__empty, .import-dialog-wrapper__title-text, .fs18, .fs36,
     .snotifyToast__buttons button, .update-service-dialog__content,
-    .custom-v-menu .v-menu-content,
+    .custom-v-menu .v-menu-content, .section-title,
     .v-date-picker-years, .empty-station__description {color: #fff}
 
     .theme--light.v-label,
     .fs12-opacity,
-    .theme--light.v-counter,
+    .theme--light.v-counter, .theme--light.v-input--is-disabled input,
     .theme--light.v-messages {color: #fff; opacity: 0.7}
 
     .import-wrapper-content .intelinvest-section .v-btn {color: rgba(0,0,0,.87) !important;}
@@ -177,7 +177,7 @@ export class ThemeUtils {
     .snotifyToast, .theme--light.v-chip,
     .import-wrapper-content .setings-menu .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light,
     .import-wrapper-content .setings-menu .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
-    .wrapper-content-panel__privacy-section-up-page-btn, .free-subscribe, .events__info-panel,
+    .wrapper-content-panel__privacy-section-up-page-btn, .free-subscribe, .events__info-panel, .info-block,
     .sing-in-wrap .pre-footer, .promo-codes__steps, .tariff-notification,
     input.highcharts-range-selector:focus, .inplace-custom-input, .currency-card.v-card {background-color: #252A35 !important}
 

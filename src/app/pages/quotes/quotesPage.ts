@@ -8,6 +8,7 @@ import {AssetQuotes} from "./assetQuotes";
 import {BondQuotes} from "./bondQuotes";
 import {CommonAssetQuotes} from "./commonAssetQuotes";
 import {CurrencyQuotes} from "./currencyQuotes";
+import {EtfQuotes} from "./etfQuotes";
 import {StockQuotes} from "./stockQuotes";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -26,6 +27,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <v-radio v-for="item in quotesTypes" :key="item.code" :label="item.description" :value="item" class="pl-1" mandatory></v-radio>
                 </v-radio-group>
                 <stock-quotes v-if="currentTab === QuotesType.STOCK"></stock-quotes>
+                <etf-quotes v-if="currentTab === QuotesType.ETF"></etf-quotes>
                 <bond-quotes v-if="currentTab === QuotesType.BOND"></bond-quotes>
                 <asset-quotes v-if="currentTab === QuotesType['USER-ASSETS']"></asset-quotes>
                 <common-asset-quotes v-if="currentTab === QuotesType['COMMON-ASSETS']"></common-asset-quotes>
@@ -33,7 +35,7 @@ const MainStore = namespace(StoreType.MAIN);
             </v-card>
         </v-container>
     `,
-    components: {StockQuotes, BondQuotes, CurrencyQuotes, AssetQuotes, CommonAssetQuotes}
+    components: {StockQuotes, EtfQuotes, BondQuotes, CurrencyQuotes, AssetQuotes, CommonAssetQuotes}
 })
 export class QuotesPage extends UI {
 
@@ -59,6 +61,7 @@ export class QuotesPage extends UI {
 export class QuotesType extends (EnumType as IStaticEnum<QuotesType>) {
 
     static readonly STOCK = new QuotesType("stock", "Акции");
+    static readonly ETF = new QuotesType("etf", "ПИФы/ETF");
     static readonly BOND = new QuotesType("bond", "Облигации");
     static readonly CURRENCY = new QuotesType("currency", "Валюты");
     static readonly "USER-ASSETS" = new QuotesType("user-assets", "Пользовательские активы");

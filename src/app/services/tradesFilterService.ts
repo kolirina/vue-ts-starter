@@ -54,6 +54,7 @@ export class TradesFilterService {
             showLinkedMoneyTrades: filter.showLinkedMoneyTrades,
             showMoneyTrades: filter.showMoneyTrades,
             search: filter.search || "",
+            currency: filter.currency || "",
             start: filter.start || "",
             end: filter.end || ""
         } as TradesFilterRequest;
@@ -78,6 +79,7 @@ export class TradesFilterService {
             showMoneyTrades: true,
             showLinkedMoneyTrades: true,
             search: "",
+            currency: null,
             start: "",
             end: ""
         };
@@ -90,7 +92,7 @@ export class TradesFilterService {
     isDefaultFilter(filter: TradesFilter): boolean {
         const defaultFilter = this.getDefaultFilter();
         return filter.listType === defaultFilter.listType && filter.showLinkedMoneyTrades === defaultFilter.showLinkedMoneyTrades &&
-            filter.showMoneyTrades === defaultFilter.showMoneyTrades && filter.search === defaultFilter.search &&
+            filter.showMoneyTrades === defaultFilter.showMoneyTrades && filter.search === defaultFilter.search && !filter.currency &&
             defaultFilter.operation.every(operation => filter.operation.includes(operation)) && filter.start === defaultFilter.start && filter.end === defaultFilter.end;
     }
 
@@ -101,6 +103,7 @@ export class TradesFilterService {
             showLinkedMoneyTrades: filter.showLinkedMoneyTrades,
             showMoneyTrades: filter.showMoneyTrades,
             search: filter.search,
+            currency: filter.currency,
             start: filter.start,
             end: filter.end
         } as TradesFilter;

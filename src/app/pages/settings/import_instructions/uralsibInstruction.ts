@@ -15,7 +15,7 @@ import {UI} from "../../../app/ui";
                         Контактная информация о менеджере указана в отчете.
                     </div>
                 </div>
-                <v-img :src="IMAGES[0]" height="207" width="980" class="grey darken-4 image"></v-img>
+                <v-img :src="IMAGES[0]" max-width="980" class="grey darken-4 image"></v-img>
                 <div class="import-default-text">
                     Полученный файлы используйте для импорта.
                 </div>

@@ -19,6 +19,7 @@ import {Permission} from "../types/permission";
 import {StoreKeys} from "../types/storeKeys";
 import {ForbiddenCode, Overview} from "../types/types";
 import {UiStateHelper} from "../utils/uiStateHelper";
+import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {BasePortfolioPage} from "./basePortfolioPage";
 
@@ -35,11 +36,11 @@ const MainStore = namespace(StoreType.MAIN);
                                      @reloadLineChart="loadPortfolioLineChart">
                     <template #afterDashboard>
                         <v-layout align-center>
-                            <div :class="['control-porfolios-title', blockNotEmpty() ? '' : 'pl-3']">
+                            <div :class="['control-portfolios-title', blockNotEmpty() ? '' : 'pl-3']">
                                 Управление составным портфелем
                             </div>
                             <v-spacer></v-spacer>
-                            <div v-if="blockNotEmpty()">
+                            <div v-if="blockNotEmpty()" class="control-portfolios__btns">
                                 <v-btn class="btn" color="primary" @click="exportPortfolio">
                                     Экспорт в xlsx
                                 </v-btn>
@@ -81,6 +82,8 @@ export class CombinedPortfolioPage extends UI {
     private clientInfo: ClientInfo;
     @MainStore.Getter
     private sideBarOpened: boolean;
+    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
+    private reloadPortfolio: (id: number) => Promise<void>;
     @Inject
     private overviewService: OverviewService;
     @Inject
@@ -113,6 +116,7 @@ export class CombinedPortfolioPage extends UI {
         this.setIds();
         await this.doCombinedPortfolio();
         UI.on(EventType.TRADE_CREATED, async (event: AddTradeEvent): Promise<void> => {
+            await this.reloadPortfolio(event.portfolioId);
             // перезагружаем информацию если сделка была добавлена в портфель входящий в составной
             if (this.ids.includes(event.portfolioId)) {
                 await this.doCombinedPortfolio();

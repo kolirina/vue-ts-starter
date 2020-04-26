@@ -18,8 +18,8 @@ import {UI} from "../../../app/ui";
                     </div>
                 </div>
 
-                <v-img :src="IMAGES[3]" height="566" width="980" class="grey darken-4 image"></v-img>
-                <v-img :src="IMAGES[4]" height="560" width="980" class="grey darken-4 image"></v-img>
+                <v-img :src="IMAGES[3]" max-width="980" class="grey darken-4 image"></v-img>
+                <v-img :src="IMAGES[4]" max-width="980" class="grey darken-4 image"></v-img>
 
                 <div class="import-default-text">
                     <div class="import-default-text-margin-t">
@@ -30,7 +30,7 @@ import {UI} from "../../../app/ui";
                     </div>
                 </div>
 
-                <v-img :src="IMAGES[0]" height="265" width="980" class="grey darken-4 image"></v-img>
+                <v-img :src="IMAGES[0]" max-width="980" class="grey darken-4 image"></v-img>
 
                 <div class="import-default-text">
                     <div class="import-default-text-margin-t">
@@ -38,7 +38,7 @@ import {UI} from "../../../app/ui";
                     </div>
                 </div>
 
-                <v-img :src="IMAGES[1]" height="300" width="980" class="grey darken-4 image"></v-img>
+                <v-img :src="IMAGES[1]" max-width="980" class="grey darken-4 image"></v-img>
 
                 <div class="import-default-text">
                     <div class="import-default-text-margin-t">
@@ -46,7 +46,7 @@ import {UI} from "../../../app/ui";
                     </div>
                 </div>
 
-                <v-img :src="IMAGES[2]" height="286" width="669" class="grey darken-4 image"></v-img>
+                <v-img :src="IMAGES[2]" max-width="669" class="grey darken-4 image"></v-img>
 
             </div>
         </div>

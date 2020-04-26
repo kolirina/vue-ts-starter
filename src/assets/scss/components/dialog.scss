@@ -11,10 +11,22 @@
     background: #0000005c;
     color: #fff !important;
   }
+
+  @media only screen and (max-width: $sm-breakpoint) {
+    position: absolute;
+    color: #000000 !important;
+    padding: 8px;
+  }
 }
 
 .dialog-wrap {
   position: relative;
+
+  @media only screen and (max-width: $sm-breakpoint) {
+    &.pa-5 {padding: 0 !important;}
+
+    .v-card__title {padding-right: 40px}
+  }
 }
 
 .dialog-actions {
@@ -40,9 +52,10 @@
     line-height: 22px;
     letter-spacing: -0.3px;
     color: #040427;
-    a {
-      color: #3b6ec9;
-    }
+
+    a {color: #3b6ec9}
+
+    @media only screen and (max-width: 959px) {font-size: 15px}
   }
 
   &__date {
@@ -65,5 +78,26 @@
   }
   .v-card__text {
     margin-bottom: -6px;
+  }
+}
+
+/* Диалог с фиксированными хэдером и футером, контент скроллится. Только для мобильных */
+@media only screen and (max-width: $sm-breakpoint) {
+
+  .scroll-dialog {
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh !important;
+
+    &__header {flex: none}
+
+    &__body {
+      overflow-y: auto;
+      flex: auto;
+    }
+
+    &__footer {
+      flex: none;
+    }
   }
 }

@@ -50,6 +50,8 @@ export type LineChartItem = BaseChartDot & {
     stockAmount: string,
     /** "Сумма приходящаяся на облигации */
     bondAmount: string,
+    /** "Сумма приходящаяся на ETF */
+    etfAmount: string,
     /** Сумма приходящаяся на денежные средства */
     moneyAmount: string,
     /** Сумма приходящаяся на денежные средства (Вводы/Выводы ДС, без учета списаний по связанным сделкам) */
@@ -126,6 +128,7 @@ export class ChartSeries extends (EnumType as IStaticEnum<ChartSeries>) {
     static readonly MONEY = new ChartSeries("moneyChart", "Денежные средства", "_SHOW_MONEY", "moneyAmount");
     static readonly IN_OUT_MONEY = new ChartSeries("inOutMoneyChart", "Внесения/Списания ДС", "_SHOW_IN_OUT_MONEY", "inOutMoneyAmount");
     static readonly STOCKS = new ChartSeries("stockChart", "Стоимость акций", "_SHOW_STOCKS", "stockAmount");
+    static readonly ETF = new ChartSeries("etfChart", "Стоимость ПИФов/ETF", "_SHOW_ETF", "etfAmount");
     static readonly BONDS = new ChartSeries("bondChart", "Стоимость облигаций", "_SHOW_BONDS", "bondAmount");
     static readonly TOTAL = new ChartSeries("totalChart", "Суммарная стоимость", "_SHOW_TOTAL", "amount");
 
@@ -147,6 +150,8 @@ export interface ChartSeriesFilter {
     inOutMoneyChart: boolean;
     /** Признак отображения графика стоимости Акций */
     stockChart: boolean;
+    /** Признак отображения графика стоимости ETF */
+    etfChart: boolean;
     /** Признак отображения графика стоимости Облигаций */
     bondChart: boolean;
 }
@@ -154,6 +159,7 @@ export interface ChartSeriesFilter {
 export enum ChartType {
     ASSETS_CHART = "assetsPieChart",
     STOCK_CHART = "stockPieChart",
+    ETF_CHART = "etfPieChart",
     BOND_CHART = "bondPieChart",
     SECTORS_CHART = "sectorsChart",
     BOND_SECTORS_CHART = "bondSectorsChart",

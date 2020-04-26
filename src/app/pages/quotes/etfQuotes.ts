@@ -15,7 +15,7 @@ import {AssetType} from "../../types/assetType";
 import {EventType} from "../../types/eventType";
 import {Operation} from "../../types/operation";
 import {StoreKeys} from "../../types/storeKeys";
-import {Pagination, Portfolio, Stock, TableHeader} from "../../types/types";
+import {Pagination, Portfolio, Share, StockTypeShare, TableHeader} from "../../types/types";
 import {TradeUtils} from "../../utils/tradeUtils";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
@@ -30,16 +30,17 @@ const MainStore = namespace(StoreType.MAIN);
                 <additional-pagination :pagination="pagination" @update:pagination="onTablePaginationChange"></additional-pagination>
             </div>
             <quotes-filter-table :filter="filter" @input="tableSearch" @changeShowUserShares="changeShowUserShares" @filter="onFilterChange" :min-length="1" placeholder="Поиск"
-                                 :store-key="StoreKeys.STOCK_QUOTES_FILTER_KEY"></quotes-filter-table>
+                                 :store-key="StoreKeys.ETF_QUOTES_FILTER_KEY"></quotes-filter-table>
             <empty-search-result v-if="isEmptySearchResult" @resetFilter="resetFilter"></empty-search-result>
             <v-data-table v-else
-                          :headers="headers" :items="stocks" item-key="id" :pagination="pagination" @update:pagination="onTablePaginationChange"
+                          :headers="headers" :items="etf" item-key="id" :pagination="pagination" @update:pagination="onTablePaginationChange"
                           :rows-per-page-items="[25, 50, 100, 200]"
                           :total-items="pagination.totalItems" class="data-table quotes-table normalize-table table-bottom-pagination" must-sort>
                 <template #items="props">
                     <tr class="selectable">
                         <td class="text-xs-left">
-                            <stock-link :ticker="props.item.ticker"></stock-link>
+                            <stock-link v-if="props.item.shareType === 'STOCK'" :ticker="props.item.ticker"></stock-link>
+                            <asset-link v-if="props.item.shareType === 'ASSET'" :ticker="String(props.item.id)">{{ props.item.ticker }}</asset-link>
                         </td>
                         <td class="text-xs-left">{{ props.item.shortname }}</td>
                         <td class="text-xs-center ii-number-cell">
@@ -48,20 +49,18 @@ const MainStore = namespace(StoreType.MAIN);
                         <td :class="[( Number(props.item.change) >= 0 ) ? 'ii--green-markup' : 'ii--red-markup', 'ii-number-cell', 'text-xs-center']">
                             {{ props.item.change }}&nbsp;%
                         </td>
-                        <td class="text-xs-center ii-number-cell">{{ props.item.lotsize }}</td>
                         <td class="text-xs-center">{{ props.item.currency }}</td>
                         <td class="text-xs-center">
-                            <stock-rate :share="props.item"></stock-rate>
-                        </td>
-                        <td class="text-xs-center">
-                            <v-btn v-if="props.item.currency === 'RUB'" :href="'http://moex.com/ru/issue.aspx?code=' + props.item.ticker" target="_blank"
-                                   :title="'Профиль эмитента ' + props.item.name + ' на сайте биржи'" icon>
-                                <i class="quotes-share"></i>
-                            </v-btn>
-                            <v-btn v-if="props.item.currency !== 'RUB'" :href="'https://finance.yahoo.com/quote/' + props.item.ticker" target="_blank"
-                                   :title="'Профиль эмитента ' + props.item.name + ' на сайте Yahoo Finance'" icon>
-                                <i class="quotes-share"></i>
-                            </v-btn>
+                            <template v-if="props.item.shareType === 'STOCK'">
+                                <v-btn v-if="props.item.currency === 'RUB'" :href="'http://moex.com/ru/issue.aspx?code=' + props.item.ticker" target="_blank"
+                                       :title="'Профиль эмитента ' + props.item.name + ' на сайте биржи'" icon>
+                                    <i class="quotes-share"></i>
+                                </v-btn>
+                                <v-btn v-if="props.item.currency !== 'RUB'" :href="'https://finance.yahoo.com/quote/' + props.item.ticker" target="_blank"
+                                       :title="'Профиль эмитента ' + props.item.name + ' на сайте Yahoo Finance'" icon>
+                                    <i class="quotes-share"></i>
+                                </v-btn>
+                            </template>
                         </td>
                         <td class="justify-end layout px-0" @click.stop>
                             <v-menu transition="slide-y-transition" bottom left nudge-bottom="25">
@@ -94,7 +93,7 @@ const MainStore = namespace(StoreType.MAIN);
     `,
     components: {AdditionalPagination, QuotesFilterTable, EmptySearchResult, StockRate}
 })
-export class StockQuotes extends UI {
+export class EtfQuotes extends UI {
 
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
     private reloadPortfolio: (id: number) => Promise<void>;
@@ -110,7 +109,7 @@ export class StockQuotes extends UI {
     private filtersService: FiltersService;
 
     /** Фильтр котировок */
-    private filter: QuotesFilter = this.filtersService.getFilter<QuotesFilter>(StoreKeys.STOCK_QUOTES_FILTER_KEY, {
+    private filter: QuotesFilter = this.filtersService.getFilter<QuotesFilter>(StoreKeys.ETF_QUOTES_FILTER_KEY, {
         searchQuery: "",
         showUserShares: false
     });
@@ -125,9 +124,7 @@ export class StockQuotes extends UI {
         {text: "Компания", align: "left", value: "shortname"},
         {text: "Цена", align: "center", value: "price"},
         {text: "Изменение", align: "center", value: "change"},
-        {text: "Размер лота", align: "center", value: "lotsize", sortable: false},
         {text: "Валюта", align: "center", value: "currency", width: "50"},
-        {text: "Рейтинг", align: "center", value: "rating"},
         {text: "Профиль эмитента", align: "center", value: "profile", sortable: false},
         {text: "", value: "", align: "center", sortable: false}
     ];
@@ -141,7 +138,7 @@ export class StockQuotes extends UI {
         pages: 0
     };
 
-    private stocks: Stock[] = [];
+    private etf: StockTypeShare[] = [];
 
     async created(): Promise<void> {
         this.filter.showUserShares = this.localStorage.get<boolean>("showUserStocks", false);
@@ -156,7 +153,7 @@ export class StockQuotes extends UI {
         this.filter.searchQuery = "";
         this.filter.showUserShares = false;
         this.filter.currency = null;
-        await this.loadStocks();
+        await this.loadEtf();
     }
 
     /**
@@ -165,47 +162,47 @@ export class StockQuotes extends UI {
      */
     private async onTablePaginationChange(pagination: Pagination): Promise<void> {
         this.pagination = pagination;
-        await this.loadStocks();
+        await this.loadEtf();
     }
 
     private async changeShowUserShares(showUserShares: boolean): Promise<void> {
         this.localStorage.set<boolean>("showUserStocks", showUserShares);
         this.filter.showUserShares = showUserShares;
-        await this.loadStocks();
+        await this.loadEtf();
     }
 
     /**
      * Обрабатывает изменение фильтра
      */
     private async onFilterChange(): Promise<void> {
-        await this.loadStocks();
+        await this.loadEtf();
     }
 
     private async tableSearch(search: string): Promise<void> {
         this.filter.searchQuery = search;
-        await this.loadStocks();
+        await this.loadEtf();
     }
 
     @ShowProgress
-    private async loadStocks(): Promise<void> {
-        const response = await this.marketservice.loadStocks(this.pagination, this.filter);
-        this.stocks = response.content;
+    private async loadEtf(): Promise<void> {
+        const response = await this.marketservice.loadEtf(this.pagination, this.filter);
+        this.etf = response.content;
         this.pagination.totalItems = response.totalItems;
         this.pagination.pages = response.pages;
-        this.isEmptySearchResult = this.stocks.length === 0;
+        this.isEmptySearchResult = this.etf.length === 0;
     }
 
-    private async openTradeDialog(stock: Stock, operation: Operation): Promise<void> {
+    private async openTradeDialog(share: Share, operation: Operation): Promise<void> {
         await new AddTradeDialog().show({
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
-            share: stock,
+            share: share,
             operation,
-            assetType: AssetType.STOCK
+            assetType: AssetType.valueByName(share.shareType)
         });
     }
 
-    private currencyForPrice(stock: Stock): string {
+    private currencyForPrice(stock: StockTypeShare): string {
         return TradeUtils.currencySymbolByAmount(stock.price).toLowerCase();
     }
 }

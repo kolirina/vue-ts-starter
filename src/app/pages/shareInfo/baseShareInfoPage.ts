@@ -79,7 +79,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 </div>
                             </div>
                         </div>
-                        <div>
+                        <div class="info-share-page__btns">
                             <v-btn class="btn mt-1" @click.stop="openDialog">
                                 Добавить в портфель
                             </v-btn>
@@ -325,7 +325,8 @@ const MainStore = namespace(StoreType.MAIN);
                         Цена бумаги
                     </v-card-title>
                     <v-card-text>
-                        <line-chart :data="history" :events-chart-data="events" :balloon-title="share.ticker" :avg-line-value="portfolioAvgPrice"></line-chart>
+                        <line-chart :data="history" :events-chart-data="events" :balloon-title="share.ticker" :avg-line-value="portfolioAvgPrice"
+                            class="portfolioAvgPriceChart"></line-chart>
                     </v-card-text>
                 </v-card>
             </template>
@@ -452,16 +453,13 @@ export class BaseShareInfoPage extends UI {
     }
 
     private async openDialog(): Promise<void> {
-        const result = await new AddTradeDialog().show({
+        await new AddTradeDialog().show({
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
             share: this.share,
             operation: Operation.BUY,
             assetType: this.assetType
         });
-        if (result) {
-            await this.$emit("reloadPortfolio");
-        }
     }
 
     private async onShareSelect(share: Share): Promise<void> {

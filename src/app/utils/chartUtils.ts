@@ -21,10 +21,9 @@ import {
     SimpleChartData
 } from "../types/charts/types";
 import {Operation} from "../types/operation";
-import {BondPortfolioRow, Overview, StockPortfolioRow} from "../types/types";
+import {BondPortfolioRow, Overview, StockTypePortfolioRow} from "../types/types";
 import {CommonUtils} from "./commonUtils";
 import {DateFormat, DateUtils} from "./dateUtils";
-import {TradeUtils} from "./tradeUtils";
 
 export class ChartUtils {
 
@@ -56,7 +55,7 @@ export class ChartUtils {
         const data: any[] = [];
         const currentTotalCost = overview.stockPortfolio.rows.map(row => new BigMoney(row.currCost).amount.abs())
             .reduce((result: Decimal, current: Decimal) => result.add(current), new Decimal("0"));
-        const rowsBySector: { [sectorName: string]: StockPortfolioRow[] } = {};
+        const rowsBySector: { [sectorName: string]: StockTypePortfolioRow[] } = {};
         overview.stockPortfolio.rows.filter(row => Number(row.quantity) !== 0).forEach(row => {
             const sector = row.share.sector;
             const sectorName = sector.root ? sector.name : sector.parent.name;
@@ -153,9 +152,9 @@ export class ChartUtils {
         return eventsGrouped;
     }
 
-    static doStockPieChartData(overview: Overview): DataPoint[] {
+    static doStockTypePieChartData(rows: StockTypePortfolioRow[]): DataPoint[] {
         const data: DataPoint[] = [];
-        overview.stockPortfolio.rows.filter(value => new BigMoney(value.currCost).amount.toString() !== "0").forEach(row => {
+        rows.filter(value => new BigMoney(value.currCost).amount.toString() !== "0").forEach(row => {
             data.push({
                 name: row.share.shortname,
                 y: new Decimal(new BigMoney(row.currCost).amount.abs().toString()).toDP(2, Decimal.ROUND_HALF_UP).toNumber()
@@ -174,6 +173,9 @@ export class ChartUtils {
         const data: CustomDataPoint[] = [];
         const rows: Array<{ shareName: string, yearYield: string, profit: string }> = [
             ...overview.stockPortfolio.rows.map(row => {
+                return {shareName: row.share.shortname, yearYield: row.yearYield, profit: row.profit};
+            }),
+            ...overview.etfPortfolio.rows.map(row => {
                 return {shareName: row.share.shortname, yearYield: row.yearYield, profit: row.profit};
             }),
             ...overview.bondPortfolio.rows.map(row => {
@@ -544,7 +546,7 @@ export class ChartUtils {
                 backgroundColor: null,
                 style: {
                     fontFamily: "\"OpenSans\" sans-serif",
-                    fontSize: "12px"
+                    fontSize: "12px",
                 }
             },
             title: {

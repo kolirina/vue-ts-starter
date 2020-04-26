@@ -7,6 +7,7 @@ import {ShowProgress} from "../platform/decorators/showProgress";
 import {DividendAggregateInfo, DividendService} from "../services/dividendService";
 import {EventType} from "../types/eventType";
 import {Portfolio} from "../types/types";
+import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {BaseDividendsPage} from "./baseDividendsPage";
 
@@ -25,6 +26,8 @@ export class DividendsPage extends UI {
     private portfolio: Portfolio;
     @MainStore.Getter
     private sideBarOpened: boolean;
+    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
+    private reloadPortfolio: (id: number) => Promise<void>;
     @Inject
     private dividendService: DividendService;
     /** Информация по дивидендам */
@@ -36,7 +39,10 @@ export class DividendsPage extends UI {
      */
     async created(): Promise<void> {
         await this.loadDividendAggregateInfo();
-        UI.on(EventType.TRADE_CREATED, async () => await this.loadDividendAggregateInfo());
+        UI.on(EventType.TRADE_CREATED, async () => {
+            await this.reloadPortfolio(this.portfolio.id);
+            await this.loadDividendAggregateInfo();
+        });
     }
 
     beforeDestroy(): void {
