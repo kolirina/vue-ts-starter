@@ -7,6 +7,7 @@ import {UI, Watch} from "../../app/ui";
 import {AverageAnnualYieldChart} from "../../components/charts/averageAnnualYield";
 import {PieChart} from "../../components/charts/pieChart";
 import {SimpleLineChart} from "../../components/charts/simpleLineChart";
+import {EmptyPortfolioStub} from "../../components/emptyPortfolioStub";
 import {Filters} from "../../platform/filters/Filters";
 import {Storage} from "../../platform/services/storage";
 import {AdviceService} from "../../services/adviceService";
@@ -30,6 +31,7 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-container class="adviser-wrap">
+            <empty-portfolio-stub v-if="isEmptyBlockShowed"></empty-portfolio-stub>
             <expanded-panel v-show="showAnalyticsPanel" :value="$uistate.adviserDiagramPanel" :with-menu="false" :state="$uistate.ADVISER_DIAGRAM_PANEL">
                 <template #header>Аналитическая сводка по портфелю</template>
                 <v-layout wrap class="adviser-diagram-section mt-3">
@@ -107,8 +109,8 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-card-text>
             </expanded-panel>
 
-            <expanded-panel v-if="showInfoPanel && false" :value="$uistate.analyticsInfoPanel" :withMenu="false" :state="$uistate.ANALYTICS_INFO_PANEL" class="mt-3">
-                <template #header>Информация</template>
+            <expanded-panel v-show="showInfoPanel && false" :value="$uistate.analyticsInfoPanel" :withMenu="false" :state="$uistate.ANALYTICS_INFO_PANEL" class="mt-3">
+                <template #header>Информация об ИИС</template>
 
                 <v-layout wrap class="adviser-diagram-section mt-3">
                     <v-flex xs12 sm12 md12 lg6 class="pr-2 left-section">
@@ -146,7 +148,7 @@ const MainStore = namespace(StoreType.MAIN);
             </expanded-panel>
         </v-container>
     `,
-    components: {ChooseRisk, Preloader, AnalysisResult, EmptyAdvice, AverageAnnualYieldChart, SimpleLineChart}
+    components: {EmptyPortfolioStub, ChooseRisk, Preloader, AnalysisResult, EmptyAdvice, AverageAnnualYieldChart, SimpleLineChart}
 })
 export class AnalyticsPage extends UI {
 
@@ -206,8 +208,8 @@ export class AnalyticsPage extends UI {
         return Filters.currencySymbolByCurrency(this.portfolio.portfolioParams.viewCurrency);
     }
 
-    private get hasTrades(): boolean {
-        return this.portfolio.overview.totalTradesCount > 0;
+    private get isEmptyBlockShowed(): boolean {
+        return this.portfolio && this.portfolio.overview.totalTradesCount === 0;
     }
 
     private get showInfoPanel(): boolean {

@@ -164,7 +164,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <div class="attachments" v-if="importProviderFeatures">
                         <file-drop-area @drop="onFileAdd" class="attachments-file-drop">
                             <div v-if="selectedProvider" class="attachments-file-drop__content">
-                                Перетащите файл. Допустимые расширения файлов: <b>{{ selectedProvider.allowedExtensions.join(", ") }}</b>
+                                Перетащите файл. <span v-if="providerAllowedExtensions">Допустимые расширения файлов: <b>{{ providerAllowedExtensions }}</b></span>
                             </div>
                         </file-drop-area>
                     </div>
@@ -198,16 +198,16 @@ const MainStore = namespace(StoreType.MAIN);
                                 </file-link>
                             </div>
                         </v-layout>
-                        <div v-if="importProviderFeatures && files.length" class="fs12-opacity mt-4">
-                            Допустимые расширения файлов: {{ selectedProvider.allowedExtensions.join(", ") }}
+                        <div v-if="importProviderFeatures && files.length && providerAllowedExtensions" class="fs12-opacity mt-4">
+                            Допустимые расширения файлов: {{ providerAllowedExtensions }}
                         </div>
                         <v-layout class="margT20" align-center justify-space-between>
                             <div>
                                 <file-link v-if="importProviderFeatures && !files.length" @select="onFileAdd" :accept="allowedExtensions" class="select-file-btn">
                                     Выбрать файл
                                 </file-link>
-                                <div v-if="importProviderFeatures && !files.length" class="fs12-opacity mt-4">
-                                    Допустимые расширения файлов: {{ selectedProvider.allowedExtensions.join(", ") }}
+                                <div v-if="importProviderFeatures && !files.length && providerAllowedExtensions" class="fs12-opacity mt-4">
+                                    Допустимые расширения файлов: {{ providerAllowedExtensions }}
                                 </div>
                             </div>
 
@@ -301,6 +301,7 @@ export class ImportPage extends UI {
             this.onSelectProvider(userProvider);
         } else {
             this.selectedProvider = null;
+            this.importProviderFeatures = null;
         }
     }
 
@@ -470,6 +471,13 @@ export class ImportPage extends UI {
 
     private get isFinam(): boolean {
         return this.selectedProvider === DealsImportProvider.FINAM;
+    }
+
+    private get providerAllowedExtensions(): string {
+        if (this.selectedProvider?.allowedExtensions) {
+            return this.selectedProvider?.allowedExtensions.join(", ");
+        }
+        return "";
     }
 
     private changePortfolioParams(portfolioParams: PortfolioParams): void {
