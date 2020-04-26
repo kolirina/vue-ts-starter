@@ -112,7 +112,7 @@ const MainStore = namespace(StoreType.MAIN);
             <expanded-panel v-show="showInfoPanel && false" :value="$uistate.analyticsInfoPanel" :withMenu="false" :state="$uistate.ANALYTICS_INFO_PANEL" class="mt-3">
                 <template #header>Информация об ИИС</template>
 
-                <v-layout wrap class="adviser-diagram-section mt-3">
+                <v-layout v-if="showInfoPanel" wrap class="adviser-diagram-section mt-3">
                     <v-flex xs12 sm12 md12 lg6 class="pr-2 left-section">
                         <v-layout wrap align-center justify-center row fill-height>
                             <v-flex class="pa-4">
@@ -127,8 +127,10 @@ const MainStore = namespace(StoreType.MAIN);
                                             <v-icon>fas fa-info-circle</v-icon>
                                         </sup>
                                         <span>
-                                            <div>Сумма внесенных на ИИС денежных средств с начала года:
-                                                {{ totalDepositInCurrentYear.amount | number }} ₽</div>
+                                            <div>
+                                                Сумма внесенных на ИИС денежных средств с начала года:
+                                                {{ totalDepositInCurrentYear.amount | number }} ₽
+                                            </div>
                                             <div>Остаток для внесения на ИИС: {{ getCurrentYearRemainder | number }} ₽</div>
                                         </span>
                                     </v-tooltip>
@@ -213,7 +215,7 @@ export class AnalyticsPage extends UI {
     }
 
     private get showInfoPanel(): boolean {
-        return this.portfolio.portfolioParams.accountType === PortfolioAccountType.IIS && this.totalDepositInCurrentYear?.amount.isPositive();
+        return this.portfolio.portfolioParams.accountType === PortfolioAccountType.IIS && this.totalDepositInCurrentYear && this.totalDepositInCurrentYear?.amount.isPositive();
     }
 
     private get currentYearPercent(): number {
