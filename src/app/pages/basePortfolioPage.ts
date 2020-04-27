@@ -394,7 +394,8 @@ export class BasePortfolioPage extends UI {
     private blockNotEmpty(type: BlockType): boolean {
         switch (type) {
             case BlockType.HISTORY_PANEL:
-                return this.overview.bondPortfolio.rows.length !== 0 || this.overview.stockPortfolio.rows.length !== 0 || this.overview.assetPortfolio.rows.length !== 0;
+                return this.overview.bondPortfolio.rows.length !== 0 || this.overview.stockPortfolio.rows.length !== 0 ||
+                    this.overview.assetPortfolio.rows.length !== 0 || this.overview.etfPortfolio.rows.length !== 0;
             case BlockType.BOND_PORTFOLIO:
                 return this.overview.bondPortfolio.rows.length > 0;
             case BlockType.STOCK_PORTFOLIO:
