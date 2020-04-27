@@ -44,6 +44,7 @@ const MainStore = namespace(StoreType.MAIN);
                 <additional-pagination :pagination="pagination" @update:pagination="onTablePaginationChange"></additional-pagination>
             </div>
             <common-asset-quotes-filter :filter="filter" @input="tableSearch" @filter="onFilterChange" :min-length="1" placeholder="Поиск"
+                                        :search-timeout="500"
                                         :store-key="StoreKeys.COMMON_QUOTES_FILTER_KEY"></common-asset-quotes-filter>
 
             <empty-search-result v-if="isEmptySearchResult" @resetFilter="resetFilter"></empty-search-result>
