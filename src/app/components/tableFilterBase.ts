@@ -51,7 +51,7 @@ import {Prop, UI} from "../app/ui";
                 <v-icon @click.native="toggleSearch">search</v-icon>
                 <v-slide-x-transition>
                     <v-text-field v-if="showSearch" :value="searchQueryMutated" @input="onSearch" @click:clear="onClear" @blur="hideInput"
-                                :label="searchLabel" single-line hide-details autofocus></v-text-field>
+                                  :label="searchLabel" single-line hide-details autofocus></v-text-field>
                 </v-slide-x-transition>
             </v-layout>
         </div>
@@ -129,7 +129,7 @@ export class TableFilterBase extends UI {
     }
 
     private onSearch(value: string): void {
-        this.searchQueryMutated = value;
+        this.searchQueryMutated = value?.trim();
         clearTimeout(this.currentTimer);
         this.currentTimer = setTimeout((): void => {
             if (!this.searchQueryMutated.length) {

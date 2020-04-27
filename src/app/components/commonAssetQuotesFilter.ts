@@ -28,7 +28,8 @@ import {TableFilterBase} from "./tableFilterBase";
     // language=Vue
     template: `
         <v-layout align-center class="pl-2">
-            <table-filter-base @search="onSearch" :search-query="filter.searchQuery" :search-label="placeholder" :min-length="minLength" :is-default="isDefaultFilter">
+            <table-filter-base @search="onSearch" :search-query="filter.searchQuery" :search-label="placeholder"
+                               :search-timeout="searchTimeout" :min-length="minLength" :is-default="isDefaultFilter">
                 <div class="trades-filter">
                     <div class="trades-filter__label mb-0">Валюта бумаги</div>
                     <div class="trades-filter__currencies">
@@ -64,6 +65,9 @@ export class CommonAssetQuotesFilter extends UI {
     /** Ключ для хранения состояния */
     @Prop({required: true, type: String})
     private storeKey: StoreKeys;
+    /** Задержка поиска */
+    @Prop({default: 0, type: Number, required: false})
+    private searchTimeout: number;
     @Inject
     private filtersService: FiltersService;
 
@@ -82,6 +86,7 @@ export class CommonAssetQuotesFilter extends UI {
 
     private onSearch(searchQuery: string): void {
         this.$emit("input", searchQuery);
+        this.filter.searchQuery = searchQuery;
         this.saveFilter();
     }
 

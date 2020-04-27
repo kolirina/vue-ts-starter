@@ -28,7 +28,8 @@ import {TableFilterBase} from "./tableFilterBase";
     // language=Vue
     template: `
         <v-layout align-center class="pl-2">
-            <table-filter-base @search="onSearch" :search-query="filter.searchQuery" :search-label="placeholder" :min-length="minLength" :is-default="isDefaultFilter">
+            <table-filter-base @search="onSearch" :search-query="filter.searchQuery" :search-label="placeholder" :min-length="minLength"
+                               :search-timeout="500" :is-default="isDefaultFilter">
                 <div class="trades-filter">
                     <div class="trades-filter__label mb-0">Валюта бумаги</div>
                     <div class="trades-filter__currencies">
@@ -96,32 +97,33 @@ export class QuotesFilterTable extends UI {
 
     private onChange(): void {
         this.$emit("changeShowUserShares", this.filter.showUserShares);
-        this.saveFilter();
+        this.saveAndEmitFilter();
     }
 
     private onSearch(searchQuery: string): void {
-        this.saveFilter();
+        this.$emit("input", searchQuery);
+        this.filtersService.saveFilter(this.storeKey, this.filter);
     }
 
     private onCurrencyChange(): void {
-        this.saveFilter();
+        this.saveAndEmitFilter();
     }
 
     private onTypeChange(): void {
-        this.saveFilter();
+        this.saveAndEmitFilter();
     }
 
     private resetCurrency(): void {
         this.filter.currency = null;
-        this.saveFilter();
+        this.saveAndEmitFilter();
     }
 
     private resetType(): void {
         this.filter.bondType = null;
-        this.saveFilter();
+        this.saveAndEmitFilter();
     }
 
-    private saveFilter(): void {
+    private saveAndEmitFilter(): void {
         this.$emit("filter", this.filter);
         this.filtersService.saveFilter(this.storeKey, this.filter);
     }
