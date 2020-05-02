@@ -34,13 +34,14 @@ import {FeedbackDialog} from "../feedbackDialog";
             <v-card class="dialog-wrap import-dialog-wrapper">
                 <v-layout column justify-space-between class="min-height-wrapper">
                     <div>
-                        <v-icon class="closeDialog" @click.native="close">close</v-icon>
+                        <v-icon v-if="!shareAliases.length" class="closeDialog" @click.native="close">close</v-icon>
                         <v-card-title class="import-dialog-wrapper__title">
                             <span class="import-dialog-wrapper__title-text">Результаты импорта</span>
                         </v-card-title>
                         <v-card-text class="import-dialog-wrapper__description selectable">
                             <div class="import-dialog-wrapper__description-text import-default-text">
-                                При импортировании отчета возникли ошибки, отчет не был импортирован полностью. Чтобы завершить формирование пожалуйста внесите остатки вручную.
+                                При импортировании отчета возникли ошибки, отчет не был импортирован полностью.
+                                Чтобы завершить формирование, пожалуйста, внесите остатки вручную.
                             </div>
                             <video-link class="margB20 fs13">
                                 <template #foreword>
@@ -82,7 +83,7 @@ import {FeedbackDialog} from "../feedbackDialog";
                         </v-card-text>
                         <v-card-text class="import-dialog-wrapper__description selectable">
                             <div class="import-dialog-wrapper__description-text import-default-text">
-                                Мы не смогли распознать следующие бумаги из отчета, пожалуйста укажите соответствие каждого названия к бумаге на сервисе,
+                                Мы не смогли распознать следующие бумаги из отчета, пожалуйста, укажите соответствие каждого названия к бумаге на сервисе,
                                 и тогда ваш отчет будет импортирован полностью.
                                 <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" bottom>
                                     <sup class="custom-tooltip" slot="activator">

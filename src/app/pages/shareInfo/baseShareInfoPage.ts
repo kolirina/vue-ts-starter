@@ -31,10 +31,10 @@ import {TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
 import {BaseChartDot, Dot, HighStockEventsGroup} from "../../types/charts/types";
 import {Operation} from "../../types/operation";
-import {ErrorInfo, Portfolio, Share, ShareDynamic, ShareType} from "../../types/types";
+import {Asset, ErrorInfo, Portfolio, Share, ShareDynamic, ShareType, StockTypeShare} from "../../types/types";
 import {ChartUtils} from "../../utils/chartUtils";
-import {TradeUtils} from "../../utils/tradeUtils";
 import {StoreType} from "../../vuex/storeType";
+import {AssetCategory} from "../../services/assetService";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -68,7 +68,7 @@ const MainStore = namespace(StoreType.MAIN);
                             <div v-if="share.sector">
                                 <div class="info-share-page__name-stock-block__sector-rating">
                                     <span class="info-share-page__name-stock-block__subtitle">
-                                        Сектор - {{ share.sector.name }}
+                                        {{ sectorDescription }}
                                     </span>
                                     <span v-if="share.sector.parent" class="info-share-page__name-stock-block__subtitle">
                                         ,&nbsp;родительский сектор: {{ share.sector.parent.name }}
@@ -326,7 +326,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-card-title>
                     <v-card-text>
                         <line-chart :data="history" :events-chart-data="events" :balloon-title="share.ticker" :avg-line-value="portfolioAvgPrice"
-                            class="portfolioAvgPriceChart"></line-chart>
+                                    class="portfolioAvgPriceChart"></line-chart>
                     </v-card-text>
                 </v-card>
             </template>
@@ -500,6 +500,14 @@ export class BaseShareInfoPage extends UI {
 
     private get isStockAsset(): boolean {
         return this.assetType === AssetType.STOCK;
+    }
+
+    private get sectorDescription(): string {
+        if (this.share.shareType === ShareType.ASSET) {
+            const assetCategory: AssetCategory = AssetCategory.valueByName((this.share as Asset).category);
+            return assetCategory == null ? "Активы" : assetCategory.description;
+        }
+        return (this.share as StockTypeShare).sector.name;
     }
 
     /**

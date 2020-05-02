@@ -16,7 +16,7 @@ export class ExportService {
      */
     async exportTrades(portfolioId: number): Promise<any> {
         const response = await this.http.get<Response>(`/export/${portfolioId}`);
-        const fileName = this.getFileName(response.headers, portfolioId, ExportType.TRADES);
+        const fileName = this.getFileName(response.headers, portfolioId, ExportType.TRADES_CSV);
         await this.download(response, fileName);
     }
 
@@ -64,11 +64,17 @@ export class ExportService {
      */
     private getFileName(headers: Headers, portfolioId: number, exportType: ExportType): string {
         try {
-            const contentDisposition = (headers as any)["content-disposition"];
-            return contentDisposition.substring(contentDisposition.indexOf("=") + 1).trim();
+            for (const entry of headers.entries()) {
+                if (entry[0] === "content-disposition") {
+                    const contentDisposition = entry[1];
+                    if (contentDisposition) {
+                        return contentDisposition.substring(contentDisposition.indexOf("=") + 1).trim();
+                    }
+                }
+            }
         } catch (e) {
-            return `${exportType.toLowerCase()}_portfolio_${portfolioId}.${exportType === ExportType.TRADES ? "csv" : "xlsx"}`;
         }
+        return `${exportType.toLowerCase()}_portfolio_${portfolioId}.${exportType === ExportType.TRADES_CSV ? "csv" : "xlsx"}`;
     }
 
     /**
@@ -89,6 +95,7 @@ export class ExportService {
 /** Тип отчета для экспорта */
 export enum ExportType {
     TRADES = "TRADES",
+    TRADES_CSV = "TRADES_CSV",
     STOCKS = "STOCKS",
     ETF = "ETF",
     BONDS = "BONDS",
