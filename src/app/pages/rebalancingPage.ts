@@ -401,7 +401,7 @@ export class RebalancingPage extends UI {
             return "";
         }
         if (TariffUtils.isTariffExpired(this.clientInfo.user) && this.calculateRows.indexOf(row) % 2 === 0) {
-            return "Ваш тариф истек. Пожалуйста продлите подписку, чтобы увидеть все данные";
+            return "Ваш тариф истек. Пожалуйста, продлите подписку, чтобы увидеть все данные";
         }
         const isBuyAction = Number(this.calculationsInLots ? row.lots : row.pieces) > 0;
         const result: string[] = [`<span class="${isBuyAction ? "green--text" : "red--text"}">`];

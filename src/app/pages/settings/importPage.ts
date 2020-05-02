@@ -312,7 +312,7 @@ export class ImportPage extends UI {
     private onFileAdd(fileList: File[]): void {
         let filtered = fileList;
         if (fileList.length > 1) {
-            this.$snotify.warning("Пожалуйста загружайте по одному файлу для более точных результатов импорта.");
+            this.$snotify.warning("Пожалуйста, загружайте по одному файлу для более точных результатов импорта.");
             filtered = [fileList[0]];
         }
         const isValid = FileUtils.checkExtension(filtered[0]);

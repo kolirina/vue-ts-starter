@@ -43,7 +43,7 @@ const MainStore = namespace(StoreType.MAIN);
                         <inplace-input name="email" :value="email" :max-length="120" @input="onEmailChange" class="mr-3 mb-2">
                             <v-tooltip v-if="!clientInfo.user.emailConfirmed" content-class="custom-tooltip-wrap" max-width="250px" slot="afterText" top>
                                 <v-icon slot="activator" class="profile-not-confirmed-email">fas fa-exclamation-triangle</v-icon>
-                                <span>Адрес не подтвержден. Пожалуйста подтвердите Ваш адрес эл.почты что бы воспользоваться всеми функциями сервиса.</span>
+                                <span>Адрес не подтвержден. Пожалуйста, подтвердите Ваш адрес эл.почты что бы воспользоваться всеми функциями сервиса.</span>
                             </v-tooltip>
                         </inplace-input>
                         <v-btn v-if="!clientInfo.user.emailConfirmed" @click="verifyEmail" color="#EBEFF7">

@@ -184,7 +184,7 @@ export class ImportErrorsDialog extends CustomDialog<ImportErrorsDialogData, Sha
      * @param newTicket название новой бумаги из компонента поиска
      */
     private async onRequestNewShare(newTicket: string): Promise<void> {
-        const message = `Пожалуйста добавьте бумагу ${newTicket} в систему.`;
+        const message = `Пожалуйста, добавьте бумагу ${newTicket} в систему.`;
         await new FeedbackDialog().show({clientInfo: this.data.clientInfo, message: message});
     }
 

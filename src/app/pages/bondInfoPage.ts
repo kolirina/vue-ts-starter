@@ -336,12 +336,12 @@ export class BondInfoPage extends UI {
      * @param newTicket название новой бумаги из компонента поиска
      */
     private async onRequestNewShare(newTicket: string): Promise<void> {
-        const message = `Пожалуйста добавьте бумагу ${newTicket} в систему.`;
+        const message = `Пожалуйста, добавьте бумагу ${newTicket} в систему.`;
         await new FeedbackDialog().show({clientInfo: this.clientInfo.user, message: message});
     }
 
     private async openFeedBackDialog(): Promise<void> {
-        const message = `Пожалуйста добавьте бумагу ${this.$route.params.isin} в систему.`;
+        const message = `Пожалуйста, добавьте бумагу ${this.$route.params.isin} в систему.`;
         await new FeedbackDialog().show({clientInfo: this.clientInfo.user, message: message});
     }
 }

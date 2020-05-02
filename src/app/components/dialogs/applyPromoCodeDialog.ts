@@ -64,7 +64,7 @@ export class ApplyPromoCodeDialog extends CustomDialog<void, BtnReturn> {
     @DisableConcurrentExecution
     private async applyPromoCode(): Promise<void> {
         if (CommonUtils.isBlank(this.promoCode)) {
-            this.$snotify.warning("Пожалуйста введите промокод");
+            this.$snotify.warning("Пожалуйста, введите промокод");
             return;
         }
         await this.tariffService.applyPromoCode(this.promoCode);
