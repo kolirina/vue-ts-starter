@@ -24,6 +24,7 @@ import {FeedbackDialog} from "../../components/dialogs/feedbackDialog";
 import {StockRate} from "../../components/stockRate";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {Filters} from "../../platform/filters/Filters";
+import {AssetCategory} from "../../services/assetService";
 import {ClientInfo} from "../../services/clientService";
 import {MarketService} from "../../services/marketService";
 import {NotificationType} from "../../services/notificationsService";
@@ -34,7 +35,6 @@ import {Operation} from "../../types/operation";
 import {Asset, ErrorInfo, Portfolio, Share, ShareDynamic, ShareType, StockTypeShare} from "../../types/types";
 import {ChartUtils} from "../../utils/chartUtils";
 import {StoreType} from "../../vuex/storeType";
-import {AssetCategory} from "../../services/assetService";
 
 const MainStore = namespace(StoreType.MAIN);
 
