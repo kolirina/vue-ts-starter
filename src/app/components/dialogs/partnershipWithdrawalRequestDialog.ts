@@ -81,11 +81,11 @@ import {PartnershipWithdrawalRequest, PromoCodeService} from "../../services/pro
                                 </v-flex>
 
                                 <!-- Признак согласия, если раньше не соглашался -->
-                                <v-flex v-if="!clientInfo.partnerShipAgreement" xs12 sm12>
+                                <v-flex v-if="!clientInfo.partnershipAgreement" xs12 sm12>
                                     <v-checkbox slot="activator" v-model="agree" class="mt-4" v-validate="'required'" hide-details>
                                         <template #label>
                                         <span>
-                                            Я ознакомился с <a href="https://intelinvest.ru/partnership-agreement">Партнерским договором Реферальной Программы</a>
+                                            Я ознакомился с <a :href="partnershipUrl">Партнерским договором Реферальной Программы</a>
                                         </span>
                                         </template>
                                     </v-checkbox>
@@ -151,6 +151,7 @@ export class PartnershipWithdrawalRequestDialog extends CustomDialog<string, num
                 this.promoCodeService.createPartnershipWithdrawalRequest(this.withdrawalRequest),
                 this.clientService.setPartnerShipAgreement()
             ]);
+            this.clientInfo.partnershipAgreement = true;
             this.close(withdrawalRequestNumber);
         } finally {
             this.processState = false;
@@ -159,6 +160,10 @@ export class PartnershipWithdrawalRequestDialog extends CustomDialog<string, num
 
     private get isValid(): boolean {
         return this.withdrawalRequest && !!this.withdrawalRequest.amount && !!this.withdrawalRequest.contact && !!this.withdrawalRequest.fio && !!this.withdrawalRequest.inn &&
-            !!this.withdrawalRequest.account && !!this.withdrawalRequest.bankBic && (this.clientInfo.partnerShipAgreement || this.agree);
+            !!this.withdrawalRequest.account && !!this.withdrawalRequest.bankBic && (this.clientInfo.partnershipAgreement || this.agree);
+    }
+
+    private get partnershipUrl(): string {
+        return `${window.location.protocol}//${window.location.host}/partnership-agreement`;
     }
 }

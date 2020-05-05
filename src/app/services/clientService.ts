@@ -226,7 +226,7 @@ export interface BaseClient {
     /** Признак необходимости отображения привественного тура пользователю */
     needShowHelpDeskWidget: boolean;
     /** Признак согласия с условиями партнерской программы */
-    partnerShipAgreement: boolean;
+    partnershipAgreement: boolean;
 }
 
 export interface ClientResponse extends BaseClient {

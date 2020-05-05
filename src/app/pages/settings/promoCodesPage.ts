@@ -142,7 +142,7 @@ export class PromoCodesPage extends UI {
         const result = await new PartnerProgramJoiningDialog().show();
         if (result === BtnReturn.YES) {
             await this.becamePartner();
-            this.clientInfo.user.partnerShipAgreement = true;
+            this.clientInfo.user.partnershipAgreement = true;
             this.clientInfo.user.referralAwardType = "PAYMENT";
             this.$snotify.info("Вы успешно зарегистрированы в партнерской программе");
         }

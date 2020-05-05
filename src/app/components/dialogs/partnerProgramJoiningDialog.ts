@@ -38,7 +38,7 @@ import {BtnReturn, CustomDialog} from "../../platform/dialogs/customDialog";
                     <v-checkbox slot="activator" v-model="agree" class="mt-4" hide-details>
                         <template #label>
                             <span>
-                                Я ознакомился с <a href="https://intelinvest.ru/partnership-agreement">Партнерским договором Реферальной Программы</a>
+                                Я ознакомился с <a :href="partnershipUrl">Партнерским договором Реферальной Программы</a>
                             </span>
                         </template>
                     </v-checkbox>
@@ -52,5 +52,10 @@ import {BtnReturn, CustomDialog} from "../../platform/dialogs/customDialog";
 })
 export class PartnerProgramJoiningDialog extends CustomDialog<void, BtnReturn> {
 
+    /** Признак согласия с условиями программы */
     private agree: boolean = false;
+
+    private get partnershipUrl(): string {
+        return `${window.location.protocol}//${window.location.host}/partnership-agreement`;
+    }
 }
