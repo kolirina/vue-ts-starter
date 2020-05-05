@@ -25,6 +25,14 @@ export class PromoCodeService {
     async getPromoCodeStatistics(): Promise<PromoCodeStatistics> {
         return this.http.get<PromoCodeStatistics>(`/promo-code/statistics`);
     }
+
+    /**
+     * Создает запрос на вывод партнерского вознаграждения
+     * @returns идентификатор созданного запроса
+     */
+    async createPartnershipWithdrawalRequest(withdrawalRequest: PartnershipWithdrawalRequest): Promise<number> {
+        return this.http.post<number>(`/promo-code/withdrawal-request`, withdrawalRequest);
+    }
 }
 
 /** Статистика по промокоду пользователя */
@@ -41,4 +49,20 @@ export interface PromoCodeStatistics {
     referralCount: number;
     /** всего пользователей, которые хоть раз оплачивали */
     hasPaymentsReferralCount: number;
+}
+
+/** Запрос на вывод партнерского вознаграждения */
+export interface PartnershipWithdrawalRequest {
+    /** Всего оплачено пользователями от партнера */
+    amount: string;
+    /** Всего оплачено пользователями от партнера */
+    contact: string;
+    /** Всего оплачено пользователями от партнера */
+    fio: string;
+    /** Всего оплачено пользователями от партнера */
+    inn: string;
+    /** Всего оплачено пользователями от партнера */
+    account: string;
+    /** Всего оплачено пользователями от партнера */
+    bankBic: string;
 }

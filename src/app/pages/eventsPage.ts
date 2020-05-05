@@ -374,9 +374,9 @@ export class EventsPage extends UI {
 
     private async loadAllData(): Promise<void> {
         await Promise.all([
-                await this.updateEvents(),
-                await this.loadDividendNews(),
-                await this.loadCalendarEvents(),
+                this.updateEvents(),
+                this.loadDividendNews(),
+                this.loadCalendarEvents(),
             ]
         );
     }

@@ -1,9 +1,12 @@
+import {Decimal} from "decimal.js";
 import {Inject} from "typescript-ioc";
 import {namespace} from "vuex-class/lib/bindings";
 import {Component, UI} from "../../app/ui";
-import {PartnerProgramRulesDialog} from "../../components/dialogs/partnerProgramRulesDialog";
+import {PartnerProgramJoiningDialog} from "../../components/dialogs/partnerProgramJoiningDialog";
+import {PartnershipWithdrawalRequestDialog} from "../../components/dialogs/partnershipWithdrawalRequestDialog";
 import {ExpandedPanel} from "../../components/expandedPanel";
 import {ShowProgress} from "../../platform/decorators/showProgress";
+import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {ClientInfo, ClientService} from "../../services/clientService";
 import {PromoCodeService, PromoCodeStatistics} from "../../services/promoCodeService";
 import {StoreType} from "../../vuex/storeType";
@@ -44,23 +47,24 @@ const MainStore = namespace(StoreType.MAIN);
                                     </div>
                                 </div>
                                 <div class="rewards">
-                                    <div class="promo-codes__subtitle">Выберите тип вознаграждения</div>
-                                    <v-radio-group v-model="clientInfo.user.referralAwardType" @change="onReferralAwardTypeChange" class="radio-horizontal">
-                                        <v-radio label="Подписка" value="SUBSCRIPTION"></v-radio>
-                                        <v-radio label="Платеж" value="PAYMENT"></v-radio>
-                                    </v-radio-group>
-                                    <div v-if="clientInfo.user.referralAwardType === 'SUBSCRIPTION'">
-                                        После первой оплаты приглашенного Вами<br>
-                                        пользователя Вы получите месяц подписки бесплатно.
-                                    </div>
-                                    <div v-if="clientInfo.user.referralAwardType === 'PAYMENT'">
-                                        Вы будете получать 30% от суммы оплат<br>
-                                        каждого приглашенного Вами пользователя.<br>
-                                        Вывод от 5000 <span class="rewards-currency rub"></span>, через Вашего менеджера
-                                    </div>
-                                    <div v-if="clientInfo.user.referralAwardType === 'PAYMENT'" class="mt-3">
-                                        <a @click.stop="openPartnerProgramRulesDialog">Правила Партнерской программы</a>
-                                    </div>
+                                    <template v-if="clientInfo.user.referralAwardType === 'SUBSCRIPTION'">
+                                        <div class="promo-codes__subtitle">Ваше вознаграждение</div>
+                                        <div>
+                                            Вы получаете месяц бесплатной подписки после оплаты каждого приглашенного пользователя.
+                                        </div>
+                                        <div class="mt-3">
+                                            <div class="promo-codes__subtitle">Предлагаем стать Партнером</div>
+                                            <div class="body-2">
+                                                У вас свой блог или канал?<br/>
+                                                Станьте нашим партнером и получайте до 150 000 руб. в месяц
+                                            </div>
+                                            <div class="body-1">
+                                                Платим 30% с каждой оплаты приглашенного пользователя в течение 2 лет.<br/>
+                                                Выделяем персонального менеджера.
+                                            </div>
+                                        </div>
+                                        <a @click.stop="openPartnerProgramJoiningDialog">Стать партнером</a>
+                                    </template>
                                     <div v-if="clientInfo.user.referralAwardType === 'PAYMENT'" class="mt-3">
                                         <div>
                                             <div class="promo-codes__subtitle mb-2">Связаться по вопросам сотрудничества</div>
@@ -70,6 +74,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             ВК: <a href="https://vk.com/intelinvest_partner" target="_blank" class="decorationNone">https://vk.com/intelinvest_partner</a><br/>
                                             Email: <a href="mailto:partner@intelinvest.ru" target="_blank" class="decorationNone">partner@intelinvest.ru</a><br/>
                                         </div>
+                                        <v-btn v-if="showRequestWithdrawal" class="mt-3" primary @click.stop="requestWithdrawal">Запрос на вывод вознаграждения</v-btn>
                                     </div>
                                 </div>
                             </div>
@@ -86,15 +91,15 @@ const MainStore = namespace(StoreType.MAIN);
                                     </div>
                                     <template v-if="clientInfo.user.referralAwardType === 'PAYMENT'">
                                         <div>
-                                            <span>Всего заработано:</span>{{ promoCodeStatistics.referrerPaymentsTotal }}
+                                            <span>Всего заработано:</span>{{ promoCodeStatistics.referrerPaymentsTotal | number }}
                                             <span class="rewards-currency rub"></span>
                                         </div>
                                         <div>
-                                            <span>Всего выплачено:</span>{{ promoCodeStatistics.referrerPaymentsTotalPaid }}
+                                            <span>Всего выплачено:</span>{{ promoCodeStatistics.referrerPaymentsTotalPaid | number }}
                                             <span class="rewards-currency rub"></span>
                                         </div>
                                         <div class="statistics__label">
-                                            <span>Остаток для выплаты:</span>{{ promoCodeStatistics.referrerPaymentsTotalUnpaid }}
+                                            <span>Остаток для выплаты:</span>{{ promoCodeStatistics.referrerPaymentsTotalUnpaid | number }}
                                             <span class="rewards-currency rub"></span>
                                         </div>
                                     </template>
@@ -130,13 +135,32 @@ export class PromoCodesPage extends UI {
         this.promoCodeStatistics = await this.promoCodeService.getPromoCodeStatistics();
     }
 
-    @ShowProgress
-    private async onReferralAwardTypeChange(): Promise<void> {
-        await this.promoCodeService.changeReferralAwardType(this.clientInfo.user.referralAwardType);
+    /**
+     * Открывает диалог принятия условия партнерской программы
+     */
+    private async openPartnerProgramJoiningDialog(): Promise<void> {
+        const result = await new PartnerProgramJoiningDialog().show();
+        if (result === BtnReturn.YES) {
+            await this.becamePartner();
+            this.clientInfo.user.partnerShipAgreement = true;
+            this.clientInfo.user.referralAwardType = "PAYMENT";
+            this.$snotify.info("Вы успешно зарегистрированы в партнерской программе");
+        }
     }
 
-    private async openPartnerProgramRulesDialog(): Promise<void> {
-        await new PartnerProgramRulesDialog().show();
+    @ShowProgress
+    private async becamePartner(): Promise<void> {
+        await Promise.all([
+            this.clientService.setPartnerShipAgreement(),
+            this.promoCodeService.changeReferralAwardType("PAYMENT")
+        ]);
+    }
+
+    private async requestWithdrawal(): Promise<void> {
+        const result = await new PartnershipWithdrawalRequestDialog().show(this.promoCodeStatistics.referrerPaymentsTotalUnpaid);
+        if (result) {
+            this.$snotify.info("Запрос на вывод средств успешно зарегистрирован, идентификатор запроса: " + result);
+        }
     }
 
     private copyPromoCode(): void {
@@ -152,5 +176,12 @@ export class PromoCodesPage extends UI {
      */
     private get refLink(): string {
         return `${window.location.protocol}//${window.location.host}/?registration=true&ref=${this.clientInfo.user.id}`;
+    }
+
+    /**
+     * Возвращает признак отображения кнопки Запрос на вывод вознаграждения, если причитаемая сумма больше или равно 5000 рублей
+     */
+    private get showRequestWithdrawal(): boolean {
+        return this.promoCodeStatistics && new Decimal(this.promoCodeStatistics.referrerPaymentsTotalUnpaid).comparedTo(new Decimal("5000")) >= 0;
     }
 }

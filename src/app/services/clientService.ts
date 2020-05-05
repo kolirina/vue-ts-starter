@@ -98,6 +98,14 @@ export class ClientService {
     }
 
     /**
+     * Обновляет признак согласия с условиями партнерской программы
+     * @returns {Promise<void>}
+     */
+    async setPartnerShipAgreement(): Promise<void> {
+        await this.http.post(`/user/partnership-agreement`);
+    }
+
+    /**
      * Удаляет и отписывает пользователя от рассылок
      * @returns {Promise<void>}
      */
@@ -217,6 +225,8 @@ export interface BaseClient {
     needShowTour: boolean;
     /** Признак необходимости отображения привественного тура пользователю */
     needShowHelpDeskWidget: boolean;
+    /** Признак согласия с условиями партнерской программы */
+    partnerShipAgreement: boolean;
 }
 
 export interface ClientResponse extends BaseClient {
