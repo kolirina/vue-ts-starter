@@ -37,7 +37,7 @@ import {BtnReturn, CustomDialog} from "../../platform/dialogs/customDialog";
                     </div>
                     <v-checkbox slot="activator" v-model="agree" class="mt-4" hide-details>
                         <template #label>
-                            <span>
+                            <span class="fs12">
                                 Я ознакомился с <a :href="partnershipUrl">Партнерским договором Реферальной Программы</a>
                             </span>
                         </template>

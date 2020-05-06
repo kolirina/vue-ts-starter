@@ -48,7 +48,7 @@ import {PartnershipWithdrawalRequest, PromoCodeService} from "../../services/pro
                                 <v-flex xs12 sm12>
                                     <v-text-field label="Контакт" v-model.trim="withdrawalRequest.contact" :counter="1000" maxLength="1000"
                                                   v-validate="'max:1000'" :error-messages="errors.collect('contact')" name="contact" persistent-hint
-                                                  hint="Как с вами можно связаться, если потребуется уточнение. Укажите предпочитаемый способ связи: телефон, email, vk, telegram">
+                                                  hint="Как с вами можно связаться, если потребуется уточнение. Укажите предпочитаемый способ связи: telegram, email, vk">
                                     </v-text-field>
                                 </v-flex>
 
@@ -84,7 +84,7 @@ import {PartnershipWithdrawalRequest, PromoCodeService} from "../../services/pro
                                 <v-flex v-if="!clientInfo.partnershipAgreement" xs12 sm12>
                                     <v-checkbox slot="activator" v-model="agree" class="mt-4" v-validate="'required'" hide-details>
                                         <template #label>
-                                        <span>
+                                        <span class="fs12">
                                             Я ознакомился с <a :href="partnershipUrl">Партнерским договором Реферальной Программы</a>
                                         </span>
                                         </template>
@@ -127,7 +127,7 @@ export class PartnershipWithdrawalRequestDialog extends CustomDialog<string, num
     async created(): Promise<void> {
         this.clientInfo = await this.clientService.getClientInfo();
         this.withdrawalRequest = {
-            contact: this.clientInfo.email,
+            contact: "",
             bankBic: "",
             account: "",
             inn: "",

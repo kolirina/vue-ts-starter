@@ -33,7 +33,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 <div>Друзья получают скидку 20%<br>на первую покупку</div>
                             </div>
                             <div class="promo-codes__step">
-                                <div>Вы получаете подарок<br>на выбор</div>
+                                <div>Вы получаете <br>{{ clientInfo.user.referralAwardType === 'SUBSCRIPTION' ? "месяц подписки бесплатно" : "30% от суммы оплаты" }}</div>
                             </div>
                         </div>
                         <div class="section-content">
@@ -159,7 +159,7 @@ export class PromoCodesPage extends UI {
     private async requestWithdrawal(): Promise<void> {
         const result = await new PartnershipWithdrawalRequestDialog().show(this.promoCodeStatistics.referrerPaymentsTotalUnpaid);
         if (result) {
-            this.$snotify.info("Запрос на вывод средств успешно зарегистрирован, идентификатор запроса: " + result);
+            this.$snotify.info("Запрос на вывод средств успешно зарегистрирован");
         }
     }
 
