@@ -108,7 +108,7 @@ export class CommonUtils {
      */
     static skipSendToSentry(error: Error | any): boolean {
         return !error || this.isUserError(error) || this.isTariffExceededError(error) || "Не удалось выполнить запрос, повторите позже" === error.message ||
-            "Внутренняя ошибка сервера" === error.message || error.captured === "true";
+            "Внутренняя ошибка сервера" === error.message || error.captured === "true" || "Не удалось выполнить запрос, повторите позже" === error;
     }
 
     /**

@@ -31,9 +31,10 @@ import {ExportType} from "../services/exportService";
 import {PortfolioBlockType} from "../services/onBoardingTourService";
 import {OverviewService} from "../services/overviewService";
 import {TableHeaders, TABLES_NAME, TablesService, TableType} from "../services/tablesService";
+import {BigMoney} from "../types/bigMoney";
 import {ChartType, HighStockEventsGroup, SectorChartData} from "../types/charts/types";
 import {StoreKeys} from "../types/storeKeys";
-import {AssetPortfolioRow, BlockType, BondPortfolioRow, EventType, Overview, StockPortfolioRow, StockTypePortfolioRow, TableHeader} from "../types/types";
+import {AssetPortfolioRow, AssetRow, BlockType, BondPortfolioRow, EventType, Overview, StockPortfolioRow, StockTypePortfolioRow, TableHeader} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
 import {PortfolioUtils} from "../utils/portfolioUtils";
 import {UiStateHelper} from "../utils/uiStateHelper";
@@ -50,11 +51,15 @@ import {UiStateHelper} from "../utils/uiStateHelper";
 
                 <slot name="afterDashboard"></slot>
 
-                <aggregate-asset-table v-if="blockNotEmpty(emptyBlockType.AGGREGATE)" :assets="overview.assetRows" class="mt-3"
-                                       :data-v-step="getTourStepIndex(PortfolioBlockType.AGGREGATE_TABLE)"></aggregate-asset-table>
+                <expanded-panel v-if="blockNotEmpty(emptyBlockType.AGGREGATE)" name="assets" :value="[true]" class="mt-3 selectable" disabled always-open>
+                    <template #header>
+                        <span>Состав портфеля по активам</span>
+                    </template>
+                    <aggregate-asset-table :assets="aggregateAssets" :data-v-step="getTourStepIndex(PortfolioBlockType.AGGREGATE_TABLE)"></aggregate-asset-table>
+                </expanded-panel>
 
                 <expanded-panel v-if="blockNotEmpty(emptyBlockType.STOCK_PORTFOLIO)" :value="$uistate.stocksTablePanel"
-                                :withMenu="true" name="stock" :state="$uistate.STOCKS" @click="onStockTablePanelClick" class="mt-3 selectable"
+                                with-menu name="stock" :state="$uistate.STOCKS" @click="onStockTablePanelClick" class="mt-3 selectable"
                                 :data-v-step="getTourStepIndex(PortfolioBlockType.STOCK_TABLE)">
                     <template #header>
                         <span>Акции</span>
@@ -74,7 +79,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                 </expanded-panel>
 
                 <expanded-panel v-if="blockNotEmpty(emptyBlockType.BOND_PORTFOLIO)" :value="$uistate.bondsTablePanel"
-                                :withMenu="true" name="bond" :state="$uistate.BONDS" @click="onBondTablePanelClick" class="mt-3 selectable"
+                                with-menu name="bond" :state="$uistate.BONDS" @click="onBondTablePanelClick" class="mt-3 selectable"
                                 :data-v-step="getTourStepIndex(PortfolioBlockType.BOND_TABLE)">
                     <template #header>
                         <span>Облигации</span>
@@ -94,7 +99,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                 </expanded-panel>
 
                 <expanded-panel v-if="blockNotEmpty(emptyBlockType.ETF_PORTFOLIO)" :value="$uistate.etfTablePanel"
-                                :withMenu="true" name="etf" :state="$uistate.ETF" @click="onEtfTablePanelClick" class="mt-3 selectable"
+                                with-menu name="etf" :state="$uistate.ETF" @click="onEtfTablePanelClick" class="mt-3 selectable"
                                 :data-v-step="getTourStepIndex(PortfolioBlockType.ETF_TABLE)">
                     <template #header>
                         <span>ПИФы/ETF</span>
@@ -114,7 +119,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                 </expanded-panel>
 
                 <expanded-panel v-if="blockNotEmpty(emptyBlockType.ASSETS)" :value="$uistate.assetsTablePanel"
-                                :withMenu="true" name="asset" :state="$uistate.ASSET_TABLE" @click="onAssetTablePanelClick" class="mt-3 selectable"
+                                with-menu name="asset" :state="$uistate.ASSET_TABLE" @click="onAssetTablePanelClick" class="mt-3 selectable"
                                 :data-v-step="getTourStepIndex(PortfolioBlockType.ASSET_TABLE)">
                     <template #header>
                         <span>Прочие активы</span>
@@ -505,6 +510,10 @@ export class BasePortfolioPage extends UI {
 
     private get assetRows(): StockTypePortfolioRow[] {
         return [...this.overview.assetPortfolio.rows, this.overview.assetPortfolio.sumRow as AssetPortfolioRow];
+    }
+
+    private get aggregateAssets(): AssetRow[] {
+        return this.overview.assetRows.filter(assetRow => !new BigMoney(assetRow.currCost).amount.isZero());
     }
 
     private get bondRows(): BondPortfolioRow[] {

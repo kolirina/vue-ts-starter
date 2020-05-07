@@ -312,7 +312,7 @@ export class ImportPage extends UI {
     private onFileAdd(fileList: File[]): void {
         let filtered = fileList;
         if (fileList.length > 1) {
-            this.$snotify.warning("Пожалуйста загружайте по одному файлу для более точных результатов импорта.");
+            this.$snotify.warning("Пожалуйста, загружайте по одному файлу для более точных результатов импорта.");
             filtered = [fileList[0]];
         }
         const isValid = FileUtils.checkExtension(filtered[0]);
@@ -433,7 +433,7 @@ export class ImportPage extends UI {
             }
             await this.reloadPortfolio(this.portfolio.id);
             this.$snotify.info(`Импорт прошел успешно. ${firstWord} ${response.validatedTradesCount} ${secondWord}.`);
-            if (navigateToPortfolioPage) {
+            if (navigateToPortfolioPage && !needUploadAgain) {
                 this.$router.push("portfolio");
             }
         } else if (response.errors && duplicateTradeErrorCount > 0 && response.errors.length === duplicateTradeErrorCount && response.validatedTradesCount === 0) {

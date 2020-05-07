@@ -90,7 +90,7 @@ export class FeedbackDialog extends CustomDialog<FeedbackDialogData, void> {
     @DisableConcurrentExecution
     private async sendFeedback(): Promise<void> {
         if (this.username.length === 0 || this.email.length === 0 || this.message.length === 0) {
-            this.$snotify.warning("Пожалуйста заполните все поля для отправки");
+            this.$snotify.warning("Пожалуйста, заполните все поля для отправки");
             return;
         }
         await this.feedbackService.sendFeedback({username: this.username, email: this.email, feedbackType: this.feedbackType, message: this.message});

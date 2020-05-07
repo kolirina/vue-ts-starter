@@ -993,7 +993,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
      * @param newTicket название новой бумаги из компонента поиска
      */
     private async onRequestNewShare(newTicket: string): Promise<void> {
-        const message = `Пожалуйста добавьте бумагу ${newTicket} в систему.`;
+        const message = `Пожалуйста, добавьте бумагу ${newTicket} в систему.`;
         await new FeedbackDialog().show({clientInfo: this.clientInfo, message: message});
     }
 

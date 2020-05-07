@@ -41,7 +41,7 @@ import {CurrencyBalances} from "../../currencyBalances";
                             <v-card-text @click.stop>
                                 <span>
                                     <div class="balance-text">
-                                        Пожалуйста внесите остаток денежных средств на данный момент
+                                        Пожалуйста, внесите остаток денежных средств на данный момент
                                     </div>
                                     <video-link class="balance-text">
                                         <template #foreword>

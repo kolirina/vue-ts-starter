@@ -53,7 +53,7 @@ const MainStore = namespace(StoreType.MAIN);
                     Все используемые источники являются официальными каналами предоставления информации, однако это не исключает, что:<br>
                     <b>- по отдельным активам в разделе нет Событий;<br>
                         - некоторые События предоставлены с ошибкой.</b><br><br>
-                    Поэтому обращаем ваше внимание, что <b>перед исполнением начислений проверяйте пожалуйста правильность данных.</b><br>
+                    Поэтому обращаем ваше внимание, что <b>перед исполнением начислений проверяйте, пожалуйста, правильность данных.</b><br>
                     Это позволит сохранять данные портфеля корректными.<br>
                     Если же по какой-либо из ваших бумаг нет события в календаре или новостях, добавьте сделку по начислению вручную.<br>
                     <a @click="hideHintsPanel">Больше не показывать</a>
@@ -374,9 +374,9 @@ export class EventsPage extends UI {
 
     private async loadAllData(): Promise<void> {
         await Promise.all([
-                await this.updateEvents(),
-                await this.loadDividendNews(),
-                await this.loadCalendarEvents(),
+                this.updateEvents(),
+                this.loadDividendNews(),
+                this.loadCalendarEvents(),
             ]
         );
     }

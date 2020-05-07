@@ -35,7 +35,7 @@ import {CommonUtils} from "../../utils/commonUtils";
                     <div class="enterPromoCode-dialog__title">Ввод промокода</div>
                     <v-text-field ref="input" v-model.trim="promoCode" maxlength="12" size="12" @keypress.enter="applyPromoCode" label="Введите промокод"></v-text-field>
                     <v-card-actions>
-                        <v-btn :disabled="!promoCode" class="big_btn" @click.native="applyPromoCode">Применить</v-btn>
+                        <v-btn :disabled="!promoCode" color="primary" class="big_btn" @click.native="applyPromoCode">Применить</v-btn>
                     </v-card-actions>
                 </div>
             </v-card>
@@ -64,7 +64,7 @@ export class ApplyPromoCodeDialog extends CustomDialog<void, BtnReturn> {
     @DisableConcurrentExecution
     private async applyPromoCode(): Promise<void> {
         if (CommonUtils.isBlank(this.promoCode)) {
-            this.$snotify.warning("Пожалуйста введите промокод");
+            this.$snotify.warning("Пожалуйста, введите промокод");
             return;
         }
         await this.tariffService.applyPromoCode(this.promoCode);

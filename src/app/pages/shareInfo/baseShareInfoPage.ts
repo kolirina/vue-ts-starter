@@ -24,6 +24,7 @@ import {FeedbackDialog} from "../../components/dialogs/feedbackDialog";
 import {StockRate} from "../../components/stockRate";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {Filters} from "../../platform/filters/Filters";
+import {AssetCategory} from "../../services/assetService";
 import {ClientInfo} from "../../services/clientService";
 import {MarketService} from "../../services/marketService";
 import {NotificationType} from "../../services/notificationsService";
@@ -31,9 +32,8 @@ import {TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
 import {BaseChartDot, Dot, HighStockEventsGroup} from "../../types/charts/types";
 import {Operation} from "../../types/operation";
-import {ErrorInfo, Portfolio, Share, ShareDynamic, ShareType} from "../../types/types";
+import {Asset, ErrorInfo, Portfolio, Share, ShareDynamic, ShareType, StockTypeShare} from "../../types/types";
 import {ChartUtils} from "../../utils/chartUtils";
-import {TradeUtils} from "../../utils/tradeUtils";
 import {StoreType} from "../../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -68,7 +68,7 @@ const MainStore = namespace(StoreType.MAIN);
                             <div v-if="share.sector">
                                 <div class="info-share-page__name-stock-block__sector-rating">
                                     <span class="info-share-page__name-stock-block__subtitle">
-                                        Сектор - {{ share.sector.name }}
+                                        {{ sectorDescription }}
                                     </span>
                                     <span v-if="share.sector.parent" class="info-share-page__name-stock-block__subtitle">
                                         ,&nbsp;родительский сектор: {{ share.sector.parent.name }}
@@ -326,7 +326,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-card-title>
                     <v-card-text>
                         <line-chart :data="history" :events-chart-data="events" :balloon-title="share.ticker" :avg-line-value="portfolioAvgPrice"
-                            class="portfolioAvgPriceChart"></line-chart>
+                                    class="portfolioAvgPriceChart"></line-chart>
                     </v-card-text>
                 </v-card>
             </template>
@@ -502,17 +502,25 @@ export class BaseShareInfoPage extends UI {
         return this.assetType === AssetType.STOCK;
     }
 
+    private get sectorDescription(): string {
+        if (this.share.shareType === ShareType.ASSET) {
+            const assetCategory: AssetCategory = AssetCategory.valueByName((this.share as Asset).category);
+            return assetCategory == null ? "Активы" : assetCategory.description;
+        }
+        return (this.share as StockTypeShare).sector.name;
+    }
+
     /**
      * Вызывает диалог обратной связи для добавления новой бумаги в систему
      * @param newTicket название новой бумаги из компонента поиска
      */
     private async onRequestNewShare(newTicket: string): Promise<void> {
-        const message = `Пожалуйста добавьте бумагу ${newTicket} в систему.`;
+        const message = `Пожалуйста, добавьте бумагу ${newTicket} в систему.`;
         await new FeedbackDialog().show({clientInfo: this.clientInfo.user, message: message});
     }
 
     private async openFeedBackDialog(): Promise<void> {
-        const message = `Пожалуйста добавьте бумагу ${this.$route.params.ticker} в систему.`;
+        const message = `Пожалуйста, добавьте бумагу ${this.$route.params.ticker} в систему.`;
         await new FeedbackDialog().show({clientInfo: this.clientInfo.user, message: message});
     }
 }
