@@ -49,6 +49,23 @@ export class ImportService {
     }
 
     /**
+     * Загружает историю импорта
+     */
+    async importHistory(): Promise<UserImport[]> {
+        const result = await this.http.get<UserImportDto[]>("/import/history");
+        return result.map(userImport => {
+            return {
+                ...userImport,
+                provider: DealsImportProvider.valueByName(userImport.provider)
+            } as UserImport;
+        });
+    }
+
+    async revertImport(userImportId: number, portfolioId: number): Promise<void> {
+        return this.http.post(`/import/revert/${userImportId}/${portfolioId}`);
+    }
+
+    /**
      * Загружает настройки провайдеров импорта
      */
     private async loadImportProviderFeatures(): Promise<ImportProviderFeaturesByProvider> {
@@ -153,4 +170,54 @@ export interface ShareAliasItem {
     alias: string;
     currency?: string;
     share: Share;
+}
+
+/**  Модель истории пользовательского импорта */
+export type UserImportBase = {
+    /** Идентификатор истории импорта */
+    id: string;
+    /** Идентификатор пользователя */
+    userId: number;
+    /** Статус импорта */
+    status: UserLogStatus;
+    /** Дата импорта */
+    date: string;
+    /** Успешно записанное количество сделок */
+    savedTradesCount: number;
+    /** Признак наличия ошибок при импорте */
+    hasErrors: boolean;
+    /** Текст критичной ошибки */
+    generalError: string;
+    /** Имя файла импорта */
+    fileName: string;
+    /** Состояние истории импорта */
+    state: UserImportState;
+};
+
+/**  Модель истории пользовательского импорта */
+export type UserImportDto = UserImportBase & {
+    /** Провайдер импорта */
+    provider: string;
+};
+
+/**  Модель истории пользовательского импорта */
+export type UserImport = UserImportBase & {
+    /** Провайдер импорта */
+    provider: DealsImportProvider;
+};
+
+/**
+ * Описание статусов для логгирования пользовательских действий
+ * @author nedelko
+ * Date 16.10.2018
+ */
+export enum UserLogStatus {
+
+    SUCCESS = "SUCCESS",
+    ERROR = "ERROR",
+    WARN = "WARN"
+}
+
+export enum UserImportState {
+    REVERTED = "REVERTED"
 }

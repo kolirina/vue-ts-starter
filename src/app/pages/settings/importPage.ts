@@ -9,11 +9,19 @@ import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {Filters} from "../../platform/filters/Filters";
 import {ClientInfo} from "../../services/clientService";
-import {DealsImportProvider, ImportProviderFeatures, ImportProviderFeaturesByProvider, ImportResponse, ImportService, ShareAliasItem} from "../../services/importService";
+import {
+    DealsImportProvider,
+    ImportProviderFeatures,
+    ImportProviderFeaturesByProvider,
+    ImportResponse,
+    ImportService,
+    ShareAliasItem,
+    UserImport
+} from "../../services/importService";
 import {OverviewService} from "../../services/overviewService";
 import {PortfolioParams, PortfolioService} from "../../services/portfolioService";
 import {CurrencyUnit} from "../../types/currency";
-import {Portfolio, Share, Status} from "../../types/types";
+import {Portfolio, Share, Status, TableHeader} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {FileUtils} from "../../utils/fileUtils";
 import {MutationType} from "../../vuex/mutationType";
@@ -82,6 +90,37 @@ const MainStore = namespace(StoreType.MAIN);
 
                         <v-stepper-items>
                             <v-stepper-content step="1">
+                                <!-- История импорта -->
+                                <template v-if="importHistory.length">
+                                    <div v-for="userImport in importHistory" :key="userImport.id">
+                                        <div>
+                                            <span>{{ userImport.fileName }}</span>
+                                            <span>{{ userImport.date }}</span>
+                                            <span v-if="userImport.savedTradesCount">Добавлено {{ userImport.savedTradesCount }}</span>
+                                            <span>{{ userImport.status }}</span>
+                                            <span v-if="userImport.state !== 'REVERTED'" @click.stop="revertImport(userImport.id)">Удалить</span>
+                                            <span v-if="userImport.state === 'REVERTED'">REVERTED</span>
+                                        </div>
+                                        <div>
+                                            <span v-if="userImport.generalError">{{ userImport.generalError }}</span>
+                                            <expanded-panel v-if="userImport.data" name="userImportData" :value="[true]" class="mt-3 selectable" disabled always-open>
+                                                <template #header>
+                                                    <span>Ошибки импорта</span>
+                                                </template>
+                                                <v-data-table v-if="userImport.data.length" :headers="headers" :items="otherErrors" class="data-table" hide-actions must-sort>
+                                                    <template #items="props">
+                                                        <tr class="selectable">
+                                                            <td class="text-xs-center"><span v-if="props.item.dealDate">{{ props.item.dealDate | date }}</span></td>
+                                                            <td class="text-xs-left">{{ props.item.dealTicker }}</td>
+                                                            <td class="text-xs-left error-message">{{ props.item.message }}</td>
+                                                        </tr>
+                                                    </template>
+                                                </v-data-table>
+                                            </expanded-panel>
+                                        </div>
+                                    </div>
+                                </template>
+
                                 <div class="attachments" v-if="importProviderFeatures">
                                     <file-drop-area @drop="onFileAdd" class="attachments-file-drop">
                                         <div v-if="selectedProvider" class="attachments-file-drop__content">
@@ -130,10 +169,6 @@ const MainStore = namespace(StoreType.MAIN);
                                             <div v-if="importProviderFeatures && !files.length && providerAllowedExtensions" class="fs12-opacity mt-4">
                                                 Допустимые расширения файлов: {{ providerAllowedExtensions }}
                                             </div>
-                                        </div>
-
-                                        <div @click="showInstruction = !showInstruction" class="btn-show-instruction" v-if="importProviderFeatures">
-                                            {{ (showInstruction ? "Скрыть" : "Показать") + " инструкцию" }}
                                         </div>
                                     </v-layout>
                                 </v-layout>
@@ -248,8 +283,12 @@ const MainStore = namespace(StoreType.MAIN);
                                     </v-list>
                                 </v-menu>
 
-                                <import-instructions v-if="showInstruction && portfolioParams" :provider="selectedProvider" @selectProvider="onSelectProvider"
-                                                     @changePortfolioParams="changePortfolioParams" :portfolio-params="portfolioParams" class="margT20"></import-instructions>
+                                <expanded-panel :value="showInstruction" class="promo-codes__statistics">
+                                    <template #header>Как выгрузить отчет брокера?</template>
+                                    <import-instructions :provider="selectedProvider" @selectProvider="onSelectProvider"
+                                                         @changePortfolioParams="changePortfolioParams" :portfolio-params="portfolioParams" class="margT20"></import-instructions>
+                                </expanded-panel>
+
                             </v-stepper-content>
 
                             <v-stepper-content step="2">
@@ -352,7 +391,7 @@ export class ImportPage extends UI {
     /** Допустимые MIME типы */
     private allowedExtensions = FileUtils.ALLOWED_MIME_TYPES;
     /** Отображение инструкции к провайдеру */
-    private showInstruction: boolean = true;
+    private showInstruction: number[] = [1];
     private portfolioParams: PortfolioParams = null;
     /** Признак процесса импорта, чтобы не очищались файлы */
     private importInProgress = false;
@@ -361,6 +400,15 @@ export class ImportPage extends UI {
 
     private shareAliases: ShareAliasItem[] = [];
 
+    private importHistory: UserImport[] = [];
+
+    /** Заголовки таблицы с ошибками */
+    private headers: TableHeader[] = [
+        {text: "Дата", align: "center", value: "dealDate", sortable: false},
+        {text: "Тикер", align: "left", value: "dealTicker", sortable: false},
+        {text: "Ошибка", align: "center", value: "message", sortable: false}
+    ];
+
     /**
      * Инициализирует необходимые для работы данные
      * @inheritDoc
@@ -368,8 +416,27 @@ export class ImportPage extends UI {
     @ShowProgress
     async created(): Promise<void> {
         this.importProviderFeaturesByProvider = await this.importService.getImportProviderFeatures();
+        this.importHistory = await this.importService.importHistory();
         this.portfolioParams = {...this.portfolio.portfolioParams};
         this.selectUserProvider();
+    }
+
+    private async revertImport(userImportId: number): Promise<void> {
+        const result = await new ConfirmDialog().show("Вы собираетесь откатить импорт, это приведет к удалению информации о нем из портфеля");
+        if (result === BtnReturn.YES) {
+            await this.revertImportConfirmed(userImportId);
+            await this.loadImportHistory();
+        }
+    }
+
+    @ShowProgress
+    private async loadImportHistory(): Promise<void> {
+        this.importHistory = await this.importService.importHistory();
+    }
+
+    @ShowProgress
+    private async revertImportConfirmed(userImportId: number): Promise<void> {
+        await this.importService.revertImport(userImportId, this.portfolio.id);
     }
 
     private onShareSelect(share: Share, aliasItem: ShareAliasItem): void {
