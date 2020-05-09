@@ -65,3 +65,8 @@ input.highcharts-range-selector:focus {
   align-items: center;
   justify-content: center;
 }
+
+.info-block {
+  @extend %info-panel;
+  padding: 12px;
+}

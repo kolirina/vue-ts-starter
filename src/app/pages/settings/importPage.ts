@@ -31,27 +31,33 @@ const MainStore = namespace(StoreType.MAIN);
                     <div class="section-title header-first-card__title-text">Импорт сделок</div>
                 </v-card-title>
             </v-card>
-            <v-card flat class="import-wrapper pb-0">
+            <v-card flat class="import-wrapper paddB24">
+                <div class="info-block margB24">
+                    Данный раздел поможет Вам перенести отчеты брокера на сервис.<br>
+                    Обратите внимание, что для полного соответствия портфеля необходимо выгрузить сделки за все время, а не только за последний месяц.
+                </div>
                 <v-card-title class="import-wrapper-header">
                     <div class="import-wrapper-header__title">
                         Выберите своего брокера
+                        <v-tooltip content-class="custom-tooltip-wrap" max-width="340px" bottom>
+                            <sup class="custom-tooltip" slot="activator">
+                                <v-icon>fas fa-info-circle</v-icon>
+                            </sup>
+                            <span>Будут отображены данные за выбранный период, начиная с даты первой сделки портфеля.</span>
+                        </v-tooltip>
                     </div>
                 </v-card-title>
             </v-card>
             <v-card flat class="px-0 py-0" data-v-step="0">
-                <v-card-text class="import-wrapper-content">
-                    <div class="providers">
-                        <div v-for="provider in providers.values()" :key="provider.code" @click="onSelectProvider(provider)" class="item">
-                            <div :class="['w100pc', 'alignC', selectedProvider === provider ? 'active' : '']">
-                                <div :class="['item-img-block', provider.code.toLowerCase()]">
-                                </div>
-                                <div class="item-text">
-                                    {{ provider.description }}
-                                </div>
-                            </div>
+                <div class="providers">
+                    <div v-for="provider in providers.values()" :key="provider.code" @click="onSelectProvider(provider)"
+                         :class="{'item': true, 'active': selectedProvider === provider}">
+                        <div :class="['item-img-block', provider.code.toLowerCase()]"></div>
+                        <div class="item-text">
+                            {{ provider.description }}
                         </div>
                     </div>
-                </v-card-text>
+                </div>
             </v-card>
             <v-card flat class="import-wrapper">
                 <v-card-text class="import-wrapper-content">
