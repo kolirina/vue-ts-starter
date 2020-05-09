@@ -31,7 +31,8 @@ const MainStore = namespace(StoreType.MAIN);
                     <div class="section-title header-first-card__title-text">Импорт сделок</div>
                 </v-card-title>
             </v-card>
-            <v-card flat class="import-wrapper paddB24">
+            <!-- Выбор брокера -->
+            <v-card v-if="!selectedProvider" flat class="import-wrapper paddB24">
                 <div class="info-block margB24">
                     Данный раздел поможет Вам перенести отчеты брокера на сервис.<br>
                     Обратите внимание, что для полного соответствия портфеля необходимо выгрузить сделки за все время, а не только за последний месяц.
@@ -48,7 +49,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </div>
                 </v-card-title>
             </v-card>
-            <v-card flat class="px-0 py-0" data-v-step="0">
+            <v-card v-if="!selectedProvider" flat class="px-0 py-0" data-v-step="0">
                 <div class="providers">
                     <div v-for="provider in providers.values()" :key="provider.code" @click="onSelectProvider(provider)"
                          :class="{'item': true, 'active': selectedProvider === provider}">
@@ -59,7 +60,9 @@ const MainStore = namespace(StoreType.MAIN);
                     </div>
                 </div>
             </v-card>
-            <v-card flat class="import-wrapper">
+
+            <!-- Брокер выбран -->
+            <v-card v-if="selectedProvider" flat class="import-wrapper">
                 <v-card-text class="import-wrapper-content">
                     <v-menu content-class="dialog-setings-menu"
                             transition="slide-y-transition"
