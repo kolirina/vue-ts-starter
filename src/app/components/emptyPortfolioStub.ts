@@ -24,23 +24,23 @@ import {EventType} from "../types/eventType";
     template: `
         <v-container class="h100pc">
             <v-layout justify-center align-center column class="h100pc">
-                <v-img src="./img/portfolio/empty-portfolio.svg" width="100%" heigth="100%" max-width="353" max-height="302" class="margB35"></v-img>
-                <div class="alignC mw520">
-                    <div class="fs16">
+                <img src="./img/portfolio/empty-portfolio-2.svg" class="margB32 maxW100">
+                <div class="alignC mw540">
+                    <div class="fs18 bold">
                         Для начала работы заполните свой портфель
                     </div>
-                    <div class="fs16 alignC margT30">
-                        Вы можете загрузить отчет со сделками вашего брокера или указать
-                        остатки портфеля, если знаете цену или стоимость покупки бумаг.
+                    <div class="margT32 color-lite">
+                        Вы можете загрузить отчет со сделками вашего брокера или завести
+                        сделки самостоятельно, если знаете цены и даты покупок/продаж
                     </div>
                     <video-link>
                         <a>Смотреть видео инструкцию по импорту сделок</a>
                     </video-link>
-                    <div class="margT20 alignC">
-                        <v-btn class="btn mr-1" color="#EBEFF7" @click="goToImport" data-v-step="0">
+                    <div class="margT14 center-elements">
+                        <v-btn class="btn" color="#EBEFF7" @click="goToImport" data-v-step="0">
                             Загрузить отчет
                         </v-btn>
-                        <v-btn class="btn ml-3" color="#EBEFF7" to="/balances">
+                        <v-btn class="btn margL12" color="#EBEFF7" to="/balances">
                             Указать остатки
                         </v-btn>
                     </div>

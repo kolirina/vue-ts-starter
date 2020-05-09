@@ -57,3 +57,11 @@ input.highcharts-range-selector:focus {
   border-bottom: 1px solid $sidebar-hr-color;
   margin: 24px 0;
 }
+
+.color-lite {color: $font-color--lite}
+
+.center-elements {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
