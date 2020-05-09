@@ -52,7 +52,10 @@ const MainStore = namespace(StoreType.MAIN);
                             <sup class="custom-tooltip" slot="activator">
                                 <v-icon>fas fa-info-circle</v-icon>
                             </sup>
-                            <span>Будут отображены данные за выбранный период, начиная с даты первой сделки портфеля.</span>
+                            <span>
+                                Если в списке нет вашего брокера или терминала, вы всегда можете осуществить импорт через универсальный Формат Intelinvest (CSV)
+                                или обратиться к нам через <a @click.stop="openFeedBackDialog">обратную связь</a> , <a href="mailto:web@intelinvest.ru">по почте</a> или в группе <a href="https://vk.com/intelinvest">вконтакте</a>.
+                            </span>
                         </v-tooltip>
                     </div>
                 </v-card-title>
@@ -72,19 +75,23 @@ const MainStore = namespace(StoreType.MAIN);
             <!-- Брокер выбран -->
             <v-card v-if="selectedProvider" flat class="import-wrapper">
                 <v-card-text class="import-wrapper-content">
-                    <!-- Иконка брокера и меню Изменить брокера -->
-                    <p v-if="portfolio.overview.totalTradesCount" style="text-align: center;padding: 20px;">
-                        <b>
-                            Дата последней сделки {{ portfolio.overview.lastTradeDate | date }}.
-                        </b>
-                    </p>
-                    <v-divider></v-divider>
-                    <v-stepper v-model="currentStep">
+                    <div class="provider__info">
+                        <div>
+                            <!-- Иконка брокера и меню Изменить брокера -->
+                            <div class="provider">
+                                <div :class="['provider__image', selectedProvider.code.toLowerCase()]"></div>
+                                <div class="provider__name">
+                                    {{ selectedProvider.description }}
+                                    <div v-if="portfolio.overview.totalTradesCount">Дата последней сделки: {{ portfolio.overview.lastTradeDate | date }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <v-btn>Изменить брокера</v-btn>
+                    </div>
+                    <v-stepper v-model="currentStep" class="provider__stepper">
                         <v-stepper-header>
                             <v-stepper-step step="1">Загрузка отчета</v-stepper-step>
-                            <v-divider></v-divider>
                             <v-stepper-step step="2">Дополнительные данные</v-stepper-step>
-                            <v-divider></v-divider>
                             <v-stepper-step step="3">Результат импорта</v-stepper-step>
                         </v-stepper-header>
 
