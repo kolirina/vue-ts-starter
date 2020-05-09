@@ -175,7 +175,7 @@ export interface ShareAliasItem {
 /**  Модель истории пользовательского импорта */
 export type UserImportBase = {
     /** Идентификатор истории импорта */
-    id: string;
+    id: number;
     /** Идентификатор пользователя */
     userId: number;
     /** Статус импорта */
@@ -188,6 +188,8 @@ export type UserImportBase = {
     hasErrors: boolean;
     /** Текст критичной ошибки */
     generalError: string;
+    /** Ошибки импорта */
+    data: DealImportError[];
     /** Имя файла импорта */
     fileName: string;
     /** Состояние истории импорта */

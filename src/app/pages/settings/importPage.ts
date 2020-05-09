@@ -7,7 +7,6 @@ import {FeedbackDialog} from "../../components/dialogs/feedbackDialog";
 import {ExpandedPanel} from "../../components/expandedPanel";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
-import {Filters} from "../../platform/filters/Filters";
 import {ClientInfo} from "../../services/clientService";
 import {
     DealsImportProvider,
@@ -16,7 +15,8 @@ import {
     ImportResponse,
     ImportService,
     ShareAliasItem,
-    UserImport
+    UserImport,
+    UserLogStatus
 } from "../../services/importService";
 import {OverviewService} from "../../services/overviewService";
 import {PortfolioParams, PortfolioService} from "../../services/portfolioService";
@@ -96,18 +96,22 @@ const MainStore = namespace(StoreType.MAIN);
                                         <div>
                                             <span>{{ userImport.fileName }}</span>
                                             <span>{{ userImport.date }}</span>
-                                            <span v-if="userImport.savedTradesCount">Добавлено {{ userImport.savedTradesCount }}</span>
+                                            <span v-if="userImport.savedTradesCount">
+                                                {{ userImport.savedTradesCount | declension("Добавлена", "Добавлено", "Добавлено") }}
+                                                {{ userImport.savedTradesCount }} {{ userImport.savedTradesCount | declension("сделка", "сделки", "сделок") }}
+                                            </span>
                                             <span>{{ userImport.status }}</span>
                                             <span v-if="userImport.state !== 'REVERTED'" @click.stop="revertImport(userImport.id)">Удалить</span>
                                             <span v-if="userImport.state === 'REVERTED'">REVERTED</span>
                                         </div>
                                         <div>
                                             <span v-if="userImport.generalError">{{ userImport.generalError }}</span>
-                                            <expanded-panel v-if="userImport.data" name="userImportData" :value="[true]" class="mt-3 selectable" disabled always-open>
+                                            <expanded-panel v-if="userImport.data && userImport.data.length" name="userImportData" :value="[true]" class="mt-3 selectable" disabled
+                                                            always-open>
                                                 <template #header>
                                                     <span>Ошибки импорта</span>
                                                 </template>
-                                                <v-data-table v-if="userImport.data.length" :headers="headers" :items="otherErrors" class="data-table" hide-actions must-sort>
+                                                <v-data-table :headers="headers" :items="userImport.data" class="data-table" hide-actions must-sort>
                                                     <template #items="props">
                                                         <tr class="selectable">
                                                             <td class="text-xs-center"><span v-if="props.item.dealDate">{{ props.item.dealDate | date }}</span></td>
@@ -321,10 +325,13 @@ const MainStore = namespace(StoreType.MAIN);
                             </v-stepper-content>
 
                             <v-stepper-content step="3">
-                                <div>
-                                    <span>icon</span>
+                                <div v-if="importResult">
+                                    <span>{{ importResult.status }}</span>
                                     <span>Успех</span>
-                                    <span>Добавлено 185 сделок</span>
+                                    <span>
+                                        {{ importResult.validatedTradesCount | declension("Добавлена", "Добавлено", "Добавлено") }}
+                                        {{ importResult.validatedTradesCount }} {{ importResult.validatedTradesCount | declension("сделка", "сделки", "сделок") }}
+                                    </span>
                                 </div>
                                 <span>Портфель почти сформирован, для полного соответствия требуются дополнительные данные</span>
                                 <expanded-panel name="dividends" :value="[true]" class="mt-3 selectable" disabled always-open>
@@ -402,6 +409,8 @@ export class ImportPage extends UI {
 
     private importHistory: UserImport[] = [];
 
+    private importResult: ImportResponse = null;
+
     /** Заголовки таблицы с ошибками */
     private headers: TableHeader[] = [
         {text: "Дата", align: "center", value: "dealDate", sortable: false},
@@ -431,7 +440,50 @@ export class ImportPage extends UI {
 
     @ShowProgress
     private async loadImportHistory(): Promise<void> {
-        this.importHistory = await this.importService.importHistory();
+        // this.importHistory = await this.importService.importHistory();
+        this.importHistory = [{
+            id: 1519,
+            userId: 28,
+            date: "2020-05-09",
+            status: "ERROR" as UserLogStatus,
+            provider: DealsImportProvider.SBERBANK,
+            savedTradesCount: 0,
+            hasErrors: true,
+            data: [],
+            generalError: "Ошибка при импорте файла",
+            fileName: "broker_rep (3).xlsx",
+            state: null
+        }, {
+            id: 1520,
+            userId: 28,
+            date: "2020-05-09",
+            status: "SUCCESS" as UserLogStatus,
+            provider: DealsImportProvider.TINKOFF,
+            savedTradesCount: 2,
+            hasErrors: false,
+            data: [],
+            generalError: null,
+            fileName: "broker_rep (3).xlsx",
+            state: null
+        }, {
+            id: 1521,
+            userId: 28,
+            date: "2020-05-09",
+            status: "WARN" as UserLogStatus,
+            provider: DealsImportProvider.TINKOFF,
+            savedTradesCount: 10,
+            hasErrors: true,
+            data: [{
+                message: "Неверный идентификатор бумаги",
+                dealDate: null,
+                dealTicker: "FFFF",
+                currency: null,
+                shareNotFound: true
+            }, {message: "Сделка уже была импортирована ранее", dealDate: "2020-01-21", dealTicker: null, currency: null, shareNotFound: false}],
+            generalError: null,
+            fileName: "broker_rep (3).xlsx",
+            state: null
+        }];
     }
 
     @ShowProgress
@@ -457,16 +509,16 @@ export class ImportPage extends UI {
     }
 
     private async goToFinalStep(): Promise<void> {
-        // const filled = this.shareAliases.filter(shareAlias => !!shareAlias.share);
-        // const allFilled = filled.length === this.shareAliases.length;
-        // if (!allFilled) {
-        //     const answer = await new ConfirmDialog().show("Вы не указали соответствия для всех нераспознанных бумаг." +
-        //         "Если продолжить, будут импортированы только сделки по тем бумагам, которые вы указали.");
-        //     if (answer !== BtnReturn.YES) {
-        //         return;
-        //     }
-        // }
-        // await this.importService.saveShareAliases(filled);
+        const filled = this.shareAliases.filter(shareAlias => !!shareAlias.share);
+        const allFilled = filled.length === this.shareAliases.length;
+        if (!allFilled) {
+            const answer = await new ConfirmDialog().show("Вы не указали соответствия для всех нераспознанных бумаг." +
+                "Если продолжить, будут импортированы только сделки по тем бумагам, которые вы указали.");
+            if (answer !== BtnReturn.YES) {
+                return;
+            }
+        }
+        await this.importService.saveShareAliases(filled);
         this.currentStep = "3";
     }
 
@@ -530,15 +582,6 @@ export class ImportPage extends UI {
      * Отправляет отчет на сервер и обрабатывает ответ
      */
     private async uploadFile(): Promise<void> {
-        this.shareAliases = [
-            {
-                alias: "Газпром", currency: "USD", share: null
-            },
-            {
-                alias: "Сбербанк", currency: "USD", share: null
-            }];
-        this.currentStep = "2";
-        return;
         if (this.files && this.files.length && this.selectedProvider) {
             this.importInProgress = true;
             if (this.portfolio.portfolioParams.brokerId && this.portfolio.portfolioParams.brokerId !== this.selectedProvider.id) {
@@ -553,8 +596,21 @@ export class ImportPage extends UI {
             if (this.isFinam && this.portfolioParams.fixFee !== this.portfolio.portfolioParams.fixFee) {
                 await this.portfolioService.createOrUpdatePortfolio(this.portfolioParams);
             }
-            const response = await this.importReport();
-            await this.handleUploadResponse(response);
+            // this.importResult = await this.importReport();
+            this.importResult = this.importResult = {
+                message: "Импорт завершен",
+                errors: [{
+                    message: "Сделка уже была импортирована ранее",
+                    dealDate: "2020-01-17",
+                    dealTicker: "FXGD",
+                    currency: null,
+                    shareNotFound: false
+                }, {message: "Сделка уже была импортирована ранее", dealDate: "2020-01-21", dealTicker: null, currency: null, shareNotFound: false}],
+                generalError: null,
+                validatedTradesCount: 10,
+                status: "WARN" as Status
+            };
+            await this.handleUploadResponse();
         }
     }
 
@@ -575,20 +631,20 @@ export class ImportPage extends UI {
      * Обрабатывает ответ от сервера после импорта отчета
      * @param response
      */
-    private async handleUploadResponse(response: ImportResponse): Promise<void> {
-        if (response.status === Status.ERROR && CommonUtils.isBlank(response.generalError)) {
-            this.$snotify.error(response.message);
+    private async handleUploadResponse(): Promise<void> {
+        if (this.importResult.status === Status.ERROR && CommonUtils.isBlank(this.importResult.generalError)) {
+            this.$snotify.error(this.importResult.message);
             return;
         }
-        if (response.generalError) {
+        if (this.importResult.generalError) {
             this.currentStep = "3";
             return;
         }
         let duplicateTradeErrorCount = 0;
-        if (response.errors && response.errors.length) {
-            const duplicateTradeErrors = response.errors.filter(error => error.message === ImportPage.DUPLICATE_MSG);
-            const repoTradeErrors = response.errors.filter(error => error.message === ImportPage.REPO_TRADE_MSG);
-            const errors = response.errors.filter(error => !duplicateTradeErrors.includes(error) && !repoTradeErrors.includes(error));
+        if (this.importResult.errors && this.importResult.errors.length) {
+            const duplicateTradeErrors = this.importResult.errors.filter(error => error.message === ImportPage.DUPLICATE_MSG);
+            const repoTradeErrors = this.importResult.errors.filter(error => error.message === ImportPage.REPO_TRADE_MSG);
+            const errors = this.importResult.errors.filter(error => !duplicateTradeErrors.includes(error) && !repoTradeErrors.includes(error));
             duplicateTradeErrorCount = duplicateTradeErrors.length;
             // если после удаления ошибки все еще остались, отображаем диалог
             // отображаем диалог с ошибками, но информацию по портфелю надо перезагрузить если были успешно импортированы сделки
@@ -604,18 +660,7 @@ export class ImportPage extends UI {
                 return;
             }
         }
-        if (response.validatedTradesCount) {
-            const firstWord = Filters.declension(response.validatedTradesCount, "Добавлена", "Добавлено", "Добавлено");
-            const secondWord = Filters.declension(response.validatedTradesCount, "сделка", "сделки", "сделок");
-            // let navigateToPortfolioPage = true;
-            // if (this.importProviderFeatures.confirmMoneyBalance) {
-            //     navigateToPortfolioPage = await new ImportSuccessDialog().show({
-            //         router: this.$router,
-            //         store: this.$store.state[StoreType.MAIN],
-            //         validatedTradesCount: response.validatedTradesCount,
-            //         duplicateTradeErrorCount
-            //     }) === BtnReturn.YES;
-            // }
+        if (this.importResult.validatedTradesCount) {
             await this.reloadPortfolio(this.portfolio.id);
         }
         this.currentStep = "3";
