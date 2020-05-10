@@ -1,5 +1,5 @@
 .import-wrapper {
-  padding: 24px 32px;
+  padding: 24px 32px 50px;
   &-header {
     padding: 0;
 
@@ -35,6 +35,9 @@
       }
     }
     .section-upload-file{
+      margin-top: 16px;
+      align-items: center;
+
       .btn-show-instruction {
         font-size: 12px;
         line-height: 22px;
@@ -216,14 +219,8 @@
         &__step {display: none}
       }
     }
-  }
 
-  &__import-history {
-    @extend .promo-codes__statistics;
-
-    .v-expansion-panel__header {
-      min-height: 0;
-    }
+    .exp-panel.promo-codes__statistics .v-expansion-panel__header {min-height: 0}
   }
 }
 
@@ -287,6 +284,108 @@
   }
   .intelinvest {
     background: url("../img/sidebar/logo.svg") center no-repeat;
+  }
+}
+
+/* Блок История импорта */
+.import-history {
+  @extend .promo-codes__statistics;
+
+  .v-expansion-panel__header {
+    min-height: 0;
+  }
+
+  &-block {
+    background: $main--bg-color;
+    border-radius: 4px;
+    padding: 12px 16px 16px;
+
+    &:first-child {margin-top: 16px}
+
+    + .import-history-block {
+      margin-top: 12px;
+    }
+
+    &__header {
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid #DEE2F0;
+      padding-bottom: 12px;
+
+      &.withoutBorder {
+        padding-bottom: 0;
+        border-bottom: none;
+      }
+
+      > span:not(:last-child) {margin-right: 8px}
+    }
+
+    &__date {font-size: 14px}
+
+    &__description {
+      font-size: 12px;
+      line-height: 18px;
+      color: #9095A6;
+      margin-top: 2px;
+    }
+
+    &__status {
+      padding: 0 8px 0 22px;
+      font-size: 12px;
+      line-height: 24px;
+      border-radius: 4px;
+      position: relative;
+      margin-left: auto;
+
+      &.error {
+        background: rgba(#ff5252, 0.2) !important;
+
+        &:before {background: #ff5252}
+      }
+
+      &.warn {
+        background: rgba(#FFE600, 0.2);
+
+        &:before {background: #FFE600}
+      }
+
+      &.success {
+        background: rgba(#6CC11A, 0.2) !important;
+
+        &:before {background: #6CC11A}
+      }
+
+      &:before {
+        content: "";
+        position: absolute;
+        left: 8px;
+        top: 8px;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+      }
+    }
+
+    &__delete {
+      width: 24px;
+      height: 24px;
+      background: url("../img/common/icon-delete.svg") no-repeat center;
+      cursor: pointer;
+    }
+
+    &__body {
+      > * {margin-top: 12px}
+
+      .v-expansion-panel__header {
+        justify-content: space-between;
+        padding-bottom: 12px !important;
+
+        .v-expansion-panel__container--active & {
+          border-bottom: 1px solid $sidebar-hr-color;
+          margin-bottom: 16px;
+        }
+      }
+    }
   }
 }
 

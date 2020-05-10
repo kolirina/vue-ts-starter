@@ -99,42 +99,43 @@ const MainStore = namespace(StoreType.MAIN);
                             <v-stepper-content step="1">
                                 <!-- История импорта -->
                                 <div v-if="providerAllowedExtensions" class="attachments__allowed-extensions" >Допустимые расширения файлов: <span>{{ providerAllowedExtensions }}</span></div>
-                                <expanded-panel class="provider__import-history">
-                                    <template #header>История импорта</template>
-                                    <template v-if="importHistory.length">
-                                        История импорта
-                                        <div v-for="userImport in importHistory" :key="userImport.id">
-                                            <div>
-                                                <span>{{ userImport.fileName }}</span>
-                                                <span>{{ userImport.date }}</span>
-                                                <span v-if="userImport.savedTradesCount">
+                                <expanded-panel class="import-history">
+                                    <template v-if="importHistory.length" #header>История импорта</template>
+                                    <div v-for="userImport in importHistory" :key="userImport.id" class="import-history-block">
+                                        <div :class="[{'import-history-block__header': true, 'withoutBorder': userImport.status === 'SUCCESS'}]">
+                                            <!-- TODO: нужно ли имя? в дизайне его нет -->
+                                            <!-- <span>{{ userImport.fileName }}</span>-->
+                                            <span class="import-history-block__date">{{ userImport.date }}</span>
+                                            <span v-if="userImport.savedTradesCount" class="import-history-block__description">
                                                 {{ userImport.savedTradesCount | declension("Добавлена", "Добавлено", "Добавлено") }}
                                                 {{ userImport.savedTradesCount }} {{ userImport.savedTradesCount | declension("сделка", "сделки", "сделок") }}
                                             </span>
-                                                <span>{{ userImport.status }}</span>
-                                                <span v-if="userImport.state !== 'REVERTED'" @click.stop="revertImport(userImport.id)">Удалить</span>
-                                                <span v-if="userImport.state === 'REVERTED'">REVERTED</span>
-                                            </div>
-                                            <div>
-                                                <span v-if="userImport.generalError">{{ userImport.generalError }}</span>
-                                                <expanded-panel v-if="userImport.data && userImport.data.length" name="userImportData" :value="[true]" class="mt-3 selectable" disabled
-                                                                always-open>
-                                                    <template #header>
-                                                        <span>Ошибки импорта</span>
-                                                    </template>
-                                                    <v-data-table :headers="headers" :items="userImport.data" class="data-table" hide-actions must-sort>
-                                                        <template #items="props">
-                                                            <tr class="selectable">
-                                                                <td class="text-xs-center"><span v-if="props.item.dealDate">{{ props.item.dealDate | date }}</span></td>
-                                                                <td class="text-xs-left">{{ props.item.dealTicker }}</td>
-                                                                <td class="text-xs-left error-message">{{ props.item.message }}</td>
-                                                            </tr>
-                                                        </template>
-                                                    </v-data-table>
-                                                </expanded-panel>
-                                            </div>
+                                            <span :class="['import-history-block__status', userImport.status.toLowerCase()]">
+                                                {{ userImport.status === "ERROR" ? 'Ошибка' : userImport.status === "WARN" ? 'С замечаниями' : 'Успешно' }}
+                                            </span>
+                                            <span v-if="userImport.state !== 'REVERTED'" @click.stop="revertImport(userImport.id)" class="import-history-block__delete"></span>
+                                            <!-- TODO: нужно ли это? в дизайне его нет -->
+                                            <span v-if="userImport.state === 'REVERTED'">REVERTED</span>
                                         </div>
-                                    </template>
+                                        <div class="import-history-block__body">
+                                            <div v-if="userImport.generalError">{{ userImport.generalError }}</div>
+                                            <expanded-panel v-if="userImport.data && userImport.data.length" name="userImportData" :value="[true]" class="selectable" disabled
+                                                            always-open>
+                                                <template #header>
+                                                    <span>Ошибки импорта</span>
+                                                </template>
+                                                <v-data-table :headers="headers" :items="userImport.data" class="data-table" hide-actions must-sort>
+                                                    <template #items="props">
+                                                        <tr class="selectable">
+                                                            <td class="text-xs-center"><span v-if="props.item.dealDate">{{ props.item.dealDate | date }}</span></td>
+                                                            <td class="text-xs-left">{{ props.item.dealTicker }}</td>
+                                                            <td class="text-xs-left error-message">{{ props.item.message }}</td>
+                                                        </tr>
+                                                    </template>
+                                                </v-data-table>
+                                            </expanded-panel>
+                                        </div>
+                                    </div>
                                 </expanded-panel>
 
                                 <div class="attachments" v-if="!files.length && importProviderFeatures">
@@ -150,42 +151,40 @@ const MainStore = namespace(StoreType.MAIN);
                                         </div>
                                     </file-drop-area>
                                 </div>
-                                <div v-if="files.length && importProviderFeatures" class="attach-file">
-                                    <v-template v-for="(file, index) in files" :key="index">
-                                        <v-list-tile-title class="attach-file__name">
-                                            {{ file.name }}
-                                        </v-list-tile-title>
-                                        <div class="attach-file__size">
-                                            {{ file.size | bytes }}
+                                <div v-if="importProviderFeatures && files.length" class="attachments-block">
+                                    <div class="fs0">
+                                        <div v-for="(file, index) in files" :key="index" class="attach-file">
+                                            <v-list-tile-title class="attach-file__name">
+                                                {{ file.name }}
+                                            </v-list-tile-title>
+                                            <div class="attach-file__size">
+                                                {{ file.size | bytes }}
+                                            </div>
+                                            <v-icon color="#B0B4C2" small @click="deleteFile(file)">close</v-icon>
                                         </div>
-                                        <v-icon color="#B0B4C2" small @click="deleteFile(file)">close</v-icon>
-                                    </v-template>
-                                </div>
 
-                                <v-layout class="section-upload-file" wrap column data-v-step="2">
-                                    <v-layout v-if="importProviderFeatures && files.length" align-center class="margT16">
-                                        <v-btn color="primary" class="btn" @click.stop="uploadFile">Загрузить</v-btn>
-                                        <file-link @select="onFileAdd" :accept="allowedExtensions" class="reselect-file-btn margL12">
-                                            Выбрать другой файл
-                                        </file-link>
-                                    </v-layout>
-                                </v-layout>
-                                <v-divider class="margT32 margB24"></v-divider>
-
-                                <v-menu content-class="dialog-setings-menu"
-                                        transition="slide-y-transition"
-                                        nudge-bottom="36" right class="setings-menu margT0"
-                                        v-if="importProviderFeatures" min-width="514" :close-on-content-click="false">
-                                    <v-btn class="btn" slot="activator">
-                                        Настройки
-                                    </v-btn>
-                                    <v-list dense>
-                                        <div class="title-setings">
-                                            Расширенные настройки импорта
-                                        </div>
-                                        <v-flex>
-                                            <v-checkbox v-model="importProviderFeatures.createLinkedTrade" hide-details class="checkbox-setings">
-                                                <template #label>
+                                        <v-layout class="section-upload-file" wrap data-v-step="2">
+                                            <v-btn color="primary" class="btn" @click.stop="uploadFile">Загрузить</v-btn>
+                                            <file-link @select="onFileAdd" :accept="allowedExtensions" class="reselect-file-btn margL12">
+                                                Выбрать другой файл
+                                            </file-link>
+                                        </v-layout>
+                                    </div>
+                                    <div>
+                                        <v-menu content-class="dialog-setings-menu"
+                                                transition="slide-y-transition"
+                                                nudge-bottom="36" right class="setings-menu margT0"
+                                                v-if="importProviderFeatures" min-width="514" :close-on-content-click="false">
+                                            <v-btn class="btn" slot="activator">
+                                                Настройки
+                                            </v-btn>
+                                            <v-list dense>
+                                                <div class="title-setings">
+                                                    Расширенные настройки импорта
+                                                </div>
+                                                <v-flex>
+                                                    <v-checkbox v-model="importProviderFeatures.createLinkedTrade" hide-details class="checkbox-setings">
+                                                        <template #label>
                                                     <span>Добавлять сделки по списанию/зачислению денежных средств
                                                         <v-menu content-class="zi-102" transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12">
                                                             <sup class="custom-tooltip" slot="activator">
@@ -198,10 +197,10 @@ const MainStore = namespace(StoreType.MAIN);
                                                             </v-list>
                                                         </v-menu>
                                                     </span>
-                                                </template>
-                                            </v-checkbox>
-                                            <v-checkbox v-model="importProviderFeatures.autoCommission" hide-details class="checkbox-setings">
-                                                <template #label>
+                                                        </template>
+                                                    </v-checkbox>
+                                                    <v-checkbox v-model="importProviderFeatures.autoCommission" hide-details class="checkbox-setings">
+                                                        <template #label>
                                                     <span>
                                                         Автоматически рассчитывать комиссию для сделок
                                                         <v-menu content-class="zi-102" transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12"
@@ -218,10 +217,10 @@ const MainStore = namespace(StoreType.MAIN);
                                                             </v-list>
                                                         </v-menu>
                                                     </span>
-                                                </template>
-                                            </v-checkbox>
-                                            <v-checkbox v-model="importProviderFeatures.autoEvents" hide-details class="checkbox-setings">
-                                                <template #label>
+                                                        </template>
+                                                    </v-checkbox>
+                                                    <v-checkbox v-model="importProviderFeatures.autoEvents" hide-details class="checkbox-setings">
+                                                        <template #label>
                                                     <span>
                                                         Автоматически исполнять события по бумагам
                                                         <v-menu content-class="zi-102" transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12"
@@ -238,10 +237,10 @@ const MainStore = namespace(StoreType.MAIN);
                                                             </v-list>
                                                         </v-menu>
                                                     </span>
-                                                </template>
-                                            </v-checkbox>
-                                            <v-checkbox v-model="importProviderFeatures.confirmMoneyBalance" hide-details class="checkbox-setings">
-                                                <template #label>
+                                                        </template>
+                                                    </v-checkbox>
+                                                    <v-checkbox v-model="importProviderFeatures.confirmMoneyBalance" hide-details class="checkbox-setings">
+                                                        <template #label>
                                                     <span>
                                                         Спрашивать текущий остаток ДС
                                                         <v-menu content-class="zi-102" transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12"
@@ -257,10 +256,10 @@ const MainStore = namespace(StoreType.MAIN);
                                                             </v-list>
                                                         </v-menu>
                                                     </span>
-                                                </template>
-                                            </v-checkbox>
-                                            <v-checkbox v-model="importProviderFeatures.importMoneyTrades" hide-details class="checkbox-setings">
-                                                <template #label>
+                                                        </template>
+                                                    </v-checkbox>
+                                                    <v-checkbox v-model="importProviderFeatures.importMoneyTrades" hide-details class="checkbox-setings">
+                                                        <template #label>
                                                     <span>
                                                         Импорт сделок по денежным средствам
                                                         <v-menu content-class="zi-102" transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12"
@@ -276,11 +275,15 @@ const MainStore = namespace(StoreType.MAIN);
                                                             </v-list>
                                                         </v-menu>
                                                     </span>
-                                                </template>
-                                            </v-checkbox>
-                                        </v-flex>
-                                    </v-list>
-                                </v-menu>
+                                                        </template>
+                                                    </v-checkbox>
+                                                </v-flex>
+                                            </v-list>
+                                        </v-menu>
+                                    </div>
+                                </div>
+
+                                <v-divider class="margT32 margB24"></v-divider>
 
                                 <expanded-panel :value="showInstruction" class="promo-codes__statistics">
                                     <template #header>Как выгрузить отчет брокера?</template>

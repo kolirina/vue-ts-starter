@@ -146,7 +146,7 @@ export class ThemeUtils {
     .import-wrapper-content .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
     .v-tooltip__content.menu-icons, .hint-text-for-setings,
     .import-format-requirements-ul, .intel-invest-instruction__title, .intel-invest-instruction__format-text, .intel-invest-instruction__title-values,
-    .intel-invest-instruction__values, .intel-invest-instruction__template-requirements, .import-instructions, .tooltip-text,
+    .intel-invest-instruction__values, .intel-invest-instruction__template-requirements, .import-instructions, .import-default-text .tooltip-text,
     .snotifyToast__body, .info-share-page__empty, .import-dialog-wrapper__title-text, .fs18, .fs36,
     .snotifyToast__buttons button, .update-service-dialog__content,
     .custom-v-menu .v-menu-content, .section-title,

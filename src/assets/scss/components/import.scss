@@ -83,16 +83,24 @@
       color: $theme-color-dark-blue;
     }
   }
+
+  &-block {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 24px;
+  }
 }
 
 .attach-file {
+  display: inline-block;
   border: 1px solid #E8E9ED;
   width: 260px;
   background: url("../img/common/icon-attach.svg") no-repeat left 12px center;
   padding: 12px 24px 12px 56px;
-  margin-top: 24px;
   border-radius: 4px;
   position: relative;
+
+  + .attach-file {margin-left: 12px}
 
   &__name {font-size: 14px}
 
