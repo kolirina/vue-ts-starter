@@ -23,26 +23,21 @@ import {PortfolioParams} from "../../../services/portfolioService";
                 <div class="fs16 bold alignC margB20">
                     Инструкция
                 </div>
-                <div class="import-default-text">
-                    Перейдите в личный кабинет брокера. Перейдите на вкладку просмотра <strong>Единой<br>
-                    денежной позиции</strong> далее вкладка <strong>Справка по счету.</strong>
-                </div>
-                    <v-img :src="IMAGES[0]" max-width="980" class="grey darken-4 image"></v-img>
-                <div class="import-default-text">
-                    Настройте параметры отчета:
-                </div>
-                <div class="import-format-requirements-ul">
-                    <ul>
-                        <li>Укажите период</li>
-                        <li>Укажите формат отчета <b><i>xml</i></b></li>
-                        <li>Нажмите кнопку <b><i>Сформировать</i></b></li>
-                    </ul>
-                </div>
+
+                Перейдите в личный кабинет брокера. Перейдите на вкладку просмотра <strong>Единой<br>
+                денежной позиции</strong> далее вкладка <strong>Справка по счету.</strong>
+
+                <v-img :src="IMAGES[0]" max-width="980" class="grey darken-4 image"></v-img>
+
+                Настройте параметры отчета:
+                <ul>
+                    <li>Укажите период</li>
+                    <li>Укажите формат отчета <b><i>xml</i></b></li>
+                    <li>Нажмите кнопку <b><i>Сформировать</i></b></li>
+                </ul>
                 <v-img :src="IMAGES[1]" max-width="980" class="grey darken-4 image"></v-img>
-                <div class="import-default-text">
-                    После успешного формирования отчета появится запрос на скачивание отчета.<br>
-                    Полученный файл используйте для импорта.
-                </div>
+                После успешного формирования отчета появится запрос на скачивание отчета.<br>
+                Полученный файл используйте для импорта.
             </div>
         </div>
     `

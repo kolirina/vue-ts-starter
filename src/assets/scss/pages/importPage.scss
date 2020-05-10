@@ -1,9 +1,3 @@
-.import-default-text {
-  font-size: 13px;
-  line-height: 22px;
-  letter-spacing: -0.3px;
-  color: #040427;
-}
 .import-wrapper {
   padding: 24px 32px;
   &-header {
@@ -13,7 +7,7 @@
       font-weight: 600;
       font-size: 16px;
       line-height: 24px;
-      color: #040427;
+      color: $theme-color-dark-blue;
     }
   }
   &-content {

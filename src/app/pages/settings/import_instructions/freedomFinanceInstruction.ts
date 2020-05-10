@@ -20,18 +20,12 @@ import {Component, UI} from "../../../app/ui";
     // language=Vue
     template: `
         <div>
-            <div>
-                <div class="import-default-text">
-                    Перейдите в online-терминал. Перейдите на вкладку <b>Сделки</b>
-                </div>
-                <v-img :src="IMAGES[0]" max-width="980" class="grey darken-4 image"></v-img>
-                <div class="import-default-text">
-                    Для получения отчета нажмите Экспорт в Excel
-                </div>
-                <div class="import-default-text">
-                    Полученный файл используйте для импорта.
-                </div>
-            </div>
+            Перейдите в online-терминал. Перейдите на вкладку <b>Сделки</b>
+
+            <v-img :src="IMAGES[0]" max-width="980" class="grey darken-4 image"></v-img>
+
+            Для получения отчета нажмите Экспорт в Excel<br>
+            Полученный файл используйте для импорта.
         </div>
     `
 })
