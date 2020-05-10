@@ -2,7 +2,7 @@
 
 .file-drop-area {
   border-radius: $form-element--border-radius;
-  border: 1px dashed #c9cdd0;
+  border: 2px dashed #c9cdd0;
 
   &.drag-over {
     background-color: rgba($main-color-1, .3);

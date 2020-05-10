@@ -74,7 +74,7 @@
       }
       .reselect-file-btn {
         .file-link__text {
-          padding: 12px 20px;
+          padding: 8px 16px;
           background: none;
           color: #3D4656;
           border: 1px solid #CACED5;
@@ -121,24 +121,7 @@
     color: #3D4656;
   }
 }
-.item-files {
-  padding: 0px 16px 6px;
-  border-bottom: 2px solid #3B6EC9;
-  max-width: 308px;
-  &__name {
-    max-width: 159px;
-    font-size: 12px;
-    line-height: 22px;
-    letter-spacing: -0.3px;
-    color: #040427;
-    font-weight: 600;
-  }
-  &__size {
-    font-size: 10px;
-    letter-spacing: -0.3px;
-    color: #A1A6B6;
-  }
-}
+
 .providers {
   display: flex;
   flex-wrap: wrap;
@@ -218,16 +201,34 @@
         height: auto;
       }
 
+      &__content {
+        padding: 0;
+        margin-top: 24px;
+      }
+
       &__step {
         padding: 0;
 
         &:not(:last-child):after {
-          content: ">";
-          margin: 0 4px;
+          content: "";
+          background: url("../img/common/icon-dropdown.svg") no-repeat center;
+          background-size: contain;
+          width: 10px;
+          height: 10px;
+          margin: 0 8px;
+          transform: rotate(90deg);
         }
 
         &__step {display: none}
       }
+    }
+  }
+
+  &__import-history {
+    @extend .promo-codes__statistics;
+
+    .v-expansion-panel__header {
+      min-height: 0;
     }
   }
 }
