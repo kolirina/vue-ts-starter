@@ -1,6 +1,7 @@
 import {Inject} from "typescript-ioc";
 import {namespace} from "vuex-class/lib/bindings";
 import {Component, UI, Watch} from "../../app/ui";
+import {BrokerSwitcher} from "../../components/brokerSwitcher";
 import {CurrencyBalances} from "../../components/currencyBalances";
 import {ConfirmDialog} from "../../components/dialogs/confirmDialog";
 import {FeedbackDialog} from "../../components/dialogs/feedbackDialog";
@@ -15,7 +16,7 @@ import {
     ImportResponse,
     ImportService,
     ShareAliasItem,
-    UserImport,
+    UserImport, UserImportState,
     UserLogStatus
 } from "../../services/importService";
 import {OverviewService} from "../../services/overviewService";
@@ -86,7 +87,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 </div>
                             </div>
                         </div>
-                        <v-btn>Изменить брокера</v-btn>
+                        <broker-switcher @selectProvider="onSelectProvider($event)"></broker-switcher>
                     </div>
                     <v-stepper v-model="currentStep" class="provider__stepper">
                         <v-stepper-header>
@@ -103,7 +104,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     <template v-if="importHistory.length" #header>История импорта</template>
                                     <div v-for="userImport in importHistory" :key="userImport.id" class="import-history-block">
                                         <div :class="[{'import-history-block__header': true, 'withoutBorder': userImport.status === 'SUCCESS'}]">
-                                            <!-- TODO: нужно ли имя? в дизайне его нет -->
+                                            <!-- TODO: нужно ли имя? в дизайне его нет. Нужно, оставляем -->
                                             <!-- <span>{{ userImport.fileName }}</span>-->
                                             <span class="import-history-block__date">{{ userImport.date }}</span>
                                             <span v-if="userImport.savedTradesCount" class="import-history-block__description">
@@ -114,8 +115,6 @@ const MainStore = namespace(StoreType.MAIN);
                                                 {{ userImport.status === Status.ERROR ? 'Ошибка' : userImport.status === Status.WARN ? 'С замечаниями' : 'Успешно' }}
                                             </span>
                                             <span v-if="userImport.state !== 'REVERTED'" @click.stop="revertImport(userImport.id)" class="import-history-block__delete"></span>
-                                            <!-- TODO: нужно ли это? в дизайне его нет -->
-                                            <span v-if="userImport.state === 'REVERTED'">REVERTED</span>
                                         </div>
                                         <div class="import-history-block__body">
                                             <div v-if="userImport.generalError">{{ userImport.generalError }}</div>
@@ -402,7 +401,7 @@ const MainStore = namespace(StoreType.MAIN);
             </v-card>
         </v-container>
     `,
-    components: {CurrencyBalances, ImportInstructions, ExpandedPanel}
+    components: {BrokerSwitcher, CurrencyBalances, ImportInstructions, ExpandedPanel}
 })
 export class ImportPage extends UI {
 
@@ -497,7 +496,7 @@ export class ImportPage extends UI {
             data: [],
             generalError: "Ошибка при импорте файла",
             fileName: "broker_rep (3).xlsx",
-            state: null
+            state: UserImportState.REVERTED
         }, {
             id: 1520,
             userId: 28,
