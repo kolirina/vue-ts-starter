@@ -136,6 +136,7 @@
     &-img-block {
       @extend %provider-image;
       filter: grayscale(1);
+      background-size: 30px 30px !important;
     }
     &-text {
       font-size: 12px;
@@ -172,6 +173,7 @@
 
   &__image {
     @extend %provider-image;
+    background-size: 30px 30px !important;
   }
 
   &__name {
@@ -224,13 +226,57 @@
     }
 
     .exp-panel.promo-codes__statistics .v-expansion-panel__header {min-height: 0}
+
+    .currency-balances > div {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      margin-bottom: 48px;
+
+      > div:not(.btn-section) {
+        max-width: 232px;
+        width: 232px;
+        margin-right: 12px;
+      }
+
+      .btn-section {display: none}
+
+      .v-text-field {
+
+        &__details {display: none}
+
+        &__suffix {
+          position: absolute;
+          top: calc(100% + 4px);
+          font-size: 12px;
+          color: rgba(61, 70, 86, 0.54);
+        }
+      }
+    }
+  }
+}
+
+.providers-list {
+  &__item-img {
+    @extend %provider-image;
+    width: 32px !important;
+    height: 32px !important;
+    background-size: 22px 22px !important;
+  }
+
+  &__item-description {font-size: 14px}
+
+  .v-list__tile {
+    height: auto;
+    padding: 6px 20px;
   }
 }
 
 /* Иконки брокеров */
 
 .provider,
-.providers {
+.providers,
+.providers-list {
   .alfadirect {
     background: url("../img/fileimport/alfadirect.svg") center no-repeat;
   }
@@ -454,6 +500,5 @@
   border-radius: 50%;
   width: 52px;
   height: 52px;
-  background-size: 30px 30px !important;
   margin-right: 12px;
 }

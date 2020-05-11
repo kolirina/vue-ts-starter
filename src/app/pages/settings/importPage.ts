@@ -297,6 +297,16 @@ const MainStore = namespace(StoreType.MAIN);
 
                             <v-stepper-content step="2">
                                 <v-card class="dialog-wrap import-dialog-wrapper">
+                                    <span class="fs14">Остатки денежных средств</span>
+                                    <v-tooltip content-class="custom-tooltip-wrap" max-width="563px" bottom>
+                                        <sup class="custom-tooltip" slot="activator">
+                                            <v-icon>fas fa-info-circle</v-icon>
+                                        </sup>
+                                        <!-- TODO проверить текст подсказки-->
+                                        <span>
+                                            Текст подсказки
+                                        </span>
+                                    </v-tooltip>
                                     <currency-balances v-if="importProviderFeatures.confirmMoneyBalance || true" :portfolio-id="portfolio.id"
                                                        class="currency-balances"></currency-balances>
                                     <v-divider></v-divider>

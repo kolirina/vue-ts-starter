@@ -21,17 +21,14 @@ import {DealsImportProvider} from "../services/importService";
     // language=Vue
     template: `
         <v-list-tile class="text-xs-center sidebar-list-item">
-            <v-list-tile-content class="portfolio-content">
-                <v-menu offset-y transition="slide-y-transition" class="portfolios-drop portfolios-menu">
-                    <v-btn slot="activator" class="pa-0 w100pc">
-                        <span>Изменить брокера</span>
-                    </v-btn>
-
-                    <v-list class="portfolios-list">
+            <v-list-tile-content>
+                <v-menu offset-y transition="slide-y-transition" max-height="480px" min-width="260px">
+                    <v-btn slot="activator">Изменить брокера</v-btn>
+                    <v-list class="providers-list">
                         <v-list-tile v-for="provider in providers" :key="provider.code" @click="onSelectProvider(provider)">
-                            <v-layout align-center class="portfolios-list-icons">
-                                <div :class="['item-img-block', provider.code.toLowerCase()]"></div>
-                                <div class="item-text">
+                            <v-layout align-center class="providers-list__item">
+                                <div :class="['providers-list__item-img', provider.code.toLowerCase()]"></div>
+                                <div class="providers-list__item-description">
                                     {{ provider.description }}
                                 </div>
                             </v-layout>
