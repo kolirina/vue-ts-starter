@@ -141,7 +141,7 @@ export class ThemeUtils {
     .providers .item-text,
     .select-section .v-select__selection,
     .v-menu__content .v-select-list .v-list__tile__title,
-    .dialog-default-text,
+    .dialog-default-text, .attachments__allowed-extensions span,
     .v-btn.portfolio-rows-filter__button:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
     .import-wrapper-content .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
     .v-tooltip__content.menu-icons, .hint-text-for-setings,
@@ -154,12 +154,12 @@ export class ThemeUtils {
 
     .theme--light.v-label,
     .fs12-opacity,
-    .theme--light.v-counter, .theme--light.v-input--is-disabled input,
-    .theme--light.v-messages {color: #fff; opacity: 0.7}
+    .theme--light.v-counter, .theme--light.v-input--is-disabled input, .provider__stepper .currency-balances>div .v-text-field__suffix,
+    .theme--light.v-messages, .theme--light.v-stepper .v-stepper__label, .attachments .attachments__title {color: #fff; opacity: 0.7}
 
     .import-wrapper-content .intelinvest-section .v-btn {color: rgba(0,0,0,.87) !important;}
 
-    .theme--light.v-pagination .v-pagination__navigation {background: none}
+    .theme--light.v-pagination .v-pagination__navigation, .theme--light.v-stepper {background: none}
 
     .active-link, .wrap-list-menu .v-list__tile:hover,
     .theme--dark.v-btn:not(.v-btn--icon):not(.v-btn--flat),
@@ -178,7 +178,8 @@ export class ThemeUtils {
     .import-wrapper-content .setings-menu .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light,
     .import-wrapper-content .setings-menu .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
     .wrapper-content-panel__privacy-section-up-page-btn, .free-subscribe, .events__info-panel, .info-block,
-    .sing-in-wrap .pre-footer, .promo-codes__steps, .tariff-notification,
+    .sing-in-wrap .pre-footer, .promo-codes__steps, .tariff-notification, .import-history-block,
+    .import-result-info .exp-panel, .import-result-info .exp-panel .v-card,
     input.highcharts-range-selector:focus, .inplace-custom-input, .currency-card.v-card {background-color: #252A35 !important}
 
     .dashboard-wrap {background-color: #0a0d19;}

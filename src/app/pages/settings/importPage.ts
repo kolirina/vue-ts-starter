@@ -329,14 +329,6 @@ const MainStore = namespace(StoreType.MAIN);
                                                               @requestNewShare="onRequestNewShare"
                                                               autofocus ellipsis allow-request></share-search>
                                             </div>
-                                            <div v-for="aliasItem in shareAliases" :key="aliasItem.alias" class="import-alias-item">
-                                                <!-- Алиас бумаги -->
-                                                <div class="import-alias-item__name" :title="aliasItem.alias">{{ aliasDescription(aliasItem) }}</div>
-                                                <!-- Выбранная бумага -->
-                                                <share-search @change="onShareSelect($event, aliasItem)" @clear="onShareClear(aliasItem)"
-                                                              @requestNewShare="onRequestNewShare"
-                                                              autofocus ellipsis allow-request></share-search>
-                                            </div>
                                         </v-card-text>
                                     </div>
 
