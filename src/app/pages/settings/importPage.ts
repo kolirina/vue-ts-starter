@@ -16,7 +16,8 @@ import {
     ImportResponse,
     ImportService,
     ShareAliasItem,
-    UserImport, UserImportState,
+    UserImport,
+    UserImportState,
     UserLogStatus
 } from "../../services/importService";
 import {OverviewService} from "../../services/overviewService";
@@ -55,7 +56,8 @@ const MainStore = namespace(StoreType.MAIN);
                             </sup>
                             <span>
                                 Если в списке нет вашего брокера или терминала, вы всегда можете осуществить импорт через универсальный Формат Intelinvest (CSV)
-                                или обратиться к нам через <a @click.stop="openFeedBackDialog">обратную связь</a> , <a href="mailto:web@intelinvest.ru">по почте</a> или в группе <a href="https://vk.com/intelinvest">вконтакте</a>.
+                                или обратиться к нам через <a @click.stop="openFeedBackDialog">обратную связь</a> , <a href="mailto:web@intelinvest.ru">по почте</a> или в группе <a
+                                    href="https://vk.com/intelinvest">вконтакте</a>.
                             </span>
                         </v-tooltip>
                     </div>
@@ -99,13 +101,14 @@ const MainStore = namespace(StoreType.MAIN);
                         <v-stepper-items>
                             <v-stepper-content step="1">
                                 <!-- История импорта -->
-                                <div v-if="providerAllowedExtensions" class="attachments__allowed-extensions" >Допустимые расширения файлов: <span>{{ providerAllowedExtensions }}</span></div>
+                                <div v-if="providerAllowedExtensions" class="attachments__allowed-extensions">Допустимые расширения файлов:
+                                    <span>{{ providerAllowedExtensions }}</span></div>
                                 <expanded-panel class="import-history">
                                     <template v-if="importHistory.length" #header>История импорта</template>
                                     <div v-for="userImport in importHistory" :key="userImport.id" class="import-history-block">
                                         <div :class="[{'import-history-block__header': true, 'withoutBorder': userImport.status === 'SUCCESS'}]">
                                             <!-- TODO: нужно ли имя? в дизайне его нет. Нужно, оставляем -->
-                                            <!-- <span>{{ userImport.fileName }}</span>-->
+                                            <span>{{ userImport.fileName }}</span>
                                             <span class="import-history-block__date">{{ userImport.date }}</span>
                                             <span v-if="userImport.savedTradesCount" class="import-history-block__description">
                                                 {{ userImport.savedTradesCount | declension("Добавлена", "Добавлено", "Добавлено") }}
@@ -649,7 +652,22 @@ export class ImportPage extends UI {
                     dealTicker: "FXGD",
                     currency: null,
                     shareNotFound: false
-                }, {message: "Сделка уже была импортирована ранее", dealDate: "2020-01-21", dealTicker: null, currency: null, shareNotFound: false}],
+                },
+                    {
+                        message: "Сделка уже была импортирована ранее",
+                        dealDate: "2020-01-21",
+                        dealTicker: null,
+                        currency: null,
+                        shareNotFound: false
+                    },
+                    {
+                        message: "Нераспознанный тикер бумаги",
+                        dealDate: "2020-01-21",
+                        dealTicker: "GAZPOM",
+                        currency: null,
+                        shareNotFound: true
+                    }
+                ],
                 generalError: null,
                 validatedTradesCount: 10,
                 status: "WARN" as Status
