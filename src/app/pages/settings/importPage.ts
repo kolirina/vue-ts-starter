@@ -48,7 +48,7 @@ const MainStore = namespace(StoreType.MAIN);
                 <v-card-title class="import-wrapper-header">
                     <div class="import-wrapper-header__title">
                         Выберите своего брокера
-                        <v-tooltip content-class="custom-tooltip-wrap" max-width="340px" bottom>
+                        <v-tooltip content-class="custom-tooltip-wrap" max-width="563px" bottom>
                             <sup class="custom-tooltip" slot="activator">
                                 <v-icon>fas fa-info-circle</v-icon>
                             </sup>
@@ -111,7 +111,7 @@ const MainStore = namespace(StoreType.MAIN);
                                                 {{ userImport.savedTradesCount }} {{ userImport.savedTradesCount | declension("сделка", "сделки", "сделок") }}
                                             </span>
                                             <span :class="['import-history-block__status', userImport.status.toLowerCase()]">
-                                                {{ userImport.status === "ERROR" ? 'Ошибка' : userImport.status === "WARN" ? 'С замечаниями' : 'Успешно' }}
+                                                {{ userImport.status === Status.ERROR ? 'Ошибка' : userImport.status === Status.WARN ? 'С замечаниями' : 'Успешно' }}
                                             </span>
                                             <span v-if="userImport.state !== 'REVERTED'" @click.stop="revertImport(userImport.id)" class="import-history-block__delete"></span>
                                             <!-- TODO: нужно ли это? в дизайне его нет -->
@@ -323,35 +323,78 @@ const MainStore = namespace(StoreType.MAIN);
                             </v-stepper-content>
 
                             <v-stepper-content step="3">
-                                <div v-if="importResult">
-                                    <span>{{ importResult.status }}</span>
-                                    <span>Успех</span>
-                                    <span>
-                                        {{ importResult.validatedTradesCount | declension("Добавлена", "Добавлено", "Добавлено") }}
-                                        {{ importResult.validatedTradesCount }} {{ importResult.validatedTradesCount | declension("сделка", "сделки", "сделок") }}
-                                    </span>
+                                <div v-if="importResult" class="import-result-status">
+                                    <div :class="['import-result-status__img',
+                                        importResult.status === Status.ERROR ? 'status-error' :
+                                        importResult.status === Status.SUCCESS ? 'status-success' : 'status-warn']"></div>
+                                    <div class="import-result-status__content">
+                                        <div :class="{'status-error': importResult.status === Status.ERROR}">
+                                            {{ importResult.status === Status.ERROR ? "Ошибка" : importResult.status === Status.SUCCESS ? "Успех" : "Почти Успех" }}
+                                        </div>
+                                        <span>
+                                            {{ importResult.validatedTradesCount | declension("Добавлена", "Добавлено", "Добавлено") }}
+                                            {{ importResult.validatedTradesCount }} {{ importResult.validatedTradesCount | declension("сделка", "сделки", "сделок") }}
+                                        </span>
+                                    </div>
                                 </div>
-                                <span>Портфель почти сформирован, для полного соответствия требуются дополнительные данные</span>
-                                <expanded-panel name="dividends" :value="[true]" class="mt-3 selectable" disabled always-open>
-                                    <template #header>
-                                        <span>Отчет не содержит информацию по дивидендам</span>
-                                    </template>
-                                    <span>content</span>
-                                </expanded-panel>
+                                <div class="info-block">Портфель почти сформирован, для полного соответствия требуются дополнительные данные</div>
+                                <div class="import-result-info">
+                                    <expanded-panel name="dividends" :value="[true]" class="selectable import-history">
+                                        <template #header>
+                                            <span>Отчет не содержит информацию по дивидендам</span>
+                                            <v-tooltip content-class="custom-tooltip-wrap" max-width="563px" bottom>
+                                                <sup class="custom-tooltip" slot="activator">
+                                                    <v-icon>fas fa-info-circle</v-icon>
+                                                </sup>
+                                                <!-- TODO проверить текст подсказки-->
+                                                <span>
+                                                   Текст подсказки
+                                                </span>
+                                            </v-tooltip>
+                                        </template>
+                                        <span>content</span>
+                                    </expanded-panel>
 
-                                <expanded-panel name="tickers" :value="[true]" class="mt-3 selectable" disabled always-open>
-                                    <template #header>
-                                        <span>Не распознаны тикеры средующий бумаг</span>
-                                    </template>
-                                    <span>content</span>
-                                </expanded-panel>
+                                    <expanded-panel name="tickers" :value="[true]" class="selectable import-history">
+                                        <template #header>
+                                            <span>Не распознаны тикеры средующий бумаг</span>
+                                            <v-tooltip content-class="custom-tooltip-wrap" max-width="563px" bottom>
+                                                <sup class="custom-tooltip" slot="activator">
+                                                    <v-icon>fas fa-info-circle</v-icon>
+                                                </sup>
+                                                <!-- TODO проверить текст подсказки-->
+                                                <span>
+                                                    Брокер использует нестандартные названия для ценных бумаг в своих отчетах или не указывает уникальный идентификатор
+                                                    бумаги, по которому ее можно распознать.<br><br>
 
-                                <expanded-panel name="residuals" :value="[true]" class="mt-3 selectable" disabled always-open>
-                                    <template #header>
-                                        <span>Остаток денежных средств может отличаться от брокера</span>
-                                    </template>
-                                    <span>content</span>
-                                </expanded-panel>
+                                                    Чтобы импортировать ваш портфель полностью соотнесите название бумаги из отчета с названием бумаги на сервисе.
+                                                    Например: « ПАО Газпром-ао » → GAZP
+                                                </span>
+                                            </v-tooltip>
+                                        </template>
+                                        <span>content</span>
+                                    </expanded-panel>
+
+                                    <expanded-panel name="residuals" :value="[true]" class="selectable import-history">
+                                        <template #header>
+                                            <span>Остаток денежных средств может отличаться от брокера</span>
+                                            <v-tooltip content-class="custom-tooltip-wrap" max-width="563px" bottom>
+                                                <sup class="custom-tooltip" slot="activator">
+                                                    <v-icon>fas fa-info-circle</v-icon>
+                                                </sup>
+                                                <!-- TODO проверить текст подсказки-->
+                                                <span>
+                                                    В отчете брокера не указаны остатки денежных средств на данный момент.
+                                                    Чтобы исключить несоответствие портфеля, пожалуйста укажите текущие остатки денежных средств в полях ввода
+                                                </span>
+                                            </v-tooltip>
+                                        </template>
+                                        <span>content</span>
+                                    </expanded-panel>
+                                </div>
+                                <!-- TODO: добавить действия -->
+                                <v-btn color="primary" class="margR12">Перейти в портфель</v-btn>
+                                <v-btn>Новый импорт</v-btn>
                             </v-stepper-content>
                         </v-stepper-items>
                     </v-stepper>
@@ -415,6 +458,9 @@ export class ImportPage extends UI {
         {text: "Тикер", align: "left", value: "dealTicker", sortable: false},
         {text: "Ошибка", align: "center", value: "message", sortable: false}
     ];
+
+    /** Статусы */
+    private Status = Status;
 
     /**
      * Инициализирует необходимые для работы данные
