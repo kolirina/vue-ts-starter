@@ -369,6 +369,11 @@
       > span:not(:last-child) {margin-right: 8px}
     }
 
+    &__name {
+      margin-top: 2px;
+      font-weight: 600
+    }
+
     &__date {font-size: 14px}
 
     &__description {
@@ -434,6 +439,29 @@
           margin-bottom: 16px;
         }
       }
+    }
+  }
+}
+
+.import-alias {
+  padding: 0;
+  margin-bottom: 32px;
+
+  &-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+
+    &__name {
+      @extend .ellipsis;
+      width: 232px;
+      font-size: 14px;
+      margin-right: 12px;
+      flex: none;
+    }
+
+    .v-input {
+      max-width: 476px;
     }
   }
 }

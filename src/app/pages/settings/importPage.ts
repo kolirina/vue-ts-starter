@@ -107,8 +107,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     <template v-if="importHistory.length" #header>История импорта</template>
                                     <div v-for="userImport in importHistory" :key="userImport.id" class="import-history-block">
                                         <div :class="[{'import-history-block__header': true, 'withoutBorder': userImport.status === 'SUCCESS'}]">
-                                            <!-- TODO: нужно ли имя? в дизайне его нет. Нужно, оставляем -->
-                                            <span>{{ userImport.fileName }}</span>
+                                            <span class="import-history-block__name">{{ userImport.fileName }}</span>
                                             <span class="import-history-block__date">{{ userImport.date }}</span>
                                             <span v-if="userImport.savedTradesCount" class="import-history-block__description">
                                                 {{ userImport.savedTradesCount | declension("Добавлена", "Добавлено", "Добавлено") }}
@@ -309,26 +308,37 @@ const MainStore = namespace(StoreType.MAIN);
                                     </v-tooltip>
                                     <currency-balances v-if="importProviderFeatures.confirmMoneyBalance || true" :portfolio-id="portfolio.id"
                                                        class="currency-balances"></currency-balances>
-                                    <v-divider></v-divider>
-                                    <v-layout column justify-space-between class="min-height-wrapper">
-                                        <v-card-text v-if="shareAliases.length" class="selectable">
-                                            <div v-for="aliasItem in shareAliases" :key="aliasItem.alias">
-                                                <v-layout align-center justify-start wrap row fill-height class="mt-2 mb-2">
-                                                    <!-- Алиас бумаги -->
-                                                    <v-flex xs12 sm4>
-                                                        <span class="fs12" :title="aliasItem.alias">{{ aliasDescription(aliasItem) }}</span>
-                                                    </v-flex>
-
-                                                    <!-- Выбранная бумага -->
-                                                    <v-flex xs12 sm8>
-                                                        <share-search @change="onShareSelect($event, aliasItem)" @clear="onShareClear(aliasItem)"
-                                                                      @requestNewShare="onRequestNewShare"
-                                                                      autofocus ellipsis allow-request></share-search>
-                                                    </v-flex>
-                                                </v-layout>
+                                    <v-divider class="margB24"></v-divider>
+                                    <span class="fs14">Остатки денежных средств</span>
+                                    <v-tooltip content-class="custom-tooltip-wrap" max-width="563px" bottom>
+                                        <sup class="custom-tooltip" slot="activator">
+                                            <v-icon>fas fa-info-circle</v-icon>
+                                        </sup>
+                                        <!-- TODO проверить текст подсказки-->
+                                        <span>
+                                            Текст подсказки
+                                        </span>
+                                    </v-tooltip>
+                                    <div class="margT20">
+                                        <v-card-text v-if="shareAliases.length" class="selectable import-alias">
+                                            <div v-for="aliasItem in shareAliases" :key="aliasItem.alias" class="import-alias-item">
+                                                <!-- Алиас бумаги -->
+                                                <div class="import-alias-item__name" :title="aliasItem.alias">{{ aliasDescription(aliasItem) }}</div>
+                                                <!-- Выбранная бумага -->
+                                                <share-search @change="onShareSelect($event, aliasItem)" @clear="onShareClear(aliasItem)"
+                                                              @requestNewShare="onRequestNewShare"
+                                                              autofocus ellipsis allow-request></share-search>
+                                            </div>
+                                            <div v-for="aliasItem in shareAliases" :key="aliasItem.alias" class="import-alias-item">
+                                                <!-- Алиас бумаги -->
+                                                <div class="import-alias-item__name" :title="aliasItem.alias">{{ aliasDescription(aliasItem) }}</div>
+                                                <!-- Выбранная бумага -->
+                                                <share-search @change="onShareSelect($event, aliasItem)" @clear="onShareClear(aliasItem)"
+                                                              @requestNewShare="onRequestNewShare"
+                                                              autofocus ellipsis allow-request></share-search>
                                             </div>
                                         </v-card-text>
-                                    </v-layout>
+                                    </div>
 
                                     <v-btn color="primary" class="big_btn" @click.native="goToFinalStep">Далее</v-btn>
                                 </v-card>
