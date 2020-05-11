@@ -77,9 +77,18 @@
           border: 1px solid #CACED5;
           white-space: nowrap;
         }
+
+        @media only screen and (max-width: $sm-breakpoint) {
+          display: inline-block;
+          padding: 8px 0;
+        }
       }
+
+      @media only screen and (max-width: $sm-breakpoint) {margin-bottom: 24px}
     }
   }
+
+  @media only screen and (max-width: $sm-breakpoint) {padding: 16px}
 }
 .dialog-setings-menu {
   .v-list{
@@ -169,6 +178,8 @@
     align-items: center;
     padding-bottom: 10px;
     border-bottom: 1px solid $sidebar-hr-color;
+
+    @media only screen and (max-width: $xs-breakpoint) {flex-wrap: wrap}
   }
 
   &__image {
@@ -222,6 +233,10 @@
         &__step {display: none}
 
         &.v-stepper__step--active ~ .v-stepper__step {text-shadow: none}
+
+        @media only screen and (max-width: $sm-breakpoint) {
+          .v-stepper__label {display: flex !important}
+        }
       }
     }
 
@@ -367,6 +382,8 @@
       }
 
       > span:not(:last-child) {margin-right: 8px}
+
+      @media only screen and (max-width: $sm-breakpoint) {overflow-y: auto}
     }
 
     &__name {
@@ -463,6 +480,8 @@
     .v-input {
       max-width: 476px;
     }
+
+    @media only screen and (max-width: $sm-breakpoint) {flex-direction: column}
   }
 }
 
@@ -480,7 +499,11 @@
 
     + .exp-panel {margin-top: 8px}
 
-    .v-expansion-panel__header {justify-content: space-between}
+    .v-expansion-panel__header {
+      justify-content: space-between;
+
+      @media only screen and (max-width: $sm-breakpoint) {overflow-y: auto}
+    }
 
     .v-expansion-panel__container--active .v-expansion-panel__header {
       border-bottom: 1px solid $sidebar-hr-color;

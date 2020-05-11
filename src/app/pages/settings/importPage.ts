@@ -165,8 +165,8 @@ const MainStore = namespace(StoreType.MAIN);
                                         </div>
 
                                         <v-layout class="section-upload-file" wrap data-v-step="2">
-                                            <v-btn color="primary" class="btn" @click.stop="uploadFile">Загрузить</v-btn>
-                                            <file-link @select="onFileAdd" :accept="allowedExtensions" class="reselect-file-btn margL12">
+                                            <v-btn color="primary" class="btn margR12" @click.stop="uploadFile">Загрузить</v-btn>
+                                            <file-link @select="onFileAdd" :accept="allowedExtensions" class="reselect-file-btn">
                                                 Выбрать другой файл
                                             </file-link>
                                         </v-layout>
