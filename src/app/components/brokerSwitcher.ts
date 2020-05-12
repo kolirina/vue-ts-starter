@@ -24,15 +24,17 @@ import {DealsImportProvider} from "../services/importService";
             <v-list-tile-content>
                 <v-menu offset-y transition="slide-y-transition" max-height="480px" min-width="260px">
                     <v-btn slot="activator">Изменить брокера</v-btn>
-                    <v-list class="providers-list">
-                        <v-list-tile v-for="provider in providers" :key="provider.code" @click="onSelectProvider(provider)">
-                            <v-layout align-center class="providers-list__item">
-                                <div :class="['providers-list__item-img', provider.code.toLowerCase()]"></div>
-                                <div class="providers-list__item-description">
-                                    {{ provider.description }}
-                                </div>
-                            </v-layout>
-                        </v-list-tile>
+                    <v-list class="providers-list" style="height: 450px">
+                        <vue-scroll>
+                            <v-list-tile v-for="provider in providers" :key="provider.code" @click="onSelectProvider(provider)">
+                                <v-layout align-center class="providers-list__item">
+                                    <div :class="['providers-list__item-img', provider.code.toLowerCase()]"></div>
+                                    <div class="providers-list__item-description">
+                                        {{ provider.description }}
+                                    </div>
+                                </v-layout>
+                            </v-list-tile>
+                        </vue-scroll>
                     </v-list>
                 </v-menu>
             </v-list-tile-content>

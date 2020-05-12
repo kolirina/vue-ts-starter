@@ -6,24 +6,24 @@ import {CurrencyBalances} from "../../components/currencyBalances";
 import {ConfirmDialog} from "../../components/dialogs/confirmDialog";
 import {FeedbackDialog} from "../../components/dialogs/feedbackDialog";
 import {ExpandedPanel} from "../../components/expandedPanel";
+import {ImportErrorsTable} from "../../components/imp/importErrorsTable";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {ClientInfo} from "../../services/clientService";
 import {
+    DealImportError,
     DealsImportProvider,
     ImportProviderFeatures,
     ImportProviderFeaturesByProvider,
     ImportResponse,
     ImportService,
     ShareAliasItem,
-    UserImport,
-    UserImportState,
-    UserLogStatus
+    UserImport
 } from "../../services/importService";
 import {OverviewService} from "../../services/overviewService";
 import {PortfolioParams, PortfolioService} from "../../services/portfolioService";
 import {CurrencyUnit} from "../../types/currency";
-import {Portfolio, Share, Status, TableHeader} from "../../types/types";
+import {Portfolio, Share, Status} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {FileUtils} from "../../utils/fileUtils";
 import {MutationType} from "../../vuex/mutationType";
@@ -101,10 +101,11 @@ const MainStore = namespace(StoreType.MAIN);
                         <v-stepper-items>
                             <v-stepper-content step="1">
                                 <!-- История импорта -->
-                                <div v-if="providerAllowedExtensions" class="attachments__allowed-extensions">Допустимые расширения файлов:
-                                    <span>{{ providerAllowedExtensions }}</span></div>
-                                <expanded-panel class="import-history">
-                                    <template v-if="importHistory.length" #header>История импорта</template>
+                                <div v-if="providerAllowedExtensions" class="attachments__allowed-extensions">
+                                    Допустимые расширения файлов: <span>{{ providerAllowedExtensions }}</span>
+                                </div>
+                                <expanded-panel v-if="importHistory.length" class="import-history">
+                                    <template #header>История импорта</template>
                                     <div v-for="userImport in importHistory" :key="userImport.id" class="import-history-block">
                                         <div :class="[{'import-history-block__header': true, 'withoutBorder': userImport.status === 'SUCCESS'}]">
                                             <span class="import-history-block__name">{{ userImport.fileName }}</span>
@@ -120,20 +121,9 @@ const MainStore = namespace(StoreType.MAIN);
                                         </div>
                                         <div class="import-history-block__body">
                                             <div v-if="userImport.generalError">{{ userImport.generalError }}</div>
-                                            <expanded-panel v-if="userImport.data && userImport.data.length" name="userImportData" :value="[true]" class="selectable" disabled
-                                                            always-open>
-                                                <template #header>
-                                                    <span>Ошибки импорта</span>
-                                                </template>
-                                                <v-data-table :headers="headers" :items="userImport.data" class="data-table" hide-actions must-sort>
-                                                    <template #items="props">
-                                                        <tr class="selectable">
-                                                            <td class="text-xs-center"><span v-if="props.item.dealDate">{{ props.item.dealDate | date }}</span></td>
-                                                            <td class="text-xs-left">{{ props.item.dealTicker }}</td>
-                                                            <td class="text-xs-left error-message">{{ props.item.message }}</td>
-                                                        </tr>
-                                                    </template>
-                                                </v-data-table>
+                                            <expanded-panel v-if="userImport.data && userImport.data.length" class="selectable">
+                                                <template #header>Ошибки импорта</template>
+                                                <import-errors-table :error-items="userImport.data"></import-errors-table>
                                             </expanded-panel>
                                         </div>
                                     </div>
@@ -142,12 +132,21 @@ const MainStore = namespace(StoreType.MAIN);
                                 <div class="attachments" v-if="!files.length && importProviderFeatures">
                                     <file-drop-area @drop="onFileAdd" class="attachments-file-drop">
                                         <div v-if="selectedProvider" class="attachments-file-drop__content">
-                                            <div class="attachments__title">Загрузить отчет</div>
+                                            <div class="attachments__title">Загрузить отчет по сделкам</div>
                                             <div>
                                                 Перетащить сюда или
-                                                <file-link @select="onFileAdd" :accept="allowedExtensions" class="select-file-btn">
-                                                    выбрать
-                                                </file-link>
+                                                <file-link @select="onFileAdd" :accept="allowedExtensions" class="select-file-btn">выбрать</file-link>
+                                            </div>
+                                        </div>
+                                    </file-drop-area>
+                                </div>
+                                <div class="attachments" v-if="files.length !== 2 && importProviderFeatures && isSberbank">
+                                    <file-drop-area @drop="onFileAdd" class="attachments-file-drop">
+                                        <div v-if="selectedProvider" class="attachments-file-drop__content">
+                                            <div class="attachments__title">Загрузить отчет с зачислениями и списаниями</div>
+                                            <div>
+                                                Перетащить сюда или
+                                                <file-link @select="onFileAdd" :accept="allowedExtensions" class="select-file-btn">выбрать</file-link>
                                             </div>
                                         </div>
                                     </file-drop-area>
@@ -166,116 +165,116 @@ const MainStore = namespace(StoreType.MAIN);
 
                                         <v-layout class="section-upload-file" wrap data-v-step="2">
                                             <v-btn color="primary" class="btn margR12" @click.stop="uploadFile">Загрузить</v-btn>
-                                            <file-link @select="onFileAdd" :accept="allowedExtensions" class="reselect-file-btn">
+                                            <file-link v-if="!isSberbank" @select="onFileAdd" :accept="allowedExtensions" class="reselect-file-btn">
                                                 Выбрать другой файл
                                             </file-link>
                                         </v-layout>
                                     </div>
                                     <div>
-                                        <v-menu content-class="dialog-setings-menu"
+                                        <v-menu v-if="importProviderFeatures && showImportSettings" content-class="dialog-settings-menu"
                                                 transition="slide-y-transition"
-                                                nudge-bottom="36" right class="setings-menu margT0"
-                                                v-if="importProviderFeatures" min-width="514" :close-on-content-click="false">
+                                                nudge-bottom="36" right class="settings-menu margT0"
+                                                min-width="514" :close-on-content-click="false">
                                             <v-btn class="btn" slot="activator">
                                                 Настройки
                                             </v-btn>
                                             <v-list dense>
-                                                <div class="title-setings">
+                                                <div class="title-settings">
                                                     Расширенные настройки импорта
                                                 </div>
                                                 <v-flex>
-                                                    <v-checkbox v-model="importProviderFeatures.createLinkedTrade" hide-details class="checkbox-setings">
+                                                    <v-checkbox v-model="importProviderFeatures.createLinkedTrade" hide-details class="checkbox-settings">
                                                         <template #label>
-                                                    <span>Добавлять сделки по списанию/зачислению денежных средств
-                                                        <v-menu content-class="zi-102" transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12">
-                                                            <sup class="custom-tooltip" slot="activator">
-                                                                <v-icon>fas fa-info-circle</v-icon>
-                                                            </sup>
-                                                            <v-list dense>
-                                                                <div class="hint-text-for-setings">
-                                                                    Если включено, будут добавлены связанные сделки по зачислению/списанию денежных средств
-                                                                </div>
-                                                            </v-list>
-                                                        </v-menu>
-                                                    </span>
+                                                        <span>Добавлять сделки по списанию/зачислению денежных средств
+                                                            <v-menu content-class="zi-102" transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12">
+                                                                <sup class="custom-tooltip" slot="activator">
+                                                                    <v-icon>fas fa-info-circle</v-icon>
+                                                                </sup>
+                                                                <v-list dense>
+                                                                    <div class="hint-text-for-settings">
+                                                                        Если включено, будут добавлены связанные сделки по зачислению/списанию денежных средств
+                                                                    </div>
+                                                                </v-list>
+                                                            </v-menu>
+                                                        </span>
                                                         </template>
                                                     </v-checkbox>
-                                                    <v-checkbox v-model="importProviderFeatures.autoCommission" hide-details class="checkbox-setings">
+                                                    <v-checkbox v-model="importProviderFeatures.autoCommission" hide-details class="checkbox-settings">
                                                         <template #label>
-                                                    <span>
-                                                        Автоматически рассчитывать комиссию для сделок
-                                                        <v-menu content-class="zi-102" transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12"
-                                                                max-width="520">
-                                                            <sup class="custom-tooltip" slot="activator">
-                                                                <v-icon>fas fa-info-circle</v-icon>
-                                                            </sup>
-                                                            <v-list dense>
-                                                                <div class="hint-text-for-setings">
-                                                                    Если включено, комиссия для каждой сделки по ценной бумаге будет рассчитана в соответствии
-                                                                    со значением фиксированной комиссии, заданной для портфеля. Если комиссия для бумаги есть в отчете
-                                                                    она не будет перезаписана.
-                                                                </div>
-                                                            </v-list>
-                                                        </v-menu>
-                                                    </span>
+                                                        <span>
+                                                            Автоматически рассчитывать комиссию для сделок
+                                                            <v-menu content-class="zi-102" transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12"
+                                                                    max-width="520">
+                                                                <sup class="custom-tooltip" slot="activator">
+                                                                    <v-icon>fas fa-info-circle</v-icon>
+                                                                </sup>
+                                                                <v-list dense>
+                                                                    <div class="hint-text-for-settings">
+                                                                        Если включено, комиссия для каждой сделки по ценной бумаге будет рассчитана в соответствии
+                                                                        со значением фиксированной комиссии, заданной для портфеля. Если комиссия для бумаги есть в отчете
+                                                                        она не будет перезаписана.
+                                                                    </div>
+                                                                </v-list>
+                                                            </v-menu>
+                                                        </span>
                                                         </template>
                                                     </v-checkbox>
-                                                    <v-checkbox v-model="importProviderFeatures.autoEvents" hide-details class="checkbox-setings">
+                                                    <v-checkbox v-model="importProviderFeatures.autoEvents" hide-details class="checkbox-settings">
                                                         <template #label>
-                                                    <span>
-                                                        Автоматически исполнять события по бумагам
-                                                        <v-menu content-class="zi-102" transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12"
-                                                                max-width="520">
-                                                            <sup class="custom-tooltip" slot="activator">
-                                                                <v-icon>fas fa-info-circle</v-icon>
-                                                            </sup>
-                                                            <v-list dense>
-                                                                <div class="hint-text-for-setings">
-                                                                    Если включено, события (дивиденды, купоны, амортизация, погашение) по сделкам,
-                                                                    полученным из отчета (на даты первой и последней сделки),
-                                                                    будут автоматически исполнены после импорта.
-                                                                </div>
-                                                            </v-list>
-                                                        </v-menu>
-                                                    </span>
+                                                        <span>
+                                                            Автоматически исполнять события по бумагам
+                                                            <v-menu content-class="zi-102" transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12"
+                                                                    max-width="520">
+                                                                <sup class="custom-tooltip" slot="activator">
+                                                                    <v-icon>fas fa-info-circle</v-icon>
+                                                                </sup>
+                                                                <v-list dense>
+                                                                    <div class="hint-text-for-settings">
+                                                                        Если включено, события (дивиденды, купоны, амортизация, погашение) по сделкам,
+                                                                        полученным из отчета (на даты первой и последней сделки),
+                                                                        будут автоматически исполнены после импорта.
+                                                                    </div>
+                                                                </v-list>
+                                                            </v-menu>
+                                                        </span>
                                                         </template>
                                                     </v-checkbox>
-                                                    <v-checkbox v-model="importProviderFeatures.confirmMoneyBalance" hide-details class="checkbox-setings">
+                                                    <v-checkbox v-model="importProviderFeatures.confirmMoneyBalance" hide-details class="checkbox-settings">
                                                         <template #label>
-                                                    <span>
-                                                        Спрашивать текущий остаток ДС
-                                                        <v-menu content-class="zi-102" transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12"
-                                                                max-width="520">
-                                                            <sup class="custom-tooltip" slot="activator">
-                                                                <v-icon>fas fa-info-circle</v-icon>
-                                                            </sup>
-                                                            <v-list dense>
-                                                                <div class="hint-text-for-setings">
-                                                                    Если включено, то после успешного импорта будет предложено ввести текущий остаток денежных
-                                                                    средств на счете. Отключите, если Вы хотите сами задать вводы и выводы денег.
-                                                                </div>
-                                                            </v-list>
-                                                        </v-menu>
-                                                    </span>
+                                                        <span>
+                                                            Спрашивать текущий остаток ДС
+                                                            <v-menu content-class="zi-102" transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12"
+                                                                    max-width="520">
+                                                                <sup class="custom-tooltip" slot="activator">
+                                                                    <v-icon>fas fa-info-circle</v-icon>
+                                                                </sup>
+                                                                <v-list dense>
+                                                                    <div class="hint-text-for-settings">
+                                                                        Если включено, то после успешного импорта будет предложено ввести текущий остаток денежных
+                                                                        средств на счете. Отключите, если Вы хотите сами задать вводы и выводы денег.
+                                                                    </div>
+                                                                </v-list>
+                                                            </v-menu>
+                                                        </span>
                                                         </template>
                                                     </v-checkbox>
-                                                    <v-checkbox v-model="importProviderFeatures.importMoneyTrades" hide-details class="checkbox-setings">
+                                                    <v-checkbox v-model="importProviderFeatures.importMoneyTrades" hide-details class="checkbox-settings">
                                                         <template #label>
-                                                    <span>
-                                                        Импорт сделок по денежным средствам
-                                                        <v-menu content-class="zi-102" transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12"
-                                                                max-width="520">
-                                                            <sup class="custom-tooltip" slot="activator">
-                                                                <v-icon>fas fa-info-circle</v-icon>
-                                                            </sup>
-                                                            <v-list dense>
-                                                                <div class="hint-text-for-setings">
-                                                                    Если включено, то из отчета будут импортированы сделки по денежным средствам.
-                                                                    Отключите, если Вы не хотите загружать сделки по движению денежных средств.
-                                                                </div>
-                                                            </v-list>
-                                                        </v-menu>
-                                                    </span>
+                                                        <span>
+                                                            Импорт сделок по денежным средствам
+                                                            <v-menu content-class="zi-102" transition="slide-y-transition" left top :open-on-hover="true" nudge-top="12"
+                                                                    max-width="520">
+                                                                <sup class="custom-tooltip" slot="activator">
+                                                                    <v-icon>fas fa-info-circle</v-icon>
+                                                                </sup>
+                                                                <v-list dense>
+                                                                    <div class="hint-text-for-settings">
+                                                                        Если включено, то из отчета будут импортированы сделки по денежным средствам.
+                                                                        Отключите, если Вы не хотите загружать сделки по движению денежных средств.
+                                                                    </div>
+                                                                </v-list>
+                                                            </v-menu>
+                                                        </span>
                                                         </template>
                                                     </v-checkbox>
                                                 </v-flex>
@@ -296,31 +295,30 @@ const MainStore = namespace(StoreType.MAIN);
 
                             <v-stepper-content step="2">
                                 <v-card class="dialog-wrap import-dialog-wrapper">
-                                    <span class="fs14">Остатки денежных средств</span>
-                                    <v-tooltip content-class="custom-tooltip-wrap" max-width="563px" bottom>
-                                        <sup class="custom-tooltip" slot="activator">
-                                            <v-icon>fas fa-info-circle</v-icon>
-                                        </sup>
-                                        <!-- TODO проверить текст подсказки-->
-                                        <span>
-                                            Текст подсказки
-                                        </span>
-                                    </v-tooltip>
-                                    <currency-balances v-if="importProviderFeatures.confirmMoneyBalance || true" :portfolio-id="portfolio.id"
-                                                       class="currency-balances"></currency-balances>
-                                    <v-divider class="margB24"></v-divider>
-                                    <span class="fs14">Остатки денежных средств</span>
-                                    <v-tooltip content-class="custom-tooltip-wrap" max-width="563px" bottom>
-                                        <sup class="custom-tooltip" slot="activator">
-                                            <v-icon>fas fa-info-circle</v-icon>
-                                        </sup>
-                                        <!-- TODO проверить текст подсказки-->
-                                        <span>
-                                            Текст подсказки
-                                        </span>
-                                    </v-tooltip>
-                                    <div class="margT20">
-                                        <v-card-text v-if="shareAliases.length" class="selectable import-alias">
+                                    <template v-if="importProviderFeatures.confirmMoneyBalance">
+                                        <span class="fs14">Остатки денежных средств</span>
+                                        <tooltip>
+                                            Остаток денежных средств может отличаться от брокера<br/>
+                                            В отчете брокера не указаны остатки денежных средств на данный момент.
+                                            Чтобы исключить несоответствие портфеля, пожалуйста укажите текущие остатки денежных средств в полях ввода
+                                        </tooltip>
+                                        <!-- todo import условие отображения блока и кнопки -->
+                                        <currency-balances :portfolio-id="portfolio.id"
+                                                           class="currency-balances"></currency-balances>
+
+                                        <v-divider class="margB24"></v-divider>
+                                    </template>
+
+                                    <span v-if="shareAliases.length" class="fs14">Не распознаны тикеры следующих бумаг</span>
+                                    <tooltip v-if="shareAliases.length">
+                                        Брокер использует нестандартные названия для ценных бумаг в своих отчетах или не указывает уникальный идентификатор
+                                        бумаги, по которому ее можно распознать.<br><br>
+
+                                        Чтобы импортировать ваш портфель полностью соотнесите название бумаги из отчета с названием бумаги на сервисе.
+                                        Например: «ПАО Газпром-ао» → GAZP
+                                    </tooltip>
+                                    <div v-if="shareAliases.length" class="margT20">
+                                        <v-card-text class="selectable import-alias">
                                             <div v-for="aliasItem in shareAliases" :key="aliasItem.alias" class="import-alias-item">
                                                 <!-- Алиас бумаги -->
                                                 <div class="import-alias-item__name" :title="aliasItem.alias">{{ aliasDescription(aliasItem) }}</div>
@@ -332,22 +330,22 @@ const MainStore = namespace(StoreType.MAIN);
                                         </v-card-text>
                                     </div>
 
-                                    <v-btn color="primary" class="big_btn" @click.native="goToFinalStep">Далее</v-btn>
+                                    <v-btn color="primary" class="big_btn" @click.stop="goToFinalStep">Далее</v-btn>
                                 </v-card>
                             </v-stepper-content>
 
                             <v-stepper-content step="3">
                                 <div v-if="importResult" class="import-result-status">
                                     <div :class="['import-result-status__img',
-                                        importResult.status === Status.ERROR ? 'status-error' :
-                                        importResult.status === Status.SUCCESS ? 'status-success' : 'status-warn']"></div>
+                                        importStatus === Status.ERROR ? 'status-error' :
+                                        importStatus === Status.SUCCESS ? 'status-success' : 'status-warn']"></div>
                                     <div class="import-result-status__content">
-                                        <div :class="{'status-error': importResult.status === Status.ERROR}">
-                                            {{ importResult.status === Status.ERROR ? "Ошибка" : importResult.status === Status.SUCCESS ? "Успех" : "Почти Успех" }}
+                                        <div :class="{'status-error': importStatus === Status.ERROR}">
+                                            {{ importStatus === Status.ERROR ? "Ошибка" : importStatus === Status.SUCCESS ? "Успех" : "Почти Успех" }}
                                         </div>
                                         <span>
-                                            {{ importResult.validatedTradesCount | declension("Добавлена", "Добавлено", "Добавлено") }}
-                                            {{ importResult.validatedTradesCount }} {{ importResult.validatedTradesCount | declension("сделка", "сделки", "сделок") }}
+                                            {{ savedTradesCount | declension("Добавлена", "Добавлено", "Добавлено") }}
+                                            {{ savedTradesCount }} {{ savedTradesCount | declension("сделка", "сделки", "сделок") }}
                                         </span>
                                     </div>
                                 </div>
@@ -355,60 +353,80 @@ const MainStore = namespace(StoreType.MAIN);
                                 <div class="import-result-info">
                                     <expanded-panel name="dividends" :value="[true]" class="selectable import-history">
                                         <template #header>
-                                            <span>Отчет не содержит информацию по дивидендам</span>
-                                            <v-tooltip content-class="custom-tooltip-wrap" max-width="563px" bottom>
-                                                <sup class="custom-tooltip" slot="activator">
-                                                    <v-icon>fas fa-info-circle</v-icon>
-                                                </sup>
-                                                <!-- TODO проверить текст подсказки-->
-                                                <span>
-                                                   Текст подсказки
-                                                </span>
-                                            </v-tooltip>
+                                            <span>Отчет {{ importProviderFeatures.autoEvents ? "не" : "" }} содержит информацию по дивидендам, купонам, амортизации</span>
+                                            <tooltip v-if="importProviderFeatures.autoEvents">
+                                                В отчетах не содержится информации по выплаченным дивидендам, купонам или амортизации, поэтому мы добавили недостающие начисления
+                                                из истории на основе ваших данных.
+                                            </tooltip>
+                                            <tooltip v-if="!importProviderFeatures.autoEvents">
+                                                В отчетах содержится информация по выплаченным дивидендам, купонам или амортизации.
+                                            </tooltip>
                                         </template>
-                                        <span>content</span>
+                                        <span>
+                                            Возможно, в отчет не успели попасть все начисления, пожалуйста, проверьте дополнительно раздел<br/>
+                                            <router-link :to="{'name': 'events'}">События</router-link>
+                                            , в нем будут отображены события по бумагам, которые еще не учтены.
+                                        </span>
                                     </expanded-panel>
 
-                                    <expanded-panel name="tickers" :value="[true]" class="selectable import-history">
+                                    <expanded-panel v-if="notFoundShareErrors.length" name="tickers" :value="[true]" class="selectable import-history">
                                         <template #header>
-                                            <span>Не распознаны тикеры средующий бумаг</span>
-                                            <v-tooltip content-class="custom-tooltip-wrap" max-width="563px" bottom>
-                                                <sup class="custom-tooltip" slot="activator">
-                                                    <v-icon>fas fa-info-circle</v-icon>
-                                                </sup>
-                                                <!-- TODO проверить текст подсказки-->
-                                                <span>
-                                                    Брокер использует нестандартные названия для ценных бумаг в своих отчетах или не указывает уникальный идентификатор
-                                                    бумаги, по которому ее можно распознать.<br><br>
+                                            <span>Не распознаны тикеры следующих бумаг</span>
+                                            <tooltip>
+                                                Брокер использует нестандартные названия для ценных бумаг в своих отчетах или не указывает уникальный идентификатор
+                                                бумаги, по которому ее можно распознать.<br><br>
 
-                                                    Чтобы импортировать ваш портфель полностью соотнесите название бумаги из отчета с названием бумаги на сервисе.
-                                                    Например: « ПАО Газпром-ао » → GAZP
-                                                </span>
-                                            </v-tooltip>
+                                                Чтобы импортировать ваш портфель полностью соотнесите название бумаги из отчета с названием бумаги на сервисе.
+                                                Например: «ПАО Газпром-ао» → GAZP
+                                            </tooltip>
                                         </template>
-                                        <span>content</span>
+                                        <import-errors-table :error-items="notFoundShareErrors"></import-errors-table>
                                     </expanded-panel>
 
-                                    <expanded-panel name="residuals" :value="[true]" class="selectable import-history">
+                                    <expanded-panel v-if="importProviderFeatures.confirmMoneyBalance" name="residuals" :value="[true]" class="selectable import-history">
                                         <template #header>
                                             <span>Остаток денежных средств может отличаться от брокера</span>
-                                            <v-tooltip content-class="custom-tooltip-wrap" max-width="563px" bottom>
-                                                <sup class="custom-tooltip" slot="activator">
-                                                    <v-icon>fas fa-info-circle</v-icon>
-                                                </sup>
-                                                <!-- TODO проверить текст подсказки-->
-                                                <span>
-                                                    В отчете брокера не указаны остатки денежных средств на данный момент.
-                                                    Чтобы исключить несоответствие портфеля, пожалуйста укажите текущие остатки денежных средств в полях ввода
-                                                </span>
-                                            </v-tooltip>
+                                            <tooltip>
+                                                В отчете брокера не указаны остатки денежных средств на данный момент.
+                                            </tooltip>
                                         </template>
-                                        <span>content</span>
+                                        В отчете брокера не указаны остатки денежных средств на данный момент.<br/>
+                                        Если Вы указали остатки на предыдущем шаге, все должно быть хорошо,<br/>
+                                        иначе, вам необходимо дополнить историю сделок, движениями денежных средств.
+                                    </expanded-panel>
+
+                                    <expanded-panel v-if="otherErrors.length" name="tickers" :value="[true]" class="selectable import-history">
+                                        <template #header>
+                                            <span>При импорте отчета возникли следующие ошибки</span>
+                                            <tooltip>
+                                                Возможно, изменился формат импорта или в отчете не содержится информации по сделкам.
+                                            </tooltip>
+                                        </template>
+                                        <import-errors-table :error-items="otherErrors"></import-errors-table>
+                                    </expanded-panel>
+
+                                    <expanded-panel v-if="repoTradeErrors.length" name="tickers" :value="[true]" class="selectable import-history">
+                                        <template #header>
+                                            <span>РЕПО сделки не были добавлены</span>
+                                            <tooltip>
+                                                <span class="amount-deals">{{ repoTradeErrors.length }}</span>
+                                                {{ repoTradeErrors.length | declension("сделка", "сделки", "сделок") }}
+                                                из отчета имеют тип РЕПО и не были загружены, (если вы производили их самостоятельно, добавьте их вручную).
+                                            </tooltip>
+                                        </template>
+                                        <span>
+                                            РЕПО сделки могут быть совершены вашим брокером, если вы давали согласие на займы своих бумаг.
+                                            Брокер может занимать и отдавать бумаги в течение дня, при этом в отчете такие сделки
+                                            будут отображаться, например, как РЕПО часть 1 и РЕПО часть 2, и по своей сути,
+                                            такие операции не должны влиять на расчет доходности вашего портфеля и попадать в список сделок,
+                                            потому что вы их не совершали.<br/><br/>
+                                            Если сделки РЕПО совершали вы самостоятельно, и хотите их учесть,
+                                            рекомендуем внести их через диалог добавления сделки.
+                                        </span>
                                     </expanded-panel>
                                 </div>
-                                <!-- TODO: добавить действия -->
-                                <v-btn color="primary" class="margR12">Перейти в портфель</v-btn>
-                                <v-btn>Новый импорт</v-btn>
+                                <v-btn @click="goToPortfolio" color="primary" class="margR12">Перейти в портфель</v-btn>
+                                <v-btn @click="goToNewImport">Новый импорт</v-btn>
                             </v-stepper-content>
                         </v-stepper-items>
                     </v-stepper>
@@ -416,7 +434,7 @@ const MainStore = namespace(StoreType.MAIN);
             </v-card>
         </v-container>
     `,
-    components: {BrokerSwitcher, CurrencyBalances, ImportInstructions, ExpandedPanel}
+    components: {BrokerSwitcher, CurrencyBalances, ImportErrorsTable, ImportInstructions, ExpandedPanel}
 })
 export class ImportPage extends UI {
 
@@ -458,20 +476,13 @@ export class ImportPage extends UI {
     /** Признак процесса импорта, чтобы не очищались файлы */
     private importInProgress = false;
     /** Текущий шаг */
-    private currentStep = "1";
+    private currentStep = ImportStep._1;
 
     private shareAliases: ShareAliasItem[] = [];
 
     private importHistory: UserImport[] = [];
 
     private importResult: ImportResponse = null;
-
-    /** Заголовки таблицы с ошибками */
-    private headers: TableHeader[] = [
-        {text: "Дата", align: "center", value: "dealDate", sortable: false},
-        {text: "Тикер", align: "left", value: "dealTicker", sortable: false},
-        {text: "Ошибка", align: "center", value: "message", sortable: false}
-    ];
 
     /** Статусы */
     private Status = Status;
@@ -493,61 +504,19 @@ export class ImportPage extends UI {
         const result = await new ConfirmDialog().show("Вы собираетесь откатить импорт, это приведет к удалению информации о нем из портфеля");
         if (result === BtnReturn.YES) {
             await this.revertImportConfirmed(userImportId);
-            await this.loadImportHistory();
+            this.$snotify.info("Результаты импорта были успешно отменены");
         }
     }
 
     @ShowProgress
     private async loadImportHistory(): Promise<void> {
-        // this.importHistory = await this.importService.importHistory();
-        this.importHistory = [{
-            id: 1519,
-            userId: 28,
-            date: "2020-05-09",
-            status: "ERROR" as UserLogStatus,
-            provider: DealsImportProvider.SBERBANK,
-            savedTradesCount: 0,
-            hasErrors: true,
-            data: [],
-            generalError: "Ошибка при импорте файла",
-            fileName: "broker_rep (3).xlsx",
-            state: UserImportState.REVERTED
-        }, {
-            id: 1520,
-            userId: 28,
-            date: "2020-05-09",
-            status: "SUCCESS" as UserLogStatus,
-            provider: DealsImportProvider.TINKOFF,
-            savedTradesCount: 2,
-            hasErrors: false,
-            data: [],
-            generalError: null,
-            fileName: "broker_rep (3).xlsx",
-            state: null
-        }, {
-            id: 1521,
-            userId: 28,
-            date: "2020-05-09",
-            status: "WARN" as UserLogStatus,
-            provider: DealsImportProvider.TINKOFF,
-            savedTradesCount: 10,
-            hasErrors: true,
-            data: [{
-                message: "Неверный идентификатор бумаги",
-                dealDate: null,
-                dealTicker: "FFFF",
-                currency: null,
-                shareNotFound: true
-            }, {message: "Сделка уже была импортирована ранее", dealDate: "2020-01-21", dealTicker: null, currency: null, shareNotFound: false}],
-            generalError: null,
-            fileName: "broker_rep (3).xlsx",
-            state: null
-        }];
+        this.importHistory = await this.importService.importHistory();
     }
 
     @ShowProgress
     private async revertImportConfirmed(userImportId: number): Promise<void> {
         await this.importService.revertImport(userImportId, this.portfolio.id);
+        await this.loadImportHistory();
     }
 
     private onShareSelect(share: Share, aliasItem: ShareAliasItem): void {
@@ -571,14 +540,16 @@ export class ImportPage extends UI {
         const filled = this.shareAliases.filter(shareAlias => !!shareAlias.share);
         const allFilled = filled.length === this.shareAliases.length;
         if (!allFilled) {
-            const answer = await new ConfirmDialog().show("Вы не указали соответствия для всех нераспознанных бумаг." +
+            const answer = await new ConfirmDialog().show("Вы не указали соответствия для всех нераспознанных бумаг. " +
                 "Если продолжить, будут импортированы только сделки по тем бумагам, которые вы указали.");
             if (answer !== BtnReturn.YES) {
                 return;
             }
         }
         await this.importService.saveShareAliases(filled);
-        this.currentStep = "3";
+        this.importResult = await this.importReport();
+        await this.handleUploadResponse();
+        this.currentStep = ImportStep._3;
     }
 
     private aliasDescription(shareAlias: ShareAliasItem): string {
@@ -592,6 +563,7 @@ export class ImportPage extends UI {
             return;
         }
         this.selectUserProvider();
+        await this.loadImportHistory();
     }
 
     private selectUserProvider(): void {
@@ -610,11 +582,11 @@ export class ImportPage extends UI {
      */
     private onFileAdd(fileList: File[]): void {
         let filtered = fileList;
-        if (fileList.length > 1) {
+        if (fileList.length > 1 && !this.isSberbank) {
             this.$snotify.warning("Пожалуйста, загружайте по одному файлу для более точных результатов импорта.");
             filtered = [fileList[0]];
         }
-        const isValid = FileUtils.checkExtension(filtered[0]);
+        const isValid = fileList.map(file => FileUtils.checkExtension(file)).every(result => result);
         if (!isValid) {
             this.$snotify.warning(`Формат файла не соответствует разрешенным: ${FileUtils.ALLOWED_EXTENSION}.`);
             return;
@@ -623,7 +595,7 @@ export class ImportPage extends UI {
             this.$snotify.warning(`Максимальный размер загружаемого файла 10 Мб.`);
             return;
         }
-        this.files = filtered;
+        this.files = [...this.files, ...filtered];
     }
 
     /**
@@ -655,35 +627,7 @@ export class ImportPage extends UI {
             if (this.isFinam && this.portfolioParams.fixFee !== this.portfolio.portfolioParams.fixFee) {
                 await this.portfolioService.createOrUpdatePortfolio(this.portfolioParams);
             }
-            // this.importResult = await this.importReport();
-            this.importResult = this.importResult = {
-                message: "Импорт завершен",
-                errors: [{
-                    message: "Сделка уже была импортирована ранее",
-                    dealDate: "2020-01-17",
-                    dealTicker: "FXGD",
-                    currency: null,
-                    shareNotFound: false
-                },
-                    {
-                        message: "Сделка уже была импортирована ранее",
-                        dealDate: "2020-01-21",
-                        dealTicker: null,
-                        currency: null,
-                        shareNotFound: false
-                    },
-                    {
-                        message: "Нераспознанный тикер бумаги",
-                        dealDate: "2020-01-21",
-                        dealTicker: "GAZPOM",
-                        currency: null,
-                        shareNotFound: true
-                    }
-                ],
-                generalError: null,
-                validatedTradesCount: 10,
-                status: "WARN" as Status
-            };
+            this.importResult = await this.importReport();
             await this.handleUploadResponse();
         }
     }
@@ -698,53 +642,66 @@ export class ImportPage extends UI {
      */
     @ShowProgress
     private async importReport(): Promise<ImportResponse> {
-        return this.importService.importReport(this.selectedProvider.code, this.portfolio.id, this.files, this.importProviderFeatures);
+        const results = await this.importService.importReport(this.selectedProvider.code, this.portfolio.id, this.files, this.importProviderFeatures);
+        if (results.length > 1) {
+            const hasErrorStatus = results.some(result => result.status === Status.ERROR);
+            const hasWarnStatus = results.some(result => result.status === Status.WARN);
+            return {
+                validatedTradesCount: results.map(result => result.validatedTradesCount).reduce((previousValue, currentValue) => previousValue + currentValue, 0),
+                generalError: hasErrorStatus ? results.find(result => result.generalError)?.generalError : null,
+                message: hasErrorStatus ? results.find(result => result.generalError)?.message :
+                    hasWarnStatus ? results.find(result => result.status === Status.WARN)?.message : results.find(result => result.status === Status.SUCCESS)?.message,
+                status: hasErrorStatus ? Status.ERROR : hasWarnStatus ? Status.WARN : Status.SUCCESS,
+                errors: results.map(result => result.errors).reduce((a, b) => a.concat(b), [])
+            };
+        }
+        return results[0];
     }
 
     /**
      * Обрабатывает ответ от сервера после импорта отчета
-     * @param response
+     * @param retryUpload
      */
-    private async handleUploadResponse(): Promise<void> {
+    private async handleUploadResponse(retryUpload: boolean = false): Promise<void> {
         if (this.importResult.status === Status.ERROR && CommonUtils.isBlank(this.importResult.generalError)) {
             this.$snotify.error(this.importResult.message);
             return;
         }
         if (this.importResult.generalError) {
-            this.currentStep = "3";
+            this.currentStep = ImportStep._3;
             return;
         }
-        let duplicateTradeErrorCount = 0;
-        if (this.importResult.errors && this.importResult.errors.length) {
-            const duplicateTradeErrors = this.importResult.errors.filter(error => error.message === ImportPage.DUPLICATE_MSG);
-            const repoTradeErrors = this.importResult.errors.filter(error => error.message === ImportPage.REPO_TRADE_MSG);
-            const errors = this.importResult.errors.filter(error => !duplicateTradeErrors.includes(error) && !repoTradeErrors.includes(error));
-            duplicateTradeErrorCount = duplicateTradeErrors.length;
+        if (this.importResult.validatedTradesCount) {
+            await this.reloadPortfolio(this.portfolio.id);
+        }
+        // если это повторная загрузка после сохранения алиасов, поторно в этот блок не заходи и сразу идем на третий шаг
+        if (!retryUpload && this.importResult.errors && this.importResult.errors.length) {
             // если после удаления ошибки все еще остались, отображаем диалог
             // отображаем диалог с ошибками, но информацию по портфелю надо перезагрузить если были успешно импортированы сделки
-            if (errors.length) {
-                this.shareAliases = errors.filter(error => error.shareNotFound).map(error => {
+            if (this.importResult.errors.length) {
+                this.shareAliases = this.importResult.errors.filter(error => error.shareNotFound).map(error => {
                     return {
                         alias: error.dealTicker,
                         currency: error.currency,
                         share: null
                     } as ShareAliasItem;
                 });
-                this.currentStep = "2";
+                this.currentStep = ImportStep._2;
                 return;
             }
         }
-        if (this.importResult.validatedTradesCount) {
-            await this.reloadPortfolio(this.portfolio.id);
-        }
-        this.currentStep = "3";
+
+        this.currentStep = ImportStep._3;
     }
 
-    /**
-     * Показать инструкцию после нажатия на кнопку "CSV"
-     */
-    private showIntelinvestInstruction(): void {
-        this.onSelectProvider(this.providers.INTELINVEST);
+    private async goToNewImport(): Promise<void> {
+        this.currentStep = ImportStep._1;
+        this.clearFiles();
+        await this.loadImportHistory();
+    }
+
+    private goToPortfolio(): void {
+        this.$router.push("portfolio");
     }
 
     /**
@@ -776,7 +733,61 @@ export class ImportPage extends UI {
         return "";
     }
 
+    private get importStatus(): Status {
+        if (this.importResult) {
+            if (this.importResult.errors && this.duplicateTradeErrors.length > 0 && this.importResult.errors.length === this.duplicateTradeErrors.length &&
+                this.importResult.validatedTradesCount === 0) {
+                // Импорт завершен. Все сделки из отчета уже были импортированы ранее.
+                return Status.SUCCESS;
+            } else if (!this.importResult.validatedTradesCount && !this.importResult.errors.length) {
+                // Импорт завершен. В отчете не содержится информации по сделкам.");
+                return Status.WARN;
+            }
+            return this.importResult.status;
+        }
+        return null;
+    }
+
+    private get notFoundShareErrors(): DealImportError[] {
+        return this.importResult ? this.importResult.errors.filter(error => error.shareNotFound) : [];
+    }
+
+    private get otherErrors(): DealImportError[] {
+        return this.importResult ? this.importResult.errors.filter(error => !error.shareNotFound && error.message !== ImportPage.REPO_TRADE_MSG &&
+            error.message !== ImportPage.DUPLICATE_MSG) : [];
+    }
+
+    private get repoTradeErrors(): DealImportError[] {
+        return this.importResult ? this.importResult.errors.filter(error => error.message === ImportPage.REPO_TRADE_MSG) : [];
+    }
+
+    private get duplicateTradeErrors(): DealImportError[] {
+        return this.importResult ? this.importResult.errors.filter(error => error.message === ImportPage.DUPLICATE_MSG) : [];
+    }
+
+    private get savedTradesCount(): number {
+        if (this.importResult) {
+            return this.importStatus === Status.SUCCESS && this.importResult.validatedTradesCount === 0 && this.duplicateTradeErrors.length > 0 ? this.duplicateTradeErrors.length :
+                this.importResult.validatedTradesCount;
+        }
+        return 0;
+    }
+
+    private get isSberbank(): boolean {
+        return this.selectedProvider === DealsImportProvider.SBERBANK;
+    }
+
+    private get showImportSettings(): boolean {
+        return ![DealsImportProvider.SBERBANK, DealsImportProvider.TINKOFF, DealsImportProvider.VTB24].includes(this.selectedProvider);
+    }
+
     private changePortfolioParams(portfolioParams: PortfolioParams): void {
         this.portfolioParams = portfolioParams;
     }
+}
+
+enum ImportStep {
+    _1 = "1",
+    _2 = "2",
+    _3 = "3"
 }

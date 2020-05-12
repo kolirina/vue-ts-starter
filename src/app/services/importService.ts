@@ -27,10 +27,10 @@ export class ImportService {
      * @param files файлы для загрузки
      * @param importRequest
      */
-    async importReport(provider: string, portfolioId: number, files: File[], importRequest: ImportProviderFeatures): Promise<ImportResponse> {
+    async importReport(provider: string, portfolioId: number, files: File[], importRequest: ImportProviderFeatures): Promise<ImportResponse[]> {
         const report = new FormData();
         files.forEach(file => report.append("files", file, file.name));
-        return this.http.post<ImportResponse>(`/import/${provider}/to/${portfolioId}`, report, importRequest as any, {headers: this.http.importHeaders});
+        return this.http.post<ImportResponse[]>(`/import/${provider}/to/${portfolioId}`, report, importRequest as any, {headers: this.http.importHeaders});
     }
 
     /**
@@ -62,7 +62,7 @@ export class ImportService {
     }
 
     async revertImport(userImportId: number, portfolioId: number): Promise<void> {
-        return this.http.post(`/import/revert/${userImportId}/${portfolioId}`);
+        return this.http.post(`/import/revert/${userImportId}/portfolio/${portfolioId}`);
     }
 
     /**

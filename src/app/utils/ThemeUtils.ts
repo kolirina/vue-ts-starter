@@ -121,7 +121,7 @@ export class ThemeUtils {
     .events-calendar-wrap .calendar-events-title,
     .theme--light.v-calendar-weekly .v-calendar-weekly__day,
     .theme--light.v-calendar-weekly .v-calendar-weekly__head-weekday.v-past,
-    .checkbox-setings span, .dialog-setings-menu .title-setings,
+    .checkbox-settings span, .dialog-setings-menu .title-setings,
     .control-portfolios-title,
     .export-page .info-block,
     .promo-codes .rewards,

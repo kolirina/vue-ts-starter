@@ -155,7 +155,7 @@ import {DateFormat, DateUtils} from "../../utils/dateUtils";
                                 <div>
                                     <v-menu content-class="qr-code-section"
                                             transition="slide-y-transition"
-                                            nudge-bottom="36" left class="setings-menu"
+                                            nudge-bottom="36" left class="settings-menu"
                                             :close-on-content-click="false">
                                         <v-btn class="btn qr-code-btn" slot="activator">
                                             QR code
@@ -184,7 +184,7 @@ import {DateFormat, DateUtils} from "../../utils/dateUtils";
                             <div v-if="link">
                                 <v-menu content-class="qr-code-section"
                                         transition="slide-y-transition"
-                                        nudge-bottom="36" left class="setings-menu"
+                                        nudge-bottom="36" left class="settings-menu"
                                         :close-on-content-click="false">
                                     <v-btn class="btn qr-code-btn" slot="activator">
                                         QR code

@@ -25,7 +25,7 @@
         }
       }
     }
-    .setings-menu {
+    .settings-menu {
       margin: 27px 0px 20px 0px;
       .v-btn {
         padding: 0px 38px 0px 20px;
@@ -90,14 +90,14 @@
 
   @media only screen and (max-width: $sm-breakpoint) {padding: 16px}
 }
-.dialog-setings-menu {
+.dialog-settings-menu {
   .v-list{
     padding: 17px 9px 24px 20px !important;
   }
   .v-input__slot {
     margin-bottom: 0px !important;
   }
-  .title-setings {
+  .title-settings {
     font-size: 12px;
     line-height: 16px;
     letter-spacing: 0.2px;
@@ -110,13 +110,13 @@
     min-width: 0 !important;
   }
 }
-.hint-text-for-setings {
+.hint-text-for-settings {
   padding: 16px;
   font-size: 13px;
   line-height: 28px;
   color: #040427;
 }
-.checkbox-setings {
+.checkbox-settings {
   margin-bottom: 5px;
   &:last-child {
     margin-bottom: 0px;
