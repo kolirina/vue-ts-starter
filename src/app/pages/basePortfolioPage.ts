@@ -44,7 +44,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
     template: `
         <v-container v-if="overview" fluid class="paddT0">
             <v-layout column>
-                <dashboard :data="overview.dashboardData" :view-currency="viewCurrency" :side-bar-opened="sideBarOpened"
+                <dashboard :overview="overview" :view-currency="viewCurrency" :side-bar-opened="sideBarOpened"
                            :data-v-step="getTourStepIndex(PortfolioBlockType.DASHBOARD)"></dashboard>
 
                 <negative-balance-notification v-if="showNegativeBalance"></negative-balance-notification>

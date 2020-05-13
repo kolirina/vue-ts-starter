@@ -33,7 +33,7 @@ const MainStore = namespace(StoreType.MAIN);
         <div v-if="portfolio" class="h100pc">
             <empty-portfolio-stub v-if="isEmptyBlockShowed"></empty-portfolio-stub>
             <v-container v-else fluid class="paddT0 h100pc">
-                <dashboard :data="portfolio.overview.dashboardData" :side-bar-opened="sideBarOpened" :view-currency="portfolio.portfolioParams.viewCurrency"></dashboard>
+                <dashboard :overview="portfolio.overview" :side-bar-opened="sideBarOpened" :view-currency="portfolio.portfolioParams.viewCurrency"></dashboard>
                 <expanded-panel name="trades" :value="[true]" class="auto-cursor" data-v-step="0" disabled with-menu always-open>
                     <template #header>Сделки</template>
                     <template #list>

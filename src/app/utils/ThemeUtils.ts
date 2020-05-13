@@ -15,8 +15,7 @@
  */
 
 import {StoreKeys} from "../types/storeKeys";
-import {BROWSER} from "../types/types";
-import {CommonUtils} from "./commonUtils";
+import {Theme} from "../types/types";
 
 export class ThemeUtils {
 
@@ -265,5 +264,22 @@ export class ThemeUtils {
         }
         stylesElement.innerHTML = nightTheme ? ThemeUtils.CSS_STYLES : "";
         stylesElement.setAttribute("media", nightTheme ? "screen" : "none");
+    }
+
+    static detectPrefersColorScheme(): Theme {
+        // Detect if prefers-color-scheme is supported
+        if (window.matchMedia("(prefers-color-scheme)").media !== "not all") {
+            // Set colorScheme to Dark if prefers-color-scheme is dark. Otherwise set to light.
+            return window.matchMedia("(prefers-color-scheme: dark)").matches ? Theme.NIGHT : Theme.DAY;
+        } else {
+            // If the browser doesn't support prefers-color-scheme, set it as default to dark
+            return Theme.NIGHT;
+        }
+    }
+
+    static detectTheme(): void {
+        window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", e => {
+            ThemeUtils.setStyles(e.matches);
+        });
     }
 }
