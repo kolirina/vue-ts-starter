@@ -33,6 +33,7 @@ import {TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
 import {BigMoney} from "../../types/bigMoney";
 import {BaseChartDot, Dot, HighStockEventsGroup} from "../../types/charts/types";
+import {EventType} from "../../types/eventType";
 import {Operation} from "../../types/operation";
 import {Asset, ErrorInfo, Portfolio, Share, ShareDynamic, ShareType, StockTypeShare} from "../../types/types";
 import {ChartUtils} from "../../utils/chartUtils";
@@ -398,6 +399,13 @@ export class BaseShareInfoPage extends UI {
     async created(): Promise<void> {
         await this.loadShareInfo();
         this.portfolioAvgPrice = await this.getPortfolioAvgPrice();
+        UI.on(EventType.TRADE_CREATED, async () => {
+            this.portfolioAvgPrice = await this.getPortfolioAvgPrice();
+        });
+    }
+
+    beforeDestroy(): void {
+        UI.off(EventType.TRADE_CREATED);
     }
 
     /**
@@ -533,7 +541,6 @@ export class BaseShareInfoPage extends UI {
         try {
             const assetRow = [...this.portfolio.overview.assetPortfolio.rows, ...this.portfolio.overview.etfPortfolio.rows, ...this.portfolio.overview.stockPortfolio.rows]
                 .find(row => {
-                    console.log(row.share.id, row.share.shareType, String(row.share.id) === this.ticker && row.share.shareType === ShareType.ASSET);
                     return (String(row.share.id) === this.ticker && row.share.shareType === ShareType.ASSET) ||
                         (row.share.shareType === ShareType.STOCK && row.share.ticker === this.ticker);
                 });
