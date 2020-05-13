@@ -349,8 +349,8 @@ const MainStore = namespace(StoreType.MAIN);
                                         </span>
                                     </div>
                                 </div>
-                                <div class="info-block">Портфель почти сформирован, для полного соответствия требуются дополнительные данные</div>
-                                <div class="import-result-info">
+                                <div v-if="!isIntelinvest" class="info-block">Портфель почти сформирован, для полного соответствия требуются дополнительные данные</div>
+                                <div v-if="!isIntelinvest" class="import-result-info">
                                     <expanded-panel name="dividends" :value="[true]" class="selectable import-history">
                                         <template #header>
                                             <span>Отчет {{ importProviderFeatures.autoEvents ? "не" : "" }} содержит информацию по дивидендам, купонам, амортизации</span>
@@ -715,6 +715,7 @@ export class ImportPage extends UI {
             this.importProviderFeatures.createLinkedTrade = false;
         }
         this.clearFiles();
+        this.currentStep = ImportStep._1;
     }
 
     private clearFiles(): void {
@@ -775,6 +776,10 @@ export class ImportPage extends UI {
 
     private get isSberbank(): boolean {
         return this.selectedProvider === DealsImportProvider.SBERBANK;
+    }
+
+    private get isIntelinvest(): boolean {
+        return this.selectedProvider === DealsImportProvider.INTELINVEST;
     }
 
     private get showImportSettings(): boolean {

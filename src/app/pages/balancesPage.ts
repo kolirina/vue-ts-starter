@@ -79,7 +79,7 @@ const MainStore = namespace(StoreType.MAIN);
                                                 </v-menu>
                                             </v-flex>
                                             <v-flex class="mt-4">
-                                                <ii-number-field v-model="quantity" required :rules="rulesQuantity" :decimals="0" label="Количество" name="quantity"
+                                                <ii-number-field v-model="quantity" required :rules="rulesQuantity" :decimals="6" label="Количество" name="quantity"
                                                                  @keyup="calculateOnQuantity" @change="changeOnQuantity">
                                                 </ii-number-field>
                                             </v-flex>
