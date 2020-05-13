@@ -14,7 +14,7 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <base-share-info-page :ticker="ticker" :portfolio-avg-price="portfolioAvgPrice"></base-share-info-page>
+        <base-share-info-page :ticker="ticker"></base-share-info-page>
     `,
     components: {BaseShareInfoPage}
 })
@@ -48,10 +48,4 @@ export class ShareInfoPage extends UI {
     private onRouterChange(): void {
         this.ticker = this.$route.params.ticker;
     }
-
-    private get portfolioAvgPrice(): number {
-        const row = this.portfolio.overview.stockPortfolio.rows.find(r => r.share.ticker === this.ticker);
-        return row ? new BigMoney(row.avgBuy).amount.toNumber() : null;
-    }
-
 }

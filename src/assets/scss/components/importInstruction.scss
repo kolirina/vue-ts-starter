@@ -1,3 +1,19 @@
+.import-instructions {
+  font-size: 14px;
+  line-height: 22px;
+  letter-spacing: -0.3px;
+  color: $theme-color-dark-blue;
+
+  ul {margin: 16px 0;}
+}
+
+.import-default-text {
+  font-size: 13px;
+  line-height: 22px;
+  letter-spacing: -0.3px;
+  color: $theme-color-dark-blue;
+}
+
 .alfa-line {
     border-top: 1px solid #CACED5;
     height: 1px;
@@ -9,22 +25,10 @@
 .image {
     margin: 16px 0px 23px;
 }
-.import-format-requirements-ul {
-    font-size: 13px;
-    line-height: 22px;
-    letter-spacing: -0.3px;
-    color: #040427;
-    ul {
-        margin: 15px 0px;
-    }
-}
+
 .intel-invest-instruction {
     &__title {
-        font-size: 13px;
-        line-height: 22px;
-        letter-spacing: -0.3px;
-        color: #040427;
-        margin-bottom: 25.5px;
+        margin-bottom: 24px;
         &-values {
             font-size: 14px;
             line-height: 26px;
@@ -39,11 +43,7 @@
         margin-bottom: 23.5px;
         &-text {
             font-weight: 600;
-            font-size: 14px;
-            line-height: 22px;
-            letter-spacing: -0.3px;
-            color: #040427;
-            padding: 10.5px 0px 11.5px;
+            padding: 10.5px 0 11.5px;
         }
     }
     &__values {

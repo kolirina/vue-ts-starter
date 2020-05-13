@@ -153,7 +153,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 </v-btn>
                                 <v-menu content-class="dialog-type-menu"
                                         transition="slide-y-transition"
-                                        nudge-bottom="36" right class="setings-menu"
+                                        nudge-bottom="36" right class="settings-menu"
                                         :close-on-content-click="false">
                                     <v-btn class="btn" slot="activator">
                                         Настройка доступа

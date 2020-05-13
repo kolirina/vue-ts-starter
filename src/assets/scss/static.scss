@@ -20,6 +20,7 @@ input[type="search"] {
 // Отступы =============================================================================================================
 
 .margT10 {margin-top: 10px}
+.margT16 {margin-top: 16px}
 .margT24 {margin-top: 24px !important}
 .margT40 {margin-top: 40px}
 .margT30 {margin-top: 30px}
@@ -27,10 +28,12 @@ input[type="search"] {
 .margT70 {margin-top: 70px}
 
 .margL8 {margin-left: 8px !important}
+.margL12 {margin-left: 12px !important}
 .margL16 {margin-left: 16px !important}
 .margL24 {margin-left: 24px !important}
 
 .margR8 {margin-right: 8px}
+.margR12 {margin-right: 12px !important;}
 .margR16 {margin-right: 16px}
 .margR28 {margin-right: 28px}
 .margR60 {margin-right: 60px}
@@ -39,12 +42,15 @@ input[type="search"] {
 .margB8 {margin-bottom: 8px}
 .margB16 {margin-bottom: 16px !important}
 .margB20 {margin-bottom: 20px}
+.margB24 {margin-bottom: 24px}
 .margB30 {margin-bottom: 30px}
 .margB32 {margin-bottom: 32px}
 .margB35 {margin-bottom: 35px !important}
 .margB64 {margin-bottom: 64px}
 
+.margT14 {margin-top: 14px}
 .margT20 {margin-top: 20px !important}
+.margT32 {margin-top: 32px}
 .margT50 {margin-top: 50px}
 .margT0 {margin-top: 0 !important}
 
@@ -75,6 +81,7 @@ input[type="search"] {
 .w20pc {width: 20%}
 .w10pc {width: 10%}
 .mw640 {max-width: 640px}
+.mw540 {max-width: 540px}
 .mw520 {max-width: 520px}
 .mw320 {max-width: 320px}
 .mw218 {max-width: 218px}
@@ -176,6 +183,8 @@ input[type="search"] {
   font-size: 12px;
   color: #a3a7b4;
 }
+
+.fs0 {font-size: 0}
 
 // Другое ==============================================================================================================
 

@@ -14,25 +14,26 @@
  * (c) ООО "Интеллектуальные инвестиции", 2019
  */
 
-import {Component, UI} from "../../../app/ui";
+/**
+ * Компонент для отображения ссылки на просмотр информации по акции
+ */
+import {Component, Prop, UI} from "../app/ui";
 
 @Component({
     // language=Vue
     template: `
-        <div>
-            Перейдите в online-терминал. Перейдите на вкладку <b>Сделки</b>
-
-            <v-img :src="IMAGES[0]" max-width="980" class="grey darken-4 image"></v-img>
-
-            Для получения отчета нажмите Экспорт в Excel<br>
-            Полученный файл используйте для импорта.
-        </div>
+        <v-tooltip content-class="custom-tooltip-wrap" max-width="563px" bottom>
+            <sup class="custom-tooltip" slot="activator">
+                <v-icon>{{ icon }}</v-icon>
+            </sup>
+            <span>
+                <slot></slot>
+            </span>
+        </v-tooltip>
     `
 })
-export class FreedomFinanceInstruction extends UI {
+export class Tooltip extends UI {
 
-    private IMAGES: string[] = [
-        "./img/import_instructions/freedom_finance/1.png",
-    ];
-
+    @Prop({type: String, required: false, default: "fas fa-info-circle"})
+    private icon: string;
 }

@@ -45,7 +45,6 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-list>
                 </v-menu>
             </v-list-tile-content>
-
         </v-list-tile>
     `
 })

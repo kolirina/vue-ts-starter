@@ -203,18 +203,18 @@ const MainStore = namespace(StoreType.MAIN);
                         <v-spacer></v-spacer>
                         <div class="import-wrapper-content pr-1">
                             <span v-if="customFilter" class="event-calendar-active-filter" title="Настроен фильтр"></span>
-                            <v-menu content-class="dialog-setings-menu" transition="slide-y-transition" nudge-bottom="36" left bottom class="setings-menu my-0 mx-0"
+                            <v-menu content-class="dialog-settings-menu" transition="slide-y-transition" nudge-bottom="36" left bottom class="settings-menu my-0 mx-0"
                                     :close-on-content-click="false" min-width="255">
                                 <v-btn class="btn" slot="activator">
                                     Настройки
                                 </v-btn>
                                 <v-list dense>
-                                    <div class="title-setings">
+                                    <div class="title-settings">
                                         Тип события
                                     </div>
                                     <v-flex>
                                         <v-checkbox v-for="event in calendarEventsTypes.values()" :input-value="isCalendarTypeChecked(event.code)"
-                                                    @change="changeFilter(event.code)" :key="event.code" hide-details class="checkbox-setings">
+                                                    @change="changeFilter(event.code)" :key="event.code" hide-details class="checkbox-settings">
                                             <template #label>
                                                 <span>
                                                     {{ event.description }}
