@@ -5,7 +5,7 @@ import {Component, Prop, UI} from "../app/ui";
     template: `
         <div class="update-service-dialog__content selectable">
             <div>
-                <p>
+                <p v-if="showIntro">
                     Мы рады сообщить, что сервис учета инвестиций Intelinvest <br/>
                     стал еще удобнее, быстрее и появились новые возможности.
                 </p>
@@ -49,7 +49,7 @@ import {Component, Prop, UI} from "../app/ui";
                     <li>Исправли недочеты, о которых вы нам сообщали</li>
                 </ul>
 
-                <template v-if="isLogin">
+                <template v-if="loggedIn">
                     <expanded-panel :value="oldUpdatesPanelState" class="promo-codes__statistics">
                         <template #header>Предыдущие обновления</template>
                         <div class="update-service-dialog__date">29.03.2020</div>
@@ -222,7 +222,7 @@ import {Component, Prop, UI} from "../app/ui";
                     </expanded-panel>
                 </template>
             </div>
-            <div class="app-btns">
+            <div v-if="showIntro" class="app-btns">
                 <a href="https://itunes.apple.com/ru/app/intelinvest-%D1%83%D1%87%D0%B5%D1%82-%D0%B8%D0%BD%D0%B2%D0%B5%D1%81%D1%82%D0%B8%D1%86%D0%B8%D0%B9
                 /id1422478197?mt=8" title="Загрузите приложение в App Store" target="_blank">
                     <img src="./img/help/app-store-badge2.svg" alt="pic">
@@ -231,8 +231,8 @@ import {Component, Prop, UI} from "../app/ui";
                     <img src="./img/help/google-play-badge2.svg" alt="pic">
                 </a>
             </div>
-            <div>
-                <div v-if="isLogin">
+            <div v-if="showIntro">
+                <div v-if="loggedIn">
                     Желаем вам доходных инвестиций, команда Intelinvest.<br/>
                     Все вопросы и предложения, через форму
                     <a @click="openFeedBackDialog">обратной связи.</a><br/><br/>
@@ -253,7 +253,10 @@ import {Component, Prop, UI} from "../app/ui";
 export class UpdateServiceInfo extends UI {
 
     @Prop({default: false, type: Boolean})
-    private isLogin: boolean;
+    private loggedIn: boolean;
+
+    @Prop({default: true, type: Boolean})
+    private showIntro: boolean;
 
     private oldUpdatesPanelState = [0];
 

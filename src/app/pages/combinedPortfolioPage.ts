@@ -74,7 +74,7 @@ const MainStore = namespace(StoreType.MAIN);
             </template>
         </v-slide-x-reverse-transition>
     `,
-    components: {BasePortfolioPage, ContentLoader}
+    components: {BasePortfolioPage}
 })
 export class CombinedPortfolioPage extends UI {
 

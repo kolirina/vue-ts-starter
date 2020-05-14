@@ -9,6 +9,7 @@ import exporting from "highcharts/modules/exporting";
 import Clipboard from "v-clipboard";
 import VeeValidate, {Validator} from "vee-validate";
 import Vue from "vue";
+import {ContentLoader} from "vue-content-loader";
 import VueQriously from "vue-qriously";
 import Snotify, {SnotifyPosition} from "vue-snotify";
 import VueTour from "vue-tour";
@@ -120,6 +121,7 @@ export class UIRegistry {
         UI.component("micro-line-chart", MicroLineChart);
         UI.component("video-link", VideoLink);
         UI.component("tooltip", Tooltip);
+        UI.component("content-loader", ContentLoader);
 
         // фильтры
         UI.filter("amount", Filters.formatMoneyAmount);
