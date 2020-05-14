@@ -48,7 +48,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 <div class="dashboard-summary-income-icon">
                                     <v-icon>{{ block.isSummaryIncome.isUpward ? 'arrow_upward' : 'arrow_downward' }}</v-icon>
                                 </div>
-                                <div class="dashboard-summary-income-text dashboard-currency" :class="block.secondCurrency">
+                                <div v-if="block.secondValue" class="dashboard-summary-income-text dashboard-currency" :class="block.secondCurrency">
                                     <span>{{ block.secondValue }} </span>
                                 </div>
                                 <v-tooltip v-if="block.secondTooltip" content-class="custom-tooltip-wrap dashboard-tooltip" class="ml-1" :max-width="450" bottom right>
@@ -63,7 +63,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </template>
 
                         <template v-else>
-                            <span class="dashboard-currency" :class="block.secondCurrency">{{ block.secondValue }} </span>
+                            <span v-if="block.secondValue" class="dashboard-currency" :class="block.secondCurrency">{{ block.secondValue }} </span>
                             <span class="dashboard-second-value-desc">{{ block.secondValueDesc }} </span>
                             <v-tooltip v-if="block.secondTooltip" content-class="custom-tooltip-wrap dashboard-tooltip" :max-width="450" bottom right>
                                 <sup slot="activator">
@@ -183,15 +183,16 @@ export class Dashboard extends UI {
 Прибыль портфеля посчитанная относительно ${this.percentProfitBySummary ? "средневзвешенной стоимости вложений" : "суммарной текущей стоимости"}: ` +
                 ` <b>${this.percentProfitBySummary ? newValue.percentProfit : newValue.percentProfitBySummaryCost} %</b>`
         };
+        const showSecondYield = !this.invalidYieldData[0];
         this.blocks[2] = {
             name: "Среднегодовая доходность",
             mainValue: newValue.yearYield,
-            secondValue: newValue.yearYieldWithoutDividendsAndCoupons,
+            secondValue: showSecondYield ? newValue.yearYieldWithoutDividendsAndCoupons : null,
             mainCurrency: "percent",
             secondCurrency: "percent",
             tooltip: this.invalidYieldData[1],
             mainValueIcon: this.invalidYieldData[0],
-            secondTooltip: "Доходность без учета дивидендов и выплат по облигациям"
+            secondTooltip: showSecondYield ? "Доходность без учета дивидендов и выплат по облигациям" : null
         };
         this.blocks[3] = {
             name: "Изменение за день",
@@ -218,17 +219,21 @@ export class Dashboard extends UI {
     private get invalidYieldData(): [string, string] {
         const yearYield = new Decimal(this.overview.dashboardData.yearYield);
         const daysDiff = DateUtils.parseDate(DateUtils.currentDate()).diff(this.overview.firstTradeDate, "day");
-        // Дата с первой сделки в портфеле менее 90 дней и доходность равна +-(50%).
+        // Дата с первой сделки в портфеле менее 90 дней и доходность равна  от 50 до 90 процентов
         if (daysDiff < 90) {
-            if (yearYield.abs().comparedTo(new Decimal("50")) >= 0) {
+            if (yearYield.abs().comparedTo(new Decimal("50")) >= 0 && yearYield.abs().comparedTo(new Decimal("90")) < 0) {
                 return ["broken-portfolio-icon", `Для расчета доходности необходим период не менее 90 дней. Текущее значение: ${this.overview.dashboardData.yearYield} %`];
+            } else if (yearYield.abs().comparedTo(new Decimal("90")) >= 0) {
+                return ["broken-portfolio-icon", this.YIELD_TOOLTIP];
             }
             return [null, this.YIELD_TOOLTIP];
         }
         // Дата с первой сделки в портфеле более 90 дней и доходность >= -90%
         // Скрыть показатель, заменив на значок
         if (daysDiff >= 90) {
-            if (yearYield.abs().comparedTo(new Decimal("50")) > 0 && yearYield.abs().comparedTo(new Decimal("90")) < 0) {
+            if (yearYield.abs().comparedTo(new Decimal("50")) >= 0 && yearYield.abs().comparedTo(new Decimal("90")) <= 0) {
+                return ["broken-portfolio-icon", this.YIELD_TOOLTIP + `<br/>Текущее значение: ${this.overview.dashboardData.yearYield} %`];
+            } else if (yearYield.abs().comparedTo(new Decimal("90")) >= 0) {
                 return ["broken-portfolio-icon", this.YIELD_TOOLTIP];
             }
             return [null, this.YIELD_TOOLTIP];
