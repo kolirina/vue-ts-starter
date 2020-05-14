@@ -15,6 +15,7 @@ export class UiStateHelper {
     static readonly ASSET_CHART_PANEL = "assetChartPanel";
     static readonly AGGREGATE_CHART_PANEL = "aggregateChartPanel";
     static readonly YIELD_CONTRIBUTORS_CHART_PANEL = "yieldContributorsChartPanel";
+    static readonly WHOLE_PORTFOLIO_SHARES_ALLOCATION_CHART_PANEL = "wholePortfolioSharesAllocationChartChartPanel";
     static readonly SECTORS_PANEL = "sectorsPanel";
     static readonly BOND_SECTORS_PANEL = "bondSectorsPanel";
     static readonly BONDS = "bonds_panel";
@@ -191,6 +192,14 @@ export class UiStateHelper {
 
     static get yieldContributorsChart(): number[] {
         return [localStorage.get(UiStateHelper.YIELD_CONTRIBUTORS_CHART_PANEL, 0)];
+    }
+
+    static set wholePortfolioSharesAllocationChart(value: number[]) {
+        localStorage.set(UiStateHelper.WHOLE_PORTFOLIO_SHARES_ALLOCATION_CHART_PANEL, value);
+    }
+
+    static get wholePortfolioSharesAllocationChart(): number[] {
+        return [localStorage.get(UiStateHelper.WHOLE_PORTFOLIO_SHARES_ALLOCATION_CHART_PANEL, 0)];
     }
 
     static set sectorsGraph(value: number[]) {

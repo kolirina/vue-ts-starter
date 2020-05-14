@@ -21,6 +21,7 @@ import {
     SimpleChartData
 } from "../types/charts/types";
 import {Operation} from "../types/operation";
+import {PortfolioAssetType} from "../types/portfolioAssetType";
 import {BondPortfolioRow, Overview, StockTypePortfolioRow} from "../types/types";
 import {CommonUtils} from "./commonUtils";
 import {DateFormat, DateUtils} from "./dateUtils";
@@ -194,6 +195,51 @@ export class ChartUtils {
                 profit: Filters.formatNumber(profit.toString()),
                 currencySymbol: currencySymbol,
                 y: profit.toNumber()
+            });
+        });
+        data.sort((a, b) => b.y - a.y);
+        return data;
+    }
+
+    /**
+     * Возвращает набор для графика эффективности бумаг в портфеле
+     * @param overview данные по портфелю
+     * @param currencySymbol символ валюты
+     */
+    static doWholePortfolioSharesAllocationChartData(overview: Overview, currencySymbol: string): CustomDataPoint[] {
+        const data: CustomDataPoint[] = [];
+        const skippedTypes = [PortfolioAssetType.STOCK, PortfolioAssetType.BOND, PortfolioAssetType.ETF, PortfolioAssetType.OTHER];
+        const rows: Array<{ shareName: string, percentShare: string, currCost: string, profit: string, currency: string }> = [
+            ...overview.stockPortfolio.rows.map(row => {
+                return {shareName: row.share.shortname, percentShare: row.percCurrShareInWholePortfolio, currCost: row.currCost, profit: row.profit, currency: currencySymbol};
+            }),
+            ...overview.etfPortfolio.rows.map(row => {
+                return {shareName: row.share.shortname, percentShare: row.percCurrShareInWholePortfolio, currCost: row.currCost, profit: row.profit, currency: currencySymbol};
+            }),
+            ...overview.bondPortfolio.rows.map(row => {
+                return {shareName: row.bond.shortname, percentShare: row.percCurrShareInWholePortfolio, currCost: row.currCost, profit: row.profit, currency: currencySymbol};
+            }),
+            ...overview.assetPortfolio.rows.map(row => {
+                return {shareName: row.share.shortname, percentShare: row.percCurrShareInWholePortfolio, currCost: row.currCost, profit: row.profit, currency: currencySymbol};
+            }),
+            ...overview.assetRows.filter(row => !skippedTypes.includes(PortfolioAssetType.valueByName(row.type))).map(row => {
+                return {
+                    shareName: PortfolioAssetType.valueByName(row.type)?.description, percentShare: row.percCurrShareInWholePortfolio,
+                    currency: new BigMoney(row.currCost).currencySymbol,
+                    currCost: row.currCost, profit: row.profit
+                };
+            })
+        ];
+        rows.filter(value => !new Decimal(value.percentShare).isZero()).forEach(row => {
+            const percentShare = new Decimal(row.percentShare).abs().toDP(2, Decimal.ROUND_HALF_UP);
+            const currCost = new BigMoney(row.currCost).amount.abs().toDP(2, Decimal.ROUND_HALF_UP);
+            const profit = row.profit ? new BigMoney(row.profit).amount.abs().toDP(2, Decimal.ROUND_HALF_UP) : new Decimal("0");
+            data.push({
+                name: row.shareName,
+                description: `Стоимость ${Filters.formatNumber(currCost.toString())} ${row.currency}, доля: ${percentShare.toNumber()} %`,
+                profit: Filters.formatNumber(profit.toString()),
+                currencySymbol: currencySymbol,
+                y: percentShare.toNumber()
             });
         });
         data.sort((a, b) => b.y - a.y);
