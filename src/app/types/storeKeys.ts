@@ -42,5 +42,7 @@ export enum StoreKeys {
     /** Ключ под которым хранится признак развернутого меню */
     MENU_STATE_KEY = "MENU_STATE",
     /** Ключ под которым хранится название темы */
-    THEME = "theme"
+    THEME = "theme",
+    /** Ключ под которым хранится признак скрытия панели быстрых действия в диалоге добавления сделки */
+    ADD_TRADE_DIALOG_QUICK_ACTIONS_PANEL = "add_trade_dialog_quick_actions_panel"
 }

@@ -6,6 +6,7 @@ import {Component, UI} from "../../app/ui";
 import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {CustomDialog} from "../../platform/dialogs/customDialog";
+import {Storage} from "../../platform/services/storage";
 import {AssetCategory, AssetService} from "../../services/assetService";
 import {Client, ClientService} from "../../services/clientService";
 import {DateTimeService} from "../../services/dateTimeService";
@@ -22,6 +23,7 @@ import {EventType} from "../../types/eventType";
 import {Operation} from "../../types/operation";
 import {Permission} from "../../types/permission";
 import {PortfolioAssetType} from "../../types/portfolioAssetType";
+import {StoreKeys} from "../../types/storeKeys";
 import {TradeDataHolder} from "../../types/trade/tradeDataHolder";
 import {TradeMap} from "../../types/trade/tradeMap";
 import {TradeValue} from "../../types/trade/tradeValue";
@@ -31,6 +33,7 @@ import {DateUtils} from "../../utils/dateUtils";
 import {TariffUtils} from "../../utils/tariffUtils";
 import {TradeUtils} from "../../utils/tradeUtils";
 import {MainStore} from "../../vuex/mainStore";
+import {TradeQuickAction, TradeQuickActions} from "../tradeQuickActions";
 import {FeedbackDialog} from "./feedbackDialog";
 import {TariffExpiredDialog} from "./tariffExpiredDialog";
 
@@ -63,6 +66,10 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
 
                 <v-card-text class="paddT0 paddB0">
                     <v-container grid-list-md class="paddT0 paddB0">
+                        <!-- Панель с быстрыми ссылками. Пока пользователь не скроет их -->
+                        <v-slide-y-reverse-transition>
+                            <trade-quick-actions v-if="showQuickActionsPanel" @change="setQuickAction" @close="closeQuickActionsPanel"></trade-quick-actions>
+                        </v-slide-y-reverse-transition>
                         <v-layout wrap>
                             <!-- Тикер бумаги -->
                             <v-flex v-if="shareAssetType" xs12 sm8>
@@ -308,7 +315,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
             </v-card>
         </v-dialog>
     `,
-    components: {CustomDialog}
+    components: {CustomDialog, TradeQuickActions}
 })
 export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> implements TradeDataHolder {
 
@@ -333,6 +340,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private dateTimeService: DateTimeService;
     @Inject
     private assetService: AssetService;
+    @Inject
+    private localStorage: Storage;
     /** Информация о клиенте */
     private clientInfo: Client = null;
     /** Выбранный портфель для добавления сделки. По умолчанию текущий */
@@ -343,6 +352,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private assetCategories = AssetCategory.values();
     /** Операции */
     private Operation = Operation;
+    /** Тип актива */
+    private AssetType = AssetType;
     /** Тип добавляемого актива */
     private assetType = AssetType.STOCK;
     /** Текущий курс для обменной сделки */
@@ -416,8 +427,11 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     private portfolioProModeEnabled = false;
     /** Текущее количество бумаг по которой идёт добавление сделки */
     private currentCountShareSearch: string = null;
+    /** Признак отображения панели с быстрыми действиями */
+    private showQuickActionsPanel = false;
 
     async mounted(): Promise<void> {
+        this.showQuickActionsPanel = this.localStorage.get(StoreKeys.ADD_TRADE_DIALOG_QUICK_ACTIONS_PANEL, true);
         this.clientInfo = await this.clientService.getClientInfo();
         await this.checkAllowedAddTrade();
         this.portfolio = (this.data.store as any).currentPortfolio;
@@ -1018,6 +1032,19 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             }
         }
         return assetType === AssetType.STOCK ? "Акция, ПИФ, ETF" : assetType.description;
+    }
+
+    private async setQuickAction(tradeQuickAction: TradeQuickAction): Promise<void> {
+        this.assetType = tradeQuickAction.assetType;
+        this.onAssetTypeChange();
+        this.operation = tradeQuickAction.operation;
+        await this.onOperationChange();
+        this.note = tradeQuickAction.note;
+    }
+
+    private closeQuickActionsPanel(): void {
+        this.localStorage.set(StoreKeys.ADD_TRADE_DIALOG_QUICK_ACTIONS_PANEL, false);
+        this.showQuickActionsPanel = false;
     }
 
     private get showFreeBalance(): boolean {
