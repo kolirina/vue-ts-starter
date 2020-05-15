@@ -43,24 +43,26 @@ import {Operation} from "../types/operation";
                         </span>
                 </v-tooltip>
             </v-flex>
-            <v-flex @click="setQuickAction(AssetType.MONEY, Operation.INCOME)" class="add-trade-dialog__action-item">
-                <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" top>
-                    <span slot="activator">Добавить доход</span>
-                    <span>
+            <v-layout wrap row style="margin-bottom: auto !important;">
+                <v-flex @click="setQuickAction(AssetType.MONEY, Operation.INCOME)" class="add-trade-dialog__action-item">
+                    <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" top>
+                        <span slot="activator">Добавить доход</span>
+                        <span>
                             Добавить произвольный доход.<br/>
                             Это может быть вычет, возврат НДФЛ, другая сумма,
                             которую вы хотите учесть в прибыли портфеля
                         </span>
-                </v-tooltip>
-            </v-flex>
-            <v-flex>
-                <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" top>
-                    <a slot="activator" @click="closeQuickActionsPanel">
-                        <v-icon class="add-trade-dialog__close-actions-icon">far fa-times-circle</v-icon>
-                    </a>
-                    <span>Закрыть и больше не показывать</span>
-                </v-tooltip>
-            </v-flex>
+                    </v-tooltip>
+                </v-flex>
+                <v-flex>
+                    <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" top>
+                        <a slot="activator" @click="closeQuickActionsPanel">
+                            <v-icon class="add-trade-dialog__close-actions-icon">far fa-times-circle</v-icon>
+                        </a>
+                        <span>Закрыть и больше не показывать</span>
+                    </v-tooltip>
+                </v-flex>
+            </v-layout>
         </v-layout>
     `
 })

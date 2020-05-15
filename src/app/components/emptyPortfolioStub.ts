@@ -33,9 +33,6 @@ import {EventType} from "../types/eventType";
                         Вы можете загрузить отчет со сделками вашего брокера или завести
                         сделки самостоятельно, если знаете цены и даты покупок/продаж
                     </div>
-                    <video-link>
-                        <a>Смотреть видео инструкцию по импорту сделок</a>
-                    </video-link>
                     <div class="margT14 center-elements">
                         <v-btn class="btn" color="#EBEFF7" @click="goToImport" data-v-step="0">
                             Загрузить отчет

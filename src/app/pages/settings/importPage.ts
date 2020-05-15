@@ -1,3 +1,5 @@
+import dayjs from "dayjs";
+import Decimal from "decimal.js";
 import {Inject} from "typescript-ioc";
 import {namespace} from "vuex-class/lib/bindings";
 import {Component, UI, Watch} from "../../app/ui";
@@ -10,6 +12,7 @@ import {ImportErrorsTable} from "../../components/imp/importErrorsTable";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {ClientInfo} from "../../services/clientService";
+import {EventService} from "../../services/eventService";
 import {
     DealImportError,
     DealsImportProvider,
@@ -25,6 +28,7 @@ import {PortfolioParams, PortfolioService} from "../../services/portfolioService
 import {CurrencyUnit} from "../../types/currency";
 import {Portfolio, Share, Status} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
+import {DateUtils} from "../../utils/dateUtils";
 import {FileUtils} from "../../utils/fileUtils";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
@@ -302,9 +306,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             В отчете брокера не указаны остатки денежных средств на данный момент.
                                             Чтобы исключить несоответствие портфеля, пожалуйста укажите текущие остатки денежных средств в полях ввода
                                         </tooltip>
-                                        <!-- todo import условие отображения блока и кнопки -->
-                                        <currency-balances :portfolio-id="portfolio.id"
-                                                           class="currency-balances"></currency-balances>
+                                        <currency-balances :portfolio-id="portfolio.id" class="currency-balances"></currency-balances>
 
                                         <v-divider class="margB24"></v-divider>
                                     </template>
@@ -350,8 +352,11 @@ const MainStore = namespace(StoreType.MAIN);
                                     </div>
                                 </div>
                                 <div v-if="!isIntelinvest" class="info-block">Портфель почти сформирован, для полного соответствия требуются дополнительные данные</div>
+                                <!-- todo import вынести в компонент -->
                                 <div v-if="!isIntelinvest" class="import-result-info">
-                                    <expanded-panel name="dividends" :value="[true]" class="selectable import-history">
+                                    <!-- Блок отображается если из отчета не импортируются начисления или если импортируются, и есть новые события -->
+                                    <expanded-panel v-if="hasNewEventsAfterImport || importProviderFeatures.autoEvents" name="dividends" :value="[true]"
+                                                    class="selectable import-history">
                                         <template #header>
                                             <span>Отчет {{ importProviderFeatures.autoEvents ? "не" : "" }} содержит информацию по дивидендам, купонам, амортизации</span>
                                             <tooltip v-if="importProviderFeatures.autoEvents">
@@ -363,9 +368,16 @@ const MainStore = namespace(StoreType.MAIN);
                                             </tooltip>
                                         </template>
                                         <span>
-                                            Возможно, в отчет не успели попасть все начисления, пожалуйста, проверьте дополнительно раздел<br/>
-                                            <router-link :to="{'name': 'events'}">События</router-link>
-                                            , в нем будут отображены события по бумагам, которые еще не учтены.
+                                            <template v-if="importProviderFeatures.autoEvents">
+                                                Отчет вашего брокера не содержит информацию о бумагах, по которым происходят выплаты. <br/>
+                                                К счастью, мы постарались восстановить эти сделки на основе общедоступной информации. <br/>
+                                                Однако, эта информация не всегда достоверна - возможны небольшие расхождения по суммам, <br/>
+                                                о некоторых выплатах мы можем не знать. <br/>
+                                            </template>
+                                            <template v-if="importProviderFeatures.autoEvents || hasNewEventsAfterImport">
+                                                Проверьте дополнительно раздел <router-link :to="{'name': 'events'}">События</router-link>, <br/>
+                                             в нем будут отображены события по бумагам, которые еще не учтены.
+                                            </template>
                                         </span>
                                     </expanded-panel>
 
@@ -383,16 +395,44 @@ const MainStore = namespace(StoreType.MAIN);
                                         <import-errors-table :error-items="notFoundShareErrors"></import-errors-table>
                                     </expanded-panel>
 
-                                    <expanded-panel v-if="importProviderFeatures.confirmMoneyBalance" name="residuals" :value="[true]" class="selectable import-history">
+                                    <expanded-panel v-if="isQuik || importProviderFeatures.confirmMoneyBalance" name="residuals" :value="[true]" class="selectable import-history">
                                         <template #header>
                                             <span>Остаток денежных средств может отличаться от брокера</span>
                                             <tooltip>
                                                 В отчете брокера не указаны остатки денежных средств на данный момент.
                                             </tooltip>
                                         </template>
-                                        В отчете брокера не указаны остатки денежных средств на данный момент.<br/>
-                                        Если Вы указали остатки на предыдущем шаге, все должно быть хорошо,<br/>
-                                        иначе, вам необходимо дополнить историю сделок, движениями денежных средств.
+                                        <template v-if="importProviderFeatures.confirmMoneyBalance">
+                                            В отчете брокера не указаны остатки денежных средств на данный момент.<br/>
+                                            Если Вы указали остатки на предыдущем шаге, система внесла корректирующую сделку.<br/>
+                                            Вы можете занести сделки пополения счета вручную, чтобы получить более точные результаты.
+                                        </template>
+                                        <template v-if="isQuik">
+                                            В отчете не содержится движения по списаниям и зачислениям денежных средств.<br/>
+                                            Если Вы указали остатки на предыдущем шаге, система внесла корректирую сделку. <br/>
+                                            Вы можете занести сделки пополения счета вручную, чтобы получить более точные результаты.
+                                        </template>
+                                    </expanded-panel>
+
+                                    <expanded-panel v-if="isFinam" name="residuals" :value="[true]" class="selectable import-history">
+                                        <template #header>
+                                            <span>Сверьте расходы по комиссиям брокера</span>
+                                        </template>
+                                        Отчет вашего брокера не содержит информацию об удерживаемых комиссиях по сделкам. <br/>
+                                        <template v-if="finamHasFixFee">
+                                            Вы указали в настройках Портфеля размер фиксированной комиссии, и мы расчитали ее автоматически.<br/>
+                                        </template>
+                                        <template v-else>
+                                            Вы можете указать в настройках Портфеля размер фиксированной комиссии, и мы расчитаем ее автоматически при следующем импорте.<br/>
+                                        </template>
+                                        Вы можете сверить результат и добавить корректирующию сделку типа Расход, если будет необходимо.
+                                    </expanded-panel>
+
+                                    <expanded-panel v-if="requireMoreReports" name="tickers" :value="[true]" class="selectable import-history">
+                                        <template #header>
+                                            <span>Не хватает сделок для формирования портфеля</span>
+                                        </template>
+                                        Для формирования портфеля загрузите отчет(отчеты) за все время ведения счета.
                                     </expanded-panel>
 
                                     <expanded-panel v-if="otherErrors.length" name="tickers" :value="[true]" class="selectable import-history">
@@ -456,6 +496,8 @@ export class ImportPage extends UI {
     private overviewService: OverviewService;
     @Inject
     private portfolioService: PortfolioService;
+    @Inject
+    private eventService: EventService;
     /** Все провайдеры импорта */
     private importProviderFeaturesByProvider: ImportProviderFeaturesByProvider = null;
     /** Настройки импорта для выбранного провайдера */
@@ -487,6 +529,8 @@ export class ImportPage extends UI {
     /** Статусы */
     private Status = Status;
 
+    private hasNewEventsAfterImport = false;
+
     /**
      * Инициализирует необходимые для работы данные
      * @inheritDoc
@@ -498,6 +542,7 @@ export class ImportPage extends UI {
         await this.loadImportHistory();
         this.portfolioParams = {...this.portfolio.portfolioParams};
         this.selectUserProvider();
+        this.showInstruction = [this.portfolioParams.brokerId ? 0 : 1];
     }
 
     private async revertImport(userImportId: number): Promise<void> {
@@ -549,6 +594,10 @@ export class ImportPage extends UI {
         await this.importService.saveShareAliases(filled);
         this.importResult = await this.importReport();
         await this.handleUploadResponse();
+        // если начисления импортируем из отчета, дополнительно проверяем что в Событиях ничего нового не появилось
+        if (!this.importProviderFeatures.autoEvents) {
+            this.hasNewEventsAfterImport = (await this.eventService.getEvents(this.portfolio.id)).events.length > 0;
+        }
         this.currentStep = ImportStep._3;
     }
 
@@ -678,8 +727,8 @@ export class ImportPage extends UI {
         if (!retryUpload && this.importResult.errors && this.importResult.errors.length) {
             // если после удаления ошибки все еще остались, отображаем диалог
             // отображаем диалог с ошибками, но информацию по портфелю надо перезагрузить если были успешно импортированы сделки
-            if (this.importResult.errors.length) {
-                this.shareAliases = this.importResult.errors.filter(error => error.shareNotFound).map(error => {
+            if (this.notFoundShareErrors.length) {
+                this.shareAliases = this.notFoundShareErrors.map(error => {
                     return {
                         alias: error.dealTicker,
                         currency: error.currency,
@@ -690,7 +739,11 @@ export class ImportPage extends UI {
                 return;
             }
         }
-
+        // если не повторная загрузка и требуется подтверждение балансов, переходим на второй шаг
+        if (!retryUpload && this.importProviderFeatures.confirmMoneyBalance) {
+            this.currentStep = ImportStep._2;
+            return;
+        }
         this.currentStep = ImportStep._3;
     }
 
@@ -721,10 +774,6 @@ export class ImportPage extends UI {
     private clearFiles(): void {
         this.files = [];
         this.importInProgress = false;
-    }
-
-    private get isFinam(): boolean {
-        return this.selectedProvider === DealsImportProvider.FINAM;
     }
 
     private get providerAllowedExtensions(): string {
@@ -774,12 +823,33 @@ export class ImportPage extends UI {
         return 0;
     }
 
+    private get isFinam(): boolean {
+        return this.selectedProvider === DealsImportProvider.FINAM;
+    }
+
+    private get isQuik(): boolean {
+        return this.selectedProvider === DealsImportProvider.QUIK;
+    }
+
+    private get finamHasFixFee(): boolean {
+        const fixFee = this.portfolioParams.fixFee ? new Decimal(this.portfolioParams.fixFee) : null;
+        return this.isFinam && !fixFee && !fixFee.isZero();
+    }
+
     private get isSberbank(): boolean {
         return this.selectedProvider === DealsImportProvider.SBERBANK;
     }
 
     private get isIntelinvest(): boolean {
         return this.selectedProvider === DealsImportProvider.INTELINVEST;
+    }
+
+    /**
+     * Возвращает признак необходимости загрузки дополнительных отчетов
+     * Если дата последней сдеки не в текущем году
+     */
+    private get requireMoreReports(): boolean {
+        return DateUtils.parseDate(this.portfolio.overview.lastTradeDate).get("year") < dayjs().get("year");
     }
 
     private get showImportSettings(): boolean {
