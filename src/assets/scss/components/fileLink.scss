@@ -2,11 +2,9 @@
 
 .file-link {
   display: inline;
+  cursor: pointer;
+  color: #1f83c8;
+  text-decoration: underline;
 
-  .file-link__text {
-    cursor: pointer;
-    color: #1f83c8;
-
-    &:hover {text-decoration: underline;}
-  }
+  &:hover {text-decoration: none;}
 }
