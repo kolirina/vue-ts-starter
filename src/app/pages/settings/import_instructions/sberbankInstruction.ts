@@ -24,6 +24,89 @@ import {Component, UI} from "../../../app/ui";
                 Также поддерживается импорт отчетов в формате html, которые брокер присылает вам на почту.<br/>
                 Можно загружать отчеты обоих форматов, за любые периоды, в том числе и пересекающиеся между собой, дублей сделок при этом не будет.
             </div>
+
+            1 изображение
+            <div class="import-instructions__gallery">
+                <figure>
+                    <img :src="IMAGES[1]" alt="">
+                </figure>
+            </div>
+            2 изображения
+            <div class="import-instructions__gallery">
+                <figure>
+                    <img :src="IMAGES[2]" alt="">
+                </figure>
+                <figure>
+                    <img :src="IMAGES[3]" alt="">
+                </figure>
+            </div>
+            3 изображения
+            <div class="import-instructions__gallery">
+                <figure>
+                    <img :src="IMAGES[1]" alt="">
+                </figure>
+                <figure>
+                    <img :src="IMAGES[2]" alt="">
+                </figure>
+                <figure>
+                    <img :src="IMAGES[3]" alt="">
+                </figure>
+            </div>
+            4 изображения
+            <div class="import-instructions__gallery">
+                <figure>
+                    <img :src="IMAGES[0]" alt="">
+                </figure>
+                <figure>
+                    <img :src="IMAGES[4]" alt="">
+                </figure>
+                <figure>
+                    <img :src="IMAGES[5]" alt="">
+                </figure>
+                <figure>
+                    <img :src="IMAGES[6]" alt="">
+                </figure>
+            </div>
+            5 изображений
+            <div class="import-instructions__gallery">
+                <figure>
+                    <img :src="IMAGES[0]" alt="">
+                </figure>
+                <figure>
+                    <img :src="IMAGES[4]" alt="">
+                </figure>
+                <figure>
+                    <img :src="IMAGES[5]" alt="">
+                </figure>
+                <figure>
+                    <img :src="IMAGES[6]" alt="">
+                </figure>
+                <figure>
+                    <img :src="IMAGES[6]" alt="">
+                </figure>
+            </div>
+            6 изображений
+            <div class="import-instructions__gallery">
+                <figure>
+                    <img :src="IMAGES[0]" alt="">
+                </figure>
+                <figure>
+                    <img :src="IMAGES[4]" alt="">
+                </figure>
+                <figure>
+                    <img :src="IMAGES[5]" alt="">
+                </figure>
+                <figure>
+                    <img :src="IMAGES[6]" alt="">
+                </figure>
+                <figure>
+                    <img :src="IMAGES[4]" alt="">
+                </figure>
+                <figure>
+                    <img :src="IMAGES[5]" alt="">
+                </figure>
+            </div>
+
             <div class="mt-4">
                 Для получения отчета по счету или ИИС в новом интерфейсе Сбербанк Онлайн, следуйте инструкции.<br/><br/>
                 Чтобы получить отчет за весь период в формате <b>xls/xlsx</b>:<br/>
