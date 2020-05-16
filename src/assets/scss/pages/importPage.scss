@@ -26,16 +26,19 @@
       }
     }
     .settings-menu {
-      margin: 27px 0px 20px 0px;
+      margin-right: 0;
       .v-btn {
         padding: 0px 38px 0px 20px;
         border-radius: 30px !important;
         background: url("../img/fileimport/setings.svg") no-repeat;
         background-position: 86% center;
       }
+
+      @media only screen and (max-width: $xs-breakpoint) {
+        margin: 24px 0 20px 0;
+      }
     }
     .section-upload-file{
-      margin-top: 16px;
       align-items: center;
 
       .btn-show-instruction {
@@ -45,46 +48,31 @@
         color: #A1A6B6;
         cursor: pointer;
       }
-      .v-btn {
-        margin-top: 20px;
-      }
-      .file-link__text{
-        background: #3b6ec9;
+
+      .v-btn {margin-top: 20px}
+
+      .reselect-file-btn {
         border-radius: 4px;
         font-size: 14px;
         line-height: 20px;
         text-align: center;
-        color: #FFFFFF;
-        padding: 8px 20px;
-        height: 44px;
         min-width: 124px;
         text-decoration: none !important;
         white-space: nowrap;
-      }
-      .select-file-btn {
-        .file-link__text {
-          padding: 12px 20px;
-          background: #3b6ec9;
-          color: #FFFFFF;
-          white-space: nowrap;
-        }
-      }
-      .reselect-file-btn {
-        .file-link__text {
-          padding: 8px 16px;
-          background: none;
-          color: #3D4656;
-          border: 1px solid #CACED5;
-          white-space: nowrap;
-        }
-
-        @media only screen and (max-width: $sm-breakpoint) {
-          display: inline-block;
-          padding: 8px 0;
-        }
+        display: inline-flex;
+        height: 36px;
+        align-items: center;
+        padding: 8px 16px;
+        background: none;
+        color: #3D4656;
+        border: 1px solid #CACED5;
       }
 
-      @media only screen and (max-width: $sm-breakpoint) {margin-bottom: 24px}
+      @media only screen and (max-width: $xs-breakpoint) {
+        flex-direction: column;
+
+        .btn {margin-bottom: 16px !important;}
+      }
     }
   }
 
@@ -447,13 +435,20 @@
     &__body {
       > * {margin-top: 12px}
 
-      .v-expansion-panel__header {
-        justify-content: space-between;
-        padding-bottom: 12px !important;
+      .exp-panel {
 
-        .v-expansion-panel__container--active & {
+        .v-expansion-panel__header {
+          justify-content: space-between;
+
+          &__icon {transform: rotate(180deg) !important}
+        }
+
+        .v-expansion-panel__container--active .v-expansion-panel__header {
           border-bottom: 1px solid $sidebar-hr-color;
           margin-bottom: 16px;
+          padding-bottom: 12px !important;
+
+          &__icon {transform: rotate(0deg) !important;}
         }
       }
     }

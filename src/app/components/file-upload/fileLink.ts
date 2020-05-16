@@ -10,12 +10,10 @@ import {FileUtils} from "../../utils/fileUtils";
 @Component({
     // language=Vue
     template: `
-        <div class="file-link" @click.stop>
+        <label :for="inputId" class="file-link" @click.stop>
             <input :id="inputId" ref="input" style="display: none;" type="file" name="files" :multiple="multiple" :accept="accept" @change="onChange"/>
-            <label :for="inputId" class="file-link__text">
-                <slot></slot>
-            </label>
-        </div>`
+            <slot></slot>
+        </label>`
 })
 export class FileLink extends UI {
 

@@ -105,7 +105,7 @@ const MainStore = namespace(StoreType.MAIN);
                         <v-stepper-items>
                             <v-stepper-content step="1">
                                 <!-- История импорта -->
-                                <div v-if="providerAllowedExtensions" class="attachments__allowed-extensions">
+                                <div v-if="providerAllowedExtensions" :class="{'attachments__allowed-extensions': true, 'withoutImportHistory': !importHistory.length}">
                                     Допустимые расширения файлов: <span>{{ providerAllowedExtensions }}</span>
                                 </div>
                                 <expanded-panel v-if="importHistory.length" class="import-history">
@@ -139,7 +139,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             <div class="attachments__title">Загрузить отчет по сделкам</div>
                                             <div>
                                                 Перетащить сюда или
-                                                <file-link @select="onFileAdd" :accept="allowedExtensions" class="select-file-btn">выбрать</file-link>
+                                                <file-link @select="onFileAdd" :accept="allowedExtensions">выбрать</file-link>
                                             </div>
                                         </div>
                                     </file-drop-area>
@@ -150,7 +150,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             <div class="attachments__title">Загрузить отчет с зачислениями и списаниями</div>
                                             <div>
                                                 Перетащить сюда или
-                                                <file-link @select="onFileAdd" :accept="allowedExtensions" class="select-file-btn">выбрать</file-link>
+                                                <file-link @select="onFileAdd" :accept="allowedExtensions">выбрать</file-link>
                                             </div>
                                         </div>
                                     </file-drop-area>
@@ -177,7 +177,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     <div>
                                         <v-menu v-if="importProviderFeatures && showImportSettings" content-class="dialog-settings-menu"
                                                 transition="slide-y-transition"
-                                                nudge-bottom="36" right class="settings-menu margT0"
+                                                nudge-bottom="36" right class="settings-menu"
                                                 min-width="514" :close-on-content-click="false">
                                             <v-btn class="btn" slot="activator">
                                                 Настройки

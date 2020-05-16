@@ -24,7 +24,7 @@ import {EventType} from "../types/eventType";
     template: `
         <v-container class="h100pc">
             <v-layout justify-center align-center column class="h100pc">
-                <img src="./img/portfolio/empty-portfolio-2.svg" class="margB32 maxW100">
+                <img src="./img/portfolio/empty-portfolio-2.svg" class="empty-portfolio-image">
                 <div class="alignC mw540">
                     <div class="fs18 bold">
                         Для начала работы заполните свой портфель

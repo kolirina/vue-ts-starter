@@ -38,7 +38,7 @@ export class ThemeUtils {
 
      .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light,
      .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).v-btn--disabled,
-     .import-wrapper-content .section-upload-file .reselect-file-btn .file-link__text,
+     .import-wrapper-content .section-upload-file .reselect-file-btn,
      .free-subscribe a {
         background-color: #3b6ec9 !important;
         color: #fff !important;
