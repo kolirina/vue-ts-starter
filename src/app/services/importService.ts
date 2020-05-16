@@ -118,6 +118,10 @@ export interface ImportResponse {
     generalError: string;
     /** Количество успешно импортированных сделок */
     validatedTradesCount: number;
+    /** Дата первой сделки в портфеле. Может быть null если в портфеле еще ни одной сделки */
+    firstTradeDate: string;
+    /** Дата последней сделки в портфеле. Может быть null если в портфеле еще ни одной сделки */
+    lastTradeDate: string;
     /** Статус импорта */
     status: Status;
 }

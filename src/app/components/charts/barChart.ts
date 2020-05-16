@@ -58,56 +58,31 @@ export class BarChart extends UI {
     private async draw(): Promise<void> {
         this.chart = Highcharts.chart(this.$refs.container, {
             chart: {
-                type: "bar",
+                type: "column",
                 backgroundColor: null
             },
             title: {
-                text: this.title
+                text: ""
             },
+            plotOptions: {},
             xAxis: {
                 categories: this.categoryNames,
-                title: {
-                    text: null
-                }
+                crosshair: true,
+                gridLineWidth: 1
             },
             yAxis: {
                 min: 0,
                 title: {
-                    text: this.title,
-                    align: "high"
-                },
-                labels: {
-                    overflow: "justify"
+                    text: ""
                 }
             },
-            tooltip: {
-                pointFormat: "<b>{point.y}, ({point.percentage:.2f}%)</b> <br/>",
-                valueSuffix: ` ${this.tooltipValueSuffix}`
-            },
-            plotOptions: {
-                bar: {
-                    dataLabels: {
-                        enabled: true
-                    }
-                }
-            },
-            legend: {
-                layout: "vertical",
-                align: "right",
-                verticalAlign: "top",
-                x: -40,
-                y: 80,
-                floating: true,
-                borderWidth: 1,
-                backgroundColor: "#FFFFFF",
-                shadow: true
-            },
-            credits: {
+            exporting: {
                 enabled: false
             },
             series: [{
-                name: this.seriesName,
-                data: this.data
+                data: this.data,
+                name: "Дивиденд",
+                color: "#03A9F4"
             }]
         });
     }

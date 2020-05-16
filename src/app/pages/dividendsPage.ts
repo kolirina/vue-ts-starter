@@ -17,8 +17,9 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-slide-x-reverse-transition>
-            <template v-if="dividendInfo">
-                <base-dividends-page :portfolio="portfolio" :dividend-info="dividendInfo" :side-bar-opened="sideBarOpened"></base-dividends-page>
+            <template v-if="initialized">
+                <empty-portfolio-stub v-if="isEmptyBlockShowed"></empty-portfolio-stub>
+                <base-dividends-page v-else :portfolio="portfolio" :dividend-info="dividendInfo" :side-bar-opened="sideBarOpened"></base-dividends-page>
             </template>
             <template v-else>
                 <content-loader class="content-loader" :height="800" :width="800" :speed="1" primaryColor="#f3f3f3" secondaryColor="#ecebeb">
@@ -45,6 +46,8 @@ export class DividendsPage extends UI {
     private dividendService: DividendService;
     /** Информация по дивидендам */
     private dividendInfo: DividendAggregateInfo = null;
+    /** Признак инициализации */
+    private initialized = false;
 
     /**
      * Загружает данные по дивидендам
@@ -64,12 +67,20 @@ export class DividendsPage extends UI {
 
     @Watch("portfolio")
     private async onPortfolioChange(): Promise<void> {
-        this.dividendInfo = null;
         await this.loadDividendAggregateInfo();
     }
 
     @ShowProgress
     private async loadDividendAggregateInfo(): Promise<void> {
-        this.dividendInfo = await this.dividendService.getDividendAggregateInfo(this.portfolio.id);
+        this.initialized = false;
+        try {
+            this.dividendInfo = await this.dividendService.getDividendAggregateInfo(this.portfolio.id);
+        } finally {
+            this.initialized = true;
+        }
+    }
+
+    private get isEmptyBlockShowed(): boolean {
+        return this.portfolio && this.portfolio.overview.totalTradesCount === 0;
     }
 }

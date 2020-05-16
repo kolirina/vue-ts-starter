@@ -2,7 +2,6 @@ import dayjs from "dayjs";
 import {Inject} from "typescript-ioc";
 import {namespace} from "vuex-class/lib/bindings";
 import {Component, UI, Watch} from "../app/ui";
-import {EmptyPortfolioStub} from "../components/emptyPortfolioStub";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {ExportService, ExportType} from "../services/exportService";
 import {MarketHistoryService} from "../services/marketHistoryService";
@@ -51,7 +50,7 @@ const MainStore = namespace(StoreType.MAIN);
             </base-portfolio-page>
         </div>
     `,
-    components: {BasePortfolioPage, EmptyPortfolioStub}
+    components: {BasePortfolioPage}
 })
 export class PortfolioPage extends UI {
 

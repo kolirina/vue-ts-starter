@@ -5,7 +5,6 @@ import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
 import {AdditionalPagination} from "../components/additionalPagination";
 import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog";
-import {EmptyPortfolioStub} from "../components/emptyPortfolioStub";
 import {EmptySearchResult} from "../components/emptySearchResult";
 import {ExpandedPanel} from "../components/expandedPanel";
 import {TradesTable} from "../components/tables/tradesTable";
@@ -55,7 +54,7 @@ const MainStore = namespace(StoreType.MAIN);
             </v-container>
         </div>
     `,
-    components: {TradesTable, ExpandedPanel, TradesTableFilter, AdditionalPagination, EmptySearchResult, EmptyPortfolioStub}
+    components: {TradesTable, ExpandedPanel, TradesTableFilter, AdditionalPagination, EmptySearchResult}
 })
 export class TradesPage extends UI {
 

@@ -230,7 +230,7 @@ export class ChartUtils {
                 };
             })
         ];
-        rows.filter(value => !new Decimal(value.percentShare).isZero()).forEach(row => {
+        rows.filter(value => value.percentShare && !new Decimal(value.percentShare).isZero()).forEach(row => {
             const percentShare = new Decimal(row.percentShare).abs().toDP(2, Decimal.ROUND_HALF_UP);
             const currCost = new BigMoney(row.currCost).amount.abs().toDP(2, Decimal.ROUND_HALF_UP);
             const profit = row.profit ? new BigMoney(row.profit).amount.abs().toDP(2, Decimal.ROUND_HALF_UP) : new Decimal("0");

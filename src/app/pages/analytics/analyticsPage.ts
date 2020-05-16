@@ -7,7 +7,6 @@ import {UI, Watch} from "../../app/ui";
 import {AverageAnnualYieldChart} from "../../components/charts/averageAnnualYield";
 import {PieChart} from "../../components/charts/pieChart";
 import {SimpleLineChart} from "../../components/charts/simpleLineChart";
-import {EmptyPortfolioStub} from "../../components/emptyPortfolioStub";
 import {Filters} from "../../platform/filters/Filters";
 import {Storage} from "../../platform/services/storage";
 import {AdviceService} from "../../services/adviceService";
@@ -176,7 +175,7 @@ const MainStore = namespace(StoreType.MAIN);
             </expanded-panel>
         </v-container>
     `,
-    components: {EmptyPortfolioStub, ChooseRisk, Preloader, AnalysisResult, EmptyAdvice, AverageAnnualYieldChart, SimpleLineChart}
+    components: {ChooseRisk, Preloader, AnalysisResult, EmptyAdvice, AverageAnnualYieldChart, SimpleLineChart}
 })
 export class AnalyticsPage extends UI {
 

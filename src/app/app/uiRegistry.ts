@@ -17,6 +17,7 @@ import vuescroll from "vuescroll";
 import Vuetify from "vuetify";
 import {AssetLink} from "../components/assetLink";
 import {BondLink} from "../components/bondLink";
+import {BarChart} from "../components/charts/barChart";
 import {ChartExportMenu} from "../components/charts/chartExportMenu";
 import {LineChart} from "../components/charts/lineChart";
 import {MicroLineChart} from "../components/charts/microLineChart";
@@ -24,6 +25,7 @@ import {PieChart} from "../components/charts/pieChart";
 import {Dashboard} from "../components/dashboard";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
 import {ImageDialog} from "../components/dialogs/imageDialog";
+import {EmptyPortfolioStub} from "../components/emptyPortfolioStub";
 import {ExpandedPanel} from "../components/expandedPanel";
 import {FileDropArea} from "../components/file-upload/fileDropArea";
 import {FileLink} from "../components/file-upload/fileLink";
@@ -105,6 +107,7 @@ export class UIRegistry {
         UI.component("dashboard", Dashboard);
         UI.component("add-trade-dialog", AddTradeDialog);
         UI.component("pie-chart", PieChart);
+        UI.component("bar-chart", BarChart);
         UI.component("line-chart", LineChart);
         UI.component("file-drop-area", FileDropArea);
         UI.component("file-link", FileLink);
@@ -122,6 +125,7 @@ export class UIRegistry {
         UI.component("video-link", VideoLink);
         UI.component("tooltip", Tooltip);
         UI.component("content-loader", ContentLoader);
+        UI.component("empty-portfolio-stub", EmptyPortfolioStub);
 
         // фильтры
         UI.filter("amount", Filters.formatMoneyAmount);

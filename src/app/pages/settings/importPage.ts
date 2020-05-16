@@ -351,9 +351,9 @@ const MainStore = namespace(StoreType.MAIN);
                                         </span>
                                     </div>
                                 </div>
-                                <div v-if="!isIntelinvest" class="info-block">Портфель почти сформирован, для полного соответствия требуются дополнительные данные</div>
+                                <div v-if="showResultsPanel" class="info-block">Портфель почти сформирован, для полного соответствия требуются дополнительные данные</div>
                                 <!-- todo import вынести в компонент -->
-                                <div v-if="!isIntelinvest" class="import-result-info">
+                                <div v-if="showResultsPanel" class="import-result-info">
                                     <!-- Блок отображается если из отчета не импортируются начисления или если импортируются, и есть новые события -->
                                     <expanded-panel v-if="hasNewEventsAfterImport || importProviderFeatures.autoEvents" name="dividends" :value="[true]"
                                                     class="selectable import-history">
@@ -701,8 +701,10 @@ export class ImportPage extends UI {
                 message: hasErrorStatus ? results.find(result => result.generalError)?.message :
                     hasWarnStatus ? results.find(result => result.status === Status.WARN)?.message : results.find(result => result.status === Status.SUCCESS)?.message,
                 status: hasErrorStatus ? Status.ERROR : hasWarnStatus ? Status.WARN : Status.SUCCESS,
+                firstTradeDate: results.sort((a, b) => DateUtils.parseDate(a.firstTradeDate).isAfter(DateUtils.parseDate(b.firstTradeDate)) ? 1 : -1)[0].firstTradeDate,
+                lastTradeDate: results.sort((a, b) => DateUtils.parseDate(a.lastTradeDate).isBefore(DateUtils.parseDate(b.lastTradeDate)) ? 1 : -1)[0].lastTradeDate,
                 errors: results.map(result => result.errors).reduce((a, b) => a.concat(b), [])
-            };
+            } as ImportResponse;
         }
         return results[0];
     }
@@ -849,11 +851,17 @@ export class ImportPage extends UI {
      * Если дата последней сдеки не в текущем году
      */
     private get requireMoreReports(): boolean {
-        return DateUtils.parseDate(this.portfolio.overview.lastTradeDate).get("year") < dayjs().get("year");
+        return DateUtils.parseDate(this.importResult?.lastTradeDate).get("year") < dayjs().get("year");
     }
 
     private get showImportSettings(): boolean {
         return ![DealsImportProvider.SBERBANK, DealsImportProvider.TINKOFF, DealsImportProvider.VTB24].includes(this.selectedProvider);
+    }
+
+    private get showResultsPanel(): boolean {
+        return !this.isIntelinvest && (this.hasNewEventsAfterImport || this.importProviderFeatures.autoEvents || this.notFoundShareErrors.length > 0 ||
+            this.isQuik || this.importProviderFeatures.confirmMoneyBalance || this.isFinam || this.requireMoreReports || this.otherErrors.length > 0 ||
+            this.repoTradeErrors.length > 0);
     }
 
     private changePortfolioParams(portfolioParams: PortfolioParams): void {
