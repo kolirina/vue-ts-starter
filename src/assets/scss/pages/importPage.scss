@@ -26,12 +26,16 @@
       }
     }
     .settings-menu {
-      margin: 27px 0px 20px 0px;
+      margin-right: 0;
       .v-btn {
         padding: 0px 38px 0px 20px;
         border-radius: 30px !important;
         background: url("../img/fileimport/setings.svg") no-repeat;
         background-position: 86% center;
+      }
+
+      @media only screen and (max-width: $xs-breakpoint) {
+        margin: 24px 0 20px 0;
       }
     }
     .section-upload-file{

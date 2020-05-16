@@ -177,7 +177,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     <div>
                                         <v-menu v-if="importProviderFeatures && showImportSettings" content-class="dialog-settings-menu"
                                                 transition="slide-y-transition"
-                                                nudge-bottom="36" right class="settings-menu margT0"
+                                                nudge-bottom="36" right class="settings-menu"
                                                 min-width="514" :close-on-content-click="false">
                                             <v-btn class="btn" slot="activator">
                                                 Настройки
