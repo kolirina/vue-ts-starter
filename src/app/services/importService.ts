@@ -30,7 +30,8 @@ export class ImportService {
     async importReport(provider: string, portfolioId: number, files: File[], importRequest: ImportProviderFeatures): Promise<ImportResponse> {
         const report = new FormData();
         files.forEach(file => report.append("files", file, file.name));
-        return this.http.post<ImportResponse>(`/import/${provider}/to/${portfolioId}`, report, importRequest as any, {headers: this.http.importHeaders});
+        const result = await this.http.post<ImportResponse[]>(`/import/${provider}/to/${portfolioId}`, report, importRequest as any, {headers: this.http.importHeaders});
+        return result[0];
     }
 
     /**
