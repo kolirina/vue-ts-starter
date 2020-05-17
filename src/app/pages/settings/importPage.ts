@@ -133,24 +133,24 @@ const MainStore = namespace(StoreType.MAIN);
                                     </div>
                                 </expanded-panel>
 
-                                <div class="attachments" v-if="!files.length && importProviderFeatures">
-                                    <file-drop-area @drop="onFileAdd" class="attachments-file-drop">
+                                <div v-if="!files.length && importProviderFeatures" class="attachments" >
+                                    <file-drop-area @drop="onFileAdd($event)" class="attachments-file-drop">
                                         <div v-if="selectedProvider" class="attachments-file-drop__content">
                                             <div class="attachments__title">Загрузить отчет по сделкам</div>
                                             <div>
                                                 Перетащить сюда или
-                                                <file-link @select="onFileAdd" :accept="allowedExtensions">выбрать</file-link>
+                                                <file-link @select="onFileAdd($event)" :accept="allowedExtensions">выбрать</file-link>
                                             </div>
                                         </div>
                                     </file-drop-area>
                                 </div>
-                                <div class="attachments" v-if="files.length !== 2 && importProviderFeatures && isSberbank">
-                                    <file-drop-area @drop="onFileAdd" class="attachments-file-drop">
+                                <div v-if="files.length !== 2 && importProviderFeatures && isSberbank" class="attachments" >
+                                    <file-drop-area @drop="onFileAdd($event)" class="attachments-file-drop">
                                         <div v-if="selectedProvider" class="attachments-file-drop__content">
                                             <div class="attachments__title">Загрузить отчет с зачислениями и списаниями</div>
                                             <div>
                                                 Перетащить сюда или
-                                                <file-link @select="onFileAdd" :accept="allowedExtensions">выбрать</file-link>
+                                                <file-link @select="onFileAdd($event)" :accept="allowedExtensions">выбрать</file-link>
                                             </div>
                                         </div>
                                     </file-drop-area>
@@ -169,7 +169,7 @@ const MainStore = namespace(StoreType.MAIN);
 
                                         <v-layout class="section-upload-file" wrap data-v-step="2">
                                             <v-btn color="primary" class="btn margR12" @click.stop="uploadFile">Загрузить</v-btn>
-                                            <file-link v-if="!isSberbank" @select="onFileAdd" :accept="allowedExtensions" class="reselect-file-btn">
+                                            <file-link v-if="!isSberbank" @select="onFileAdd($event, true)" :accept="allowedExtensions" class="reselect-file-btn">
                                                 Выбрать другой файл
                                             </file-link>
                                         </v-layout>
@@ -376,7 +376,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             </template>
                                             <template v-if="importProviderFeatures.autoEvents || hasNewEventsAfterImport">
                                                 Проверьте дополнительно раздел <router-link :to="{'name': 'events'}">События</router-link>, <br/>
-                                             в нем будут отображены события по бумагам, которые еще не учтены.
+                                                в нем будут отображены события по бумагам, которые еще не учтены.
                                             </template>
                                         </span>
                                     </expanded-panel>
@@ -628,8 +628,9 @@ export class ImportPage extends UI {
     /**
      * Событие при добавлении вложений
      * @param {FileList} fileList список файлов
+     * @param replace признак того, что надо заменить, а не добавить файл
      */
-    private onFileAdd(fileList: File[]): void {
+    private onFileAdd(fileList: File[], replace: boolean = false): void {
         let filtered = fileList;
         if (fileList.length > 1 && !this.isSberbank) {
             this.$snotify.warning("Пожалуйста, загружайте по одному файлу для более точных результатов импорта.");
@@ -644,7 +645,7 @@ export class ImportPage extends UI {
             this.$snotify.warning(`Максимальный размер загружаемого файла 10 Мб.`);
             return;
         }
-        this.files = [...this.files, ...filtered];
+        this.files = replace ? [...filtered] : [...this.files, ...filtered];
     }
 
     /**
