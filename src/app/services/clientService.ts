@@ -314,7 +314,7 @@ export interface DeleteProfileRequest {
 export class DeleteProfileReason extends (EnumType as IStaticEnum<DeleteProfileReason>) {
 
     static readonly REDUCE_INVEST_ACTIVITY = new DeleteProfileReason("REDUCE_INVEST_ACTIVITY", "Прекратил или уменьшил инвесторскую деятельность");
-    static readonly ABSENT_FUNCTIONALITY = new DeleteProfileReason("ABSENT_FUNCTIONALITY", "Нет нужной мне функционаьности");
+    static readonly ABSENT_FUNCTIONALITY = new DeleteProfileReason("ABSENT_FUNCTIONALITY", "Нет нужной мне функциональности");
     static readonly ERRORS = new DeleteProfileReason("ERRORS", "Ошибки в сервисе");
     static readonly EXPENSIVE_TARIFFS = new DeleteProfileReason("EXPENSIVE_TARIFFS", "Дорогие тарифные планы");
     static readonly GO_TO_EXCEL = new DeleteProfileReason("GO_TO_EXCEL", "Буду вести учет в Excel");

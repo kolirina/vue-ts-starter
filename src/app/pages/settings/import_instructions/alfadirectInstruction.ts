@@ -1,13 +1,11 @@
-import Component from "vue-class-component";
-import {UI} from "../../../app/ui";
+import {Component, UI} from "../../../app/ui";
+import {ImageDialog} from "../../../components/dialogs/imageDialog";
 
 @Component({
     // language=Vue
     template: `
         <div>
-            Перейдите в личный кабинет брокера, и выберите пункт Отчеты.
-
-            <v-img :src="IMAGES[0]" max-width="800" class="grey darken-4 image"></v-img>
+            Перейдите в личный кабинет брокера, и выберите пункт <b>Отчеты</b>.
 
             Выберите тип отчета <b>Брокерский</b> Настройте параметры отчета:
             <ul>
@@ -17,20 +15,26 @@ import {UI} from "../../../app/ui";
                 <li>Нажмите кнопку Сохранить XLS</li>
             </ul>
 
-            <v-img :src="IMAGES[1]" max-width="960" class="grey darken-4 image"></v-img>
-
             Полученный файл используйте для импорта.
+
+            <div class="import-instructions__gallery">
+                <figure>
+                    <img :src="IMAGES[0]" alt="3" @click.stop="openImageDialog">
+                </figure>
+                <figure>
+                    <img :src="IMAGES[1]" alt="4" @click.stop="openImageDialog">
+                </figure>
+            </div>
 
             <div class="alfa-line"></div>
 
             Вы также можете использовать отчеты в формате xml, которые можно<br>
             выгрузить из старой версии личного кабинета. Для этого на главном экране<br>
             перейдите по ссылке Старый ЛК<br>
+
             В старой версии ЛК брокера
 
-            <v-img :src="IMAGES[2]" max-width="762" class="grey darken-4 image"></v-img>
-
-            Выберите пункт меню Отчеты -> Бухгалтерские отчеты<br>
+            Выберите пункт меню Отчеты → Бухгалтерские отчеты<br>
             Настройте параметры отчета:
             <ul>
                 <li>Укажите вид отчета. (<b>ОТЧЕТ ОБ УРЕГУЛИРОВАННЫХ СДЕЛКАХ</b>)</li>
@@ -41,11 +45,18 @@ import {UI} from "../../../app/ui";
                 <li>Нажмите кнопку <b>Построить отчет</b></li>
             </ul>
 
-            <v-img :src="IMAGES[3]" max-width="980" class="grey darken-4 image"></v-img>
-
             После успешного формирования отчета он появится в таблице ниже<br>
             в статусе "готово". Скачайте отчет в формате xml и используйте его<br>
             для импорта.
+
+            <div class="import-instructions__gallery">
+                <figure>
+                    <img :src="IMAGES[2]" alt="5" @click.stop="openImageDialog">
+                </figure>
+                <figure>
+                    <img :src="IMAGES[3]" alt="6" @click.stop="openImageDialog">
+                </figure>
+            </div>
         </div>
     `
 })
@@ -58,4 +69,7 @@ export class AlfadirectInstruction extends UI {
         "./img/import_instructions/alfadirect/4.png"
     ];
 
+    private async openImageDialog(): Promise<void> {
+        await new ImageDialog().show((event as any).target.attributes[0].nodeValue);
+    }
 }

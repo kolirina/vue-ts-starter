@@ -1,5 +1,5 @@
-import Component from "vue-class-component";
-import {UI} from "../../../app/ui";
+import {Component, UI} from "../../../app/ui";
+import {ImageDialog} from "../../../components/dialogs/imageDialog";
 
 @Component({
     // language=Vue
@@ -18,19 +18,13 @@ import {UI} from "../../../app/ui";
             </div>
             <div class="mt-4">
                 Для получения отчета за конкретный месяц используйте инструкцию ниже.<br/>
-                Перейдите на сайт <a href="https://www.tinkoff.ru/" target="_blank">https://www.tinkoff.ru</a>,
-                <div>
-                    в верхнем меню перейдите <b>Инвестиции</b> - <b>Портфель</b>
-                </div>
-                <div>
-                    Выберите в выпадающем меню пункт <b>О счете</b>
-                </div>
-                <v-img :src="IMAGES[0]" max-width="800" class="grey darken-4 image"></v-img>
+                Перейдите на сайт <a href="https://www.tinkoff.ru/" target="_blank">https://www.tinkoff.ru</a> →
+                в верхнем меню перейдите <b>Инвестиции</b> - <b>Портфель</b> →
+                Выберите в выпадающем меню пункт <b>О счете</b> →
+                Переключите формат отчета в <b>Excel</b>
             </div>
 
-            Переключите формат отчета в <b>Excel</b>
 
-            <v-img :src="IMAGES[1]" max-width="800" class="grey darken-4 image"></v-img>
             <div class="import-default-text-margin-t">
                 Настройте параметры отчета:
             </div>
@@ -39,11 +33,21 @@ import {UI} from "../../../app/ui";
                 <li>Год</li>
                 <li>Нажмите кнопку Скачать</li>
             </ul>
-            <v-img :src="IMAGES[2]" max-width="800" class="grey darken-4 image"></v-img>
             <div>
                 Полученный файл используйте для импорта.
             </div>
 
+            <div class="import-instructions__gallery">
+                <figure>
+                    <img :src="IMAGES[0]" alt="0" @click.stop="openImageDialog">
+                </figure>
+                <figure>
+                    <img :src="IMAGES[1]" alt="1" @click.stop="openImageDialog">
+                </figure>
+                <figure>
+                    <img :src="IMAGES[2]" alt="2" @click.stop="openImageDialog">
+                </figure>
+            </div>
         </div>
     `
 })
@@ -55,4 +59,7 @@ export class TinkoffInstruction extends UI {
         "./img/import_instructions/tinkoff/3.png",
     ];
 
+    private async openImageDialog(): Promise<void> {
+        await new ImageDialog().show((event as any).target.attributes[0].nodeValue);
+    }
 }

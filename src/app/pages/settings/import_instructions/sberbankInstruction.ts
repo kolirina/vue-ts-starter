@@ -14,6 +14,7 @@
  * (c) ООО "Интеллектуальные инвестиции", 2020
  */
 import {Component, UI} from "../../../app/ui";
+import {ImageDialog} from "../../../components/dialogs/imageDialog";
 
 @Component({
     // language=Vue
@@ -25,118 +26,23 @@ import {Component, UI} from "../../../app/ui";
                 Можно загружать отчеты обоих форматов, за любые периоды, в том числе и пересекающиеся между собой, дублей сделок при этом не будет.
             </div>
 
-            1 изображение
-            <div class="import-instructions__gallery">
-                <figure>
-                    <img :src="IMAGES[1]" alt="">
-                </figure>
-            </div>
-            2 изображения
-            <div class="import-instructions__gallery">
-                <figure>
-                    <img :src="IMAGES[2]" alt="">
-                </figure>
-                <figure>
-                    <img :src="IMAGES[3]" alt="">
-                </figure>
-            </div>
-            3 изображения
-            <div class="import-instructions__gallery">
-                <figure>
-                    <img :src="IMAGES[1]" alt="">
-                </figure>
-                <figure>
-                    <img :src="IMAGES[2]" alt="">
-                </figure>
-                <figure>
-                    <img :src="IMAGES[3]" alt="">
-                </figure>
-            </div>
-            4 изображения
-            <div class="import-instructions__gallery">
-                <figure>
-                    <img :src="IMAGES[0]" alt="">
-                </figure>
-                <figure>
-                    <img :src="IMAGES[4]" alt="">
-                </figure>
-                <figure>
-                    <img :src="IMAGES[5]" alt="">
-                </figure>
-                <figure>
-                    <img :src="IMAGES[6]" alt="">
-                </figure>
-            </div>
-            5 изображений
-            <div class="import-instructions__gallery">
-                <figure>
-                    <img :src="IMAGES[0]" alt="">
-                </figure>
-                <figure>
-                    <img :src="IMAGES[4]" alt="">
-                </figure>
-                <figure>
-                    <img :src="IMAGES[5]" alt="">
-                </figure>
-                <figure>
-                    <img :src="IMAGES[6]" alt="">
-                </figure>
-                <figure>
-                    <img :src="IMAGES[6]" alt="">
-                </figure>
-            </div>
-            6 изображений
-            <div class="import-instructions__gallery">
-                <figure>
-                    <img :src="IMAGES[0]" alt="">
-                </figure>
-                <figure>
-                    <img :src="IMAGES[4]" alt="">
-                </figure>
-                <figure>
-                    <img :src="IMAGES[5]" alt="">
-                </figure>
-                <figure>
-                    <img :src="IMAGES[6]" alt="">
-                </figure>
-                <figure>
-                    <img :src="IMAGES[4]" alt="">
-                </figure>
-                <figure>
-                    <img :src="IMAGES[5]" alt="">
-                </figure>
-            </div>
-
             <div class="mt-4">
-                Для получения отчета по счету или ИИС в новом интерфейсе Сбербанк Онлайн, следуйте инструкции.<br/><br/>
-                Чтобы получить отчет за весь период в формате <b>xls/xlsx</b>:<br/>
+                Чтобы получить отчет по брокерскому счету или ИИС за весь период в формате <b>xls/xlsx</b>:<br/>
                 Перейдите на сайт <a href="https://online.sberbank.ru/" target="_blank">https://online.sberbank.ru/</a>,
-                <div>
-                    в левом боковом меню выберите пункт <b>Инвестиции</b>
-                </div>
-                <div>
-                    Выберите в выпадающем меню пункт <b>Брокерское обслуживание</b>
-                </div>
-                <div>
-                    Выберите нужный счет (брокерский или ИИС) и нажмите на ссылку <b>Операции по счету</b>
-                </div>
-                <v-img :src="IMAGES[0]" max-width="800" class="grey darken-4 image"></v-img>
+                <span>в левом боковом меню выберите пункт <b>Инвестиции</b></span> →
+                <span>Выберите в выпадающем меню пункт <b>Брокерское обслуживание</b></span> →
+                <span>Выберите нужный счет (брокерский или ИИС) и нажмите на ссылку <b>Операции по счету</b></span>
             </div>
-
+            <br/>
             <div>
                 Для получения списка сделок по бумагам переключитесь на вкладку <b>Сделки</b>
             </div>
-            <div class="import-default-text-margin-t">
+            <span class="import-default-text-margin-t">
                 Настройте параметры отчета:
-            </div>
-            <ul>
-                <li>Выберите <b>За период</b></li>
-                <li>Выберите период отчета (оптимальный вариант: с даты первой сделки по текущий день)</li>
-            </ul>
-            <div>
-                Отобразится список сделок за выбранный период.
-            </div>
-            <v-img :src="IMAGES[1]" max-width="800" class="grey darken-4 image"></v-img>
+            </span> →
+            <span>Выберите <b>За период</b></span> →
+            <span>Выберите период отчета (оптимальный вариант: с даты первой сделки по текущий день)</span>
+
             <div>
                 Нажмите кнопку <b>Скачать в Excel</b>
             </div>
@@ -147,22 +53,28 @@ import {Component, UI} from "../../../app/ui";
             <div class="mt-5">
                 Для получения списка сделок по движению денежных средств переключитесь на вкладку <b>Зачисления/Списания</b>
             </div>
-            <div class="import-default-text-margin-t">
+            <span class="import-default-text-margin-t">
                 Настройте параметры отчета:
-            </div>
-            <ul>
-                <li>Выберите <b>За период</b></li>
-                <li>Выберите период отчета (оптимальный вариант: с даты первой сделки по текущий день)</li>
-            </ul>
-            <div>
-                Отобразится список зачислений/списаний за выбранный период.
-            </div>
+            </span> →
+            <span>Выберите <b>За период</b></span> →
+            <span>Выберите период отчета (оптимальный вариант: с даты первой сделки по текущий день)</span>
             <div>
                 Нажмите кнопку <b>Скачать в Excel</b>
             </div>
-            <v-img :src="IMAGES[2]" max-width="800" class="grey darken-4 image"></v-img>
             <div>
                 Полученный файл используйте для импорта.
+            </div>
+
+            <div class="import-instructions__gallery">
+                <figure>
+                    <img :src="IMAGES[0]" alt="0" @click.stop="openImageDialog">
+                </figure>
+                <figure>
+                    <img :src="IMAGES[1]" alt="1" @click.stop="openImageDialog">
+                </figure>
+                <figure>
+                    <img :src="IMAGES[2]" alt="2" @click.stop="openImageDialog">
+                </figure>
             </div>
 
             <div class="mt-4">
@@ -176,12 +88,10 @@ import {Component, UI} from "../../../app/ui";
                     Выберите в выпадающем меню пункт <b>Брокерское обслуживание</b>
                 </div>
             </div>
-            <v-img :src="IMAGES[3]" max-width="800" class="grey darken-4 image"></v-img>
 
             <div>
                 Для получения списка сделок по бумагам переключитесь на вкладку <b>Сделки</b>
             </div>
-            <v-img :src="IMAGES[4]" max-width="800" class="grey darken-4 image"></v-img>
             <div class="import-default-text-margin-t">
                 Настройте параметры отчета:
             </div>
@@ -193,7 +103,6 @@ import {Component, UI} from "../../../app/ui";
             <div>
                 Отобразится список сделок за выбранный период.
             </div>
-            <v-img :src="IMAGES[5]" max-width="800" class="grey darken-4 image"></v-img>
             <div>
                 Нажмите кнопку <b>Скачать в формате Excel</b>
             </div>
@@ -218,10 +127,25 @@ import {Component, UI} from "../../../app/ui";
             <div>
                 Нажмите кнопку <b>Скачать в формате Excel</b>
             </div>
-            <v-img :src="IMAGES[6]" max-width="800" class="grey darken-4 image"></v-img>
             <div>
                 Полученный файл используйте для импорта.
             </div>
+
+            <div class="import-instructions__gallery">
+                <figure>
+                    <img :src="IMAGES[3]" alt="3" @click.stop="openImageDialog">
+                </figure>
+                <figure>
+                    <img :src="IMAGES[4]" alt="4" @click.stop="openImageDialog">
+                </figure>
+                <figure>
+                    <img :src="IMAGES[5]" alt="5" @click.stop="openImageDialog">
+                </figure>
+                <figure>
+                    <img :src="IMAGES[6]" alt="6" @click.stop="openImageDialog">
+                </figure>
+            </div>
+
             <div class="mt-4">
                 Если у Вас счет ИИС и вы выбрали у брокера опцию зачисления денежных средств от Дивидендов, Купонов, Амортизаций и Погашений на
                 отдельный банковский счет, тогда в отчете по Зачислениям/Списаниям не будут отображены начисления по бумагам, а только переводы.<br/>
@@ -242,4 +166,7 @@ export class SberbankInstruction extends UI {
         "./img/import_instructions/sberbank/old/4.png",
     ];
 
+    private async openImageDialog(): Promise<void> {
+        await new ImageDialog().show((event as any).target.attributes[0].nodeValue);
+    }
 }

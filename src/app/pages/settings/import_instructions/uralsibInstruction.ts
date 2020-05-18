@@ -1,5 +1,5 @@
-import Component from "vue-class-component";
-import {UI} from "../../../app/ui";
+import {Component, UI} from "../../../app/ui";
+import {ImageDialog} from "../../../components/dialogs/imageDialog";
 
 @Component({
     // language=Vue
@@ -12,9 +12,14 @@ import {UI} from "../../../app/ui";
             <div class="import-default-text-margin-t">
                 Контактная информация о менеджере указана в отчете.
             </div>
-            <v-img :src="IMAGES[0]" max-width="980" class="grey darken-4 image"></v-img>
 
             Полученный файлы используйте для импорта.
+
+            <div class="import-instructions__gallery">
+                <figure>
+                    <img :src="IMAGES[0]" alt="0" @click.stop="openImageDialog">
+                </figure>
+            </div>
         </div>
     `
 })
@@ -24,4 +29,7 @@ export class UralsibInstruction extends UI {
         "./img/import_instructions/uralsib/1.png"
     ];
 
+    private async openImageDialog(): Promise<void> {
+        await new ImageDialog().show((event as any).target.attributes[0].nodeValue);
+    }
 }

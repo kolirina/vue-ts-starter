@@ -14,6 +14,7 @@
     max-width: 1024px;
 
     > figure {
+      cursor: pointer;
       height: 232px;
       margin: 0 $gallery-margin $gallery-margin 0;
       overflow: hidden;

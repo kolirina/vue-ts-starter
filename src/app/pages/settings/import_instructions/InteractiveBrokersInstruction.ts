@@ -15,6 +15,7 @@
  */
 
 import {Component, UI} from "../../../app/ui";
+import {ImageDialog} from "../../../components/dialogs/imageDialog";
 
 @Component({
     // language=Vue
@@ -22,14 +23,7 @@ import {Component, UI} from "../../../app/ui";
         <div>
             <div>Перейдите в личный кабинет брокера</div>
 
-            <div>В боковом меню выберите <b>Отчеты</b></div>
-
-            <v-img :src="IMAGES[0]" max-width="933" class="grey darken-4 image"></v-img>
-
-            Первая вкладка - <b>"Выписки"</b><br/>
-            Формат отчета <b>Активность</b>
-
-            <v-img :src="IMAGES[1]" max-width="933" class="grey darken-4 image"></v-img>
+            <span>В боковом меню выберите <b>Отчеты</b></span> → Первая вкладка - <b>"Выписки"</b> → Формат отчета <b>Активность</b> →
 
             Настройте параметры получаемого отчета
             <ul>
@@ -49,14 +43,25 @@ import {Component, UI} from "../../../app/ui";
                 <li>Язык - <b>Русский</b> (Если применимо)</li>
             </ul>
 
-            <v-img :src="IMAGES[2]" max-width="802" class="grey darken-4 image"></v-img>
-
             После этого нажмите кнопку <b>Запустить</b>.<br/>
-
-            <v-img :src="IMAGES[3]" max-width="933" class="grey darken-4 image"></v-img>
 
             Полученный отчет используйте для импорта.<br/>
             Если отчет не пройдет импорт, попробуйте пересохранить файл в кодировке UTF-8 или windows-1251.
+
+            <div class="import-instructions__gallery">
+                <figure>
+                    <img :src="IMAGES[0]" alt="3" @click.stop="openImageDialog">
+                </figure>
+                <figure>
+                    <img :src="IMAGES[1]" alt="4" @click.stop="openImageDialog">
+                </figure>
+                <figure>
+                    <img :src="IMAGES[2]" alt="5" @click.stop="openImageDialog">
+                </figure>
+                <figure>
+                    <img :src="IMAGES[3]" alt="6" @click.stop="openImageDialog">
+                </figure>
+            </div>
         </div>
     `
 })
@@ -69,4 +74,7 @@ export class InteractiveBrokersInstruction extends UI {
         "./img/import_instructions/ib/4.png",
     ];
 
+    private async openImageDialog(): Promise<void> {
+        await new ImageDialog().show((event as any).target.attributes[0].nodeValue);
+    }
 }
