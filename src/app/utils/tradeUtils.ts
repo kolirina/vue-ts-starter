@@ -137,4 +137,8 @@ export class TradeUtils {
     static isCalculationAssetType(operation: Operation): boolean {
         return TradeUtils.CALCULATION_OPERATIONS.includes(operation);
     }
+
+    static notZero(value: string): boolean {
+        return !CommonUtils.isBlank(value) && !new BigMoney(value).amount.isZero();
+    }
 }
