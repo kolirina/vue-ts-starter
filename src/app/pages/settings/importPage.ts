@@ -362,9 +362,9 @@ const MainStore = namespace(StoreType.MAIN);
                                             </tooltip>
                                         </template>
                                         <span>
-                                            РЕПО сделки могут быть совершены вашим брокером, если вы давали согласие на займы своих бумаг.
-                                            Брокер может занимать и отдавать бумаги в течение дня, при этом в отчете такие сделки
-                                            будут отображаться, например, как РЕПО часть 1 и РЕПО часть 2, и по своей сути,
+                                            РЕПО сделки могут быть совершены вашим брокером, если вы давали согласие на займы своих бумаг.<br/>
+                                            Брокер может занимать и отдавать бумаги в течение дня, при этом в отчете такие сделки<br/>
+                                            будут отображаться, например, как РЕПО часть 1 и РЕПО часть 2, и по своей сути,<br/>
                                             такие операции не должны влиять на расчет доходности вашего портфеля и попадать в список сделок,
                                             потому что вы их не совершали.<br/><br/>
                                             Если сделки РЕПО совершали вы самостоятельно, и хотите их учесть,
@@ -672,7 +672,7 @@ export class ImportPage extends UI {
 
     private async goToNewImport(): Promise<void> {
         this.currentStep = ImportStep._1;
-        this.clearFiles();
+        this.clearFields();
         await this.loadImportHistory();
     }
 
@@ -690,14 +690,15 @@ export class ImportPage extends UI {
         if (this.selectedProvider === this.providers.INTELINVEST) {
             this.importProviderFeatures.createLinkedTrade = false;
         }
-        this.clearFiles();
+        this.clearFields();
         this.currentStep = ImportStep._1;
     }
 
-    private clearFiles(): void {
+    private clearFields(): void {
         this.files = [];
         this.importInProgress = false;
         this.previousImportValidatedTradesCount = 0;
+        this.shareAliases = [];
         this.autoEvents = true;
     }
 
