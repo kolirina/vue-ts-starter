@@ -252,7 +252,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         <div :class="{'status-error': importStatus === Status.ERROR}">
                                             {{ importStatus === Status.ERROR ? "Ошибка" : importStatus === Status.SUCCESS ? "Успех" : "Почти Успех" }}
                                         </div>
-                                        <span>
+                                        <span v-if="savedTradesCount">
                                             {{ savedTradesCount | declension("Добавлена", "Добавлено", "Добавлено") }}
                                             {{ savedTradesCount }} {{ savedTradesCount | declension("сделка", "сделки", "сделок") }}
                                         </span>
@@ -335,14 +335,14 @@ const MainStore = namespace(StoreType.MAIN);
                                         Вы можете сверить результат и добавить корректирующию сделку типа Расход, если будет необходимо.
                                     </expanded-panel>
 
-                                    <expanded-panel v-if="requireMoreReports" name="tickers" :value="[true]" class="selectable import-history">
+                                    <expanded-panel v-if="requireMoreReports" name="requireMoreReports" :value="[true]" class="selectable import-history">
                                         <template #header>
                                             <span>Не хватает сделок для формирования портфеля</span>
                                         </template>
                                         Для формирования портфеля загрузите отчет(отчеты) за все время ведения счета.
                                     </expanded-panel>
 
-                                    <expanded-panel v-if="otherErrors.length" name="tickers" :value="[true]" class="selectable import-history">
+                                    <expanded-panel v-if="otherErrors.length" name="otherErrors" :value="[true]" class="selectable import-history">
                                         <template #header>
                                             <span>При импорте отчета возникли следующие ошибки</span>
                                             <tooltip>
@@ -352,7 +352,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         <import-errors-table :error-items="otherErrors"></import-errors-table>
                                     </expanded-panel>
 
-                                    <expanded-panel v-if="repoTradeErrors.length" name="tickers" :value="[true]" class="selectable import-history">
+                                    <expanded-panel v-if="repoTradeErrors.length" name="repoTradeErrors" :value="[true]" class="selectable import-history">
                                         <template #header>
                                             <span>РЕПО сделки не были добавлены</span>
                                             <tooltip>
@@ -369,6 +369,19 @@ const MainStore = namespace(StoreType.MAIN);
                                             потому что вы их не совершали.<br/><br/>
                                             Если сделки РЕПО совершали вы самостоятельно, и хотите их учесть,
                                             рекомендуем внести их через диалог добавления сделки.
+                                        </span>
+                                    </expanded-panel>
+
+                                    <expanded-panel v-if="duplicateTradeErrors.length" name="duplicateTradeErrors" :value="[true]" class="selectable import-history">
+                                        <template #header>
+                                            <span>Некоторые сделки уже были импортированые ранее</span>
+                                            <tooltip>
+                                                Мы распознаем такие сделки, чтобы избежать дублирования и неправильных рассчетов
+                                            </tooltip>
+                                        </template>
+                                        <span>
+                                            В отчете присутствует {{ duplicateTradeErrors.length }} {{ duplicateTradeErrors.length | declension("сделка", "сделки", "сделок") }}<br/>
+                                            уже импортированных ранее.
                                         </span>
                                     </expanded-panel>
                                 </div>
@@ -784,7 +797,7 @@ export class ImportPage extends UI {
     private get showResultsPanel(): boolean {
         return !this.isIntelinvest && (this.hasNewEventsAfterImport || this.importProviderFeatures.autoEvents || this.notFoundShareErrors.length > 0 ||
             this.isQuik || this.importProviderFeatures.confirmMoneyBalance || this.isFinam || this.requireMoreReports || this.otherErrors.length > 0 ||
-            this.repoTradeErrors.length > 0);
+            this.repoTradeErrors.length > 0 || this.duplicateTradeErrors.length > 0);
     }
 
     private changePortfolioParams(portfolioParams: PortfolioParams): void {
