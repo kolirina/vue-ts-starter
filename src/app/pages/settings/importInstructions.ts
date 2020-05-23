@@ -119,15 +119,6 @@ import {ZerichInstruction} from "./import_instructions/zerichInstruction";
             <div v-if="provider === providers.QUIK">
                 <QuikInstruction></QuikInstruction>
             </div>
-
-            <div v-if="provider" class="import-default-text-margin-t">
-                <!-- Не отображаем блок про Квик если он уже выбран -->
-                <template v-if="provider !== providers.QUIK">
-                    Если у вас возникли сложности при загрузке отчетов брокера и вы используете<br>
-                    Quik, можете <a @click="selectProvider(providers.QUIK)">импортировать</a>
-                    отчеты из терминала.
-                </template>
-            </div>
         </div>
     `,
     components: {

@@ -14,6 +14,7 @@
  * (c) ООО "Интеллектуальные инвестиции", 2019
  */
 import {Inject} from "typescript-ioc";
+import Vue from "vue";
 import {NewBackendVersionDialog} from "../components/dialogs/newBackendVersionDialog";
 import {Storage} from "../platform/services/storage";
 import {StoreKeys} from "../types/storeKeys";
@@ -93,6 +94,9 @@ export class InactivityMonitor {
      * Проверить версию приложения бэкэнда
      */
     private checkBackendVersion(): void {
+        if (Vue.config.productionTip) {
+            return;
+        }
         setInterval(async () => {
             const version = await this.applicationService.getBackendVersion();
             const versionFromLocalStorage = this.storage.get<AppVersion>(StoreKeys.BACKEND_VERSION_KEY, null);
