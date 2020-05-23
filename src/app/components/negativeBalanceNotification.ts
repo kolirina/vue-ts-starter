@@ -1,9 +1,7 @@
-import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
 import {BtnReturn} from "../platform/dialogs/customDialog";
-import {OverviewService} from "../services/overviewService";
 import {Portfolio} from "../types/types";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
@@ -23,17 +21,11 @@ const MainStore = namespace(StoreType.MAIN);
                     </span>
                     <span class="fs13">
                         В Вашем портфеле отрицательный баланс денежных средств. Это может являться причиной некорректного отображения стоимости портфеля и других показателей.
-                        <video-link>
-                            <template #foreword>
-                                <span>Узнать причины появления отрицательного баланса вы можете из данной</span>
-                            </template>
-                            <a>видео инструкции</a>
-                        </video-link>
                     </span>
                 </v-menu>
             </div>
             <v-layout class="btn-action-section" wrap justify-space-between>
-                <v-btn @click="goToCalculations()">
+                <v-btn @click="goToCalculations">
                     Сверить расчеты
                 </v-btn>
                 <v-btn @click="openDialogResidueIndications">

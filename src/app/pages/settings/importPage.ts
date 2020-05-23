@@ -56,16 +56,16 @@ const MainStore = namespace(StoreType.MAIN);
                         <v-card-title class="import-wrapper-header">
                             <div class="import-wrapper-header__title">
                                 Выберите своего брокера
-                                <v-tooltip content-class="custom-tooltip-wrap" max-width="563px" bottom>
-                                    <sup class="custom-tooltip" slot="activator">
-                                        <v-icon>fas fa-info-circle</v-icon>
-                                    </sup>
-                                    <span>
-                                        Если в списке нет вашего брокера или терминала, вы всегда можете осуществить импорт через универсальный Формат Intelinvest (CSV)
+                                <v-menu open-on-hover bottom nudge-bottom="11" content-class="pa-3 bg-white" max-width="600">
+                                <span class="custom-tooltip" slot="activator">
+                                    <v-icon>fas fa-info-circle</v-icon>
+                                </span>
+                                    <span class="fs13">
+                                        Если в списке нет вашего брокера или терминала, вы всегда можете осуществить импорт через универсальный формат Intelinvest (csv)
                                         или обратиться к нам через <a @click.stop="openFeedBackDialog">обратную связь</a> ,
                                         <a href="mailto:web@intelinvest.ru">по почте</a> или в группе <a href="https://vk.com/intelinvest">вконтакте</a>.
-                                    </span>
-                                </v-tooltip>
+                                </span>
+                                </v-menu>
                             </div>
                         </v-card-title>
                     </v-card>
