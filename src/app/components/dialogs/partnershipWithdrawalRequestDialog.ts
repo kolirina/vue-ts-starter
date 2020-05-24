@@ -54,15 +54,16 @@ import {PartnershipWithdrawalRequest, PromoCodeService} from "../../services/pro
 
                                 <!-- ФИО -->
                                 <v-flex xs12 sm12>
-                                    <v-text-field label="ФИО" v-model.trim="withdrawalRequest.fio" :counter="255" persistent-hint maxLength="255"
-                                                  v-validate="'max:255'" :error-messages="errors.collect('fio')" name="fio" hint="Укажите ваши Фамилия Имя Отчество"></v-text-field>
+                                    <v-text-field label="ФИО/Наименование юр. лица" v-model.trim="withdrawalRequest.fio" :counter="255" persistent-hint maxLength="255"
+                                                  v-validate="'max:255'" :error-messages="errors.collect('fio')" name="fio"
+                                                  hint="Укажите ваши Фамилия Имя Отчество или наименование юр. лица"></v-text-field>
                                 </v-flex>
 
                                 <!-- ИНН -->
                                 <v-flex xs12 sm12>
                                     <v-text-field label="ИНН" v-model="withdrawalRequest.inn" :counter="12" maxLength="12" mask="############" persistent-hint
-                                                  v-validate="'min:12'" :error-messages="errors.collect('inn')" name="inn"
-                                                  hint="Укажите ваш ИНН, он должен состоять из 12 цифр"></v-text-field>
+                                                  v-validate="'min:10|max:12'" :error-messages="errors.collect('inn')" name="inn"
+                                                  hint="Укажите ваш ИНН, он должен состоять из 10 цифр для юр.лица или 12 цифр для физ. лица"></v-text-field>
                                 </v-flex>
 
                                 <!-- Номер счета получателя -->

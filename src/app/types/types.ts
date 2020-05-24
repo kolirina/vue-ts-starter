@@ -339,6 +339,7 @@ export type DashboardBrick = {
     isSummaryIncome?: {
         isUpward: boolean
     },
+    mainValueIcon?: string,
     mainCurrency: string,
     secondCurrency: string,
     tooltip?: string,

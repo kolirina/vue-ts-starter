@@ -71,7 +71,8 @@ const MainStore = namespace(StoreType.MAIN);
                         {{ props.item.facevalue | amount(true, null, false, true) }}&nbsp;<span class="second-value">{{ props.item.facevalue | currencySymbol }}</span>
                     </td>
                     <td v-if="tableHeadersState.nkd" :class="['text-xs-right', 'ii-number-cell']">
-                        {{ props.item.nkd | amount(true, null, false, true) }}&nbsp;<span class="second-value">{{ props.item.nkd | currencySymbol }}</span>
+                        <span v-if="notZero(props.item.nkd)">{{ props.item.nkd | amount(true, null, false, true) }}</span>&nbsp;
+                        <span v-if="notZero(props.item.nkd)" class="second-value">{{ props.item.nkd | currencySymbol }}</span>
                     </td>
                     <td v-if="tableHeadersState.fee" :class="['text-xs-right', 'ii-number-cell']">
                         {{ getFee(props.item) }}&nbsp;<span class="second-value">{{ props.item.fee | currencySymbol }}</span>
@@ -396,5 +397,9 @@ export class TradesTable extends UI {
 
     private calculationAssetType(operation: string): boolean {
         return TradeUtils.isCalculationAssetType(Operation.valueByName(operation));
+    }
+
+    private notZero(value: string): boolean {
+        return TradeUtils.notZero(value);
     }
 }

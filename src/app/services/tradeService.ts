@@ -27,7 +27,7 @@ export class TradeService {
         await this.http.put("/trades", req);
     }
 
-    async getCurrencyFromTo(currencyFrom: string, currencyTo: string, date: string): Promise<any> {
+    async getCurrencyFromTo(currencyFrom: string, currencyTo: string, date: string): Promise<CurrencyHistoryRate> {
         return this.http.get(`/currency/${currencyFrom}/${currencyTo}`, {date});
     }
 
@@ -373,4 +373,9 @@ export interface SuggestedQuantityResponse {
     amount: string;
     /** Количество */
     quantity: string;
+}
+
+export interface CurrencyHistoryRate {
+    date: string;
+    rate: string;
 }

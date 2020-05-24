@@ -40,7 +40,7 @@ export class ThemeSwitcher extends UI {
     private nightTheme = false;
 
     created(): void {
-        this.nightTheme = this.storage.get<string>(StoreKeys.THEME, Theme.DAY) === Theme.NIGHT;
+        this.nightTheme = this.storage.get<string>(StoreKeys.THEME, ThemeUtils.detectPrefersColorScheme()) === Theme.NIGHT;
         ThemeUtils.setStyles(this.nightTheme);
     }
 

@@ -1,9 +1,10 @@
+import Decimal from "decimal.js";
 import {namespace} from "vuex-class";
 import {Component, Prop, UI, Watch} from "../app/ui";
 import {Filters} from "../platform/filters/Filters";
 import {ClientInfo} from "../services/clientService";
 import {BigMoney} from "../types/bigMoney";
-import {DashboardBrick, DashboardData} from "../types/types";
+import {DashboardBrick, DashboardData, Overview} from "../types/types";
 import {DateUtils} from "../utils/dateUtils";
 import {StoreType} from "../vuex/storeType";
 
@@ -22,7 +23,17 @@ const MainStore = namespace(StoreType.MAIN);
             </v-card-title>
             <v-container fluid pl-3 pt-0>
                 <v-layout row class="mx-0 py-2">
-                    <span class="dashboard-currency dashboard-card-big-nums mr-1" :class="block.mainCurrency">{{ block.mainValue }} </span>
+                    <span class="dashboard-currency dashboard-card-big-nums mr-1" :class="block.mainValueIcon ? '' : block.mainCurrency">
+                        <template v-if="block.mainValueIcon">
+                            <v-tooltip content-class="custom-tooltip-wrap dashboard-tooltip" :max-width="450" bottom right>
+                                <span slot="activator" :class="block.mainValueIcon"></span>
+                                <span v-html="block.tooltip"></span>
+                         </v-tooltip>
+                        </template>
+                        <template v-else>
+                            {{ block.mainValue }}
+                        </template>
+                    </span>
                     <v-tooltip v-if="block.mainValueTooltip" content-class="custom-tooltip-wrap dashboard-tooltip" :max-width="450" bottom right>
                         <sup slot="activator">
                             <v-icon slot="activator" style="font-size: 12px">far fa-question-circle</v-icon>
@@ -37,7 +48,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 <div class="dashboard-summary-income-icon">
                                     <v-icon>{{ block.isSummaryIncome.isUpward ? 'arrow_upward' : 'arrow_downward' }}</v-icon>
                                 </div>
-                                <div class="dashboard-summary-income-text dashboard-currency" :class="block.secondCurrency">
+                                <div v-if="block.secondValue" class="dashboard-summary-income-text dashboard-currency" :class="block.secondCurrency">
                                     <span>{{ block.secondValue }} </span>
                                 </div>
                                 <v-tooltip v-if="block.secondTooltip" content-class="custom-tooltip-wrap dashboard-tooltip" class="ml-1" :max-width="450" bottom right>
@@ -52,7 +63,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </template>
 
                         <template v-else>
-                            <span class="dashboard-currency" :class="block.secondCurrency">{{ block.secondValue }} </span>
+                            <span v-if="block.secondValue" class="dashboard-currency" :class="block.secondCurrency">{{ block.secondValue }} </span>
                             <span class="dashboard-second-value-desc">{{ block.secondValueDesc }} </span>
                             <v-tooltip v-if="block.secondTooltip" content-class="custom-tooltip-wrap dashboard-tooltip" :max-width="450" bottom right>
                                 <sup slot="activator">
@@ -76,7 +87,7 @@ export class DashboardBrickComponent extends UI {
 @Component({
     // language=Vue
     template: `
-        <v-container v-if="data" px-0 grid-list-md text-xs-center fluid>
+        <v-container v-if="overview" px-0 grid-list-md text-xs-center fluid>
             <v-layout class="dashboard-wrap px-4 selectable" row wrap :class="{'menu-open': !sideBarOpened}">
                 <v-flex class="dashboard-item" xl3 lg3 md6 sm6 xs12>
                     <dashboard-brick-component :block="blocks[0]"></dashboard-brick-component>
@@ -103,9 +114,9 @@ export class Dashboard extends UI {
     /** Признак открытой боковой панели */
     @Prop({required: true, type: Boolean, default: true})
     private sideBarOpened: boolean;
-    /** Данные по дашборду */
+    /** Данные по портфелю */
     @Prop({required: true})
-    private data: DashboardData;
+    private overview: Overview;
     @MainStore.Getter
     private clientInfo: ClientInfo;
     /** Блоки для отображения дашборда */
@@ -113,17 +124,24 @@ export class Dashboard extends UI {
     /** Дата, начиная с которой для новых пользователей будет отображаться показатель Прибыль в процентах рассчитаная относительно текущей стоимости */
     private readonly NEW_USERS_DATE = DateUtils.parseDate("2020-04-01");
 
+    private readonly YIELD_TOOLTIP = "Доходность в процентах годовых. Рассчитывается исходя из прибыли портфеля с даты первой сделки по текущий момент.<br/>" +
+        "                             Например, если портфель за полгода существования принес 8%, то его годовая доходность будет 16%." +
+        "                             Показатель полезен для сравнения доходности портфеля с банковскими депозитами и другими активами.<br/>" +
+        "                             Расчет ведется на основе средневзвешенной стоимости портфеля с учетом денежных средств.<br/>";
+    private readonly THREE_MONTHS_DESC = "В расчете учитывается временной промежуток, поэтому показатель работает на периоде от 3 месяцев.";
+
     /**
      * Инициализация данных
      * @inheritDoc
      */
     created(): void {
-        this.fillBricks(this.data);
+        this.fillBricks(this.overview.dashboardData);
     }
 
-    @Watch("data")
-    private onBlockChange(newValue: DashboardData): void {
-        this.fillBricks(newValue);
+    @Watch("overview")
+    private onBlockChange(newValue: Overview): void {
+        this.overview = newValue;
+        this.fillBricks(newValue.dashboardData);
     }
 
     private fillBricks(newValue: DashboardData): void {
@@ -158,23 +176,23 @@ export class Dashboard extends UI {
                 "                                Сумму по сделкам с типом Расход и Доход.<br/>" +
                 "                                Ввод и вывод денежных средств на прибыль портфеля не влияют. <br/>",
             mainValueTooltip: `Пользовательская прибыль: ${Filters.formatMoneyAmount(newValue.usersIncomes)}<br/>
-                            Пользовательские убытки: ${Filters.formatMoneyAmount(newValue.usersLosses)}<br/>`,
+                               Пользовательские убытки: ${Filters.formatMoneyAmount(newValue.usersLosses)}<br/>
+                               В системе установлен курс валют по ЦБ. Это позволяет исключить влияние изменений курса на оценку эффективности бумаг`,
             secondTooltip:
                 `Прибыль портфеля в отношении к его ${this.percentProfitBySummary ? "суммарной текущей стоимости" : "средневзвешенной стоимости вложений"} с учетом денег.<br/>
 Прибыль портфеля посчитанная относительно ${this.percentProfitBySummary ? "средневзвешенной стоимости вложений" : "суммарной текущей стоимости"}: ` +
                 ` <b>${this.percentProfitBySummary ? newValue.percentProfit : newValue.percentProfitBySummaryCost} %</b>`
         };
+        const showSecondYield = !this.invalidYieldData[0];
         this.blocks[2] = {
             name: "Среднегодовая доходность",
             mainValue: newValue.yearYield,
-            secondValue: newValue.yearYieldWithoutDividendsAndCoupons,
+            secondValue: showSecondYield ? newValue.yearYieldWithoutDividendsAndCoupons : null,
             mainCurrency: "percent",
             secondCurrency: "percent",
-            tooltip: "Доходность в процентах годовых. Рассчитывается исходя из прибыли портфеля с даты первой сделки по текущий момент.<br/>" +
-                "                                Например, если портфель за полгода существования принес 8%, то его годовая доходность будет 16%." +
-                "                                Показатель полезен для сравнения доходности портфеля с банковскими депозитами и другими активами.<br/>" +
-                "                                Расчет ведется на основе средневзвешенной стоимости портфеля с учетом денежных средств.",
-            secondTooltip: "Доходность без учета дивидендов и выплат по облигациям"
+            tooltip: this.invalidYieldData[1],
+            mainValueIcon: this.invalidYieldData[0],
+            secondTooltip: showSecondYield ? "Доходность без учета дивидендов и выплат по облигациям" : null
         };
         this.blocks[3] = {
             name: "Изменение за день",
@@ -196,5 +214,30 @@ export class Dashboard extends UI {
      */
     private get percentProfitBySummary(): boolean {
         return DateUtils.parseDate(this.clientInfo.user.regDate).isAfter(this.NEW_USERS_DATE);
+    }
+
+    private get invalidYieldData(): [string, string] {
+        const yearYield = new Decimal(this.overview.dashboardData.yearYield);
+        const daysDiff = DateUtils.parseDate(DateUtils.currentDate()).diff(this.overview.firstTradeDate, "day");
+        // Дата с первой сделки в портфеле менее 90 дней и доходность равна  от 50 до 90 процентов
+        if (daysDiff < 90) {
+            if (yearYield.abs().comparedTo(new Decimal("50")) >= 0 && yearYield.abs().comparedTo(new Decimal("90")) < 0) {
+                return ["broken-portfolio-icon", `Для расчета доходности необходим период не менее 90 дней. Текущее значение: ${this.overview.dashboardData.yearYield} %`];
+            } else if (yearYield.abs().comparedTo(new Decimal("90")) >= 0) {
+                return ["broken-portfolio-icon", this.YIELD_TOOLTIP + this.THREE_MONTHS_DESC];
+            }
+            return [null, this.YIELD_TOOLTIP + this.THREE_MONTHS_DESC];
+        }
+        // Дата с первой сделки в портфеле более 90 дней и доходность >= -90%
+        // Скрыть показатель, заменив на значок
+        if (daysDiff >= 90) {
+            if (yearYield.abs().comparedTo(new Decimal("50")) >= 0 && yearYield.abs().comparedTo(new Decimal("90")) <= 0) {
+                return ["broken-portfolio-icon", this.YIELD_TOOLTIP + `<br/>Текущее значение: ${this.overview.dashboardData.yearYield} %`];
+            } else if (yearYield.abs().comparedTo(new Decimal("90")) >= 0) {
+                return ["broken-portfolio-icon", this.YIELD_TOOLTIP];
+            }
+            return [null, this.YIELD_TOOLTIP];
+        }
+        return [null, this.YIELD_TOOLTIP];
     }
 }

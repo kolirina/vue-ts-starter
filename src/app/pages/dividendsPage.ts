@@ -16,7 +16,21 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <base-dividends-page v-if="dividendInfo" :portfolio="portfolio" :dividend-info="dividendInfo" :side-bar-opened="sideBarOpened"></base-dividends-page>
+        <v-slide-x-reverse-transition>
+            <template v-if="initialized">
+                <empty-portfolio-stub v-if="isEmptyBlockShowed"></empty-portfolio-stub>
+                <base-dividends-page v-else :portfolio="portfolio" :dividend-info="dividendInfo" :side-bar-opened="sideBarOpened"></base-dividends-page>
+            </template>
+            <template v-else>
+                <content-loader class="content-loader" :height="800" :width="800" :speed="1" primaryColor="#f3f3f3" secondaryColor="#ecebeb">
+                    <rect x="0" y="20" rx="5" ry="5" width="801.11" height="100"/>
+                    <rect x="0" y="140" rx="5" ry="5" width="801.11" height="100"/>
+                    <rect x="0" y="260" rx="5" ry="5" width="801.11" height="100"/>
+                    <rect x="0" y="380" rx="5" ry="5" width="801.11" height="100"/>
+                    <rect x="0" y="500" rx="5" ry="5" width="801.11" height="100"/>
+                </content-loader>
+            </template>
+        </v-slide-x-reverse-transition>
     `,
     components: {BaseDividendsPage}
 })
@@ -32,6 +46,8 @@ export class DividendsPage extends UI {
     private dividendService: DividendService;
     /** Информация по дивидендам */
     private dividendInfo: DividendAggregateInfo = null;
+    /** Признак инициализации */
+    private initialized = false;
 
     /**
      * Загружает данные по дивидендам
@@ -56,6 +72,15 @@ export class DividendsPage extends UI {
 
     @ShowProgress
     private async loadDividendAggregateInfo(): Promise<void> {
-        this.dividendInfo = await this.dividendService.getDividendAggregateInfo(this.portfolio.id);
+        this.initialized = false;
+        try {
+            this.dividendInfo = await this.dividendService.getDividendAggregateInfo(this.portfolio.id);
+        } finally {
+            this.initialized = true;
+        }
+    }
+
+    private get isEmptyBlockShowed(): boolean {
+        return this.portfolio && this.portfolio.overview.totalTradesCount === 0;
     }
 }

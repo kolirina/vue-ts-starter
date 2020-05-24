@@ -15,8 +15,7 @@
  */
 
 import {StoreKeys} from "../types/storeKeys";
-import {BROWSER} from "../types/types";
-import {CommonUtils} from "./commonUtils";
+import {Theme} from "../types/types";
 
 export class ThemeUtils {
 
@@ -39,7 +38,7 @@ export class ThemeUtils {
 
      .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light,
      .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).v-btn--disabled,
-     .import-wrapper-content .section-upload-file .reselect-file-btn .file-link__text,
+     .import-wrapper-content .section-upload-file .reselect-file-btn,
      .free-subscribe a {
         background-color: #3b6ec9 !important;
         color: #fff !important;
@@ -121,7 +120,7 @@ export class ThemeUtils {
     .events-calendar-wrap .calendar-events-title,
     .theme--light.v-calendar-weekly .v-calendar-weekly__day,
     .theme--light.v-calendar-weekly .v-calendar-weekly__head-weekday.v-past,
-    .checkbox-setings span, .dialog-setings-menu .title-setings,
+    .checkbox-settings span, .dialog-setings-menu .title-setings,
     .control-portfolios-title,
     .export-page .info-block,
     .promo-codes .rewards,
@@ -141,12 +140,12 @@ export class ThemeUtils {
     .providers .item-text,
     .select-section .v-select__selection,
     .v-menu__content .v-select-list .v-list__tile__title,
-    .dialog-default-text,
+    .dialog-default-text, .attachments__allowed-extensions span,
     .v-btn.portfolio-rows-filter__button:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
     .import-wrapper-content .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
     .v-tooltip__content.menu-icons, .hint-text-for-setings,
-    .import-format-requirements-ul, .intel-invest-instruction__title, .intel-invest-instruction__format-text, .intel-invest-instruction__title-values,
-    .intel-invest-instruction__values, .intel-invest-instruction__template-requirements, .import-default-text, .tooltip-text,
+    .intel-invest-instruction__title, .intel-invest-instruction__format-text, .intel-invest-instruction__title-values,
+    .intel-invest-instruction__values, .intel-invest-instruction__template-requirements, .import-instructions, .import-default-text .tooltip-text,
     .snotifyToast__body, .info-share-page__empty, .import-dialog-wrapper__title-text, .fs18, .fs36,
     .snotifyToast__buttons button, .update-service-dialog__content,
     .custom-v-menu .v-menu-content, .section-title,
@@ -154,12 +153,12 @@ export class ThemeUtils {
 
     .theme--light.v-label,
     .fs12-opacity,
-    .theme--light.v-counter, .theme--light.v-input--is-disabled input,
-    .theme--light.v-messages {color: #fff; opacity: 0.7}
+    .theme--light.v-counter, .theme--light.v-input--is-disabled input, .provider__stepper .currency-balances>div .v-text-field__suffix,
+    .theme--light.v-messages, .theme--light.v-stepper .v-stepper__label, .attachments .attachments__title {color: #fff; opacity: 0.7}
 
     .import-wrapper-content .intelinvest-section .v-btn {color: rgba(0,0,0,.87) !important;}
 
-    .theme--light.v-pagination .v-pagination__navigation {background: none}
+    .theme--light.v-pagination .v-pagination__navigation, .theme--light.v-stepper {background: none}
 
     .active-link, .wrap-list-menu .v-list__tile:hover,
     .theme--dark.v-btn:not(.v-btn--icon):not(.v-btn--flat),
@@ -178,7 +177,8 @@ export class ThemeUtils {
     .import-wrapper-content .setings-menu .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light,
     .import-wrapper-content .setings-menu .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
     .wrapper-content-panel__privacy-section-up-page-btn, .free-subscribe, .events__info-panel, .info-block,
-    .sing-in-wrap .pre-footer, .promo-codes__steps, .tariff-notification,
+    .sing-in-wrap .pre-footer, .promo-codes__steps, .tariff-notification, .import-history-block,
+    .import-result-info .exp-panel, .import-result-info .exp-panel .v-card,
     input.highcharts-range-selector:focus, .inplace-custom-input, .currency-card.v-card {background-color: #252A35 !important}
 
     .dashboard-wrap {background-color: #0a0d19;}
@@ -264,5 +264,22 @@ export class ThemeUtils {
         }
         stylesElement.innerHTML = nightTheme ? ThemeUtils.CSS_STYLES : "";
         stylesElement.setAttribute("media", nightTheme ? "screen" : "none");
+    }
+
+    static detectPrefersColorScheme(): Theme {
+        // Detect if prefers-color-scheme is supported
+        if (window.matchMedia("(prefers-color-scheme)").media !== "not all") {
+            // Set colorScheme to Dark if prefers-color-scheme is dark. Otherwise set to light.
+            return window.matchMedia("(prefers-color-scheme: dark)").matches ? Theme.NIGHT : Theme.DAY;
+        } else {
+            // If the browser doesn't support prefers-color-scheme, set it as default to dark
+            return Theme.NIGHT;
+        }
+    }
+
+    static detectTheme(): void {
+        window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", e => {
+            ThemeUtils.setStyles(e.matches);
+        });
     }
 }

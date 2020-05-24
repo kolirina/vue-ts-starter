@@ -14,6 +14,7 @@
  * (c) ООО "Интеллектуальные инвестиции", 2019
  */
 
+import Decimal from "decimal.js";
 import {Inject} from "typescript-ioc";
 import {namespace} from "vuex-class/lib/bindings";
 import {Component, Prop, UI, Watch} from "../../app/ui";
@@ -30,10 +31,13 @@ import {MarketService} from "../../services/marketService";
 import {NotificationType} from "../../services/notificationsService";
 import {TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
+import {BigMoney} from "../../types/bigMoney";
 import {BaseChartDot, Dot, HighStockEventsGroup} from "../../types/charts/types";
+import {EventType} from "../../types/eventType";
 import {Operation} from "../../types/operation";
 import {Asset, ErrorInfo, Portfolio, Share, ShareDynamic, ShareType, StockTypeShare} from "../../types/types";
 import {ChartUtils} from "../../utils/chartUtils";
+import {DateUtils} from "../../utils/dateUtils";
 import {StoreType} from "../../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -318,7 +322,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-card-text>
             </v-card>
 
-            <template v-if="share">
+            <template v-if="share && portfolioAvgPrice">
                 <div class="space-between-blocks"></div>
                 <v-card class="chart-overflow" flat data-v-step="2">
                     <v-card-title class="chart-title">
@@ -353,15 +357,11 @@ export class BaseShareInfoPage extends UI {
     $refs: {
         chartComponent: DividendChart
     };
-
+    /** Тикер */
     @Prop({type: String, default: null, required: true})
     private ticker: string;
-
-    @Prop({type: Number, default: null, required: false})
-    private portfolioAvgPrice: number;
-
+    /** Тип актива */
     @Prop({type: Object, default: (): AssetType => AssetType.STOCK, required: false})
-    /** Тип активов */
     private assetType: AssetType;
 
     @Inject
@@ -390,6 +390,7 @@ export class BaseShareInfoPage extends UI {
     private AssetType = AssetType;
     /** Признак, если бумага не была найдена */
     private shareNotFound = false;
+    private portfolioAvgPrice: number = null;
 
     /**
      * Инициализация данных
@@ -397,6 +398,14 @@ export class BaseShareInfoPage extends UI {
      */
     async created(): Promise<void> {
         await this.loadShareInfo();
+        this.portfolioAvgPrice = await this.getPortfolioAvgPrice();
+        UI.on(EventType.TRADE_CREATED, async () => {
+            this.portfolioAvgPrice = await this.getPortfolioAvgPrice();
+        });
+    }
+
+    beforeDestroy(): void {
+        UI.off(EventType.TRADE_CREATED);
     }
 
     /**
@@ -406,6 +415,7 @@ export class BaseShareInfoPage extends UI {
     @Watch("ticker")
     private async onTickerChange(): Promise<void> {
         await this.loadShareInfo();
+        this.portfolioAvgPrice = await this.getPortfolioAvgPrice();
     }
 
     @Watch("portfolio")
@@ -522,5 +532,28 @@ export class BaseShareInfoPage extends UI {
     private async openFeedBackDialog(): Promise<void> {
         const message = `Пожалуйста, добавьте бумагу ${this.$route.params.ticker} в систему.`;
         await new FeedbackDialog().show({clientInfo: this.clientInfo.user, message: message});
+    }
+
+    /**
+     * Возвращает цену бумаги в портфеле. Если валюта портфеля и бумаге не совпадает, дополнительно конвертирует цену
+     */
+    private async getPortfolioAvgPrice(): Promise<number> {
+        try {
+            const assetRow = [...this.portfolio.overview.assetPortfolio.rows, ...this.portfolio.overview.etfPortfolio.rows, ...this.portfolio.overview.stockPortfolio.rows]
+                .find(row => {
+                    return (String(row.share.id) === this.ticker && row.share.shareType === ShareType.ASSET) ||
+                        (row.share.shareType === ShareType.STOCK && row.share.ticker === this.ticker);
+                });
+            if (assetRow && this.portfolio.portfolioParams.viewCurrency !== this.share.currency) {
+                const res = await this.tradeService.getCurrencyFromTo(this.share.currency, this.portfolio.portfolioParams.viewCurrency,
+                    DateUtils.formatDayMonthYear(DateUtils.currentDate()));
+                const price = new BigMoney(assetRow.avgBuy).amount.dividedBy(new Decimal(res.rate));
+                return price.toDP(price.lessThan(new Decimal("1")) ? 9 : 2).toNumber();
+            }
+            return assetRow ? new BigMoney(assetRow.avgBuy).amount.toNumber() : -1;
+        } catch (e) {
+            // на всякий случай, иначе график не отрисуется
+            return -1;
+        }
     }
 }

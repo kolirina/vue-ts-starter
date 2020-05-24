@@ -1,7 +1,6 @@
 import {Decimal} from "decimal.js";
 import {Inject} from "typescript-ioc";
 import {Component, namespace, UI, Watch} from "../app/ui";
-import {EmptyPortfolioStub} from "../components/emptyPortfolioStub";
 import {Filters} from "../platform/filters/Filters";
 import {ClientInfo} from "../services/clientService";
 import {OverviewService} from "../services/overviewService";
@@ -213,8 +212,7 @@ const MainStore = namespace(StoreType.MAIN);
 
             <empty-portfolio-stub v-else></empty-portfolio-stub>
         </v-container>
-    `,
-    components: {EmptyPortfolioStub}
+    `
 })
 export class RebalancingPage extends UI {
 

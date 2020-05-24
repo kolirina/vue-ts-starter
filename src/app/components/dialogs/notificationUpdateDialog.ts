@@ -14,7 +14,7 @@ import {UpdateServiceInfo} from "../updateServiceInfo";
                 </v-card-title>
 
                 <v-card-text>
-                    <update-service-info @openFeedBackDialog="openFeedBackDialog" is-login class="pl-3 py-0"></update-service-info>
+                    <update-service-info @openFeedBackDialog="openFeedBackDialog" logged-in class="pl-3 py-0"></update-service-info>
                 </v-card-text>
                 <v-card-actions class="pr-3 pb-3">
                     <v-spacer></v-spacer>

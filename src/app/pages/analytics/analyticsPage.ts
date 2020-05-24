@@ -7,7 +7,6 @@ import {UI, Watch} from "../../app/ui";
 import {AverageAnnualYieldChart} from "../../components/charts/averageAnnualYield";
 import {PieChart} from "../../components/charts/pieChart";
 import {SimpleLineChart} from "../../components/charts/simpleLineChart";
-import {EmptyPortfolioStub} from "../../components/emptyPortfolioStub";
 import {Filters} from "../../platform/filters/Filters";
 import {Storage} from "../../platform/services/storage";
 import {AdviceService} from "../../services/adviceService";
@@ -16,6 +15,7 @@ import {ClientInfo, ClientService} from "../../services/clientService";
 import {PortfolioAccountType, PortfolioService} from "../../services/portfolioService";
 import {BigMoney} from "../../types/bigMoney";
 import {ChartType, CustomDataPoint, SimpleChartData, YieldCompareData} from "../../types/charts/types";
+import {EventType} from "../../types/eventType";
 import {Portfolio} from "../../types/types";
 import {ChartUtils} from "../../utils/chartUtils";
 import {MutationType} from "../../vuex/mutationType";
@@ -87,7 +87,7 @@ const MainStore = namespace(StoreType.MAIN);
             </expanded-panel>
 
             <expanded-panel v-if="yieldContributorsChartData.length" :value="$uistate.yieldContributorsChart" :state="$uistate.YIELD_CONTRIBUTORS_CHART_PANEL"
-                            customMenu class="mt-3">
+                            custom-menu class="mt-3">
                 <template #header>
                     Эффективность бумаг в портфеле
                     <v-tooltip content-class="custom-tooltip-wrap" bottom>
@@ -106,6 +106,31 @@ const MainStore = namespace(StoreType.MAIN);
                 <v-card-text>
                     <pie-chart :ref="ChartType.YIELD_CONTRIBUTORS_CHART" :data="yieldContributorsChartData" :view-currency="viewCurrency"
                                balloon-title="Эффективность бумаг в портфеле" tooltip-format="YIELDS" v-tariff-expired-hint></pie-chart>
+                </v-card-text>
+            </expanded-panel>
+
+            <expanded-panel v-if="wholePortfolioSharesAllocationChartData.length" :value="$uistate.wholePortfolioSharesAllocationChart"
+                            :state="$uistate.WHOLE_PORTFOLIO_SHARES_ALLOCATION_CHART_PANEL"
+                            custom-menu class="mt-3">
+                <template #header>
+                    Распределение всех активов в портфеле
+                    <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                        <template #activator="{ on }">
+                            <v-icon v-on="on" class="fs12 vAlignSuper">far fa-question-circle</v-icon>
+                        </template>
+                        <span>
+                            Диаграмма сквозного распределения всех ваших активов, включая денежные средства, в портфеле
+                        </span>
+                    </v-tooltip>
+                </template>
+                <template #customMenu>
+                    <chart-export-menu @print="print(ChartType.WHOLE_PORTFOLIO_SHARES_ALLOCATION_CHART)"
+                                       @exportTo="exportTo(ChartType.WHOLE_PORTFOLIO_SHARES_ALLOCATION_CHART, $event)"
+                                       class="exp-panel-menu"></chart-export-menu>
+                </template>
+                <v-card-text>
+                    <pie-chart :ref="ChartType.WHOLE_PORTFOLIO_SHARES_ALLOCATION_CHART" :data="wholePortfolioSharesAllocationChartData" :view-currency="viewCurrency"
+                               balloon-title="Распределение всех активов в портфеле" tooltip-format="YIELDS" v-tariff-expired-hint></pie-chart>
                 </v-card-text>
             </expanded-panel>
 
@@ -150,7 +175,7 @@ const MainStore = namespace(StoreType.MAIN);
             </expanded-panel>
         </v-container>
     `,
-    components: {EmptyPortfolioStub, ChooseRisk, Preloader, AnalysisResult, EmptyAdvice, AverageAnnualYieldChart, SimpleLineChart}
+    components: {ChooseRisk, Preloader, AnalysisResult, EmptyAdvice, AverageAnnualYieldChart, SimpleLineChart}
 })
 export class AnalyticsPage extends UI {
 
@@ -184,20 +209,30 @@ export class AnalyticsPage extends UI {
     private totalDepositInCurrentYear: BigMoney = null;
     /** Данные для диаграммы эффективности бумаг */
     private yieldContributorsChartData: CustomDataPoint[] = [];
+    /** Данные для диаграммы эффективности бумаг */
+    private wholePortfolioSharesAllocationChartData: CustomDataPoint[] = [];
     /** Типы круговых диаграмм */
     private ChartType = ChartType;
 
     async created(): Promise<void> {
-        await this.loadDiagramData();
-        await this.loadTotalDepositInCurrentYear();
-        this.yieldContributorsChartData = await this.doYieldContributorsChartData();
+        await this.init();
+        UI.on(EventType.TRADE_CREATED, async () => await this.init());
+    }
+
+    beforeDestroy(): void {
+        UI.off(EventType.TRADE_CREATED);
     }
 
     @Watch("portfolio")
     private async onPortfolioChange(): Promise<void> {
+        await this.init();
+    }
+
+    private async init(): Promise<void> {
         await this.loadDiagramData();
         await this.loadTotalDepositInCurrentYear();
         this.yieldContributorsChartData = await this.doYieldContributorsChartData();
+        this.wholePortfolioSharesAllocationChartData = await this.doWholePortfolioSharesAllocationChartData();
     }
 
     private async loadDiagramData(): Promise<void> {
@@ -227,6 +262,10 @@ export class AnalyticsPage extends UI {
 
     private doYieldContributorsChartData(): CustomDataPoint[] {
         return ChartUtils.doYieldContributorsPieChartData(this.portfolio.overview, this.viewCurrency);
+    }
+
+    private doWholePortfolioSharesAllocationChartData(): CustomDataPoint[] {
+        return ChartUtils.doWholePortfolioSharesAllocationChartData(this.portfolio.overview, this.viewCurrency);
     }
 
     private get getCurrentYearRemainder(): number {

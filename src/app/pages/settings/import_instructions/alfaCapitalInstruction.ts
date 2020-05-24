@@ -14,37 +14,31 @@
  * (c) ООО "Интеллектуальные инвестиции", 2019
  */
 
-import Component from "vue-class-component";
-import {UI} from "../../../app/ui";
+import {Component, UI} from "../../../app/ui";
+import {ImageDialog} from "../../../components/dialogs/imageDialog";
 
 @Component({
     // language=Vue
     template: `
         <div>
-            <div>
-                <div class="import-default-text">
-                    Перейдите в личный кабинет брокера, и выберите пункт История операций.
-                </div>
+            Перейдите в личный кабинет брокера, и выберите пункт История операций.<br>
+            Выберите тип отчета <b>Сделки</b> Настройте параметры отчета:
 
-                <div class="import-default-text">
-                    Выберите тип отчета <b>Сделки</b> Настройте параметры отчета:
-                </div>
-                <div class="import-format-requirements-ul">
-                    <ul>
-                        <li>Укажите договор или оставте пункт Все договоры</li>
-                        <li>Начало периода</li>
-                        <li>Окончание периода</li>
-                        <li>Нажмите кнопку Скачать XLS</li>
-                    </ul>
-                </div>
+            <ul>
+                <li>Укажите договор или оставте пункт Все договоры</li>
+                <li>Начало периода</li>
+                <li>Окончание периода</li>
+                <li>Нажмите кнопку Скачать XLS</li>
+            </ul>
 
-                <v-img :src="IMAGES[0]" max-width="715" class="grey darken-4 image"></v-img>
+            Полученный файл используйте для импорта.<br>
+            Будут импортированы сделки по бумагам,
+            движения ДС (связанные с вводом/выводом на счет, налоги и расходы не связанные напрямую со сделками).
 
-                <div class="import-default-text">
-                    Полученный файл используйте для импорта.<br>
-                    Будут импортированы сделки по бумагам,
-                    движения ДС (связанные с вводом/выводом на счет, налоги и расходы не связанные напрямую со сделками).
-                </div>
+            <div class="import-instructions__gallery">
+                <figure>
+                    <img :src="IMAGES[0]" alt="3" @click.stop="openImageDialog">
+                </figure>
             </div>
         </div>
     `
@@ -55,4 +49,7 @@ export class AlfaCapitalInstruction extends UI {
         "./img/import_instructions/alfacapital/ak.png",
     ];
 
+    private async openImageDialog(): Promise<void> {
+        await new ImageDialog().show((event as any).target.attributes[0].nodeValue);
+    }
 }

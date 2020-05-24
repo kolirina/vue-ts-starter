@@ -1,4 +1,5 @@
 import {Component, Prop, UI} from "../../../app/ui";
+import {ImageDialog} from "../../../components/dialogs/imageDialog";
 import {PortfolioParams} from "../../../services/portfolioService";
 
 @Component({
@@ -20,29 +21,26 @@ import {PortfolioParams} from "../../../services/portfolioService";
                 </ii-number-field>
             </div>
             <div class="margT50">
-                <div class="fs16 bold alignC margB20">
-                    Инструкция
-                </div>
-                <div class="import-default-text">
-                    Перейдите в личный кабинет брокера. Перейдите на вкладку просмотра <strong>Единой<br>
-                    денежной позиции</strong> далее вкладка <strong>Справка по счету.</strong>
-                </div>
-                    <v-img :src="IMAGES[0]" max-width="980" class="grey darken-4 image"></v-img>
-                <div class="import-default-text">
-                    Настройте параметры отчета:
-                </div>
-                <div class="import-format-requirements-ul">
-                    <ul>
-                        <li>Укажите период</li>
-                        <li>Укажите формат отчета <b><i>xml</i></b></li>
-                        <li>Нажмите кнопку <b><i>Сформировать</i></b></li>
-                    </ul>
-                </div>
-                <v-img :src="IMAGES[1]" max-width="980" class="grey darken-4 image"></v-img>
-                <div class="import-default-text">
-                    После успешного формирования отчета появится запрос на скачивание отчета.<br>
-                    Полученный файл используйте для импорта.
-                </div>
+                Для получения отчета по сделкам перейдите в личный кабинет брокера. Перейдите на вкладку просмотра <strong>Единой<br>
+                денежной позиции</strong> далее вкладка <strong>Справка по счету.</strong>
+
+                Настройте параметры отчета:
+                <ul>
+                    <li>Укажите период</li>
+                    <li>Укажите формат отчета <b><i>xml</i></b></li>
+                    <li>Нажмите кнопку <b><i>Сформировать</i></b></li>
+                </ul>
+                После успешного формирования отчета появится запрос на скачивание отчета.<br>
+                Полученный файл используйте для импорта.
+            </div>
+
+            <div class="import-instructions__gallery">
+                <figure>
+                    <img :src="IMAGES[0]" alt="0" @click.stop="openImageDialog">
+                </figure>
+                <figure>
+                    <img :src="IMAGES[1]" alt="1" @click.stop="openImageDialog">
+                </figure>
             </div>
         </div>
     `
@@ -67,4 +65,7 @@ export class FinamInstruction extends UI {
         this.$emit("changePortfolioParams", this.portfolioParams);
     }
 
+    private async openImageDialog(): Promise<void> {
+        await new ImageDialog().show((event as any).target.attributes[0].nodeValue);
+    }
 }

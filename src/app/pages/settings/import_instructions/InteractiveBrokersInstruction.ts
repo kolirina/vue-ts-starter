@@ -15,64 +15,52 @@
  */
 
 import {Component, UI} from "../../../app/ui";
+import {ImageDialog} from "../../../components/dialogs/imageDialog";
 
 @Component({
     // language=Vue
     template: `
         <div>
-            <div>
-                <div class="import-default-text">
-                    Перейдите в личный кабинет брокера
-                </div>
+            <div>Перейдите в личный кабинет брокера</div>
 
-                <div class="import-default-text">
-                    В боковом меню выберите <b>Отчеты</b>
-                </div>
+            <span>В боковом меню выберите <b>Отчеты</b></span> → Первая вкладка - <b>"Выписки"</b> → Формат отчета <b>Активность</b> →
 
-                <v-img :src="IMAGES[0]" max-width="933" class="grey darken-4 image"></v-img>
+            Настройте параметры получаемого отчета
+            <ul>
+                <li>Период - <b>Индивидуальный срок</b></li>
+                <li><b>Начальная дата</b> и <b>Конечная дата</b> - укажите значения, которые Вам необходимы. Как правило, для получения полной информации необходимо
+                    выбрать интервал,
+                    который бы соответствовал всему времени существования брокерского счета (с даты создания до текущей даты)
+                </li>
+                <li>Формат - <b>csv</b></li>
+                <li>Язык - <b>Русский</b> (Если применимо)</li>
+            </ul>
+            Либо можете получить отчет за определенный год
+            <ul>
+                <li>Период - <b>Годовой</b></li>
+                <li>Дата - укажите требуемый год</li>
+                <li>Формат - <b>csv</b></li>
+                <li>Язык - <b>Русский</b> (Если применимо)</li>
+            </ul>
 
-                <div class="import-default-text">
-                    Первая вкладка - <b>"Выписки"</b><br/>
-                    Формат отчета <b>Активность</b>
-                </div>
+            После этого нажмите кнопку <b>Запустить</b>.<br/>
 
-                <v-img :src="IMAGES[1]" max-width="933" class="grey darken-4 image"></v-img>
+            Полученный отчет используйте для импорта.<br/>
+            Если отчет не пройдет импорт, попробуйте пересохранить файл в кодировке UTF-8 или windows-1251.
 
-                <div class="import-default-text">
-                    Настройте параметры получаемого отчета
-                </div>
-
-                <div class="import-format-requirements-ul">
-                    <ul>
-                        <li>Период - <b>Индивидуальный срок</b></li>
-                        <li><b>Начальная дата</b> и <b>Конечная дата</b> - укажите значения, которые Вам необходимы. Как правило, для получения полной информации необходимо
-                            выбрать интервал,
-                            который бы соответствовал всему времени существования брокерского счета (с даты создания до текущей даты)
-                        </li>
-                        <li>Формат - <b>csv</b></li>
-                        <li>Язык - <b>Русский</b> (Если применимо)</li>
-                    </ul>
-                    Либо можете получить отчет за определенный год
-                    <ul>
-                        <li>Период - <b>Годовой</b></li>
-                        <li>Дата - укажите требуемый год</li>
-                        <li>Формат - <b>csv</b></li>
-                        <li>Язык - <b>Русский</b> (Если применимо)</li>
-                    </ul>
-                </div>
-
-                <v-img :src="IMAGES[2]" max-width="802" class="grey darken-4 image"></v-img>
-
-                <div class="import-default-text">
-                    После этого нажмите кнопку <b>Запустить</b>.<br/>
-                </div>
-
-                <v-img :src="IMAGES[3]" max-width="933" class="grey darken-4 image"></v-img>
-
-                <div class="import-default-text">
-                    Полученный отчет используйте для импорта.<br/>
-                    Если отчет не пройдет импорт, попробуйте пересохранить файл в кодировке UTF-8 или windows-1251.
-                </div>
+            <div class="import-instructions__gallery">
+                <figure>
+                    <img :src="IMAGES[0]" alt="3" @click.stop="openImageDialog">
+                </figure>
+                <figure>
+                    <img :src="IMAGES[1]" alt="4" @click.stop="openImageDialog">
+                </figure>
+                <figure>
+                    <img :src="IMAGES[2]" alt="5" @click.stop="openImageDialog">
+                </figure>
+                <figure>
+                    <img :src="IMAGES[3]" alt="6" @click.stop="openImageDialog">
+                </figure>
             </div>
         </div>
     `
@@ -86,4 +74,7 @@ export class InteractiveBrokersInstruction extends UI {
         "./img/import_instructions/ib/4.png",
     ];
 
+    private async openImageDialog(): Promise<void> {
+        await new ImageDialog().show((event as any).target.attributes[0].nodeValue);
+    }
 }

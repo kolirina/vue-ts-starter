@@ -15,22 +15,21 @@
  */
 
 import {Component, UI} from "../../../app/ui";
+import {ImageDialog} from "../../../components/dialogs/imageDialog";
 
 @Component({
     // language=Vue
     template: `
         <div>
-            <div>
-                <div class="import-default-text">
-                    Перейдите в online-терминал. Перейдите на вкладку <b>Сделки</b>
-                </div>
-                <v-img :src="IMAGES[0]" max-width="980" class="grey darken-4 image"></v-img>
-                <div class="import-default-text">
-                    Для получения отчета нажмите Экспорт в Excel
-                </div>
-                <div class="import-default-text">
-                    Полученный файл используйте для импорта.
-                </div>
+            Перейдите в online-терминал. Перейдите на вкладку <b>Сделки</b>
+
+            Для получения отчета нажмите Экспорт в Excel<br>
+            Полученный файл используйте для импорта.
+
+            <div class="import-instructions__gallery">
+                <figure>
+                    <img :src="IMAGES[0]" alt="0" @click.stop="openImageDialog">
+                </figure>
             </div>
         </div>
     `
@@ -41,4 +40,7 @@ export class FreedomFinanceInstruction extends UI {
         "./img/import_instructions/freedom_finance/1.png",
     ];
 
+    private async openImageDialog(): Promise<void> {
+        await new ImageDialog().show((event as any).target.attributes[0].nodeValue);
+    }
 }

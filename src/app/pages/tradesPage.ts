@@ -5,7 +5,6 @@ import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
 import {AdditionalPagination} from "../components/additionalPagination";
 import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog";
-import {EmptyPortfolioStub} from "../components/emptyPortfolioStub";
 import {EmptySearchResult} from "../components/emptySearchResult";
 import {ExpandedPanel} from "../components/expandedPanel";
 import {TradesTable} from "../components/tables/tradesTable";
@@ -33,7 +32,7 @@ const MainStore = namespace(StoreType.MAIN);
         <div v-if="portfolio" class="h100pc">
             <empty-portfolio-stub v-if="isEmptyBlockShowed"></empty-portfolio-stub>
             <v-container v-else fluid class="paddT0 h100pc">
-                <dashboard :data="portfolio.overview.dashboardData" :side-bar-opened="sideBarOpened" :view-currency="portfolio.portfolioParams.viewCurrency"></dashboard>
+                <dashboard :overview="portfolio.overview" :side-bar-opened="sideBarOpened" :view-currency="portfolio.portfolioParams.viewCurrency"></dashboard>
                 <expanded-panel name="trades" :value="[true]" class="auto-cursor" data-v-step="0" disabled with-menu always-open>
                     <template #header>Сделки</template>
                     <template #list>
@@ -55,7 +54,7 @@ const MainStore = namespace(StoreType.MAIN);
             </v-container>
         </div>
     `,
-    components: {TradesTable, ExpandedPanel, TradesTableFilter, AdditionalPagination, EmptySearchResult, EmptyPortfolioStub}
+    components: {TradesTable, ExpandedPanel, TradesTableFilter, AdditionalPagination, EmptySearchResult}
 })
 export class TradesPage extends UI {
 

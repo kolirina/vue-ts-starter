@@ -22,117 +22,102 @@ import {ZerichInstruction} from "./import_instructions/zerichInstruction";
 @Component({
     // language=Vue
     template: `
-        <div>
-            <div class="import-instructions">
-                <!-- ALFADIRECT -->
-                <div v-if="provider === providers.ALFADIRECT">
-                    <AlfadirectInstruction></AlfadirectInstruction>
-                </div>
-
-                <!-- ITINVEST -->
-                <div v-if="provider === providers.ITINVEST">
-                    <ItInvestInstruction></ItInvestInstruction>
-                </div>
-
-                <!-- ОТКРЫТИЕ -->
-                <div v-if="provider === providers.OTKRYTIE">
-                    <OtkrytieInstruction></OtkrytieInstruction>
-                </div>
-
-                <!-- ZERICH -->
-                <div v-if="provider === providers.ZERICH">
-                    <ZerichInstruction></ZerichInstruction>
-                </div>
-
-                <!-- PSBANK -->
-                <div v-if="provider === providers.PSBANK">
-                    <PsbInstruction></PsbInstruction>
-                </div>
-
-                <!-- BCS -->
-                <div v-if="provider === providers.BCS">
-                    <BcsInstruction></BcsInstruction>
-                </div>
-
-                <!-- BCS CYPRUS-->
-                <div v-if="provider === providers.BCS_CYPRUS">
-                    <BcsCyprusInstruction></BcsCyprusInstruction>
-                </div>
-
-                <!-- FINAM -->
-                <div v-if="provider === providers.FINAM">
-                    <FinamInstruction :portfolio-params="portfolioParams" @changePortfolioParams="changePortfolioParams">
-                    </FinamInstruction>
-                </div>
-
-                <!-- FREEDOM_FINANCE -->
-                <div v-if="provider === providers.FREEDOM_FINANCE">
-                    <FreedomFinanceInstruction></FreedomFinanceInstruction>
-                </div>
-
-                <!-- KITFINANCE -->
-                <div v-if="provider === providers.KITFINANCE">
-                    <p class="import-default-text">
-                        Используйте для импорта отчеты в формате xlsx.
-                    </p>
-                </div>
-
-                <!-- URALSIB -->
-                <div v-if="provider === providers.URALSIB">
-                    <UralsibInstruction></UralsibInstruction>
-                </div>
-
-                <!-- SBERBANK -->
-                <div v-if="provider === providers.SBERBANK">
-                    <SberbankInstruction></SberbankInstruction>
-                </div>
-
-                <!-- VTB24 -->
-                <div v-if="provider === providers.VTB24">
-                    <VtbInstruction></VtbInstruction>
-                </div>
-
-                <!-- Interactive brokers -->
-                <div v-if="provider === providers.INTERACTIVE_BROKERS">
-                    <InteractiveBrokersInstruction></InteractiveBrokersInstruction>
-                </div>
-
-                <!-- Tinkoff -->
-                <div v-if="provider === providers.TINKOFF">
-                    <TinkoffInstruction></TinkoffInstruction>
-                </div>
-
-                <!-- ATON -->
-                <div v-if="provider === providers.ATON">
-                    <p class="import-default-text">
-                        Используйте для импорта отчеты в формате xml. Будут импортированы сделки по бумагам, включая дивиденды, купоны, амортизацию,
-                        и движения денежных средств.
-                    </p>
-                </div>
-
-                <!-- ALFACAPITAL -->
-                <div v-if="provider === providers.ALFACAPITAL">
-                    <AlfaCapitalInstruction></AlfaCapitalInstruction>
-                </div>
-
-                <!-- Формат intelinvest -->
-                <div v-if="provider === providers.INTELINVEST">
-                    <IntelinvestInstruction></IntelinvestInstruction>
-                </div>
-
-                <!-- QUIK -->
-                <div v-if="provider === providers.QUIK">
-                    <QuikInstruction></QuikInstruction>
-                </div>
+        <div class="import-instructions">
+            <!-- ALFADIRECT -->
+            <div v-if="provider === providers.ALFADIRECT">
+                <AlfadirectInstruction></AlfadirectInstruction>
             </div>
 
-            <div v-if="provider" class="import-default-text">
-                <!-- Не отображаем блок про Квик если он уже выбран -->
-                <p v-if="provider !== providers.QUIK" class="import-default-text-margin-t">
-                    Если у вас возникли сложности при загрузке отчетов брокера и вы используете<br>
-                    Quik, можете <a @click="selectProvider(providers.QUIK)">импортировать</a>
-                    отчеты из терминала.
-                </p>
+            <!-- ITINVEST -->
+            <div v-if="provider === providers.ITINVEST">
+                <ItInvestInstruction></ItInvestInstruction>
+            </div>
+
+            <!-- ОТКРЫТИЕ -->
+            <div v-if="provider === providers.OTKRYTIE">
+                <OtkrytieInstruction></OtkrytieInstruction>
+            </div>
+
+            <!-- ZERICH -->
+            <div v-if="provider === providers.ZERICH">
+                <ZerichInstruction></ZerichInstruction>
+            </div>
+
+            <!-- PSBANK -->
+            <div v-if="provider === providers.PSBANK">
+                <PsbInstruction></PsbInstruction>
+            </div>
+
+            <!-- BCS -->
+            <div v-if="provider === providers.BCS">
+                <BcsInstruction></BcsInstruction>
+            </div>
+
+            <!-- BCS CYPRUS-->
+            <div v-if="provider === providers.BCS_CYPRUS">
+                <BcsCyprusInstruction></BcsCyprusInstruction>
+            </div>
+
+            <!-- FINAM -->
+            <div v-if="provider === providers.FINAM">
+                <FinamInstruction :portfolio-params="portfolioParams" @changePortfolioParams="changePortfolioParams">
+                </FinamInstruction>
+            </div>
+
+            <!-- FREEDOM_FINANCE -->
+            <div v-if="provider === providers.FREEDOM_FINANCE">
+                <FreedomFinanceInstruction></FreedomFinanceInstruction>
+            </div>
+
+            <!-- KITFINANCE -->
+            <div v-if="provider === providers.KITFINANCE">
+                Используйте для импорта отчеты в формате xlsx.
+            </div>
+
+            <!-- URALSIB -->
+            <div v-if="provider === providers.URALSIB">
+                <UralsibInstruction></UralsibInstruction>
+            </div>
+
+            <!-- SBERBANK -->
+            <div v-if="provider === providers.SBERBANK">
+                <SberbankInstruction></SberbankInstruction>
+            </div>
+
+            <!-- VTB24 -->
+            <div v-if="provider === providers.VTB24">
+                <VtbInstruction></VtbInstruction>
+            </div>
+
+            <!-- Interactive brokers -->
+            <div v-if="provider === providers.INTERACTIVE_BROKERS">
+                <InteractiveBrokersInstruction></InteractiveBrokersInstruction>
+            </div>
+
+            <!-- Tinkoff -->
+            <div v-if="provider === providers.TINKOFF">
+                <TinkoffInstruction></TinkoffInstruction>
+            </div>
+
+            <!-- ATON -->
+            <div v-if="provider === providers.ATON">
+                Перейдите на сайт АТОН в раздел → <b>Входящие</b> → <b>Запросить отчет</b> → <b>Настройте параметры отчета</b>.
+                Полученный файл используйте для импорта.
+            </div>
+
+            <!-- ALFACAPITAL -->
+            <div v-if="provider === providers.ALFACAPITAL">
+                <AlfaCapitalInstruction></AlfaCapitalInstruction>
+            </div>
+
+            <!-- Формат intelinvest -->
+            <div v-if="provider === providers.INTELINVEST">
+                <IntelinvestInstruction></IntelinvestInstruction>
+            </div>
+
+            <!-- QUIK -->
+            <div v-if="provider === providers.QUIK">
+                <QuikInstruction></QuikInstruction>
             </div>
         </div>
     `,

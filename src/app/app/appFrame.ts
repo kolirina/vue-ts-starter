@@ -191,7 +191,8 @@ export class AppFrame extends UI {
     }
 
     private applyTheme(): void {
-        ThemeUtils.setStyles(this.localStorage.get<string>(StoreKeys.THEME, Theme.DAY) === Theme.NIGHT);
+        ThemeUtils.detectTheme();
+        ThemeUtils.setStyles(this.localStorage.get<string>(StoreKeys.THEME, ThemeUtils.detectPrefersColorScheme()) === Theme.NIGHT);
     }
 
     private async checkAuthorized(registration?: boolean): Promise<void> {

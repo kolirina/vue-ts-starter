@@ -2,6 +2,7 @@ import {Component, namespace, UI} from "../app/ui";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
 import {FeedbackDialog} from "../components/dialogs/feedbackDialog";
 import {ImageDialog} from "../components/dialogs/imageDialog";
+import {UpdateServiceInfo} from "../components/updateServiceInfo";
 import {ClientInfo} from "../services/clientService";
 import {AssetType} from "../types/assetType";
 import {EventType} from "../types/eventType";
@@ -97,15 +98,18 @@ const MainStore = namespace(StoreType.MAIN);
                     <div class="wrapper-list-reference__item-content-wrapper">
                         <a @click.stop="scrollTo('privacy')">Соглашение</a>
                     </div>
+                    <div class="wrapper-list-reference__item-content-wrapper">
+                        <a @click.stop="scrollTo('updates_history')">История обновлений</a>
+                    </div>
                 </div>
             </v-layout>
             <div>
                 <v-expansion-panel expand class="wrapper-panel" v-model="configExpansionPanel">
                     <v-expansion-panel-content>
-                        <template v-slot:actions>
+                        <template #actions>
                             <i class="custom-action-icon"></i>
                         </template>
-                        <template v-slot:header>
+                        <template #header>
                             <div id="about">О сервисе</div>
                         </template>
                         <v-card>
@@ -363,10 +367,10 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-expansion-panel-content>
 
                     <v-expansion-panel-content>
-                        <template v-slot:actions>
+                        <template #actions>
                             <i class="custom-action-icon"></i>
                         </template>
-                        <template v-slot:header>
+                        <template #header>
                             <div id="balances">Текущие остатки портфеля</div>
                         </template>
                         <v-card>
@@ -389,10 +393,10 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-card>
                     </v-expansion-panel-content>
                     <v-expansion-panel-content>
-                        <template v-slot:actions>
+                        <template #actions>
                             <i class="custom-action-icon"></i>
                         </template>
-                        <template v-slot:header>
+                        <template #header>
                             <div id="import">Импорт сделок</div>
                         </template>
                         <v-card>
@@ -484,10 +488,10 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-card>
                     </v-expansion-panel-content>
                     <v-expansion-panel-content>
-                        <template v-slot:actions>
+                        <template #actions>
                             <i class="custom-action-icon"></i>
                         </template>
-                        <template v-slot:header>
+                        <template #header>
                             <div id="export">Экспорт сделок</div>
                         </template>
                         <v-card>
@@ -520,10 +524,10 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-card>
                     </v-expansion-panel-content>
                     <v-expansion-panel-content>
-                        <template v-slot:actions>
+                        <template #actions>
                             <i class="custom-action-icon"></i>
                         </template>
-                        <template v-slot:header>
+                        <template #header>
                             <div id="portfolio">Страница Портфель</div>
                         </template>
                         <v-card>
@@ -614,10 +618,10 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-card>
                     </v-expansion-panel-content>
                     <v-expansion-panel-content>
-                        <template v-slot:actions>
+                        <template #actions>
                             <i class="custom-action-icon"></i>
                         </template>
-                        <template v-slot:header>
+                        <template #header>
                             <div id="analytics">Страница Аналитика</div>
                         </template>
                         <v-card>
@@ -638,10 +642,10 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-card>
                     </v-expansion-panel-content>
                     <v-expansion-panel-content>
-                        <template v-slot:actions>
+                        <template #actions>
                             <i class="custom-action-icon"></i>
                         </template>
-                        <template v-slot:header>
+                        <template #header>
                             <div id="trades">Страница Сделки</div>
                         </template>
                         <v-card>
@@ -685,10 +689,10 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-card>
                     </v-expansion-panel-content>
                     <v-expansion-panel-content>
-                        <template v-slot:actions>
+                        <template #actions>
                             <i class="custom-action-icon"></i>
                         </template>
-                        <template v-slot:header>
+                        <template #header>
                             <div id="commissions">
                                 Добавление комиссий, расходов и доходов
                             </div>
@@ -745,10 +749,10 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-card>
                     </v-expansion-panel-content>
                     <v-expansion-panel-content>
-                        <template v-slot:actions>
+                        <template #actions>
                             <i class="custom-action-icon"></i>
                         </template>
-                        <template v-slot:header>
+                        <template #header>
                             <div id="events">Страница События</div>
                         </template>
                         <v-card>
@@ -803,10 +807,10 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-card>
                     </v-expansion-panel-content>
                     <v-expansion-panel-content>
-                        <template v-slot:actions>
+                        <template #actions>
                             <i class="custom-action-icon"></i>
                         </template>
-                        <template v-slot:header>
+                        <template #header>
                             <div id="combined_portfolio">Страница Составной портфель</div>
                         </template>
                         <v-card>
@@ -825,10 +829,10 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-card>
                     </v-expansion-panel-content>
                     <v-expansion-panel-content>
-                        <template v-slot:actions>
+                        <template #actions>
                             <i class="custom-action-icon"></i>
                         </template>
-                        <template v-slot:header>
+                        <template #header>
                             <div id="dividends">Страница Дивиденды</div>
                         </template>
                         <v-card>
@@ -871,10 +875,10 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-card>
                     </v-expansion-panel-content>
                     <v-expansion-panel-content>
-                        <template v-slot:actions>
+                        <template #actions>
                             <i class="custom-action-icon"></i>
                         </template>
-                        <template v-slot:header>
+                        <template #header>
                             <div id="quotes">Страница Котировки</div>
                         </template>
                         <v-card>
@@ -897,10 +901,10 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-card>
                     </v-expansion-panel-content>
                     <v-expansion-panel-content>
-                        <template v-slot:actions>
+                        <template #actions>
                             <i class="custom-action-icon"></i>
                         </template>
-                        <template v-slot:header>
+                        <template #header>
                             <div id="quotes">Страница Информация</div>
                         </template>
                         <v-card>
@@ -923,10 +927,10 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-card>
                     </v-expansion-panel-content>
                     <v-expansion-panel-content>
-                        <template v-slot:actions>
+                        <template #actions>
                             <i class="custom-action-icon"></i>
                         </template>
-                        <template v-slot:header>
+                        <template #header>
                             <div id="settings">Настройки</div>
                         </template>
                         <v-card>
@@ -1071,10 +1075,10 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-card>
                     </v-expansion-panel-content>
                     <v-expansion-panel-content>
-                        <template v-slot:actions>
+                        <template #actions>
                             <i class="custom-action-icon"></i>
                         </template>
-                        <template v-slot:header>
+                        <template #header>
                             <div id="help">Вопросы и помощь</div>
                         </template>
                         <v-card>
@@ -1097,10 +1101,10 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-card>
                     </v-expansion-panel-content>
                     <v-expansion-panel-content>
-                        <template v-slot:actions>
+                        <template #actions>
                             <i class="custom-action-icon"></i>
                         </template>
-                        <template v-slot:header>
+                        <template #header>
                             <div id="privacy">Соглашение</div>
                         </template>
                         <v-card>
@@ -1113,6 +1117,28 @@ const MainStore = namespace(StoreType.MAIN);
                             </div>
                         </v-card>
                     </v-expansion-panel-content>
+                    <v-expansion-panel-content>
+                        <template #actions>
+                            <i class="custom-action-icon"></i>
+                        </template>
+                        <template #header>
+                            <div id="updates_history">История обновлений</div>
+                        </template>
+                        <v-card>
+                            <div class="wrapper-content-panel">
+                                <div class="wrapper-content-panel__single-section">
+                                    <div class="wrapper-content-panel__single-section-item">
+                                        <p>
+                                            История обновлений сервиса.<br/>
+                                            Архив всех обновлений вы можете найти на нашем
+                                            <a href="https://t.me/intelinvest_chat" title="Чат в Telegram" target="_blank">блоге</a>.
+                                        </p>
+                                    </div>
+                                    <update-service-info @openFeedBackDialog="openFeedBackDialog" logged-in :show-intro="false" class="pl-3 py-0"></update-service-info>
+                                </div>
+                            </div>
+                        </v-card>
+                    </v-expansion-panel-content>
                 </v-expansion-panel>
             </div>
             <div>
@@ -1121,7 +1147,8 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-btn>
             </div>
         </v-container>
-    `
+    `,
+    components: {UpdateServiceInfo}
 })
 export class HelpPage extends UI {
 
@@ -1137,6 +1164,7 @@ export class HelpPage extends UI {
     private Operation = Operation;
     /* Управление какие блоки открыты при загрузке страницы */
     private configExpansionPanel: boolean[] = [
+        true,
         true,
         true,
         true,
