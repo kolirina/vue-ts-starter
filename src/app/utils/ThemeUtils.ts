@@ -15,7 +15,8 @@
  */
 
 import {StoreKeys} from "../types/storeKeys";
-import {Theme} from "../types/types";
+import {BROWSER, Theme} from "../types/types";
+import {CommonUtils} from "./commonUtils";
 
 export class ThemeUtils {
 
@@ -277,9 +278,16 @@ export class ThemeUtils {
         }
     }
 
+    /**
+     * Устанавливает слушатель для автоматической смены темы
+     * Сафари и Ие не поддерживают данный обработчик
+     */
     static detectTheme(): void {
-        window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", e => {
-            ThemeUtils.setStyles(e.matches);
-        });
+        const browserInfo = CommonUtils.detectBrowser();
+        if (![BROWSER.SAFARY, BROWSER.IE].includes(browserInfo.name as BROWSER)) {
+            window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", e => {
+                ThemeUtils.setStyles(e.matches);
+            });
+        }
     }
 }

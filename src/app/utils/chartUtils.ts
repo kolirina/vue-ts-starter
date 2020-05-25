@@ -233,7 +233,7 @@ export class ChartUtils {
         rows.filter(value => value.percentShare && !new Decimal(value.percentShare).isZero()).forEach(row => {
             const percentShare = new Decimal(row.percentShare).abs().toDP(2, Decimal.ROUND_HALF_UP);
             const currCost = new BigMoney(row.currCost).amount.abs().toDP(2, Decimal.ROUND_HALF_UP);
-            const profit = row.profit ? new BigMoney(row.profit).amount.abs().toDP(2, Decimal.ROUND_HALF_UP) : new Decimal("0");
+            const profit = row.profit ? new BigMoney(row.profit).amount.toDP(2, Decimal.ROUND_HALF_UP) : new Decimal("0");
             data.push({
                 name: row.shareName,
                 description: `Стоимость ${Filters.formatNumber(currCost.toString())} ${row.currency}, доля: ${percentShare.toNumber()} %`,

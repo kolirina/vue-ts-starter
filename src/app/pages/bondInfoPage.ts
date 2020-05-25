@@ -165,7 +165,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-card-text>
             </v-card>
             <div class="space-between-blocks"></div>
-            <v-card v-if="share" class="chart-overflow" flat>
+            <v-card v-if="share && portfolioAvgPrice" class="chart-overflow" flat>
                 <v-card-title class="chart-title">
                     Цена облигации
                 </v-card-title>
@@ -221,6 +221,7 @@ export class BondInfoPage extends UI {
     private AssetType = AssetType;
     /** Признак, если бумага не была найдена */
     private shareNotFound = false;
+    private portfolioAvgPrice: number = null;
 
     /**
      * Инициализация данных
@@ -228,7 +229,11 @@ export class BondInfoPage extends UI {
      */
     async created(): Promise<void> {
         await this.loadBondInfo();
-        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
+        this.portfolioAvgPrice = this.getPortfolioAvgPrice();
+        UI.on(EventType.TRADE_CREATED, async () => {
+            await this.reloadPortfolio(this.portfolio.id);
+            this.portfolioAvgPrice = this.getPortfolioAvgPrice();
+        });
     }
 
     beforeDestroy(): void {
@@ -243,6 +248,7 @@ export class BondInfoPage extends UI {
     private async onRouterChange(): Promise<void> {
         this.isin = this.$route.params.isin;
         await this.loadBondInfo();
+        this.portfolioAvgPrice = this.getPortfolioAvgPrice();
     }
 
     @Watch("portfolio")
@@ -326,9 +332,9 @@ export class BondInfoPage extends UI {
         this.$refs.chartComponent.chart.exportChart({type: ChartUtils.EXPORT_TYPES[type]});
     }
 
-    private get portfolioAvgPrice(): number {
+    private getPortfolioAvgPrice(): number {
         const row = this.portfolio.overview.bondPortfolio.rows.find(r => r.bond.ticker === this.share.ticker);
-        return row ? Number(row.avgBuy) : null;
+        return row ? Number(row.avgBuy) : -1;
     }
 
     /**

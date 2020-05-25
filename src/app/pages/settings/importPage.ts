@@ -216,7 +216,7 @@ const MainStore = namespace(StoreType.MAIN);
                                                     В отчете брокера не указаны остатки денежных средств на данный момент.
                                                     Чтобы исключить несоответствие портфеля, пожалуйста укажите текущие остатки денежных средств в полях ввода
                                                 </tooltip>
-                                                <currency-balances :portfolio-id="portfolio.id" class="currency-balances"></currency-balances>
+                                                <currency-balances ref="currencyBalances" :portfolio-id="portfolio.id" class="currency-balances"></currency-balances>
 
                                                 <v-divider class="margB24"></v-divider>
                                             </template>
@@ -415,6 +415,10 @@ const MainStore = namespace(StoreType.MAIN);
 })
 export class ImportPage extends UI {
 
+    $refs: {
+        currencyBalances: CurrencyBalances
+    };
+
     /** Текст ошибки о дублировании сделки */
     private static readonly DUPLICATE_MSG = "Сделка уже была импортирована ранее";
     /** Ошибка о репо */
@@ -527,6 +531,12 @@ export class ImportPage extends UI {
     }
 
     private async goToFinalStep(): Promise<void> {
+        const result = await this.$refs.currencyBalances.validateResiduals();
+        if (!result) {
+            this.$snotify.warning("Укажите остатки");
+            return;
+        }
+        await this.$refs.currencyBalances.saveOrUpdateCurrentMoney();
         const filled = this.shareAliases.filter(shareAlias => !!shareAlias.share);
         const allFilled = filled.length === this.shareAliases.length;
         if (!allFilled) {
@@ -711,7 +721,8 @@ export class ImportPage extends UI {
         await this.loadImportHistory();
     }
 
-    private goToPortfolio(): void {
+    private async goToPortfolio(): Promise<void> {
+        await this.reloadPortfolio(this.portfolio.id);
         this.$router.push("portfolio");
     }
 
