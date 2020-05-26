@@ -16,11 +16,11 @@
 
 import {Inject} from "typescript-ioc";
 import {Component, namespace, UI} from "../../../app/ui";
-import {StoreType} from "../../../vuex/storeType";
-import {ClientInfo, ClientService} from "../../../services/clientService";
-import {MutationType} from "../../../vuex/mutationType";
 import {ConfirmDialog} from "../../../components/dialogs/confirmDialog";
 import {BtnReturn} from "../../../platform/dialogs/customDialog";
+import {ClientInfo, ClientService} from "../../../services/clientService";
+import {MutationType} from "../../../vuex/mutationType";
+import {StoreType} from "../../../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
 
