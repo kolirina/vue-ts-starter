@@ -415,14 +415,15 @@ const MainStore = namespace(StoreType.MAIN);
 })
 export class ImportPage extends UI {
 
-    $refs: {
-        currencyBalances: CurrencyBalances
-    };
-
     /** Текст ошибки о дублировании сделки */
     private static readonly DUPLICATE_MSG = "Сделка уже была импортирована ранее";
     /** Ошибка о репо */
     private static readonly REPO_TRADE_MSG = "Импорт сделки РЕПО не производится.";
+
+    $refs: {
+        currencyBalances: CurrencyBalances
+    };
+
     /** Максимальный размер загружаемого файла 10 Мб */
     readonly MAX_SIZE = 1024 * 1024 * 10;
     @MainStore.Getter
