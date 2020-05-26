@@ -24,29 +24,35 @@ import {ThemeUtils} from "../utils/ThemeUtils";
 @Component({
     // language=Vue
     template: `
-        <v-btn flat @click="toggleTheme" :title="nightTheme ? 'Выключить Ночную тему' : 'Включить Ночную тему'" class="btn">
-            <v-icon v-if="nightTheme" light>far fa-moon</v-icon>
-            <v-icon v-else light>far fa-lightbulb</v-icon>
-            <span class="ml-2">{{ nightTheme ? 'Темная тема' : 'Светлая тема' }}</span>
-        </v-btn>
+        <div>
+            <v-btn flat @click="setTheme(Theme.NIGHT)" title="Темная тема" class="btn">
+                <v-icon light>far fa-moon</v-icon>
+                <span class="ml-2">Темная тема</span>
+            </v-btn>
+            <v-btn flat @click="setTheme(Theme.DAY)" title="Светлая тема" class="btn">
+                <v-icon light>far fa-lightbulb</v-icon>
+                <span class="ml-2">Светлая темаа</span>
+            </v-btn>
+        </div>
     `
 })
 export class ThemeSwitcher extends UI {
 
     @Inject
     private storage: Storage;
-
     /** Признак темной темы */
-    private nightTheme = false;
+    private theme = Theme.DAY;
+    /** Тема */
+    private Theme = Theme;
 
     created(): void {
-        this.nightTheme = this.storage.get<string>(StoreKeys.THEME, ThemeUtils.detectPrefersColorScheme()) === Theme.NIGHT;
-        ThemeUtils.setStyles(this.nightTheme);
+        this.theme = this.storage.get<Theme>(StoreKeys.THEME, ThemeUtils.detectPrefersColorScheme());
+        ThemeUtils.setStyles(this.theme === Theme.NIGHT);
     }
 
-    private toggleTheme(): void {
-        this.nightTheme = !this.nightTheme;
-        this.storage.set(StoreKeys.THEME, this.nightTheme ? Theme.NIGHT : Theme.DAY);
-        ThemeUtils.setStyles(this.nightTheme);
+    private setTheme(theme: Theme): void {
+        this.theme = theme;
+        this.storage.set(StoreKeys.THEME, theme);
+        ThemeUtils.setStyles(this.theme === Theme.NIGHT);
     }
 }

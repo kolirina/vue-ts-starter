@@ -34,6 +34,10 @@ import {StoreKeys} from "../types/storeKeys";
 import {CommonUtils} from "../utils/commonUtils";
 import {TariffUtils} from "../utils/tariffUtils";
 import {VuexConfiguration} from "../vuex/vuexConfiguration";
+import {ProfileInterfacePage} from "../pages/settings/profile/profileInterfacePage";
+import {ProfileMainPage} from "../pages/settings/profile/profileMainPage";
+import {ProfilePaymentPage} from "../pages/settings/profile/profilePaymentPage";
+import {ProfileSubscriptionPage} from "../pages/settings/profile/profileSubscriptionPage";
 
 Vue.use(VueRouter);
 
@@ -315,6 +319,42 @@ export class RouterConfiguration {
                     title: "Профиль"
                 },
                 component: ProfilePage
+            },
+            {
+                name: "profile-main",
+                path: "/profile/main",
+                meta: {
+                    tariffAllowed: true,
+                    title: "Основные"
+                },
+                component: ProfileMainPage
+            },
+            {
+                name: "profile-interface",
+                path: "/profile/interface",
+                meta: {
+                    tariffAllowed: true,
+                    title: "Интерфейс"
+                },
+                component: ProfileInterfacePage
+            },
+            {
+                name: "profile-payment",
+                path: "/profile/payment",
+                meta: {
+                    tariffAllowed: true,
+                    title: "Способ оплаты"
+                },
+                component: ProfilePaymentPage
+            },
+            {
+                name: "profile-subscription",
+                path: "/profile/subscription",
+                meta: {
+                    tariffAllowed: true,
+                    title: "Подписки"
+                },
+                component: ProfileSubscriptionPage
             },
             {
                 path: "/help",
