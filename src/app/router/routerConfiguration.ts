@@ -20,6 +20,10 @@ import {ExportPage} from "../pages/settings/exportPage";
 import {ImportPage} from "../pages/settings/importPage";
 import {NotificationsPage} from "../pages/settings/notificationsPage";
 import {PortfoliosManagementPage} from "../pages/settings/portfoliosManagementPage";
+import {ProfileInterfacePage} from "../pages/settings/profile/profileInterfacePage";
+import {ProfileMainPage} from "../pages/settings/profile/profileMainPage";
+import {ProfilePaymentPage} from "../pages/settings/profile/profilePaymentPage";
+import {ProfileSubscriptionPage} from "../pages/settings/profile/profileSubscriptionPage";
 import {ProfilePage} from "../pages/settings/profilePage";
 import {PromoCodesPage} from "../pages/settings/promoCodesPage";
 import {SettingsPage} from "../pages/settings/settingsPage";
@@ -34,10 +38,6 @@ import {StoreKeys} from "../types/storeKeys";
 import {CommonUtils} from "../utils/commonUtils";
 import {TariffUtils} from "../utils/tariffUtils";
 import {VuexConfiguration} from "../vuex/vuexConfiguration";
-import {ProfileInterfacePage} from "../pages/settings/profile/profileInterfacePage";
-import {ProfileMainPage} from "../pages/settings/profile/profileMainPage";
-import {ProfilePaymentPage} from "../pages/settings/profile/profilePaymentPage";
-import {ProfileSubscriptionPage} from "../pages/settings/profile/profileSubscriptionPage";
 
 Vue.use(VueRouter);
 
