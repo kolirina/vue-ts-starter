@@ -532,12 +532,14 @@ export class ImportPage extends UI {
     }
 
     private async goToFinalStep(): Promise<void> {
-        const result = await this.$refs.currencyBalances.validateResiduals();
-        if (!result) {
-            this.$snotify.warning("Укажите остатки");
-            return;
+        if (this.importProviderFeatures.confirmMoneyBalance) {
+            const result = await this.$refs.currencyBalances.validateResiduals();
+            if (!result) {
+                this.$snotify.warning("Укажите остатки");
+                return;
+            }
+            await this.$refs.currencyBalances.saveOrUpdateCurrentMoney();
         }
-        await this.$refs.currencyBalances.saveOrUpdateCurrentMoney();
         const filled = this.shareAliases.filter(shareAlias => !!shareAlias.share);
         const allFilled = filled.length === this.shareAliases.length;
         if (!allFilled) {
