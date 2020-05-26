@@ -283,11 +283,15 @@ export class ThemeUtils {
      * Сафари и Ие не поддерживают данный обработчик
      */
     static detectTheme(): void {
-        const browserInfo = CommonUtils.detectBrowser();
-        if (![BROWSER.SAFARY, BROWSER.IE].includes(browserInfo.name as BROWSER)) {
-            window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", e => {
-                ThemeUtils.setStyles(e.matches);
-            });
+        try {
+            const browserInfo = CommonUtils.detectBrowser();
+            if (![BROWSER.SAFARY, BROWSER.IE].includes(browserInfo.name as BROWSER)) {
+                window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", e => {
+                    ThemeUtils.setStyles(e.matches);
+                });
+            }
+        } catch (e) {
+            // mute
         }
     }
 }
