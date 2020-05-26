@@ -62,6 +62,25 @@ export class CurrencyBalances extends UI {
         await this.loadSetCashBalances();
     }
 
+    /**
+     * public method
+     */
+    async validateResiduals(): Promise<boolean> {
+        return this.$validator.validateAll();
+    }
+
+    /**
+     * public method
+     */
+    async saveOrUpdateCurrentMoney(): Promise<void> {
+        await this.overviewService.saveOrUpdateCurrentMoney(this.portfolioId, [
+            {currentMoney: this.currencyRub, currency: Currency.RUB},
+            {currentMoney: this.currencyUsd, currency: Currency.USD},
+            {currentMoney: this.currencyEur, currency: Currency.EUR},
+            {currentMoney: this.currencyGbp, currency: Currency.GBP}
+        ]);
+    }
+
     private async loadSetCashBalances(): Promise<void> {
         this.residuals = await this.portfolioService.getMoneyResiduals(this.portfolioId);
         this.currencyRub = this.numberСonversion(this.residuals.RUB);
