@@ -35,39 +35,43 @@ const MainStore = namespace(StoreType.MAIN);
         <v-container fluid>
             <v-card flat class="header-first-card">
                 <v-card-title class="header-first-card__wrapper-title">
-                    <div class="section-title header-first-card__title-text">Способ оплаты</div>
+                    <div class="section-title header-first-card__title-text">Профиль</div>
                 </v-card-title>
             </v-card>
             <v-layout class="profile" column>
-                <v-layout class="wrapper-payment-info mt-5 margB20" wrap>
-                    <v-card flat class="mr-5">
-                        <span class="profile__subtitle">
-                            Информация по тарифному плану
-                        </span>
-                        <div class="fs13 mt-3">
-                            Тарифный план {{ clientInfo.user.tariff.description }}<br>
-                            {{ expirationDescription }}
+                <div class="profile__header">
+                    <div class="profile__header-title">
+                        <img src="./img/profile/payment-method.svg" alt="">
+                        <div>
+                            <span>Способ оплаты</span>
+                            <div @click="goBack" class="profile__back-btn">Назад</div>
+                        </div>
+                    </div>
+                </div>
+                <v-layout class="wrapper-payment-info margB20" column>
+                    <v-card flat>
+                        <span class="profile__subtitle">Тарифный план</span>
+                        <div class="mt-3">
+                            <div class="wrapper-payment-info__title">{{ clientInfo.user.tariff.description }}</div>
+                            <span class="wrapper-payment-info__description">{{ expirationDescription }}</span>
                         </div>
                     </v-card>
-                    <v-card v-if="hasPaymentInfo" flat>
-                        <span class="profile__subtitle">
-                            Способ оплаты
-                        </span>
-                        <v-layout class="mt-3" wrap>
-                            <v-layout class="mr-4">
+                    <v-card v-if="hasPaymentInfo" class="margT20" flat>
+                        <span class="profile__subtitle">Способ оплаты</span>
+                        <v-layout class="mt-3">
+                            <div class="mr-4">
                                 <v-tooltip content-class="custom-tooltip-wrap payment-card-hint" max-width="280px" bottom nudge-right="60">
                                     <div slot="activator">
                                         <v-layout align-center>
-                                            <div class="fs13">
-                                                **** **** {{ paymentInfo.pan }}
+                                            <div class="wrapper-payment-info__title pan">
+                                                {{ paymentInfo.pan }}
                                             </div>
-                                            <v-icon class="ml-3">done</v-icon>
                                         </v-layout>
-                                        <div class="fs13 payment-card-date">{{ paymentInfo.expDate }}</div>
+                                        <div class="wrapper-payment-info__description">{{ paymentInfo.expDate }}</div>
                                     </div>
                                     <span class="fs13">У вас активировано автоматическое продление подписки, вы можете отменить ее с помощью кнопки "Отвязать карту".</span>
                                 </v-tooltip>
-                            </v-layout>
+                            </div>
                             <v-btn @click.stop="cancelOrderSchedule" class="mt-0" color="#EBEFF7">
                                 Отвязать карту
                             </v-btn>
@@ -105,7 +109,7 @@ export class ProfilePaymentPage extends UI {
         // todo удалить
         this.paymentInfo = {
             expDate: "05/22",
-            pan: "**** **** **** 1234"
+            pan: "1234"
         };
     }
 
@@ -129,6 +133,10 @@ export class ProfilePaymentPage extends UI {
     @ShowProgress
     private async cancelOrderScheduleConfirmed(request: CancelOrderRequest): Promise<void> {
         await this.tariffService.cancelOrderSchedule(request);
+    }
+
+    private goBack(): void {
+        this.$router.push({name: "profile"});
     }
 
     /**

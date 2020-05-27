@@ -35,19 +35,24 @@ const MainStore = namespace(StoreType.MAIN);
         <v-container fluid>
             <v-card flat class="header-first-card">
                 <v-card-title class="header-first-card__wrapper-title">
-                    <div class="section-title header-first-card__title-text">Основные настройки</div>
-                    <v-spacer></v-spacer>
-                    <v-btn @click.stop="changePassword" class="primary">
-                        Сменить пароль
-                    </v-btn>
+                    <div class="section-title header-first-card__title-text">Профиль</div>
                 </v-card-title>
             </v-card>
             <v-layout class="profile" column>
-                <v-card flat>
-                    <div class="fs16 mb-2">
-                        Детали профиля
+                <div class="profile__header">
+                    <div class="profile__header-title">
+                        <img src="./img/profile/main-settings.svg" alt="">
+                        <div>
+                            <span>Основные настройки</span>
+                            <div @click="goBack" class="profile__back-btn">Назад</div>
+                        </div>
                     </div>
-                    <div class="profile__subtitle margT0">Email</div>
+                    <v-btn @click.stop="changePassword" color="#EBEFF7">
+                        Сменить пароль
+                    </v-btn>
+                </div>
+                <v-card flat>
+                    <div class="profile__subtitle margB8 margT0">Email</div>
                     <v-layout align-center justify-start row fill-height wrap>
                         <inplace-input name="email" :value="email" :max-length="120" @input="onEmailChange" class="mr-3 mb-2">
                             <v-tooltip v-if="!clientInfo.user.emailConfirmed" content-class="custom-tooltip-wrap" max-width="250px" slot="afterText" top>
@@ -60,17 +65,17 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-btn>
                     </v-layout>
 
-                    <div class="profile__subtitle mt-2">Имя пользователя</div>
+                    <div class="profile__subtitle margB8 margT12">Имя пользователя</div>
                     <inplace-input name="username" :value="username" :max-length="120" @input="onUserNameChange"></inplace-input>
                 </v-card>
                 <expanded-panel :value="[0]" class="promo-codes__statistics mt-3">
                     <template #header>Удаление аккаунта</template>
                     <v-card flat>
-                        <v-layout wrap>
-                            <div class="fs13 maxW778 mr-4 mt-3">
+                        <v-layout wrap align-center>
+                            <div class="fs13 maxW778 mr-4 mt-2">
                                 Внимание! После удаления аккаунта, вы больше не сможете войти в личный кабинет.
                             </div>
-                            <v-btn @click.stop="deleteProfileAndUnsubscribe" class="mt-3" color="#EBEFF7">
+                            <v-btn @click.stop="deleteProfileAndUnsubscribe" class="mt-2" color="#EBEFF7">
                                 Удалить аккаунт
                             </v-btn>
                         </v-layout>
@@ -186,5 +191,9 @@ export class ProfileMainPage extends UI {
     @ShowProgress
     private async deleteProfileAndUnsubscribeConfirmed(deleteProfileRequest: DeleteProfileRequest): Promise<void> {
         await this.clientService.deleteProfileAndUnsubscribe(deleteProfileRequest);
+    }
+
+    private goBack(): void {
+        this.$router.push({name: "profile"});
     }
 }
