@@ -25,7 +25,7 @@
 
     &:hover {
       background-color: rgba($sidebar-blue-color, 0.06);
-      border-color: rgba($sidebar-blue-color, 0.06);
+      border-color: $sidebar-blue-color;
     }
 
     &__header {
@@ -251,6 +251,18 @@
       color: #9498a1;
     }
   }
+
+  &__subscriptions {
+    align-items: center;
+    margin-top: 16px;
+
+    > div {
+      font-size: 14px;
+      line-height: 18px;
+      max-width: 542px;
+      margin-right: 12px;
+    }
+  }
 }
 .focus-content-input {
   .v-input__append-inner {
@@ -277,5 +289,29 @@
     .v-text-field__details {
       padding-left: 16px !important;
     }
+  }
+}
+
+.theme-switcher {
+  .btn {
+    padding: 0 0 0 32px;
+
+    &:hover:before {background-color: transparent}
+
+    .v-ripple__container {display: none}
+  }
+
+  &__light {
+    background: url("../img/profile/theme-light.svg") no-repeat left center;
+    margin: 0;
+
+    &.active {background-image: url("../img/profile/theme-light-active.svg")}
+  }
+
+  &__dark {
+    background: url("../img/profile/theme-dark.svg") no-repeat left center;
+    margin: 0 32px 0 0;
+
+    &.active {background-image: url("../img/profile/theme-dark-active.svg")}
   }
 }

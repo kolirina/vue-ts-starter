@@ -24,14 +24,12 @@ import {ThemeUtils} from "../utils/ThemeUtils";
 @Component({
     // language=Vue
     template: `
-        <div>
-            <v-btn flat @click="setTheme(Theme.NIGHT)" title="Темная тема" class="btn">
-                <v-icon light>far fa-moon</v-icon>
-                <span class="ml-2">Темная тема</span>
+        <div class="theme-switcher">
+            <v-btn flat @click="setTheme(Theme.NIGHT)" title="Темная тема" :class="{'btn theme-switcher__dark': true, 'active': theme === Theme.NIGHT}">
+                <span>Темная тема</span>
             </v-btn>
-            <v-btn flat @click="setTheme(Theme.DAY)" title="Светлая тема" class="btn">
-                <v-icon light>far fa-lightbulb</v-icon>
-                <span class="ml-2">Светлая темаа</span>
+            <v-btn flat @click="setTheme(Theme.DAY)" title="Светлая тема" :class="{'btn theme-switcher__light': true, 'active': theme === Theme.DAY}">
+                <span>Светлая тема</span>
             </v-btn>
         </div>
     `

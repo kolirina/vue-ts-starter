@@ -30,28 +30,37 @@ const MainStore = namespace(StoreType.MAIN);
         <v-container fluid>
             <v-card flat class="header-first-card">
                 <v-card-title class="header-first-card__wrapper-title">
-                    <div class="section-title header-first-card__title-text">Подписки</div>
+                    <div class="section-title header-first-card__title-text">Профиль</div>
                 </v-card-title>
             </v-card>
             <v-layout class="profile" column>
-                <v-layout wrap align-center>
-                    <v-card flat>
-                        <span class="profile__subtitle">
-                            Информационная рассылка
-                        </span>
-                        <v-layout wrap>
-                            <div v-if="clientInfo.user.unsubscribed" class="fs13 maxW778 mr-4 mt-3">
-                                Вы не подписаны на нашу рассылку. Вы не будете получать сообщения о новых возможностях, акциях и других важных новостях сервиса.
-                            </div>
-                            <div v-else class="fs13 maxW778 mr-4 mt-3">
-                                Вы подписаны на нашу рассылку. Вы будете получать сообщения о новых возможностях, акциях и других важных новостях сервиса.
-                            </div>
-                            <v-btn @click.stop="changeMailSubscription" class="mt-3" color="#EBEFF7">
-                                {{ clientInfo.user.unsubscribed ? 'Подписаться' : 'Отписаться'}}
-                            </v-btn>
-                        </v-layout>
-                    </v-card>
-                </v-layout>
+                <div class="profile__header">
+                    <div class="profile__header-title">
+                        <img src="./img/profile/subscriptions.svg" alt="">
+                        <div>
+                            <span>Подписки</span>
+                            <div @click="goBack" class="profile__back-btn">Назад</div>
+                        </div>
+                    </div>
+                </div>
+                <v-card flat>
+                    <span class="profile__subtitle">
+                        Информационная рассылка
+                    </span>
+                    <v-layout class="profile__subscriptions" wrap>
+                        <div v-if="clientInfo.user.unsubscribed">
+                            Вы не подписаны на нашу информационную рассылку.
+                            Вы не будете получать сообщения о новых возможностях, акциях и других важных новостях сервиса.
+                        </div>
+                        <div v-else>
+                            Вы подписаны на нашу информационную рассылку.
+                            Вы будете получать сообщения о новых возможностях, акциях и других важных новостях сервиса.
+                        </div>
+                        <v-btn @click.stop="changeMailSubscription" color="#EBEFF7">
+                            {{ clientInfo.user.unsubscribed ? 'Подписаться' : 'Отписаться'}}
+                        </v-btn>
+                    </v-layout>
+                </v-card>
             </v-layout>
         </v-container>
     `
@@ -83,5 +92,9 @@ export class ProfileSubscriptionPage extends UI {
         }
         this.clientService.resetClientInfo();
         await this.reloadUser();
+    }
+
+    private goBack(): void {
+        this.$router.push({name: "profile"});
     }
 }

@@ -30,11 +30,20 @@ const MainStore = namespace(StoreType.MAIN);
         <v-container fluid>
             <v-card flat class="header-first-card">
                 <v-card-title class="header-first-card__wrapper-title">
-                    <div class="section-title header-first-card__title-text">Настройки интерфейса</div>
+                    <div class="section-title header-first-card__title-text">Профиль</div>
                 </v-card-title>
             </v-card>
             <v-layout class="profile" column>
-                <v-layout wrap align-center class="mt-3">
+                <div class="profile__header">
+                    <div class="profile__header-title">
+                        <img src="./img/profile/interface-settings.svg" alt="">
+                        <div>
+                            <span>Настройки интерфейса</span>
+                            <div @click="goBack" class="profile__back-btn">Назад</div>
+                        </div>
+                    </div>
+                </div>
+                <v-layout wrap align-center class="margB24">
                     <v-card flat>
                         <span class="profile__subtitle">
                             Настройки темы интерфейса
@@ -46,24 +55,24 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-layout>
                     </v-card>
                 </v-layout>
-                <expanded-panel :value="widgetPanel" class="promo-codes__statistics mt-3">
-                    <template #header>Виджет помощи</template>
-                    <v-card flat @click.stop>
-                        <v-layout wrap @click.stop>
-                            <v-switch v-model="clientInfo.user.needShowHelpDeskWidget" @change="onShowHelpDeskWidgetChange" class="ml-3">
-                                <template #label>
-                                    <span>Отображать виджет помощи</span>
-                                    <v-tooltip content-class="custom-tooltip-wrap" bottom>
-                                        <sup class="custom-tooltip" slot="activator">
-                                            <v-icon>fas fa-info-circle</v-icon>
-                                        </sup>
-                                        <span>Скрывает виджет помощи в правом нижнем углу.</span>
-                                    </v-tooltip>
-                                </template>
-                            </v-switch>
-                        </v-layout>
-                    </v-card>
-                </expanded-panel>
+                <div>
+                    <span class="profile__subtitle">
+                        Виджет помощи
+                        <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                            <sup class="custom-tooltip" slot="activator">
+                                <v-icon>fas fa-info-circle</v-icon>
+                            </sup>
+                            <span>Скрывает виджет помощи в правом нижнем углу.</span>
+                        </v-tooltip>
+                    </span>
+                    <v-layout wrap @click.stop>
+                        <v-switch v-model="clientInfo.user.needShowHelpDeskWidget" @change="onShowHelpDeskWidgetChange">
+                            <template #label>
+                                <span>Отображать виджет помощи</span>
+                            </template>
+                        </v-switch>
+                    </v-layout>
+                </div>
             </v-layout>
         </v-container>
     `,
@@ -86,5 +95,9 @@ export class ProfileInterfacePage extends UI {
     private async onShowHelpDeskWidgetChange(): Promise<void> {
         await this.clientService.setNeedShowHelpDeskWidget(this.clientInfo.user.needShowHelpDeskWidget);
         HelpDeskUtils.toggleWidget(this.clientInfo.user.needShowHelpDeskWidget, this.clientInfo.user);
+    }
+
+    private goBack(): void {
+        this.$router.push({name: "profile"});
     }
 }
