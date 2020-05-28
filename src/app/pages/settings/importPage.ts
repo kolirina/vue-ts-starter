@@ -499,6 +499,7 @@ export class ImportPage extends UI {
         const result = await new ConfirmDialog().show("Вы собираетесь откатить импорт, это приведет к удалению информации о нем из портфеля");
         if (result === BtnReturn.YES) {
             await this.revertImportConfirmed(userImportId);
+            await this.reloadPortfolio(this.portfolio.id);
             this.$snotify.info("Результаты импорта были успешно отменены");
         }
     }
@@ -657,7 +658,7 @@ export class ImportPage extends UI {
     @ShowProgress
     private async importReport(): Promise<ImportResponse> {
         const results = await this.importService.importReport(this.selectedProvider.code, this.portfolio.id, this.files,
-            {...this.importProviderFeatures, autoEvents: this.autoEvents});
+            {...this.importProviderFeatures, autoEvents: this.showImportSettings ? this.autoEvents : this.importProviderFeatures.autoEvents});
         if (results.length > 1) {
             const hasErrorStatus = results.some(result => result.status === Status.ERROR);
             const hasWarnStatus = results.some(result => result.status === Status.WARN);
