@@ -147,7 +147,7 @@ export class ThemeUtils {
     .v-tooltip__content.menu-icons, .hint-text-for-setings,
     .intel-invest-instruction__title, .intel-invest-instruction__format-text, .intel-invest-instruction__title-values,
     .intel-invest-instruction__values, .intel-invest-instruction__template-requirements, .import-instructions, .import-default-text .tooltip-text,
-    .snotifyToast__body, .info-share-page__empty, .import-dialog-wrapper__title-text, .fs18, .fs36,
+    .snotifyToast__body, .info-share-page__empty, .import-dialog-wrapper__title-text, .fs18, .fs36, .import-default-text,
     .snotifyToast__buttons button, .update-service-dialog__content,
     .custom-v-menu .v-menu-content, .section-title,
     .v-date-picker-years, .empty-station__description {color: #fff}
@@ -250,6 +250,7 @@ export class ThemeUtils {
     .content-loader stop {stop-color: #2c3040}
 
     .sing-in-wrap .paired-section__right-section {background-image: url(../img/sign_in/bg-dark.svg)}
+    .wrapper-payment-info__title.pan {background-image: url(../img/profile/done-light.svg) !important}
 
     .v-input input::-webkit-input-placeholder {color: #cfd0d4 !important}
     .v-input input::-ms-input-placeholder {color: #cfd0d4 !important}

@@ -58,7 +58,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-card>
                     <v-card v-if="hasPaymentInfo" class="margT20" flat>
                         <span class="profile__subtitle">Способ оплаты</span>
-                        <v-layout class="mt-3">
+                        <v-layout class="profile__payment-method mt-3">
                             <div class="mr-4">
                                 <v-tooltip content-class="custom-tooltip-wrap payment-card-hint" max-width="280px" bottom nudge-right="60">
                                     <div slot="activator">

@@ -202,6 +202,12 @@
     }
   }
 
+  .inplace-custom-input {
+    max-width: 492px;
+
+    input {min-width: 380px}
+  }
+
   .inplace-input-field,
   .inplace-out {
     max-width: 232px;
@@ -242,6 +248,7 @@
           content: "···· ···· ····";
           font-size: 1.6em;
           margin-right: 8px;
+          white-space: nowrap;
         }
       }
     }
@@ -262,6 +269,42 @@
       max-width: 542px;
       margin-right: 12px;
     }
+  }
+
+
+  @media only screen and (max-width: $sm-breakpoint) {
+    padding: 16px;
+
+    &__header {
+      display: block;
+
+      .v-btn {margin-top: 16px !important;}
+    }
+
+    &-item {
+      width: 100%;
+
+      &:nth-child(odd) {margin-right: 0}
+    }
+
+    &__subscriptions {
+      flex-direction: column;
+      align-items: flex-start;
+
+      .v-btn {margin-top: 16px !important;}
+    }
+
+    &__payment-method {
+     display: block;
+
+      .v-btn {margin-top: 16px !important;}
+    }
+
+    .inplace-custom-input input {min-width: auto}
+  }
+
+  @media only screen and (max-width: $xs-breakpoint) {
+    .inplace-custom-input {margin-right: 0 !important;}
   }
 }
 .focus-content-input {
