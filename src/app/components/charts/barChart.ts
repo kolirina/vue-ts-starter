@@ -1,22 +1,21 @@
-import Highcharts, {ChartObject} from "highcharts";
-import Component from "vue-class-component";
-import {Prop, Watch} from "vue-property-decorator";
-import {UI} from "../../app/ui";
+import {ChartObject} from "highcharts";
+import {Component, Prop, UI, Watch} from "../../app/ui";
+import {ColumnChartData, PieChartTooltipFormat} from "../../types/charts/types";
+import {ChartUtils} from "../../utils/chartUtils";
 
 @Component({
     // language=Vue
     template: `
         <div>
-            <v-container grid-list-md text-xs-center v-if="!chart">
+            <v-container v-if="!chart" grid-list-md text-xs-center>
                 <v-layout row wrap>
                     <v-flex xs12>
-                        <v-progress-circular :size="70" :width="7" indeterminate
-                                             color="indigo"></v-progress-circular>
+                        <v-progress-circular :size="70" :width="7" indeterminate color="indigo"></v-progress-circular>
                     </v-flex>
                 </v-layout>
             </v-container>
 
-            <div v-show="chart" ref="container" style="min-width: 500px; width: 100%; height: 500px; margin: 0 auto"></div>
+            <div v-show="chart" ref="container" :style="style"></div>
         </div>
     `
 })
@@ -25,26 +24,25 @@ export class BarChart extends UI {
     $refs: {
         container: HTMLElement
     };
-
+    /** Объект графика */
+    chart: ChartObject = null;
+    /** Валюта просмотра. Может быть не указана, тогда будет браться значения из данных о точке */
+    @Prop({required: false, default: null, type: String})
+    private viewCurrency: string;
+    /** Формат тултипа. Пол умолчанию для типов Акции, Облигации, Сектора */
+    @Prop({default: "COMMON", type: String})
+    private tooltipFormat: string;
+    /** Заголовок */
     @Prop({default: "", type: String})
     private title: string;
-
+    /** Подпись к легенде */
     @Prop({default: "", type: String})
-    private seriesName: string;
-
-    @Prop({default: "", type: String})
-    private tooltipValueSuffix: string;
-
-    @Prop({default: "", type: String})
-    private balloonTitle: string;
-
-    @Prop()
-    private data: any[];
-
-    @Prop()
-    private categoryNames: string[];
-
-    private chart: ChartObject = null;
+    private legend: string;
+    /** Данные */
+    @Prop({required: true})
+    private data: ColumnChartData;
+    /** Стили */
+    private style: string = "";
 
     async mounted(): Promise<void> {
         await this.draw();
@@ -56,34 +54,16 @@ export class BarChart extends UI {
     }
 
     private async draw(): Promise<void> {
-        this.chart = Highcharts.chart(this.$refs.container, {
-            chart: {
-                type: "column",
-                backgroundColor: null
-            },
-            title: {
-                text: ""
-            },
-            plotOptions: {},
-            xAxis: {
-                categories: this.categoryNames,
-                crosshair: true,
-                gridLineWidth: 1
-            },
-            yAxis: {
-                min: 0,
-                title: {
-                    text: ""
-                }
-            },
-            exporting: {
-                enabled: false
-            },
-            series: [{
-                data: this.data,
-                name: "Дивиденд",
-                color: "#03A9F4"
-            }]
-        });
+        this.style = this.getStyles();
+        await this.$nextTick();
+        this.chart = ChartUtils.drawBarChart(this.$refs.container, this.data, this.title, this.viewCurrency, this.tooltipFormat as PieChartTooltipFormat);
+    }
+
+    private get height(): number {
+        return this.data.categoryNames.length < 16 ? 400 : this.data.categoryNames.length * 25;
+    }
+
+    private getStyles(): string {
+        return `min-width: 500px; width: 100%; height: ${this.height}px; margin: 0 auto`;
     }
 }

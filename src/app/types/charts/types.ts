@@ -2,8 +2,8 @@ import {DataPoint} from "highcharts";
 import {Enum, EnumType, IStaticEnum} from "../../platform/enum";
 
 export interface CustomDataPoint extends DataPoint {
-    profit: string;
-    currencySymbol: string;
+    profit?: string;
+    currencySymbol?: string;
 }
 
 export interface YieldCompareData {
@@ -97,7 +97,7 @@ export type SectorChartData = {
 /** Данные для столбчатого графика */
 export type ColumnDataSeries = {
     name: string,
-    data: number[],
+    data: CustomDataPoint[],
     color?: string,
     yAxis?: number,
 };

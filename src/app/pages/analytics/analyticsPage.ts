@@ -14,7 +14,7 @@ import {AnalyticsService} from "../../services/analyticsService";
 import {ClientInfo, ClientService} from "../../services/clientService";
 import {PortfolioAccountType, PortfolioService} from "../../services/portfolioService";
 import {BigMoney} from "../../types/bigMoney";
-import {ChartType, CustomDataPoint, SimpleChartData, YieldCompareData} from "../../types/charts/types";
+import {ChartType, ColumnChartData, CustomDataPoint, SimpleChartData, YieldCompareData} from "../../types/charts/types";
 import {EventType} from "../../types/eventType";
 import {Portfolio} from "../../types/types";
 import {ChartUtils} from "../../utils/chartUtils";
@@ -86,8 +86,8 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-layout>
             </expanded-panel>
 
-            <expanded-panel v-if="yieldContributorsChartData.length" :value="$uistate.yieldContributorsChart" :state="$uistate.YIELD_CONTRIBUTORS_CHART_PANEL"
-                            custom-menu class="mt-3">
+            <expanded-panel v-if="yieldContributorsChartData && yieldContributorsChartData.categoryNames.length" :value="$uistate.yieldContributorsChart"
+                            :state="$uistate.YIELD_CONTRIBUTORS_CHART_PANEL" custom-menu class="mt-3">
                 <template #header>
                     Эффективность бумаг в портфеле
                     <v-tooltip content-class="custom-tooltip-wrap" bottom>
@@ -104,8 +104,8 @@ const MainStore = namespace(StoreType.MAIN);
                                        class="exp-panel-menu"></chart-export-menu>
                 </template>
                 <v-card-text>
-                    <pie-chart :ref="ChartType.YIELD_CONTRIBUTORS_CHART" :data="yieldContributorsChartData" :view-currency="viewCurrency"
-                               balloon-title="Эффективность бумаг в портфеле" tooltip-format="YIELDS" v-tariff-expired-hint></pie-chart>
+                    <bar-chart :ref="ChartType.YIELD_CONTRIBUTORS_CHART" :data="yieldContributorsChartData" :view-currency="viewCurrency"
+                               tooltip-format="YIELDS" v-tariff-expired-hint></bar-chart>
                 </v-card-text>
             </expanded-panel>
 
@@ -208,7 +208,7 @@ export class AnalyticsPage extends UI {
     /** Всего внесений в текущем году */
     private totalDepositInCurrentYear: BigMoney = null;
     /** Данные для диаграммы эффективности бумаг */
-    private yieldContributorsChartData: CustomDataPoint[] = [];
+    private yieldContributorsChartData: ColumnChartData = null;
     /** Данные для диаграммы эффективности бумаг */
     private wholePortfolioSharesAllocationChartData: CustomDataPoint[] = [];
     /** Типы круговых диаграмм */
@@ -260,7 +260,7 @@ export class AnalyticsPage extends UI {
         return this.totalDepositInCurrentYear.amount.div(new Decimal("10000")).toDP(2, Decimal.ROUND_HALF_UP).toNumber();
     }
 
-    private doYieldContributorsChartData(): CustomDataPoint[] {
+    private doYieldContributorsChartData(): ColumnChartData {
         return ChartUtils.doYieldContributorsPieChartData(this.portfolio.overview, this.viewCurrency);
     }
 

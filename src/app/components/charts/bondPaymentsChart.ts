@@ -34,8 +34,6 @@ export class BondPaymentsChart extends UI {
     @Prop({required: true})
     private data: ColumnChartData;
 
-    private categoryNames: string[] = [];
-
     async mounted(): Promise<void> {
         await this.draw();
     }
