@@ -20,6 +20,10 @@ import {ExportPage} from "../pages/settings/exportPage";
 import {ImportPage} from "../pages/settings/importPage";
 import {NotificationsPage} from "../pages/settings/notificationsPage";
 import {PortfoliosManagementPage} from "../pages/settings/portfoliosManagementPage";
+import {ProfileInterfacePage} from "../pages/settings/profile/profileInterfacePage";
+import {ProfileMainPage} from "../pages/settings/profile/profileMainPage";
+import {ProfilePaymentPage} from "../pages/settings/profile/profilePaymentPage";
+import {ProfileSubscriptionPage} from "../pages/settings/profile/profileSubscriptionPage";
 import {ProfilePage} from "../pages/settings/profilePage";
 import {PromoCodesPage} from "../pages/settings/promoCodesPage";
 import {SettingsPage} from "../pages/settings/settingsPage";
@@ -315,6 +319,42 @@ export class RouterConfiguration {
                     title: "Профиль"
                 },
                 component: ProfilePage
+            },
+            {
+                name: "profile-main",
+                path: "/profile/main",
+                meta: {
+                    tariffAllowed: true,
+                    title: "Основные"
+                },
+                component: ProfileMainPage
+            },
+            {
+                name: "profile-interface",
+                path: "/profile/interface",
+                meta: {
+                    tariffAllowed: true,
+                    title: "Интерфейс"
+                },
+                component: ProfileInterfacePage
+            },
+            {
+                name: "profile-payment",
+                path: "/profile/payment",
+                meta: {
+                    tariffAllowed: true,
+                    title: "Способ оплаты"
+                },
+                component: ProfilePaymentPage
+            },
+            {
+                name: "profile-subscription",
+                path: "/profile/subscription",
+                meta: {
+                    tariffAllowed: true,
+                    title: "Подписки"
+                },
+                component: ProfileSubscriptionPage
             },
             {
                 path: "/help",
