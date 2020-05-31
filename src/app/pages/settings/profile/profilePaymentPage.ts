@@ -106,11 +106,6 @@ export class ProfilePaymentPage extends UI {
         if (![Tariff.FREE, Tariff.TRIAL].includes(this.clientInfo.user.tariff)) {
             this.paymentInfo = await this.tariffService.getPaymentInfo();
         }
-        // todo удалить
-        this.paymentInfo = {
-            expDate: "05/22",
-            pan: "1234"
-        };
     }
 
     /**
