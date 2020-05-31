@@ -723,7 +723,7 @@ export class ChartUtils {
                     fontSize: "12px",
                 },
                 events: {
-                    load: function() {
+                    load: function(): void {
                         // @ts-ignore
                         const chart: ChartObject = this;
                         const ex = chart.yAxis[0].getExtremes();
@@ -759,7 +759,7 @@ export class ChartUtils {
                         // set the min and max and return the values
                         chart.yAxis[0].setExtremes(-setVal, setVal, true, false);
                     },
-                    redraw: function() {
+                    redraw: function(): void {
                         // @ts-ignore
                         const chart: ChartObject = this;
                         chart.series.filter(series => series.type === "bar" && series.visible).forEach(series => {
