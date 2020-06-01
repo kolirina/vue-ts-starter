@@ -45,12 +45,15 @@
   }
 
   &-list-tile {
-    & > a {
-      flex-direction: column;
-    }
     .v-list__tile__title {
       font-weight: bold;
       font-size: 14px;
+    }
+
+    &__icon {
+      @extend %portfolio-switcher-icon;
+      margin-right: 16px;
+      flex: none;
     }
   }
 
