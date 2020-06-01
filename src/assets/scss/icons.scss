@@ -159,7 +159,11 @@
 .portfolio-switcher-icon {
   @extend .icon;
   background: url('../img/sidebar/case.svg') no-repeat center;
-  background-size: 27px !important;
+  background-size: 27px 27px !important;
+  background-color: rgba(255, 255, 255, 0.3) !important;
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
 }
 
 .logo-sign-in {
