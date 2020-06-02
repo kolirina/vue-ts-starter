@@ -114,9 +114,4 @@ export class PortfolioSwitcher extends UI {
     private get brokerDescription(): string {
         return this.broker ? this.broker.description : "";
     }
-
-    private getBrokerInfo(portfolioParams: PortfolioParams): DealsImportProvider {
-        const provider = DealsImportProvider.valueById(this.selected.brokerId);
-        return provider || {code: "", description: ""} as DealsImportProvider;
-    }
 }
