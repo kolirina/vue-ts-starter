@@ -35,12 +35,15 @@ const MainStore = namespace(StoreType.MAIN);
                     <v-list class="portfolios-list">
                         <v-list-tile v-for="(portfolio, index) in clientInfo.user.portfolios" class="portfolios-list-tile" :key="index"
                                      @click="onSelect(portfolio)">
-                            <v-list-tile-title class="ellipsis">{{ portfolio.name }}</v-list-tile-title>
-                            <v-layout align-center class="portfolios-list-icons">
-                                <i :class="portfolio.viewCurrency.toLowerCase()" title="Валюта"></i>
-                                <i v-if="portfolio.access" class="public-portfolio-icon" title="Публичный"></i>
-                                <i v-if="portfolio.professionalMode" class="professional-mode-icon" title="Профессиональный режим"></i>
-                            </v-layout>
+                            <div :class="['portfolios-list-tile__icon', getBrokerIconClass(portfolio.brokerId)]"></div>
+                            <div>
+                                <v-list-tile-title class="ellipsis">{{ portfolio.name }}</v-list-tile-title>
+                                <v-layout align-center class="portfolios-list-icons">
+                                    <i :class="portfolio.viewCurrency.toLowerCase()" title="Валюта"></i>
+                                    <i v-if="portfolio.access" class="public-portfolio-icon" title="Публичный"></i>
+                                    <i v-if="portfolio.professionalMode" class="professional-mode-icon" title="Профессиональный режим"></i>
+                                </v-layout>
+                            </div>
                         </v-list-tile>
                     </v-list>
                 </v-menu>
@@ -94,6 +97,11 @@ export class PortfolioSwitcher extends UI {
         return portfolio;
     }
 
+    private getBrokerIconClass(brokerId: number): string {
+        const provider = DealsImportProvider.valueById(brokerId);
+        return provider ? provider.code.toLowerCase() : "";
+    }
+
     private get broker(): DealsImportProvider {
         const provider = DealsImportProvider.valueById(this.selected.brokerId);
         return provider ? provider : null;
@@ -105,10 +113,5 @@ export class PortfolioSwitcher extends UI {
 
     private get brokerDescription(): string {
         return this.broker ? this.broker.description : "";
-    }
-
-    private getBrokerInfo(portfolioParams: PortfolioParams): DealsImportProvider {
-        const provider = DealsImportProvider.valueById(this.selected.brokerId);
-        return provider || {code: "", description: ""} as DealsImportProvider;
     }
 }
