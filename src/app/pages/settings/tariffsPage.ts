@@ -360,6 +360,22 @@ export class TariffBlock extends UI {
                     <span>Получите бесплатный месяц подписки.</span>
                     <a @click="$router.push({name: 'promo-codes'})">Подробнее</a>
                 </div>
+                <div class="payment-system">
+                    <div class="payment-system__text">
+                        Интернет-платежи защищены сертификатом SSLи протоколом 3D Secure.<br>
+                        АО “Тинькофф Банк” не передает магазинам платежные данные, в том числе данные карты.
+                    </div>
+                    <div class="payment-system__items">
+                        <img src="./img/tariffs/payment-system/visa.svg" alt="">
+                        <img src="./img/tariffs/payment-system/mastercard.svg" alt="">
+                        <img src="./img/tariffs/payment-system/maestro.svg" alt="">
+                        <img src="./img/tariffs/payment-system/verified.svg" alt="">
+                        <img src="./img/tariffs/payment-system/mastercard-secure.svg" alt="">
+                        <img src="./img/tariffs/payment-system/mir.svg" alt="">
+                        <img src="./img/tariffs/payment-system/mir-accept.svg" alt="">
+                        <img src="./img/tariffs/payment-system/pci.svg" alt="">
+                    </div>
+                </div>
             </v-card>
         </v-container>
     `,
