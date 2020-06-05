@@ -504,7 +504,7 @@ export class EventsPage extends UI {
                 amountPerShare: event.amountPerShare,
                 quantity: event.share?.shareType === ShareType.BOND ? new Decimal(event.quantity).abs().toString() : event.quantity,
                 eventPeriod: event.period,
-                eventDate: event.date,
+                eventDate: DateUtils.currentDate(),
                 note: TradeUtils.eventNote(event),
                 perOne: false,
             },
