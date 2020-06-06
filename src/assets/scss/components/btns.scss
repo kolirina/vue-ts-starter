@@ -101,7 +101,20 @@
 }
 
 .v-btn__content {
-  line-height: 1
+  line-height: 1;
+
+  // Иконки
+  .v-icon {
+    &.v-icon--left {margin-right: 12px}
+
+    &.icon-import-history {
+      background: url("../img/import/import-history.svg") no-repeat center;
+    }
+
+    &.icon-edit-broker {
+      background: url("../img/import/icon-edit.svg") no-repeat center;
+    }
+  }
 }
 
 .v-card__actions {

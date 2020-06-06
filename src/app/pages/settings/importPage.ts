@@ -81,10 +81,10 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-card>
 
                     <!-- Брокер выбран -->
-                    <v-card v-if="selectedProvider" flat class="import-wrapper">
+                    <v-card v-if="selectedProvider && !showImportHistory" flat class="import-wrapper">
                         <v-card-text class="import-wrapper-content">
                             <div class="provider__info">
-                                <div>
+                                <div class="margRAuto">
                                     <!-- Иконка брокера и меню Изменить брокера -->
                                     <div class="provider">
                                         <div :class="['provider__image', selectedProvider.code.toLowerCase()]"></div>
@@ -94,7 +94,11 @@ const MainStore = namespace(StoreType.MAIN);
                                         </div>
                                     </div>
                                 </div>
-                                <broker-switcher @selectProvider="onSelectProvider($event)"></broker-switcher>
+                                <broker-switcher @selectProvider="onSelectProvider($event)" :class="{'margR12': importHistory.length}"></broker-switcher>
+                                <v-btn v-if="importHistory.length" @click="showImportHistory = !showImportHistory" color="#EBEFF7">
+                                    <v-icon left>icon-import-history</v-icon>
+                                    История импорта
+                                </v-btn>
                             </div>
                             <v-stepper v-model="currentStep" class="provider__stepper">
                                 <v-stepper-header>
@@ -106,35 +110,9 @@ const MainStore = namespace(StoreType.MAIN);
                                 <v-stepper-items>
                                     <v-stepper-content step="1">
                                         <!-- История импорта -->
-                                        <div v-if="providerAllowedExtensions" :class="{'attachments__allowed-extensions': true, 'withoutImportHistory': !importHistory.length}">
+                                        <div v-if="providerAllowedExtensions" class="attachments__allowed-extensions">
                                             Допустимые расширения файлов: <span>{{ providerAllowedExtensions }}</span>
                                         </div>
-                                        <expanded-panel v-if="importHistory.length" class="import-history">
-                                            <template #header>История импорта</template>
-                                            <div v-for="userImport in importHistory" :key="userImport.id" class="import-history-block">
-                                                <div :class="[{'import-history-block__header': true, 'withoutBorder': userImport.status === 'SUCCESS'}]">
-                                                    <span class="import-history-block__name">{{ userImport.fileName }}</span>
-                                                    <span class="import-history-block__date">{{ userImport.date }}</span>
-                                                    <span v-if="userImport.savedTradesCount" class="import-history-block__description">
-                                                    {{ userImport.savedTradesCount | declension("Добавлена", "Добавлено", "Добавлено") }}
-                                                    {{ userImport.savedTradesCount }} {{ userImport.savedTradesCount | declension("сделка", "сделки", "сделок") }}
-                                                    </span>
-                                                    <span :class="['import-history-block__status', userImport.status.toLowerCase()]">
-                                                        {{ userImport.status === Status.ERROR ? 'Ошибка' : userImport.status === Status.WARN ? 'С замечаниями' : 'Успешно' }}
-                                                    </span>
-                                                    <span v-if="userImport.state !== 'REVERTED'" @click.stop="revertImport(userImport.id)"
-                                                          class="import-history-block__delete"></span>
-                                                </div>
-                                                <div class="import-history-block__body">
-                                                    <div v-if="userImport.generalError">{{ userImport.generalError }}</div>
-                                                    <expanded-panel v-if="userImport.data && userImport.data.length" class="selectable">
-                                                        <template #header>Ошибки импорта</template>
-                                                        <import-errors-table :error-items="userImport.data"></import-errors-table>
-                                                    </expanded-panel>
-                                                </div>
-                                            </div>
-                                        </expanded-panel>
-
                                         <div v-if="!files.length && importProviderFeatures" class="attachments">
                                             <file-drop-area @drop="onFileAdd($event)" class="attachments-file-drop">
                                                 <div v-if="selectedProvider" class="attachments-file-drop__content">
@@ -401,6 +379,41 @@ const MainStore = namespace(StoreType.MAIN);
                             </v-stepper>
                         </v-card-text>
                     </v-card>
+                    <v-card v-if="showImportHistory" flat class="import-wrapper">
+                        <div class="card__header">
+                            <div class="card__header-title">
+                                <img src="./img/import/import-icon.svg" alt="">
+                                <div>
+                                    <span>История импорта</span>
+                                    <div @click="showImportHistory = !showImportHistory" class="back-btn">Назад</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div v-if="importHistory.length" class="import-history">
+                            <div v-for="userImport in importHistory" :key="userImport.id" class="import-history-block">
+                                <div :class="[{'import-history-block__header': true, 'withoutBorder': userImport.status === 'SUCCESS'}]">
+                                    <span class="import-history-block__name">{{ userImport.fileName }}</span>
+                                    <span class="import-history-block__date">{{ userImport.date }}</span>
+                                    <span v-if="userImport.savedTradesCount" class="import-history-block__description">
+                                                    {{ userImport.savedTradesCount | declension("Добавлена", "Добавлено", "Добавлено") }}
+                                                    {{ userImport.savedTradesCount }} {{ userImport.savedTradesCount | declension("сделка", "сделки", "сделок") }}
+                                                    </span>
+                                    <span :class="['import-history-block__status', userImport.status.toLowerCase()]">
+                                                        {{ userImport.status === Status.ERROR ? 'Ошибка' : userImport.status === Status.WARN ? 'С замечаниями' : 'Успешно' }}
+                                                    </span>
+                                    <span v-if="userImport.state !== 'REVERTED'" @click.stop="revertImport(userImport.id)"
+                                          class="import-history-block__delete"></span>
+                                </div>
+                                <div class="import-history-block__body">
+                                    <div v-if="userImport.generalError">{{ userImport.generalError }}</div>
+                                    <expanded-panel v-if="userImport.data && userImport.data.length" class="selectable">
+                                        <template #header>Ошибки импорта</template>
+                                        <import-errors-table :error-items="userImport.data"></import-errors-table>
+                                    </expanded-panel>
+                                </div>
+                            </div>
+                        </div>
+                    </v-card>
                 </v-container>
             </template>
             <template v-else>
@@ -477,6 +490,8 @@ export class ImportPage extends UI {
     private autoEvents = true;
     /** Признак инициализации */
     private initialized = false;
+    /** Признак отображения истории импорта */
+    private showImportHistory = false;
 
     /**
      * Инициализирует необходимые для работы данные
