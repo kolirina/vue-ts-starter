@@ -362,8 +362,9 @@ export class TariffBlock extends UI {
                 </div>
                 <div class="payment-system">
                     <div class="payment-system__text">
-                        Интернет-платежи защищены сертификатом SSLи протоколом 3D Secure.<br>
-                        АО “Тинькофф Банк” не передает магазинам платежные данные, в том числе данные карты.
+                        Интернет-платежи защищены сертификатом SSL и протоколом 3D Secure.<br>
+                        АО "Тинькофф Банк" не передает платежные данные, в том числе данные карт.<br>
+                        Intelinvest не хранит платежные данные и данные карт.
                     </div>
                     <div class="payment-system__items">
                         <img src="./img/tariffs/payment-system/visa.svg" alt="">
