@@ -107,6 +107,14 @@ export class DealsImportProvider extends (EnumType as IStaticEnum<DealsImportPro
     private constructor(public code: string, public description: string, public id: number, public allowedExtensions: string[]) {
         super();
     }
+
+    /**
+     * Возвращает провайдера по идентификатору брокера
+     * @param brokerId
+     */
+    static valueById(brokerId: number): DealsImportProvider {
+        return DealsImportProvider.values().find(item => item.id === brokerId);
+    }
 }
 
 export interface ImportResponse {

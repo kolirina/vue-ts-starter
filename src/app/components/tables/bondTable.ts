@@ -221,19 +221,19 @@ const MainStore = namespace(StoreType.MAIN);
                     <tr>
                         <td>
                             <div class="ext-info__item">
-                                Прибыль от купонов {{ props.item.profitFromCoupons | amount }} <span>{{ portfolioCurrency }}</span><br>
+                                Прибыль от купонов {{ props.item.profitFromCoupons | amount(true, 2, true, true) }} <span>{{ portfolioCurrency }}</span><br>
                                 Прибыль от купонов {{ props.item.profitFromCouponsPercent | number }} <span>%</span><br>
                             </div>
                         </td>
                         <td>
                             <div class="ext-info__item">
-                                Прибыль по сделкам {{ props.item.exchangeProfit | amount(true) }} <span>{{ portfolioCurrency }}</span><br>
+                                Прибыль по сделкам {{ props.item.exchangeProfit | amount(true, 2, true, true) }} <span>{{ portfolioCurrency }}</span><br>
                                 Прибыль по сделкам {{ props.item.exchangeProfitPercent | number }} <span>%</span>
                             </div>
                         </td>
                         <td>
                             <div class="ext-info__item">
-                                Курс.прибыль {{ props.item.rateProfit | amount(true) }} <span>{{ portfolioCurrency }}</span><br>
+                                Курс.прибыль {{ props.item.rateProfit | amount(true, 2, true, true) }} <span>{{ portfolioCurrency }}</span><br>
                                 Курс.прибыль {{ props.item.rateProfitPercent | number }} <span>%</span><br>
                             </div>
                         </td>
@@ -252,7 +252,8 @@ const MainStore = namespace(StoreType.MAIN);
                         <td>
                             <div class="ext-info__item">
                                 Доходность {{ props.item.yearYield | number }} <span>%</span><br>
-                                P/L за день {{ props.item.dailyPl | amount(true) }} <span>{{ portfolioCurrency }}</span><br>
+                                Прибыль {{ props.item.profit| amount(true, 2, true, true) }} <span>{{ portfolioCurrency }}</span> ({{ props.item.percProfit | number }} %)<br>
+                                P/L за день {{ props.item.dailyPl | amount(true, 2, true, true) }} <span>{{ portfolioCurrency }}</span><br>
                                 P/L за день {{ props.item.dailyPlPercent | number }} <span>%</span><br>
                             </div>
                         </td>

@@ -80,7 +80,7 @@ export class TariffLimitExceedInfo extends UI {
                     <div v-if="!monthly" class="tariff__plan_year-price">{{ tariff === Tariff.FREE ? "&nbsp;" : "при оплате за год" }}</div>
                     <div v-if="monthly" class="tariff__plan_year-price">&nbsp;</div>
                 </div>
-                <div class="fs13 bold margT24">
+                <div class="fs13 bold margT24 margB24">
                     <span v-if="tariff === Tariff.FREE">7 ценных бумаг,</span>
                     <span v-else>&infin; кол-во бумаг,</span>
                     <span class="mt-1">
@@ -93,7 +93,7 @@ export class TariffLimitExceedInfo extends UI {
                     </span>
                 </div>
                 <v-tooltip v-if="!isMobile && (!available || isTariffsDifferent)" :content-class="classPaymentBtn" bottom>
-                    <v-btn slot="activator" @click.stop="makePayment(tariff)" :class="{'big_btn margT24': true, 'selected': selected}" :disabled="disabled">
+                    <v-btn slot="activator" @click.stop="makePayment(tariff)" :class="{'big_btn': true, 'selected': selected}" :disabled="disabled">
                         <span v-if="!busyState[tariff.name]">{{ buttonLabel }}</span>
                         <v-progress-circular v-if="busyState[tariff.name]" indeterminate color="white" :size="20"></v-progress-circular>
                     </v-btn>
@@ -105,7 +105,7 @@ export class TariffLimitExceedInfo extends UI {
                     </div>
                 </v-tooltip>
                 <template v-if="isMobile && (!available || isTariffsDifferent)">
-                    <v-btn slot="activator" @click.stop="makePayment(tariff)" :class="{'big_btn margT24': true, 'selected': selected}" :disabled="disabled">
+                    <v-btn slot="activator" @click.stop="makePayment(tariff)" :class="{'big_btn': true, 'selected': selected}" :disabled="disabled">
                         <span v-if="!busyState[tariff.name]">{{ buttonLabel }}</span>
                         <v-progress-circular v-if="busyState[tariff.name]" indeterminate color="white" :size="20"></v-progress-circular>
                     </v-btn>
@@ -359,6 +359,23 @@ export class TariffBlock extends UI {
                 <div class="free-subscribe">
                     <span>Получите бесплатный месяц подписки.</span>
                     <a @click="$router.push({name: 'promo-codes'})">Подробнее</a>
+                </div>
+                <div class="payment-system">
+                    <div class="payment-system__text">
+                        Интернет-платежи защищены сертификатом SSL и протоколом 3D Secure.<br>
+                        АО "Тинькофф Банк" не передает платежные данные, в том числе данные карт.<br>
+                        Intelinvest не хранит платежные данные и данные карт.
+                    </div>
+                    <div class="payment-system__items">
+                        <img src="./img/tariffs/payment-system/visa.svg" alt="">
+                        <img src="./img/tariffs/payment-system/mastercard.svg" alt="">
+                        <img src="./img/tariffs/payment-system/maestro.svg" alt="">
+                        <img src="./img/tariffs/payment-system/verified.svg" alt="">
+                        <img src="./img/tariffs/payment-system/mastercard-secure.svg" alt="">
+                        <img src="./img/tariffs/payment-system/mir.svg" alt="">
+                        <img src="./img/tariffs/payment-system/mir-accept.svg" alt="">
+                        <img src="./img/tariffs/payment-system/pci.svg" alt="">
+                    </div>
                 </div>
             </v-card>
         </v-container>

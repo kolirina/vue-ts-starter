@@ -38,7 +38,9 @@ export type SignInData = {
 };
 
 export type AssetRow = _portfolioRow & {
-    type: string
+    type: string;
+    /** Сумма в валюте представления */
+    amountInViewCurrency?: string;
 };
 
 export type TradeRow = {

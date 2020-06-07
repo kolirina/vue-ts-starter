@@ -37,13 +37,20 @@ export class ThemeUtils {
         color: #82b1ff !important;
      }
 
-     .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light,
-     .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).v-btn--disabled,
+     .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light.primary,
+     .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).v-btn--disabled.primary,
      .import-wrapper-content .section-upload-file .reselect-file-btn,
      .free-subscribe a {
         background-color: #3b6ec9 !important;
         color: #fff !important;
         border-color: transparent !important;
+     }
+
+     .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light,
+     .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).v-btn--disabled {
+        background-color: transparent !important;
+        color: #fff !important;
+        border-color: #fff !important;
      }
 
      .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).v-btn--disabled {opacity: 0.5}
@@ -125,7 +132,7 @@ export class ThemeUtils {
     .control-portfolios-title,
     .export-page .info-block,
     .promo-codes .rewards,
-    .statistics,
+    .statistics, .export-page__info-block,
     .gif-block .title-gif-block,
     .gif-block-item__title,
     .tariff, .theme--light.v-btn,
@@ -147,7 +154,7 @@ export class ThemeUtils {
     .v-tooltip__content.menu-icons, .hint-text-for-setings,
     .intel-invest-instruction__title, .intel-invest-instruction__format-text, .intel-invest-instruction__title-values,
     .intel-invest-instruction__values, .intel-invest-instruction__template-requirements, .import-instructions, .import-default-text .tooltip-text,
-    .snotifyToast__body, .info-share-page__empty, .import-dialog-wrapper__title-text, .fs18, .fs36,
+    .snotifyToast__body, .info-share-page__empty, .import-dialog-wrapper__title-text, .fs18, .fs36, .import-default-text,
     .snotifyToast__buttons button, .update-service-dialog__content,
     .custom-v-menu .v-menu-content, .section-title,
     .v-date-picker-years, .empty-station__description {color: #fff}
@@ -250,6 +257,7 @@ export class ThemeUtils {
     .content-loader stop {stop-color: #2c3040}
 
     .sing-in-wrap .paired-section__right-section {background-image: url(../img/sign_in/bg-dark.svg)}
+    .wrapper-payment-info__title.pan {background-image: url(../img/profile/done-light.svg) !important}
 
     .v-input input::-webkit-input-placeholder {color: #cfd0d4 !important}
     .v-input input::-ms-input-placeholder {color: #cfd0d4 !important}

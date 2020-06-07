@@ -18,6 +18,7 @@ import {namespace} from "vuex-class";
 import {Component, Prop, UI} from "../../app/ui";
 import {AssetType} from "../../types/assetType";
 import {BigMoney} from "../../types/bigMoney";
+import {CurrencyUnit} from "../../types/currency";
 import {Operation} from "../../types/operation";
 import {PortfolioAssetType} from "../../types/portfolioAssetType";
 import {AssetRow, Pagination, Portfolio, TableHeader} from "../../types/types";
@@ -51,7 +52,21 @@ const MainStore = namespace(StoreType.MAIN);
             <template #items="props">
                 <tr class="selectable">
                     <td class="text-xs-left">{{ props.item.type | assetDesc }}</td>
-                    <td :class="markupClasses(amount(props.item.currCost), false)" v-tariff-expired-hint>{{ props.item.currCost | amount(true) }}</td>
+                    <td :class="markupClasses(amount(props.item.currCost), false)" v-tariff-expired-hint>
+                        <v-tooltip v-if="showAmountInViewCurrency(props.item)" content-class="custom-tooltip-wrap" bottom>
+                            <template #activator="{ on }">
+                                <span class="data-table__header-with-tooltip" v-on="on">
+                                    <template>{{ props.item.currCost | amount(true, 2, true, true) }}</template>
+                                </span>
+                            </template>
+                            <span>
+                                В валюте портфеля:
+                                {{ props.item.amountInViewCurrency | amount(true, 2, true, true) }}&nbsp;
+                                <span>{{ props.item.amountInViewCurrency | currencySymbol }}</span>
+                            </span>
+                        </v-tooltip>
+                        <span v-else>{{ props.item.currCost | amount(true) }}</span>
+                    </td>
                     <td :class="markupClasses(amount(props.item.profit))" v-tariff-expired-hint>{{ props.item.profit | amount(true) }}</td>
                     <td :class="markupClasses(amount(props.item.dailyPl))" v-tariff-expired-hint>{{ props.item.dailyPl | amount(true) }}</td>
                     <td :class="markupClasses(Number(props.item.dailyPlPercent))" v-tariff-expired-hint>{{ props.item.dailyPlPercent | number }}</td>
@@ -62,22 +77,22 @@ const MainStore = namespace(StoreType.MAIN);
                                 <span class="menuDots"></span>
                             </v-btn>
                             <v-list dense>
-                                <v-list-tile v-if="!isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.BUY)">
+                                <v-list-tile v-if="!isMoneyAsset(props.item)" @click="openTradeDialog(props.item, operation.BUY)">
                                     <v-list-tile-title>
                                         Купить
                                     </v-list-tile-title>
                                 </v-list-tile>
-                                <v-list-tile v-if="!isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.SELL)">
+                                <v-list-tile v-if="!isMoneyAsset(props.item)" @click="openTradeDialog(props.item, operation.SELL)">
                                     <v-list-tile-title>
                                         Продать
                                     </v-list-tile-title>
                                 </v-list-tile>
-                                <v-list-tile v-if="isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.DEPOSIT)">
+                                <v-list-tile v-if="isMoneyAsset(props.item)" @click="openTradeDialog(props.item, operation.DEPOSIT)">
                                     <v-list-tile-title>
                                         Внести
                                     </v-list-tile-title>
                                 </v-list-tile>
-                                <v-list-tile v-if="isMoneyTrade(props.item)" @click="openTradeDialog(props.item, operation.WITHDRAW)">
+                                <v-list-tile v-if="isMoneyAsset(props.item)" @click="openTradeDialog(props.item, operation.WITHDRAW)">
                                     <v-list-tile-title>
                                         Вывести
                                     </v-list-tile-title>
@@ -162,8 +177,17 @@ export class AggregateAssetTable extends UI {
         return PortfolioAssetType.valueByName(item.type).assetType === AssetType.STOCK;
     }
 
-    private isMoneyTrade(item: AssetRow): boolean {
+    private isMoneyAsset(item: AssetRow): boolean {
         return PortfolioAssetType.valueByName(item.type).assetType === AssetType.MONEY;
+    }
+
+    /**
+     * Возвращает признак отображения тултипа с суммой в валюет представления, только для валют, кроме самой валюты представления
+     * @param item актив
+     */
+    private showAmountInViewCurrency(item: AssetRow): boolean {
+        const assetType = PortfolioAssetType.valueByName(item.type);
+        return assetType.assetType === AssetType.MONEY && assetType.currency !== CurrencyUnit.valueByCode(this.portfolio.portfolioParams.viewCurrency);
     }
 
     private customSort(items: AssetRow[], index: string, isDesc: boolean): AssetRow[] {

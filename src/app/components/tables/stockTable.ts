@@ -236,6 +236,7 @@ const MainStore = namespace(StoreType.MAIN);
                             <div class="ext-info__item">
                                 Прибыль по сделкам {{ props.item.exchangeProfit | amount(true) }} <span>{{ portfolioCurrency }}</span><br>
                                 Прибыль по сделкам {{ props.item.exchangeProfitPercent | number }} <span>%</span><br>
+                                Прибыль {{ props.item.profit| amount(true, 2, true, true) }} <span>{{ portfolioCurrency }}</span> ({{ props.item.percProfit | number }} %)<br>
                                 Доходность {{ props.item.yearYield | number }} <span>%</span>
                             </div>
                         </td>
@@ -249,21 +250,21 @@ const MainStore = namespace(StoreType.MAIN);
                     <tr>
                         <td>
                             <div class="ext-info__item">
-                                Курсовая прибыль {{ props.item.rateProfit | amount(true) }} <span>{{ portfolioCurrency }}</span><br>
+                                Курсовая прибыль {{ props.item.rateProfit | amount(true, 2, true, true) }} <span>{{ portfolioCurrency }}</span><br>
                                 Курсовая прибыль {{ props.item.rateProfitPercent | number }} <span>%</span><br>
                                 <template v-if="shareNotes&& shareNotes[props.item.share.ticker]">Заметка {{ shareNotes[props.item.share.ticker] }}</template>
                             </div>
                         </td>
                         <td>
                             <div class="ext-info__item">
-                                P/L за день {{ props.item.dailyPl | amount(true) }} <span>{{ portfolioCurrency }}</span><br>
+                                P/L за день {{ props.item.dailyPl | amount(true, 2, true, true) }} <span>{{ portfolioCurrency }}</span><br>
                                 P/L за день {{ props.item.dailyPlPercent | number }} <span>%</span><br>
                                 Комиссия {{ props.item.summFee | amount(true) }} <span>{{ portfolioCurrency }}</span>
                             </div>
                         </td>
                         <td>
                             <div class="ext-info__item">
-                                Дивиденды {{ props.item.profitFromDividends | amount(true) }} <span>{{ portfolioCurrency }}</span><br>
+                                Дивиденды {{ props.item.profitFromDividends | amount(true, 2, true, true) }} <span>{{ portfolioCurrency }}</span><br>
                                 Прибыль по дивидендам {{ props.item.profitFromDividendsPercent | number }} <span>%</span>
                             </div>
                         </td>

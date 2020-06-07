@@ -199,7 +199,8 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                     </v-flex>
                                     <v-flex v-if="calculationAssetType || isBondTrade" xs12 lg6>
                                         <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" top>
-                                            <v-checkbox slot="activator" label="Начисление на одну бумагу" v-model="perOne" hide-details></v-checkbox>
+                                            <v-checkbox slot="activator" :label="(isBondTrade ? 'НКД' : 'Начисление') + ' на одну бумагу'"
+                                                        v-model="perOne" hide-details></v-checkbox>
                                             <span>Отключите если вносите сумму начисления</span>
                                         </v-tooltip>
                                     </v-flex>

@@ -271,6 +271,8 @@
       color: #A1A6B6;
     }
   }
+
+  .v-tooltip > span {display: block}
 }
 
 .tariff-description-wrap {
@@ -342,7 +344,7 @@
   font-size: 14px;
   line-height: 44px;
   padding: 12px 24px;
-  margin: 0 32px 48px;
+  margin: 0 32px 32px;
 
   a {
     background: #EBEFF7;
@@ -361,5 +363,30 @@
     margin: 0 8px 24px;
 
     span {margin-bottom: 8px}
+  }
+}
+
+.payment-system {
+  margin: 0 32px 36px;
+
+  &__text {
+    margin-bottom: 24px;
+    color: $font-color--lite;
+    font-size: 14px;
+    line-height: 16px;
+    text-align: center;
+  }
+
+  &__items {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+
+    img {margin: 0 30px 12px 0}
+  }
+
+  @media only screen and (max-width: $xs-breakpoint) {
+    margin: 0 8px 24px;
   }
 }

@@ -172,15 +172,15 @@ const MainStore = namespace(StoreType.MAIN);
                             </v-layout>
 
                             <v-layout class="link-section" wrap>
-                                <v-flex v-if="publicSettingsAllowed" md2>
-                                    <div>
+                                <v-flex v-if="publicSettingsAllowed" md3>
+                                    <div class="alignL">
                                         <a class="portfolio-link portfolio-default-text fs14" :href="informerH(props.item.id)" target="_blank">Информер-картинка горизонтальный</a>
                                     </div>
-                                    <div>
+                                    <div class="alignL">
                                         <a class="portfolio-link portfolio-default-text fs14" :href="informerV(props.item.id)" target="_blank">Информер-картинка вертикальный</a>
                                     </div>
                                 </v-flex>
-                                <v-flex md10 class="fs14 maxW500">
+                                <v-flex md9 class="fs14 maxW500">
                                     <div v-if="showNoteLink(props.item.note)" class="maxW500">
                                         <span class="bold">Заметка:</span>
                                         <div class="text-truncate">{{ props.item.note }}</div>

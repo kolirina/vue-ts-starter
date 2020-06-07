@@ -49,6 +49,9 @@ export class ChartUtils {
         SVG: "image/svg+xml"
     };
 
+    private static readonly POSITIVE_COLOR = "#6cc11a";
+    private static readonly NEGATIVE_COLOR = "#ff3e70";
+
     private constructor() {
     }
 
@@ -170,8 +173,7 @@ export class ChartUtils {
      * @param overview данные по портфелю
      * @param currencySymbol символ валюты
      */
-    static doYieldContributorsPieChartData(overview: Overview, currencySymbol: string): CustomDataPoint[] {
-        const data: CustomDataPoint[] = [];
+    static doYieldContributorsPieChartData(overview: Overview, currencySymbol: string): ColumnChartData {
         const rows: Array<{ shareName: string, yearYield: string, profit: string }> = [
             ...overview.stockPortfolio.rows.map(row => {
                 return {shareName: row.share.shortname, yearYield: row.yearYield, profit: row.profit};
@@ -186,19 +188,32 @@ export class ChartUtils {
                 return {shareName: row.share.shortname, yearYield: row.yearYield, profit: row.profit};
             })
         ];
-        rows.filter(value => new BigMoney(value.profit).amount.comparedTo(new Decimal("0")) > 0).forEach(row => {
-            const yieldValue = Filters.formatNumber(row.yearYield);
-            const profit = new BigMoney(row.profit).amount.abs().toDP(2, Decimal.ROUND_HALF_UP);
-            data.push({
-                name: row.shareName,
-                description: `Доходность ${yieldValue} %`,
-                profit: Filters.formatNumber(profit.toString()),
-                currencySymbol: currencySymbol,
-                y: profit.toNumber()
+        const categoryNames: string[] = [];
+        const positive: CustomDataPoint[] = [];
+        const negative: CustomDataPoint[] = [];
+
+        rows.sort((a, b): number => new BigMoney(b.profit).amount.minus(new BigMoney(a.profit).amount).toNumber())
+            .filter(row => !new BigMoney(row.profit).amount.isZero())
+            .forEach(row => {
+                const yieldValue = Filters.formatNumber(row.yearYield);
+                const profit = new BigMoney(row.profit).amount.toDP(2, Decimal.ROUND_HALF_UP);
+                const point = {
+                    name: row.shareName,
+                    description: `Доходность ${yieldValue} %`,
+                    profit: Filters.formatNumber(profit.toString()),
+                    currencySymbol: currencySymbol,
+                    y: profit.toNumber()
+                };
+                (profit.isPositive() ? positive : negative).push(point);
+                (profit.isPositive() ? negative : positive).push(null);
+                categoryNames.push(row.shareName);
             });
-        });
-        data.sort((a, b) => b.y - a.y);
-        return data;
+        return {
+            categoryNames, series: [
+                {name: "Прибыль", data: positive, color: this.POSITIVE_COLOR},
+                {name: "Убыток", data: negative, color: this.NEGATIVE_COLOR}
+            ]
+        };
     }
 
     /**
@@ -689,6 +704,133 @@ export class ChartUtils {
         });
     }
 
+    /**
+     * Отрисовывает график и возвращает объект
+     * @param container контейнер где будет рисоваться график
+     * @param chartData данные для графика
+     * @param title заголовк графика
+     * @param viewCurrency валюта
+     * @param tooltipFormat формат тултипа
+     */
+    static drawBarChart(container: HTMLElement, chartData: ColumnChartData, title: string = "", viewCurrency: string = "",
+                        tooltipFormat: PieChartTooltipFormat = PieChartTooltipFormat.COMMON): ChartObject {
+        return Highcharts.chart(container, {
+            chart: {
+                type: "bar",
+                backgroundColor: null,
+                style: {
+                    fontFamily: "\"OpenSans\" sans-serif",
+                    fontSize: "12px",
+                },
+                events: {
+                    load: function(): void {
+                        // @ts-ignore
+                        const chart: ChartObject = this;
+                        const ex = chart.yAxis[0].getExtremes();
+
+                        // Sets the min and max values for the chart
+                        let minVal = 0;
+                        let maxVal = 0;
+                        let setVal = 0;
+
+                        // If the min value of the chart is negative make it positive
+                        if (ex.min < 0) {
+                            minVal = ex.min * -1;
+                        } else {
+                            minVal = ex.min;
+                        }
+                        // If the max value of the chart is negative make it positive
+                        if (ex.max < 0) {
+                            maxVal = ex.max * -1;
+                        } else {
+                            maxVal = ex.max;
+                        }
+                        // Find the biggest value and set that as the one to use
+                        if (maxVal > minVal) {
+                            setVal = maxVal;
+                        } else {
+                            setVal = minVal;
+                        }
+                        // If the value is 0 then set it to ticInterval (6 or 30) as minimum
+                        if (setVal === 0) {
+                            setVal = 15;
+                        }
+
+                        // set the min and max and return the values
+                        chart.yAxis[0].setExtremes(-setVal, setVal, true, false);
+                    },
+                    redraw: function(): void {
+                        // @ts-ignore
+                        const chart: ChartObject = this;
+                        chart.series.filter(series => series.type === "bar" && series.visible).forEach(series => {
+                            // @ts-ignore
+                            series.points.forEach(point => {
+                                const dataLabel = point.dataLabel;
+                                const offset = point.shapeArgs.height + (point.y > 0 ? dataLabel.width : 0);
+
+                                dataLabel?.attr({
+                                    // @ts-ignore
+                                    x: chart.plotWidth - point.plotY - Math.sign(point.y) * offset,
+                                });
+                            });
+                        });
+                    }
+                }
+            },
+            title: {
+                text: title
+            },
+            legend: {
+                maxHeight: 100,
+                itemMarginTop: 2
+            },
+            tooltip: {
+                headerFormat: "",
+                pointFormat: this.PIE_CHART_TOOLTIP_FORMAT[tooltipFormat],
+                valueSuffix: `${viewCurrency ? ` ${Filters.currencySymbolByCurrency(viewCurrency)}` : ""}`
+            },
+            plotOptions: {
+                column: {
+                    grouping: false,
+                },
+                series: {
+                    // подписи над стоблцами
+                    dataLabels: {
+                        enabled: true,
+                        format: "{point.name}"
+                    }
+                }
+            },
+            xAxis: {
+                visible: false,
+                categories: chartData.categoryNames,
+                crosshair: true,
+                gridLineWidth: 1,
+                labels: {
+                    style: {
+                        fontSize: "12px",
+                        color: "#040427"
+                    }
+                },
+            },
+            yAxis: [{
+                title: {
+                    text: title
+                },
+                labels: {
+                    style: {
+                        fontSize: "12px",
+                        color: "#040427"
+                    }
+                }
+            }],
+            exporting: {
+                enabled: false
+            },
+            series: chartData.series
+        });
+    }
+
     static convertBondPayments(data: EventChartData[]): ColumnChartData {
         const series: ColumnDataSeries[] = [];
         const categoryNames: string[] = [];
@@ -711,7 +853,7 @@ export class ChartUtils {
                 const pt = eventItem.description.substring(0, eventItem.description.indexOf(":"));
                 if (key === pt) {
                     const amount = parseFloat(eventItem.description.substring(eventItem.description.indexOf(" ") + 1, eventItem.description.length));
-                    result[key].data.push(amount);
+                    result[key].data.push({y: amount});
                 } else {
                     result[key].data.push(null);
                 }
