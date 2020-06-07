@@ -528,8 +528,6 @@ export type Bond = Share & {
     facevalue: string;
     /** Номер выпуска */
     regnumber: string;
-    /** Отформатированное значение номинала */
-    formattedFacevalue: string;
     /** Признак что облигация уже погашена на данный момент */
     repaid: boolean;
     /** Абсолютная текущая цена облигации без учета НКД */
