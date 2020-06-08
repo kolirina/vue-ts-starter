@@ -513,7 +513,10 @@ export class BasePortfolioPage extends UI {
     }
 
     private get aggregateAssets(): AssetRow[] {
-        return this.overview.assetRows.filter(assetRow => !new BigMoney(assetRow.currCost).amount.isZero());
+        return this.overview.assetRows.filter(assetRow => {
+            return !new BigMoney(assetRow.currCost).amount.isZero() ||
+                !assetRow.profit || !new BigMoney(assetRow.profit).amount.isZero();
+        });
     }
 
     private get bondRows(): BondPortfolioRow[] {

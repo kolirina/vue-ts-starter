@@ -99,7 +99,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     <td class="info-about-stock__content-title">Номинал</td>
                                     <td>
                                         <span class="info-about-stock__content-value">
-                                            {{ share.formattedFacevalue }}
+                                            {{ share.facevalue | amount }}
                                         </span>
                                     </td>
                                 </tr>
