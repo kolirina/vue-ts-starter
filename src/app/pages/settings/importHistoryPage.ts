@@ -18,11 +18,11 @@ import {Inject} from "typescript-ioc";
 import {namespace} from "vuex-class/lib/bindings";
 import {Component, UI, Watch} from "../../app/ui";
 import {ConfirmDialog} from "../../components/dialogs/confirmDialog";
-import {ImportErrorsTable} from "../../components/imp/importErrorsTable";
+import {ImportResultComponent} from "../../components/importResultComponent";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {ClientInfo} from "../../services/clientService";
-import {ImportService, UserImport} from "../../services/importService";
+import {ImportProviderFeatures, ImportProviderFeaturesByProvider, ImportService, UserImport} from "../../services/importService";
 import {Portfolio, Status} from "../../types/types";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
@@ -74,10 +74,9 @@ const MainStore = namespace(StoreType.MAIN);
                                 </div>
                                 <div class="import-history-block__body">
                                     <div v-if="userImport.generalError">{{ userImport.generalError }}</div>
-                                    <expanded-panel v-if="userImport.data && userImport.data.length" class="selectable">
-                                        <template #header>Ошибки импорта</template>
-                                        <import-errors-table :error-items="userImport.data"></import-errors-table>
-                                    </expanded-panel>
+                                    <import-result v-if="userImport.errors && userImport.errors.length" :import-result="userImport" :import-provider="userImport.provider"
+                                                   :portfolio-params="portfolio.portfolioParams" :import-provider-features="getImportProviderFeatures(userImport)"
+                                                   :expand-panels="false"></import-result>
                                 </div>
                             </div>
                         </div>
@@ -91,7 +90,7 @@ const MainStore = namespace(StoreType.MAIN);
             </template>
         </v-slide-x-reverse-transition>
     `,
-    components: {ImportErrorsTable}
+    components: {"import-result": ImportResultComponent}
 })
 export class ImportHistoryPage extends UI {
 
@@ -109,6 +108,8 @@ export class ImportHistoryPage extends UI {
     private Status = Status;
     /** Признак инициализации */
     private initialized = false;
+    /** Все провайдеры импорта */
+    private importProviderFeaturesByProvider: ImportProviderFeaturesByProvider = null;
 
     /**
      * Инициализирует необходимые для работы данные
@@ -117,6 +118,7 @@ export class ImportHistoryPage extends UI {
     @ShowProgress
     async created(): Promise<void> {
         await this.loadImportHistory();
+        this.importProviderFeaturesByProvider = await this.importService.getImportProviderFeatures();
         this.initialized = true;
     }
 
@@ -149,5 +151,9 @@ export class ImportHistoryPage extends UI {
     private async goBack(): Promise<void> {
         await this.reloadPortfolio(this.portfolio.id);
         this.$router.push("import");
+    }
+
+    private getImportProviderFeatures(userImport: UserImport): ImportProviderFeatures {
+        return this.importProviderFeaturesByProvider[userImport.provider.code];
     }
 }
