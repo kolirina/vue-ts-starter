@@ -38,6 +38,7 @@ import {StoreKeys} from "../types/storeKeys";
 import {CommonUtils} from "../utils/commonUtils";
 import {TariffUtils} from "../utils/tariffUtils";
 import {VuexConfiguration} from "../vuex/vuexConfiguration";
+import {ImportHistoryPage} from "../pages/settings/importHistoryPage";
 
 Vue.use(VueRouter);
 
@@ -271,6 +272,15 @@ export class RouterConfiguration {
                         meta: {
                             title: "Импорт сделок",
                             tourName: "import"
+                        }
+                    },
+                    {
+                        name: "import-history",
+                        path: "import-history",
+                        component: ImportHistoryPage,
+                        meta: {
+                            title: "История импорта",
+                            tourName: "import-history"
                         }
                     },
                     {

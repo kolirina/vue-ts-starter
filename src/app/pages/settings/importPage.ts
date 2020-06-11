@@ -81,7 +81,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-card>
 
                     <!-- Брокер выбран -->
-                    <v-card v-if="selectedProvider && !showImportHistory" flat class="import-wrapper">
+                    <v-card v-if="selectedProvider" flat class="import-wrapper">
                         <v-card-text class="import-wrapper-content">
                             <div class="provider__info">
                                 <div class="margRAuto">
@@ -95,7 +95,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     </div>
                                 </div>
                                 <broker-switcher @selectProvider="onSelectProvider($event)" :class="{'margR12': importHistory.length}"></broker-switcher>
-                                <v-btn v-if="importHistory.length" @click="showImportHistory = !showImportHistory" color="#EBEFF7">
+                                <v-btn v-if="showImportHistory" @click="goToImportHistory" color="#EBEFF7">
                                     <v-icon left>icon-import-history</v-icon>
                                     История импорта
                                 </v-btn>
@@ -379,41 +379,6 @@ const MainStore = namespace(StoreType.MAIN);
                             </v-stepper>
                         </v-card-text>
                     </v-card>
-                    <v-card v-if="showImportHistory" flat class="import-wrapper">
-                        <div class="card__header">
-                            <div class="card__header-title">
-                                <img src="./img/import/import-icon.svg" alt="">
-                                <div>
-                                    <span>История импорта</span>
-                                    <div @click="showImportHistory = !showImportHistory" class="back-btn">Назад</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div v-if="importHistory.length" class="import-history">
-                            <div v-for="userImport in importHistory" :key="userImport.id" class="import-history-block">
-                                <div :class="[{'import-history-block__header': true, 'withoutBorder': userImport.status === 'SUCCESS'}]">
-                                    <span class="import-history-block__name">{{ userImport.fileName }}</span>
-                                    <span class="import-history-block__date">{{ userImport.date }}</span>
-                                    <span v-if="userImport.savedTradesCount" class="import-history-block__description">
-                                                    {{ userImport.savedTradesCount | declension("Добавлена", "Добавлено", "Добавлено") }}
-                                                    {{ userImport.savedTradesCount }} {{ userImport.savedTradesCount | declension("сделка", "сделки", "сделок") }}
-                                                    </span>
-                                    <span :class="['import-history-block__status', userImport.status.toLowerCase()]">
-                                                        {{ userImport.status === Status.ERROR ? 'Ошибка' : userImport.status === Status.WARN ? 'С замечаниями' : 'Успешно' }}
-                                                    </span>
-                                    <span v-if="userImport.state !== 'REVERTED'" @click.stop="revertImport(userImport.id)"
-                                          class="import-history-block__delete"></span>
-                                </div>
-                                <div class="import-history-block__body">
-                                    <div v-if="userImport.generalError">{{ userImport.generalError }}</div>
-                                    <expanded-panel v-if="userImport.data && userImport.data.length" class="selectable">
-                                        <template #header>Ошибки импорта</template>
-                                        <import-errors-table :error-items="userImport.data"></import-errors-table>
-                                    </expanded-panel>
-                                </div>
-                            </div>
-                        </div>
-                    </v-card>
                 </v-container>
             </template>
             <template v-else>
@@ -422,7 +387,6 @@ const MainStore = namespace(StoreType.MAIN);
                 </content-loader>
             </template>
         </v-slide-x-reverse-transition>
-
     `,
     components: {BrokerSwitcher, CurrencyBalances, ImportErrorsTable, ImportInstructions, ExpandedPanel}
 })
@@ -490,8 +454,6 @@ export class ImportPage extends UI {
     private autoEvents = true;
     /** Признак инициализации */
     private initialized = false;
-    /** Признак отображения истории импорта */
-    private showImportHistory = false;
 
     /**
      * Инициализирует необходимые для работы данные
@@ -745,6 +707,10 @@ export class ImportPage extends UI {
         this.$router.push("portfolio");
     }
 
+    private async goToImportHistory(): Promise<void> {
+        this.$router.push("import-history");
+    }
+
     /**
      * Обрабатывает событие выбора провайдера из стороннего компонента
      * @param provider выбранный провайдер
@@ -846,6 +812,10 @@ export class ImportPage extends UI {
 
     private get showResultsPanel(): boolean {
         return !this.isIntelinvest && this.hasNotesAfterImport;
+    }
+
+    private get showImportHistory(): boolean {
+        return this.importHistory.length && [ImportStep._1, ImportStep._3].includes(this.currentStep);
     }
 
     /**
