@@ -156,6 +156,16 @@ import {ImportErrorsTable} from "./imp/importErrorsTable";
                     уже импортированных ранее.
                 </span>
             </expanded-panel>
+
+            <expanded-panel v-if="isAlfaDirekt || isFf" :value="[expandPanels]" class="selectable import-history">
+                <template #header>
+                    <span>Комиссии по бумагам в валюте не переносятся</span>
+                </template>
+                <span>
+                    Обратите внимание, что в отчетах брокера по сделкам с бумагами в валюте<br/>
+                    комиссия указывается в рублях и не переносится.
+                </span>
+            </expanded-panel>
         </div>
     `,
     components: {ImportErrorsTable}
@@ -219,6 +229,14 @@ export class ImportResultComponent extends UI {
     private get finamHasFixFee(): boolean {
         const fixFee = this.portfolioParams.fixFee ? new Decimal(this.portfolioParams.fixFee) : null;
         return this.isFinam && !fixFee && !fixFee.isZero();
+    }
+
+    private get isAlfaDirekt(): boolean {
+        return this.importProvider === DealsImportProvider.ALFADIRECT;
+    }
+
+    private get isFf(): boolean {
+        return this.importProvider === DealsImportProvider.FREEDOM_FINANCE;
     }
 
     private get isSberbank(): boolean {
