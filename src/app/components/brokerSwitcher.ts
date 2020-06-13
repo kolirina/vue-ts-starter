@@ -23,7 +23,10 @@ import {DealsImportProvider} from "../services/importService";
         <v-list-tile class="text-xs-center sidebar-list-item">
             <v-list-tile-content>
                 <v-menu offset-y transition="slide-y-transition" max-height="480px" min-width="260px" left>
-                    <v-btn slot="activator">Изменить брокера</v-btn>
+                    <v-btn slot="activator">
+                        <v-icon left>icon-edit-broker</v-icon>
+                        Изменить брокера
+                    </v-btn>
                     <v-list class="providers-list" style="height: 450px">
                         <vue-scroll>
                             <v-list-tile v-for="provider in providers" :key="provider.code" @click="onSelectProvider(provider)">

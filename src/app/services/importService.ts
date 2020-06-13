@@ -201,7 +201,7 @@ export type UserImportBase = {
     /** Текст критичной ошибки */
     generalError: string;
     /** Ошибки импорта */
-    data: DealImportError[];
+    errors: DealImportError[];
     /** Имя файла импорта */
     fileName: string;
     /** Состояние истории импорта */

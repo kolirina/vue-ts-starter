@@ -128,7 +128,6 @@ export class Dashboard extends UI {
         "                             Например, если портфель за полгода существования принес 8%, то его годовая доходность будет 16%." +
         "                             Показатель полезен для сравнения доходности портфеля с банковскими депозитами и другими активами.<br/>" +
         "                             Расчет ведется на основе средневзвешенной стоимости портфеля с учетом денежных средств.<br/>";
-    private readonly THREE_MONTHS_DESC = "В расчете учитывается временной промежуток, поэтому показатель работает на периоде от 3 месяцев.";
 
     /**
      * Инициализация данных
@@ -219,24 +218,8 @@ export class Dashboard extends UI {
     private get invalidYieldData(): [string, string] {
         const yearYield = new Decimal(this.overview.dashboardData.yearYield);
         const daysDiff = DateUtils.parseDate(DateUtils.currentDate()).diff(this.overview.firstTradeDate, "day");
-        // Дата с первой сделки в портфеле менее 90 дней и доходность равна  от 50 до 90 процентов
-        if (daysDiff < 90) {
-            if (yearYield.abs().comparedTo(new Decimal("50")) >= 0 && yearYield.abs().comparedTo(new Decimal("90")) < 0) {
-                return ["broken-portfolio-icon", `Для расчета доходности необходим период не менее 90 дней. Текущее значение: ${this.overview.dashboardData.yearYield} %`];
-            } else if (yearYield.abs().comparedTo(new Decimal("90")) >= 0) {
-                return ["broken-portfolio-icon", this.YIELD_TOOLTIP + this.THREE_MONTHS_DESC];
-            }
-            return [null, this.YIELD_TOOLTIP + this.THREE_MONTHS_DESC];
-        }
-        // Дата с первой сделки в портфеле более 90 дней и доходность >= -90%
-        // Скрыть показатель, заменив на значок
-        if (daysDiff >= 90) {
-            if (yearYield.abs().comparedTo(new Decimal("50")) >= 0 && yearYield.abs().comparedTo(new Decimal("90")) <= 0) {
-                return ["broken-portfolio-icon", this.YIELD_TOOLTIP + `<br/>Текущее значение: ${this.overview.dashboardData.yearYield} %`];
-            } else if (yearYield.abs().comparedTo(new Decimal("90")) >= 0) {
-                return ["broken-portfolio-icon", this.YIELD_TOOLTIP];
-            }
-            return [null, this.YIELD_TOOLTIP];
+        if (daysDiff <= 30 && yearYield.abs().comparedTo(new Decimal("50")) >= 0) {
+            return ["broken-portfolio-icon", `Для расчета доходности необходим период не менее 30 дней. Текущее значение: ${this.overview.dashboardData.yearYield} %`];
         }
         return [null, this.YIELD_TOOLTIP];
     }

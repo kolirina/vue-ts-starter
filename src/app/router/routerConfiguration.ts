@@ -17,6 +17,7 @@ import {PortfolioPage} from "../pages/portfolioPage";
 import {QuotesPage} from "../pages/quotes/quotesPage";
 import {RebalancingPage} from "../pages/rebalancingPage";
 import {ExportPage} from "../pages/settings/exportPage";
+import {ImportHistoryPage} from "../pages/settings/importHistoryPage";
 import {ImportPage} from "../pages/settings/importPage";
 import {NotificationsPage} from "../pages/settings/notificationsPage";
 import {PortfoliosManagementPage} from "../pages/settings/portfoliosManagementPage";
@@ -271,6 +272,15 @@ export class RouterConfiguration {
                         meta: {
                             title: "Импорт сделок",
                             tourName: "import"
+                        }
+                    },
+                    {
+                        name: "import-history",
+                        path: "import-history",
+                        component: ImportHistoryPage,
+                        meta: {
+                            title: "История импорта",
+                            tourName: "import-history"
                         }
                     },
                     {

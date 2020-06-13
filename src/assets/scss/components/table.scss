@@ -356,3 +356,8 @@ table.v-table thead td:first-child, table.v-table thead td:not(:nth-child(1)), t
 .hovered {
   background: #eee;
 }
+
+.v-datatable.v-table .wrap-cell {
+  white-space: normal !important;
+  padding: 8px 10px !important;
+}

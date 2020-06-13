@@ -73,8 +73,6 @@
   }
 
   &__allowed-extensions {
-    position: absolute;
-    right: 0;
     font-size: 12px;
     color: $sidebar-not-active-link-color;
 
@@ -82,13 +80,6 @@
       font-size: 14px;
       color: $theme-color-dark-blue;
     }
-
-    &.withoutImportHistory {
-      position: relative;
-      text-align: right;
-    }
-
-    @media only screen and (max-width: $xs-breakpoint) {position: relative}
   }
 
   &-block {

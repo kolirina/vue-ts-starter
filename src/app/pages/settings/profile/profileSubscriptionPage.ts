@@ -34,12 +34,12 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-card-title>
             </v-card>
             <v-layout class="profile" column>
-                <div class="profile__header">
-                    <div class="profile__header-title">
+                <div class="card__header">
+                    <div class="card__header-title">
                         <img src="./img/profile/subscriptions.svg" alt="">
                         <div>
                             <span>Подписки</span>
-                            <div @click="goBack" class="profile__back-btn">Назад</div>
+                            <div @click="goBack" class="back-btn">Назад</div>
                         </div>
                     </div>
                 </div>
