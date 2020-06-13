@@ -17,6 +17,7 @@ import {PortfolioPage} from "../pages/portfolioPage";
 import {QuotesPage} from "../pages/quotes/quotesPage";
 import {RebalancingPage} from "../pages/rebalancingPage";
 import {ExportPage} from "../pages/settings/exportPage";
+import {ImportHistoryPage} from "../pages/settings/importHistoryPage";
 import {ImportPage} from "../pages/settings/importPage";
 import {NotificationsPage} from "../pages/settings/notificationsPage";
 import {PortfoliosManagementPage} from "../pages/settings/portfoliosManagementPage";
@@ -38,7 +39,6 @@ import {StoreKeys} from "../types/storeKeys";
 import {CommonUtils} from "../utils/commonUtils";
 import {TariffUtils} from "../utils/tariffUtils";
 import {VuexConfiguration} from "../vuex/vuexConfiguration";
-import {ImportHistoryPage} from "../pages/settings/importHistoryPage";
 
 Vue.use(VueRouter);
 
