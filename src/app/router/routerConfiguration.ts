@@ -14,6 +14,7 @@ import {DividendsPage} from "../pages/dividendsPage";
 import {EventsPage} from "../pages/eventsPage";
 import {HelpPage} from "../pages/helpPage";
 import {PortfolioPage} from "../pages/portfolioPage";
+import {PublicPortfolioPage} from "../pages/public-portfolio/publicPortfolioPage";
 import {QuotesPage} from "../pages/quotes/quotesPage";
 import {RebalancingPage} from "../pages/rebalancingPage";
 import {ExportPage} from "../pages/settings/exportPage";
@@ -386,6 +387,16 @@ export class RouterConfiguration {
                 component: BalancesPage,
                 meta: {
                     title: "Балансы"
+                }
+            },
+            {
+                name: "public-portfolio",
+                path: "/public-portfolio",
+                component: PublicPortfolioPage,
+                meta: {
+                    title: "Публичные портфели",
+                    tourName: "portfolio",
+                    public: true
                 }
             },
         ];
