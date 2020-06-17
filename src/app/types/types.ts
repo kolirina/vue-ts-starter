@@ -664,6 +664,7 @@ export enum BROWSER {
 
 export enum EventType {
     reloadLineChart = "reloadLineChart",
+    reloadProfitLineChart = "reloadProfitLineChart",
     exportTable = "exportTable",
 }
 
@@ -672,6 +673,7 @@ export enum BlockType {
     AGGREGATE = "aggreagate",
     ASSETS = "assets",
     HISTORY_PANEL = "historyPanel",
+    PROFIT_CHART_PANEL = "profitChartPanel",
     STOCK_PORTFOLIO = "stockPortfolio",
     ETF_PORTFOLIO = "etfPortfolio",
     BOND_PORTFOLIO = "bondPortfolio",

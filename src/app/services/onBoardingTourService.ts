@@ -181,6 +181,7 @@ export enum PortfolioBlockType {
     ASSET_TABLE = "ASSET_TABLE",
     BOND_TABLE = "BOND_TABLE",
     HISTORY_CHART = "HISTORY_CHART",
+    PROFIT_CHART_PANEL = "PROFIT_CHART_PANEL",
     STOCK_CHART = "STOCK_CHART",
     ETF_CHART = "ETF_CHART",
     BOND_CHART = "BOND_CHART",
@@ -493,6 +494,14 @@ export const TOURS_BY_PORTFOLIO_BLOCK: { [key: string]: TourStep } = {
         target: `[data-v-step="$0"]`,
         content: "График стоимости портфеля. Позволяет видеть динамику портфеля во времени. На графике можно отобразить сделки, сравнить с бенчмарком (Индекс IMOEX). " +
             "Также можно отобразить не только график суммарной стоимости, но и стоимости акций, облигаций, денежных средств и вводов/выводов денег в портфеле по отдельности.",
+        params: {
+            placement: "top"
+        }
+    },
+    [PortfolioBlockType.PROFIT_CHART_PANEL]: {
+        target: `[data-v-step="$0"]`,
+        content: "График прибыли портфеля. Позволяет видеть динамику прибыли портфеля во времени. На графике можно отобразить сделки, сравнить с бенчмарком (Индекс IMOEX). " +
+            "Также можно отобразить не только график суммарной прибыли, но и график курсовой прибыли, прибыли по сделкам и начислениям по отдельности.",
         params: {
             placement: "top"
         }

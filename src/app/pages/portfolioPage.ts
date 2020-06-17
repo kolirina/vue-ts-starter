@@ -26,12 +26,15 @@ const MainStore = namespace(StoreType.MAIN);
             <empty-portfolio-stub v-if="isEmptyBlockShowed"></empty-portfolio-stub>
             <base-portfolio-page v-else :overview="overview" :portfolio-name="portfolio.portfolioParams.name"
                                  :portfolio-id="String(portfolio.portfolioParams.id)"
-                                 :line-chart-data="lineChartData" :line-chart-events="lineChartEvents" :index-line-chart-data="indexLineChartData"
+                                 :line-chart-data="lineChartData" :line-chart-events="lineChartEvents" :profit-line-chart-events="profitLineChartEvents"
+                                 :index-line-chart-data="indexLineChartData"
                                  :view-currency="portfolio.portfolioParams.viewCurrency"
                                  :state-key-prefix="StoreKeys.PORTFOLIO_CHART" :side-bar-opened="sideBarOpened" :share-notes="portfolio.portfolioParams.shareNotes"
                                  :professional-mode="portfolio.portfolioParams.professionalMode"
                                  :current-money-remainder="currentMoneyRemainder"
-                                 @reloadLineChart="loadPortfolioLineChart" @exportTable="onExportTable" exportable>
+                                 @reloadLineChart="loadPortfolioLineChart"
+                                 @reloadProfitLineChart="loadProfitLineChart"
+                                 @exportTable="onExportTable" exportable>
                 <template #afterDashboard>
                     <v-layout v-show="false" align-center>
                         <v-btn-toggle v-model="selectedPeriod" @change="onPeriodChange" mandatory>
@@ -72,6 +75,8 @@ export class PortfolioPage extends UI {
     private indexLineChartData: any[] = null;
     /** События для графика стоимости портфеля */
     private lineChartEvents: HighStockEventsGroup[] = null;
+    /** События для графика прибыли портфеля */
+    private profitLineChartEvents: HighStockEventsGroup[] = null;
     /** Ключи для сохранения информации */
     private StoreKeys = StoreKeys;
     /** Текущий объект с данными */
@@ -90,6 +95,7 @@ export class PortfolioPage extends UI {
     async created(): Promise<void> {
         this.overview = this.portfolio.overview;
         await this.loadPortfolioLineChart();
+        await this.loadProfitLineChart();
         await this.getCurrentMoneyRemainder();
         const firstTradeYear = DateUtils.getYearDate(this.overview.firstTradeDate);
         const currentYear = dayjs().year();
@@ -122,8 +128,10 @@ export class PortfolioPage extends UI {
     private async loadPortfolioData(): Promise<void> {
         this.lineChartData = null;
         this.lineChartEvents = null;
+        this.profitLineChartEvents = null;
         this.overview = this.portfolio.overview;
         await this.loadPortfolioLineChart();
+        await this.loadProfitLineChart();
         await this.getCurrentMoneyRemainder();
     }
 
@@ -137,13 +145,37 @@ export class PortfolioPage extends UI {
 
     @ShowProgress
     private async loadPortfolioLineChart(): Promise<void> {
-        if (UiStateHelper.historyPanel[0] === 1 && !CommonUtils.exists(this.lineChartData) && !CommonUtils.exists(this.lineChartEvents)) {
+        if (UiStateHelper.historyPanel[0] === 1 && !CommonUtils.exists(this.lineChartEvents)) {
+            await this.loadLineChartData();
+            this.lineChartEvents = this.lineChartEvents === null && this.profitLineChartEvents === null ?
+                await this.overviewService.getEventsChartDataWithDefaults(this.portfolio.id) :
+                [...(this.lineChartEvents || this.profitLineChartEvents).map(item => {
+                    return {...item};
+                })];
+            this.lineChartEvents.forEach(item => item.onSeries = "totalChart");
+        }
+    }
+
+    @ShowProgress
+    private async loadProfitLineChart(): Promise<void> {
+        if (UiStateHelper.profitChartPanel[0] === 1 && !CommonUtils.exists(this.profitLineChartEvents)) {
+            await this.loadLineChartData();
+            this.profitLineChartEvents = this.lineChartEvents === null && this.profitLineChartEvents === null ?
+                await this.overviewService.getEventsChartDataWithDefaults(this.portfolio.id) :
+                [...(this.lineChartEvents || this.profitLineChartEvents).map(item => {
+                    return {...item};
+                })];
+            this.profitLineChartEvents.forEach(item => item.onSeries = "totalProfit");
+        }
+    }
+
+    private async loadLineChartData(): Promise<void> {
+        if (!this.lineChartData) {
             this.lineChartData = await this.overviewService.getCostChart(this.portfolio.id);
-            // TODO сделать независимую загрузку по признаку в localStorage
-            if (this.portfolio.overview.firstTradeDate) {
-                this.indexLineChartData = await this.marketHistoryService.getIndexHistory("MMVB", dayjs(this.portfolio.overview.firstTradeDate).format("DD.MM.YYYY"));
-            }
-            this.lineChartEvents = await this.overviewService.getEventsChartDataWithDefaults(this.portfolio.id);
+        }
+        // TODO сделать независимую загрузку по признаку в localStorage
+        if (this.portfolio.overview.firstTradeDate && !this.indexLineChartData) {
+            this.indexLineChartData = await this.marketHistoryService.getIndexHistory("MMVB", dayjs(this.portfolio.overview.firstTradeDate).format("DD.MM.YYYY"));
         }
     }
 

@@ -1,3 +1,51 @@
+/*
+ * STRICTLY CONFIDENTIAL
+ * TRADE SECRET
+ * PROPRIETARY:
+ *       "Intelinvest" Ltd, TIN 1655386205
+ *       420107, REPUBLIC OF TATARSTAN, KAZAN CITY, SPARTAKOVSKAYA STREET, HOUSE 2, ROOM 119
+ * (c) "Intelinvest" Ltd, 2020
+ *
+ * СТРОГО КОНФИДЕНЦИАЛЬНО
+ * КОММЕРЧЕСКАЯ ТАЙНА
+ * СОБСТВЕННИК:
+ *       ООО "Интеллектуальные инвестиции", ИНН 1655386205
+ *       420107, РЕСПУБЛИКА ТАТАРСТАН, ГОРОД КАЗАНЬ, УЛИЦА СПАРТАКОВСКАЯ, ДОМ 2, ПОМЕЩЕНИЕ 119
+ * (c) ООО "Интеллектуальные инвестиции", 2020
+ */
+
+/*
+ * STRICTLY CONFIDENTIAL
+ * TRADE SECRET
+ * PROPRIETARY:
+ *       "Intelinvest" Ltd, TIN 1655386205
+ *       420107, REPUBLIC OF TATARSTAN, KAZAN CITY, SPARTAKOVSKAYA STREET, HOUSE 2, ROOM 119
+ * (c) "Intelinvest" Ltd, 2020
+ *
+ * СТРОГО КОНФИДЕНЦИАЛЬНО
+ * КОММЕРЧЕСКАЯ ТАЙНА
+ * СОБСТВЕННИК:
+ *       ООО "Интеллектуальные инвестиции", ИНН 1655386205
+ *       420107, РЕСПУБЛИКА ТАТАРСТАН, ГОРОД КАЗАНЬ, УЛИЦА СПАРТАКОВСКАЯ, ДОМ 2, ПОМЕЩЕНИЕ 119
+ * (c) ООО "Интеллектуальные инвестиции", 2020
+ */
+
+/*
+ * STRICTLY CONFIDENTIAL
+ * TRADE SECRET
+ * PROPRIETARY:
+ *       "Intelinvest" Ltd, TIN 1655386205
+ *       420107, REPUBLIC OF TATARSTAN, KAZAN CITY, SPARTAKOVSKAYA STREET, HOUSE 2, ROOM 119
+ * (c) "Intelinvest" Ltd, 2020
+ *
+ * СТРОГО КОНФИДЕНЦИАЛЬНО
+ * КОММЕРЧЕСКАЯ ТАЙНА
+ * СОБСТВЕННИК:
+ *       ООО "Интеллектуальные инвестиции", ИНН 1655386205
+ *       420107, РЕСПУБЛИКА ТАТАРСТАН, ГОРОД КАЗАНЬ, УЛИЦА СПАРТАКОВСКАЯ, ДОМ 2, ПОМЕЩЕНИЕ 119
+ * (c) ООО "Интеллектуальные инвестиции", 2020
+ */
+
 import {ChartObject} from "highcharts";
 import Highstock from "highcharts/highstock";
 import {Inject} from "typescript-ioc";
@@ -21,15 +69,15 @@ import {ChartUtils} from "../../utils/chartUtils";
                 </div>
 
                 <v-card class="portfolio-rows-filter__settings" style="box-shadow: none !important;">
-                    <v-switch v-model="seriesFilter.totalChart" @change="toggleChartOption(ChartSeries.TOTAL)" class="margT0" hide-details>
+                    <v-switch v-model="seriesFilter.totalProfit" @change="toggleChartOption(ChartSeries.TOTAL_PROFIT)" class="margT0" hide-details>
                         <template #label>
-                            <span>{{ ChartSeries.TOTAL.description }}</span>
+                            <span>{{ ChartSeries.TOTAL_PROFIT.description }}</span>
                             <v-tooltip content-class="custom-tooltip-wrap" bottom>
                                 <sup class="custom-tooltip" slot="activator">
                                     <v-icon>fas fa-info-circle</v-icon>
                                 </sup>
                                 <span>
-                                    Включите для отображения суммарной стоимости портфеля
+                                    Включите для отображения графика суммарной прибыли портфеля
                                 </span>
                             </v-tooltip>
                         </template>
@@ -47,93 +95,41 @@ import {ChartUtils} from "../../utils/chartUtils";
                             </v-tooltip>
                         </template>
                     </v-switch>
-                    <v-switch v-model="seriesFilter.showStockExchange" @change="toggleChartOption(ChartSeries.INDEX_STOCK_EXCHANGE)" class="mt-3" hide-details>
+                    <v-switch v-model="seriesFilter.rateProfit" @change="toggleChartOption(ChartSeries.RATE_PROFIT)" class="mt-3" hide-details>
                         <template #label>
-                            <span>{{ ChartSeries.INDEX_STOCK_EXCHANGE.description }}</span>
+                            <span>{{ ChartSeries.RATE_PROFIT.description }}</span>
                             <v-tooltip content-class="custom-tooltip-wrap" bottom>
                                 <sup class="custom-tooltip" slot="activator">
                                     <v-icon>fas fa-info-circle</v-icon>
                                 </sup>
                                 <span>
-                                    Включите, если хотите чтобы на графике отображалось сравнение с индексом МосБиржи
+                                    Включите для отображения графика курсовой прибыли
                                 </span>
                             </v-tooltip>
                         </template>
                     </v-switch>
-                    <v-switch v-model="seriesFilter.stockChart" @change="toggleChartOption(ChartSeries.STOCKS)" class="mt-3" hide-details>
+                    <v-switch v-model="seriesFilter.exchangeProfit" @change="toggleChartOption(ChartSeries.EXCHANGE_PROFIT)" class="mt-3" hide-details>
                         <template #label>
-                            <span>{{ ChartSeries.STOCKS.description }}</span>
+                            <span>{{ ChartSeries.EXCHANGE_PROFIT.description }}</span>
                             <v-tooltip content-class="custom-tooltip-wrap" bottom>
                                 <sup class="custom-tooltip" slot="activator">
                                     <v-icon>fas fa-info-circle</v-icon>
                                 </sup>
                                 <span>
-                                    Включите, если хотите чтобы на графике отображалось стоимость акций
+                                    Включите для отображения графика прибыли по сделкам
                                 </span>
                             </v-tooltip>
                         </template>
                     </v-switch>
-                    <v-switch v-model="seriesFilter.etfChart" @change="toggleChartOption(ChartSeries.ETF)" class="mt-3" hide-details>
+                    <v-switch v-model="seriesFilter.calculationProfit" @change="toggleChartOption(ChartSeries.CALCULATION_PROFIT)" class="mt-3" hide-details>
                         <template #label>
-                            <span>{{ ChartSeries.ETF.description }}</span>
+                            <span>{{ ChartSeries.CALCULATION_PROFIT.description }}</span>
                             <v-tooltip content-class="custom-tooltip-wrap" bottom>
                                 <sup class="custom-tooltip" slot="activator">
                                     <v-icon>fas fa-info-circle</v-icon>
                                 </sup>
                                 <span>
-                                    Включите, если хотите чтобы на графике отображалось стоимость ПИФов/ETF
-                                </span>
-                            </v-tooltip>
-                        </template>
-                    </v-switch>
-                    <v-switch v-model="seriesFilter.bondChart" @change="toggleChartOption(ChartSeries.BONDS)" class="mt-3" hide-details>
-                        <template #label>
-                            <span>{{ ChartSeries.BONDS.description }}</span>
-                            <v-tooltip content-class="custom-tooltip-wrap" bottom>
-                                <sup class="custom-tooltip" slot="activator">
-                                    <v-icon>fas fa-info-circle</v-icon>
-                                </sup>
-                                <span>
-                                    Включите, если хотите чтобы на графике отображалось стоимость облигаций
-                                </span>
-                            </v-tooltip>
-                        </template>
-                    </v-switch>
-                    <v-switch v-model="seriesFilter.moneyChart" @change="toggleChartOption(ChartSeries.MONEY)" class="mt-3" hide-details>
-                        <template #label>
-                            <span>{{ ChartSeries.MONEY.description }}</span>
-                            <v-tooltip content-class="custom-tooltip-wrap" bottom>
-                                <sup class="custom-tooltip" slot="activator">
-                                    <v-icon>fas fa-info-circle</v-icon>
-                                </sup>
-                                <span>
-                                    Включите, если хотите чтобы на графике отображалось денежные средства
-                                </span>
-                            </v-tooltip>
-                        </template>
-                    </v-switch>
-                    <v-switch v-model="seriesFilter.inOutMoneyChart" @change="toggleChartOption(ChartSeries.IN_OUT_MONEY)" class="mt-3" hide-details>
-                        <template #label>
-                            <span>{{ ChartSeries.IN_OUT_MONEY.description }}</span>
-                            <v-tooltip content-class="custom-tooltip-wrap" bottom>
-                                <sup class="custom-tooltip" slot="activator">
-                                    <v-icon>fas fa-info-circle</v-icon>
-                                </sup>
-                                <span>
-                                    Включите, если хотите чтобы на графике отображались Вводы/Выводы средств
-                                </span>
-                            </v-tooltip>
-                        </template>
-                    </v-switch>
-                    <v-switch v-model="seriesFilter.totalProfit" @change="toggleChartOption(ChartSeries.TOTAL_PROFIT)" class="mt-3" hide-details>
-                        <template #label>
-                            <span>{{ ChartSeries.TOTAL_PROFIT.description }}</span>
-                            <v-tooltip content-class="custom-tooltip-wrap" bottom>
-                                <sup class="custom-tooltip" slot="activator">
-                                    <v-icon>fas fa-info-circle</v-icon>
-                                </sup>
-                                <span>
-                                    Включите, если хотите чтобы на графике отображалась суммарная прибыль
+                                    Включите для отображения графика прибыли от начислений (Дивиденды, Купоны)
                                 </span>
                             </v-tooltip>
                         </template>
@@ -172,7 +168,7 @@ import {ChartUtils} from "../../utils/chartUtils";
         </div>
     `
 })
-export class PortfolioLineChart extends UI {
+export class ProfitLineChart extends UI {
 
     $refs: {
         container: HTMLElement
@@ -206,24 +202,14 @@ export class PortfolioLineChart extends UI {
     private selectedRange: string = null;
     /** Данные фильтра */
     private seriesFilter: ChartSeriesFilter = {
-        /** Признак отображения сделок на графике */
-        showTrades: true,
-        /** Признак отображения графика суммарной стоимости */
-        totalChart: true,
-        /** Признак отображения графика индкса Мосбиржи */
-        showStockExchange: false,
-        /** Признак отображения графика денежных средств */
-        moneyChart: false,
-        /** Признак отображения графика внесения/списания ДС */
-        inOutMoneyChart: false,
-        /** Признак отображения графика стоимости Акций */
-        stockChart: false,
-        /** Признак отображения графика стоимости ETF */
-        etfChart: false,
-        /** Признак отображения графика стоимости Облигаций */
-        bondChart: false,
-        /** Признак отображения графика прибыли */
-        totalProfit: false
+        /** Признак отображения графика Прибыль по сделкам */
+        exchangeProfit: false,
+        /** Признак отображения графика Прибыль курсовая */
+        rateProfit: false,
+        /** Признак отображения графика Прибыль от начислений (Дивиденды, Купоны) */
+        calculationProfit: false,
+        /** Признак отображения графика Прибыль общая */
+        totalProfit: true
     };
     /** Сравнение графиков. Для отображения процентов */
     private compare: boolean = false;
@@ -236,7 +222,7 @@ export class PortfolioLineChart extends UI {
     async mounted(): Promise<void> {
         this.restoreState();
         ChartSeries.values().forEach(series => {
-            (this.seriesFilter as any)[series.code] = this.getStorageValue(series, [ChartSeries.EVENTS, ChartSeries.TOTAL].includes(series));
+            (this.seriesFilter as any)[series.code] = this.getStorageValue(series, [ChartSeries.EVENTS, ChartSeries.TOTAL_PROFIT].includes(series));
         });
 
         this.prepareLineData();
@@ -284,20 +270,20 @@ export class PortfolioLineChart extends UI {
 
     async toggleChartOption(series: ChartSeries): Promise<void> {
         this.toggleChartSeries(series);
-        if (series === ChartSeries.TOTAL) {
-            this.seriesFilter.showTrades = this.seriesFilter.totalChart;
+        if (series === ChartSeries.TOTAL_PROFIT) {
+            this.seriesFilter.showTrades = this.seriesFilter.totalProfit;
         }
         setTimeout(async () => await this.draw(), 0);
-        if (series === ChartSeries.TOTAL && this.seriesFilter.totalChart) {
+        if (series === ChartSeries.TOTAL_PROFIT && this.seriesFilter.totalProfit) {
             await this.onShowTradesChange();
         }
     }
 
     async resetFilter(): Promise<void> {
-        this.seriesFilter.totalChart = true;
+        this.seriesFilter.totalProfit = true;
         this.seriesFilter.showTrades = true;
         await this.onShowTradesChange();
-        this.toggleChartSeries(ChartSeries.TOTAL);
+        this.toggleChartSeries(ChartSeries.TOTAL_PROFIT);
         setTimeout(async () => await this.draw(), 0);
     }
 
@@ -308,11 +294,11 @@ export class PortfolioLineChart extends UI {
     }
 
     private prepareLineData(): void {
-        [ChartSeries.TOTAL, ChartSeries.STOCKS, ChartSeries.ETF, ChartSeries.BONDS, ChartSeries.MONEY, ChartSeries.IN_OUT_MONEY, ChartSeries.TOTAL_PROFIT]
+        [ChartSeries.TOTAL_PROFIT, ChartSeries.RATE_PROFIT, ChartSeries.EXCHANGE_PROFIT, ChartSeries.CALCULATION_PROFIT]
             .forEach(series => {
                 this.lineChartSeries[series.code] = {
                     data: ChartUtils.convertToDots(this.data, series.fieldName),
-                    balloonTitle: series === ChartSeries.TOTAL ? this.balloonTitle : series.description,
+                    balloonTitle: series.description,
                     enabled: (this.seriesFilter as any)[series.code],
                     id: series.code
                 };
@@ -329,7 +315,7 @@ export class PortfolioLineChart extends UI {
             this.selectedRangeIndex,
             2,
             "",
-            "Стоимость портфеля",
+            "Прибыль портфеля",
             this.changeLoadState,
             null,
             Object.keys(this.lineChartSeries).map(key => this.lineChartSeries[key]).filter(series => series.enabled),
@@ -364,8 +350,8 @@ export class PortfolioLineChart extends UI {
     }
 
     private get isDefault(): boolean {
-        return this.seriesFilter.showTrades && this.seriesFilter.totalChart && !this.seriesFilter.showStockExchange && !this.seriesFilter.bondChart &&
-            !this.seriesFilter.stockChart && !this.seriesFilter.etfChart && !this.seriesFilter.moneyChart && !this.seriesFilter.inOutMoneyChart && !this.seriesFilter.totalProfit;
+        return this.seriesFilter.showTrades && this.seriesFilter.totalProfit && !this.seriesFilter.rateProfit && !this.seriesFilter.exchangeProfit &&
+            !this.seriesFilter.calculationProfit;
     }
 
     private getStorageValue(chartSeries: ChartSeries, defaultValue: boolean = false): boolean {
