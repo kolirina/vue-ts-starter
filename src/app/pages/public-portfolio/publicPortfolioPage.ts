@@ -20,7 +20,7 @@ import {ChartUtils} from "../../utils/chartUtils";
                     <a @click="hideHintsPanel">Больше не показывать</a>
                 </div>
                 <div class="public-portfolio-list">
-                    <div v-for="portfolio in publicPortfolios" :key="portfolio.id" class="public-portfolio-item">
+                    <div v-for="portfolio in publicPortfolios" :key="portfolio.id" @click="viewPortfolio(portfolio.id)" class="public-portfolio-item">
                         <div class="public-portfolio-item__header">{{ portfolio.investorName }}</div>
                         <div class="public-portfolio-item__title">{{ portfolio.portfolioName }}</div>
                         <div class="public-portfolio-item__chart">
@@ -29,13 +29,13 @@ import {ChartUtils} from "../../utils/chartUtils";
                         <div class="public-portfolio-item__footer">
                             <div>
                                 <div class="public-portfolio-item__footer-title">Стоимость</div>
-                                {{ portfolio.cost }}{{ portfolio.currency }}
+                                {{ portfolio.cost}}
                             </div>
                             <div>
                                 <div class="public-portfolio-item__footer-title">Прибыль</div>
                                 <span class="public-portfolio-positive">{{ portfolio.profit }}</span>
                             </div>
-                            <div>
+                            <div class="margRAuto">
                                 <div class="public-portfolio-item__footer-title">Доходность</div>
                                 <span class="public-portfolio-positive">{{ portfolio.profitability }}</span>
                             </div>
@@ -67,6 +67,14 @@ export class PublicPortfolioPage extends UI {
         this.showHintPanel = false;
     }
 
+    /**
+     * Осуществляет переход на страницу просмотра портфеля
+     * @param id идентификатор портфеля
+     */
+    private viewPortfolio(id: number): void {
+        // this.$router.push();
+    }
+
     /** Возвращает список публичных портфелей */
     private async getPublicPortfolios(): Promise<PublicPortfolio[]> {
         return [
@@ -74,8 +82,7 @@ export class PublicPortfolioPage extends UI {
                 id: 1,
                 investorName: "Иван Смирнов",
                 portfolioName: "Построение портфеля на рос облигациях с получением доходности от 7% годовых",
-                cost: "17 000 000",
-                currency: "RUB",
+                cost: "17000000",
                 profit: "87,5%",
                 profitability: "12%",
                 referrals: 2000,
@@ -92,8 +99,7 @@ export class PublicPortfolioPage extends UI {
                 id: 2,
                 investorName: "Барнаби Мармадюк Алоизий Бенджи Кобвеб Дартаньян Эгберт Феликс Гаспар Гумберт Игнатий Джейден Каспер Лерой Максимилиан",
                 portfolioName: "Получение стабильного дохода с американский дивидендных акций",
-                cost: "17 000 000",
-                currency: "USD",
+                cost: "17000000",
                 profit: "87,5%",
                 profitability: "12%",
                 referrals: 2000,
@@ -137,8 +143,6 @@ export type PublicPortfolio = {
     portfolioName: string,
     /** Стоимость */
     cost: string,
-    /** Валюта */
-    currency: string,
     /** Выгода */
     profit: string,
     /** Доходность */

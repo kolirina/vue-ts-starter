@@ -156,7 +156,8 @@ export class ThemeUtils {
     .intel-invest-instruction__values, .intel-invest-instruction__template-requirements, .import-instructions, .import-default-text .tooltip-text,
     .snotifyToast__body, .info-share-page__empty, .import-dialog-wrapper__title-text, .fs18, .fs36, .import-default-text,
     .snotifyToast__buttons button, .update-service-dialog__content,
-    .custom-v-menu .v-menu-content, .section-title,
+    .custom-v-menu .v-menu-content, .section-title, .public-portfolio-item__title, .public-portfolio-item__footer-title,
+    .public-portfolio-item__footer-referrals, .public-portfolio-item__footer-like, .public-portfolio-item__footer-dislike,
     .v-date-picker-years, .empty-station__description {color: #fff}
 
     .theme--light.v-label,
@@ -262,6 +263,9 @@ export class ThemeUtils {
     .v-input input::-webkit-input-placeholder {color: #cfd0d4 !important}
     .v-input input::-ms-input-placeholder {color: #cfd0d4 !important}
     .v-input input::-moz-placeholder {color: #cfd0d4 !important}
+
+    .public-portfolio-item .highcharts-background {fill: none !important}
+    .public-portfolio-item__chart:after {background: linear-gradient(to top, #2c3040 20%,transparent 50%);}
     `;
 
     static setStyles(nightTheme: boolean): void {

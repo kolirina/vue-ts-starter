@@ -46,6 +46,11 @@
         background: linear-gradient(to top, #fff 20%, transparent 50%);
       }
 
+      > div {
+        margin-left: -10px;
+        width: calc(100% + 20px) !important;
+      }
+
       .highcharts-graph {stroke: none}
     }
 
@@ -78,10 +83,7 @@
         margin-left: 8px !important;
       }
 
-      &-referrals {
-        background: url("../img/public-portfolio/icon-referrals.svg") no-repeat left center;
-        margin-left: auto !important;
-      }
+      &-referrals {background: url("../img/public-portfolio/icon-referrals.svg") no-repeat left center}
       &-like {background: url("../img/public-portfolio/icon-like.svg") no-repeat left center}
       &-dislike {background: url("../img/public-portfolio/icon-dislike.svg") no-repeat left center}
     }
@@ -89,4 +91,16 @@
 
   &-positive {color: $table--num--green-color}
   &-negative {color: $table--num--red-color}
+
+  @media only screen and (max-width: $sm-breakpoint) {
+    &-item {
+      width: 100% !important;
+      max-width: 100%;
+      margin: 0 0 12px;
+
+      &__footer {
+        flex-wrap: wrap;
+      }
+    }
+  }
 }

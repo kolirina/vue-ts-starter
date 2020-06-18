@@ -15,6 +15,7 @@ import {EventsPage} from "../pages/eventsPage";
 import {HelpPage} from "../pages/helpPage";
 import {PortfolioPage} from "../pages/portfolioPage";
 import {PublicPortfolioPage} from "../pages/public-portfolio/publicPortfolioPage";
+import {PublicPortfolioViewPage} from "../pages/public-portfolio/publicPortfolioViewPage";
 import {QuotesPage} from "../pages/quotes/quotesPage";
 import {RebalancingPage} from "../pages/rebalancingPage";
 import {ExportPage} from "../pages/settings/exportPage";
@@ -395,7 +396,7 @@ export class RouterConfiguration {
                 component: PublicPortfolioPage,
                 meta: {
                     title: "Публичные портфели",
-                    tourName: "portfolio",
+                    tourName: "public-portfolio",
                     public: true
                 }
             },
