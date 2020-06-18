@@ -39,9 +39,11 @@ import {ChartUtils} from "../../utils/chartUtils";
                                 <div class="public-portfolio-item__footer-title">Доходность</div>
                                 <span class="public-portfolio-positive">{{ portfolio.profitability }}</span>
                             </div>
-                            <div class="public-portfolio-item__footer-referrals">{{ getFriendlyNumber(portfolio.referrals) }}</div>
-                            <div class="public-portfolio-item__footer-like">{{ getFriendlyNumber(portfolio.like) }}</div>
-                            <div class="public-portfolio-item__footer-dislike">{{ getFriendlyNumber(portfolio.dislike) }}</div>
+                            <div class="public-portfolio-item__footer-social">
+                                <div class="public-portfolio-item__footer-referrals">{{ getFriendlyNumber(portfolio.referrals) }}</div>
+                                <div class="public-portfolio-item__footer-like">{{ getFriendlyNumber(portfolio.like) }}</div>
+                                <div class="public-portfolio-item__footer-dislike">{{ getFriendlyNumber(portfolio.dislike) }}</div>
+                            </div>
                         </div>
                     </div>
                 </div>

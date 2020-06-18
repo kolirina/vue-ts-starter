@@ -8,7 +8,6 @@
   &-item {
     cursor: pointer;
     margin: 0 12px 12px 0;
-    overflow: hidden;
     border: 1px solid $sidebar-hr-color;
     width: calc(50% - 6px);
     max-width: 492px;
@@ -59,6 +58,7 @@
       font-weight: bold;
       margin-top: 4px;
       align-items: flex-end;
+      position: relative;
 
       > div + div {margin-left: 12px}
 
@@ -69,18 +69,21 @@
         font-weight: normal;
       }
 
-      &-referrals,
-      &-like,
-      &-dislike {
-        padding-left: 20px;
-        font-size: 12px;
-        line-height: 18px;
-        color: #51545F;
-        height: 24px;
-        font-weight: normal;
+      &-social {
         display: flex;
         align-items: center;
-        margin-left: 8px !important;
+
+        > div {
+          padding-left: 20px;
+          font-size: 12px;
+          line-height: 18px;
+          color: #51545F;
+          height: 24px;
+          font-weight: normal;
+          display: flex;
+          align-items: center;
+          margin-left: 8px !important;
+        }
       }
 
       &-referrals {background: url("../img/public-portfolio/icon-referrals.svg") no-repeat left center}
@@ -100,6 +103,18 @@
 
       &__footer {
         flex-wrap: wrap;
+      }
+    }
+  }
+
+  @media only screen and (max-width: $xs-breakpoint) {
+    &-item {
+      margin: 0 0 48px;
+
+      &__footer-social {
+        position: absolute;
+        bottom: -48px;
+        right: -16px;
       }
     }
   }

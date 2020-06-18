@@ -157,7 +157,7 @@ export class ThemeUtils {
     .snotifyToast__body, .info-share-page__empty, .import-dialog-wrapper__title-text, .fs18, .fs36, .import-default-text,
     .snotifyToast__buttons button, .update-service-dialog__content,
     .custom-v-menu .v-menu-content, .section-title, .public-portfolio-item__title, .public-portfolio-item__footer-title,
-    .public-portfolio-item__footer-referrals, .public-portfolio-item__footer-like, .public-portfolio-item__footer-dislike,
+    .public-portfolio-item__footer-social > div,
     .v-date-picker-years, .empty-station__description {color: #fff}
 
     .theme--light.v-label,
