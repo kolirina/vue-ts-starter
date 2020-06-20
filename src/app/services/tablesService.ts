@@ -73,6 +73,7 @@ export class TablesService {
             value: TABLE_HEADERS.PROFIT_FROM_DIVIDENDS_PERCENT,
             active: false,
             width: "80",
+            class: "wrap-cell",
             tooltip: StockTooltips[TABLE_HEADERS.PROFIT_FROM_DIVIDENDS_PERCENT]
         },
         {

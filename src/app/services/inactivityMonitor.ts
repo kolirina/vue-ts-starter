@@ -98,10 +98,14 @@ export class InactivityMonitor {
             return;
         }
         setInterval(async () => {
-            const version = await this.applicationService.getBackendVersion();
-            const versionFromLocalStorage = this.storage.get<AppVersion>(StoreKeys.BACKEND_VERSION_KEY, null);
-            if (version && versionFromLocalStorage && version.build !== versionFromLocalStorage.build) {
-                await new NewBackendVersionDialog().show();
+            try {
+                const version = await this.applicationService.getBackendVersion();
+                const versionFromLocalStorage = this.storage.get<AppVersion>(StoreKeys.BACKEND_VERSION_KEY, null);
+                if (version && versionFromLocalStorage && version.build !== versionFromLocalStorage.build) {
+                    await new NewBackendVersionDialog().show();
+                }
+            } catch (e) {
+                // mute
             }
         }, 1000 * 60 * 10);
     }

@@ -39,12 +39,12 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-card-title>
             </v-card>
             <v-layout class="profile" column>
-                <div class="profile__header">
-                    <div class="profile__header-title">
+                <div class="card__header">
+                    <div class="card__header-title">
                         <img src="./img/profile/main-settings.svg" alt="">
                         <div>
                             <span>Основные настройки</span>
-                            <div @click="goBack" class="profile__back-btn">Назад</div>
+                            <div @click="goBack" class="back-btn">Назад</div>
                         </div>
                     </div>
                     <v-btn @click.stop="changePassword" color="#EBEFF7">
