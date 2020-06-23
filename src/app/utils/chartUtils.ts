@@ -120,12 +120,12 @@ export class ChartUtils {
             return {date: DateUtils.parseDate(key), value: points[key]};
         }).sort((a, b) => a.date.isAfter(b.date) ? 1 : a.date.isSame(b.date) ? 0 : -1);
         // для вывода от меньшего к большему
-        sorted.filter((item: { date?: dayjs.Dayjs, value: LineChartItem }) => !new BigMoney(item.value.totalProfit).amount.isZero())
+        sorted.filter((item: { date?: dayjs.Dayjs, value: LineChartItem }) => !new BigMoney(item.value.totalPeriodProfit).amount.isZero())
             .forEach((item: { date?: dayjs.Dayjs, value: LineChartItem }) => {
                 const periodName = item.date.format(monthly ? "MMMM" : "YYYY");
                 const label = `${periodName}${monthly ? " " + item.date.year() : ""}`;
                 categoryNames.push(label);
-                const profit = new BigMoney(item.value.totalProfit);
+                const profit = new BigMoney(item.value.totalPeriodProfit);
                 const percent = new Decimal(item.value.totalProfitPercentToPreviousPeriod);
                 const point = {
                     name: label,

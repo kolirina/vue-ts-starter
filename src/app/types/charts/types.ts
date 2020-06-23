@@ -64,6 +64,8 @@ export type LineChartItem = BaseChartDot & {
     calculationProfit: string;
     /** Прибыль общая */
     totalProfit: string;
+    /** Разница прибыли за период */
+    totalPeriodProfit: string;
     /** Процент прибыли по отношению к предыдущему периоду */
     totalProfitPercentToPreviousPeriod: string;
     /** Прибыль от амортизации */

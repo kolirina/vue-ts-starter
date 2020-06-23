@@ -63,6 +63,19 @@ import {ChartUtils} from "../../utils/chartUtils";
                             </v-tooltip>
                         </template>
                     </v-switch>
+                    <v-switch v-model="seriesFilter.showStockExchange" @change="toggleChartOption(ChartSeries.INDEX_STOCK_EXCHANGE)" class="mt-3" hide-details>
+                        <template #label>
+                            <span>{{ ChartSeries.INDEX_STOCK_EXCHANGE.description }}</span>
+                            <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                                <sup class="custom-tooltip" slot="activator">
+                                    <v-icon>fas fa-info-circle</v-icon>
+                                </sup>
+                                <span>
+                                    Включите, если хотите чтобы на графике отображалось сравнение с индексом МосБиржи
+                                </span>
+                            </v-tooltip>
+                        </template>
+                    </v-switch>
                     <v-switch v-model="seriesFilter.rateProfit" @change="toggleChartOption(ChartSeries.RATE_PROFIT)" class="mt-3" hide-details>
                         <template #label>
                             <span>{{ ChartSeries.RATE_PROFIT.description }}</span>
