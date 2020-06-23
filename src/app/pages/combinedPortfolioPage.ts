@@ -7,19 +7,17 @@ import {Resolver} from "../../../typings/vue";
 import {Component, UI} from "../app/ui";
 import {BlockByTariffDialog} from "../components/dialogs/blockByTariffDialog";
 import {CompositePortfolioManagement} from "../components/dialogs/compositePortfolioManagement";
-import {ShowProgress} from "../platform/decorators/showProgress";
 import {Storage} from "../platform/services/storage";
 import {ClientInfo, ClientService} from "../services/clientService";
 import {ExportService} from "../services/exportService";
 import {MarketHistoryService} from "../services/marketHistoryService";
 import {OverviewService} from "../services/overviewService";
-import {HighStockEventsGroup} from "../types/charts/types";
+import {HighStockEventsGroup, LineChartItem, PortfolioLineChartData} from "../types/charts/types";
 import {Currency} from "../types/currency";
 import {AddTradeEvent, EventType} from "../types/eventType";
 import {Permission} from "../types/permission";
 import {StoreKeys} from "../types/storeKeys";
 import {ForbiddenCode, Overview} from "../types/types";
-import {CommonUtils} from "../utils/commonUtils";
 import {UiStateHelper} from "../utils/uiStateHelper";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
@@ -35,8 +33,7 @@ const MainStore = namespace(StoreType.MAIN);
                 <base-portfolio-page :overview="overview" :line-chart-data="lineChartData" :line-chart-events="lineChartEvents" :index-line-chart-data="indexLineChartData"
                                      portfolio-name="Составной портфель" :view-currency="viewCurrency" :state-key-prefix="StoreKeys.PORTFOLIO_COMBINED_CHART"
                                      :side-bar-opened="sideBarOpened" :ids="ids"
-                                     @reloadLineChart="loadPortfolioLineChart"
-                                     @reloadLineChart="loadProfitLineChart">
+                                     @reloadLineChart="loadPortfolioLineChart">
                     <template #afterDashboard>
                         <v-layout align-center>
                             <div :class="['control-portfolios-title', blockNotEmpty() ? '' : 'pl-3']">
@@ -100,7 +97,9 @@ export class CombinedPortfolioPage extends UI {
     /** Валюта просмотра портфеля */
     private viewCurrency: string = Currency.RUB;
     /** Данные графика стоимости портфеля */
-    private lineChartData: any[] = null;
+    private lineChartData: LineChartItem[] = null;
+    /** Данные графика портфеля */
+    private portfolioLineChartData: PortfolioLineChartData = null;
     /** Данные по событиям для графика стоимости */
     private lineChartEvents: HighStockEventsGroup[] = null;
     /** Данные стоимости индекса ММВБ */
@@ -186,22 +185,12 @@ export class CombinedPortfolioPage extends UI {
 
     private async loadPortfolioLineChart(): Promise<void> {
         if (UiStateHelper.historyPanel[0] === 1) {
-            await this.loadLineChartData();
+            this.portfolioLineChartData = await this.overviewService.getCostChartCombined({ids: this.ids, viewCurrency: this.viewCurrency});
+            this.lineChartData = this.portfolioLineChartData.lineChartData;
+            if (this.overview.firstTradeDate) {
+                this.indexLineChartData = await this.marketHistoryService.getIndexHistory("MMVB", dayjs(this.overview.firstTradeDate).format("DD.MM.YYYY"));
+            }
+            this.lineChartEvents = await this.overviewService.getEventsChartDataCombined({ids: this.ids, viewCurrency: this.viewCurrency});
         }
-    }
-
-    @ShowProgress
-    private async loadProfitLineChart(): Promise<void> {
-        if (UiStateHelper.profitChartPanel[0] === 1 && !CommonUtils.exists(this.lineChartData) && !CommonUtils.exists(this.lineChartEvents)) {
-            await this.loadLineChartData();
-        }
-    }
-
-    private async loadLineChartData(): Promise<void> {
-        this.lineChartData = await this.overviewService.getCostChartCombined({ids: this.ids, viewCurrency: this.viewCurrency});
-        if (this.overview.firstTradeDate) {
-            this.indexLineChartData = await this.marketHistoryService.getIndexHistory("MMVB", dayjs(this.overview.firstTradeDate).format("DD.MM.YYYY"));
-        }
-        this.lineChartEvents = await this.overviewService.getEventsChartDataCombined({ids: this.ids, viewCurrency: this.viewCurrency});
     }
 }

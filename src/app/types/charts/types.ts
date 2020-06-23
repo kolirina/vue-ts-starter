@@ -64,11 +64,31 @@ export type LineChartItem = BaseChartDot & {
     calculationProfit: string;
     /** Прибыль общая */
     totalProfit: string;
+    /** Процент прибыли по отношению к предыдущему периоду */
+    totalProfitPercentToPreviousPeriod: string;
+    /** Прибыль от амортизации */
+    amortizationProfit: string;
+    /** Комиссия накопительным итогом */
+    totalFee: string;
+    /** Полученный и выплаченный НКД накопительным итогом */
+    totalNkd: string;
+    /** НКД по открытой позиции */
+    openPositionNkd: string;
     /** Год */
     year: string,
     /** Признак что это последняя запись в году */
     lastItemOfTheYear: string
 };
+
+/** Информация для графиков стоимости и прибыли */
+export interface PortfolioLineChartData {
+    /** Список данных для отрисовки графика */
+    lineChartData: LineChartItem[];
+    /** Данные для графика прибыли в разбивке по месяцам */
+    pointsByMonth: { [key: string]: LineChartItem };
+    /** Данные для графика прибыли в разбивке по годам */
+    pointsByYear: { [key: string]: LineChartItem };
+}
 
 export type EventChartData = {
     date: string,
@@ -188,4 +208,6 @@ export enum ChartType {
     WHOLE_PORTFOLIO_SHARES_ALLOCATION_CHART = "wholePortfolioSharesAllocationChart",
     PORTFOLIO_LINE_CHART = "portfolioLineChart",
     PROFIT_LINE_CHART = "profitLineChart",
+    PROFIT_MONTH_CHART = "profitMonthChart",
+    PROFIT_YEAR_CHART = "profitYearChart",
 }

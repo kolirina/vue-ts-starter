@@ -202,6 +202,7 @@ export class ProfitLineChart extends UI {
     private selectedRange: string = null;
     /** Данные фильтра */
     private seriesFilter: ChartSeriesFilter = {
+        showTrades: true,
         /** Признак отображения графика Прибыль по сделкам */
         exchangeProfit: false,
         /** Признак отображения графика Прибыль курсовая */

@@ -38,7 +38,6 @@ import {AssetPortfolioRow, AssetRow, BlockType, BondPortfolioRow, EventType, Ove
 import {ChartUtils} from "../utils/chartUtils";
 import {PortfolioUtils} from "../utils/portfolioUtils";
 import {UiStateHelper} from "../utils/uiStateHelper";
-import {ProfitLineChart} from "../components/charts/profitLineChart";
 
 @Component({
     // language=Vue
@@ -164,30 +163,6 @@ import {ProfitLineChart} from "../components/charts/profitLineChart";
                     </v-card-text>
                 </expanded-panel>
 
-                <expanded-panel v-if="blockNotEmpty(emptyBlockType.PROFIT_CHART_PANEL)" :value="$uistate.profitChartPanel"
-                                :state="$uistate.PROFIT_CHART_PANEL" @click="onProfitLineChartPanelStateChanges" customMenu class="mt-3"
-                                :data-v-step="getTourStepIndex(PortfolioBlockType.PROFIT_CHART_PANEL)">
-                    <template #header>Прибыль портфеля</template>
-                    <template #customMenu>
-                        <chart-export-menu v-if="lineChartData && profitLineChartEvents" @print="print(ChartType.PROFIT_LINE_CHART)"
-                                           @exportTo="exportTo(ChartType.PROFIT_LINE_CHART, $event)"
-                                           class="exp-panel-menu"></chart-export-menu>
-                    </template>
-
-                    <v-card-text class="px-1">
-                        <profit-line-chart v-if="lineChartData && profitLineChartEvents" :ref="ChartType.PROFIT_LINE_CHART" :data="lineChartData"
-                                              :moex-index-data="indexLineChartData" :state-key-prefix="stateKeyPrefix"
-                                              :events-chart-data="profitLineChartEvents" :balloon-title="portfolioName"></profit-line-chart>
-                        <v-container v-else grid-list-md text-xs-center>
-                            <v-layout row wrap>
-                                <v-flex xs12>
-                                    <v-progress-circular :size="70" :width="7" indeterminate color="indigo"></v-progress-circular>
-                                </v-flex>
-                            </v-layout>
-                        </v-container>
-                    </v-card-text>
-                </expanded-panel>
-
                 <expanded-panel v-if="blockNotEmpty(emptyBlockType.AGGREGATE)" :value="$uistate.aggregateGraph" :state="$uistate.AGGREGATE_CHART_PANEL" customMenu class="mt-3"
                                 :data-v-step="getTourStepIndex(PortfolioBlockType.AGGREGATE_CHART)">
                     <template #header>Состав портфеля по категориям</template>
@@ -278,7 +253,7 @@ import {ProfitLineChart} from "../components/charts/profitLineChart";
             </v-layout>
         </v-container>
     `,
-    components: {AggregateAssetTable, StockTable, BondTable, PortfolioLineChart, ProfitLineChart, PortfolioRowsTableFilter, NegativeBalanceNotification}
+    components: {AggregateAssetTable, StockTable, BondTable, PortfolioLineChart, PortfolioRowsTableFilter, NegativeBalanceNotification}
 })
 export class BasePortfolioPage extends UI {
 
@@ -319,9 +294,6 @@ export class BasePortfolioPage extends UI {
     /** Данные по событиям графика стоимости портфеля */
     @Prop({required: false})
     private lineChartEvents: HighStockEventsGroup[];
-    /** Данные по событиям графика прибыли портфеля */
-    @Prop({required: false})
-    private profitLineChartEvents: HighStockEventsGroup[];
     /** Признак доступности экспорта таблиц */
     @Prop({type: Boolean, required: false})
     private exportable: boolean;
@@ -427,7 +399,6 @@ export class BasePortfolioPage extends UI {
     private blockNotEmpty(type: BlockType): boolean {
         switch (type) {
             case BlockType.HISTORY_PANEL:
-            case BlockType.PROFIT_CHART_PANEL:
                 return this.overview.bondPortfolio.rows.length !== 0 || this.overview.stockPortfolio.rows.length !== 0 ||
                     this.overview.assetPortfolio.rows.length !== 0 || this.overview.etfPortfolio.rows.length !== 0;
             case BlockType.BOND_PORTFOLIO:
@@ -504,10 +475,6 @@ export class BasePortfolioPage extends UI {
 
     private async onPortfolioLineChartPanelStateChanges(): Promise<void> {
         this.$emit(EventType.reloadLineChart);
-    }
-
-    private async onProfitLineChartPanelStateChanges(): Promise<void> {
-        this.$emit(EventType.reloadProfitLineChart);
     }
 
     private async openTableHeadersDialog(tableName: string): Promise<void> {
