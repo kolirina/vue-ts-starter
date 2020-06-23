@@ -56,11 +56,39 @@ export type LineChartItem = BaseChartDot & {
     moneyAmount: string,
     /** Сумма приходящаяся на денежные средства (Вводы/Выводы ДС, без учета списаний по связанным сделкам) */
     inOutMoneyAmount: string,
+    /** Прибыль по сделкам */
+    exchangeProfit: string;
+    /** Прибыль курсовая */
+    rateProfit: string;
+    /** Прибыль от начислений (Дивиденды, Купоны) */
+    calculationProfit: string;
+    /** Прибыль общая */
+    totalProfit: string;
+    /** Процент прибыли по отношению к предыдущему периоду */
+    totalProfitPercentToPreviousPeriod: string;
+    /** Прибыль от амортизации */
+    amortizationProfit: string;
+    /** Комиссия накопительным итогом */
+    totalFee: string;
+    /** Полученный и выплаченный НКД накопительным итогом */
+    totalNkd: string;
+    /** НКД по открытой позиции */
+    openPositionNkd: string;
     /** Год */
     year: string,
     /** Признак что это последняя запись в году */
     lastItemOfTheYear: string
 };
+
+/** Информация для графиков стоимости и прибыли */
+export interface PortfolioLineChartData {
+    /** Список данных для отрисовки графика */
+    lineChartData: LineChartItem[];
+    /** Данные для графика прибыли в разбивке по месяцам */
+    pointsByMonth: { [key: string]: LineChartItem };
+    /** Данные для графика прибыли в разбивке по годам */
+    pointsByYear: { [key: string]: LineChartItem };
+}
 
 export type EventChartData = {
     date: string,
@@ -131,6 +159,10 @@ export class ChartSeries extends (EnumType as IStaticEnum<ChartSeries>) {
     static readonly ETF = new ChartSeries("etfChart", "Стоимость ПИФов/ETF", "_SHOW_ETF", "etfAmount");
     static readonly BONDS = new ChartSeries("bondChart", "Стоимость облигаций", "_SHOW_BONDS", "bondAmount");
     static readonly TOTAL = new ChartSeries("totalChart", "Суммарная стоимость", "_SHOW_TOTAL", "amount");
+    static readonly RATE_PROFIT = new ChartSeries("rateProfit", "Курсовая прибыль", "_SHOW_RATE_PROFIT", "rateProfit");
+    static readonly EXCHANGE_PROFIT = new ChartSeries("exchangeProfit", "Прибыль по сделкам", "_SHOW_EXCHANGE_PROFIT", "exchangeProfit");
+    static readonly CALCULATION_PROFIT = new ChartSeries("calculationProfit", "Прибыль по начислениям", "_SHOW_CALCULATION_PROFIT", "calculationProfit");
+    static readonly TOTAL_PROFIT = new ChartSeries("totalProfit", "Суммарная прибыль", "_SHOW_TOTAL_PROFIT", "totalProfit");
 
     private constructor(public code: string, public description: string, public storagePrefix: string, public fieldName: string) {
         super();
@@ -139,21 +171,29 @@ export class ChartSeries extends (EnumType as IStaticEnum<ChartSeries>) {
 
 export interface ChartSeriesFilter {
     /** Признак отображения сделок на графике */
-    showTrades: boolean;
+    showTrades?: boolean;
     /** Признак отображения графика суммарной стоимости */
-    totalChart: boolean;
+    totalChart?: boolean;
     /** Признак отображения графика индкса Мосбиржи */
-    showStockExchange: boolean;
+    showStockExchange?: boolean;
     /** Признак отображения графика денежных средств */
-    moneyChart: boolean;
+    moneyChart?: boolean;
     /** Признак отображения графика внесения/списания ДС */
-    inOutMoneyChart: boolean;
+    inOutMoneyChart?: boolean;
     /** Признак отображения графика стоимости Акций */
-    stockChart: boolean;
+    stockChart?: boolean;
     /** Признак отображения графика стоимости ETF */
-    etfChart: boolean;
+    etfChart?: boolean;
     /** Признак отображения графика стоимости Облигаций */
-    bondChart: boolean;
+    bondChart?: boolean;
+    /** Признак отображения графика Прибыль по сделкам */
+    exchangeProfit?: boolean;
+    /** Признак отображения графика Прибыль курсовая */
+    rateProfit?: boolean;
+    /** Признак отображения графика Прибыль от начислений (Дивиденды, Купоны) */
+    calculationProfit?: boolean;
+    /** Признак отображения графика Прибыль общая */
+    totalProfit?: boolean;
 }
 
 export enum ChartType {
@@ -167,4 +207,7 @@ export enum ChartType {
     YIELD_CONTRIBUTORS_CHART = "yieldContributorsChart",
     WHOLE_PORTFOLIO_SHARES_ALLOCATION_CHART = "wholePortfolioSharesAllocationChart",
     PORTFOLIO_LINE_CHART = "portfolioLineChart",
+    PROFIT_LINE_CHART = "profitLineChart",
+    PROFIT_MONTH_CHART = "profitMonthChart",
+    PROFIT_YEAR_CHART = "profitYearChart",
 }

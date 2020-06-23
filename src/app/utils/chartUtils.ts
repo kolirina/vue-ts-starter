@@ -112,6 +112,39 @@ export class ChartUtils {
         return {data, categories: categoryNames};
     }
 
+    static doPortfolioProfitData(points: { [key: string]: LineChartItem }, monthly: boolean = true): ColumnChartData {
+        const positive: CustomDataPoint[] = [];
+        const negative: CustomDataPoint[] = [];
+        const categoryNames: string[] = [];
+        const sorted: Array<{ date?: dayjs.Dayjs, value: LineChartItem }> = Object.keys(points).map(key => {
+            return {date: DateUtils.parseDate(key), value: points[key]};
+        }).sort((a, b) => a.date.isAfter(b.date) ? 1 : a.date.isSame(b.date) ? 0 : -1);
+        // для вывода от меньшего к большему
+        sorted.filter((item: { date?: dayjs.Dayjs, value: LineChartItem }) => !new BigMoney(item.value.totalProfit).amount.isZero())
+            .forEach((item: { date?: dayjs.Dayjs, value: LineChartItem }) => {
+                const periodName = item.date.format(monthly ? "MMMM" : "YYYY");
+                const label = `${periodName}${monthly ? " " + item.date.year() : ""}`;
+                categoryNames.push(label);
+                const profit = new BigMoney(item.value.totalProfit);
+                const percent = new Decimal(item.value.totalProfitPercentToPreviousPeriod);
+                const point = {
+                    name: label,
+                    y: profit.amount.toDP(2, Decimal.ROUND_HALF_UP).toNumber(),
+                    profit: Filters.formatNumber(profit.amount.toDP(2, Decimal.ROUND_HALF_UP).toString()),
+                    currencySymbol: profit.currencySymbol,
+                    description: `${Filters.formatNumber(percent.toString())} %`
+                };
+                (profit.amount.isPositive() ? positive : negative).push(point);
+                (profit.amount.isPositive() ? negative : positive).push(null);
+            });
+        return {
+            series: [
+                {name: "Прибыль", data: positive, color: "#1f83c8"},
+                {name: "Убыток", data: negative, color: this.NEGATIVE_COLOR}
+            ], categoryNames: categoryNames
+        };
+    }
+
     static processEventsChartData(data: EventChartData[], flags: string = "flags", onSeries: string = "totalChart",
                                   shape: string = "circlepin", width: number = 10, color: string = "rgba(5,0,217,0.4)"): HighStockEventsGroup[] {
         const eventsGroups: HighStockEventsGroup[] = [];
@@ -824,6 +857,71 @@ export class ChartUtils {
                     }
                 }
             }],
+            exporting: {
+                enabled: false
+            },
+            series: chartData.series
+        });
+    }
+
+    /**
+     * Отрисовывает график и возвращает объект
+     * @param container контейнер где будет рисоваться график
+     * @param chartData данные для графика
+     * @param title заголовк графика
+     * @param viewCurrency валюта
+     * @param tooltipFormat формат тултипа
+     */
+    static drawColumnChart(container: HTMLElement, chartData: ColumnChartData, title: string = "", viewCurrency: string = "",
+                           tooltipFormat: PieChartTooltipFormat = PieChartTooltipFormat.COMMON): ChartObject {
+        return Highcharts.chart(container, {
+            chart: {
+                type: "column",
+                backgroundColor: null,
+                style: {
+                    fontFamily: "\"OpenSans\" sans-serif",
+                    fontSize: "12px",
+                }
+            },
+            title: {
+                text: title
+            },
+            plotOptions: {
+                column: {
+                    grouping: false,
+                },
+            },
+            xAxis: {
+                categories: chartData.categoryNames,
+                crosshair: true,
+                gridLineWidth: 1,
+                labels: {
+                    style: {
+                        fontSize: "12px",
+                        color: "#040427"
+                    }
+                },
+            },
+            yAxis: {
+                title: {
+                    text: ""
+                },
+                labels: {
+                    style: {
+                        fontSize: "12px",
+                        color: "#040427"
+                    }
+                }
+            },
+            legend: {
+                maxHeight: 100,
+                itemMarginTop: 2
+            },
+            tooltip: {
+                headerFormat: "",
+                pointFormat: this.PIE_CHART_TOOLTIP_FORMAT[tooltipFormat],
+                valueSuffix: `${viewCurrency ? ` ${Filters.currencySymbolByCurrency(viewCurrency)}` : ""}`
+            },
             exporting: {
                 enabled: false
             },

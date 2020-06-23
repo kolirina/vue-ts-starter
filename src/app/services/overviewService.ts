@@ -2,7 +2,7 @@ import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {Cache} from "../platform/services/cache";
 import {Http} from "../platform/services/http";
-import {EventChartData, HighStockEventsGroup, LineChartItem} from "../types/charts/types";
+import {EventChartData, HighStockEventsGroup, PortfolioLineChartData} from "../types/charts/types";
 import {CombinedInfoRequest, CurrentMoneyRequest, Overview, Portfolio, RebalancingModel} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
 import {IisType, PortfolioAccountType, PortfolioParams, PortfolioParamsResponse} from "./portfolioService";
@@ -99,12 +99,12 @@ export class OverviewService {
         await this.http.post(`/portfolios/${id}/default`);
     }
 
-    async getCostChart(id: number): Promise<LineChartItem[]> {
-        return this.http.get<LineChartItem[]>(`/portfolios/${id}/cost-chart`);
+    async getCostChart(id: number): Promise<PortfolioLineChartData> {
+        return this.http.get<PortfolioLineChartData>(`/portfolios/${id}/cost-chart`);
     }
 
-    async getCostChartCombined(request: CombinedInfoRequest): Promise<LineChartItem[]> {
-        return this.http.post<LineChartItem[]>(`/portfolios/cost-chart-combined`, request);
+    async getCostChartCombined(request: CombinedInfoRequest): Promise<PortfolioLineChartData> {
+        return this.http.post<PortfolioLineChartData>(`/portfolios/cost-chart-combined`, request);
     }
 
     async getEventsChartDataWithDefaults(id: number): Promise<HighStockEventsGroup[]> {
