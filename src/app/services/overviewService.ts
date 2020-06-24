@@ -107,18 +107,18 @@ export class OverviewService {
         return this.http.post<PortfolioLineChartData>(`/portfolios/cost-chart-combined`, request);
     }
 
-    async getEventsChartDataWithDefaults(id: number): Promise<HighStockEventsGroup[]> {
-        return this.getEventsChartData(id);
+    async getEventsChartDataWithDefaults(id: number, withMoneyTrades: boolean = true): Promise<HighStockEventsGroup[]> {
+        return this.getEventsChartData(id, withMoneyTrades);
     }
 
-    async getEventsChartData(id: number): Promise<HighStockEventsGroup[]> {
+    async getEventsChartData(id: number, withMoneyTrades: boolean = true): Promise<HighStockEventsGroup[]> {
         const data = await this.http.get<EventChartData[]>(`/portfolios/${id}/events-chart-data`);
-        return ChartUtils.processEventsChartData(data);
+        return ChartUtils.processEventsChartData(data, withMoneyTrades);
     }
 
-    async getEventsChartDataCombined(request: CombinedInfoRequest): Promise<HighStockEventsGroup[]> {
+    async getEventsChartDataCombined(request: CombinedInfoRequest, withMoneyTrades: boolean = true): Promise<HighStockEventsGroup[]> {
         const data = await this.http.post<EventChartData[]>(`/portfolios/events-chart-data-combined`, request);
-        return ChartUtils.processEventsChartData(data);
+        return ChartUtils.processEventsChartData(data, withMoneyTrades);
     }
 
     async getCurrentMoney(portfolioId: number): Promise<string> {

@@ -344,7 +344,7 @@ export class AnalyticsPage extends UI {
             this.indexLineChartData = await this.marketHistoryService.getIndexHistory("MMVB", dayjs(this.portfolio.overview.firstTradeDate).format("DD.MM.YYYY"));
         }
         if (!CommonUtils.exists(this.profitLineChartEvents)) {
-            this.profitLineChartEvents = await this.overviewService.getEventsChartDataWithDefaults(this.portfolio.id);
+            this.profitLineChartEvents = await this.overviewService.getEventsChartDataWithDefaults(this.portfolio.id, false);
             this.profitLineChartEvents.forEach(item => item.onSeries = "totalProfit");
         }
         this.profitByMonthsChartData = await this.doPortfolioProfitMonthData();

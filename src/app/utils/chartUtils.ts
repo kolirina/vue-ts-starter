@@ -145,11 +145,11 @@ export class ChartUtils {
         };
     }
 
-    static processEventsChartData(data: EventChartData[], flags: string = "flags", onSeries: string = "totalChart",
-                                  shape: string = "circlepin", width: number = 10, color: string = "rgba(5,0,217,0.4)"): HighStockEventsGroup[] {
+    static processEventsChartData(data: EventChartData[], withMoneyTrades: boolean, flags: string = "flags", onSeries: string = "totalChart", shape: string = "circlepin",
+                                  width: number = 10, color: string = "rgba(5,0,217,0.4)"): HighStockEventsGroup[] {
         const eventsGroups: HighStockEventsGroup[] = [];
         const eventsByCount: { [key: string]: HighStockEventData[] } = {};
-        const mapped = data.map(item => {
+        const mapped = data.filter(item => withMoneyTrades || item.text !== "M").map(item => {
             const parsedDate = DateUtils.parseDate(item.date);
             const date = Date.UTC(parsedDate.year(), parsedDate.month(), parsedDate.date());
             return {x: date, title: item.text, text: item.description, color: item.backgroundColor};

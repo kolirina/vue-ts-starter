@@ -196,12 +196,10 @@ export class PortfolioLineChart extends UI {
     @Prop({required: false})
     private eventsChartData: HighStockEventsGroup[];
     /** Префикс ключа под которым будет хранится состояние */
-    @Prop({type: String, required: false})
+    @Prop({type: String, default: "PORTFOLIO_LINE_CHART"})
     private stateKeyPrefix: string;
     /** Набор доступных для выбора диапазонов дат */
     private ranges: Highstock.RangeSelectorButton[] = [];
-    /** Индекс выбранного диапазона */
-    private selectedRangeIndex: number = 1;
     /** Выбранный диапазон */
     private selectedRange: string = null;
     /** Данные фильтра */
@@ -287,9 +285,16 @@ export class PortfolioLineChart extends UI {
         if (series === ChartSeries.TOTAL) {
             this.seriesFilter.showTrades = this.seriesFilter.totalChart;
         }
+        if (series === ChartSeries.INDEX_STOCK_EXCHANGE) {
+            const seriesEnabled = (this.seriesFilter as any)[series.code];
+            if (seriesEnabled) {
+                this.compare = seriesEnabled;
+                this.localStorage.set<boolean>(`${this.stateKeyPrefix}_COMPARE`, this.compare);
+            }
+        }
         setTimeout(async () => await this.draw(), 0);
         if (series === ChartSeries.TOTAL && this.seriesFilter.totalChart) {
-            await this.onShowTradesChange();
+            setTimeout(async () => await this.onShowTradesChange(), 0);
         }
     }
 
@@ -349,8 +354,15 @@ export class PortfolioLineChart extends UI {
             };
         });
         this.selectedRange = this.localStorage.get(`${this.stateKeyPrefix}_RANGE`, "10d");
+    }
+
+    /**
+     * Возвращает Индекс выбранного диапазона
+     */
+    private get selectedRangeIndex(): number {
+        this.selectedRange = this.localStorage.get(`${this.stateKeyPrefix}_RANGE`, "10d");
         const selectedIndex = this.ranges.map(range => range.text).indexOf(this.selectedRange);
-        this.selectedRangeIndex = selectedIndex === -1 ? 1 : selectedIndex;
+        return selectedIndex === -1 ? 1 : selectedIndex;
     }
 
     /**
