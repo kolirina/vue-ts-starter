@@ -181,7 +181,6 @@ const MainStore = namespace(StoreType.MAIN);
                                                                  @changePortfolioParams="changePortfolioParams" :portfolio-params="portfolioParams"
                                                                  class="margT20"></import-instructions>
                                         </expanded-panel>
-
                                     </v-stepper-content>
 
                                     <v-stepper-content step="2">
@@ -568,6 +567,8 @@ export class ImportPage extends UI {
             this.currentStep = ImportStep._2;
             return;
         }
+        // надо очистить, потому что повторно не загружаем
+        this.previousImportValidatedTradesCount = 0;
         this.currentStep = ImportStep._3;
     }
 
