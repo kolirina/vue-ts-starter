@@ -14,19 +14,23 @@
  * (c) ООО "Интеллектуальные инвестиции", 2020
  */
 
-import {Component, UI} from "../app/ui";
+import {Component, Prop, UI} from "../app/ui";
 import {DealsImportProvider} from "../services/importService";
 
 @Component({
     // language=Vue
     template: `
         <v-list-tile class="text-xs-center sidebar-list-item">
-            <v-list-tile-content>
+            <v-list-tile-content :style="innerStyle">
                 <v-menu offset-y transition="slide-y-transition" max-height="480px" min-width="260px" left>
-                    <v-btn slot="activator">
-                        <v-icon left>icon-edit-broker</v-icon>
-                        Изменить брокера
-                    </v-btn>
+                    <template slot="activator">
+                        <slot name="activator">
+                            <v-btn>
+                                <v-icon left>icon-edit-broker</v-icon>
+                                Изменить брокера
+                            </v-btn>
+                        </slot>
+                    </template>
                     <v-list class="providers-list" style="height: 450px">
                         <vue-scroll>
                             <v-list-tile v-for="provider in providers" :key="provider.code" @click="onSelectProvider(provider)">
@@ -45,6 +49,9 @@ import {DealsImportProvider} from "../services/importService";
     `
 })
 export class BrokerSwitcher extends UI {
+
+    @Prop({type: String, default: ""})
+    private innerStyle: string;
 
     /** Провайдеры отчетов */
     private providers = DealsImportProvider.values();

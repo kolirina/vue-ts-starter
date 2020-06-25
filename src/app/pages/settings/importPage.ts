@@ -93,7 +93,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         </div>
                                     </div>
                                 </div>
-                                <broker-switcher @selectProvider="onSelectProvider($event)" :class="{'margR12': importHistory.length}"></broker-switcher>
+                                <broker-switcher @selectProvider="onSelectProvider" :class="{'margR12': importHistory.length}"></broker-switcher>
                                 <v-btn v-if="showImportHistory" @click="goToImportHistory" color="#EBEFF7">
                                     <v-icon left>icon-import-history</v-icon>
                                     История импорта

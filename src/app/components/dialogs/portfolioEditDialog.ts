@@ -6,12 +6,14 @@ import {UI} from "../../app/ui";
 import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {CustomDialog} from "../../platform/dialogs/customDialog";
+import {DealsImportProvider} from "../../services/importService";
 import {IisType, PortfolioAccountType, PortfolioParams, PortfolioService} from "../../services/portfolioService";
 import {ALLOWED_CURRENCIES, Currency} from "../../types/currency";
 import {EventType} from "../../types/eventType";
 import {CommonUtils} from "../../utils/commonUtils";
 import {DateFormat, DateUtils} from "../../utils/dateUtils";
 import {MainStore} from "../../vuex/mainStore";
+import {BrokerSwitcher} from "../brokerSwitcher";
 
 @Component({
     // language=Vue
@@ -56,6 +58,14 @@ import {MainStore} from "../../vuex/mainStore";
                             <v-flex class="select-section" v-if="portfolioParams.accountType === accountType.IIS">
                                 <v-select :items="iisTypes" dense hide-details :menu-props="{nudgeBottom:'22'}"
                                           v-model="portfolioParams.iisType" :return-object="true" item-text="description" label="Тип вычета"></v-select>
+                            </v-flex>
+                            <v-flex class="select-section">
+                                <broker-switcher @selectProvider="onSelectProvider" inner-style="justify-content: start !important;">
+                                    <a slot="activator">
+                                        <span class="fs14">{{ selectedBroker ? selectedBroker.description : "Изменить брокера" }}</span>
+                                        <v-icon v-if="selectedBroker" @click.stop="removeBrokerId" small primary>fas fa-trash-alt</v-icon>
+                                    </a>
+                                </broker-switcher>
                             </v-flex>
                         </v-layout>
 
@@ -127,7 +137,7 @@ import {MainStore} from "../../vuex/mainStore";
             </v-card>
         </v-dialog>
     `,
-    components: {CustomDialog}
+    components: {CustomDialog, BrokerSwitcher}
 })
 export class PortfolioEditDialog extends CustomDialog<PortfolioDialogData, boolean> {
 
@@ -161,6 +171,7 @@ export class PortfolioEditDialog extends CustomDialog<PortfolioDialogData, boole
         } else {
             this.portfolioParams = {
                 name: "",
+                brokerId: null,
                 access: false,
                 viewCurrency: Currency.RUB,
                 openDate: DateUtils.formatDate(dayjs(), DateFormat.DATE2),
@@ -219,10 +230,26 @@ export class PortfolioEditDialog extends CustomDialog<PortfolioDialogData, boole
         }
     }
 
+    /**
+     * Обрабатывает событие выбора провайдера из стороннего компонента
+     * @param provider выбранный провайдер
+     */
+    private onSelectProvider(provider: DealsImportProvider): void {
+        this.portfolioParams.brokerId = provider.id;
+    }
+
+    private removeBrokerId(): void {
+        this.portfolioParams.brokerId = null;
+    }
+
     private get isValid(): boolean {
         return this.portfolioParams.name.length >= 3 && this.portfolioParams.name.length <= 40 &&
             (dayjs().isAfter(DateUtils.parseDate(this.portfolioParams.openDate)) || DateUtils.currentDate() === this.portfolioParams.openDate) &&
             (CommonUtils.isBlank(this.portfolioParams.note) || this.portfolioParams.note.length <= 500);
+    }
+
+    private get selectedBroker(): DealsImportProvider {
+        return this.portfolioParams.brokerId ? DealsImportProvider.valueById(this.portfolioParams.brokerId) : null;
     }
 
     private cancel(): void {
