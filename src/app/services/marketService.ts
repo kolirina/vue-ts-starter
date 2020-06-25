@@ -63,7 +63,7 @@ export class MarketService {
             bond: result.bond,
             history: this.convertDots(result.history),
             payments: ChartUtils.convertBondPayments(result.payments),
-            events: ChartUtils.processEventsChartData(result.payments, "flags", "dataseries", "circlepin", 10)
+            events: ChartUtils.processEventsChartData(result.payments, true, "flags", "dataseries", "circlepin", 10)
         };
     }
 

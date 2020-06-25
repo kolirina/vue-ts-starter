@@ -307,7 +307,7 @@ export class BondInfoPage extends UI {
 
     private async loadTradeEvents(): Promise<void> {
         const tradeEvents = await this.tradeService.getShareTradesEvent(this.portfolio.id, this.share.ticker);
-        this.events.push(...ChartUtils.processEventsChartData(tradeEvents, "flags", "dataseries", "circlepin", 10, "rgba(20,140,0,0.45)"));
+        this.events.push(...ChartUtils.processEventsChartData(tradeEvents, true, "flags", "dataseries", "circlepin", 10, "rgba(20,140,0,0.45)"));
     }
 
     private async openDialog(): Promise<void> {
