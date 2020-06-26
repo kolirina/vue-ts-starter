@@ -15,7 +15,7 @@ import {ChartUtils} from "../../utils/chartUtils";
             <v-menu :close-on-content-click="false" :nudge-width="294" :nudge-bottom="40" bottom>
                 <div class="pl-3" slot="activator">
                     <v-btn round class="portfolio-rows-filter__button">
-                        Фильтры
+                        Настройки
                         <span class="portfolio-rows-filter__button__icon"></span>
                     </v-btn>
                 </div>
