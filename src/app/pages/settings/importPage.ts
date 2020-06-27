@@ -93,7 +93,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         </div>
                                     </div>
                                 </div>
-                                <broker-switcher @selectProvider="onSelectProvider($event)" :class="{'margR12': importHistory.length}"></broker-switcher>
+                                <broker-switcher @selectProvider="onSelectProvider" :class="{'margR12': importHistory.length}"></broker-switcher>
                                 <v-btn v-if="showImportHistory" @click="goToImportHistory" color="#EBEFF7">
                                     <v-icon left>icon-import-history</v-icon>
                                     История импорта
@@ -181,7 +181,6 @@ const MainStore = namespace(StoreType.MAIN);
                                                                  @changePortfolioParams="changePortfolioParams" :portfolio-params="portfolioParams"
                                                                  class="margT20"></import-instructions>
                                         </expanded-panel>
-
                                     </v-stepper-content>
 
                                     <v-stepper-content step="2">
@@ -568,6 +567,8 @@ export class ImportPage extends UI {
             this.currentStep = ImportStep._2;
             return;
         }
+        // надо очистить, потому что повторно не загружаем
+        this.previousImportValidatedTradesCount = 0;
         this.currentStep = ImportStep._3;
     }
 
