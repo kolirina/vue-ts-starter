@@ -33,7 +33,7 @@ import {CommonUtils} from "../../utils/commonUtils";
             <v-card class="dialog-wrap enterPromoCode-dialog">
                 <div class="enterPromoCode-dialog__content">
                     <div class="enterPromoCode-dialog__title">Ввод промокода</div>
-                    <v-text-field ref="input" v-model.trim="promoCode" maxlength="12" size="12" @keypress.enter="applyPromoCode" label="Введите промокод"></v-text-field>
+                    <v-text-field ref="input" v-model.trim="promoCode" maxlength="16" size="16" @keypress.enter="applyPromoCode" label="Введите промокод"></v-text-field>
                     <v-card-actions>
                         <v-btn :disabled="!promoCode" color="primary" class="big_btn" @click.native="applyPromoCode">Применить</v-btn>
                     </v-card-actions>
