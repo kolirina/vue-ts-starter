@@ -3,6 +3,7 @@ import {Enum, EnumType, IStaticEnum} from "../../platform/enum";
 
 export interface CustomDataPoint extends DataPoint {
     profit?: string;
+    period?: string;
     currencySymbol?: string;
 }
 
@@ -66,6 +67,8 @@ export type LineChartItem = BaseChartDot & {
     totalProfit: string;
     /** Разница прибыли за период */
     totalPeriodProfit: string;
+    /** Прибыль за перод в процентах, посчитанная относительно СВСИ на конец периода */
+    totalPeriodPercentProfit: string;
     /** Процент прибыли по отношению к предыдущему периоду */
     totalProfitPercentToPreviousPeriod: string;
     /** Прибыль от амортизации */

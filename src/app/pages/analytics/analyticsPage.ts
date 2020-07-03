@@ -139,7 +139,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </template>
                 <v-card-text>
                     <column-chart :ref="ChartType.PROFIT_MONTH_CHART" :data="profitByMonthsChartData" :view-currency="viewCurrency"
-                                  tooltip-format="YIELDS" v-tariff-expired-hint></column-chart>
+                                  tooltip-format="PROFIT" v-tariff-expired-hint></column-chart>
                 </v-card-text>
             </expanded-panel>
 
@@ -158,7 +158,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </template>
                 <v-card-text>
                     <column-chart :ref="ChartType.PROFIT_YEAR_CHART" :data="profitByYearsChartData" :view-currency="viewCurrency"
-                                  tooltip-format="YIELDS" v-tariff-expired-hint></column-chart>
+                                  tooltip-format="PROFIT" v-tariff-expired-hint></column-chart>
                 </v-card-text>
             </expanded-panel>
 

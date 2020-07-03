@@ -32,7 +32,8 @@ export class ChartUtils {
     static PIE_CHART_TOOLTIP_FORMAT = {
         COMMON: "<b>{point.y}, ({point.percentage:.2f} %)</b> <br/>{point.tickers}",
         ASSETS: "<b>{point.y:.2f} % ({point.description})</b>",
-        YIELDS: "<b>Прибыль: {point.profit} {point.currencySymbol} ({point.description})</b>"
+        YIELDS: "<b>Прибыль: {point.profit} {point.currencySymbol} ({point.description})</b>",
+        PROFIT: "<b>{point.period}</b>: {point.profit} {point.currencySymbol} <b>({point.description})</b>"
     };
     /** Цвета операций */
     static OPERATION_COLORS: { [key: string]: string } = {
@@ -126,12 +127,13 @@ export class ChartUtils {
                 const label = `${periodName}${monthly ? " " + item.date.year() : ""}`;
                 categoryNames.push(label);
                 const profit = new BigMoney(item.value.totalPeriodProfit);
-                const percent = new Decimal(item.value.totalProfitPercentToPreviousPeriod);
-                const point = {
+                const percent = new Decimal(item.value.totalPeriodPercentProfit);
+                const point: CustomDataPoint = {
                     name: label,
-                    y: profit.amount.toDP(2, Decimal.ROUND_HALF_UP).toNumber(),
+                    y: percent.toDP(2, Decimal.ROUND_HALF_UP).toNumber(),
                     profit: Filters.formatNumber(profit.amount.toDP(2, Decimal.ROUND_HALF_UP).toString()),
                     currencySymbol: profit.currencySymbol,
+                    period: label,
                     description: `${Filters.formatNumber(percent.toString())} %`
                 };
                 (profit.amount.isPositive() ? positive : negative).push(point);
