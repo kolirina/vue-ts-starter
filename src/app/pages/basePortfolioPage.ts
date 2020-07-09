@@ -42,7 +42,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
 @Component({
     // language=Vue
     template: `
-        <v-container v-if="overview" fluid class="paddT0">
+        <v-container v-if="overview" fluid class="portfolio-page-wrapper">
             <v-layout column>
                 <dashboard :overview="overview" :view-currency="viewCurrency" :side-bar-opened="sideBarOpened"
                            :data-v-step="getTourStepIndex(PortfolioBlockType.DASHBOARD)"></dashboard>
