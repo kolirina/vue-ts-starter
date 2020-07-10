@@ -397,7 +397,7 @@ export class RouterConfiguration {
                 meta: {
                     title: "Публичные портфели",
                     tourName: "public-portfolio",
-                    public: true
+                    tariffAllowed: true
                 }
             },
         ];
