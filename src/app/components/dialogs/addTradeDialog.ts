@@ -141,7 +141,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                                      :error-messages="errors.collect('assetPrice')">
                                     </ii-number-field>
                                 </v-flex>
-                                <!-- Влюта -->
+                                <!-- Валюта -->
                                 <v-flex xs12 sm3>
                                     <v-select :items="currencyList" v-model="assetCurrency" @change="onNewAssetCurrencyChange" label="Валюта актива"></v-select>
                                 </v-flex>
@@ -496,7 +496,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         } else if (this.data.eventFields) {
             this.filteredShares = this.share ? [this.share] : [];
             this.fillFieldsFromShare();
-            await this.setEventFields();
+            this.setEventFields();
         } else {
             this.fillFieldsFromShare();
             this.filteredShares = this.share ? [this.share] : [];
@@ -910,7 +910,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         }
     }
 
-    private async setEventFields(): Promise<void> {
+    private setEventFields(): void {
         // при погашении нет НКД и комиссий, цена всегда 100%
         if (this.operation === Operation.REPAYMENT) {
             this.price = "100.00";
@@ -919,6 +919,9 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             this.fee = "";
         } else {
             this.price = TradeUtils.decimal(this.data.eventFields.amount);
+        }
+        if (this.operation === Operation.DIVIDEND) {
+            this.dividendCurrency = this.share.currency;
         }
         this.currency = this.share.currency;
         this.quantity = this.data.eventFields.quantity;
