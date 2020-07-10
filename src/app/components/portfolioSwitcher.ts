@@ -21,6 +21,9 @@ const MainStore = namespace(StoreType.MAIN);
                               :title="brokerDescription"></span>
                         <div v-if="!sideBarOpened || isMobile" class="portfolios-inner-content">
                             <span class="w140 fs13 ellipsis">{{ selected.name }}</span>
+                            <div class="portfolios-list-currency">
+                                <div class="portfolios-list-currency__item active">{{ selected.viewCurrency}}</div>
+                            </div>
                             <v-layout align-center class="portfolios-list-icons">
                                 <i :class="selected.viewCurrency.toLowerCase()" title="Валюта"></i>
                                 <i v-if="selected.access" class="public-portfolio-icon" title="Публичный"></i>
