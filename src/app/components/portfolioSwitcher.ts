@@ -21,11 +21,8 @@ const MainStore = namespace(StoreType.MAIN);
                               :title="brokerDescription"></span>
                         <div v-if="!sideBarOpened || isMobile" class="portfolios-inner-content">
                             <span class="w140 fs13 ellipsis">{{ selected.name }}</span>
-                            <div class="portfolios-list-currency">
-                                <div class="portfolios-list-currency__item active">{{ selected.viewCurrency}}</div>
-                            </div>
                             <v-layout align-center class="portfolios-list-icons">
-                                <i :class="selected.viewCurrency.toLowerCase()" title="Валюта"></i>
+                                <div class="portfolios-list-currency__item active">{{ selected.viewCurrency}}</div>
                                 <i v-if="selected.access" class="public-portfolio-icon" title="Публичный"></i>
                                 <i v-if="selected.professionalMode" class="professional-mode-icon" title="Профессиональный режим"></i>
                             </v-layout>
@@ -42,7 +39,7 @@ const MainStore = namespace(StoreType.MAIN);
                             <div>
                                 <v-list-tile-title class="ellipsis">{{ portfolio.name }}</v-list-tile-title>
                                 <v-layout align-center class="portfolios-list-icons">
-                                    <i :class="portfolio.viewCurrency.toLowerCase()" title="Валюта"></i>
+                                    <div class="portfolios-list-currency__item active">{{ portfolio.viewCurrency}}</div>
                                     <i v-if="portfolio.access" class="public-portfolio-icon" title="Публичный"></i>
                                     <i v-if="portfolio.professionalMode" class="professional-mode-icon" title="Профессиональный режим"></i>
                                 </v-layout>

@@ -16,7 +16,7 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-container fluid>
+        <v-container fluid class="page-wrapper">
             <v-layout row wrap>
                 <v-flex>
                     <v-card flat class="header-first-card">
@@ -84,23 +84,34 @@ const MainStore = namespace(StoreType.MAIN);
                                 <template #header>Статистика по реферальной программе</template>
                                 <div class="statistics">
                                     <div>
-                                        <span>Привлеченных пользователей:</span>{{ promoCodeStatistics.referralCount }}
+                                        <span>Привлеченных пользователей:</span>
+                                        <span>{{ promoCodeStatistics.referralCount }}</span>
                                     </div>
                                     <div>
-                                        <span>Из них хоть раз оплативших:</span>{{ promoCodeStatistics.hasPaymentsReferralCount }}
+                                        <span>Из них хоть раз оплативших:</span>
+                                        <span>{{ promoCodeStatistics.hasPaymentsReferralCount }}</span>
                                     </div>
                                     <template v-if="clientInfo.user.referralAwardType === 'PAYMENT'">
                                         <div>
-                                            <span>Всего заработано:</span>{{ promoCodeStatistics.referrerPaymentsTotal | number }}
-                                            <span class="rewards-currency rub"></span>
+                                            <span>Всего заработано:</span>
+                                            <span>
+                                                {{ promoCodeStatistics.referrerPaymentsTotal | number }}
+                                                <span class="rewards-currency rub"></span>
+                                            </span>
                                         </div>
                                         <div>
-                                            <span>Всего выплачено:</span>{{ promoCodeStatistics.referrerPaymentsTotalPaid | number }}
-                                            <span class="rewards-currency rub"></span>
+                                            <span>Всего выплачено:</span>
+                                            <span>
+                                                {{ promoCodeStatistics.referrerPaymentsTotalPaid | number }}
+                                                <span class="rewards-currency rub"></span>
+                                            </span>
                                         </div>
                                         <div class="statistics__label">
-                                            <span>Остаток для выплаты:</span>{{ promoCodeStatistics.referrerPaymentsTotalUnpaid | number }}
-                                            <span class="rewards-currency rub"></span>
+                                            <span>Остаток для выплаты:</span>
+                                            <span>
+                                                {{ promoCodeStatistics.referrerPaymentsTotalUnpaid | number }}
+                                                <span class="rewards-currency rub"></span>
+                                            </span>
                                         </div>
                                     </template>
                                 </div>

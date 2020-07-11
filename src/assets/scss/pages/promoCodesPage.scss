@@ -1,6 +1,10 @@
 .section-content {
   padding: 24px 40px 24px 24px;
   min-width: 900px;
+
+  @media all and (max-width: $sm-breakpoint){min-width: auto;}
+
+  @media all and (max-width: $xs-breakpoint){padding: 16px}
 }
 
 .light-text,
@@ -108,6 +112,60 @@
     }
     .v-expansion-panel__container--active .v-expansion-panel__header__icon {transform: rotate(0deg)}
   }
+
+  @media all and (max-width: $sm-breakpoint) {
+    &__steps {min-width: auto}
+
+    &__step {
+      padding: 24px 12px;
+
+      > div {font-size: 13px}
+    }
+  }
+
+  @media all and (max-width: $xs-breakpoint) {
+    .promo-code {
+      margin-top: 12px;
+    }
+
+    &__steps {
+      flex-direction: column;
+      padding: 8px 0;
+    }
+
+    &__step {
+      display: flex;
+      width: auto;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      margin: 0 32px;
+      padding: 16px 0;
+
+      &:after {content: none !important;}
+
+      &:before {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+        margin: 0 16px 0 0;
+      }
+
+      > div {text-align: left}
+
+      &:last-child {border-bottom: none}
+    }
+
+    .promo-code__wrapper {
+      flex-direction: column;
+      align-items: flex-start;
+
+      .btns {
+        flex-direction: column;
+
+        .v-btn {
+          margin: 12px 0 0 !important;}
+      }
+    }
+  }
 }
 
 .statistics {
@@ -117,10 +175,29 @@
   div {
     margin: 0 0 24px 20px;
 
-    span:first-child {
-      display: inline-block;
-      width: 228px;
-      margin-right: 24px;
+    > span {
+      &:first-child {
+        display: inline-block;
+        width: 228px;
+        margin-right: 24px;
+      }
+
+      &:last-child {white-space: nowrap}
+    }
+
+  }
+
+  @media all and (max-width: $xs-breakpoint){
+    div {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-left: 0;
+
+      > span:first-child {
+        width: 194px;
+        margin-right: 16px;
+      }
     }
   }
 }
