@@ -148,7 +148,7 @@ export class Dashboard extends UI {
         const secondCurrency = new BigMoney(newValue.currentCostInAlternativeCurrency).currency.toLowerCase();
 
         this.blocks[0] = {
-            name: "Суммарная стоимость",
+            name: "Стоимость",
             mainValue: Filters.formatMoneyAmount(newValue.currentCost, true),
             secondValue: Filters.formatMoneyAmount(newValue.currentCostInAlternativeCurrency, true),
             hasNotBorderLeft: true,
@@ -161,7 +161,7 @@ export class Dashboard extends UI {
                 "                                Ниже указана суммарная стоимость портфеля, пересчитанная в долларах по текущему курсу."
         };
         this.blocks[1] = {
-            name: "Суммарная прибыль",
+            name: "Прибыль",
             mainValue: Filters.formatMoneyAmount(newValue.profit, true),
             secondValue: this.percentProfitBySummary ? newValue.percentProfitBySummaryCost : newValue.percentProfit,
             isSummaryIncome: {
