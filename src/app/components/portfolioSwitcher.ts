@@ -23,7 +23,7 @@ const MainStore = namespace(StoreType.MAIN);
                               :title="brokerDescription"></span>
                         <div v-if="!sideBarOpened || isMobile" class="portfolios-inner-content">
                             <span class="w140 fs13 ellipsis">{{ selected.name }}</span>
-                            <v-layout align-center class="portfolios-list-icons">
+                            <v-layout align-center class="portfolios-list-icons margT4">
                                 <div :class="['portfolios-list-currency__item', {'active': selected.viewCurrency === currency}]"
                                      @click.stop="changeCurrency(currency)"
                                      v-for="currency in currencyList">
