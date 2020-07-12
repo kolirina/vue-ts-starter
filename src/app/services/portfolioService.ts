@@ -53,6 +53,15 @@ export class PortfolioService {
     }
 
     /**
+     * Отправляет запрос на смену валюты портфеля
+     * @param portfolioId идентификатор портфеля
+     * @param currencyCode код валюты
+     */
+    async changeCurrency(portfolioId: number, currencyCode: string): Promise<void> {
+        await this.http.post(`/portfolio-info/change-currency/${portfolioId}/${currencyCode}`);
+    }
+
+    /**
      * Возвращает url для публичного доступа к портфелю
      * @param request запрос
      */
