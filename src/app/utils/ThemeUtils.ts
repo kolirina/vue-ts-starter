@@ -94,7 +94,7 @@ export class ThemeUtils {
     .v-picker__title.primary,
     .portfolio-rows-filter__button:hover,
     .v-tooltip__content.menu-icons,
-    .theme--light.application,
+    .theme--light.application, .mobile-wrapper-menu,
     .custom-v-menu .v-menu-content{background: #21232F !important}
 
     .active-link, .wrap-list-menu .v-list__tile:hover,
