@@ -16,14 +16,14 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-container v-if="portfolio" fluid>
+        <v-container v-if="portfolio" fluid class="page-wrapper">
             <v-card flat class="header-first-card">
                 <v-card-title class="header-first-card__wrapper-title">
                     <div class="section-title header-first-card__title-text">Котировки</div>
                 </v-card-title>
             </v-card>
-            <v-tabs class="margB16">
-                <v-tab v-for="item in quotesTypes" :key="item.code" @change="onTabSelected(item)">
+            <v-tabs>
+                <v-tab v-for="item in quotesTypes" :key="item.code" @change="onTabSelected(item)" :class="{'active': item.code === currentTab.code}">
                     {{ item.description }}
                 </v-tab>
             </v-tabs>

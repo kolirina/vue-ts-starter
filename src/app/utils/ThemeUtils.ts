@@ -76,7 +76,8 @@ export class ThemeUtils {
     .sing-in-wrap .paired-section__left-section,
     .empty-station {background: #2C3040 !important;}
 
-    .tariff-description-wrap div:nth-child(even) {background-color: #2C3040}
+    .tariff-description-wrap div:nth-child(even),
+    .theme--light.v-tabs__bar {background-color: #2C3040}
 
     .v-content__wrap,
     .header-first-card,
@@ -157,7 +158,7 @@ export class ThemeUtils {
     .snotifyToast__body, .info-share-page__empty, .import-dialog-wrapper__title-text, .fs18, .fs36, .import-default-text,
     .snotifyToast__buttons button, .update-service-dialog__content,
     .custom-v-menu .v-menu-content, .section-title,
-    .v-date-picker-years, .empty-station__description {color: #fff}
+    .v-date-picker-years, .empty-station__description, .v-tabs .v-tabs__item {color: #fff}
 
     .theme--light.v-label,
     .fs12-opacity,
