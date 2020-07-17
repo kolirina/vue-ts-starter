@@ -136,8 +136,8 @@ export class ChartUtils {
                     period: label,
                     description: `${Filters.formatNumber(percent.toString())} %`
                 };
-                (profit.amount.isPositive() ? positive : negative).push(point);
-                (profit.amount.isPositive() ? negative : positive).push(null);
+                (percent.isPositive() ? positive : negative).push(point);
+                (percent.isPositive() ? negative : positive).push(null);
             });
         return {
             series: [

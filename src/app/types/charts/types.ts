@@ -69,8 +69,6 @@ export type LineChartItem = BaseChartDot & {
     totalPeriodProfit: string;
     /** Прибыль за перод в процентах, посчитанная относительно СВСИ на конец периода */
     totalPeriodPercentProfit: string;
-    /** Процент прибыли по отношению к предыдущему периоду */
-    totalProfitPercentToPreviousPeriod: string;
     /** Прибыль от амортизации */
     amortizationProfit: string;
     /** Комиссия накопительным итогом */
