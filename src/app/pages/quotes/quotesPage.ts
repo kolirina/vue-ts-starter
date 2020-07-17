@@ -23,7 +23,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-card-title>
             </v-card>
             <v-tabs>
-                <v-tab v-for="item in quotesTypes" :key="item.code" @change="onTabSelected(item)" :class="{'active': item.code === currentTab.code}">
+                <v-tab v-for="item in quotesTypes" :key="item.code" @change="onTabSelected(item)" :class="{'active': item.code === currentTab.code}" :ripple="false">
                     {{ item.description }}
                 </v-tab>
             </v-tabs>
