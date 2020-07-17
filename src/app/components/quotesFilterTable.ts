@@ -67,6 +67,7 @@ import {TableFilterBase} from "./tableFilterBase";
                     </div>
                 </div>
             </table-filter-base>
+            <slot></slot>
         </v-layout>
     `,
     components: {TableFilterBase}
