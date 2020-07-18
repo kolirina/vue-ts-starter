@@ -247,7 +247,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                                 <span class="mr-2 pl-1">Курс валюты</span>
                                             </v-layout>
                                         </div>
-                                        <ii-number-field label="Курс валюты" v-model="currencyExchangeRate" :decimals="4" name="currency_exchange_rate"
+                                        <ii-number-field label="Курс валюты" v-model="currencyExchangeRate" :decimals="6" name="currency_exchange_rate"
                                                          v-validate="'required'" :error-messages="errors.collect('currency_exchange_rate')" maxLength="11"
                                                          class="required" @input="changedPurchasedCurrencyValue"></ii-number-field>
                                     </v-flex>
