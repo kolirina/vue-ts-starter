@@ -19,6 +19,7 @@ import {AssetLink} from "../components/assetLink";
 import {BondLink} from "../components/bondLink";
 import {BarChart} from "../components/charts/barChart";
 import {ChartExportMenu} from "../components/charts/chartExportMenu";
+import {ColumnChart} from "../components/charts/columnChart";
 import {LineChart} from "../components/charts/lineChart";
 import {MicroLineChart} from "../components/charts/microLineChart";
 import {PieChart} from "../components/charts/pieChart";
@@ -108,6 +109,7 @@ export class UIRegistry {
         UI.component("add-trade-dialog", AddTradeDialog);
         UI.component("pie-chart", PieChart);
         UI.component("bar-chart", BarChart);
+        UI.component("column-chart", ColumnChart);
         UI.component("line-chart", LineChart);
         UI.component("file-drop-area", FileDropArea);
         UI.component("file-link", FileLink);

@@ -26,7 +26,8 @@ export class TablesService {
             sortable: false,
             active: true,
             width: "65",
-            tooltip: StockTooltips[TABLE_HEADERS.OPEN_POSITION_AVG_PRICE]
+            tooltip: StockTooltips[TABLE_HEADERS.OPEN_POSITION_AVG_PRICE],
+            currency: true
         },
         {
             text: "Ср. цена (Все сделки)",
@@ -35,7 +36,8 @@ export class TablesService {
             sortable: false,
             active: false,
             width: "65",
-            tooltip: StockTooltips[TABLE_HEADERS.AVG_PRICE]
+            tooltip: StockTooltips[TABLE_HEADERS.AVG_PRICE],
+            currency: true
         },
         {
             text: "Тек. цена",
@@ -152,7 +154,7 @@ export class TablesService {
             {text: "Тикер", align: "left", value: TABLE_HEADERS.TICKER, active: false, width: "90"},
             {text: "Количество", align: "right", value: TABLE_HEADERS.QUANTITY, active: true, width: "60"},
             {
-                text: "Ср. цена",
+                text: "Ср. цена, %",
                 align: "right",
                 value: TABLE_HEADERS.AVG_PRICE,
                 sortable: false,
@@ -161,7 +163,7 @@ export class TablesService {
                 tooltip: BondTooltips[TABLE_HEADERS.AVG_PRICE]
             },
             {
-                text: "Тек. цена",
+                text: "Тек. цена, %",
                 align: "right",
                 value: TABLE_HEADERS.CURR_PRICE,
                 sortable: false,

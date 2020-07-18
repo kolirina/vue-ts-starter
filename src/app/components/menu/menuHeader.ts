@@ -8,7 +8,7 @@ import {PortfolioSwitcher} from "../portfolioSwitcher";
 @Component({
     // language=Vue
     template: `
-        <v-layout :class="['pt-3', 'overflow-hidden', sideBarOpened && !isMobile ? 'column' : '']" align-center>
+        <v-layout :class="['overflow-hidden', sideBarOpened && !isMobile ? 'column' : '']" align-center>
             <v-layout class="mini-menu-width sidebar-item-action" justify-center>
                 <v-btn @click="togglePanel" v-if="sideBarOpened" flat icon dark>
                     <span class="hamburger-icon"></span>

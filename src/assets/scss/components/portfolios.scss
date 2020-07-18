@@ -42,6 +42,24 @@
   &-list {
     max-height: 500px;
     overflow-x: auto;
+
+    &-currency__item {
+      border: 1px solid #CACED5;
+      border-radius: 2px;
+      font-size: 9px;
+      line-height: 1;
+      text-transform: uppercase;
+      padding: 1px 2px;
+      cursor: pointer;
+      margin-right: 4px;
+
+      &.active {
+        background-color: $sidebar-blue-color;
+        border-color: $sidebar-blue-color;
+        color: #fff;
+        cursor: default;
+      }
+    }
   }
 
   &-list-tile {

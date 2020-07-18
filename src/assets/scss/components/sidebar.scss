@@ -160,6 +160,9 @@
 }
 
 .mobile-wrapper-menu {
+  background-color: #fff;
+  margin-bottom: 16px;
+
   @media screen and (min-width: 550px) {
     display: none !important;
   }

@@ -5,19 +5,26 @@ import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI, Watch} from "../../app/ui";
 import {AverageAnnualYieldChart} from "../../components/charts/averageAnnualYield";
+import {ColumnChart} from "../../components/charts/columnChart";
 import {PieChart} from "../../components/charts/pieChart";
+import {ProfitLineChart} from "../../components/charts/profitLineChart";
 import {SimpleLineChart} from "../../components/charts/simpleLineChart";
+import {ShowProgress} from "../../platform/decorators/showProgress";
 import {Filters} from "../../platform/filters/Filters";
 import {Storage} from "../../platform/services/storage";
 import {AdviceService} from "../../services/adviceService";
 import {AnalyticsService} from "../../services/analyticsService";
 import {ClientInfo, ClientService} from "../../services/clientService";
+import {MarketHistoryService} from "../../services/marketHistoryService";
+import {OverviewService} from "../../services/overviewService";
 import {PortfolioAccountType, PortfolioService} from "../../services/portfolioService";
 import {BigMoney} from "../../types/bigMoney";
-import {ChartType, ColumnChartData, CustomDataPoint, SimpleChartData, YieldCompareData} from "../../types/charts/types";
+import {ChartType, ColumnChartData, CustomDataPoint, HighStockEventsGroup, PortfolioLineChartData, SimpleChartData, YieldCompareData} from "../../types/charts/types";
 import {EventType} from "../../types/eventType";
 import {Portfolio} from "../../types/types";
 import {ChartUtils} from "../../utils/chartUtils";
+import {CommonUtils} from "../../utils/commonUtils";
+import {UiStateHelper} from "../../utils/uiStateHelper";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 import {AnalysisResult} from "./analysisResult";
@@ -86,18 +93,82 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-layout>
             </expanded-panel>
 
+            <expanded-panel v-if="false && showProfitChart" :value="$uistate.profitChartPanel"
+                            :state="$uistate.PROFIT_CHART_PANEL" @click="onProfitPanelStateChange" customMenu class="mt-3"
+                            :data-v-step="0">
+                <template #header>
+                    Прибыль портфеля
+                    <tooltip>
+                        График изменения прибыли портфеля<br/>
+                        Можно отобразить как Суммарную прибыль, так и<br/>
+                        Курсовую, По сделкам, От начислений
+                    </tooltip>
+                </template>
+                <template #customMenu>
+                    <chart-export-menu v-if="portfolioLineChartData && profitLineChartEvents" @print="print(ChartType.PROFIT_LINE_CHART)"
+                                       @exportTo="exportTo(ChartType.PROFIT_LINE_CHART, $event)"
+                                       class="exp-panel-menu"></chart-export-menu>
+                </template>
+
+                <v-card-text class="px-1">
+                    <profit-line-chart v-if="portfolioLineChartData && profitLineChartEvents" :ref="ChartType.PROFIT_LINE_CHART" :data="portfolioLineChartData.lineChartData"
+                                       :moex-index-data="indexLineChartData" state-key-prefix="ANALYTICS"
+                                       :events-chart-data="profitLineChartEvents" :balloon-title="portfolio.portfolioParams.name"></profit-line-chart>
+                    <v-container v-else grid-list-md text-xs-center>
+                        <v-layout row wrap>
+                            <v-flex xs12>
+                                <v-progress-circular :size="70" :width="7" indeterminate color="indigo"></v-progress-circular>
+                            </v-flex>
+                        </v-layout>
+                    </v-container>
+                </v-card-text>
+            </expanded-panel>
+
+            <expanded-panel v-if="profitByMonthsChartData && profitByMonthsChartData.categoryNames.length" :value="$uistate.profitMonthChartPanel"
+                            :state="$uistate.PROFIT_MONTH_CHART_PANEL" @click="onProfitPanelStateChange" custom-menu class="mt-3">
+                <template #header>
+                    Прибыль по месяцам
+                    <tooltip>
+                        Диаграмма, показывающая прибыль портфеля по месяцам<br/>
+                        Процент изменения считается по отношению к предыдущему периоду
+                    </tooltip>
+                </template>
+                <template #customMenu>
+                    <chart-export-menu @print="print(ChartType.PROFIT_MONTH_CHART)" @exportTo="exportTo(ChartType.PROFIT_MONTH_CHART, $event)"
+                                       class="exp-panel-menu"></chart-export-menu>
+                </template>
+                <v-card-text>
+                    <column-chart :ref="ChartType.PROFIT_MONTH_CHART" :data="profitByMonthsChartData" :view-currency="viewCurrency"
+                                  tooltip-format="PROFIT" v-tariff-expired-hint></column-chart>
+                </v-card-text>
+            </expanded-panel>
+
+            <expanded-panel v-if="profitByYearsChartData && profitByYearsChartData.categoryNames.length" :value="$uistate.profitYearChartPanel"
+                            :state="$uistate.PROFIT_YEAR_CHART_PANEL" @click="onProfitPanelStateChange" custom-menu class="mt-3">
+                <template #header>
+                    Прибыль по годам
+                    <tooltip>
+                        Диаграмма, показывающая прибыль портфеля по годам<br/>
+                        Процент изменения считается по отношению к предыдущему периоду
+                    </tooltip>
+                </template>
+                <template #customMenu>
+                    <chart-export-menu @print="print(ChartType.PROFIT_YEAR_CHART)" @exportTo="exportTo(ChartType.PROFIT_YEAR_CHART, $event)"
+                                       class="exp-panel-menu"></chart-export-menu>
+                </template>
+                <v-card-text>
+                    <column-chart :ref="ChartType.PROFIT_YEAR_CHART" :data="profitByYearsChartData" :view-currency="viewCurrency"
+                                  tooltip-format="PROFIT" v-tariff-expired-hint></column-chart>
+                </v-card-text>
+            </expanded-panel>
+
             <expanded-panel v-if="yieldContributorsChartData && yieldContributorsChartData.categoryNames.length" :value="$uistate.yieldContributorsChart"
                             :state="$uistate.YIELD_CONTRIBUTORS_CHART_PANEL" custom-menu class="mt-3">
                 <template #header>
                     Эффективность бумаг в портфеле
-                    <v-tooltip content-class="custom-tooltip-wrap" bottom>
-                        <template #activator="{ on }">
-                            <v-icon v-on="on" class="fs12 vAlignSuper">far fa-question-circle</v-icon>
-                        </template>
-                        <span>
-                            Диаграмма бумаг, оказавших максимальный эффект на доходность портфеля
-                        </span>
-                    </v-tooltip>
+                    <tooltip>
+                        Диаграмма бумаг, оказавших максимальный эффект на доходность портфеля
+                    </tooltip>
                 </template>
                 <template #customMenu>
                     <chart-export-menu @print="print(ChartType.YIELD_CONTRIBUTORS_CHART)" @exportTo="exportTo(ChartType.YIELD_CONTRIBUTORS_CHART, $event)"
@@ -114,14 +185,9 @@ const MainStore = namespace(StoreType.MAIN);
                             custom-menu class="mt-3">
                 <template #header>
                     Распределение всех активов в портфеле
-                    <v-tooltip content-class="custom-tooltip-wrap" bottom>
-                        <template #activator="{ on }">
-                            <v-icon v-on="on" class="fs12 vAlignSuper">far fa-question-circle</v-icon>
-                        </template>
-                        <span>
-                            Диаграмма сквозного распределения всех ваших активов, включая денежные средства, в портфеле
-                        </span>
-                    </v-tooltip>
+                    <tooltip>
+                        Диаграмма сквозного распределения всех ваших активов, включая денежные средства, в портфеле
+                    </tooltip>
                 </template>
                 <template #customMenu>
                     <chart-export-menu @print="print(ChartType.WHOLE_PORTFOLIO_SHARES_ALLOCATION_CHART)"
@@ -175,12 +241,15 @@ const MainStore = namespace(StoreType.MAIN);
             </expanded-panel>
         </v-container>
     `,
-    components: {ChooseRisk, Preloader, AnalysisResult, EmptyAdvice, AverageAnnualYieldChart, SimpleLineChart}
+    components: {ChooseRisk, Preloader, AnalysisResult, EmptyAdvice, AverageAnnualYieldChart, ProfitLineChart, SimpleLineChart}
 })
 export class AnalyticsPage extends UI {
 
     $refs: {
         yieldContributorsChart: PieChart,
+        profitLineChart: ProfitLineChart,
+        profitMonthChart: ColumnChart,
+        profitYearChart: ColumnChart,
     };
 
     @Inject
@@ -199,6 +268,10 @@ export class AnalyticsPage extends UI {
     private analyticsService: AnalyticsService;
     @Inject
     private portfolioService: PortfolioService;
+    @Inject
+    private overviewService: OverviewService;
+    @Inject
+    private marketHistoryService: MarketHistoryService;
     /** Данные для сравнения доходностей */
     private yieldCompareData: YieldCompareData = null;
     /** Ставки по инфляции */
@@ -209,8 +282,18 @@ export class AnalyticsPage extends UI {
     private totalDepositInCurrentYear: BigMoney = null;
     /** Данные для диаграммы эффективности бумаг */
     private yieldContributorsChartData: ColumnChartData = null;
+    /** Данные для диаграммы прибыль по месяцам */
+    private profitByMonthsChartData: ColumnChartData = null;
+    /** Данные для диаграммы прибыль по годам */
+    private profitByYearsChartData: ColumnChartData = null;
     /** Данные для диаграммы эффективности бумаг */
     private wholePortfolioSharesAllocationChartData: CustomDataPoint[] = [];
+    /** Данные графика портфеля */
+    private portfolioLineChartData: PortfolioLineChartData = null;
+    /** События для графика прибыли портфеля */
+    private profitLineChartEvents: HighStockEventsGroup[] = null;
+    /** Данные стоимости индекса ММВБ */
+    private indexLineChartData: any[] = null;
     /** Типы круговых диаграмм */
     private ChartType = ChartType;
 
@@ -225,12 +308,17 @@ export class AnalyticsPage extends UI {
 
     @Watch("portfolio")
     private async onPortfolioChange(): Promise<void> {
+        this.portfolioLineChartData = null;
         await this.init();
     }
 
+    @ShowProgress
     private async init(): Promise<void> {
         await this.loadDiagramData();
         await this.loadTotalDepositInCurrentYear();
+        if (this.showProfitChart && (UiStateHelper.profitChartPanel[0] === 1 || UiStateHelper.profitMonthChartPanel[0] === 1 || UiStateHelper.profitYearChartPanel[0] === 1)) {
+            await this.loadProfitLineChart();
+        }
         this.yieldContributorsChartData = await this.doYieldContributorsChartData();
         this.wholePortfolioSharesAllocationChartData = await this.doWholePortfolioSharesAllocationChartData();
     }
@@ -239,6 +327,28 @@ export class AnalyticsPage extends UI {
         this.yieldCompareData = await this.analyticsService.getComparedYields(this.portfolio.id.toString());
         this.monthlyInflationData = ChartUtils.makeSimpleChartData(await this.analyticsService.getInflationForLastSixMonths());
         this.depositRatesData = ChartUtils.makeSimpleChartData(await this.analyticsService.getRatesForLastSixMonths());
+    }
+
+    private async onProfitPanelStateChange(): Promise<void> {
+        if (UiStateHelper.profitChartPanel[0] === 1 || UiStateHelper.profitMonthChartPanel[0] === 1 || UiStateHelper.profitYearChartPanel[0] === 1) {
+            await this.loadProfitLineChart();
+        }
+    }
+
+    private async loadProfitLineChart(): Promise<void> {
+        if (!this.portfolioLineChartData) {
+            this.portfolioLineChartData = await this.overviewService.getCostChart(this.portfolio.id);
+        }
+        // TODO сделать независимую загрузку по признаку в localStorage
+        if (this.portfolio.overview.firstTradeDate && !this.indexLineChartData) {
+            this.indexLineChartData = await this.marketHistoryService.getIndexHistory("MMVB", dayjs(this.portfolio.overview.firstTradeDate).format("DD.MM.YYYY"));
+        }
+        if (!CommonUtils.exists(this.profitLineChartEvents)) {
+            this.profitLineChartEvents = await this.overviewService.getEventsChartDataWithDefaults(this.portfolio.id, false);
+            this.profitLineChartEvents.forEach(item => item.onSeries = "totalProfit");
+        }
+        this.profitByMonthsChartData = await this.doPortfolioProfitMonthData();
+        this.profitByYearsChartData = await this.doPortfolioProfitYearData();
     }
 
     private get viewCurrency(): string {
@@ -268,6 +378,14 @@ export class AnalyticsPage extends UI {
         return ChartUtils.doWholePortfolioSharesAllocationChartData(this.portfolio.overview, this.viewCurrency);
     }
 
+    private doPortfolioProfitMonthData(): ColumnChartData {
+        return ChartUtils.doPortfolioProfitData(this.portfolioLineChartData.pointsByMonth);
+    }
+
+    private doPortfolioProfitYearData(): ColumnChartData {
+        return ChartUtils.doPortfolioProfitData(this.portfolioLineChartData.pointsByYear, false);
+    }
+
     private get getCurrentYearRemainder(): number {
         if (!this.totalDepositInCurrentYear) {
             return null;
@@ -289,5 +407,10 @@ export class AnalyticsPage extends UI {
 
     private get showAnalyticsPanel(): boolean {
         return Math.abs(dayjs(this.portfolio.overview.firstTradeDate).diff(dayjs(), "day")) > 365;
+    }
+
+    private get showProfitChart(): boolean {
+        return this.portfolio.overview.bondPortfolio.rows.length !== 0 || this.portfolio.overview.stockPortfolio.rows.length !== 0 ||
+            this.portfolio.overview.assetPortfolio.rows.length !== 0 || this.portfolio.overview.etfPortfolio.rows.length !== 0;
     }
 }
