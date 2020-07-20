@@ -22,6 +22,7 @@ import {PortfoliosTable} from "../../components/tables/portfoliosTable";
 import {ClientInfo} from "../../services/clientService";
 import {PortfolioParams} from "../../services/portfolioService";
 import {EventType} from "../../types/eventType";
+import {Portfolio} from "../../types/types";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 
@@ -60,17 +61,21 @@ export class PortfoliosManagementPage extends UI {
     private updatePortfolio: (portfolio: PortfolioParams) => Promise<void>;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
     private reloadPortfolio: (id: number) => Promise<void>;
+    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
+    private portfolio: Portfolio;
 
     created(): void {
         UI.on(EventType.PORTFOLIO_CREATED, async () => this.reloadPortfolios());
         UI.on(EventType.PORTFOLIO_UPDATED, async (portfolio: PortfolioParams) => this.updatePortfolio(portfolio));
         UI.on(EventType.PORTFOLIO_RELOAD, async (portfolio: PortfolioParams) => await this.reloadPortfolio(portfolio.id));
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
     }
 
     beforeDestroy(): void {
         UI.off(EventType.PORTFOLIO_CREATED);
         UI.off(EventType.PORTFOLIO_UPDATED);
         UI.off(EventType.PORTFOLIO_RELOAD);
+        UI.off(EventType.TRADE_CREATED);
     }
 
     private async openDialog(): Promise<void> {

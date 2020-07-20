@@ -77,7 +77,7 @@ export class TradesFilterService {
             operation: TradesTableFilter.DEFAULT_OPERATIONS,
             listType: TradeListType.FULL,
             showMoneyTrades: true,
-            showLinkedMoneyTrades: true,
+            showLinkedMoneyTrades: false,
             search: "",
             currency: null,
             start: "",

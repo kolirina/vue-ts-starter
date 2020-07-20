@@ -9,6 +9,9 @@ import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {ClientInfo, ClientService} from "../../services/clientService";
 import {PromoCodeService, PromoCodeStatistics} from "../../services/promoCodeService";
+import {EventType} from "../../types/eventType";
+import {Portfolio} from "../../types/types";
+import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -128,6 +131,10 @@ export class PromoCodesPage extends UI {
 
     @MainStore.Getter
     private clientInfo: ClientInfo;
+    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
+    private reloadPortfolio: (id: number) => Promise<void>;
+    @MainStore.Getter
+    private portfolio: Portfolio;
     /** Сервис для работы с данными клиента */
     @Inject
     private clientService: ClientService;
@@ -144,6 +151,11 @@ export class PromoCodesPage extends UI {
     @ShowProgress
     async created(): Promise<void> {
         this.promoCodeStatistics = await this.promoCodeService.getPromoCodeStatistics();
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
+    }
+
+    beforeDestroy(): void {
+        UI.off(EventType.TRADE_CREATED);
     }
 
     /**
