@@ -40,12 +40,11 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-container v-if="portfolio" fluid class="pa-0" data-v-step="0">
-            <div class="additional-pagination-quotes-table">
-                <additional-pagination :pagination="pagination" @update:pagination="onTablePaginationChange"></additional-pagination>
-            </div>
             <common-asset-quotes-filter :filter="filter" @input="tableSearch" @filter="onFilterChange" :min-length="1" placeholder="Поиск"
                                         :search-timeout="500"
-                                        :store-key="StoreKeys.COMMON_QUOTES_FILTER_KEY"></common-asset-quotes-filter>
+                                        :store-key="StoreKeys.COMMON_QUOTES_FILTER_KEY">
+                <additional-pagination :pagination="pagination" @update:pagination="onTablePaginationChange"></additional-pagination>
+            </common-asset-quotes-filter>
 
             <empty-search-result v-if="isEmptySearchResult" @resetFilter="resetFilter"></empty-search-result>
 
