@@ -25,7 +25,7 @@ import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {ClientInfo} from "../../services/clientService";
 import {ExportService, ExportType} from "../../services/exportService";
 import {OverviewService} from "../../services/overviewService";
-import {PortfolioParams, PortfoliosDialogType, PortfolioService} from "../../services/portfolioService";
+import {PortfolioAccountType, PortfolioParams, PortfoliosDialogType, PortfolioService} from "../../services/portfolioService";
 import {EventType} from "../../types/eventType";
 import {Tariff} from "../../types/tariff";
 import {Portfolio, TableHeader} from "../../types/types";
@@ -45,99 +45,155 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-data-table :headers="headers" :items="portfolios" item-key="id" :custom-sort="customSort" hide-actions class="data-table portfolios-content-table" must-sort
-                      data-v-step="0">
-            <template #items="props">
-                <tr class="selectable" @dblclick="props.expanded = !props.expanded">
-                    <td data-v-step="2">
-                        <span @click="props.expanded = !props.expanded" class="data-table-cell" :class="{'data-table-cell-open': props.expanded, 'path': true}"></span>
-                    </td>
-                    <td class="pl-0">
-                        <v-layout align-center>
+        <v-card class="import-wrapper">
+            <div class="portfolio-list">
+                <div v-for="portfolio in portfolios" class="portfolio-item">
+                    <div class="portfolio-item__header">
+                        <div class="portfolio-item__header-description">{{ portfolio.name }}</div>
+                        <div @click.stop data-v-step="1">
+                            <v-menu transition="slide-y-transition" bottom left min-width="173" nudge-bottom="30">
+                                <v-btn slot="activator" flat icon dark>
+                                    <span class="menuDots"></span>
+                                </v-btn>
+                                <v-list dense>
+                                    <v-list-tile @click="openDialogForEdit(portfolio)">
+                                        <v-list-tile-title>
+                                            Редактировать
+                                        </v-list-tile-title>
+                                    </v-list-tile>
+                                    <v-list-tile @click="clonePortfolio(portfolio)">
+                                        <v-list-tile-title>
+                                            Создать копию
+                                        </v-list-tile-title>
+                                    </v-list-tile>
+                                    <v-list-tile @click="downloadFile(portfolio.id)" :disabled="downloadNotAllowed">
+                                        <v-list-tile-title>
+                                            Экспорт в csv
+                                        </v-list-tile-title>
+                                    </v-list-tile>
+                                    <v-list-tile @click="exportPortfolio(portfolio.id)">
+                                        <v-list-tile-title>
+                                            Экспорт в xlsx
+                                        </v-list-tile-title>
+                                    </v-list-tile>
+                                    <v-divider v-if="!portfolio.parentTradeId"></v-divider>
+                                    <v-list-tile @click="clearPortfolio(portfolio)">
+                                        <v-list-tile-title class="delete-btn">
+                                            Очистить
+                                        </v-list-tile-title>
+                                    </v-list-tile>
+                                    <v-list-tile @click="deletePortfolio(portfolio)">
+                                        <v-list-tile-title class="delete-btn">
+                                            Удалить
+                                        </v-list-tile-title>
+                                    </v-list-tile>
+                                </v-list>
+                            </v-menu>
+                        </div>
+                    </div>
+                    <div class="portfolio-item__body">
+                        <div class="portfolio-item__body-info">
+                            <div><span>Фиксированная комиссия</span><span>{{ portfolio.fixFee }} %</span></div>
+                            <div><span>Валюта</span><span>{{ portfolio.viewCurrency }}</span></div>
+                            <div><span>Тип счета</span><span>{{ portfolio.accountType.description }}</span></div>
+                            <div v-if="portfolio.accountType === PortfolioAccountType.IIS"><span>Тип ИИС</span><span>{{portfolio.iisType.description}}</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <v-data-table :headers="headers" :items="portfolios" item-key="id" :custom-sort="customSort" hide-actions class="data-table portfolios-content-table" must-sort
+                          data-v-step="0">
+                <template #items="props">
+                    <tr class="selectable" @dblclick="props.expanded = !props.expanded">
+                        <td data-v-step="2">
+                            <span @click="props.expanded = !props.expanded" class="data-table-cell" :class="{'data-table-cell-open': props.expanded, 'path': true}"></span>
+                        </td>
+                        <td class="pl-0">
+                            <v-layout align-center>
                             <span>
                                 {{ props.item.name }}
                             </span>
-                            <v-tooltip transition="slide-y-transition" open-on-hover
-                                       content-class="menu-icons" right bottom v-if="props.item.professionalMode"
-                                       nudge-right="122" nudge-top="10" class="hint-for-icon-name-section pl-3">
-                                <i class="professional-mode-icon" slot="activator"></i>
-                                <div class="pa-3">
-                                    Активирован профессиональный режим
-                                </div>
-                            </v-tooltip>
-                            <v-tooltip transition="slide-y-transition" open-on-hover
-                                       content-class="menu-icons" left bottom v-if="props.item.access"
-                                       nudge-right="122" nudge-top="10"
-                                       :class="['hint-for-icon-name-section', props.item.access && !props.item.professionalMode ? 'pl-3' : 'pl-2']">
-                                <i class="public-portfolio-icon" slot="activator"></i>
-                                <div class="pa-3">
-                                    Открыт публичный доступ к портфелю
-                                </div>
-                            </v-tooltip>
-                        </v-layout>
-                    </td>
-                    <td class="text-xs-right">{{ props.item.fixFee }}&nbsp;<span class="second-value">%</span></td>
-                    <td class="text-xs-center">{{ props.item.viewCurrency | currencySymbolByCurrency }}</td>
-                    <td class="text-xs-left">{{ props.item.accountType.description }}</td>
-                    <td class="text-xs-right">{{ props.item.openDate }}</td>
-                    <td class="justify-center layout px-0" @click.stop data-v-step="1">
-                        <v-menu transition="slide-y-transition" bottom left min-width="173" nudge-bottom="30">
-                            <v-btn slot="activator" flat icon dark>
-                                <span class="menuDots"></span>
-                            </v-btn>
-                            <v-list dense>
-                                <v-list-tile @click="openDialogForEdit(props.item)">
-                                    <v-list-tile-title>
-                                        Редактировать
-                                    </v-list-tile-title>
-                                </v-list-tile>
-                                <v-list-tile @click="clonePortfolio(props.item.id)">
-                                    <v-list-tile-title>
-                                        Создать копию
-                                    </v-list-tile-title>
-                                </v-list-tile>
-                                <v-list-tile @click="downloadFile(props.item.id)" :disabled="downloadNotAllowed">
-                                    <v-list-tile-title>
-                                        Экспорт в csv
-                                    </v-list-tile-title>
-                                </v-list-tile>
-                                <v-list-tile @click="exportPortfolio(props.item.id)">
-                                    <v-list-tile-title>
-                                        Экспорт в xlsx
-                                    </v-list-tile-title>
-                                </v-list-tile>
-                                <v-divider v-if="!props.item.parentTradeId"></v-divider>
-                                <v-list-tile @click="clearPortfolio(props.item)">
-                                    <v-list-tile-title class="delete-btn">
-                                        Очистить
-                                    </v-list-tile-title>
-                                </v-list-tile>
-                                <v-list-tile @click="deletePortfolio(props.item)">
-                                    <v-list-tile-title class="delete-btn">
-                                        Удалить
-                                    </v-list-tile-title>
-                                </v-list-tile>
-                            </v-list>
-                        </v-menu>
-                    </td>
-                </tr>
-            </template>
+                                <v-tooltip transition="slide-y-transition" open-on-hover
+                                           content-class="menu-icons" right bottom v-if="props.item.professionalMode"
+                                           nudge-right="122" nudge-top="10" class="hint-for-icon-name-section pl-3">
+                                    <i class="professional-mode-icon" slot="activator"></i>
+                                    <div class="pa-3">
+                                        Активирован профессиональный режим
+                                    </div>
+                                </v-tooltip>
+                                <v-tooltip transition="slide-y-transition" open-on-hover
+                                           content-class="menu-icons" left bottom v-if="props.item.access"
+                                           nudge-right="122" nudge-top="10"
+                                           :class="['hint-for-icon-name-section', props.item.access && !props.item.professionalMode ? 'pl-3' : 'pl-2']">
+                                    <i class="public-portfolio-icon" slot="activator"></i>
+                                    <div class="pa-3">
+                                        Открыт публичный доступ к портфелю
+                                    </div>
+                                </v-tooltip>
+                            </v-layout>
+                        </td>
+                        <td class="text-xs-right">{{ props.item.fixFee }}&nbsp;<span class="second-value">%</span></td>
+                        <td class="text-xs-center">{{ props.item.viewCurrency | currencySymbolByCurrency }}</td>
+                        <td class="text-xs-left">{{ props.item.accountType.description }}</td>
+                        <td class="text-xs-right">{{ props.item.openDate }}</td>
+                        <td class="justify-center layout px-0" @click.stop data-v-step="1">
+                            <v-menu transition="slide-y-transition" bottom left min-width="173" nudge-bottom="30">
+                                <v-btn slot="activator" flat icon dark>
+                                    <span class="menuDots"></span>
+                                </v-btn>
+                                <v-list dense>
+                                    <v-list-tile @click="openDialogForEdit(props.item)">
+                                        <v-list-tile-title>
+                                            Редактировать
+                                        </v-list-tile-title>
+                                    </v-list-tile>
+                                    <v-list-tile @click="clonePortfolio(props.item.id)">
+                                        <v-list-tile-title>
+                                            Создать копию
+                                        </v-list-tile-title>
+                                    </v-list-tile>
+                                    <v-list-tile @click="downloadFile(props.item.id)" :disabled="downloadNotAllowed">
+                                        <v-list-tile-title>
+                                            Экспорт в csv
+                                        </v-list-tile-title>
+                                    </v-list-tile>
+                                    <v-list-tile @click="exportPortfolio(props.item.id)">
+                                        <v-list-tile-title>
+                                            Экспорт в xlsx
+                                        </v-list-tile-title>
+                                    </v-list-tile>
+                                    <v-divider v-if="!props.item.parentTradeId"></v-divider>
+                                    <v-list-tile @click="clearPortfolio(props.item)">
+                                        <v-list-tile-title class="delete-btn">
+                                            Очистить
+                                        </v-list-tile-title>
+                                    </v-list-tile>
+                                    <v-list-tile @click="deletePortfolio(props.item)">
+                                        <v-list-tile-title class="delete-btn">
+                                            Удалить
+                                        </v-list-tile-title>
+                                    </v-list-tile>
+                                </v-list>
+                            </v-menu>
+                        </td>
+                    </tr>
+                </template>
 
-            <template #expand="props">
-                <v-card flat>
-                    <v-card-text class="action-btn-table-row">
-                        <div class="wrap-info-content">
-                            <v-layout>
-                                <div class="portfolio-default-text">
-                                    Портфель "{{ props.item.name }}" <span v-if="props.item.brokerName">Брокер "{{ props.item.brokerName }}"</span>
-                                </div>
-                                <v-spacer></v-spacer>
-                                <v-tooltip content-class="custom-tooltip-wrap" top>
-                                    <v-checkbox slot="activator" label="Профессиональный режим"
-                                                @change="onProfessionalModeChange(props.item)"
-                                                v-model="props.item.professionalMode" hide-details class="portfolio-default-text">
-                                    </v-checkbox>
-                                    <span>
+                <template #expand="props">
+                    <v-card flat>
+                        <v-card-text class="action-btn-table-row">
+                            <div class="wrap-info-content">
+                                <v-layout>
+                                    <div class="portfolio-default-text">
+                                        Портфель "{{ props.item.name }}" <span v-if="props.item.brokerName">Брокер "{{ props.item.brokerName }}"</span>
+                                    </div>
+                                    <v-spacer></v-spacer>
+                                    <v-tooltip content-class="custom-tooltip-wrap" top>
+                                        <v-checkbox slot="activator" label="Профессиональный режим"
+                                                    @change="onProfessionalModeChange(props.item)"
+                                                    v-model="props.item.professionalMode" hide-details class="portfolio-default-text">
+                                        </v-checkbox>
+                                        <span>
                                         Профессиональный режим включает дополнительные возможности, необходимые опытным инвесторам:
                                         <ul>
                                             <li>возможность уходить в минус по деньгам (маржинальное кредитование)</li>
@@ -145,54 +201,55 @@ const MainStore = namespace(StoreType.MAIN);
                                             <li>возможность учета времени заключения сделки</li>
                                         </ul>
                                     </span>
-                                </v-tooltip>
-                            </v-layout>
-                            <v-layout v-if="publicSettingsAllowed" class="setings-btn">
-                                <v-btn v-if="props.item.access" class="btn" v-clipboard="() => publicLink(props.item.id)" @click="copyPortfolioLink">
-                                    Копировать ссылку на портфель
-                                </v-btn>
-                                <v-menu content-class="dialog-type-menu"
-                                        transition="slide-y-transition"
-                                        nudge-bottom="36" right class="settings-menu"
-                                        :close-on-content-click="false">
-                                    <v-btn class="btn" slot="activator">
-                                        Настройка доступа
+                                    </v-tooltip>
+                                </v-layout>
+                                <v-layout v-if="publicSettingsAllowed" class="setings-btn">
+                                    <v-btn v-if="props.item.access" class="btn" v-clipboard="() => publicLink(props.item.id)" @click="copyPortfolioLink">
+                                        Копировать ссылку на портфель
                                     </v-btn>
-                                    <v-list dense>
-                                        <v-flex>
-                                            <div @click.stop="openSharePortfolioDialog(props.item, type)" class="menu-text" v-for="type in dialogTypes.values()" :key="type.code">
-                                                {{ type.description }}
-                                            </div>
-                                        </v-flex>
-                                    </v-list>
-                                </v-menu>
-                                <v-btn class="btn" @click.stop="openEmbeddedDialog(props.item.id)">
-                                    Встраиваемые блоки
-                                </v-btn>
-                            </v-layout>
+                                    <v-menu content-class="dialog-type-menu"
+                                            transition="slide-y-transition"
+                                            nudge-bottom="36" right class="settings-menu"
+                                            :close-on-content-click="false">
+                                        <v-btn class="btn" slot="activator">
+                                            Настройка доступа
+                                        </v-btn>
+                                        <v-list dense>
+                                            <v-flex>
+                                                <div @click.stop="openSharePortfolioDialog(props.item, type)" class="menu-text" v-for="type in dialogTypes.values()" :key="type.code">
+                                                    {{ type.description }}
+                                                </div>
+                                            </v-flex>
+                                        </v-list>
+                                    </v-menu>
+                                    <v-btn class="btn" @click.stop="openEmbeddedDialog(props.item.id)">
+                                        Встраиваемые блоки
+                                    </v-btn>
+                                </v-layout>
 
-                            <v-layout class="link-section" wrap>
-                                <v-flex v-if="publicSettingsAllowed" md3>
-                                    <div class="alignL">
-                                        <a class="portfolio-link portfolio-default-text fs14" :href="informerH(props.item.id)" target="_blank">Информер-картинка горизонтальный</a>
-                                    </div>
-                                    <div class="alignL">
-                                        <a class="portfolio-link portfolio-default-text fs14" :href="informerV(props.item.id)" target="_blank">Информер-картинка вертикальный</a>
-                                    </div>
-                                </v-flex>
-                                <v-flex md9 class="fs14 maxW500">
-                                    <div v-if="showNoteLink(props.item.note)" class="maxW500">
-                                        <span class="bold">Заметка:</span>
-                                        <div class="text-truncate">{{ props.item.note }}</div>
-                                    </div>
-                                    <a v-else @click.stop="openDialogForEdit(props.item)">Создать заметку</a>
-                                </v-flex>
-                            </v-layout>
-                        </div>
-                    </v-card-text>
-                </v-card>
-            </template>
-        </v-data-table>
+                                <v-layout class="link-section" wrap>
+                                    <v-flex v-if="publicSettingsAllowed" md3>
+                                        <div class="alignL">
+                                            <a class="portfolio-link portfolio-default-text fs14" :href="informerH(props.item.id)" target="_blank">Информер-картинка горизонтальный</a>
+                                        </div>
+                                        <div class="alignL">
+                                            <a class="portfolio-link portfolio-default-text fs14" :href="informerV(props.item.id)" target="_blank">Информер-картинка вертикальный</a>
+                                        </div>
+                                    </v-flex>
+                                    <v-flex md9 class="fs14 maxW500">
+                                        <div v-if="showNoteLink(props.item.note)" class="maxW500">
+                                            <span class="bold">Заметка:</span>
+                                            <div class="text-truncate">{{ props.item.note }}</div>
+                                        </div>
+                                        <a v-else @click.stop="openDialogForEdit(props.item)">Создать заметку</a>
+                                    </v-flex>
+                                </v-layout>
+                            </div>
+                        </v-card-text>
+                    </v-card>
+                </template>
+            </v-data-table>
+        </v-card>
     `
 })
 export class PortfoliosTable extends UI {
@@ -217,6 +274,8 @@ export class PortfoliosTable extends UI {
     private overviewService: OverviewService;
     /** Типы диалогов */
     private dialogTypes = PortfoliosDialogType;
+
+    private PortfolioAccountType = PortfolioAccountType;
 
     private headers: TableHeader[] = [
         {text: "", align: "left", ghost: true, sortable: false, value: "", active: true, width: "44"},
