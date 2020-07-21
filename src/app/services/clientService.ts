@@ -63,6 +63,24 @@ export class ClientService {
     }
 
     /**
+     * Отправляет запрос на смену публичного имени
+     * @param newValue новое публичное имя
+     * @returns {Promise<void>}
+     */
+    async changePublicName(newValue: string): Promise<void> {
+        await this.http.post(`/user/change-public-name`, newValue);
+    }
+
+    /**
+     * Отправляет запрос на смену публичной ссылки
+     * @param newValue новая публичная ссылка
+     * @returns {Promise<void>}
+     */
+    async changePublicLInk(newValue: string): Promise<void> {
+        await this.http.post(`/user/change-public-link`, newValue);
+    }
+
+    /**
      * Отправляет запрос на смену E-mail пользователя
      * @param request запрос на смену E-mail пользователя
      * @returns {Promise<void>}
@@ -195,6 +213,14 @@ export interface BaseClient {
     referralAwardType: string;
     /** Промокод пользователя */
     promoCode: PromoCode;
+    /** Публичное имя пользовтеля (Для партнеров) */
+    publicName: string;
+    /** Ссылка на публичный ресурс (Для партнеров) */
+    publicLink: string;
+    /** Количество всех реферреров */
+    referrersCount: number;
+    /** Количество активных платников-реферреров */
+    referrersPaidCount: number;
     /** Признак блокировки аккаунта */
     blocked: boolean;
     /** Алиас для реферальной ссылки */
@@ -227,6 +253,8 @@ export interface BaseClient {
     needShowHelpDeskWidget: boolean;
     /** Признак согласия с условиями партнерской программы */
     partnershipAgreement: boolean;
+    /** Признак возможности голосовать за портфели */
+    canLikePortfolio: boolean;
 }
 
 export interface ClientResponse extends BaseClient {

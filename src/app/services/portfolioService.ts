@@ -99,7 +99,7 @@ export class PortfolioService {
     async createPortfolio(portfolio: PortfolioParams): Promise<PortfolioParams> {
         const request: CreatePortfolioRequest = {
             name: portfolio.name,
-            access: portfolio.access ? 1 : 0,
+            access: portfolio.access,
             openDate: portfolio.openDate,
             accountType: portfolio.accountType.value,
             iisType: portfolio.iisType ? portfolio.iisType.value : null,
@@ -199,6 +199,15 @@ export class PortfolioService {
         const total = await this.http.get<string>(`/${this.ENDPOINT_BASE}/total-deposit-current-year/${portfolioId}`);
         return total ? new BigMoney(total) : null;
     }
+
+    /**
+     * Отправляет запрос для сохранения голоса за портфель
+     * @param portfolioId идентификатор портфеля
+     * @param vote голос -1/1
+     */
+    async votePortfolio(portfolioId: number, vote: number): Promise<void> {
+        await this.http.post(`/portfolio-info/vote/${portfolioId}/${vote}`);
+    }
 }
 
 /** Тип счета портфеля. Брокерский или ИИС */
@@ -243,8 +252,8 @@ export interface BasePortfolioParams {
     id?: number;
     /** Название портфеля */
     name: string;
-    /** Публичный доступ к портфелю */
-    access: boolean;
+    /** Доступ портфеля.  0 - приватный, 1 - публичный только по ссылке, 2 - полностью публичный" */
+    access: number;
     /** Доступ к разделу Дивиденды в публичном портфеле */
     dividendsAccess?: boolean;
     /** Доступ к разделу Сделки в публичном портфеле */
@@ -279,8 +288,8 @@ export interface BasePortfolioParams {
 export interface CreatePortfolioRequest {
     /** Название портфеля */
     name: string;
-    /** Публичный доступ к портфелю */
-    access: 0 | 1;
+    /** Доступ портфеля.  0 - приватный, 1 - публичный только по ссылке, 2 - полностью публичный" */
+    access: number;
     /** Дата открытия */
     openDate: string;
     /** Идентификатор брокера */
@@ -307,8 +316,8 @@ export interface UpdatePortfolioRequest {
     id: number;
     /** Название портфеля */
     name: string;
-    /** Публичный доступ к портфелю */
-    access: boolean;
+    /** Доступ портфеля.  0 - приватный, 1 - публичный только по ссылке, 2 - полностью публичный" */
+    access: number;
     /** Доступ к разделу Дивиденды в публичном портфеле */
     dividendsAccess?: boolean;
     /** Доступ к разделу Сделки в публичном портфеле */

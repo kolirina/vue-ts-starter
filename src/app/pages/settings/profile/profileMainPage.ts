@@ -24,6 +24,7 @@ import {BtnReturn} from "../../../platform/dialogs/customDialog";
 import {ClientInfo, ClientService, DeleteProfileRequest} from "../../../services/clientService";
 import {TariffService} from "../../../services/tariffService";
 import {EventType} from "../../../types/eventType";
+import {Tariff} from "../../../types/tariff";
 import {Portfolio} from "../../../types/types";
 import {CommonUtils} from "../../../utils/commonUtils";
 import {MutationType} from "../../../vuex/mutationType";
@@ -69,6 +70,20 @@ const MainStore = namespace(StoreType.MAIN);
 
                     <div class="profile__subtitle margB8 margT12">Имя пользователя</div>
                     <inplace-input name="username" :value="username" :max-length="120" @input="onUserNameChange"></inplace-input>
+
+                    <template v-if="clientInfo.user.tariff !== Tariff.FREE">
+                        <div class="profile__subtitle margB8 margT12">
+                            Публичное имя
+                            <tooltip>Ваше имя (будет использовано для отображения на карточке публичного портфеля)</tooltip>
+                        </div>
+                        <inplace-input name="publicName" :value="publicName" :max-length="255" @input="onPublicNameChange"></inplace-input>
+
+                        <div class="profile__subtitle margB8 margT12">
+                            Публичная ссылка
+                            <tooltip>Ссылка на профиль, блог, сайт (будет использована для отображения на карточке публичного портфеля)</tooltip>
+                        </div>
+                        <inplace-input name="publicLink" :value="publicLink" :max-length="1024" @input="onPublicLinkChange"></inplace-input>
+                    </template>
                 </v-card>
                 <expanded-panel :value="[0]" class="promo-codes__statistics mt-3">
                     <template #header>Удаление аккаунта</template>
@@ -101,10 +116,16 @@ export class ProfileMainPage extends UI {
     /** Сервис для работы с тарифами */
     @Inject
     private tariffService: TariffService;
+    /** Тарифы */
+    private Tariff = Tariff;
     /** Имя пользователя */
     private username = "";
     /** email пользователя */
     private email = "";
+    /** Публичное имя пользователя */
+    private publicName = "";
+    /** Ссылка на публичный ресурс пользователя */
+    private publicLink = "";
 
     /**
      * Инициализирует данные компонента
@@ -114,6 +135,8 @@ export class ProfileMainPage extends UI {
     async created(): Promise<void> {
         this.username = this.clientInfo.user.username;
         this.email = this.clientInfo.user.email;
+        this.publicName = this.clientInfo.user.publicName;
+        this.publicLink = this.clientInfo.user.publicLink;
         UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
     }
 
@@ -171,6 +194,36 @@ export class ProfileMainPage extends UI {
             await this.clientService.changeUsername({id: this.clientInfo.user.id, username: this.username});
             this.clientInfo.user.username = this.username;
             this.$snotify.info("Новое имя пользователя успешно сохранено");
+        }
+    }
+
+    /**
+     * Обрабатывает смену публичного имени имени
+     * @param publicName
+     */
+    @ShowProgress
+    private async onPublicNameChange(publicName: string): Promise<void> {
+        this.publicName = CommonUtils.isBlank(publicName) ? this.clientInfo.user.publicName : publicName;
+        // отправляем запрос только если действительно поменяли
+        if (this.publicName !== this.clientInfo.user.publicName) {
+            await this.clientService.changePublicName(this.publicName);
+            this.clientInfo.user.publicName = this.publicName;
+            this.$snotify.info("Новое Публичное имя успешно сохранено");
+        }
+    }
+
+    /**
+     * Обрабатывает смену публичной ссылки
+     * @param publicLink
+     */
+    @ShowProgress
+    private async onPublicLinkChange(publicLink: string): Promise<void> {
+        this.publicLink = CommonUtils.isBlank(publicLink) ? this.clientInfo.user.publicLink : publicLink;
+        // отправляем запрос только если действительно поменяли
+        if (this.publicLink !== this.clientInfo.user.publicLink) {
+            await this.clientService.changePublicLInk(this.publicLink);
+            this.clientInfo.user.publicLink = this.publicLink;
+            this.$snotify.info("Новое Публичная ссылка успешно сохранена");
         }
     }
 

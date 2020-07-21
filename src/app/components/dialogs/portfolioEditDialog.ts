@@ -153,7 +153,7 @@ export class PortfolioEditDialog extends CustomDialog<PortfolioDialogData, boole
     private dateMenuValue = false;
     /** Список валют */
     private currencyList = ALLOWED_CURRENCIES;
-    private accessTypes = [AccessTypes.PRIVATE, AccessTypes.PUBLIC];
+    private accessTypes = [AccessTypes.PRIVATE, AccessTypes.PUBLIC, AccessTypes.PUBLIC_BY_LINK];
     private iisTypes = IisType.values();
     private accountType = PortfolioAccountType;
     private accountTypes = PortfolioAccountType.values();
@@ -172,7 +172,7 @@ export class PortfolioEditDialog extends CustomDialog<PortfolioDialogData, boole
             this.portfolioParams = {
                 name: "",
                 brokerId: null,
-                access: false,
+                access: 0,
                 viewCurrency: Currency.RUB,
                 openDate: DateUtils.formatDate(dayjs(), DateFormat.DATE2),
                 accountType: PortfolioAccountType.BROKERAGE
@@ -258,8 +258,9 @@ export class PortfolioEditDialog extends CustomDialog<PortfolioDialogData, boole
 }
 
 class AccessTypes {
-    static readonly PUBLIC = {value: true, label: "Публичный"};
-    static readonly PRIVATE = {value: false, label: "Закрытый"};
+    static readonly PUBLIC = {value: 1, label: "Публичный"};
+    static readonly PUBLIC_BY_LINK = {value: 2, label: "Публичный по ссылке"};
+    static readonly PRIVATE = {value: 0, label: "Закрытый"};
 }
 
 type AccessType = {

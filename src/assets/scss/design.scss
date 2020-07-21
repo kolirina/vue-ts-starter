@@ -70,7 +70,7 @@ input.highcharts-range-selector:focus {
   @extend %info-panel;
   padding: 12px;
 
-  > a {
+  > a.big-link {
     display: inline-block;
     font-size: 14px;
     line-height: 20px;

@@ -219,7 +219,7 @@ export class SharePortfolioDialog extends CustomDialog<SharePortfolioDialogData,
 
     private shareOption: PortfoliosDialogType = null;
 
-    private access = true;
+    private access = 1;
     private divAccess = false;
     private tradeAccess = false;
     private lineDataAccess = false;
