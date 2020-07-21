@@ -521,7 +521,7 @@ export class StockTable extends UI {
     }
 
     private getHeaderText(header: TableHeader): string {
-        return header.currency ? `${header.text} ${this.portfolioCurrency}` : header.text;
+        return header.currency ? `${header.text}, ${this.portfolioCurrency}` : header.text;
     }
 
     private markupClasses(amount: number): string[] {

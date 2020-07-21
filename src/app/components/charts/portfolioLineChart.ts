@@ -15,7 +15,7 @@ import {ChartUtils} from "../../utils/chartUtils";
             <v-menu :close-on-content-click="false" :nudge-width="294" :nudge-bottom="40" bottom>
                 <div class="pl-3" slot="activator">
                     <v-btn round class="portfolio-rows-filter__button">
-                        Фильтры
+                        Настройки
                         <span class="portfolio-rows-filter__button__icon"></span>
                     </v-btn>
                 </div>
@@ -125,6 +125,19 @@ import {ChartUtils} from "../../utils/chartUtils";
                             </v-tooltip>
                         </template>
                     </v-switch>
+                    <v-switch v-model="seriesFilter.totalProfit" @change="toggleChartOption(ChartSeries.TOTAL_PROFIT)" class="mt-3" hide-details>
+                        <template #label>
+                            <span>{{ ChartSeries.TOTAL_PROFIT.description }}</span>
+                            <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                                <sup class="custom-tooltip" slot="activator">
+                                    <v-icon>fas fa-info-circle</v-icon>
+                                </sup>
+                                <span>
+                                    Включите, если хотите чтобы на графике отображалась суммарная прибыль
+                                </span>
+                            </v-tooltip>
+                        </template>
+                    </v-switch>
                     <v-switch v-model="compare" @change="toggleCompareOption" class="mt-3" hide-details>
                         <template #label>
                             <span>Процентное сравнение</span>
@@ -183,12 +196,10 @@ export class PortfolioLineChart extends UI {
     @Prop({required: false})
     private eventsChartData: HighStockEventsGroup[];
     /** Префикс ключа под которым будет хранится состояние */
-    @Prop({type: String, required: false})
+    @Prop({type: String, default: "PORTFOLIO_LINE_CHART"})
     private stateKeyPrefix: string;
     /** Набор доступных для выбора диапазонов дат */
     private ranges: Highstock.RangeSelectorButton[] = [];
-    /** Индекс выбранного диапазона */
-    private selectedRangeIndex: number = 1;
     /** Выбранный диапазон */
     private selectedRange: string = null;
     /** Данные фильтра */
@@ -209,6 +220,8 @@ export class PortfolioLineChart extends UI {
         etfChart: false,
         /** Признак отображения графика стоимости Облигаций */
         bondChart: false,
+        /** Признак отображения графика прибыли */
+        totalProfit: false
     };
     /** Сравнение графиков. Для отображения процентов */
     private compare: boolean = false;
@@ -272,9 +285,16 @@ export class PortfolioLineChart extends UI {
         if (series === ChartSeries.TOTAL) {
             this.seriesFilter.showTrades = this.seriesFilter.totalChart;
         }
+        if (series === ChartSeries.INDEX_STOCK_EXCHANGE) {
+            const seriesEnabled = (this.seriesFilter as any)[series.code];
+            if (seriesEnabled) {
+                this.compare = seriesEnabled;
+                this.localStorage.set<boolean>(`${this.stateKeyPrefix}_COMPARE`, this.compare);
+            }
+        }
         setTimeout(async () => await this.draw(), 0);
         if (series === ChartSeries.TOTAL && this.seriesFilter.totalChart) {
-            await this.onShowTradesChange();
+            setTimeout(async () => await this.onShowTradesChange(), 0);
         }
     }
 
@@ -293,14 +313,15 @@ export class PortfolioLineChart extends UI {
     }
 
     private prepareLineData(): void {
-        [ChartSeries.TOTAL, ChartSeries.STOCKS, ChartSeries.ETF, ChartSeries.BONDS, ChartSeries.MONEY, ChartSeries.IN_OUT_MONEY].forEach(series => {
-            this.lineChartSeries[series.code] = {
-                data: ChartUtils.convertToDots(this.data, series.fieldName),
-                balloonTitle: series === ChartSeries.TOTAL ? this.balloonTitle : series.description,
-                enabled: (this.seriesFilter as any)[series.code],
-                id: series.code
-            };
-        });
+        [ChartSeries.TOTAL, ChartSeries.STOCKS, ChartSeries.ETF, ChartSeries.BONDS, ChartSeries.MONEY, ChartSeries.IN_OUT_MONEY, ChartSeries.TOTAL_PROFIT]
+            .forEach(series => {
+                this.lineChartSeries[series.code] = {
+                    data: ChartUtils.convertToDots(this.data, series.fieldName),
+                    balloonTitle: series === ChartSeries.TOTAL ? this.balloonTitle : series.description,
+                    enabled: (this.seriesFilter as any)[series.code],
+                    id: series.code
+                };
+            });
     }
 
     /**
@@ -333,8 +354,15 @@ export class PortfolioLineChart extends UI {
             };
         });
         this.selectedRange = this.localStorage.get(`${this.stateKeyPrefix}_RANGE`, "10d");
+    }
+
+    /**
+     * Возвращает Индекс выбранного диапазона
+     */
+    private get selectedRangeIndex(): number {
+        this.selectedRange = this.localStorage.get(`${this.stateKeyPrefix}_RANGE`, "10d");
         const selectedIndex = this.ranges.map(range => range.text).indexOf(this.selectedRange);
-        this.selectedRangeIndex = selectedIndex === -1 ? 1 : selectedIndex;
+        return selectedIndex === -1 ? 1 : selectedIndex;
     }
 
     /**
@@ -349,7 +377,7 @@ export class PortfolioLineChart extends UI {
 
     private get isDefault(): boolean {
         return this.seriesFilter.showTrades && this.seriesFilter.totalChart && !this.seriesFilter.showStockExchange && !this.seriesFilter.bondChart &&
-            !this.seriesFilter.stockChart && !this.seriesFilter.etfChart && !this.seriesFilter.moneyChart && !this.seriesFilter.inOutMoneyChart;
+            !this.seriesFilter.stockChart && !this.seriesFilter.etfChart && !this.seriesFilter.moneyChart && !this.seriesFilter.inOutMoneyChart && !this.seriesFilter.totalProfit;
     }
 
     private getStorageValue(chartSeries: ChartSeries, defaultValue: boolean = false): boolean {

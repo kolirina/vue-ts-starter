@@ -7,8 +7,10 @@ import {ShowProgress} from "../../platform/decorators/showProgress";
 import {ClientInfo} from "../../services/clientService";
 import {ExportService, ExportType} from "../../services/exportService";
 import {PortfolioParams, PortfolioService} from "../../services/portfolioService";
+import {EventType} from "../../types/eventType";
 import {Portfolio, PortfolioBackup} from "../../types/types";
 import {ExportUtils} from "../../utils/exportUtils";
+import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -104,6 +106,8 @@ export class ExportPage extends UI {
     /** Текущий портфель */
     @MainStore.Getter
     private portfolio: Portfolio;
+    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
+    private reloadPortfolio: (id: number) => Promise<void>;
     /** Сервис для экспорта портфеля */
     @Inject
     private exportService: ExportService;
@@ -116,6 +120,14 @@ export class ExportPage extends UI {
     private portfolioBackup: PortfolioBackup = null;
     /** Типы экспорта таблиц */
     private ExportType = ExportType;
+
+    created(): void {
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
+    }
+
+    beforeDestroy(): void {
+        UI.off(EventType.TRADE_CREATED);
+    }
 
     /**
      * Инициализация компонента, загрузка портфелей

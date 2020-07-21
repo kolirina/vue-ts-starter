@@ -22,7 +22,7 @@ import {DealsImportProvider} from "../services/importService";
     template: `
         <v-list-tile class="text-xs-center sidebar-list-item">
             <v-list-tile-content :style="innerStyle">
-                <v-menu offset-y transition="slide-y-transition" max-height="480px" min-width="260px" left>
+                <v-menu offset-y transition="slide-y-transition" max-height="480px" min-width="260px" left z-index="300">
                     <template slot="activator">
                         <slot name="activator">
                             <v-btn>

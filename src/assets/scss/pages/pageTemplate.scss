@@ -11,6 +11,10 @@
       margin-bottom: 0px;
       color: #040427;
     }
+
+  @media all and (max-width: $xs-breakpoint){
+    &__wrapper-title {padding-left: 0}
+  }
 }
 
 .template-wrapper {

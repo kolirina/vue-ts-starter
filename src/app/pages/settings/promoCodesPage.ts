@@ -9,6 +9,9 @@ import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {ClientInfo, ClientService} from "../../services/clientService";
 import {PromoCodeService, PromoCodeStatistics} from "../../services/promoCodeService";
+import {EventType} from "../../types/eventType";
+import {Portfolio} from "../../types/types";
+import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -16,7 +19,7 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-container fluid>
+        <v-container fluid class="page-wrapper">
             <v-layout row wrap>
                 <v-flex>
                     <v-card flat class="header-first-card">
@@ -84,23 +87,34 @@ const MainStore = namespace(StoreType.MAIN);
                                 <template #header>Статистика по реферальной программе</template>
                                 <div class="statistics">
                                     <div>
-                                        <span>Привлеченных пользователей:</span>{{ promoCodeStatistics.referralCount }}
+                                        <span>Привлеченных пользователей:</span>
+                                        <span>{{ promoCodeStatistics.referralCount }}</span>
                                     </div>
                                     <div>
-                                        <span>Из них хоть раз оплативших:</span>{{ promoCodeStatistics.hasPaymentsReferralCount }}
+                                        <span>Из них хоть раз оплативших:</span>
+                                        <span>{{ promoCodeStatistics.hasPaymentsReferralCount }}</span>
                                     </div>
                                     <template v-if="clientInfo.user.referralAwardType === 'PAYMENT'">
                                         <div>
-                                            <span>Всего заработано:</span>{{ promoCodeStatistics.referrerPaymentsTotal | number }}
-                                            <span class="rewards-currency rub"></span>
+                                            <span>Всего заработано:</span>
+                                            <span>
+                                                {{ promoCodeStatistics.referrerPaymentsTotal | number }}
+                                                <span class="rewards-currency rub"></span>
+                                            </span>
                                         </div>
                                         <div>
-                                            <span>Всего выплачено:</span>{{ promoCodeStatistics.referrerPaymentsTotalPaid | number }}
-                                            <span class="rewards-currency rub"></span>
+                                            <span>Всего выплачено:</span>
+                                            <span>
+                                                {{ promoCodeStatistics.referrerPaymentsTotalPaid | number }}
+                                                <span class="rewards-currency rub"></span>
+                                            </span>
                                         </div>
                                         <div class="statistics__label">
-                                            <span>Остаток для выплаты:</span>{{ promoCodeStatistics.referrerPaymentsTotalUnpaid | number }}
-                                            <span class="rewards-currency rub"></span>
+                                            <span>Остаток для выплаты:</span>
+                                            <span>
+                                                {{ promoCodeStatistics.referrerPaymentsTotalUnpaid | number }}
+                                                <span class="rewards-currency rub"></span>
+                                            </span>
                                         </div>
                                     </template>
                                 </div>
@@ -117,6 +131,10 @@ export class PromoCodesPage extends UI {
 
     @MainStore.Getter
     private clientInfo: ClientInfo;
+    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
+    private reloadPortfolio: (id: number) => Promise<void>;
+    @MainStore.Getter
+    private portfolio: Portfolio;
     /** Сервис для работы с данными клиента */
     @Inject
     private clientService: ClientService;
@@ -133,6 +151,11 @@ export class PromoCodesPage extends UI {
     @ShowProgress
     async created(): Promise<void> {
         this.promoCodeStatistics = await this.promoCodeService.getPromoCodeStatistics();
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
+    }
+
+    beforeDestroy(): void {
+        UI.off(EventType.TRADE_CREATED);
     }
 
     /**

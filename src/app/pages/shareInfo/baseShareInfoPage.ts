@@ -459,7 +459,7 @@ export class BaseShareInfoPage extends UI {
     private async loadTradeEvents(): Promise<void> {
         const tradeEvents = this.isStockAsset ? await this.tradeService.getShareTradesEvent(this.portfolio.id, this.share.ticker) :
             await this.tradeService.getAssetShareTradesEvent(this.portfolio.id, String(this.share.id));
-        this.events.push(...ChartUtils.processEventsChartData(tradeEvents, "flags", "dataseries", "circlepin", 10, "rgba(20,140,0,0.45)"));
+        this.events.push(...ChartUtils.processEventsChartData(tradeEvents, true, "flags", "dataseries", "circlepin", 10, "rgba(20,140,0,0.45)"));
     }
 
     private async openDialog(): Promise<void> {
@@ -515,7 +515,13 @@ export class BaseShareInfoPage extends UI {
     private get sectorDescription(): string {
         if (this.share.shareType === ShareType.ASSET) {
             const assetCategory: AssetCategory = AssetCategory.valueByName((this.share as Asset).category);
-            return assetCategory == null ? "Активы" : assetCategory.description;
+            if (assetCategory == null) {
+                return "Активы";
+            }
+            if (assetCategory === AssetCategory.STOCK) {
+                return (this.share as StockTypeShare).sector.name;
+            }
+            return assetCategory.description;
         }
         return (this.share as StockTypeShare).sector.name;
     }
@@ -547,13 +553,13 @@ export class BaseShareInfoPage extends UI {
             if (assetRow && this.portfolio.portfolioParams.viewCurrency !== this.share.currency) {
                 const res = await this.tradeService.getCurrencyFromTo(this.share.currency, this.portfolio.portfolioParams.viewCurrency,
                     DateUtils.formatDayMonthYear(DateUtils.currentDate()));
-                const price = new BigMoney(assetRow.avgBuy).amount.dividedBy(new Decimal(res.rate));
+                const price = new BigMoney(assetRow.openPositionAvgPrice).amount.dividedBy(new Decimal(res.rate));
                 return price.toDP(price.lessThan(new Decimal("1")) ? 9 : 2).toNumber();
             }
-            return assetRow ? new BigMoney(assetRow.avgBuy).amount.toNumber() : -1;
+            return assetRow ? new BigMoney(assetRow.openPositionAvgPrice).amount.toNumber() : -99999999;
         } catch (e) {
             // на всякий случай, иначе график не отрисуется
-            return -1;
+            return -99999999;
         }
     }
 }

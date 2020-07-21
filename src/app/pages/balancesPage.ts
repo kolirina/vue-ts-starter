@@ -14,6 +14,7 @@ import {TradeFields, TradeService} from "../services/tradeService";
 import {AssetType} from "../types/assetType";
 import {BigMoney} from "../types/bigMoney";
 import {ALLOWED_CURRENCIES, Currency} from "../types/currency";
+import {EventType} from "../types/eventType";
 import {Operation} from "../types/operation";
 import {TradeDataHolder} from "../types/trade/tradeDataHolder";
 import {ErrorInfo, Portfolio, Share} from "../types/types";
@@ -219,8 +220,12 @@ export class BalancesPage extends UI implements TradeDataHolder {
     @ShowProgress
     async created(): Promise<void> {
         this.topShares = await this.marketService.loadTopStocks();
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
     }
 
+    beforeDestroy(): void {
+        UI.off(EventType.TRADE_CREATED);
+    }
     private async specifyResidues(): Promise<void> {
         await this.reloadPortfolio(this.portfolio.id);
     }

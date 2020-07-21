@@ -1,4 +1,12 @@
+import {namespace} from "vuex-class";
 import {Component, UI} from "../../app/ui";
+import {ShowProgress} from "../../platform/decorators/showProgress";
+import {EventType} from "../../types/eventType";
+import {Portfolio} from "../../types/types";
+import {MutationType} from "../../vuex/mutationType";
+import {StoreType} from "../../vuex/storeType";
+
+const MainStore = namespace(StoreType.MAIN);
 
 @Component({
     // language=Vue
@@ -60,6 +68,24 @@ import {Component, UI} from "../../app/ui";
     `
 })
 export class ProfilePage extends UI {
+
+    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
+    private reloadPortfolio: (id: number) => Promise<void>;
+    @MainStore.Getter
+    private portfolio: Portfolio;
+
+    /**
+     * Инициализирует данные компонента
+     * @inheritDoc
+     */
+    @ShowProgress
+    async created(): Promise<void> {
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
+    }
+
+    beforeDestroy(): void {
+        UI.off(EventType.TRADE_CREATED);
+    }
 
     private goToMainSetting(): void {
         this.$router.push({name: "profile-main"});

@@ -12,7 +12,7 @@ import {ClientInfo, ClientService} from "../services/clientService";
 import {ExportService} from "../services/exportService";
 import {MarketHistoryService} from "../services/marketHistoryService";
 import {OverviewService} from "../services/overviewService";
-import {HighStockEventsGroup} from "../types/charts/types";
+import {HighStockEventsGroup, LineChartItem, PortfolioLineChartData} from "../types/charts/types";
 import {Currency} from "../types/currency";
 import {AddTradeEvent, EventType} from "../types/eventType";
 import {Permission} from "../types/permission";
@@ -97,7 +97,9 @@ export class CombinedPortfolioPage extends UI {
     /** Валюта просмотра портфеля */
     private viewCurrency: string = Currency.RUB;
     /** Данные графика стоимости портфеля */
-    private lineChartData: any[] = null;
+    private lineChartData: LineChartItem[] = null;
+    /** Данные графика портфеля */
+    private portfolioLineChartData: PortfolioLineChartData = null;
     /** Данные по событиям для графика стоимости */
     private lineChartEvents: HighStockEventsGroup[] = null;
     /** Данные стоимости индекса ММВБ */
@@ -183,7 +185,8 @@ export class CombinedPortfolioPage extends UI {
 
     private async loadPortfolioLineChart(): Promise<void> {
         if (UiStateHelper.historyPanel[0] === 1) {
-            this.lineChartData = await this.overviewService.getCostChartCombined({ids: this.ids, viewCurrency: this.viewCurrency});
+            this.portfolioLineChartData = await this.overviewService.getCostChartCombined({ids: this.ids, viewCurrency: this.viewCurrency});
+            this.lineChartData = this.portfolioLineChartData.lineChartData;
             if (this.overview.firstTradeDate) {
                 this.indexLineChartData = await this.marketHistoryService.getIndexHistory("MMVB", dayjs(this.overview.firstTradeDate).format("DD.MM.YYYY"));
             }

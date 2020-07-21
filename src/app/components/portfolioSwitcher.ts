@@ -1,9 +1,11 @@
+import {Inject} from "typescript-ioc";
 import {namespace} from "vuex-class/lib/bindings";
 import {Component, Prop, UI, Watch} from "../app/ui";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {ClientInfo} from "../services/clientService";
 import {DealsImportProvider} from "../services/importService";
-import {PortfolioParams} from "../services/portfolioService";
+import {PortfolioParams, PortfolioService} from "../services/portfolioService";
+import {CurrencyUnit} from "../types/currency";
 import {Portfolio} from "../types/types";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
@@ -21,8 +23,12 @@ const MainStore = namespace(StoreType.MAIN);
                               :title="brokerDescription"></span>
                         <div v-if="!sideBarOpened || isMobile" class="portfolios-inner-content">
                             <span class="w140 fs13 ellipsis">{{ selected.name }}</span>
-                            <v-layout align-center class="portfolios-list-icons">
-                                <i :class="selected.viewCurrency.toLowerCase()" title="Валюта"></i>
+                            <v-layout align-center class="portfolios-list-icons margT4">
+                                <div :class="['portfolios-list-currency__item', {'active': selected.viewCurrency === currency}]"
+                                     @click.stop="changeCurrency(currency)"
+                                     v-for="currency in currencyList">
+                                    {{ currency }}
+                                </div>
                                 <i v-if="selected.access" class="public-portfolio-icon" title="Публичный"></i>
                                 <i v-if="selected.professionalMode" class="professional-mode-icon" title="Профессиональный режим"></i>
                             </v-layout>
@@ -64,6 +70,12 @@ export class PortfolioSwitcher extends UI {
     @MainStore.Action(MutationType.SET_DEFAULT_PORTFOLIO)
     private setDefaultPortfolio: (id: number) => Promise<void>;
 
+    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
+    private reloadPortfolio: (id: number) => Promise<void>;
+
+    @Inject
+    private portfolioService: PortfolioService;
+
     @Prop({default: false, required: false})
     private sideBarOpened: boolean;
 
@@ -71,6 +83,9 @@ export class PortfolioSwitcher extends UI {
     private isMobile: boolean;
 
     private selected: PortfolioParams = null;
+
+    /** Список валют */
+    private currencyList = [CurrencyUnit.RUB, CurrencyUnit.USD, CurrencyUnit.EUR].map(currency => currency.code);
 
     async created(): Promise<void> {
         this.selected = this.getSelected();
@@ -100,6 +115,15 @@ export class PortfolioSwitcher extends UI {
     private getBrokerIconClass(brokerId: number): string {
         const provider = DealsImportProvider.valueById(brokerId);
         return provider ? provider.code.toLowerCase() : "";
+    }
+
+    /**
+     * Обновляет валюту портфеля
+     * @param currencyCode валюта
+     */
+    private async changeCurrency(currencyCode: string): Promise<void> {
+        await this.portfolioService.changeCurrency(this.selected.id, currencyCode);
+        await this.reloadPortfolio(this.selected.id);
     }
 
     private get broker(): DealsImportProvider {

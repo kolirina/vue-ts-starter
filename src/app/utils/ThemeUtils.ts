@@ -76,7 +76,8 @@ export class ThemeUtils {
     .sing-in-wrap .paired-section__left-section,
     .empty-station {background: #2C3040 !important;}
 
-    .tariff-description-wrap div:nth-child(even) {background-color: #2C3040}
+    .tariff-description-wrap div:nth-child(even),
+    .theme--light.v-tabs__bar {background-color: #2C3040}
 
     .v-content__wrap,
     .header-first-card,
@@ -94,7 +95,7 @@ export class ThemeUtils {
     .v-picker__title.primary,
     .portfolio-rows-filter__button:hover,
     .v-tooltip__content.menu-icons,
-    .theme--light.application,
+    .theme--light.application, .mobile-wrapper-menu,
     .custom-v-menu .v-menu-content{background: #21232F !important}
 
     .active-link, .wrap-list-menu .v-list__tile:hover,
@@ -158,7 +159,7 @@ export class ThemeUtils {
     .snotifyToast__buttons button, .update-service-dialog__content,
     .custom-v-menu .v-menu-content, .section-title, .public-portfolio-item__title, .public-portfolio-item__footer-title,
     .public-portfolio-item__footer-social > div,
-    .v-date-picker-years, .empty-station__description {color: #fff}
+    .v-date-picker-years, .empty-station__description, .v-tabs .v-tabs__item {color: #fff}
 
     .theme--light.v-label,
     .fs12-opacity,

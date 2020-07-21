@@ -10,6 +10,7 @@ import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {ClientInfo, ClientService} from "../../services/clientService";
 import {TariffService, UserPaymentInfo} from "../../services/tariffService";
+import {EventType} from "../../types/eventType";
 import {Permission} from "../../types/permission";
 import {Tariff} from "../../types/tariff";
 import {Portfolio} from "../../types/types";
@@ -390,6 +391,8 @@ export class TariffsPage extends UI {
     private tariffService: TariffService;
     @MainStore.Getter
     private clientInfo: ClientInfo;
+    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
+    private reloadPortfolio: (id: number) => Promise<void>;
     @MainStore.Getter
     private expiredTariff: boolean;
     @MainStore.Getter
@@ -425,6 +428,11 @@ export class TariffsPage extends UI {
             this.$snotify.info("Оплата заказа успешно завершена");
             this.$router.push({name: "tariffs"});
         }
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
+    }
+
+    beforeDestroy(): void {
+        UI.off(EventType.TRADE_CREATED);
     }
 
     /**

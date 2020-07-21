@@ -148,7 +148,7 @@ export class Dashboard extends UI {
         const secondCurrency = new BigMoney(newValue.currentCostInAlternativeCurrency).currency.toLowerCase();
 
         this.blocks[0] = {
-            name: "Суммарная стоимость",
+            name: "Стоимость",
             mainValue: Filters.formatMoneyAmount(newValue.currentCost, true),
             secondValue: Filters.formatMoneyAmount(newValue.currentCostInAlternativeCurrency, true),
             hasNotBorderLeft: true,
@@ -161,7 +161,7 @@ export class Dashboard extends UI {
                 "                                Ниже указана суммарная стоимость портфеля, пересчитанная в долларах по текущему курсу."
         };
         this.blocks[1] = {
-            name: "Суммарная прибыль",
+            name: "Прибыль",
             mainValue: Filters.formatMoneyAmount(newValue.profit, true),
             secondValue: this.percentProfitBySummary ? newValue.percentProfitBySummaryCost : newValue.percentProfit,
             isSummaryIncome: {
@@ -176,7 +176,7 @@ export class Dashboard extends UI {
                 "                                Ввод и вывод денежных средств на прибыль портфеля не влияют. <br/>",
             mainValueTooltip: `Пользовательская прибыль: ${Filters.formatMoneyAmount(newValue.usersIncomes)}<br/>
                                Пользовательские убытки: ${Filters.formatMoneyAmount(newValue.usersLosses)}<br/>
-                               В системе установлен курс валют по ЦБ. Это позволяет исключить влияние изменений курса на оценку эффективности бумаг`,
+                               В системе установлен курс валют с ММВБ`,
             secondTooltip:
                 `Прибыль портфеля в отношении к его ${this.percentProfitBySummary ? "суммарной текущей стоимости" : "средневзвешенной стоимости вложений"} с учетом денег.<br/>
 Прибыль портфеля посчитанная относительно ${this.percentProfitBySummary ? "средневзвешенной стоимости вложений" : "суммарной текущей стоимости"}: ` +

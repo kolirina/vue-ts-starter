@@ -16,16 +16,18 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-container v-if="portfolio" fluid>
+        <v-container v-if="portfolio" fluid class="page-wrapper">
             <v-card flat class="header-first-card">
                 <v-card-title class="header-first-card__wrapper-title">
                     <div class="section-title header-first-card__title-text">Котировки</div>
                 </v-card-title>
             </v-card>
+            <v-tabs>
+                <v-tab v-for="item in quotesTypes" :key="item.code" @change="onTabSelected(item)" :class="{'active': item.code === currentTab.code}" :ripple="false">
+                    {{ item.description }}
+                </v-tab>
+            </v-tabs>
             <v-card flat class="pa-0">
-                <v-radio-group v-model="currentTab" row class="mt-0 pt-4 pl-4 margB35" @change="onTabSelected" hide-details>
-                    <v-radio v-for="item in quotesTypes" :key="item.code" :label="item.description" :value="item" class="pl-1" mandatory></v-radio>
-                </v-radio-group>
                 <stock-quotes v-if="currentTab === QuotesType.STOCK"></stock-quotes>
                 <etf-quotes v-if="currentTab === QuotesType.ETF"></etf-quotes>
                 <bond-quotes v-if="currentTab === QuotesType.BOND"></bond-quotes>
@@ -52,7 +54,8 @@ export class QuotesPage extends UI {
         this.currentTab = QuotesType.valueByName(this.$route.params.tab.toUpperCase()) || QuotesType.STOCK;
     }
 
-    private onTabSelected(): void {
+    private onTabSelected(item: QuotesType): void {
+        this.currentTab = item;
         this.$router.push({name: "quotes", params: {tab: this.currentTab.code}});
     }
 }

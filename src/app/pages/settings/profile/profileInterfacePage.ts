@@ -19,7 +19,10 @@ import {Component, namespace, UI} from "../../../app/ui";
 import {ThemeSwitcher} from "../../../components/themeSwitcher";
 import {ShowProgress} from "../../../platform/decorators/showProgress";
 import {ClientInfo, ClientService} from "../../../services/clientService";
+import {EventType} from "../../../types/eventType";
+import {Portfolio} from "../../../types/types";
 import {HelpDeskUtils} from "../../../utils/HelpDeskUtils";
+import {MutationType} from "../../../vuex/mutationType";
 import {StoreType} from "../../../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -82,11 +85,23 @@ export class ProfileInterfacePage extends UI {
 
     @MainStore.Getter
     private clientInfo: ClientInfo;
+    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
+    private reloadPortfolio: (id: number) => Promise<void>;
+    @MainStore.Getter
+    private portfolio: Portfolio;
     /** Сервис для работы с данными клиента */
     @Inject
     private clientService: ClientService;
     /** Индикатор панели управления виджетом */
     private widgetPanel = [0];
+
+    created(): void {
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
+    }
+
+    beforeDestroy(): void {
+        UI.off(EventType.TRADE_CREATED);
+    }
 
     /**
      * Обновляет признак тображения виджета помощи
