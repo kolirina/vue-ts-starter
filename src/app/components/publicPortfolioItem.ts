@@ -28,7 +28,9 @@ import {ChartUtils} from "../utils/chartUtils";
     template: `
         <div :key="portfolio.id" @click="openPublicPortfolio(portfolio.id)" class="public-portfolio-item">
             <div class="public-portfolio-item__header">{{ portfolio.ownerName }}</div>
-            <div class="public-portfolio-item__title">{{ portfolio.description }}</div>
+            <div class="public-portfolio-item__title" :title="portfolio.description">
+                {{ shortDescription }}
+            </div>
             <div class="public-portfolio-item__chart">
                 <micro-line-chart :data="getChartData(portfolio.lineChartData)" :height="64"></micro-line-chart>
             </div>
@@ -71,10 +73,17 @@ export class PublicPortfolioItem extends UI {
     }
 
     private getChartData(chartData: LineChartItem[]): any {
-        return ChartUtils.convertToDots(chartData, "amount");
+        return ChartUtils.convertToDotsWithStartPoint(chartData, "amount", false);
     }
 
     private vote(portfolio: PublicPortfolio, vote: number): void {
         this.$emit("vote", {id: portfolio.id, vote: vote} as PortfolioVote);
+    }
+
+    private get shortDescription(): string {
+        if (this.portfolio.description) {
+            return this.portfolio.description?.length > 80 ? `${this.portfolio.description.substr(0, 77)}...` : this.portfolio.description;
+        }
+        return this.portfolio.name;
     }
 }
