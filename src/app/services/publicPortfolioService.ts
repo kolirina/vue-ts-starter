@@ -55,10 +55,10 @@ export interface PublicPortfolio {
     ownerName: string;
     /** Ссылка на публичный ресурс (Для партнеров) */
     ownerPublicLink: string;
-    /** Количество всех реферреров */
-    referrersCount: number;
-    /** Количество активных платников-реферреров */
-    referrersPaidCount: number;
+    /** Количество всех рефералов */
+    referralsCount: number;
+    /** Количество активных платников-рефералов */
+    referralsPaidCount: number;
     /** Количество лайков */
     likes: number;
     /** Количество дизлайков */

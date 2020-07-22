@@ -35,7 +35,7 @@ import {ChartUtils} from "../utils/chartUtils";
             <div class="public-portfolio-item__footer">
                 <div>
                     <div class="public-portfolio-item__footer-title">Стоимость</div>
-                    {{ portfolio.currentCost | amount }} {{ portfolio.currentCost | currencySymbol }}
+                    {{ portfolio.currentCost | amount(true) }} {{ portfolio.currentCost | currencySymbol }}
                 </div>
                 <div>
                     <div class="public-portfolio-item__footer-title">Прибыль</div>
@@ -46,7 +46,9 @@ import {ChartUtils} from "../utils/chartUtils";
                     <span class="public-portfolio-positive">{{ portfolio.yearYield }}%</span>
                 </div>
                 <div class="public-portfolio-item__footer-social" @click.stop>
-                    <div class="public-portfolio-item__footer-referrals">{{ portfolio.referrersCount | friendlyNumber }}</div>
+                    <div class="public-portfolio-item__footer-referrals" title="Количество подписчиков">
+                        {{ portfolio.referralsCount | friendlyNumber }}
+                    </div>
                     <div class="public-portfolio-item__footer-like" @click="vote(portfolio, 1)">{{ portfolio.likes | friendlyNumber }}</div>
                     <div class="public-portfolio-item__footer-dislike" @click="vote(portfolio, -1)">{{ portfolio.dislikes | friendlyNumber }}</div>
                 </div>

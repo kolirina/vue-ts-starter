@@ -217,10 +217,10 @@ export interface BaseClient {
     publicName: string;
     /** Ссылка на публичный ресурс (Для партнеров) */
     publicLink: string;
-    /** Количество всех реферреров */
-    referrersCount: number;
-    /** Количество активных платников-реферреров */
-    referrersPaidCount: number;
+    /** Количество всех рефералов */
+    referralsCount: number;
+    /** Количество активных платников-рефералов */
+    referralsPaidCount: number;
     /** Признак блокировки аккаунта */
     blocked: boolean;
     /** Алиас для реферальной ссылки */
