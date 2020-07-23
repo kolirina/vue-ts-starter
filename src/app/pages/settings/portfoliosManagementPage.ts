@@ -37,10 +37,6 @@ const MainStore = namespace(StoreType.MAIN);
                     <v-card flat class="header-first-card">
                         <v-card-title class="header-first-card__wrapper-title">
                             <div class="section-title header-first-card__title-text">Управление портфелями</div>
-                            <v-spacer></v-spacer>
-                            <v-btn @click.stop="openDialog" class="primary">
-                                Добавить портфель
-                            </v-btn>
                         </v-card-title>
                     </v-card>
 

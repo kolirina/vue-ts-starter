@@ -47,13 +47,13 @@ const MainStore = namespace(StoreType.MAIN);
     template: `
         <v-card class="import-wrapper">
             <div class="portfolio-list">
-                <div v-for="portfolio in portfolios" class="portfolio-item">
+                <div v-for="portfolio in portfolios"  @click="goToEdit(portfolio.id.toString())" class="portfolio-item">
                     <div class="portfolio-item__header">
                         <div class="portfolio-item__header-description">{{ portfolio.name }}</div>
                         <div @click.stop data-v-step="1">
                             <v-menu transition="slide-y-transition" bottom left min-width="173" nudge-bottom="30">
                                 <v-btn slot="activator" flat icon dark>
-                                    <span class="menuDots"></span>
+                                    <span class="menuDots menuDots_dark"></span>
                                 </v-btn>
                                 <v-list dense>
                                     <v-list-tile @click="openDialogForEdit(portfolio)">
@@ -100,6 +100,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </div>
                     </div>
                 </div>
+                <v-btn @click.stop="openDialog" color="#f7f9fb" class="portfolio-item-add"></v-btn>
             </div>
             <v-data-table :headers="headers" :items="portfolios" item-key="id" :custom-sort="customSort" hide-actions class="data-table portfolios-content-table" must-sort
                           data-v-step="0">
@@ -136,46 +137,46 @@ const MainStore = namespace(StoreType.MAIN);
                         <td class="text-xs-center">{{ props.item.viewCurrency | currencySymbolByCurrency }}</td>
                         <td class="text-xs-left">{{ props.item.accountType.description }}</td>
                         <td class="text-xs-right">{{ props.item.openDate }}</td>
-                        <td class="justify-center layout px-0" @click.stop data-v-step="1">
-                            <v-menu transition="slide-y-transition" bottom left min-width="173" nudge-bottom="30">
-                                <v-btn slot="activator" flat icon dark>
-                                    <span class="menuDots"></span>
-                                </v-btn>
-                                <v-list dense>
-                                    <v-list-tile @click="openDialogForEdit(props.item)">
-                                        <v-list-tile-title>
-                                            Редактировать
-                                        </v-list-tile-title>
-                                    </v-list-tile>
-                                    <v-list-tile @click="clonePortfolio(props.item.id)">
-                                        <v-list-tile-title>
-                                            Создать копию
-                                        </v-list-tile-title>
-                                    </v-list-tile>
-                                    <v-list-tile @click="downloadFile(props.item.id)" :disabled="downloadNotAllowed">
-                                        <v-list-tile-title>
-                                            Экспорт в csv
-                                        </v-list-tile-title>
-                                    </v-list-tile>
-                                    <v-list-tile @click="exportPortfolio(props.item.id)">
-                                        <v-list-tile-title>
-                                            Экспорт в xlsx
-                                        </v-list-tile-title>
-                                    </v-list-tile>
-                                    <v-divider v-if="!props.item.parentTradeId"></v-divider>
-                                    <v-list-tile @click="clearPortfolio(props.item)">
-                                        <v-list-tile-title class="delete-btn">
-                                            Очистить
-                                        </v-list-tile-title>
-                                    </v-list-tile>
-                                    <v-list-tile @click="deletePortfolio(props.item)">
-                                        <v-list-tile-title class="delete-btn">
-                                            Удалить
-                                        </v-list-tile-title>
-                                    </v-list-tile>
-                                </v-list>
-                            </v-menu>
-                        </td>
+<!--                        <td class="justify-center layout px-0" @click.stop data-v-step="1">-->
+<!--                            <v-menu transition="slide-y-transition" bottom left min-width="173" nudge-bottom="30">-->
+<!--                                <v-btn slot="activator" flat icon dark>-->
+<!--                                    <span class="menuDots"></span>-->
+<!--                                </v-btn>-->
+<!--                                <v-list dense>-->
+<!--                                    <v-list-tile @click="openDialogForEdit(props.item)">-->
+<!--                                        <v-list-tile-title>-->
+<!--                                            Редактировать-->
+<!--                                        </v-list-tile-title>-->
+<!--                                    </v-list-tile>-->
+<!--                                    <v-list-tile @click="clonePortfolio(props.item.id)">-->
+<!--                                        <v-list-tile-title>-->
+<!--                                            Создать копию-->
+<!--                                        </v-list-tile-title>-->
+<!--                                    </v-list-tile>-->
+<!--                                    <v-list-tile @click="downloadFile(props.item.id)" :disabled="downloadNotAllowed">-->
+<!--                                        <v-list-tile-title>-->
+<!--                                            Экспорт в csv-->
+<!--                                        </v-list-tile-title>-->
+<!--                                    </v-list-tile>-->
+<!--                                    <v-list-tile @click="exportPortfolio(props.item.id)">-->
+<!--                                        <v-list-tile-title>-->
+<!--                                            Экспорт в xlsx-->
+<!--                                        </v-list-tile-title>-->
+<!--                                    </v-list-tile>-->
+<!--                                    <v-divider v-if="!props.item.parentTradeId"></v-divider>-->
+<!--                                    <v-list-tile @click="clearPortfolio(props.item)">-->
+<!--                                        <v-list-tile-title class="delete-btn">-->
+<!--                                            Очистить-->
+<!--                                        </v-list-tile-title>-->
+<!--                                    </v-list-tile>-->
+<!--                                    <v-list-tile @click="deletePortfolio(props.item)">-->
+<!--                                        <v-list-tile-title class="delete-btn">-->
+<!--                                            Удалить-->
+<!--                                        </v-list-tile-title>-->
+<!--                                    </v-list-tile>-->
+<!--                                </v-list>-->
+<!--                            </v-menu>-->
+<!--                        </td>-->
                     </tr>
                 </template>
 
@@ -400,6 +401,10 @@ export class PortfoliosTable extends UI {
 
     private showNoteLink(note: string): boolean {
         return !CommonUtils.isBlank(note);
+    }
+
+    private goToEdit(id: string): void {
+        this.$router.push({name: "portfolio-management-edit", params: {id: id}});
     }
 
     /**

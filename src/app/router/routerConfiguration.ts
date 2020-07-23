@@ -20,6 +20,7 @@ import {ExportPage} from "../pages/settings/exportPage";
 import {ImportHistoryPage} from "../pages/settings/importHistoryPage";
 import {ImportPage} from "../pages/settings/importPage";
 import {NotificationsPage} from "../pages/settings/notificationsPage";
+import {PortfolioManagementEditPage} from "../pages/settings/portfolio-management/portfolioManagementEditPage";
 import {PortfoliosManagementPage} from "../pages/settings/portfoliosManagementPage";
 import {ProfileInterfacePage} from "../pages/settings/profile/profileInterfacePage";
 import {ProfileMainPage} from "../pages/settings/profile/profileMainPage";
@@ -256,6 +257,14 @@ export class RouterConfiguration {
                             tourName: "portfolio_management"
                         },
                         component: PortfoliosManagementPage
+                    },
+                    {
+                        name: "portfolio-management-edit",
+                        path: "/settings/portfolio-management/:id",
+                        component: PortfolioManagementEditPage,
+                        meta: {
+                            title: "Управление портфелями"
+                        }
                     },
                     {
                         name: "export",
