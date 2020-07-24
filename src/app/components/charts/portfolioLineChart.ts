@@ -125,19 +125,19 @@ import {ChartUtils} from "../../utils/chartUtils";
                             </v-tooltip>
                         </template>
                     </v-switch>
-                    <v-switch v-model="seriesFilter.totalProfit" @change="toggleChartOption(ChartSeries.TOTAL_PROFIT)" class="mt-3" hide-details>
-                        <template #label>
-                            <span>{{ ChartSeries.TOTAL_PROFIT.description }}</span>
-                            <v-tooltip content-class="custom-tooltip-wrap" bottom>
-                                <sup class="custom-tooltip" slot="activator">
-                                    <v-icon>fas fa-info-circle</v-icon>
-                                </sup>
-                                <span>
-                                    Включите, если хотите чтобы на графике отображалась суммарная прибыль
-                                </span>
-                            </v-tooltip>
-                        </template>
-                    </v-switch>
+                    <!--<v-switch v-model="seriesFilter.totalProfit" @change="toggleChartOption(ChartSeries.TOTAL_PROFIT)" class="mt-3" hide-details>-->
+                        <!--<template #label>-->
+                            <!--<span>{{ ChartSeries.TOTAL_PROFIT.description }}</span>-->
+                            <!--<v-tooltip content-class="custom-tooltip-wrap" bottom>-->
+                                <!--<sup class="custom-tooltip" slot="activator">-->
+                                    <!--<v-icon>fas fa-info-circle</v-icon>-->
+                                <!--</sup>-->
+                                <!--<span>-->
+                                    <!--Включите, если хотите чтобы на графике отображалась суммарная прибыль-->
+                                <!--</span>-->
+                            <!--</v-tooltip>-->
+                        <!--</template>-->
+                    <!--</v-switch>-->
                     <v-switch v-model="compare" @change="toggleCompareOption" class="mt-3" hide-details>
                         <template #label>
                             <span>Процентное сравнение</span>

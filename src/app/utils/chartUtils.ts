@@ -972,7 +972,9 @@ export class ChartUtils {
      */
     static convertToDots(data: LineChartItem[], fieldName: string): any[] {
         const result: any[] = [];
-        data.forEach(value => {
+        data
+            .filter(value => !!(value as any)[fieldName])
+            .forEach(value => {
             const parsedDate = DateUtils.parseDate(value.date);
             const date = Date.UTC(parsedDate.year(), parsedDate.month(), parsedDate.date());
             const amount = new BigMoney((value as any)[fieldName]).amount.toDP(2, Decimal.ROUND_HALF_UP).toNumber();
