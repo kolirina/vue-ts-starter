@@ -32,7 +32,7 @@ import {PortfolioBlockType} from "../services/onBoardingTourService";
 import {OverviewService} from "../services/overviewService";
 import {TableHeaders, TABLES_NAME, TablesService, TableType} from "../services/tablesService";
 import {BigMoney} from "../types/bigMoney";
-import {ChartType, HighStockEventsGroup, SectorChartData} from "../types/charts/types";
+import {ChartType, HighStockEventsGroup, LineChartItem, SectorChartData} from "../types/charts/types";
 import {StoreKeys} from "../types/storeKeys";
 import {AssetPortfolioRow, AssetRow, BlockType, BondPortfolioRow, EventType, Overview, StockPortfolioRow, StockTypePortfolioRow, TableHeader} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
@@ -287,7 +287,7 @@ export class BasePortfolioPage extends UI {
     private shareNotes: { [key: string]: string };
     /** Данные по графику стоимости портфеля */
     @Prop({required: false})
-    private lineChartData: any[];
+    private lineChartData: LineChartItem[];
     /** Данные по графику индекса */
     @Prop({required: false})
     private indexLineChartData: any[];
