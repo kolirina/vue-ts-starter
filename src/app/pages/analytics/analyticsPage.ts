@@ -124,7 +124,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-card-text>
             </expanded-panel>
 
-            <expanded-panel v-if="false && profitByMonthsChartData && profitByMonthsChartData.categoryNames.length" :value="$uistate.profitMonthChartPanel"
+            <expanded-panel v-if="profitByMonthsChartData && profitByMonthsChartData.categoryNames.length" :value="$uistate.profitMonthChartPanel"
                             :state="$uistate.PROFIT_MONTH_CHART_PANEL" @click="onProfitPanelStateChange" custom-menu class="mt-3">
                 <template #header>
                     Прибыль по месяцам
@@ -143,7 +143,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-card-text>
             </expanded-panel>
 
-            <expanded-panel v-if="false && profitByYearsChartData && profitByYearsChartData.categoryNames.length" :value="$uistate.profitYearChartPanel"
+            <expanded-panel v-if="profitByYearsChartData && profitByYearsChartData.categoryNames.length" :value="$uistate.profitYearChartPanel"
                             :state="$uistate.PROFIT_YEAR_CHART_PANEL" @click="onProfitPanelStateChange" custom-menu class="mt-3">
                 <template #header>
                     Прибыль по годам

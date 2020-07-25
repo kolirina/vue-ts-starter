@@ -33,7 +33,9 @@ export class ChartUtils {
         COMMON: "<b>{point.y}, ({point.percentage:.2f} %)</b> <br/>{point.tickers}",
         ASSETS: "<b>{point.y:.2f} % ({point.description})</b>",
         YIELDS: "<b>Прибыль: {point.profit} {point.currencySymbol} ({point.description})</b>",
-        PROFIT: "<b>{point.period}</b>: {point.profit} {point.currencySymbol} <b>({point.description})</b>"
+        // todo profit расскоментировать проценты прибыли
+        // PROFIT: "<b>{point.period}</b>: {point.profit} {point.currencySymbol} <b>({point.description})</b>"
+        PROFIT: "<b>{point.period}</b>: {point.profit} {point.currencySymbol}"
     };
     /** Цвета операций */
     static OPERATION_COLORS: { [key: string]: string } = {
