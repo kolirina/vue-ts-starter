@@ -1,9 +1,16 @@
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
+import {namespace} from "vuex-class";
 import {UI} from "../../app/ui";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {MarketService} from "../../services/marketService";
 import {Currency, CurrencyItem} from "../../types/currency";
+import {EventType} from "../../types/eventType";
+import {Portfolio} from "../../types/types";
+import {MutationType} from "../../vuex/mutationType";
+import {StoreType} from "../../vuex/storeType";
+
+const MainStore = namespace(StoreType.MAIN);
 
 @Component({
     // language=Vue
@@ -23,6 +30,10 @@ import {Currency, CurrencyItem} from "../../types/currency";
 })
 export class CurrencyQuotes extends UI {
 
+    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
+    private reloadPortfolio: (id: number) => Promise<void>;
+    @MainStore.Getter
+    private portfolio: Portfolio;
     @Inject
     private marketservice: MarketService;
 
@@ -37,5 +48,10 @@ export class CurrencyQuotes extends UI {
         const array = await this.marketservice.loadCurrencies();
         const sortBy: string[] = [Currency.EUR, Currency.USD, Currency.GBP];
         this.currencies = array.sort((a, b) => sortBy.indexOf(b.charCode) - sortBy.indexOf(a.charCode));
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
+    }
+
+    beforeDestroy(): void {
+        UI.off(EventType.TRADE_CREATED);
     }
 }

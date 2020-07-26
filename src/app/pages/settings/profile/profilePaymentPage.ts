@@ -22,9 +22,12 @@ import {ShowProgress} from "../../../platform/decorators/showProgress";
 import {BtnReturn} from "../../../platform/dialogs/customDialog";
 import {ClientInfo, ClientService} from "../../../services/clientService";
 import {CancelOrderRequest, TariffService, UserPaymentInfo} from "../../../services/tariffService";
+import {EventType} from "../../../types/eventType";
 import {Tariff} from "../../../types/tariff";
+import {Portfolio} from "../../../types/types";
 import {CommonUtils} from "../../../utils/commonUtils";
 import {DateUtils} from "../../../utils/dateUtils";
+import {MutationType} from "../../../vuex/mutationType";
 import {StoreType} from "../../../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -86,6 +89,10 @@ export class ProfilePaymentPage extends UI {
 
     @MainStore.Getter
     private clientInfo: ClientInfo;
+    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
+    private reloadPortfolio: (id: number) => Promise<void>;
+    @MainStore.Getter
+    private portfolio: Portfolio;
     @MainStore.Getter
     private expiredTariff: boolean;
     /** Сервис для работы с данными клиента */
@@ -106,6 +113,11 @@ export class ProfilePaymentPage extends UI {
         if (![Tariff.FREE, Tariff.TRIAL].includes(this.clientInfo.user.tariff)) {
             this.paymentInfo = await this.tariffService.getPaymentInfo();
         }
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
+    }
+
+    beforeDestroy(): void {
+        UI.off(EventType.TRADE_CREATED);
     }
 
     /**

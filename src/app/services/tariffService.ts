@@ -17,7 +17,7 @@ export class TariffService {
      * @param monthly признак оплаты за месяц
      */
     async makePayment(tariff: Tariff, monthly: boolean): Promise<TinkoffPaymentOrderResponse> {
-        return this.http.post<TinkoffPaymentOrderResponse>("/tariff/payment", {tariff: tariff.name, monthly});
+        return this.http.post<TinkoffPaymentOrderResponse>("/tariff/payment", {tariff: tariff.name, monthly, tariffRequestSource: "WEB"});
     }
 
     /**

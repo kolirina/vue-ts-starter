@@ -93,7 +93,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-layout>
             </expanded-panel>
 
-            <expanded-panel v-if="false && showProfitChart" :value="$uistate.profitChartPanel"
+            <expanded-panel v-if="showProfitChart" :value="$uistate.profitChartPanel"
                             :state="$uistate.PROFIT_CHART_PANEL" @click="onProfitPanelStateChange" customMenu class="mt-3"
                             :data-v-step="0">
                 <template #header>

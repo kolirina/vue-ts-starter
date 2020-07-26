@@ -25,6 +25,7 @@ import {
 import {OverviewService} from "../../services/overviewService";
 import {PortfolioParams, PortfolioService} from "../../services/portfolioService";
 import {CurrencyUnit} from "../../types/currency";
+import {EventType} from "../../types/eventType";
 import {Portfolio, Share, Status} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {DateUtils} from "../../utils/dateUtils";
@@ -344,6 +345,11 @@ export class ImportPage extends UI {
         } finally {
             this.initialized = true;
         }
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
+    }
+
+    beforeDestroy(): void {
+        UI.off(EventType.TRADE_CREATED);
     }
 
     private async revertImport(userImportId: number): Promise<void> {

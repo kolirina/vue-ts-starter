@@ -1,8 +1,10 @@
 import {ChartObject} from "highcharts";
 import Highstock from "highcharts/highstock";
+import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {Prop, Watch} from "vue-property-decorator";
 import {UI} from "../../app/ui";
+import {Storage} from "../../platform/services/storage";
 import {HighStockEventsGroup, LineChartSeries} from "../../types/charts/types";
 import {ChartUtils} from "../../utils/chartUtils";
 
@@ -27,7 +29,8 @@ export class LineChart extends UI {
     $refs: {
         container: HTMLElement
     };
-
+    @Inject
+    private localStorage: Storage;
     /** Заголовок графика */
     @Prop({default: "", type: String})
     private title: string;
@@ -52,6 +55,10 @@ export class LineChart extends UI {
     private ranges: Highstock.RangeSelectorButton[] = [];
     /** Количество знаков для округления на графике */
     private decimals = 2;
+    /** Префикс ключа под которым будет хранится состояние */
+    private stateKeyPrefix: string = "SHARE_LINE_CHART";
+    /** Выбранный диапазон */
+    private selectedRange: string = null;
 
     /**
      * Инициализация данных
@@ -59,7 +66,7 @@ export class LineChart extends UI {
      */
     async mounted(): Promise<void> {
         this.decimals = this.defineDecimals();
-        this.ranges = [...ChartUtils.getChartRanges()];
+        this.restoreState();
         await this.draw();
     }
 
@@ -83,7 +90,36 @@ export class LineChart extends UI {
             id: "dataseries"
         };
         this.chart = ChartUtils.drawLineChart(this.$refs.container, this.eventsChartData, this.ranges,
-            this.ranges.length - 1, this.decimals, this.title, this.yAxisTitle, null, this.avgLineValue, [compareData]);
+            this.selectedRangeIndex, this.decimals, this.title, this.yAxisTitle, null, this.avgLineValue, [compareData]);
+    }
+
+    private restoreState(): void {
+        this.ranges = [...ChartUtils.getChartRanges()];
+        this.ranges.forEach(range => {
+            range.events = {
+                click: (event: Event): void => this.saveRange(range.text)
+            };
+        });
+        this.selectedRange = this.localStorage.get(`${this.stateKeyPrefix}_RANGE`, "YTD");
+    }
+
+    /**
+     * Возвращает Индекс выбранного диапазона
+     */
+    private get selectedRangeIndex(): number {
+        this.selectedRange = this.localStorage.get(`${this.stateKeyPrefix}_RANGE`, "YTD");
+        const selectedIndex = this.ranges.map(range => range.text).indexOf(this.selectedRange);
+        return selectedIndex === -1 ? 1 : selectedIndex;
+    }
+
+    /**
+     * Сохраняет выбранный диапазон графика
+     * @param range выбранный диапазон графика
+     */
+    private saveRange(range: string): void {
+        if (this.stateKeyPrefix) {
+            this.localStorage.set(`${this.stateKeyPrefix}_RANGE`, range);
+        }
     }
 
     private defineDecimals(): number {

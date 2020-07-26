@@ -556,10 +556,10 @@ export class BaseShareInfoPage extends UI {
                 const price = new BigMoney(assetRow.openPositionAvgPrice).amount.dividedBy(new Decimal(res.rate));
                 return price.toDP(price.lessThan(new Decimal("1")) ? 9 : 2).toNumber();
             }
-            return assetRow ? new BigMoney(assetRow.openPositionAvgPrice).amount.toNumber() : -1;
+            return assetRow ? new BigMoney(assetRow.openPositionAvgPrice).amount.toNumber() : -99999999;
         } catch (e) {
             // на всякий случай, иначе график не отрисуется
-            return -1;
+            return -99999999;
         }
     }
 }

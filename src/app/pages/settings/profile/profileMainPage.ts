@@ -23,6 +23,8 @@ import {ShowProgress} from "../../../platform/decorators/showProgress";
 import {BtnReturn} from "../../../platform/dialogs/customDialog";
 import {ClientInfo, ClientService, DeleteProfileRequest} from "../../../services/clientService";
 import {TariffService} from "../../../services/tariffService";
+import {EventType} from "../../../types/eventType";
+import {Portfolio} from "../../../types/types";
 import {CommonUtils} from "../../../utils/commonUtils";
 import {MutationType} from "../../../vuex/mutationType";
 import {StoreType} from "../../../vuex/storeType";
@@ -89,6 +91,10 @@ export class ProfileMainPage extends UI {
 
     @MainStore.Getter
     private clientInfo: ClientInfo;
+    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
+    private reloadPortfolio: (id: number) => Promise<void>;
+    @MainStore.Getter
+    private portfolio: Portfolio;
     /** Сервис для работы с данными клиента */
     @Inject
     private clientService: ClientService;
@@ -108,6 +114,11 @@ export class ProfileMainPage extends UI {
     async created(): Promise<void> {
         this.username = this.clientInfo.user.username;
         this.email = this.clientInfo.user.email;
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
+    }
+
+    beforeDestroy(): void {
+        UI.off(EventType.TRADE_CREATED);
     }
 
     /**

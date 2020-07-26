@@ -8,8 +8,10 @@ import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {Filters} from "../../platform/filters/Filters";
 import {Notification, NotificationsService, NotificationType} from "../../services/notificationsService";
 import {BigMoney} from "../../types/bigMoney";
-import {Bond} from "../../types/types";
+import {EventType} from "../../types/eventType";
+import {Bond, Portfolio} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
+import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -128,10 +130,14 @@ const MainStore = namespace(StoreType.MAIN);
 })
 export class NotificationsPage extends UI {
 
+    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
+    private reloadPortfolio: (id: number) => Promise<void>;
+    @MainStore.Getter
+    private portfolio: Portfolio;
     @Inject
-    notificationsService: NotificationsService;
+    private notificationsService: NotificationsService;
 
-    notifications: Notification[] = [];
+    private notifications: Notification[] = [];
 
     private searchTypesTitle = KeyWordsSearchTypeTitle;
 
@@ -139,6 +145,11 @@ export class NotificationsPage extends UI {
 
     async created(): Promise<void> {
         await this.loadNotifications();
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
+    }
+
+    beforeDestroy(): void {
+        UI.off(EventType.TRADE_CREATED);
     }
 
     async addNotificationDialog(notificationType: NotificationType): Promise<void> {
