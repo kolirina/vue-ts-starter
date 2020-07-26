@@ -132,14 +132,14 @@ export class ChartUtils {
                 const percent = new Decimal(item.value.totalPeriodPercentProfit);
                 const point: CustomDataPoint = {
                     name: label,
-                    y: percent.toDP(2, Decimal.ROUND_HALF_UP).toNumber(),
+                    y: profit.amount.toDP(2, Decimal.ROUND_HALF_UP).toNumber(),
                     profit: Filters.formatNumber(profit.amount.toDP(2, Decimal.ROUND_HALF_UP).toString()),
                     currencySymbol: profit.currencySymbol,
                     period: label,
                     description: `${Filters.formatNumber(percent.toString())} %`
                 };
-                (percent.isPositive() ? positive : negative).push(point);
-                (percent.isPositive() ? negative : positive).push(null);
+                (profit.amount.isPositive() ? positive : negative).push(point);
+                (profit.amount.isPositive() ? negative : positive).push(null);
             });
         return {
             series: [
