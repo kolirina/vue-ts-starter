@@ -331,7 +331,9 @@ export class AnalyticsPage extends UI {
 
     private async onProfitPanelStateChange(): Promise<void> {
         if (UiStateHelper.profitChartPanel[0] === 1 || UiStateHelper.profitMonthChartPanel[0] === 1 || UiStateHelper.profitYearChartPanel[0] === 1) {
-            await this.loadProfitLineChart();
+            if (!this.portfolioLineChartData) {
+                await this.loadProfitLineChart();
+            }
         }
     }
 
