@@ -30,7 +30,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     {{ currency }}
                                 </div>
                                 <i v-if="selected.access" class="public-portfolio-icon" title="Публичный"></i>
-                                <div v-if="!selected.professionalMode" class="professional-mode-icon" title="Профессиональный режим"></div>
+                                <div v-if="selected.professionalMode" class="professional-mode-icon" title="Профессиональный режим"></div>
                             </v-layout>
                         </div>
                         <div v-if="!sideBarOpened || isMobile" class="portfolios-arrow">
@@ -47,7 +47,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 <v-layout align-center class="portfolios-list-icons">
                                     <i :class="portfolio.viewCurrency.toLowerCase()" title="Валюта"></i>
                                     <i v-if="portfolio.access" class="public-portfolio-icon" title="Публичный"></i>
-                                    <div v-if="!portfolio.professionalMode" class="professional-mode-icon" title="Профессиональный режим"></div>
+                                    <div v-if="portfolio.professionalMode" class="professional-mode-icon" title="Профессиональный режим"></div>
                                 </v-layout>
                             </div>
                         </v-list-tile>
