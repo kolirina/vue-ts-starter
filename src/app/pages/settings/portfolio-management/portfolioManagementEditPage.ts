@@ -16,8 +16,10 @@
 
 import {Inject} from "typescript-ioc";
 import {Component, UI} from "../../../app/ui";
-import {PortfolioParams, PortfolioService} from "../../../services/portfolioService";
-import {EventType} from "../../../types/eventType";
+import {IisType, PortfolioParams, PortfolioService} from "../../../services/portfolioService";
+import {PortfolioManagementGeneralTab} from "./portfolioManagementGeneralTab";
+import {PortfolioManagementIntegrationTab} from "./portfolioManagementIntegrationTab";
+import {PortfolioManagementShareTab} from "./portfolioManagementShareTab";
 
 @Component({
     // language=Vue
@@ -40,64 +42,48 @@ import {EventType} from "../../../types/eventType";
                     <!-- todo: экспорт -->
                     <v-btn>Экспорт</v-btn>
                 </div>
-                <div>
-                    <v-tabs>
-                        <v-tab>Общие настройки</v-tab>
-                        <v-tab>Публичный доступ</v-tab>
-                        <v-tab>Интеграция</v-tab>
-                        <v-tab-item>
-                            <v-tooltip content-class="custom-tooltip-wrap" top>
-                                <v-checkbox slot="activator" label="Профессиональный режим"
-                                            @change="onProfessionalModeChange"
-                                            v-model="portfolio.professionalMode" hide-details>
-                                </v-checkbox>
-                                <span>
-                                    Профессиональный режим включает дополнительные возможности, необходимые опытным инвесторам:
-                                    <ul>
-                                        <li>возможность уходить в минус по деньгам (маржинальное кредитование)</li>
-                                        <li>возможность открытия коротких позиций</li>
-                                        <li>возможность учета времени заключения сделки</li>
-                                    </ul>
-                                </span>
-                            </v-tooltip>
 
-                            <v-text-field label="Введите название портфеля" v-model.trim="portfolio.name" required autofocus
-                                          v-validate="'required|max:40|min:3'"
-                                          :error-messages="errors.collect('name')"
-                                          data-vv-name="name" @keyup.enter="savePortfolio"
-                                          class="required">
-                            </v-text-field>
-                        </v-tab-item>
-                        <v-tab-item>Публичный доступ</v-tab-item>
-                        <v-tab-item>Интеграция</v-tab-item>
-                    </v-tabs>
-                </div>
+                <v-tabs v-model="currentTab" @change="onTabSelect" class="portfolio-management-tabs">
+                    <v-tab :class="{'active': 0 === currentTab}">Общие настройки</v-tab>
+                    <v-tab :class="{'active': 1 === currentTab}">Публичный доступ</v-tab>
+                    <v-tab :class="{'active': 2 === currentTab}">Интеграция</v-tab>
+                    <v-tab-item>
+                        <portfolio-management-general-tab :portfolio="portfolio"></portfolio-management-general-tab>
+                    </v-tab-item>
+                    <v-tab-item>
+                        <portfolio-management-share-tab :portfolio="portfolio"></portfolio-management-share-tab>
+                    </v-tab-item>
+                    <v-tab-item>
+                        <portfolio-management-integration-tab :portfolio="portfolio"></portfolio-management-integration-tab>
+                    </v-tab-item>
+                </v-tabs>
             </v-layout>
         </v-container>
-    `
+    `,
+    components: {PortfolioManagementGeneralTab, PortfolioManagementShareTab, PortfolioManagementIntegrationTab}
 })
 export class PortfolioManagementEditPage extends UI {
-
     /** Сервис по работе с портфелями */
     @Inject
     private portfolioService: PortfolioService;
     /** Портфель */
     private portfolio: PortfolioParams = null;
 
-    async created(): Promise<void> {
+    private currentTab: any = null;
+
+    /**
+     * Инициализация портфеля
+     * @inheritDoc
+     */
+    async mounted(): Promise<void> {
         this.portfolio = await this.portfolioService.getPortfolioById(Number(this.$route.params.id));
+        if (!this.portfolio.iisType) {
+            this.portfolio.iisType = IisType.TYPE_A;
+        }
     }
 
-    /** Включение/выключение профессионального режима */
-    private async onProfessionalModeChange(): Promise<void> {
-        const result = await this.portfolioService.updatePortfolio(this.portfolio);
-        this.$snotify.info(`Профессиональный режим для портфеля ${result.professionalMode ? "включен" : "выключен"}`);
-        UI.emit(EventType.PORTFOLIO_UPDATED, result);
-    }
-
-    /** Сохраняет изменения в портфеле */
-    private async savePortfolio(): Promise<void> {
-        // todo: сохранение портфеля
+    private onTabSelect(): void {
+        console.log(this.currentTab);
     }
 
     /** Возвращает к списку портфелей */
