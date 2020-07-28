@@ -120,6 +120,9 @@ export class Tours extends UI {
      * @param event событие с данными
      */
     private async onTourEvent(event: TourEvent): Promise<void> {
+        if (!this.clientInfo.user.needShowTour) {
+            return;
+        }
         switch (event.type) {
             case TourEventType.DONE:
                 await this.doneOnBoarding();

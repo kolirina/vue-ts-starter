@@ -33,7 +33,9 @@ export class ChartUtils {
         COMMON: "<b>{point.y}, ({point.percentage:.2f} %)</b> <br/>{point.tickers}",
         ASSETS: "<b>{point.y:.2f} % ({point.description})</b>",
         YIELDS: "<b>Прибыль: {point.profit} {point.currencySymbol} ({point.description})</b>",
-        PROFIT: "<b>{point.period}</b>: {point.profit} {point.currencySymbol} <b>({point.description})</b>"
+        // todo profit расскоментировать проценты прибыли
+        // PROFIT: "<b>{point.period}</b>: {point.profit} {point.currencySymbol} <b>({point.description})</b>"
+        PROFIT: "<b>{point.period}</b>: {point.profit} {point.currencySymbol}"
     };
     /** Цвета операций */
     static OPERATION_COLORS: { [key: string]: string } = {
@@ -130,14 +132,14 @@ export class ChartUtils {
                 const percent = new Decimal(item.value.totalPeriodPercentProfit);
                 const point: CustomDataPoint = {
                     name: label,
-                    y: percent.toDP(2, Decimal.ROUND_HALF_UP).toNumber(),
+                    y: profit.amount.toDP(2, Decimal.ROUND_HALF_UP).toNumber(),
                     profit: Filters.formatNumber(profit.amount.toDP(2, Decimal.ROUND_HALF_UP).toString()),
                     currencySymbol: profit.currencySymbol,
                     period: label,
                     description: `${Filters.formatNumber(percent.toString())} %`
                 };
-                (percent.isPositive() ? positive : negative).push(point);
-                (percent.isPositive() ? negative : positive).push(null);
+                (profit.amount.isPositive() ? positive : negative).push(point);
+                (profit.amount.isPositive() ? negative : positive).push(null);
             });
         return {
             series: [
@@ -976,7 +978,9 @@ export class ChartUtils {
 
     static convertToDotsWithStartPoint(data: LineChartItem[], fieldName: string, addStartZeroPoint: boolean = true): any[] {
         const result: any[] = [];
-        data.forEach(value => {
+        data
+            .filter(value => !!(value as any)[fieldName])
+            .forEach(value => {
             const parsedDate = DateUtils.parseDate(value.date);
             const date = Date.UTC(parsedDate.year(), parsedDate.month(), parsedDate.date());
             const amount = new BigMoney((value as any)[fieldName]).amount.toDP(2, Decimal.ROUND_HALF_UP).toNumber();
