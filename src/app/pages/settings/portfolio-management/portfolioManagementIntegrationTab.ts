@@ -45,8 +45,7 @@ import {PortfolioParams, PortfolioService} from "../../../services/portfolioServ
                         box
                         :value="embeddedCode"
                         hide-details
-                        readonly
-                ></v-text-field>
+                        readonly></v-text-field>
                 <div class="embedded-copy-btn-section">
                     <v-btn class="btn" v-clipboard="() => embeddedCode" @click="copyLink">
                         Копировать ссылку

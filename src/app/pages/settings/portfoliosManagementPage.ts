@@ -73,8 +73,4 @@ export class PortfoliosManagementPage extends UI {
         UI.off(EventType.PORTFOLIO_RELOAD);
         UI.off(EventType.TRADE_CREATED);
     }
-
-    private async openDialog(): Promise<void> {
-        await new PortfolioEditDialog().show({store: this.$store.state[StoreType.MAIN], router: this.$router});
-    }
 }

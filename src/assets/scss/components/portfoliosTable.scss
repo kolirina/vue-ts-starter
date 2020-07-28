@@ -136,6 +136,44 @@
         min-height: 0;
         padding-left: 16px;
       }
+
+      .v-text-field.v-select:not(.v-autocomplete) .v-select__selections {padding-left: 0}
+
+      .selected-broker {
+        display: flex;
+        align-items: center;
+        margin-right: 24px;
+
+        &__wrapper {
+          display: flex;
+          align-items: center;
+          margin-bottom: 20px;
+
+          i {display: none}
+
+          .v-list__tile {height: auto}
+        }
+
+        &__img {
+          width: 36px;
+          height: 36px;
+          border: 1px solid $sidebar-hr-color;
+          border-radius: 50%;
+          background-size: 24px 24px !important;
+          margin-right: 12px;
+        }
+      }
+
+      .select-section {white-space: nowrap}
+
+      .textarea-section {margin: 20px 0}
     }
+  }
+
+  &-link {
+    display: flex;
+    align-items: center;
+
+    .v-btn {margin-left: 12px !important;}
   }
 }

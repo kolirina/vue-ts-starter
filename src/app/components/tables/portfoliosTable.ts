@@ -420,4 +420,8 @@ export class PortfoliosTable extends UI {
     private get publicSettingsAllowed(): boolean {
         return this.clientInfo.user.tariff !== Tariff.FREE;
     }
+
+    private async openDialog(): Promise<void> {
+        await new PortfolioEditDialog().show({store: this.$store.state[StoreType.MAIN], router: this.$router});
+    }
 }

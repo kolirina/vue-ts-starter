@@ -58,32 +58,31 @@ import {DateUtils} from "../../../utils/dateUtils";
                           class="required" hint="Обязательное поле">
             </v-text-field>
 
-                <v-layout class="select-option-wrap">
-                    <v-flex class="select-section">
-                        <v-select :items="currencyList" v-model="portfolio.viewCurrency" label="Валюта портфеля"
-                                  :persistent-hint="true" dense hide-details
-                                  hint="Валюта, в которой происходит расчет всех показателей. Активы, приобретенные в другой валюте
-                                        будут конвертированы по курсу на дату совершения сделки." :menu-props="{nudgeBottom:'22'}">
-                        </v-select>
-                    </v-flex>
+            <v-layout class="select-option-wrap">
+                <v-flex class="select-section">
+                    <v-select :items="currencyList" v-model="portfolio.viewCurrency" label="Валюта портфеля"
+                              :persistent-hint="true" dense hide-details
+                              hint="Валюта, в которой происходит расчет всех показателей. Активы, приобретенные в другой валюте
+                                    будут конвертированы по курсу на дату совершения сделки." :menu-props="{nudgeBottom:'22'}">
+                    </v-select>
+                </v-flex>
 
-                    <v-flex class="select-section">
-                        <v-select :items="accountTypes" v-model="portfolio.accountType" :return-object="true" item-text="description" dense hide-details
-                                  label="Тип счета" :menu-props="{nudgeBottom:'22'}"></v-select>
-                    </v-flex>
-                    <v-flex class="select-section" v-if="portfolio.accountType === accountType.IIS">
-                        <v-select :items="iisTypes" dense hide-details :menu-props="{nudgeBottom:'22'}"
-                                  v-model="portfolio.iisType" :return-object="true" item-text="description" label="Тип вычета"></v-select>
-                    </v-flex>
-                    <v-flex class="select-section">
-                        <broker-switcher @selectProvider="onSelectProvider" inner-style="justify-content: start !important;">
-                            <a slot="activator">
-                                <span class="fs14">{{ selectedBroker ? selectedBroker.description : "Изменить брокера" }}</span>
-                                <v-icon v-if="selectedBroker" @click.stop="removeBrokerId" small primary>fas fa-trash-alt</v-icon>
-                            </a>
-                        </broker-switcher>
-                    </v-flex>
-                </v-layout>
+                <v-flex class="select-section">
+                    <v-select :items="accountTypes" v-model="portfolio.accountType" :return-object="true" item-text="description" dense hide-details
+                              label="Тип счета" :menu-props="{nudgeBottom:'22'}"></v-select>
+                </v-flex>
+                <v-flex class="select-section" v-if="portfolio.accountType === accountType.IIS">
+                    <v-select :items="iisTypes" dense hide-details :menu-props="{nudgeBottom:'22'}"
+                              v-model="portfolio.iisType" :return-object="true" item-text="description" label="Тип вычета"></v-select>
+                </v-flex>
+            </v-layout>
+            <div class="selected-broker__wrapper">
+                <div v-if="selectedBroker" class="selected-broker">
+                    <div :class="['selected-broker__img', selectedBroker.code.toLowerCase()]"></div>
+                    <span>{{ selectedBroker.description }}</span>
+                </div>
+                <broker-switcher @selectProvider="onSelectProvider"></broker-switcher>
+            </div>
 
                 <v-layout>
                     <v-flex xs12 sm5>

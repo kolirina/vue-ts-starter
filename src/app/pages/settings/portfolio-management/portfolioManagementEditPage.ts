@@ -43,7 +43,7 @@ import {PortfolioManagementShareTab} from "./portfolioManagementShareTab";
                     <v-btn>Экспорт</v-btn>
                 </div>
 
-                <v-tabs v-model="currentTab" @change="onTabSelect" class="portfolio-management-tabs">
+                <v-tabs v-model="currentTab" class="portfolio-management-tabs">
                     <v-tab :class="{'active': 0 === currentTab}">Общие настройки</v-tab>
                     <v-tab :class="{'active': 1 === currentTab}">Публичный доступ</v-tab>
                     <v-tab :class="{'active': 2 === currentTab}">Интеграция</v-tab>
@@ -80,10 +80,6 @@ export class PortfolioManagementEditPage extends UI {
         if (!this.portfolio.iisType) {
             this.portfolio.iisType = IisType.TYPE_A;
         }
-    }
-
-    private onTabSelect(): void {
-        console.log(this.currentTab);
     }
 
     /** Возвращает к списку портфелей */

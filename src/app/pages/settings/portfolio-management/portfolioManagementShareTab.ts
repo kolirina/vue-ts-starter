@@ -32,133 +32,91 @@ import {DateFormat, DateUtils} from "../../../utils/dateUtils";
 @Component({
     // language=Vue
     template: `
-        <div class="portfolio-management-tab__wrapper">
-            <v-card-text class="paddT0 paddB0">
-                <div>
-                    <v-layout column class="mt-4">
-                        <v-layout align-center class="px-0 py-0" wrap>
-                            <v-flex v-if="showCalendar" align-center class="xs11 sm5">
-                                <v-menu
-                                        ref="dateMenu"
-                                        :close-on-content-click="false"
-                                        v-model="dateMenuValue"
-                                        :return-value.sync="expiredDate"
-                                        lazy
-                                        transition="scale-transition"
-                                        offset-y
-                                        full-width
-                                        min-width="290px">
-                                    <v-text-field
-                                            slot="activator"
-                                            v-model="expiredDate"
-                                            label="Срок действия токена до"
-                                            required
-                                            append-icon="event"
-                                            readonly></v-text-field>
-                                    <v-date-picker v-model="expiredDate" :no-title="true" locale="ru" :first-day-of-week="1"
-                                                   @input="$refs.dateMenu.save(expiredDate)"></v-date-picker>
-                                </v-menu>
-                            </v-flex>
-                            <v-flex v-if="link && showCalendar" sm1 xs1 class="mt-1">
-                                <v-tooltip transition="slide-y-transition"
-                                           open-on-hover content-class="menu-icons" bottom max-width="292"
-                                           nudge-right="120">
-                                    <sup slot="activator">
-                                        <div class="repeat-link-btn" @click="generateTokenLink">
-                                            <img src="img/portfolio/link.svg">
-                                        </div>
-                                    </sup>
-                                    <div class="tooltip-text pa-3">
-                                        Сгенерировать ссылку повторно
-                                    </div>
-                                </v-tooltip>
-                            </v-flex>
-                        </v-layout>
-                        <v-flex xs12 v-if="link" :class="[shareOption !== dialogTypes.DEFAULT_ACCESS ? 'input-link-section' : '']">
-                            <v-text-field :value="link" placeholder="url для доступа к портфелю" readonly hide-details></v-text-field>
+        <div>
+            <div class="portfolio-management-tab__wrapper">
+                <v-switch v-model="access" class="margB20">
+                    <template #label>
+                        <span>Публичный доступ {{access ? "открыт" : "закрыт"}}</span>
+                        <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                            <sup class="custom-tooltip" slot="activator">
+                                <v-icon>fas fa-info-circle</v-icon>
+                            </sup>
+                            <span>
+                                Текст подсказки
+                            </span>
+                        </v-tooltip>
+                    </template>
+                </v-switch>
+            </div>
+            <!--v-flex v-if="link" sm1 xs1 class="mt-1">
+                <v-tooltip transition="slide-y-transition"
+                           open-on-hover content-class="menu-icons" bottom max-width="292"
+                           nudge-right="120">
+                    <sup slot="activator">
+                        <div class="repeat-link-btn" @click="generateTokenLink">
+                            <img src="img/portfolio/link.svg">
+                        </div>
+                    </sup>
+                    <div class="tooltip-text pa-3">
+                        Сгенерировать ссылку повторно
+                    </div>
+                </v-tooltip>
+            </v-flex-->
+            <div v-if="!link">
+                <v-btn class="btn" slot="activator" @click="generateTokenLink">
+                    Сгенерировать ссылку
+                </v-btn>
+            </div>
+            <div v-if="link" class="portfolio-link">
+                <v-text-field :value="link" placeholder="url для доступа к портфелю" readonly hide-details class="mw378"></v-text-field>
+                <v-btn class="btn" v-clipboard="() => link" slot="activator" @click="copyLink">
+                    Копировать ссылку
+                </v-btn>
+                <v-menu content-class="qr-code-section"
+                        transition="slide-y-transition"
+                        nudge-bottom="36" left class="settings-menu"
+                        :close-on-content-click="false">
+                    <v-btn class="btn qr-code-btn" slot="activator">
+                        QR code
+                    </v-btn>
+                    <v-list dense>
+                        <v-flex>
+                            <qriously :value="link" :size="120"></qriously>
                         </v-flex>
-                    </v-layout>
-
-                    <v-layout v-if="shareOption === dialogTypes.DEFAULT_ACCESS" column class="default-access-content">
-                        <v-layout wrap justify-space-between>
-                            <div>
-                                <v-flex xs12 class="mb-2">
-                                    <v-checkbox v-model="access"
-                                                hide-details class="shrink mr-2 portfolio-default-text"
-                                                label="Публичный доступ к портфелю"></v-checkbox>
-                                </v-flex>
-                                <v-flex xs12 class="mb-2 mt-4">
-                                    <v-checkbox v-model="divAccess"
-                                                hide-details class="shrink mr-2 mt-0 portfolio-default-text"
-                                                label="Просмотр дивидендов"></v-checkbox>
-                                </v-flex>
-                                <v-flex xs12 class="mb-2">
-                                    <v-checkbox v-model="tradeAccess"
-                                                hide-details class="shrink mr-2 mt-0 portfolio-default-text"
-                                                label="Просмотр сделок"></v-checkbox>
-                                </v-flex>
-                                <v-flex xs12 class="mb-2">
-                                    <v-checkbox v-model="lineDataAccess"
-                                                hide-details class="shrink mr-2 mt-0 portfolio-default-text"
-                                                label="Просмотр графика"></v-checkbox>
-                                </v-flex>
-                                <v-flex xs12>
-                                    <v-checkbox v-model="dashboardAccess"
-                                                hide-details class="shrink mr-2 mt-0 portfolio-default-text"
-                                                label="Просмотр дашборда"></v-checkbox>
-                                </v-flex>
-                            </div>
-                            <div>
-                                <v-menu content-class="qr-code-section"
-                                        transition="slide-y-transition"
-                                        nudge-bottom="36" left class="settings-menu"
-                                        :close-on-content-click="false">
-                                    <v-btn class="btn qr-code-btn" slot="activator">
-                                        QR code
-                                    </v-btn>
-                                    <v-list dense>
-                                        <v-flex>
-                                            <qriously :value="link" :size="120"></qriously>
-                                        </v-flex>
-                                    </v-list>
-                                </v-menu>
-                            </div>
-                        </v-layout>
-                    </v-layout>
-
-                    <v-layout wrap v-if="shareOption !== dialogTypes.DEFAULT_ACCESS" class="action-btn-section">
-                        <div v-if="!link">
-                            <v-btn class="btn" slot="activator" @click="generateTokenLink">
-                                Сгенерировать ссылку
-                            </v-btn>
-                        </div>
-                        <div v-if="link">
-                            <v-btn class="btn" v-clipboard="() => link" slot="activator" @click="copyLink">
-                                Копировать ссылку
-                            </v-btn>
-                        </div>
-                        <div v-if="link">
-                            <v-menu content-class="qr-code-section"
-                                    transition="slide-y-transition"
-                                    nudge-bottom="36" left class="settings-menu"
-                                    :close-on-content-click="false">
-                                <v-btn class="btn qr-code-btn" slot="activator">
-                                    QR code
-                                </v-btn>
-                                <v-list dense>
-                                    <v-flex>
-                                        <qriously :value="link" :size="120"></qriously>
-                                    </v-flex>
-                                </v-list>
-                            </v-menu>
+                    </v-list>
+                </v-menu>
+            </div>
+            <div class="portfolio-management-tab__wrapper">
+                <v-layout column class="default-access-content">
+                    <v-layout wrap justify-space-between>
+                        <div>
+                            <v-flex xs12 class="mb-2">
+                                <v-checkbox v-model="divAccess"
+                                            hide-details class="shrink mr-2 mt-0 portfolio-default-text"
+                                            label="Просмотр дивидендов"></v-checkbox>
+                            </v-flex>
+                            <v-flex xs12 class="mb-2">
+                                <v-checkbox v-model="tradeAccess"
+                                            hide-details class="shrink mr-2 mt-0 portfolio-default-text"
+                                            label="Просмотр сделок"></v-checkbox>
+                            </v-flex>
+                            <v-flex xs12 class="mb-2">
+                                <v-checkbox v-model="lineDataAccess"
+                                            hide-details class="shrink mr-2 mt-0 portfolio-default-text"
+                                            label="Просмотр графика"></v-checkbox>
+                            </v-flex>
+                            <v-flex xs12>
+                                <v-checkbox v-model="dashboardAccess"
+                                            hide-details class="shrink mr-2 mt-0 portfolio-default-text"
+                                            label="Просмотр дашборда"></v-checkbox>
+                            </v-flex>
                         </div>
                     </v-layout>
-                </div>
-            </v-card-text>
-            <v-card-actions class="save-btn-section">
-                <v-spacer></v-spacer>
-                <v-btn color="primary" light @click.native="savePublicParams">Сохранить</v-btn>
-            </v-card-actions>
+                </v-layout>
+                <v-card-actions class="save-btn-section">
+                    <v-btn color="primary" light @click.native="savePublicParams">Сохранить</v-btn>
+                </v-card-actions>
+            </div>
         </div>
     `,
     components: {BrokerSwitcher}
@@ -236,11 +194,6 @@ export class PortfolioManagementShareTab extends UI {
 
     private copyLink(): void {
         this.$snotify.info("Ссылка скопирована");
-    }
-
-    /** Условие для отображения календаря */
-    private get showCalendar(): boolean {
-        return PortfoliosDialogType.BY_LINK === this.shareOption;
     }
 
     private selectDialogType(type: PortfoliosDialogType): void {
