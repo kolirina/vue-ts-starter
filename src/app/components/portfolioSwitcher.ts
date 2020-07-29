@@ -32,7 +32,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 <i v-if="selected.access === 2" class="public-portfolio-icon" title="Публичный"></i>
                                 <!-- todo public иконка для доступа Публичный по ссылке -->
                                 <i v-if="selected.access === 1" class="public-portfolio-icon" title="Публичный по ссылке"></i>
-                                <i v-if="selected.professionalMode" class="professional-mode-icon" title="Профессиональный режим"></i>
+                                <div v-if="selected.professionalMode" class="professional-mode-icon" title="Профессиональный режим"></div>
                             </v-layout>
                         </div>
                         <div v-if="!sideBarOpened || isMobile" class="portfolios-arrow">
@@ -51,7 +51,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     <i v-if="portfolio.access === 2" class="public-portfolio-icon" title="Публичный"></i>
                                     <!-- todo public иконка для доступа Публичный по ссылке -->
                                     <i v-if="selected.access === 1" class="public-portfolio-icon" title="Публичный по ссылке"></i>
-                                    <i v-if="portfolio.professionalMode" class="professional-mode-icon" title="Профессиональный режим"></i>
+                                    <div v-if="portfolio.professionalMode" class="professional-mode-icon" title="Профессиональный режим"></div>
                                 </v-layout>
                             </div>
                         </v-list-tile>
