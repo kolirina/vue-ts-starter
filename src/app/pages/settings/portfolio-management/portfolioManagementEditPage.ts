@@ -16,6 +16,7 @@
 
 import {Inject} from "typescript-ioc";
 import {Component, UI} from "../../../app/ui";
+import {DealsImportProvider} from "../../../services/importService";
 import {IisType, PortfolioParams, PortfolioService} from "../../../services/portfolioService";
 import {PortfolioManagementGeneralTab} from "./portfolioManagementGeneralTab";
 import {PortfolioManagementIntegrationTab} from "./portfolioManagementIntegrationTab";
@@ -33,7 +34,7 @@ import {PortfolioManagementShareTab} from "./portfolioManagementShareTab";
             <v-layout v-if="portfolio" class="profile" column>
                 <div class="card__header">
                     <div class="card__header-title">
-                        <div :class="['provider__image', portfolio.brokerName?.toLowerCase()]"></div>
+                        <div :class="['provider__image', selectedBroker?.code.toLowerCase()]"></div>
                         <div class="margRAuto">
                             <span>{{ portfolio.name }}</span>
                             <div @click="goBack" class="back-btn">Назад</div>
@@ -85,5 +86,9 @@ export class PortfolioManagementEditPage extends UI {
     /** Возвращает к списку портфелей */
     private goBack(): void {
         this.$router.push({name: "portfolio-management"});
+    }
+
+    private get selectedBroker(): DealsImportProvider {
+        return this.portfolio.brokerId ? DealsImportProvider.valueById(this.portfolio.brokerId) : null;
     }
 }

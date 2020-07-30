@@ -298,6 +298,12 @@ export interface BasePortfolioParams {
     combined?: boolean;
     /** Заметки по бумагам в портфеле */
     shareNotes?: { [key: string]: string };
+    /** Публичное имя инвестора */
+    publicName?: string;
+    /** Сайт */
+    site?: string;
+    /** Цель портфель */
+    target?: string;
 }
 
 /** Запрос на создание портфеля */

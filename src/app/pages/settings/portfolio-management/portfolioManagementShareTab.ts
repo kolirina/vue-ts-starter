@@ -48,26 +48,7 @@ import {DateFormat, DateUtils} from "../../../utils/dateUtils";
                     </template>
                 </v-switch>
             </div>
-            <!--v-flex v-if="link" sm1 xs1 class="mt-1">
-                <v-tooltip transition="slide-y-transition"
-                           open-on-hover content-class="menu-icons" bottom max-width="292"
-                           nudge-right="120">
-                    <sup slot="activator">
-                        <div class="repeat-link-btn" @click="generateTokenLink">
-                            <img src="img/portfolio/link.svg">
-                        </div>
-                    </sup>
-                    <div class="tooltip-text pa-3">
-                        Сгенерировать ссылку повторно
-                    </div>
-                </v-tooltip>
-            </v-flex-->
-            <div v-if="!link">
-                <v-btn class="btn" slot="activator" @click="generateTokenLink">
-                    Сгенерировать ссылку
-                </v-btn>
-            </div>
-            <div v-if="link" class="portfolio-link">
+            <div v-if="link" class="portfolio-management-tab__flex-row">
                 <v-text-field :value="link" placeholder="url для доступа к портфелю" readonly hide-details class="mw378"></v-text-field>
                 <v-btn class="btn" v-clipboard="() => link" slot="activator" @click="copyLink">
                     Копировать ссылку
@@ -88,30 +69,62 @@ import {DateFormat, DateUtils} from "../../../utils/dateUtils";
             </div>
             <div class="portfolio-management-tab__wrapper">
                 <v-layout column class="default-access-content">
-                    <v-layout wrap justify-space-between>
-                        <div>
-                            <v-flex xs12 class="mb-2">
-                                <v-checkbox v-model="divAccess"
-                                            hide-details class="shrink mr-2 mt-0 portfolio-default-text"
-                                            label="Просмотр дивидендов"></v-checkbox>
-                            </v-flex>
-                            <v-flex xs12 class="mb-2">
-                                <v-checkbox v-model="tradeAccess"
-                                            hide-details class="shrink mr-2 mt-0 portfolio-default-text"
-                                            label="Просмотр сделок"></v-checkbox>
-                            </v-flex>
-                            <v-flex xs12 class="mb-2">
-                                <v-checkbox v-model="lineDataAccess"
-                                            hide-details class="shrink mr-2 mt-0 portfolio-default-text"
-                                            label="Просмотр графика"></v-checkbox>
-                            </v-flex>
-                            <v-flex xs12>
-                                <v-checkbox v-model="dashboardAccess"
-                                            hide-details class="shrink mr-2 mt-0 portfolio-default-text"
-                                            label="Просмотр дашборда"></v-checkbox>
-                            </v-flex>
+                    <v-flex xs12 class="mb-2">
+                        <v-checkbox v-model="access"
+                                    hide-details class="shrink mr-2 mt-0 portfolio-default-text"
+                                    label="Доступ только по ссылке"></v-checkbox>
+                    </v-flex>
+                    <v-flex xs12 class="mb-2">
+                        <v-checkbox v-model="divAccess"
+                                    hide-details class="shrink mr-2 mt-0 portfolio-default-text"
+                                    label="Скрыть дивиденды"></v-checkbox>
+                    </v-flex>
+                    <v-flex xs12 class="mb-2">
+                        <v-checkbox v-model="tradeAccess"
+                                    hide-details class="shrink mr-2 mt-0 portfolio-default-text"
+                                    label="Скрыть сделки"></v-checkbox>
+                    </v-flex>
+                    <v-flex xs12 class="mb-2">
+                        <v-checkbox v-model="lineDataAccess"
+                                    hide-details class="shrink mr-2 mt-0 portfolio-default-text"
+                                    label="Скрыть график"></v-checkbox>
+                    </v-flex>
+                    <div class="form-row margT24">
+                        <div class="profile__subtitle form-row__title">
+                            Публичное имя
+                            <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                                <sup class="custom-tooltip" slot="activator">
+                                    <v-icon>fas fa-info-circle</v-icon>
+                                </sup>
+                                <span>Текст подсказки</span>
+                            </v-tooltip>
                         </div>
-                    </v-layout>
+                        <v-text-field name="publicName" v-model="portfolio.publicName" label="Публичное имя"></v-text-field>
+                    </div>
+                    <div class="form-row">
+                        <div class="profile__subtitle form-row__title">
+                            Личный сайт
+                            <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                                <sup class="custom-tooltip" slot="activator">
+                                    <v-icon>fas fa-info-circle</v-icon>
+                                </sup>
+                                <span>Текст подсказки</span>
+                            </v-tooltip>
+                        </div>
+                        <v-text-field name="site" v-model="portfolio.site" label="Личный сайт"></v-text-field>
+                    </div>
+                    <div class="form-row">
+                        <div class="profile__subtitle form-row__title">
+                            Цель портфеля
+                            <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                                <sup class="custom-tooltip" slot="activator">
+                                    <v-icon>fas fa-info-circle</v-icon>
+                                </sup>
+                                <span>Текст подсказки</span>
+                            </v-tooltip>
+                        </div>
+                        <v-text-field name="target" v-model="portfolio.target" label="Цель портфеля" :counter="120"></v-text-field>
+                    </div>
                 </v-layout>
                 <v-card-actions class="save-btn-section">
                     <v-btn color="primary" light @click.native="savePublicParams">Сохранить</v-btn>
@@ -128,7 +141,7 @@ export class PortfolioManagementShareTab extends UI {
     };
 
     @Prop()
-    portfolio: PortfolioParams;
+    private portfolio: PortfolioParams;
 
     @Inject
     private portfolioService: PortfolioService;
@@ -136,11 +149,10 @@ export class PortfolioManagementShareTab extends UI {
 
     private shareOption: PortfoliosDialogType = null;
 
-    private access = true;
+    private access = 0;
     private divAccess = false;
     private tradeAccess = false;
     private lineDataAccess = false;
-    private dashboardAccess = false;
     private expiredDate: string = DateUtils.formatDate(dayjs().add(7, "day"), DateFormat.DATE2);
     private dateMenuValue = false;
     private userId = "";
@@ -155,7 +167,6 @@ export class PortfolioManagementShareTab extends UI {
         this.divAccess = this.portfolio.dividendsAccess;
         this.tradeAccess = this.portfolio.tradesAccess;
         this.lineDataAccess = this.portfolio.lineDataAccess;
-        this.dashboardAccess = this.portfolio.dashboardAccess;
     }
 
     @ShowProgress
@@ -177,7 +188,6 @@ export class PortfolioManagementShareTab extends UI {
             access: this.access,
             tradesAccess: this.tradeAccess,
             dividendsAccess: this.divAccess,
-            dashboardAccess: this.dashboardAccess,
             lineDataAccess: this.lineDataAccess
         });
         this.$snotify.info("Настройки доступа к портфелю успешно изменены");
