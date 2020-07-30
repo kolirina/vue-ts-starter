@@ -15,6 +15,8 @@
  */
 
 import {Inject} from "typescript-ioc";
+import {RawLocation, Route} from "vue-router";
+import {Vue} from "vue/types/vue";
 import {Component, UI} from "../../../app/ui";
 import {DealsImportProvider} from "../../../services/importService";
 import {IisType, PortfolioParams, PortfolioService} from "../../../services/portfolioService";
@@ -72,12 +74,25 @@ export class PortfolioManagementEditPage extends UI {
 
     private currentTab: any = null;
 
+    async beforeRouteUpdate(to: Route, from: Route, next: (to?: RawLocation | false | ((vm: Vue) => any) | void) => void): Promise<void> {
+        await this.loadPortfolio(Number(to.params.id));
+        next();
+    }
+
     /**
      * Инициализация портфеля
      * @inheritDoc
      */
     async mounted(): Promise<void> {
-        this.portfolio = await this.portfolioService.getPortfolioById(Number(this.$route.params.id));
+        await this.loadPortfolio(Number(this.$route.params.id));
+    }
+
+    /**
+     * Загружает портфель
+     * @param id идентификатор
+     */
+    private async loadPortfolio(id: number): Promise<void> {
+        this.portfolio = await this.portfolioService.getPortfolioById(id);
         if (!this.portfolio.iisType) {
             this.portfolio.iisType = IisType.TYPE_A;
         }
