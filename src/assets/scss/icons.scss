@@ -89,6 +89,8 @@
   display: block;
   cursor: pointer;
   background: url('../img/common/dots_more.svg') no-repeat center;
+
+  &_dark {background: url('../img/common/dots_more-dark.svg') no-repeat center}
 }
 
 .hamburger-icon {

@@ -257,7 +257,7 @@ export class PortfolioEditDialog extends CustomDialog<PortfolioDialogData, boole
     }
 }
 
-class AccessTypes {
+export class AccessTypes {
     static readonly PUBLIC = {value: 2, label: "Публичный"};
     static readonly PUBLIC_BY_LINK = {value: 1, label: "Публичный по ссылке"};
     static readonly PRIVATE = {value: 0, label: "Закрытый"};

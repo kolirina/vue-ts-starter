@@ -85,6 +85,22 @@ export class PortfolioService {
     }
 
     /**
+     * Возвращает портфель пользователя по id
+     * @param id идентификатор портфеля
+     * todo: нужно возвращать название брокера на английском для икноки
+     */
+    async getPortfolioById(id: number): Promise<PortfolioParams> {
+        const portfolios: PortfolioParamsResponse[] = await this.http.get<PortfolioParamsResponse[]>(`/${this.ENDPOINT_BASE}`);
+        const portfolio = portfolios.find(item => item.id === id);
+        return {
+            ...portfolio,
+            accountType: portfolio.accountType ? PortfolioAccountType.valueByName(portfolio.accountType) : null,
+            iisType: portfolio.iisType ? IisType.valueByName(portfolio.iisType) : null,
+            shareNotes: portfolio.shareNotes ? portfolio.shareNotes : {}
+        } as PortfolioParams;
+    }
+
+    /**
      * Отправляет запрос на создание нового портфеля или обновление
      * @param portfolio портфель
      */

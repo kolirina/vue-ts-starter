@@ -31,3 +31,149 @@
         display: inline-flex;
     }
 }
+
+.portfolio {
+
+  &-list {
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 1000px;
+  }
+
+  &-item {
+    cursor: pointer;
+    margin: 0 12px 12px 0;
+    overflow: hidden;
+    border: 1px solid $sidebar-hr-color;
+    width: calc(50% - 6px);
+    max-width: 492px;
+    padding: 12px 16px 16px;
+    border-radius: 8px;
+    min-height: 169px;
+    background-color: #fff;
+    transition: background-color 0.1s linear;
+
+    &:nth-child(2n) {margin-right: 0}
+
+    &:hover {background-color: rgba($sidebar-hr-color, 0.5)}
+
+    &__header {
+      @extend .ellipsis;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 12px;
+      border-bottom: 1px solid $sidebar-hr-color;
+      font-size: 14px;
+      line-height: 22px;
+
+      &-description {
+        margin-right: 24px;
+      }
+
+      .v-btn {
+        height: auto;
+        width: auto;
+      }
+    }
+
+    &__body {
+
+      &-info > div {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 12px;
+
+        > span {
+          line-height: 16px;
+
+          &:first-child {
+            font-size: 12px;
+            color: $table--header--font-color;
+          }
+
+          &:last-child {
+            font-weight: 600;
+            font-size: 14px;
+          }
+        }
+      }
+    }
+
+    &-add {
+      border: 1px solid $sidebar-hr-color !important;
+      width: calc(50% - 6px);
+      max-width: 492px;
+      border-radius: 8px;
+      background: url('../img/portfolio/add.svg') no-repeat center;
+      margin: 0 12px 12px 0;
+      min-height: 169px;
+    }
+  }
+
+  &-management-tabs .v-tabs__bar {
+    border: 1px solid #E8E9ED;
+    box-sizing: border-box;
+    border-radius: 4px;
+    box-shadow: none;
+    margin-bottom: 24px;
+
+    .v-tabs__div.active .v-tabs__item {
+      color: $main--font-color !important;
+    }
+  }
+
+  &-management-tab {
+    &__wrapper {
+      max-width: 552px;
+
+      .v-label {font-size: 14px}
+
+      .v-input--selection-controls:not(.v-input--hide-details) .v-input__slot {margin-bottom: 0}
+
+      .v-messages {
+        min-height: 0;
+        padding-left: 16px;
+      }
+
+      .v-text-field.v-select:not(.v-autocomplete) .v-select__selections {padding-left: 0}
+
+      .selected-broker {
+        display: flex;
+        align-items: center;
+        margin-right: 24px;
+
+        &__wrapper {
+          display: flex;
+          align-items: center;
+          margin-bottom: 20px;
+
+          i {display: none}
+
+          .v-list__tile {height: auto}
+        }
+
+        &__img {
+          width: 36px;
+          height: 36px;
+          border: 1px solid $sidebar-hr-color;
+          border-radius: 50%;
+          background-size: 24px 24px !important;
+          margin-right: 12px;
+        }
+      }
+
+      .select-section {white-space: nowrap}
+
+      .textarea-section {margin: 20px 0}
+    }
+  }
+
+  &-link {
+    display: flex;
+    align-items: center;
+
+    .v-btn {margin-left: 12px !important;}
+  }
+}
