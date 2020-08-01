@@ -19,6 +19,7 @@ import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../../app/ui";
 import {PortfolioEditDialog} from "../../components/dialogs/portfolioEditDialog";
 import {PortfoliosTable} from "../../components/tables/portfoliosTable";
+import {PortfoliosTile} from "../../components/tables/portfoliosTile";
 import {ClientInfo} from "../../services/clientService";
 import {PortfolioParams} from "../../services/portfolioService";
 import {EventType} from "../../types/eventType";
@@ -39,13 +40,13 @@ const MainStore = namespace(StoreType.MAIN);
                             <div class="section-title header-first-card__title-text">Управление портфелями</div>
                         </v-card-title>
                     </v-card>
-
-                    <portfolios-table :portfolios="clientInfo.user.portfolios"></portfolios-table>
+                    <portfolios-tile :portfolios="clientInfo.user.portfolios"></portfolios-tile>
+                    <!--portfolios-table :portfolios="clientInfo.user.portfolios"></portfolios-table-->
                 </v-flex>
             </v-layout>
         </v-container>
     `,
-    components: {PortfoliosTable}
+    components: {PortfoliosTable, PortfoliosTile}
 })
 export class PortfoliosManagementPage extends UI {
 

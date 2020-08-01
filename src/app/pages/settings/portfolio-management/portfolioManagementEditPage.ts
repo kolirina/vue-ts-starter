@@ -14,12 +14,15 @@
  * (c) ООО "Интеллектуальные инвестиции", 2020
  */
 
+import dayjs from "dayjs";
 import {Inject} from "typescript-ioc";
 import {RawLocation, Route} from "vue-router";
 import {Vue} from "vue/types/vue";
 import {Component, UI} from "../../../app/ui";
 import {DealsImportProvider} from "../../../services/importService";
-import {IisType, PortfolioParams, PortfolioService} from "../../../services/portfolioService";
+import {IisType, PortfolioAccountType, PortfolioParams, PortfolioService} from "../../../services/portfolioService";
+import {Currency} from "../../../types/currency";
+import {DateFormat, DateUtils} from "../../../utils/dateUtils";
 import {PortfolioManagementGeneralTab} from "./portfolioManagementGeneralTab";
 import {PortfolioManagementIntegrationTab} from "./portfolioManagementIntegrationTab";
 import {PortfolioManagementShareTab} from "./portfolioManagementShareTab";
@@ -73,9 +76,11 @@ export class PortfolioManagementEditPage extends UI {
     private portfolio: PortfolioParams = null;
 
     private currentTab: any = null;
+    /** Признак добавления нового портфеля */
+    private isNew = false;
 
     async beforeRouteUpdate(to: Route, from: Route, next: (to?: RawLocation | false | ((vm: Vue) => any) | void) => void): Promise<void> {
-        await this.loadPortfolio(Number(to.params.id));
+        await this.loadPortfolio(to.params.id);
         next();
     }
 
@@ -84,15 +89,27 @@ export class PortfolioManagementEditPage extends UI {
      * @inheritDoc
      */
     async mounted(): Promise<void> {
-        await this.loadPortfolio(Number(this.$route.params.id));
+        await this.loadPortfolio(this.$route.params.id);
     }
 
     /**
      * Загружает портфель
      * @param id идентификатор
      */
-    private async loadPortfolio(id: number): Promise<void> {
-        this.portfolio = await this.portfolioService.getPortfolioById(id);
+    private async loadPortfolio(id: string): Promise<void> {
+        if (id === "new") {
+            this.isNew = true;
+            this.portfolio = {
+                name: "",
+                brokerId: null,
+                access: 0,
+                viewCurrency: Currency.RUB,
+                openDate: DateUtils.formatDate(dayjs(), DateFormat.DATE2),
+                accountType: PortfolioAccountType.BROKERAGE
+            };
+        } else {
+            this.portfolio = await this.portfolioService.getPortfolioById(Number(id));
+        }
         if (!this.portfolio.iisType) {
             this.portfolio.iisType = IisType.TYPE_A;
         }
