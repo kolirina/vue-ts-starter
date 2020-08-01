@@ -50,6 +50,12 @@ const MainStore = namespace(StoreType.MAIN);
                 <div v-for="portfolio in portfolios"  @click="goToEdit(portfolio.id.toString())" class="portfolio-item">
                     <div class="portfolio-item__header">
                         <div class="portfolio-item__header-description">{{ portfolio.name }}</div>
+                        <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" bottom>
+                            <template v-slot:activator="{ on }">
+                                <div v-on="on" class="portfolio-item__make-deposit"></div>
+                            </template>
+                            <span>Внести дивиденды за 2020 год</span>
+                        </v-tooltip>
                         <div @click.stop data-v-step="1">
                             <v-menu transition="slide-y-transition" bottom left min-width="173" nudge-bottom="30">
                                 <v-btn slot="activator" flat icon dark>

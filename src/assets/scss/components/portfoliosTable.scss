@@ -50,30 +50,39 @@
     padding: 12px 16px 16px;
     border-radius: 8px;
     min-height: 169px;
-    background-color: #fff;
     transition: background-color 0.1s linear;
 
     &:nth-child(2n) {margin-right: 0}
 
-    &:hover {background-color: rgba($sidebar-hr-color, 0.5)}
+    &:hover {
+      background-color: rgba($sidebar-blue-color, 0.06);
+      border-color: $sidebar-blue-color;
+    }
 
     &__header {
       @extend .ellipsis;
       display: flex;
       align-items: center;
-      justify-content: space-between;
       padding-bottom: 12px;
       border-bottom: 1px solid $sidebar-hr-color;
       font-size: 14px;
       line-height: 22px;
 
-      &-description {
-        margin-right: 24px;
-      }
-
       .v-btn {
         height: auto;
         width: auto;
+      }
+    }
+
+    &__make-deposit {
+      width: 16px;
+      height: 16px;
+      margin: 0 auto 0 12px;
+      background: url('../img/portfolio/deposit.svg') no-repeat center;
+      transition: background 0.15s linear;
+
+      &:hover {
+        background: url('../img/portfolio/deposit-active.svg') no-repeat center;
       }
     }
 

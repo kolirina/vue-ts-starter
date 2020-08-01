@@ -33,7 +33,7 @@ import {PortfolioManagementShareTab} from "./portfolioManagementShareTab";
         <v-container fluid>
             <v-card flat class="header-first-card">
                 <v-card-title class="header-first-card__wrapper-title">
-                    <div class="section-title header-first-card__title-text">Управление портфелями</div>
+                    <div class="section-title header-first-card__title-text">{{ isNew ? "Добавление портфеля" : "Управление портфелями" }}</div>
                 </v-card-title>
             </v-card>
             <v-layout v-if="portfolio" class="profile" column>

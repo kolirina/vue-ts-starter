@@ -27,8 +27,8 @@ import {PortfolioParams, PortfolioService} from "../../../services/portfolioServ
         <div class="portfolio-management-tab__wrapper">
             <div class="portfolio-management-tab__title">Встраиваемые блоки</div>
             <div class="portfolio-management-tab__informer">
-                <a class="portfolio-link fs14" :href="informerH(portfolio.id.toString())" target="_blank">Информер-картинка горизонтальный</a>
-                <a class="portfolio-link fs14" :href="informerV(portfolio.id.toString())" target="_blank">Информер-картинка вертикальный</a>
+                <a class="portfolio-link fs14" :href="informerH" target="_blank">Информер-картинка горизонтальный</a>
+                <a class="portfolio-link fs14" :href="informerV" target="_blank">Информер-картинка вертикальный</a>
             </div>
             <p>
                 Вы можете добавить таблицу с ценными бумагами или диаграмму на свой блог или сайт. Для этого выберите нужный
@@ -39,7 +39,7 @@ import {PortfolioParams, PortfolioService} from "../../../services/portfolioServ
                 <v-select :items="embeddedOptions" :return-object="true" item-text="name" v-model="embeddedOption" :hide-details="true"></v-select>
             </div>
             <div class="portfolio-management-tab__flex-row">
-                <v-text-field label="Box" single-line box :value="embeddedCode" hide-details readonly></v-text-field>
+                <v-text-field :value="embeddedCode" hide-details readonly></v-text-field>
                 <v-btn class="btn" v-clipboard="() => embeddedCode" @click="copyLink">Копировать ссылку</v-btn>
             </div>
         </div>
@@ -68,12 +68,12 @@ export class PortfolioManagementIntegrationTab extends UI {
             `style="height: 600px; width: 100%; margin: 10px 0; display: block;" frameborder="0"></iframe>`;
     }
 
-    private informerV(id: string): string {
-        return `${window.location.protocol}//${window.location.host}/informer/v/${id}.png`;
+    private get informerV(): string {
+        return `${window.location.protocol}//${window.location.host}/informer/v/${this.portfolio.id}.png`;
     }
 
-    private informerH(id: string): string {
-        return `${window.location.protocol}//${window.location.host}/informer/h/${id}.png`;
+    private get informerH(): string {
+        return `${window.location.protocol}//${window.location.host}/informer/h/${this.portfolio.id}.png`;
     }
 
     private copyLink(): void {
