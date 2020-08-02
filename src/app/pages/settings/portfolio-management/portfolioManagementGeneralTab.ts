@@ -123,15 +123,6 @@ import {DateUtils} from "../../../utils/dateUtils";
                                     v-validate="'max:500'" :error-messages="errors.collect('note')" data-vv-name="note"></v-textarea>
                     </v-flex>
                 </v-layout>
-            <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn :loading="processState" :disabled="!isValid || processState" color="primary" light @click.stop.native="savePortfolio">
-                    Сохранить
-                    <span slot="loader" class="custom-loader">
-                        <v-icon color="blue">fas fa-spinner fa-spin</v-icon>
-                      </span>
-                </v-btn>
-            </v-card-actions>
         </div>
     `,
     components: {BrokerSwitcher}
@@ -153,46 +144,12 @@ export class PortfolioManagementGeneralTab extends UI {
     private iisTypes = IisType.values();
     private accountType = PortfolioAccountType;
     private accountTypes = PortfolioAccountType.values();
-    private processState = false;
 
     /** Включение/выключение профессионального режима */
     private async onProfessionalModeChange(): Promise<void> {
         const result = await this.portfolioService.updatePortfolio(this.portfolio);
         this.$snotify.info(`Профессиональный режим для портфеля ${result.professionalMode ? "включен" : "выключен"}`);
         UI.emit(EventType.PORTFOLIO_UPDATED, result);
-    }
-
-    @ShowProgress
-    @DisableConcurrentExecution
-    private async savePortfolio(): Promise<void> {
-        if (!this.isValid) {
-            this.$snotify.warning("Поля заполнены некорректно");
-            return;
-        }
-        this.processState = true;
-        try {
-            await this.portfolioService.createOrUpdatePortfolio(this.portfolio);
-        } catch (error) {
-            // если 403 ошибки при добавлении портфеля, диалог уже отобразили, больше ошибок показывать не нужно
-            if (error.code !== "403") {
-                throw error;
-            }
-            return;
-        } finally {
-            this.processState = false;
-        }
-        this.$snotify.info(`Портфель успешно ${this.portfolio.id ? "изменен" : "создан"}`);
-        this.processState = false;
-        if (this.portfolio.id) {
-            // если валюта была изменена, необходимо обновить данные по портфелю, иначе просто обновляем сам портфель
-            if (this.portfolio.viewCurrency !== this.portfolio.viewCurrency) {
-                UI.emit(EventType.PORTFOLIO_RELOAD, this.portfolio);
-            } else {
-                UI.emit(EventType.PORTFOLIO_UPDATED, this.portfolio);
-            }
-        } else {
-            UI.emit(EventType.PORTFOLIO_CREATED);
-        }
     }
 
     /**
@@ -218,12 +175,6 @@ export class PortfolioManagementGeneralTab extends UI {
 
     private removeBrokerId(): void {
         this.portfolio.brokerId = null;
-    }
-
-    private get isValid(): boolean {
-        return this.portfolio.name.length >= 3 && this.portfolio.name.length <= 40 &&
-            (dayjs().isAfter(DateUtils.parseDate(this.portfolio.openDate)) || DateUtils.currentDate() === this.portfolio.openDate) &&
-            (CommonUtils.isBlank(this.portfolio.note) || this.portfolio.note.length <= 500);
     }
 
     private get selectedBroker(): DealsImportProvider {

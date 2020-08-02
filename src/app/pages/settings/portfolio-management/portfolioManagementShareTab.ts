@@ -34,7 +34,7 @@ import {DateFormat, DateUtils} from "../../../utils/dateUtils";
     template: `
         <div>
             <div class="portfolio-management-tab__wrapper">
-                <v-switch v-model="access" class="margB20">
+                <v-switch v-model="access" @change="onAccessChange" class="margB20">
                     <template #label>
                         <span>Публичный доступ {{access ? "открыт" : "закрыт"}}</span>
                         <v-tooltip content-class="custom-tooltip-wrap" bottom>
@@ -70,22 +70,22 @@ import {DateFormat, DateUtils} from "../../../utils/dateUtils";
             <div class="portfolio-management-tab__wrapper">
                 <v-layout column class="default-access-content">
                     <v-flex xs12 class="mb-2">
-                        <v-checkbox v-model="access"
+                        <v-checkbox v-model="linkAccess" @change="onAccessChange"
                                     hide-details class="shrink mr-2 mt-0 portfolio-default-text"
                                     label="Доступ только по ссылке"></v-checkbox>
                     </v-flex>
                     <v-flex xs12 class="mb-2">
-                        <v-checkbox v-model="divAccess"
+                        <v-checkbox v-model="portfolio.dividendsAccess"
                                     hide-details class="shrink mr-2 mt-0 portfolio-default-text"
                                     label="Скрыть дивиденды"></v-checkbox>
                     </v-flex>
                     <v-flex xs12 class="mb-2">
-                        <v-checkbox v-model="tradeAccess"
+                        <v-checkbox v-model="portfolio.tradesAccess"
                                     hide-details class="shrink mr-2 mt-0 portfolio-default-text"
                                     label="Скрыть сделки"></v-checkbox>
                     </v-flex>
                     <v-flex xs12 class="mb-2">
-                        <v-checkbox v-model="lineDataAccess"
+                        <v-checkbox v-model="portfolio.lineDataAccess"
                                     hide-details class="shrink mr-2 mt-0 portfolio-default-text"
                                     label="Скрыть график"></v-checkbox>
                     </v-flex>
@@ -126,9 +126,6 @@ import {DateFormat, DateUtils} from "../../../utils/dateUtils";
                         <v-text-field name="target" v-model="portfolio.target" label="Цель портфеля" :counter="120"></v-text-field>
                     </div>
                 </v-layout>
-                <v-card-actions class="save-btn-section">
-                    <v-btn color="primary" light @click.native="savePublicParams">Сохранить</v-btn>
-                </v-card-actions>
             </div>
         </div>
     `,
@@ -149,12 +146,9 @@ export class PortfolioManagementShareTab extends UI {
 
     private shareOption: PortfoliosDialogType = null;
 
-    private access = 0;
-    private divAccess = false;
-    private tradeAccess = false;
-    private lineDataAccess = false;
+    private access = false;
+    private linkAccess = false;
     private expiredDate: string = DateUtils.formatDate(dayjs().add(7, "day"), DateFormat.DATE2);
-    private dateMenuValue = false;
     private userId = "";
     private shareUrlsCache: { [key: string]: string } = {
         [PortfoliosDialogType.DEFAULT_ACCESS.code]: null,
@@ -163,10 +157,12 @@ export class PortfolioManagementShareTab extends UI {
 
     mounted(): void {
         this.shareOption = PortfoliosDialogType.DEFAULT_ACCESS;
-        this.access = this.portfolio.access;
-        this.divAccess = this.portfolio.dividendsAccess;
-        this.tradeAccess = this.portfolio.tradesAccess;
-        this.lineDataAccess = this.portfolio.lineDataAccess;
+        if (this.portfolio.access === 2) {
+            this.access = true;
+        } else if (this.portfolio.access === 1) {
+            this.access = true;
+            this.linkAccess = true;
+        }
     }
 
     @ShowProgress
@@ -180,18 +176,15 @@ export class PortfolioManagementShareTab extends UI {
         });
     }
 
-    @ShowProgress
-    @DisableConcurrentExecution
-    private async savePublicParams(): Promise<void> {
-        const result = await this.portfolioService.updatePortfolio({
-            ...this.portfolio,
-            access: this.access,
-            tradesAccess: this.tradeAccess,
-            dividendsAccess: this.divAccess,
-            lineDataAccess: this.lineDataAccess
-        });
-        this.$snotify.info("Настройки доступа к портфелю успешно изменены");
-        UI.emit(EventType.PORTFOLIO_UPDATED, result);
+    /** Устанавливает доступ к портфелю: 0 - приватный, 1 - публичный только по ссылке, 2 - полностью публичный */
+    private onAccessChange(): void {
+        if (this.access && this.linkAccess) {
+            this.portfolio.access = 1;
+        } else if (this.access && !this.linkAccess) {
+            this.portfolio.access = 2;
+        } else {
+            this.portfolio.access = 0;
+        }
     }
 
     private get link(): string {
@@ -204,10 +197,6 @@ export class PortfolioManagementShareTab extends UI {
 
     private copyLink(): void {
         this.$snotify.info("Ссылка скопирована");
-    }
-
-    private selectDialogType(type: PortfoliosDialogType): void {
-        this.shareOption = type;
     }
 
     private isValid(): boolean {

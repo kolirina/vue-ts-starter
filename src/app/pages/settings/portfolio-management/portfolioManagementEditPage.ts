@@ -19,9 +19,13 @@ import {Inject} from "typescript-ioc";
 import {RawLocation, Route} from "vue-router";
 import {Vue} from "vue/types/vue";
 import {Component, UI} from "../../../app/ui";
+import {DisableConcurrentExecution} from "../../../platform/decorators/disableConcurrentExecution";
+import {ShowProgress} from "../../../platform/decorators/showProgress";
 import {DealsImportProvider} from "../../../services/importService";
 import {IisType, PortfolioAccountType, PortfolioParams, PortfolioService} from "../../../services/portfolioService";
 import {Currency} from "../../../types/currency";
+import {EventType} from "../../../types/eventType";
+import {CommonUtils} from "../../../utils/commonUtils";
 import {DateFormat, DateUtils} from "../../../utils/dateUtils";
 import {PortfolioManagementGeneralTab} from "./portfolioManagementGeneralTab";
 import {PortfolioManagementIntegrationTab} from "./portfolioManagementIntegrationTab";
@@ -63,6 +67,15 @@ import {PortfolioManagementShareTab} from "./portfolioManagementShareTab";
                         <portfolio-management-integration-tab :portfolio="portfolio"></portfolio-management-integration-tab>
                     </v-tab-item>
                 </v-tabs>
+                <v-card-actions v-if="currentTab !== 2">
+                    <v-btn :loading="processState" :disabled="!isValid || processState" color="primary" light @click.stop.native="savePortfolio">
+                        Сохранить
+                        <span slot="loader" class="custom-loader">
+                        <v-icon color="blue">fas fa-spinner fa-spin</v-icon>
+                      </span>
+                    </v-btn>
+                    <v-btn @click="goBack">Отмена</v-btn>
+                </v-card-actions>
             </v-layout>
         </v-container>
     `,
@@ -78,6 +91,8 @@ export class PortfolioManagementEditPage extends UI {
     private currentTab: any = null;
     /** Признак добавления нового портфеля */
     private isNew = false;
+
+    private processState = false;
 
     async beforeRouteUpdate(to: Route, from: Route, next: (to?: RawLocation | false | ((vm: Vue) => any) | void) => void): Promise<void> {
         await this.loadPortfolio(to.params.id);
@@ -113,6 +128,46 @@ export class PortfolioManagementEditPage extends UI {
         if (!this.portfolio.iisType) {
             this.portfolio.iisType = IisType.TYPE_A;
         }
+        console.log(this.portfolio);
+    }
+
+    @ShowProgress
+    @DisableConcurrentExecution
+    private async savePortfolio(): Promise<void> {
+        if (!this.isValid) {
+            this.$snotify.warning("Поля заполнены некорректно");
+            return;
+        }
+        this.processState = true;
+        try {
+            await this.portfolioService.createOrUpdatePortfolio(this.portfolio);
+        } catch (error) {
+            // если 403 ошибки при добавлении портфеля, диалог уже отобразили, больше ошибок показывать не нужно
+            if (error.code !== "403") {
+                throw error;
+            }
+            return;
+        } finally {
+            this.processState = false;
+        }
+        this.$snotify.info(`Портфель успешно ${this.portfolio.id ? "изменен" : "создан"}`);
+        this.processState = false;
+        if (this.portfolio.id) {
+            // если валюта была изменена, необходимо обновить данные по портфелю, иначе просто обновляем сам портфель
+            if (this.portfolio.viewCurrency !== this.portfolio.viewCurrency) {
+                UI.emit(EventType.PORTFOLIO_RELOAD, this.portfolio);
+            } else {
+                UI.emit(EventType.PORTFOLIO_UPDATED, this.portfolio);
+            }
+        } else {
+            UI.emit(EventType.PORTFOLIO_CREATED);
+        }
+    }
+
+    private get isValid(): boolean {
+        return this.portfolio.name.length >= 3 && this.portfolio.name.length <= 40 &&
+            (dayjs().isAfter(DateUtils.parseDate(this.portfolio.openDate)) || DateUtils.currentDate() === this.portfolio.openDate) &&
+            (CommonUtils.isBlank(this.portfolio.note) || this.portfolio.note.length <= 500);
     }
 
     /** Возвращает к списку портфелей */
