@@ -221,7 +221,7 @@ export class ProfileMainPage extends UI {
         this.publicLink = CommonUtils.isBlank(publicLink) ? this.clientInfo.user.publicLink : publicLink;
         // отправляем запрос только если действительно поменяли
         if (this.publicLink !== this.clientInfo.user.publicLink) {
-            await this.clientService.changePublicLInk(this.publicLink);
+            await this.clientService.changePublicLink(this.publicLink);
             this.clientInfo.user.publicLink = this.publicLink;
             this.$snotify.info("Новое Публичная ссылка успешно сохранена");
         }

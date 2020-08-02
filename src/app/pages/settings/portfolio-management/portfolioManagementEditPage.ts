@@ -21,6 +21,7 @@ import {Vue} from "vue/types/vue";
 import {Component, UI} from "../../../app/ui";
 import {DisableConcurrentExecution} from "../../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../../platform/decorators/showProgress";
+import {Client, ClientService} from "../../../services/clientService";
 import {DealsImportProvider} from "../../../services/importService";
 import {IisType, PortfolioAccountType, PortfolioParams, PortfolioService} from "../../../services/portfolioService";
 import {Currency} from "../../../types/currency";
@@ -69,7 +70,7 @@ import {PortfolioManagementShareTab} from "./portfolioManagementShareTab";
                 </v-tabs>
                 <v-card-actions v-if="currentTab !== 2">
                     <v-btn :loading="processState" :disabled="!isValid || processState" color="primary" light @click.stop.native="savePortfolio">
-                        Сохранить
+                        {{ isNew ? "Добавить" : "Сохранить"}}
                         <span slot="loader" class="custom-loader">
                         <v-icon color="blue">fas fa-spinner fa-spin</v-icon>
                       </span>
@@ -87,7 +88,7 @@ export class PortfolioManagementEditPage extends UI {
     private portfolioService: PortfolioService;
     /** Портфель */
     private portfolio: PortfolioParams = null;
-
+    /** Текущий таб */
     private currentTab: any = null;
     /** Признак добавления нового портфеля */
     private isNew = false;
@@ -128,7 +129,6 @@ export class PortfolioManagementEditPage extends UI {
         if (!this.portfolio.iisType) {
             this.portfolio.iisType = IisType.TYPE_A;
         }
-        console.log(this.portfolio);
     }
 
     @ShowProgress

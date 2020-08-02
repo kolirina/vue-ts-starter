@@ -121,15 +121,22 @@
     }
   }
 
-  &-management-tabs .v-tabs__bar {
-    border: 1px solid #E8E9ED;
-    box-sizing: border-box;
-    border-radius: 4px;
-    box-shadow: none;
-    margin-bottom: 24px;
+  &-management-tabs {
+    .v-tabs__bar {
+      border: 1px solid $sidebar-hr-color;
+      box-sizing: border-box;
+      border-radius: 4px;
+      box-shadow: none;
+      margin-bottom: 24px;
 
-    .v-tabs__div.active .v-tabs__item {
-      color: $main--font-color !important;
+      .v-tabs__div.active .v-tabs__item {
+        color: $main--font-color !important;
+      }
+    }
+
+    & + .v-card__actions {
+      border-top: 1px solid $sidebar-hr-color;
+      padding: 24px 0 0;
     }
   }
 
@@ -176,6 +183,11 @@
       .select-section {white-space: nowrap}
 
       .textarea-section {margin: 20px 0}
+
+      .form-row .inplace-custom-input {
+        max-width: 100%;
+        height: 52px;
+      }
     }
 
     &__title {

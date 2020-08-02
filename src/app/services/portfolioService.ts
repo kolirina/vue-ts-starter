@@ -156,7 +156,8 @@ export class PortfolioService {
             alternativeViewCurrency: portfolio.alternativeViewCurrency,
             fixFee: portfolio.fixFee,
             note: portfolio.note,
-            combined: portfolio.combined
+            combined: portfolio.combined,
+            description: portfolio.description
         };
 
         const item = await this.http.put<PortfolioParamsResponse>(`/${this.ENDPOINT_BASE}`, request);
@@ -298,12 +299,8 @@ export interface BasePortfolioParams {
     combined?: boolean;
     /** Заметки по бумагам в портфеле */
     shareNotes?: { [key: string]: string };
-    /** Публичное имя инвестора */
-    publicName?: string;
-    /** Сайт */
-    site?: string;
-    /** Цель портфель */
-    target?: string;
+    /** Цель портфеля */
+    description?: string;
 }
 
 /** Запрос на создание портфеля */
@@ -368,6 +365,8 @@ export interface UpdatePortfolioRequest {
     accountType: string;
     /** Тип ИИС */
     iisType: string;
+    /** Цель публичного портфеля */
+    description: string;
 }
 
 /** Параметры портфеля пользователя */

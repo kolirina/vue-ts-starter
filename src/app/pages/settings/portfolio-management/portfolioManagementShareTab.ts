@@ -16,18 +16,16 @@
 
 import dayjs from "dayjs";
 import {Inject} from "typescript-ioc";
-import {Component, Prop, UI} from "../../../app/ui";
+import {Component, namespace, Prop, UI} from "../../../app/ui";
 import {BrokerSwitcher} from "../../../components/brokerSwitcher";
-import {AccessTypes} from "../../../components/dialogs/portfolioEditDialog";
-import {DisableConcurrentExecution} from "../../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../../platform/decorators/showProgress";
-import {CustomDialog} from "../../../platform/dialogs/customDialog";
-import {DealsImportProvider} from "../../../services/importService";
-import {IisType, PortfolioAccountType, PortfolioParams, PortfoliosDialogType, PortfolioService} from "../../../services/portfolioService";
-import {ALLOWED_CURRENCIES, Currency} from "../../../types/currency";
-import {EventType} from "../../../types/eventType";
+import {ClientInfo, ClientService} from "../../../services/clientService";
+import {PortfolioParams, PortfoliosDialogType, PortfolioService} from "../../../services/portfolioService";
 import {CommonUtils} from "../../../utils/commonUtils";
 import {DateFormat, DateUtils} from "../../../utils/dateUtils";
+import {StoreType} from "../../../vuex/storeType";
+
+const MainStore = namespace(StoreType.MAIN);
 
 @Component({
     // language=Vue
@@ -92,26 +90,16 @@ import {DateFormat, DateUtils} from "../../../utils/dateUtils";
                     <div class="form-row margT24">
                         <div class="profile__subtitle form-row__title">
                             Публичное имя
-                            <v-tooltip content-class="custom-tooltip-wrap" bottom>
-                                <sup class="custom-tooltip" slot="activator">
-                                    <v-icon>fas fa-info-circle</v-icon>
-                                </sup>
-                                <span>Текст подсказки</span>
-                            </v-tooltip>
+                            <tooltip>Ваше имя (будет использовано для отображения на карточке публичного портфеля)</tooltip>
                         </div>
-                        <v-text-field name="publicName" v-model="portfolio.publicName" label="Публичное имя"></v-text-field>
+                        <inplace-input name="publicName" :value="publicName" :max-length="255" @input="onPublicNameChange"></inplace-input>
                     </div>
                     <div class="form-row">
                         <div class="profile__subtitle form-row__title">
                             Личный сайт
-                            <v-tooltip content-class="custom-tooltip-wrap" bottom>
-                                <sup class="custom-tooltip" slot="activator">
-                                    <v-icon>fas fa-info-circle</v-icon>
-                                </sup>
-                                <span>Текст подсказки</span>
-                            </v-tooltip>
+                            <tooltip>Ссылка на профиль, блог, сайт (будет использована для отображения на карточке публичного портфеля)</tooltip>
                         </div>
-                        <v-text-field name="site" v-model="portfolio.site" label="Личный сайт"></v-text-field>
+                        <inplace-input name="publicLink" :value="publicLink" :max-length="1024" @input="onPublicLinkChange"></inplace-input>
                     </div>
                     <div class="form-row">
                         <div class="profile__subtitle form-row__title">
@@ -120,10 +108,10 @@ import {DateFormat, DateUtils} from "../../../utils/dateUtils";
                                 <sup class="custom-tooltip" slot="activator">
                                     <v-icon>fas fa-info-circle</v-icon>
                                 </sup>
-                                <span>Текст подсказки</span>
+                                <span>Цель портфеля, описание, которое будет использовано для отображения на карточке публичного портфеля</span>
                             </v-tooltip>
                         </div>
-                        <v-text-field name="target" v-model="portfolio.target" label="Цель портфеля" :counter="120"></v-text-field>
+                        <v-text-field name="target" v-model="portfolio.description" label="Цель портфеля" :counter="120"></v-text-field>
                     </div>
                 </v-layout>
             </div>
@@ -136,13 +124,17 @@ export class PortfolioManagementShareTab extends UI {
     $refs: {
         dateMenu: any
     };
+    @MainStore.Getter
+    private clientInfo: ClientInfo;
 
     @Prop()
     private portfolio: PortfolioParams;
 
     @Inject
     private portfolioService: PortfolioService;
-    private dialogTypes = PortfoliosDialogType;
+    /** Сервис по работе с нформацией о клиенте */
+    @Inject
+    private clientService: ClientService;
 
     private shareOption: PortfoliosDialogType = null;
 
@@ -154,8 +146,12 @@ export class PortfolioManagementShareTab extends UI {
         [PortfoliosDialogType.DEFAULT_ACCESS.code]: null,
         [PortfoliosDialogType.BY_LINK.code]: null,
     };
+    /** Публичное имя пользователя */
+    private publicName = "";
+    /** Ссылка на публичный ресурс пользователя */
+    private publicLink = "";
 
-    mounted(): void {
+    async created(): Promise<void> {
         this.shareOption = PortfoliosDialogType.DEFAULT_ACCESS;
         if (this.portfolio.access === 2) {
             this.access = true;
@@ -163,6 +159,8 @@ export class PortfolioManagementShareTab extends UI {
             this.access = true;
             this.linkAccess = true;
         }
+        this.publicName = this.clientInfo.user.publicName;
+        this.publicLink = this.clientInfo.user.publicLink;
     }
 
     @ShowProgress
@@ -184,6 +182,36 @@ export class PortfolioManagementShareTab extends UI {
             this.portfolio.access = 2;
         } else {
             this.portfolio.access = 0;
+        }
+    }
+
+    /**
+     * Обрабатывает смену публичной ссылки
+     * @param publicLink
+     */
+    @ShowProgress
+    private async onPublicLinkChange(publicLink: string): Promise<void> {
+        this.publicLink = CommonUtils.isBlank(publicLink) ? this.clientInfo.user.publicLink : publicLink;
+        // отправляем запрос только если действительно поменяли
+        if (this.publicLink !== this.clientInfo.user.publicLink) {
+            await this.clientService.changePublicLink(this.publicLink);
+            this.clientInfo.user.publicLink = this.publicLink;
+            this.$snotify.info("Новое Публичная ссылка успешно сохранена");
+        }
+    }
+
+    /**
+     * Обрабатывает смену публичного имени имени
+     * @param publicName
+     */
+    @ShowProgress
+    private async onPublicNameChange(publicName: string): Promise<void> {
+        this.publicName = CommonUtils.isBlank(publicName) ? this.clientInfo.user.publicName : publicName;
+        // отправляем запрос только если действительно поменяли
+        if (this.publicName !== this.clientInfo.user.publicName) {
+            await this.clientService.changePublicName(this.publicName);
+            this.clientInfo.user.publicName = this.publicName;
+            this.$snotify.info("Новое Публичное имя успешно сохранено");
         }
     }
 

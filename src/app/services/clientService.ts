@@ -76,7 +76,7 @@ export class ClientService {
      * @param newValue новая публичная ссылка
      * @returns {Promise<void>}
      */
-    async changePublicLInk(newValue: string): Promise<void> {
+    async changePublicLink(newValue: string): Promise<void> {
         await this.http.post(`/user/change-public-link`, newValue);
     }
 
