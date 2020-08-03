@@ -30,6 +30,26 @@
     }
   }
 
+  &-group {
+    box-shadow: none;
+
+    .v-btn {
+      border-radius: 0 !important;
+      background-size: 20px 20px !important;
+
+      &:first-child {
+        border-radius: 4px 0 0 4px !important;
+      }
+
+      &:last-child {
+        border-radius: 0 4px 4px 0 !important;
+      }
+
+      &.btn_icon-list {background: url("../img/portfolio/list.svg") no-repeat center;}
+      &.btn_icon-tile {background: url("../img/portfolio/tile.svg") no-repeat center;}
+    }
+  }
+
   &-group-right {
     display: flex;
     justify-content: flex-end;

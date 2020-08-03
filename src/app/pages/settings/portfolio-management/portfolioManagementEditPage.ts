@@ -18,19 +18,25 @@ import dayjs from "dayjs";
 import {Inject} from "typescript-ioc";
 import {RawLocation, Route} from "vue-router";
 import {Vue} from "vue/types/vue";
+import {namespace} from "vuex-class/lib/bindings";
 import {Component, UI} from "../../../app/ui";
 import {DisableConcurrentExecution} from "../../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../../platform/decorators/showProgress";
-import {Client, ClientService} from "../../../services/clientService";
+import {ClientInfo} from "../../../services/clientService";
+import {ExportService, ExportType} from "../../../services/exportService";
 import {DealsImportProvider} from "../../../services/importService";
 import {IisType, PortfolioAccountType, PortfolioParams, PortfolioService} from "../../../services/portfolioService";
 import {Currency} from "../../../types/currency";
 import {EventType} from "../../../types/eventType";
 import {CommonUtils} from "../../../utils/commonUtils";
 import {DateFormat, DateUtils} from "../../../utils/dateUtils";
+import {ExportUtils} from "../../../utils/exportUtils";
+import {StoreType} from "../../../vuex/storeType";
 import {PortfolioManagementGeneralTab} from "./portfolioManagementGeneralTab";
 import {PortfolioManagementIntegrationTab} from "./portfolioManagementIntegrationTab";
 import {PortfolioManagementShareTab} from "./portfolioManagementShareTab";
+
+const MainStore = namespace(StoreType.MAIN);
 
 @Component({
     // language=Vue
@@ -50,8 +56,21 @@ import {PortfolioManagementShareTab} from "./portfolioManagementShareTab";
                             <div @click="goBack" class="back-btn">Назад</div>
                         </div>
                     </div>
-                    <!-- todo: экспорт -->
-                    <v-btn>Экспорт</v-btn>
+                    <v-menu transition="slide-y-transition" bottom left nudge-bottom="36">
+                        <v-btn slot="activator">Экспорт</v-btn>
+                        <v-list class="card__header-menu">
+                            <v-list-tile @click="downloadFile" :disabled="downloadNotAllowed">
+                                <v-list-tile-title>
+                                    Экспорт в csv
+                                </v-list-tile-title>
+                            </v-list-tile>
+                            <v-list-tile @click="exportPortfolio">
+                                <v-list-tile-title>
+                                    Экспорт в xlsx
+                                </v-list-tile-title>
+                            </v-list-tile>
+                        </v-list>
+                    </v-menu>
                 </div>
 
                 <v-tabs v-model="currentTab" class="portfolio-management-tabs">
@@ -83,9 +102,15 @@ import {PortfolioManagementShareTab} from "./portfolioManagementShareTab";
     components: {PortfolioManagementGeneralTab, PortfolioManagementShareTab, PortfolioManagementIntegrationTab}
 })
 export class PortfolioManagementEditPage extends UI {
+
+    @MainStore.Getter
+    private clientInfo: ClientInfo;
     /** Сервис по работе с портфелями */
     @Inject
     private portfolioService: PortfolioService;
+    /** Сервис для экспорта портфеля */
+    @Inject
+    private exportService: ExportService;
     /** Портфель */
     private portfolio: PortfolioParams = null;
     /** Текущий таб */
@@ -162,6 +187,22 @@ export class PortfolioManagementEditPage extends UI {
         } else {
             UI.emit(EventType.PORTFOLIO_CREATED);
         }
+    }
+
+    /** Отправляет запрос на скачивание файла со сделками в формате csv */
+    @ShowProgress
+    private async downloadFile(): Promise<void> {
+        await this.exportService.exportTrades(this.portfolio.id);
+    }
+
+    @ShowProgress
+    private async exportPortfolio(): Promise<void> {
+        await this.exportService.exportReport(this.portfolio.id, ExportType.COMPLEX);
+    }
+
+    /** Возвращает признак доступности для загрузки файла со сделками */
+    private get downloadNotAllowed(): boolean {
+        return ExportUtils.isDownloadNotAllowed(this.clientInfo);
     }
 
     private get isValid(): boolean {
