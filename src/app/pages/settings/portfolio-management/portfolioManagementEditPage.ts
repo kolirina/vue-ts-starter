@@ -48,7 +48,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-card-title>
             </v-card>
             <v-layout v-if="portfolio" class="profile" column>
-                <div class="card__header">
+                <div v-if="!isNew" class="card__header">
                     <div class="card__header-title">
                         <div :class="['provider__image', selectedBroker?.code.toLowerCase()]"></div>
                         <div class="margRAuto">
@@ -72,8 +72,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-list>
                     </v-menu>
                 </div>
-
-                <v-tabs v-model="currentTab" class="portfolio-management-tabs">
+                <v-tabs v-if="!isNew" v-model="currentTab" class="portfolio-management-tabs">
                     <v-tab :class="{'active': 0 === currentTab}">Общие настройки</v-tab>
                     <v-tab :class="{'active': 1 === currentTab}">Публичный доступ</v-tab>
                     <v-tab :class="{'active': 2 === currentTab}">Интеграция</v-tab>
@@ -87,6 +86,10 @@ const MainStore = namespace(StoreType.MAIN);
                         <portfolio-management-integration-tab :portfolio="portfolio"></portfolio-management-integration-tab>
                     </v-tab-item>
                 </v-tabs>
+                <template v-if="isNew">
+                    <div class="portfolio-management-tab__title margB8">Общая информация</div>
+                    <portfolio-management-general-tab :portfolio="portfolio"></portfolio-management-general-tab>
+                </template>
                 <v-card-actions v-if="currentTab !== 2">
                     <v-btn :loading="processState" :disabled="!isValid || processState" color="primary" light @click.stop.native="savePortfolio">
                         {{ isNew ? "Добавить" : "Сохранить"}}
@@ -149,6 +152,7 @@ export class PortfolioManagementEditPage extends UI {
                 accountType: PortfolioAccountType.BROKERAGE
             };
         } else {
+            this.isNew = false;
             this.portfolio = await this.portfolioService.getPortfolioById(Number(id));
         }
         if (!this.portfolio.iisType) {
@@ -164,8 +168,13 @@ export class PortfolioManagementEditPage extends UI {
             return;
         }
         this.processState = true;
+        let newPortfolio: PortfolioParams = null;
         try {
-            await this.portfolioService.createOrUpdatePortfolio(this.portfolio);
+            if (this.isNew) {
+                newPortfolio = await this.portfolioService.createPortfolio(this.portfolio);
+            } else {
+                await this.portfolioService.updatePortfolio(this.portfolio);
+            }
         } catch (error) {
             // если 403 ошибки при добавлении портфеля, диалог уже отобразили, больше ошибок показывать не нужно
             if (error.code !== "403") {
@@ -186,6 +195,9 @@ export class PortfolioManagementEditPage extends UI {
             }
         } else {
             UI.emit(EventType.PORTFOLIO_CREATED);
+            if (newPortfolio) {
+                await this.$router.push({name: "portfolio-management-edit", params: {id: newPortfolio.id.toString()}});
+            }
         }
     }
 

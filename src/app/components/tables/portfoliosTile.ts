@@ -25,20 +25,15 @@ import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {ClientInfo} from "../../services/clientService";
 import {ExportService, ExportType} from "../../services/exportService";
 import {OverviewService} from "../../services/overviewService";
-import {PortfolioAccountType, PortfolioParams, PortfoliosDialogType, PortfolioService} from "../../services/portfolioService";
+import {PortfolioAccountType, PortfolioParams, PortfolioService} from "../../services/portfolioService";
 import {EventType} from "../../types/eventType";
 import {Tariff} from "../../types/tariff";
-import {Portfolio, TableHeader} from "../../types/types";
-import {CommonUtils} from "../../utils/commonUtils";
+import {Portfolio} from "../../types/types";
 import {ExportUtils} from "../../utils/exportUtils";
-import {SortUtils} from "../../utils/sortUtils";
-import {ActionType} from "../../vuex/actionType";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 import {ConfirmDialog} from "../dialogs/confirmDialog";
-import {EmbeddedBlocksDialog} from "../dialogs/embeddedBlocksDialog";
 import {PortfolioEditDialog} from "../dialogs/portfolioEditDialog";
-import {SharePortfolioDialog} from "../dialogs/sharePortfolioDialog";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -186,46 +181,11 @@ export class PortfoliosTile extends UI {
         }
     }
 
-    private publicLink(id: string): string {
-        return `${window.location.protocol}//${window.location.host}/public-portfolio/${id}/`;
-    }
-
-    private informerV(id: string): string {
-        return `${window.location.protocol}//${window.location.host}/informer/v/${id}.png`;
-    }
-
-    private informerH(id: string): string {
-        return `${window.location.protocol}//${window.location.host}/informer/h/${id}.png`;
-    }
-
-    private async openEmbeddedDialog(id: string): Promise<void> {
-        await new EmbeddedBlocksDialog().show(id);
-    }
-
-    private async openSharePortfolioDialog(portfolio: PortfolioParams, type: PortfoliosDialogType): Promise<void> {
-        await new SharePortfolioDialog().show({portfolio: portfolio, clientInfo: this.clientInfo, type: type});
-    }
-
     @ShowProgress
     private async onProfessionalModeChange(portfolio: PortfolioParams): Promise<void> {
         const result = await this.portfolioService.updatePortfolio(portfolio);
         this.$snotify.info(`Профессиональный режим для портфеля ${result.professionalMode ? "включен" : "выключен"}`);
         UI.emit(EventType.PORTFOLIO_UPDATED, result);
-    }
-
-    private customSort(items: PortfolioParams[], index: string, isDesc: boolean): PortfolioParams[] {
-        items.sort((a: PortfolioParams, b: PortfolioParams): number => {
-            const first = (a as any)[index];
-            const second = (b as any)[index];
-            if (!isDesc) {
-                const result = SortUtils.compareValues(first, second) * -1;
-                return result === 0 ? Number(b.id) - Number(a.id) : result;
-            } else {
-                const result = SortUtils.compareValues(first, second);
-                return result === 0 ? Number(a.id) - Number(b.id) : result;
-            }
-        });
-        return items;
     }
 
     /**
@@ -239,14 +199,6 @@ export class PortfoliosTile extends UI {
     @ShowProgress
     private async exportPortfolio(id: number): Promise<void> {
         await this.exportService.exportReport(id, ExportType.COMPLEX);
-    }
-
-    private copyPortfolioLink(): void {
-        this.$snotify.info("Ссылка скопирована");
-    }
-
-    private showNoteLink(note: string): boolean {
-        return !CommonUtils.isBlank(note);
     }
 
     private goToEdit(id: string): void {

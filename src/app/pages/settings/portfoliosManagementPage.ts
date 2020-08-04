@@ -37,10 +37,10 @@ const MainStore = namespace(StoreType.MAIN);
                     <v-card flat class="header-first-card">
                         <v-card-title class="header-first-card__wrapper-title">
                             <div class="section-title header-first-card__title-text margR12">Управление портфелями</div>
-                            <v-btn-toggle v-model="displayMode" class="btn-group">
+                            <!--v-btn-toggle v-model="displayMode" class="btn-group">
                                 <v-btn :value="DisplayMode.TILE" class="btn_icon-tile"></v-btn>
                                 <v-btn :value="DisplayMode.LIST" class="btn_icon-list"></v-btn>
-                            </v-btn-toggle>
+                            </v-btn-toggle-->
                             <v-spacer></v-spacer>
                             <v-btn v-if="displayMode === DisplayMode.LIST" @click.stop="openDialog" class="primary">
                                 Добавить портфель
