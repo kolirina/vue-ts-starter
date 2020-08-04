@@ -40,7 +40,9 @@ import {PortfolioParams, PortfolioService} from "../../../services/portfolioServ
             </div>
             <div class="portfolio-management-tab__flex-row">
                 <v-text-field :value="embeddedCode" hide-details readonly></v-text-field>
-                <v-btn class="btn" v-clipboard="() => embeddedCode" @click="copyLink">Копировать ссылку</v-btn>
+                <div class="portfolio-management-tab__wrap-row">
+                    <v-btn class="btn" v-clipboard="() => embeddedCode" @click="copyLink">Копировать ссылку</v-btn>
+                </div>
             </div>
         </div>
     `,

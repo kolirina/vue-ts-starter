@@ -31,7 +31,7 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-container v-if="clientInfo && clientInfo.user" fluid>
+        <v-container v-if="clientInfo && clientInfo.user" fluid class="page-wrapper">
             <v-layout row wrap>
                 <v-flex>
                     <v-card flat class="header-first-card">

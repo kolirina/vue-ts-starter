@@ -35,35 +35,29 @@ const MainStore = namespace(StoreType.MAIN);
                 <v-switch v-model="access" @change="onAccessChange" class="margB20">
                     <template #label>
                         <span>Публичный доступ {{access ? "открыт" : "закрыт"}}</span>
-                        <v-tooltip content-class="custom-tooltip-wrap" bottom>
-                            <sup class="custom-tooltip" slot="activator">
-                                <v-icon>fas fa-info-circle</v-icon>
-                            </sup>
-                            <span>
-                                Текст подсказки
-                            </span>
-                        </v-tooltip>
                     </template>
                 </v-switch>
             </div>
             <div v-if="link" class="portfolio-management-tab__flex-row">
-                <v-text-field :value="link" placeholder="url для доступа к портфелю" readonly hide-details class="mw378"></v-text-field>
-                <v-btn class="btn" v-clipboard="() => link" slot="activator" @click="copyLink">
-                    Копировать ссылку
-                </v-btn>
-                <v-menu content-class="qr-code-section"
-                        transition="slide-y-transition"
-                        nudge-bottom="36" left class="settings-menu"
-                        :close-on-content-click="false">
-                    <v-btn class="btn qr-code-btn" slot="activator">
-                        QR code
+                <v-text-field :value="link" placeholder="url для доступа к портфелю" readonly hide-details class="public-link"></v-text-field>
+                <div class="portfolio-management-tab__wrap-row">
+                    <v-btn class="btn" v-clipboard="() => link" slot="activator" @click="copyLink">
+                        Копировать ссылку
                     </v-btn>
-                    <v-list dense>
-                        <v-flex>
-                            <qriously :value="link" :size="120"></qriously>
-                        </v-flex>
-                    </v-list>
-                </v-menu>
+                    <v-menu content-class="qr-code-section"
+                            transition="slide-y-transition"
+                            nudge-bottom="36" left class="settings-menu"
+                            :close-on-content-click="false">
+                        <v-btn class="btn qr-code-btn" slot="activator">
+                            QR code
+                        </v-btn>
+                        <v-list dense>
+                            <v-flex>
+                                <qriously :value="link" :size="120"></qriously>
+                            </v-flex>
+                        </v-list>
+                    </v-menu>
+                </div>
             </div>
             <div class="portfolio-management-tab__wrapper">
                 <v-layout column class="default-access-content">
