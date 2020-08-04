@@ -46,6 +46,8 @@ export class ThemeUtils {
         border-color: transparent !important;
      }
 
+     .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light.portfolio-item-add {border-color: #3b6ec9 !important}
+
      .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light,
      .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).v-btn--disabled {
         background-color: transparent !important;
@@ -113,7 +115,7 @@ export class ThemeUtils {
     .inplace-custom-input input, .portfolio-rows-filter__settings .theme--light.v-label, .portfolio-rows-filter__settings .v-label,
     .v-radio .v-label,
     .chart-title, .info-share-page .info-about-stock__content-title,
-    .portfolio-default-text label,
+    .portfolio-default-text label, .portfolio-management-tabs .v-tabs__bar .v-tabs__div.active .v-tabs__item,
     .theme--light.v-label:not(.v-label--active) {color: #fff !important}
 
     .data-table tbody .selectable td,
@@ -207,6 +209,7 @@ export class ThemeUtils {
 
     .import-wrapper-content .setings-menu .v-btn,
     .portfolio-rows-filter__button__icon {background-image: url("./img/fileimport/settings-light.svg")}
+    .qr-code-btn {background-image: url("./img/portfolio/qrbtn-light.svg")}
 
     .theme--light.v-table tbody tr.selectable:hover:not(.v-datatable__expand-row) {background: #3b6ec9 !important;}
 

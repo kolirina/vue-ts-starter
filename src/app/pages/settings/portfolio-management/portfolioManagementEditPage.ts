@@ -31,6 +31,7 @@ import {EventType} from "../../../types/eventType";
 import {CommonUtils} from "../../../utils/commonUtils";
 import {DateFormat, DateUtils} from "../../../utils/dateUtils";
 import {ExportUtils} from "../../../utils/exportUtils";
+import {MutationType} from "../../../vuex/mutationType";
 import {StoreType} from "../../../vuex/storeType";
 import {PortfolioManagementGeneralTab} from "./portfolioManagementGeneralTab";
 import {PortfolioManagementIntegrationTab} from "./portfolioManagementIntegrationTab";
@@ -108,6 +109,8 @@ export class PortfolioManagementEditPage extends UI {
 
     @MainStore.Getter
     private clientInfo: ClientInfo;
+    @MainStore.Action(MutationType.RELOAD_PORTFOLIOS)
+    private reloadPortfolios: () => Promise<void>;
     /** Сервис по работе с портфелями */
     @Inject
     private portfolioService: PortfolioService;
@@ -133,6 +136,7 @@ export class PortfolioManagementEditPage extends UI {
      * @inheritDoc
      */
     async mounted(): Promise<void> {
+        UI.on(EventType.PORTFOLIO_CREATED, async () => this.reloadPortfolios());
         await this.loadPortfolio(this.$route.params.id);
     }
 
