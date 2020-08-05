@@ -146,6 +146,7 @@ export class AppFrame extends UI {
     private loading = false;
 
     private mainSection: NavBarItem[] = [
+        {title: "Публичные портфели", action: "public-portfolio"},
         {title: "Портфель", action: "portfolio"},
         {title: "Аналитика", action: "adviser"},
         {title: "Сделки", action: "trades"},

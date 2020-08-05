@@ -973,6 +973,10 @@ export class ChartUtils {
      * @param fieldName название поля
      */
     static convertToDots(data: LineChartItem[], fieldName: string): any[] {
+        return ChartUtils.convertToDotsWithStartPoint(data, fieldName, true);
+    }
+
+    static convertToDotsWithStartPoint(data: LineChartItem[], fieldName: string, addStartZeroPoint: boolean = true): any[] {
         const result: any[] = [];
         data
             .filter(value => !!(value as any)[fieldName])
@@ -980,7 +984,7 @@ export class ChartUtils {
             const parsedDate = DateUtils.parseDate(value.date);
             const date = Date.UTC(parsedDate.year(), parsedDate.month(), parsedDate.date());
             const amount = new BigMoney((value as any)[fieldName]).amount.toDP(2, Decimal.ROUND_HALF_UP).toNumber();
-            if (result.length === 0) {
+            if (result.length === 0 && addStartZeroPoint) {
                 result.push([date - 1, 0]);
             }
             result.push([date, amount]);

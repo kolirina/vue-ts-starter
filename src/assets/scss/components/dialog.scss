@@ -81,6 +81,21 @@
   }
 }
 
+.change-tariff-dialog {
+  .dialog-header-text {
+    flex-direction: column;
+    &:before {
+      content: "";
+      width: 72px;
+      height: 72px;
+      background: url("../img/portfolio/congratulations.svg") no-repeat center;
+      margin-bottom: 12px;
+    }
+  }
+
+  .import-default-text {text-align: center}
+}
+
 /* Диалог с фиксированными хэдером и футером, контент скроллится. Только для мобильных */
 @media only screen and (max-width: $sm-breakpoint) {
 

@@ -60,6 +60,18 @@
         cursor: default;
       }
     }
+
+    &__settings {
+      display: none;
+      position: absolute;
+      right: 16px;
+      width: 16px;
+      height: 16px;
+      background: url('../img/sidebar/settings-in-list.svg') no-repeat center;
+      transition: transform 0.1s linear;
+
+      &:hover {transform: scale(1.1)}
+    }
   }
 
   &-list-tile {
@@ -73,6 +85,13 @@
       margin-right: 16px;
       flex: none;
     }
+
+    &__info {
+      margin-right: auto;
+      padding-right: 48px;
+    }
+
+    &:hover .portfolios-list__settings {display: block}
   }
 
   &-list-icons {

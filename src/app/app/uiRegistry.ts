@@ -140,6 +140,7 @@ export class UIRegistry {
         UI.filter("currencySymbolByCurrency", Filters.currencySymbolByCurrency);
         UI.filter("currencySymbol", Filters.currencySymbol);
         UI.filter("bytes", Filters.formatBytes);
+        UI.filter("friendlyNumber", Filters.friendlyNumber);
 
         // директивы
         UI.directive(StateDirective.NAME, new StateDirective());

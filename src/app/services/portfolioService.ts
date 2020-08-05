@@ -85,6 +85,22 @@ export class PortfolioService {
     }
 
     /**
+     * Возвращает портфель пользователя по id
+     * @param id идентификатор портфеля
+     * todo: нужно возвращать название брокера на английском для икноки
+     */
+    async getPortfolioById(id: number): Promise<PortfolioParams> {
+        const portfolios: PortfolioParamsResponse[] = await this.http.get<PortfolioParamsResponse[]>(`/${this.ENDPOINT_BASE}`);
+        const portfolio = portfolios.find(item => item.id === id);
+        return {
+            ...portfolio,
+            accountType: portfolio.accountType ? PortfolioAccountType.valueByName(portfolio.accountType) : null,
+            iisType: portfolio.iisType ? IisType.valueByName(portfolio.iisType) : null,
+            shareNotes: portfolio.shareNotes ? portfolio.shareNotes : {}
+        } as PortfolioParams;
+    }
+
+    /**
      * Отправляет запрос на создание нового портфеля или обновление
      * @param portfolio портфель
      */
@@ -99,7 +115,7 @@ export class PortfolioService {
     async createPortfolio(portfolio: PortfolioParams): Promise<PortfolioParams> {
         const request: CreatePortfolioRequest = {
             name: portfolio.name,
-            access: portfolio.access ? 1 : 0,
+            access: portfolio.access,
             openDate: portfolio.openDate,
             accountType: portfolio.accountType.value,
             iisType: portfolio.iisType ? portfolio.iisType.value : null,
@@ -140,7 +156,8 @@ export class PortfolioService {
             alternativeViewCurrency: portfolio.alternativeViewCurrency,
             fixFee: portfolio.fixFee,
             note: portfolio.note,
-            combined: portfolio.combined
+            combined: portfolio.combined,
+            description: portfolio.description
         };
 
         const item = await this.http.put<PortfolioParamsResponse>(`/${this.ENDPOINT_BASE}`, request);
@@ -174,7 +191,7 @@ export class PortfolioService {
      * Отправляет запрос на создание копии портфеля
      * @param portfolioId идентификатор портфеля
      */
-    async createPortfolioCopy(portfolioId: string): Promise<PortfolioParams> {
+    async createPortfolioCopy(portfolioId: number): Promise<PortfolioParams> {
         const response: PortfolioParamsResponse = await this.http.get<PortfolioParamsResponse>(`/${this.ENDPOINT_BASE}/copy/${portfolioId}`);
         return {
             ...response,
@@ -198,6 +215,15 @@ export class PortfolioService {
     async totalDepositInCurrentYear(portfolioId: number): Promise<BigMoney> {
         const total = await this.http.get<string>(`/${this.ENDPOINT_BASE}/total-deposit-current-year/${portfolioId}`);
         return total ? new BigMoney(total) : null;
+    }
+
+    /**
+     * Отправляет запрос для сохранения голоса за портфель
+     * @param portfolioId идентификатор портфеля
+     * @param vote голос -1/1
+     */
+    async votePortfolio(portfolioId: number, vote: number): Promise<void> {
+        await this.http.post(`/portfolio-info/vote/${portfolioId}/${vote}`);
     }
 }
 
@@ -243,8 +269,8 @@ export interface BasePortfolioParams {
     id?: number;
     /** Название портфеля */
     name: string;
-    /** Публичный доступ к портфелю */
-    access: boolean;
+    /** Доступ портфеля.  0 - приватный, 1 - публичный только по ссылке, 2 - полностью публичный" */
+    access: number;
     /** Доступ к разделу Дивиденды в публичном портфеле */
     dividendsAccess?: boolean;
     /** Доступ к разделу Сделки в публичном портфеле */
@@ -273,14 +299,16 @@ export interface BasePortfolioParams {
     combined?: boolean;
     /** Заметки по бумагам в портфеле */
     shareNotes?: { [key: string]: string };
+    /** Цель портфеля */
+    description?: string;
 }
 
 /** Запрос на создание портфеля */
 export interface CreatePortfolioRequest {
     /** Название портфеля */
     name: string;
-    /** Публичный доступ к портфелю */
-    access: 0 | 1;
+    /** Доступ портфеля.  0 - приватный, 1 - публичный только по ссылке, 2 - полностью публичный" */
+    access: number;
     /** Дата открытия */
     openDate: string;
     /** Идентификатор брокера */
@@ -307,8 +335,8 @@ export interface UpdatePortfolioRequest {
     id: number;
     /** Название портфеля */
     name: string;
-    /** Публичный доступ к портфелю */
-    access: boolean;
+    /** Доступ портфеля.  0 - приватный, 1 - публичный только по ссылке, 2 - полностью публичный" */
+    access: number;
     /** Доступ к разделу Дивиденды в публичном портфеле */
     dividendsAccess?: boolean;
     /** Доступ к разделу Сделки в публичном портфеле */
@@ -337,6 +365,8 @@ export interface UpdatePortfolioRequest {
     accountType: string;
     /** Тип ИИС */
     iisType: string;
+    /** Цель публичного портфеля */
+    description: string;
 }
 
 /** Параметры портфеля пользователя */

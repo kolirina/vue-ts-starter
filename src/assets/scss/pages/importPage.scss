@@ -277,7 +277,9 @@
 .providers,
 .portfolio-content,
 .portfolios-list-tile,
-.providers-list {
+.providers-list,
+.card__header,
+.selected-broker {
   .alfadirect {
     background: url("../img/fileimport/alfadirect.svg") center no-repeat;
   }
@@ -545,5 +547,6 @@
   width: 52px;
   height: 52px;
   margin-right: 12px;
+  background: url("../img/sidebar/case.svg") no-repeat center;
   background-color: #fff !important;
 }

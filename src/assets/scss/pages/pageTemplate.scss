@@ -17,6 +17,14 @@
   }
 }
 
+.template-wrapper {
+  padding: 24px 32px;
+
+  @media only screen and (max-width: $sm-breakpoint) {
+    padding: 16px;
+  }
+}
+
 .card__header {
   display: flex;
   align-items: center;
@@ -54,8 +62,15 @@
     }
   }
 
+  &-menu {
+    .v-list__tile__title {
+      font-size: 14px;
+      line-height: 18px;
+    }
+  }
+
   @media only screen and (max-width: $sm-breakpoint) {
-    display: block;
+    flex-wrap: wrap;
 
     .v-btn {margin-top: 16px !important;}
   }

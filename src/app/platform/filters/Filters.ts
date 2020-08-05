@@ -149,6 +149,22 @@ export class Filters {
         return arguments[n % 10 === 1 && n % 100 !== 11 ? 1 : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 2 : 3];
     }
 
+    /**
+     * Форматирует число с постфиксом К, М для тысяч и миллионов
+     * @param num
+     */
+    static friendlyNumber(num: number): string {
+        let formattedNumber;
+        if (num >= 1000000) {
+            formattedNumber = (num / 1000000).toFixed(1).replace(/\.0$/, "") + "M";
+        } else if (num >= 1000) {
+            formattedNumber = (num / 1000).toFixed(1).replace(/\.0$/, "") + "K";
+        } else {
+            formattedNumber = num.toString();
+        }
+        return formattedNumber;
+    }
+
     private static replaceCommaToDot(value: string): string {
         try {
             return value.replace(",", ".");
