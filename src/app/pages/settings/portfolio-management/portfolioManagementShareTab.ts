@@ -67,17 +67,17 @@ const MainStore = namespace(StoreType.MAIN);
                                     label="Доступ только по ссылке"></v-checkbox>
                     </v-flex>
                     <v-flex xs12 class="mb-2">
-                        <v-checkbox v-model="portfolio.dividendsAccess"
+                        <v-checkbox v-model="portfolio.dividendsAccess" :true-value="false" :false-value="true"
                                     hide-details class="shrink mr-2 mt-0 portfolio-default-text"
                                     label="Скрыть дивиденды"></v-checkbox>
                     </v-flex>
                     <v-flex xs12 class="mb-2">
-                        <v-checkbox v-model="portfolio.tradesAccess"
+                        <v-checkbox v-model="portfolio.tradesAccess" :true-value="false" :false-value="true"
                                     hide-details class="shrink mr-2 mt-0 portfolio-default-text"
                                     label="Скрыть сделки"></v-checkbox>
                     </v-flex>
                     <v-flex xs12 class="mb-2">
-                        <v-checkbox v-model="portfolio.lineDataAccess"
+                        <v-checkbox v-model="portfolio.lineDataAccess" :true-value="false" :false-value="true"
                                     hide-details class="shrink mr-2 mt-0 portfolio-default-text"
                                     label="Скрыть график"></v-checkbox>
                     </v-flex>
@@ -115,9 +115,6 @@ const MainStore = namespace(StoreType.MAIN);
 })
 export class PortfolioManagementShareTab extends UI {
 
-    $refs: {
-        dateMenu: any
-    };
     @MainStore.Getter
     private clientInfo: ClientInfo;
 
@@ -170,10 +167,8 @@ export class PortfolioManagementShareTab extends UI {
 
     /** Устанавливает доступ к портфелю: 0 - приватный, 1 - публичный только по ссылке, 2 - полностью публичный */
     private onAccessChange(): void {
-        if (this.access && this.linkAccess) {
-            this.portfolio.access = 1;
-        } else if (this.access && !this.linkAccess) {
-            this.portfolio.access = 2;
+        if (this.access) {
+            this.portfolio.access = this.linkAccess ? 1 : 2;
         } else {
             this.portfolio.access = 0;
         }

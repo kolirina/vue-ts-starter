@@ -22,6 +22,7 @@ import {namespace} from "vuex-class/lib/bindings";
 import {Component, UI} from "../../../app/ui";
 import {DisableConcurrentExecution} from "../../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../../platform/decorators/showProgress";
+import {Enum, EnumType, IStaticEnum} from "../../../platform/enum";
 import {ClientInfo} from "../../../services/clientService";
 import {ExportService, ExportType} from "../../../services/exportService";
 import {DealsImportProvider} from "../../../services/importService";
@@ -29,7 +30,7 @@ import {IisType, PortfolioAccountType, PortfolioParams, PortfolioService} from "
 import {Currency} from "../../../types/currency";
 import {EventType} from "../../../types/eventType";
 import {CommonUtils} from "../../../utils/commonUtils";
-import {DateFormat, DateUtils} from "../../../utils/dateUtils";
+import {DateUtils} from "../../../utils/dateUtils";
 import {ExportUtils} from "../../../utils/exportUtils";
 import {MutationType} from "../../../vuex/mutationType";
 import {StoreType} from "../../../vuex/storeType";
@@ -45,7 +46,7 @@ const MainStore = namespace(StoreType.MAIN);
         <v-container fluid class="page-wrapper">
             <v-card flat class="header-first-card">
                 <v-card-title class="header-first-card__wrapper-title">
-                    <div class="section-title header-first-card__title-text">{{ isNew ? "Добавление портфеля" : "Управление портфелями" }}</div>
+                    <div class="section-title header-first-card__title-text">{{ isNew ? "Добавление портфеля" : "Управление портфелем" }}</div>
                 </v-card-title>
             </v-card>
             <v-layout v-if="portfolio" class="profile" column>
@@ -60,7 +61,8 @@ const MainStore = namespace(StoreType.MAIN);
                     <v-menu transition="slide-y-transition" bottom left nudge-bottom="36">
                         <v-btn slot="activator">Экспорт</v-btn>
                         <v-list class="card__header-menu">
-                            <v-list-tile @click="downloadFile" :disabled="downloadNotAllowed">
+                            <v-list-tile @click="downloadFile" :disabled="downloadNotAllowed"
+                                         :title="downloadNotAllowed ? 'Экспорт на вашем тарифе недоступен' : 'Экспорт всех сделок в csv формате'">
                                 <v-list-tile-title>
                                     Экспорт в csv
                                 </v-list-tile-title>
@@ -73,10 +75,10 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-list>
                     </v-menu>
                 </div>
-                <v-tabs v-if="!isNew" v-model="currentTab" class="portfolio-management-tabs">
-                    <v-tab :class="{'active': 0 === currentTab}">Общие настройки</v-tab>
-                    <v-tab :class="{'active': 1 === currentTab}">Публичный доступ</v-tab>
-                    <v-tab :class="{'active': 2 === currentTab}">Интеграция</v-tab>
+                <v-tabs v-if="!isNew" class="portfolio-management-tabs">
+                    <v-tab v-for="tab in portfolioTabs" :key="tab.code" @change="currentTab = tab" :class="{'active': tab === currentTab}" :ripple="false">
+                        {{ tab.description }}
+                    </v-tab>
                     <v-tab-item>
                         <portfolio-management-general-tab :portfolio="portfolio"></portfolio-management-general-tab>
                     </v-tab-item>
@@ -89,9 +91,9 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-tabs>
                 <template v-if="isNew">
                     <div class="portfolio-management-tab__title margB8">Общая информация</div>
-                    <portfolio-management-general-tab :portfolio="portfolio"></portfolio-management-general-tab>
+                    <portfolio-management-general-tab :portfolio="portfolio" @savePortfolio="savePortfolio"></portfolio-management-general-tab>
                 </template>
-                <v-card-actions v-if="currentTab !== 2">
+                <v-card-actions v-if="currentTab !== PortfolioTab.INTEGRATION">
                     <v-btn :loading="processState" :disabled="!isValid || processState" color="primary" light @click.stop.native="savePortfolio">
                         {{ isNew ? "Добавить" : "Сохранить"}}
                         <span slot="loader" class="custom-loader">
@@ -111,6 +113,10 @@ export class PortfolioManagementEditPage extends UI {
     private clientInfo: ClientInfo;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIOS)
     private reloadPortfolios: () => Promise<void>;
+    @MainStore.Mutation(MutationType.UPDATE_PORTFOLIO)
+    private updatePortfolio: (portfolio: PortfolioParams) => Promise<void>;
+    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
+    private reloadPortfolio: (id: number) => Promise<void>;
     /** Сервис по работе с портфелями */
     @Inject
     private portfolioService: PortfolioService;
@@ -120,16 +126,15 @@ export class PortfolioManagementEditPage extends UI {
     /** Портфель */
     private portfolio: PortfolioParams = null;
     /** Текущий таб */
-    private currentTab: any = null;
+    private currentTab: PortfolioTab = PortfolioTab.COMMON;
+    /** Типы табов */
+    private PortfolioTab = PortfolioTab;
+    /** Список табок */
+    private portfolioTabs = PortfolioTab.values();
     /** Признак добавления нового портфеля */
     private isNew = false;
-
+    /** Статус прогресса */
     private processState = false;
-
-    async beforeRouteUpdate(to: Route, from: Route, next: (to?: RawLocation | false | ((vm: Vue) => any) | void) => void): Promise<void> {
-        await this.loadPortfolio(to.params.id);
-        next();
-    }
 
     /**
      * Инициализация портфеля
@@ -137,7 +142,23 @@ export class PortfolioManagementEditPage extends UI {
      */
     async mounted(): Promise<void> {
         UI.on(EventType.PORTFOLIO_CREATED, async () => this.reloadPortfolios());
+        UI.on(EventType.PORTFOLIO_CREATED, async () => this.reloadPortfolios());
+        UI.on(EventType.PORTFOLIO_UPDATED, async (portfolio: PortfolioParams) => this.updatePortfolio(portfolio));
+        UI.on(EventType.PORTFOLIO_RELOAD, async (portfolio: PortfolioParams) => await this.reloadPortfolio(portfolio.id));
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
         await this.loadPortfolio(this.$route.params.id);
+    }
+
+    beforeDestroy(): void {
+        UI.off(EventType.PORTFOLIO_CREATED);
+        UI.off(EventType.PORTFOLIO_UPDATED);
+        UI.off(EventType.PORTFOLIO_RELOAD);
+        UI.off(EventType.TRADE_CREATED);
+    }
+
+    async beforeRouteUpdate(to: Route, from: Route, next: (to?: RawLocation | false | ((vm: Vue) => any) | void) => void): Promise<void> {
+        await this.loadPortfolio(to.params.id);
+        next();
     }
 
     /**
@@ -151,9 +172,13 @@ export class PortfolioManagementEditPage extends UI {
                 name: "",
                 brokerId: null,
                 access: 0,
+                fixFee: "",
+                note: "",
+                professionalMode: false,
                 viewCurrency: Currency.RUB,
-                openDate: DateUtils.formatDate(dayjs(), DateFormat.DATE2),
-                accountType: PortfolioAccountType.BROKERAGE
+                openDate: DateUtils.currentDate(),
+                accountType: PortfolioAccountType.BROKERAGE,
+                iisType: null,
             };
         } else {
             this.isNew = false;
@@ -177,7 +202,7 @@ export class PortfolioManagementEditPage extends UI {
             if (this.isNew) {
                 newPortfolio = await this.portfolioService.createPortfolio(this.portfolio);
             } else {
-                await this.portfolioService.updatePortfolio(this.portfolio);
+                this.portfolio = await this.portfolioService.updatePortfolio(this.portfolio);
             }
         } catch (error) {
             // если 403 ошибки при добавлении портфеля, диалог уже отобразили, больше ошибок показывать не нужно
@@ -188,19 +213,17 @@ export class PortfolioManagementEditPage extends UI {
         } finally {
             this.processState = false;
         }
-        this.$snotify.info(`Портфель успешно ${this.portfolio.id ? "изменен" : "создан"}`);
+        this.$snotify.info(`Портфель успешно ${this.isNew ? "создан" : "изменен"}`);
         this.processState = false;
-        if (this.portfolio.id) {
+        if (this.isNew) {
+            UI.emit(EventType.PORTFOLIO_CREATED);
+            await this.$router.push({name: "portfolio-management-edit", params: {id: String(newPortfolio.id)}});
+        } else {
             // если валюта была изменена, необходимо обновить данные по портфелю, иначе просто обновляем сам портфель
             if (this.portfolio.viewCurrency !== this.portfolio.viewCurrency) {
                 UI.emit(EventType.PORTFOLIO_RELOAD, this.portfolio);
             } else {
                 UI.emit(EventType.PORTFOLIO_UPDATED, this.portfolio);
-            }
-        } else {
-            UI.emit(EventType.PORTFOLIO_CREATED);
-            if (newPortfolio) {
-                await this.$router.push({name: "portfolio-management-edit", params: {id: newPortfolio.id.toString()}});
             }
         }
     }
@@ -234,5 +257,17 @@ export class PortfolioManagementEditPage extends UI {
 
     private get selectedBroker(): DealsImportProvider {
         return this.portfolio.brokerId ? DealsImportProvider.valueById(this.portfolio.brokerId) : null;
+    }
+}
+
+@Enum("code")
+export class PortfolioTab extends (EnumType as IStaticEnum<PortfolioTab>) {
+
+    static readonly COMMON = new PortfolioTab("common", "Общие настройки");
+    static readonly ACCESS = new PortfolioTab("access", "Публичный доступ");
+    static readonly INTEGRATION = new PortfolioTab("integration", "Интеграция");
+
+    private constructor(public code: string, public description: string) {
+        super();
     }
 }

@@ -15,10 +15,8 @@
  */
 
 import {Inject} from "typescript-ioc";
-import Component from "vue-class-component";
-import {Prop} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
-import {UI} from "../../app/ui";
+import {Component, Prop, UI} from "../../app/ui";
 import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
@@ -32,8 +30,8 @@ import {Portfolio} from "../../types/types";
 import {ExportUtils} from "../../utils/exportUtils";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
+import {ChangeTariffDialog} from "../dialogs/changeTariffDialog";
 import {ConfirmDialog} from "../dialogs/confirmDialog";
-import {PortfolioEditDialog} from "../dialogs/portfolioEditDialog";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -42,27 +40,27 @@ const MainStore = namespace(StoreType.MAIN);
     template: `
         <v-card class="import-wrapper">
             <div class="portfolio-list">
-                <div v-for="portfolio in portfolios"  @click="goToEdit(portfolio.id.toString())" class="portfolio-item">
+                <div v-for="portfolio in portfolios" :key="portfolio.id" @click="goToEdit(portfolio.id)" class="portfolio-item">
                     <div class="portfolio-item__header">
                         <div class="portfolio-item__header-description">{{ portfolio.name }}</div>
-                        <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" bottom>
+                        <v-tooltip v-if="portfolio.note" content-class="custom-tooltip-wrap modal-tooltip" bottom>
                             <template v-slot:activator="{ on }">
                                 <div v-on="on" class="portfolio-item__make-deposit"></div>
                             </template>
-                            <span>Внести дивиденды за 2020 год</span>
+                            <span>{{ portfolio.note }}</span>
                         </v-tooltip>
-                        <div @click.stop data-v-step="1">
+                        <div @click.stop>
                             <v-menu transition="slide-y-transition" bottom left min-width="173" nudge-bottom="30">
                                 <v-btn slot="activator" flat icon dark>
                                     <span class="menuDots menuDots_dark"></span>
                                 </v-btn>
                                 <v-list dense>
-                                    <v-list-tile @click="openDialogForEdit(portfolio)">
+                                    <v-list-tile @click="goToEdit(portfolio.id)">
                                         <v-list-tile-title>
                                             Редактировать
                                         </v-list-tile-title>
                                     </v-list-tile>
-                                    <v-list-tile @click="clonePortfolio(portfolio)">
+                                    <v-list-tile @click="clonePortfolio(portfolio.id)">
                                         <v-list-tile-title>
                                             Создать копию
                                         </v-list-tile-title>
@@ -77,7 +75,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             Экспорт в xlsx
                                         </v-list-tile-title>
                                     </v-list-tile>
-                                    <v-divider v-if="!portfolio.parentTradeId"></v-divider>
+                                    <v-divider></v-divider>
                                     <v-list-tile @click="clearPortfolio(portfolio)">
                                         <v-list-tile-title class="delete-btn">
                                             Очистить
@@ -97,11 +95,14 @@ const MainStore = namespace(StoreType.MAIN);
                             <div><span>Фиксированная комиссия</span><span>{{ portfolio.fixFee }} %</span></div>
                             <div><span>Валюта</span><span>{{ portfolio.viewCurrency }}</span></div>
                             <div><span>Тип счета</span><span>{{ portfolio.accountType.description }}</span></div>
-                            <div v-if="portfolio.accountType === PortfolioAccountType.IIS"><span>Тип ИИС</span><span>{{portfolio.iisType.description}}</span></div>
+                            <div v-if="portfolio.accountType === PortfolioAccountType.IIS">
+                                <span>Тип ИИС</span>
+                                <span>{{portfolio.iisType.description}}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <v-btn @click.stop="goToEdit('new')" color="#f7f9fb" class="portfolio-item-add"></v-btn>
+                <v-btn @click.stop="createNewPortfolio" color="#f7f9fb" class="portfolio-item-add"></v-btn>
             </div>
         </v-card>
     `
@@ -126,15 +127,10 @@ export class PortfoliosTile extends UI {
     private exportService: ExportService;
     @Inject
     private overviewService: OverviewService;
-
-    private PortfolioAccountType = PortfolioAccountType;
-
     @Prop({default: [], required: true})
     private portfolios: PortfolioParams[];
-
-    private async openDialogForEdit(portfolioParams: PortfolioParams): Promise<void> {
-        await new PortfolioEditDialog().show({store: this.$store.state[StoreType.MAIN], router: this.$router, portfolioParams});
-    }
+    /** Типы счетов портфеля */
+    private PortfolioAccountType = PortfolioAccountType;
 
     private async deletePortfolio(portfolio: PortfolioParams): Promise<void> {
         const result = await new ConfirmDialog().show(`Вы собираетесь удалить портфель "${portfolio.name}".
@@ -162,7 +158,7 @@ export class PortfoliosTile extends UI {
 
     @ShowProgress
     @DisableConcurrentExecution
-    private async clonePortfolio(id: string): Promise<void> {
+    private async clonePortfolio(id: number): Promise<void> {
         await this.portfolioService.createPortfolioCopy(id);
         this.$snotify.info("Копия портфеля успешно создана");
         UI.emit(EventType.PORTFOLIO_CREATED);
@@ -181,13 +177,6 @@ export class PortfoliosTile extends UI {
         }
     }
 
-    @ShowProgress
-    private async onProfessionalModeChange(portfolio: PortfolioParams): Promise<void> {
-        const result = await this.portfolioService.updatePortfolio(portfolio);
-        this.$snotify.info(`Профессиональный режим для портфеля ${result.professionalMode ? "включен" : "выключен"}`);
-        UI.emit(EventType.PORTFOLIO_UPDATED, result);
-    }
-
     /**
      * Отправляет запрос на скачивание файла со сделками в формате csv
      */
@@ -201,8 +190,16 @@ export class PortfoliosTile extends UI {
         await this.exportService.exportReport(id, ExportType.COMPLEX);
     }
 
-    private goToEdit(id: string): void {
-        this.$router.push({name: "portfolio-management-edit", params: {id: id}});
+    private goToEdit(id: number): void {
+        this.$router.push({name: "portfolio-management-edit", params: {id: String(id)}});
+    }
+
+    private async createNewPortfolio(): Promise<void> {
+        if (this.clientInfo.user.tariff.maxPortfoliosCount < this.clientInfo.user.portfolios.length + 1) {
+            await new ChangeTariffDialog().show();
+            return;
+        }
+        await this.$router.push({name: "portfolio-management-edit", params: {id: "new"}});
     }
 
     /**

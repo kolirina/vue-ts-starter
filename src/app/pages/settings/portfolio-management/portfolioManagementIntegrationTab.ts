@@ -18,7 +18,6 @@ import {Inject} from "typescript-ioc";
 import {Component, Prop, UI} from "../../../app/ui";
 import {BrokerSwitcher} from "../../../components/brokerSwitcher";
 import {EmbeddedOption} from "../../../components/dialogs/embeddedBlocksDialog";
-
 import {PortfolioParams, PortfolioService} from "../../../services/portfolioService";
 
 @Component({

@@ -191,7 +191,7 @@ export class PortfolioService {
      * Отправляет запрос на создание копии портфеля
      * @param portfolioId идентификатор портфеля
      */
-    async createPortfolioCopy(portfolioId: string): Promise<PortfolioParams> {
+    async createPortfolioCopy(portfolioId: number): Promise<PortfolioParams> {
         const response: PortfolioParamsResponse = await this.http.get<PortfolioParamsResponse>(`/${this.ENDPOINT_BASE}/copy/${portfolioId}`);
         return {
             ...response,

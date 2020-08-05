@@ -54,7 +54,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     <div v-if="portfolio.professionalMode" class="professional-mode-icon" title="Профессиональный режим"></div>
                                 </v-layout>
                             </div>
-                            <div @click="goToPortfolioSettings(portfolio.id.toString())" class="portfolios-list__settings" title="Управление портфелем"></div>
+                            <div @click="goToPortfolioSettings(portfolio.id)" class="portfolios-list__settings" title="Управление портфелем"></div>
                         </v-list-tile>
                     </v-list>
                 </v-menu>
@@ -131,8 +131,8 @@ export class PortfolioSwitcher extends UI {
         await this.reloadPortfolio(this.selected.id);
     }
 
-    private goToPortfolioSettings(id: string): void {
-        this.$router.push({name: "portfolio-management-edit", params: {id: id}});
+    private goToPortfolioSettings(id: number): void {
+        this.$router.push({name: "portfolio-management-edit", params: {id: String(id)}});
     }
 
     private get broker(): DealsImportProvider {

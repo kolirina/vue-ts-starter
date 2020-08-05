@@ -18,14 +18,10 @@ import dayjs from "dayjs";
 import {Inject} from "typescript-ioc";
 import {Component, Prop, UI} from "../../../app/ui";
 import {BrokerSwitcher} from "../../../components/brokerSwitcher";
-import {AccessTypes} from "../../../components/dialogs/portfolioEditDialog";
-import {DisableConcurrentExecution} from "../../../platform/decorators/disableConcurrentExecution";
-import {ShowProgress} from "../../../platform/decorators/showProgress";
 import {DealsImportProvider} from "../../../services/importService";
 import {IisType, PortfolioAccountType, PortfolioParams, PortfolioService} from "../../../services/portfolioService";
 import {ALLOWED_CURRENCIES} from "../../../types/currency";
 import {EventType} from "../../../types/eventType";
-import {CommonUtils} from "../../../utils/commonUtils";
 import {DateUtils} from "../../../utils/dateUtils";
 
 @Component({
@@ -55,7 +51,7 @@ import {DateUtils} from "../../../utils/dateUtils";
                           v-validate="'required|max:40|min:3'"
                           :error-messages="errors.collect('name')"
                           data-vv-name="name" @keyup.enter="savePortfolio"
-                          class="required" hint="Обязательное поле">
+                          class="required">
             </v-text-field>
 
             <v-layout class="select-option-wrap">
@@ -81,53 +77,60 @@ import {DateUtils} from "../../../utils/dateUtils";
                     <div :class="['selected-broker__img', selectedBroker.code.toLowerCase()]"></div>
                     <span>{{ selectedBroker.description }}</span>
                 </div>
-                <broker-switcher @selectProvider="onSelectProvider"></broker-switcher>
+                <broker-switcher @selectProvider="onSelectProvider" inner-style="justify-content: start !important;">
+                    <a v-if="selectedBroker" slot="activator">
+                        <v-icon @click.stop="removeBrokerId" small>fas fa-trash-alt</v-icon>
+                    </a>
+                    <v-btn v-else slot="activator">
+                        <span class="fs14">Изменить брокера</span>
+                    </v-btn>
+                </broker-switcher>
             </div>
+            <v-layout>
+                <v-flex xs12 sm6>
+                    <ii-number-field label="Фиксированная комиссия в %" v-model="portfolio.fixFee"
+                                     hint="Для автоматического рассчета комиссии при внесении сделок." :decimals="5" @keyup.enter="savePortfolio">
+                    </ii-number-field>
+                </v-flex>
 
-                <v-layout>
-                    <v-flex xs12 sm5>
-                        <ii-number-field label="Фиксированная комиссия в %" v-model="portfolio.fixFee"
-                                         hint="Для автоматического рассчета комиссии при внесении сделок." :decimals="5" @keyup.enter="savePortfolio">
-                        </ii-number-field>
-                    </v-flex>
+                <v-flex xs12 sm6 class="wrap-calendar-section">
+                    <v-menu
+                            ref="dateMenu"
+                            :close-on-content-click="false"
+                            v-model="dateMenuValue"
+                            :return-value.sync="portfolio.openDate"
+                            lazy
+                            transition="scale-transition"
+                            offset-y
+                            full-width
+                            min-width="290px">
+                        <v-text-field
+                                slot="activator"
+                                v-model="portfolio.openDate"
+                                :error-messages="errors.collect('openDate')"
+                                name="openDate"
+                                label="Дата открытия"
+                                required
+                                append-icon="event"
+                                readonly></v-text-field>
+                        <v-date-picker v-model="portfolio.openDate" :no-title="true" locale="ru" :first-day-of-week="1"
+                                       @input="onDateSelected"></v-date-picker>
+                    </v-menu>
+                </v-flex>
+            </v-layout>
 
-                    <v-flex xs12 sm5 class="wrap-calendar-section">
-                        <v-menu
-                                ref="dateMenu"
-                                :close-on-content-click="false"
-                                v-model="dateMenuValue"
-                                :return-value.sync="portfolio.openDate"
-                                lazy
-                                transition="scale-transition"
-                                offset-y
-                                full-width
-                                min-width="290px">
-                            <v-text-field
-                                    slot="activator"
-                                    v-model="portfolio.openDate"
-                                    :error-messages="errors.collect('openDate')"
-                                    name="openDate"
-                                    label="Дата открытия"
-                                    required
-                                    append-icon="event"
-                                    readonly></v-text-field>
-                            <v-date-picker v-model="portfolio.openDate" :no-title="true" locale="ru" :first-day-of-week="1"
-                                           @input="onDateSelected"></v-date-picker>
-                        </v-menu>
-                    </v-flex>
-                </v-layout>
-
-                <v-layout>
-                    <v-flex xs12 class="textarea-section">
-                        <v-textarea label="Заметка" v-model="portfolio.note" :rows="2" :counter="500"
-                                    v-validate="'max:500'" :error-messages="errors.collect('note')" data-vv-name="note"></v-textarea>
-                    </v-flex>
-                </v-layout>
+            <v-layout>
+                <v-flex xs12 class="textarea-section">
+                    <v-textarea label="Заметка" v-model="portfolio.note" :rows="2" :counter="500"
+                                v-validate="'max:500'" :error-messages="errors.collect('note')" data-vv-name="note"></v-textarea>
+                </v-flex>
+            </v-layout>
         </div>
     `,
     components: {BrokerSwitcher}
 })
 export class PortfolioManagementGeneralTab extends UI {
+
     $refs: {
         dateMenu: any
     };
@@ -179,5 +182,9 @@ export class PortfolioManagementGeneralTab extends UI {
 
     private get selectedBroker(): DealsImportProvider {
         return this.portfolio.brokerId ? DealsImportProvider.valueById(this.portfolio.brokerId) : null;
+    }
+
+    private async savePortfolio(): Promise<void> {
+        this.$emit("savePortfolio");
     }
 }

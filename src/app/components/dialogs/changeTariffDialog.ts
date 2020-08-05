@@ -1,4 +1,5 @@
-import Component from "vue-class-component";
+import {VueRouter} from "vue-router/types/router";
+import {Component} from "../../app/ui";
 import {CustomDialog} from "../../platform/dialogs/customDialog";
 
 /**
@@ -21,12 +22,18 @@ import {CustomDialog} from "../../platform/dialogs/customDialog";
                         </div>
                     </v-card-text>
                     <v-card-actions>
-                        <v-btn color="primary">Сменить тариф</v-btn>
+                        <v-btn color="primary" @click="goToTariffs">Сменить тариф</v-btn>
                     </v-card-actions>
                 </div>
             </v-card>
         </v-dialog>
     `
 })
-export class ChangeTariffDialog extends CustomDialog<string, string> {
+export class ChangeTariffDialog extends CustomDialog<VueRouter, string> {
+
+    private goToTariffs(): void {
+        if (this.$router.currentRoute.name !== "tariffs") {
+            this.$router.push({name: "tariffs"});
+        }
+    }
 }
