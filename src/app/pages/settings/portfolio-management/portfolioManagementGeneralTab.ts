@@ -86,7 +86,7 @@ import {DateUtils} from "../../../utils/dateUtils";
                     </v-btn>
                 </broker-switcher>
             </div>
-            <v-layout>
+            <v-layout wrap>
                 <v-flex xs12 sm6>
                     <ii-number-field label="Фиксированная комиссия в %" v-model="portfolio.fixFee"
                                      hint="Для автоматического рассчета комиссии при внесении сделок." :decimals="5" @keyup.enter="savePortfolio">
