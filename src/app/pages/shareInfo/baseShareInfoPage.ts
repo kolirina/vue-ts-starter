@@ -322,7 +322,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-card-text>
             </v-card>
 
-            <template v-if="share && portfolioAvgPrice">
+            <template v-if="share && portfolioAvgPrice !== null">
                 <div class="space-between-blocks"></div>
                 <v-card class="chart-overflow" flat data-v-step="2">
                     <v-card-title class="chart-title">

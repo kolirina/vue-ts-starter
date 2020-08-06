@@ -254,11 +254,8 @@ export class ProfitLineChart extends UI {
             this.seriesFilter.showTrades = this.seriesFilter.totalProfit;
         }
         if (series === ChartSeries.INDEX_STOCK_EXCHANGE) {
-            const seriesEnabled = (this.seriesFilter as any)[series.code];
-            if (seriesEnabled) {
-                this.compare = seriesEnabled;
-                this.localStorage.set<boolean>(`${this.stateKeyPrefix}_COMPARE`, this.compare);
-            }
+            this.compare = (this.seriesFilter as any)[series.code];
+            this.localStorage.set<boolean>(`${this.stateKeyPrefix}_COMPARE`, this.compare);
         }
         setTimeout(async () => await this.draw(), 0);
         if (series === ChartSeries.TOTAL_PROFIT && this.seriesFilter.totalProfit) {
