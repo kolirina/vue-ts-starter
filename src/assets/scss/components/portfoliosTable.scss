@@ -47,6 +47,7 @@
     border: 1px solid $sidebar-hr-color;
     width: calc(50% - 6px);
     max-width: 492px;
+    min-width: 288px;
     padding: 12px 16px 16px;
     border-radius: 8px;
     min-height: 169px;
@@ -77,7 +78,7 @@
     &__make-deposit {
       width: 16px;
       height: 16px;
-      margin: 0 auto 0 12px;
+      margin: 0 12px 0;
       background: url('../img/portfolio/deposit.svg') no-repeat center;
       transition: background 0.15s linear;
 
@@ -176,7 +177,7 @@
           border: 1px solid $sidebar-hr-color;
           border-radius: 50%;
           background-size: 24px 24px !important;
-          background-color: #fff !important;
+          background-color: rgba(255,255,255,.3) !important;
           margin-right: 12px;
         }
       }
@@ -271,6 +272,9 @@
       }
 
       &__flex-row {
+
+        > div:first-child {width: 100%}
+
         .public-link {
           width: 100%;
           max-width: 100%;
@@ -278,6 +282,8 @@
       }
 
       &__wrap-row {
+        margin-left: 0;
+
         .v-btn {
           margin-top: 12px !important;
 
