@@ -86,16 +86,13 @@ import {DateUtils} from "../../../utils/dateUtils";
                     </v-btn>
                 </broker-switcher>
             </div>
-            <v-layout wrap>
-                <v-flex xs12 sm6>
+            <v-layout wrap class="wrap-calendar-section">
+
                     <ii-number-field label="Фиксированная комиссия в %" v-model="portfolio.fixFee"
                                      hint="Для автоматического рассчета комиссии при внесении сделок." :decimals="5" @keyup.enter="savePortfolio">
                     </ii-number-field>
-                </v-flex>
 
-                <v-flex xs12 sm6 class="wrap-calendar-section">
-                    <v-menu
-                            ref="dateMenu"
+                    <v-menu ref="dateMenu"
                             :close-on-content-click="false"
                             v-model="dateMenuValue"
                             :return-value.sync="portfolio.openDate"
@@ -116,7 +113,6 @@ import {DateUtils} from "../../../utils/dateUtils";
                         <v-date-picker v-model="portfolio.openDate" :no-title="true" locale="ru" :first-day-of-week="1"
                                        @input="onDateSelected"></v-date-picker>
                     </v-menu>
-                </v-flex>
             </v-layout>
 
             <v-layout>

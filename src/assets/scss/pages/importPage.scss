@@ -168,6 +168,7 @@
 
   &__image {
     @extend %provider-image;
+    background: url("../img/sidebar/case.svg") no-repeat center;
     background-size: 30px 30px !important;
   }
 
@@ -547,6 +548,5 @@
   width: 52px;
   height: 52px;
   margin-right: 12px;
-  background: url("../img/sidebar/case.svg") no-repeat center;
-  background-color: #fff !important;
+  background-color: rgba(255,255,255,.3) !important;
 }

@@ -49,7 +49,7 @@ const MainStore = namespace(StoreType.MAIN);
                             </template>
                             <span>{{ portfolio.note }}</span>
                         </v-tooltip>
-                        <div @click.stop>
+                        <div @click.stop class="margLAuto">
                             <v-menu transition="slide-y-transition" bottom left min-width="173" nudge-bottom="30">
                                 <v-btn slot="activator" flat icon dark>
                                     <span class="menuDots menuDots_dark"></span>
