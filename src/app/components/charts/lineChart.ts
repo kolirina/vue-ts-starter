@@ -100,14 +100,14 @@ export class LineChart extends UI {
                 click: (event: Event): void => this.saveRange(range.text)
             };
         });
-        this.selectedRange = this.localStorage.get(`${this.stateKeyPrefix}_RANGE`, "YTD");
+        this.selectedRange = this.localStorage.get(`${this.stateKeyPrefix}_RANGE`, "6m");
     }
 
     /**
      * Возвращает Индекс выбранного диапазона
      */
     private get selectedRangeIndex(): number {
-        this.selectedRange = this.localStorage.get(`${this.stateKeyPrefix}_RANGE`, "YTD");
+        this.selectedRange = this.localStorage.get(`${this.stateKeyPrefix}_RANGE`, "6m");
         const selectedIndex = this.ranges.map(range => range.text).indexOf(this.selectedRange);
         return selectedIndex === -1 ? 1 : selectedIndex;
     }
