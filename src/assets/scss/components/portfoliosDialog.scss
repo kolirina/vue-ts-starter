@@ -99,12 +99,25 @@
     .select-section {padding: 8px 0}
   }
 }
+
 .wrap-calendar-section {
-    margin-left: 20px;
-    .v-input__icon {
-        margin-right: 16px;
+    justify-content: space-between;
+
+    > div {
+        flex: none;
+        width: calc(50% - 10px);
+    }
+
+    .v-input__icon {margin-right: 16px}
+
+    @media only screen and (max-width: $sm-breakpoint) {
+        > div {
+            width: 100%;
+            margin-top: 20px;
+        }
     }
 }
+
 .portfolio-dialog-wrap {
     padding: 0px 16px 16px 16px !important;
     .v-card__actions {
