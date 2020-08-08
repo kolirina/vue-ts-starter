@@ -12,7 +12,7 @@
       color: #040427;
     }
 
-  @media all and (max-width: $xs-breakpoint){
+  @media all and (max-width: $sm-breakpoint){
     &__wrapper-title {padding-left: 0}
   }
 }

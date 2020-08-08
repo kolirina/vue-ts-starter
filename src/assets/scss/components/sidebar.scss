@@ -3,7 +3,7 @@
   flex-direction: column;
   justify-content: space-between;
   overflow: initial;
-  z-index: 100;
+  z-index: 99;
   @media (max-width: 550px) {
     display: none !important;
   }

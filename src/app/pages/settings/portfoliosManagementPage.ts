@@ -40,7 +40,7 @@ const MainStore = namespace(StoreType.MAIN);
                 <v-flex>
                     <v-card flat class="header-first-card">
                         <v-card-title class="header-first-card__wrapper-title">
-                            <div class="section-title header-first-card__title-text margR12">Управление портфелями</div>
+                            <div class="section-title header-first-card__title-text margR12 lh36">Управление портфелями</div>
                             <v-btn-toggle :value="displayMode" @change="onDisplayModeChange" class="btn-group" mandatory>
                                 <v-btn :value="DisplayMode.TILE" class="btn_icon-tile"></v-btn>
                                 <v-btn :value="DisplayMode.LIST" class="btn_icon-list"></v-btn>
