@@ -49,6 +49,7 @@ const MainStore = namespace(StoreType.MAIN);
                             </template>
                             <span>{{ portfolio.note }}</span>
                         </v-tooltip>
+                        <div v-if="portfolio.professionalMode" class="professional-mode-icon"></div>
                         <div @click.stop class="margLAuto">
                             <v-menu transition="slide-y-transition" bottom left min-width="173" nudge-bottom="30">
                                 <v-btn slot="activator" flat icon dark>

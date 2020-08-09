@@ -61,7 +61,6 @@
     }
 
     &__header {
-      @extend .ellipsis;
       display: flex;
       align-items: center;
       padding-bottom: 12px;
@@ -69,16 +68,32 @@
       font-size: 14px;
       line-height: 22px;
 
+      &-description {@extend .ellipsis;}
+
+      &-description,
+      &__make-deposit,
+      .professional-mode-icon {margin-right: 12px}
+
       .v-btn {
         height: auto;
         width: auto;
       }
+
+      .professional-mode-icon {
+        margin-left: 0;
+
+        &:before {
+          border-color: #96a5be;
+          color: #96a5be;
+        }
+      }
     }
 
     &__make-deposit {
+      flex: none;
       width: 16px;
       height: 16px;
-      margin: 0 12px 0;
+      margin-right: 12px;
       background: url('../img/portfolio/deposit.svg') no-repeat center;
       transition: background 0.15s linear;
 
