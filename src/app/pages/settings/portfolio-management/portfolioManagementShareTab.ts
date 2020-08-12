@@ -38,77 +38,92 @@ const MainStore = namespace(StoreType.MAIN);
                     </template>
                 </v-switch>
             </div>
-            <div v-if="link" class="portfolio-management-tab__flex-row">
-                <v-text-field :value="link" placeholder="url для доступа к портфелю" readonly hide-details class="public-link"></v-text-field>
-                <div class="portfolio-management-tab__wrap-row">
-                    <v-btn class="btn" v-clipboard="() => link" slot="activator" @click="copyLink">
-                        Копировать ссылку
-                    </v-btn>
-                    <v-menu content-class="qr-code-section"
-                            transition="slide-y-transition"
-                            nudge-bottom="36" left class="settings-menu"
-                            :close-on-content-click="false">
-                        <v-btn class="btn qr-code-btn" slot="activator">
-                            QR code
-                        </v-btn>
-                        <v-list dense>
-                            <v-flex>
-                                <qriously :value="link" :size="120"></qriously>
+            <v-fade-transition mode="out-in" group>
+                <template v-if="access">
+                    <div class="portfolio-management-tab__flex-row" key="1">
+                        <v-text-field :value="link" placeholder="url для доступа к портфелю" readonly hide-details class="public-link"></v-text-field>
+                        <div class="portfolio-management-tab__wrap-row">
+                            <v-btn class="btn" v-clipboard="() => link" slot="activator" @click="copyLink">
+                                Копировать ссылку
+                            </v-btn>
+                            <v-menu content-class="qr-code-section"
+                                    transition="slide-y-transition"
+                                    nudge-bottom="36" left class="settings-menu"
+                                    :close-on-content-click="false">
+                                <v-btn class="btn qr-code-btn" slot="activator">
+                                    QR code
+                                </v-btn>
+                                <v-list dense>
+                                    <v-flex>
+                                        <qriously :value="link" :size="120"></qriously>
+                                    </v-flex>
+                                </v-list>
+                            </v-menu>
+                        </div>
+                    </div>
+                    <div class="portfolio-management-tab__wrapper" key="2">
+                        <v-layout column class="default-access-content">
+                            <v-flex xs12 class="mb-2">
+                                <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                                    <v-checkbox slot="activator" v-model="linkAccess" @change="onAccessChange"
+                                                hide-details class="shrink mr-2 mt-0 portfolio-default-text"
+                                                label="Доступ только по ссылке"></v-checkbox>
+                                    <span>
+                                        Если включено, портфель не будет публиковаться в разделе Публичные портфели
+                                        и пользователи сервиса не смогут просмотреть или проголосовать за него
+                                    </span>
+                                </v-tooltip>
+
                             </v-flex>
-                        </v-list>
-                    </v-menu>
-                </div>
-            </div>
-            <div class="portfolio-management-tab__wrapper">
-                <v-layout column class="default-access-content">
-                    <v-flex xs12 class="mb-2">
-                        <v-checkbox v-model="linkAccess" @change="onAccessChange"
-                                    hide-details class="shrink mr-2 mt-0 portfolio-default-text"
-                                    label="Доступ только по ссылке"></v-checkbox>
-                    </v-flex>
-                    <v-flex xs12 class="mb-2">
-                        <v-checkbox v-model="portfolio.dividendsAccess" :true-value="false" :false-value="true"
-                                    hide-details class="shrink mr-2 mt-0 portfolio-default-text"
-                                    label="Скрыть дивиденды"></v-checkbox>
-                    </v-flex>
-                    <v-flex xs12 class="mb-2">
-                        <v-checkbox v-model="portfolio.tradesAccess" :true-value="false" :false-value="true"
-                                    hide-details class="shrink mr-2 mt-0 portfolio-default-text"
-                                    label="Скрыть сделки"></v-checkbox>
-                    </v-flex>
-                    <v-flex xs12 class="mb-2">
-                        <v-checkbox v-model="portfolio.lineDataAccess" :true-value="false" :false-value="true"
-                                    hide-details class="shrink mr-2 mt-0 portfolio-default-text"
-                                    label="Скрыть график"></v-checkbox>
-                    </v-flex>
-                    <div class="form-row margT24">
-                        <div class="profile__subtitle form-row__title">
-                            Публичное имя
-                            <tooltip>Ваше имя (будет использовано для отображения на карточке публичного портфеля)</tooltip>
-                        </div>
-                        <inplace-input name="publicName" :value="publicName" :max-length="255" @input="onPublicNameChange"></inplace-input>
+                            <v-flex xs12 class="mb-2">
+                                <v-checkbox v-model="portfolio.dividendsAccess" :true-value="false" :false-value="true"
+                                            hide-details class="shrink mr-2 mt-0 portfolio-default-text"
+                                            label="Скрыть дивиденды"></v-checkbox>
+                            </v-flex>
+                            <v-flex xs12 class="mb-2">
+                                <v-checkbox v-model="portfolio.tradesAccess" :true-value="false" :false-value="true"
+                                            hide-details class="shrink mr-2 mt-0 portfolio-default-text"
+                                            label="Скрыть сделки"></v-checkbox>
+                            </v-flex>
+                            <v-flex xs12 class="mb-2">
+                                <v-checkbox v-model="portfolio.lineDataAccess" :true-value="false" :false-value="true"
+                                            hide-details class="shrink mr-2 mt-0 portfolio-default-text"
+                                            label="Скрыть график"></v-checkbox>
+                            </v-flex>
+                            <v-fade-transition mode="out-in" group>
+                                <template v-if="portfolio.access === 2">
+                                    <div class="form-row margT24" key="1">
+                                        <div class="profile__subtitle form-row__title">
+                                            Публичное имя
+                                            <tooltip>Ваше имя (будет использовано для отображения на карточке публичного портфеля)</tooltip>
+                                        </div>
+                                        <inplace-input name="publicName" :value="publicName" :max-length="255" @input="onPublicNameChange"></inplace-input>
+                                    </div>
+                                    <div class="form-row" key="2">
+                                        <div class="profile__subtitle form-row__title">
+                                            Личный сайт
+                                            <tooltip>Ссылка на профиль, блог, сайт (будет использована для отображения на карточке публичного портфеля)</tooltip>
+                                        </div>
+                                        <inplace-input name="publicLink" :value="publicLink" :max-length="1024" @input="onPublicLinkChange"></inplace-input>
+                                    </div>
+                                    <div class="form-row" key="3">
+                                        <div class="profile__subtitle form-row__title">
+                                            Цель портфеля
+                                            <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                                                <sup class="custom-tooltip" slot="activator">
+                                                    <v-icon>fas fa-info-circle</v-icon>
+                                                </sup>
+                                                <span>Цель портфеля, описание, которое будет использовано для отображения на карточке публичного портфеля</span>
+                                            </v-tooltip>
+                                        </div>
+                                        <v-text-field name="target" v-model="portfolio.description" label="Цель портфеля" :counter="120"></v-text-field>
+                                    </div>
+                                </template>
+                            </v-fade-transition>
+                        </v-layout>
                     </div>
-                    <div class="form-row">
-                        <div class="profile__subtitle form-row__title">
-                            Личный сайт
-                            <tooltip>Ссылка на профиль, блог, сайт (будет использована для отображения на карточке публичного портфеля)</tooltip>
-                        </div>
-                        <inplace-input name="publicLink" :value="publicLink" :max-length="1024" @input="onPublicLinkChange"></inplace-input>
-                    </div>
-                    <div class="form-row">
-                        <div class="profile__subtitle form-row__title">
-                            Цель портфеля
-                            <v-tooltip content-class="custom-tooltip-wrap" bottom>
-                                <sup class="custom-tooltip" slot="activator">
-                                    <v-icon>fas fa-info-circle</v-icon>
-                                </sup>
-                                <span>Цель портфеля, описание, которое будет использовано для отображения на карточке публичного портфеля</span>
-                            </v-tooltip>
-                        </div>
-                        <v-text-field name="target" v-model="portfolio.description" label="Цель портфеля" :counter="120"></v-text-field>
-                    </div>
-                </v-layout>
-            </div>
+                </template>
+            </v-fade-transition>
         </div>
     `,
     components: {BrokerSwitcher}
@@ -154,17 +169,6 @@ export class PortfolioManagementShareTab extends UI {
         this.publicLink = this.clientInfo.user.publicLink;
     }
 
-    @ShowProgress
-    private async generateTokenLink(): Promise<void> {
-        const isValid = this.isValid();
-        if (!isValid) {
-            return;
-        }
-        this.shareUrlsCache[this.shareOption.code] = await this.portfolioService.getPortfolioShareUrl({
-            id: this.portfolio.id, sharePortfolioType: this.shareOption.code, userName: this.userId, expiredDate: this.expiredDate
-        });
-    }
-
     /** Устанавливает доступ к портфелю: 0 - приватный, 1 - публичный только по ссылке, 2 - полностью публичный */
     private onAccessChange(): void {
         if (this.access) {
@@ -205,25 +209,10 @@ export class PortfolioManagementShareTab extends UI {
     }
 
     private get link(): string {
-        if (this.shareOption === PortfoliosDialogType.DEFAULT_ACCESS) {
-            return `${window.location.protocol}//${window.location.host}/public-portfolio/${this.portfolio.id}/`;
-        }
-        const link = this.shareUrlsCache[this.shareOption?.code];
-        return link ? `${this.shareUrlsCache[this.shareOption?.code]}` : null;
+        return `${window.location.protocol}//${window.location.host}/public-portfolio/${this.portfolio.id}/`;
     }
 
     private copyLink(): void {
         this.$snotify.info("Ссылка скопирована");
-    }
-
-    private isValid(): boolean {
-        if (this.shareOption === PortfoliosDialogType.DEFAULT_ACCESS) {
-            return true;
-        }
-        if (this.expiredDate === null || dayjs().isAfter(DateUtils.parseDate(this.expiredDate))) {
-            this.$snotify.warning("Срок действия токена должна быть больше текущей даты");
-            return false;
-        }
-        return true;
     }
 }

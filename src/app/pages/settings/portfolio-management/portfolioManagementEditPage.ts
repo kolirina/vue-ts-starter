@@ -54,7 +54,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <div class="card__header-title">
                         <div :class="['provider__image', selectedBroker?.code.toLowerCase()]"></div>
                         <div class="margRAuto">
-                            <span>{{ portfolio.name }}</span>
+                            <span>{{ portfolioName }}</span>
                             <div @click="goBack" class="back-btn">Назад</div>
                         </div>
                     </div>
@@ -94,7 +94,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <portfolio-management-general-tab :portfolio="portfolio" @savePortfolio="savePortfolio"></portfolio-management-general-tab>
                 </template>
                 <v-card-actions v-if="currentTab !== PortfolioTab.INTEGRATION">
-                    <v-btn :loading="processState" :disabled="!isValid || processState" color="primary" light @click.stop.native="savePortfolio">
+                    <v-btn :loading="processState" :disabled="processState" color="primary" light @click.stop.native="savePortfolio">
                         {{ isNew ? "Добавить" : "Сохранить"}}
                         <span slot="loader" class="custom-loader">
                         <v-icon color="blue">fas fa-spinner fa-spin</v-icon>
@@ -135,6 +135,8 @@ export class PortfolioManagementEditPage extends UI {
     private isNew = false;
     /** Статус прогресса */
     private processState = false;
+    /** Статус прогресса */
+    private portfolioName = "";
 
     /**
      * Инициализация портфеля
@@ -147,6 +149,7 @@ export class PortfolioManagementEditPage extends UI {
         UI.on(EventType.PORTFOLIO_RELOAD, async (portfolio: PortfolioParams) => await this.reloadPortfolio(portfolio.id));
         UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
         await this.loadPortfolio(this.$route.params.id);
+        this.portfolioName = this.portfolio.name;
     }
 
     beforeDestroy(): void {
@@ -192,8 +195,7 @@ export class PortfolioManagementEditPage extends UI {
     @ShowProgress
     @DisableConcurrentExecution
     private async savePortfolio(): Promise<void> {
-        if (!this.isValid) {
-            this.$snotify.warning("Поля заполнены некорректно");
+        if (!this.isValid()) {
             return;
         }
         this.processState = true;
@@ -204,6 +206,7 @@ export class PortfolioManagementEditPage extends UI {
             } else {
                 this.portfolio = await this.portfolioService.updatePortfolio(this.portfolio);
             }
+            this.portfolioName = this.portfolio.name;
         } catch (error) {
             // если 403 ошибки при добавлении портфеля, диалог уже отобразили, больше ошибок показывать не нужно
             if (error.code !== "403") {
@@ -244,10 +247,30 @@ export class PortfolioManagementEditPage extends UI {
         return ExportUtils.isDownloadNotAllowed(this.clientInfo);
     }
 
-    private get isValid(): boolean {
-        return this.portfolio.name.length >= 3 && this.portfolio.name.length <= 40 &&
-            (dayjs().isAfter(DateUtils.parseDate(this.portfolio.openDate)) || DateUtils.currentDate() === this.portfolio.openDate) &&
-            (CommonUtils.isBlank(this.portfolio.note) || this.portfolio.note.length <= 500);
+    private isValid(): boolean {
+        if (this.portfolio.name.length < 3 && this.portfolio.name.length > 40) {
+            this.$snotify.warning("Имя портфеля должно быть от 3 до 40 символов");
+            return false;
+        }
+        if ((dayjs().isBefore(DateUtils.parseDate(this.portfolio.openDate)) && DateUtils.currentDate() !== this.portfolio.openDate)) {
+            this.$snotify.warning("Дата открытия портфеля не может быть в будущем");
+            return false;
+        }
+        if (!CommonUtils.isBlank(this.portfolio.note) && this.portfolio.note.length > 500) {
+            this.$snotify.warning("Заметка должна быть не более 500 символов");
+            return false;
+        }
+        if (this.portfolio.access === 2) {
+            if (!this.clientInfo.user.publicName) {
+                this.$snotify.warning("Публичное имя должно быть указано");
+                return false;
+            }
+            if (CommonUtils.isBlank(this.portfolio.description)) {
+                this.$snotify.warning("Цель портфеля должна быть указана");
+                return false;
+            }
+        }
+        return true;
     }
 
     /** Возвращает к списку портфелей */

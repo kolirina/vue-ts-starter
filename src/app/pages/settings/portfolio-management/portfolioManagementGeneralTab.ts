@@ -49,6 +49,7 @@ import {DateUtils} from "../../../utils/dateUtils";
 
             <v-text-field label="Введите название портфеля" v-model.trim="portfolio.name" required autofocus
                           v-validate="'required|max:40|min:3'"
+                          maxLength="40"
                           :error-messages="errors.collect('name')"
                           data-vv-name="name" @keyup.enter="savePortfolio"
                           class="required">
