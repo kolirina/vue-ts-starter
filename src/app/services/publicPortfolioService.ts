@@ -63,6 +63,8 @@ export interface PublicPortfolio {
     likes: number;
     /** Количество дизлайков */
     dislikes: number;
+    /** Информация об истории голоса пользователя за портфель */
+    voteHistory?: VoteHistory;
     /** Текущая суммарная стоимость */
     currentCost: string;
     /** Прибыль в процентах, посчитанная относительно средневзвешенной стоимости */
@@ -71,4 +73,12 @@ export interface PublicPortfolio {
     yearYield: string;
     /** Список данных для отрисовки графика */
     lineChartData: LineChartItem[];
+}
+
+/** Инофрмация об истории голоса пользователя за портфель */
+export interface VoteHistory {
+    /** Идентификатор портфеля */
+    portfolioId?: number;
+    /** Голос пользователя за лайк. 1 лайк, -1 дизлайк */
+    value: number;
 }

@@ -51,8 +51,8 @@ import {ChartUtils} from "../utils/chartUtils";
                     <div class="public-portfolio-item__footer-referrals" title="Количество подписчиков">
                         {{ portfolio.referralsCount | friendlyNumber }}
                     </div>
-                    <div class="public-portfolio-item__footer-like" @click="vote(portfolio, 1)">{{ portfolio.likes | friendlyNumber }}</div>
-                    <div class="public-portfolio-item__footer-dislike" @click="vote(portfolio, -1)">{{ portfolio.dislikes | friendlyNumber }}</div>
+                    <div :class="['public-portfolio-item__footer-like', alreadyVoted(1) ? 'active' : '']" @click="vote(1)">{{ portfolio.likes | friendlyNumber }}</div>
+                    <div :class="['public-portfolio-item__footer-dislike', alreadyVoted(-1) ? 'active' : '']" @click="vote(-1)">{{ portfolio.dislikes | friendlyNumber }}</div>
                 </div>
             </div>
         </div>
@@ -76,8 +76,12 @@ export class PublicPortfolioItem extends UI {
         return ChartUtils.convertToDotsWithStartPoint(chartData, "amount", false);
     }
 
-    private vote(portfolio: PublicPortfolio, vote: number): void {
-        this.$emit("vote", {id: portfolio.id, vote: vote} as PortfolioVote);
+    private vote( vote: number): void {
+        this.$emit("vote", {id: this.portfolio.id, vote: vote} as PortfolioVote);
+    }
+
+    private alreadyVoted(vote: number): boolean {
+        return this.portfolio.voteHistory?.value === vote;
     }
 
     private get shortDescription(): string {

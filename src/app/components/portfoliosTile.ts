@@ -16,22 +16,22 @@
 
 import {Inject} from "typescript-ioc";
 import {namespace} from "vuex-class/lib/bindings";
-import {Component, Prop, UI} from "../../app/ui";
-import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
-import {ShowProgress} from "../../platform/decorators/showProgress";
-import {BtnReturn} from "../../platform/dialogs/customDialog";
-import {ClientInfo} from "../../services/clientService";
-import {ExportService, ExportType} from "../../services/exportService";
-import {OverviewService} from "../../services/overviewService";
-import {PortfolioAccountType, PortfolioParams, PortfolioService} from "../../services/portfolioService";
-import {EventType} from "../../types/eventType";
-import {Tariff} from "../../types/tariff";
-import {Portfolio} from "../../types/types";
-import {ExportUtils} from "../../utils/exportUtils";
-import {MutationType} from "../../vuex/mutationType";
-import {StoreType} from "../../vuex/storeType";
-import {ChangeTariffDialog} from "../dialogs/changeTariffDialog";
-import {ConfirmDialog} from "../dialogs/confirmDialog";
+import {Component, Prop, UI} from "../app/ui";
+import {DisableConcurrentExecution} from "../platform/decorators/disableConcurrentExecution";
+import {ShowProgress} from "../platform/decorators/showProgress";
+import {BtnReturn} from "../platform/dialogs/customDialog";
+import {ClientInfo} from "../services/clientService";
+import {ExportService, ExportType} from "../services/exportService";
+import {OverviewService} from "../services/overviewService";
+import {PortfolioAccountType, PortfolioParams, PortfolioService} from "../services/portfolioService";
+import {EventType} from "../types/eventType";
+import {Tariff} from "../types/tariff";
+import {Portfolio} from "../types/types";
+import {ExportUtils} from "../utils/exportUtils";
+import {MutationType} from "../vuex/mutationType";
+import {StoreType} from "../vuex/storeType";
+import {ChangeTariffDialog} from "./dialogs/changeTariffDialog";
+import {ConfirmDialog} from "./dialogs/confirmDialog";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -49,7 +49,20 @@ const MainStore = namespace(StoreType.MAIN);
                             </template>
                             <span>{{ portfolio.note }}</span>
                         </v-tooltip>
-                        <div v-if="portfolio.professionalMode" class="professional-mode-icon"></div>
+                        <v-tooltip  v-if="portfolio.professionalMode" transition="slide-y-transition" open-on-hover
+                                   content-class="menu-icons" right bottom nudge-right="122" nudge-top="10" class="hint-for-icon-name-section">
+                            <i class="professional-mode-icon" slot="activator"></i>
+                            <div class="pa-3">
+                                Активирован профессиональный режим
+                            </div>
+                        </v-tooltip>
+                        <v-tooltip v-if="portfolio.access" transition="slide-y-transition" open-on-hover
+                                   content-class="menu-icons" left bottom nudge-right="122" nudge-top="10" :class="['hint-for-icon-name-section']">
+                            <i class="public-portfolio-icon" slot="activator"></i>
+                            <div class="pa-3">
+                                Открыт публичный доступ к портфелю
+                            </div>
+                        </v-tooltip>
                         <div @click.stop class="margLAuto">
                             <v-menu transition="slide-y-transition" bottom left min-width="173" nudge-bottom="30">
                                 <v-btn slot="activator" flat icon dark>

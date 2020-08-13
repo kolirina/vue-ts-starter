@@ -21,7 +21,8 @@ import {PortfolioVote} from "../../types/eventObjects";
                     Данный раздел поможет Вам быть в курсе тенденций инвестирования, узнать стратегии распределения активов успешных инвесторов,
                     а также поделиться своими идеями по ведению портфеля.<br><br>
                     Чтобы опубликовать портфель перейдите в раздел
-                    <router-link :to="{name: 'portfolio-management'}">Управление портфелями</router-link> → Выберете портфель, которым хотите поделиться,
+                    <router-link :to="{name: 'portfolio-management'}">Управление портфелями</router-link>
+                    → Выберете портфель, которым хотите поделиться,
                     и нажмите кнопку Опубликовать.<br>
                     <a class="big-link" @click="hideHintsPanel">Больше не показывать</a>
                 </div>
@@ -68,12 +69,29 @@ export class PublicPortfolioPage extends UI {
      */
     @ShowProgress
     private async onVote(event: PortfolioVote): Promise<void> {
-        await this.portfolioService.votePortfolio(event.id, event.vote);
         const publicPortfolio = this.publicPortfolios.find(portfolio => portfolio.id === event.id);
+        let needChangeVote = false;
+        if (publicPortfolio?.voteHistory) {
+            if (publicPortfolio.voteHistory.value === event.vote) {
+                this.$snotify.warning("Ваш голос за текущий портфель уже учтен");
+                return;
+            } else {
+                needChangeVote = true;
+            }
+        }
+        await this.portfolioService.votePortfolio(event.id, event.vote);
+        if (publicPortfolio?.voteHistory) {
+            publicPortfolio.voteHistory.value = needChangeVote ? event.vote : publicPortfolio.voteHistory.value;
+        } else {
+            publicPortfolio.voteHistory = {value: event.vote};
+        }
         if (event.vote > 0) {
             publicPortfolio.likes = publicPortfolio.likes + 1;
+            publicPortfolio.dislikes = needChangeVote ? publicPortfolio.dislikes - 1 : publicPortfolio.dislikes;
         } else {
             publicPortfolio.dislikes = publicPortfolio.dislikes + 1;
+            publicPortfolio.likes = needChangeVote ? publicPortfolio.likes - 1 : publicPortfolio.likes;
         }
+        this.$snotify.info("Спасибо! Ваш голос учтен");
     }
 }

@@ -14,15 +14,14 @@
  * (c) ООО "Интеллектуальные инвестиции", 2020
  */
 
-import dayjs from "dayjs";
 import {Inject} from "typescript-ioc";
 import {Component, namespace, Prop, UI} from "../../../app/ui";
 import {BrokerSwitcher} from "../../../components/brokerSwitcher";
 import {ShowProgress} from "../../../platform/decorators/showProgress";
 import {ClientInfo, ClientService} from "../../../services/clientService";
-import {PortfolioParams, PortfoliosDialogType, PortfolioService} from "../../../services/portfolioService";
+import {PortfolioParams, PortfolioService} from "../../../services/portfolioService";
+import {Tariff} from "../../../types/tariff";
 import {CommonUtils} from "../../../utils/commonUtils";
-import {DateFormat, DateUtils} from "../../../utils/dateUtils";
 import {StoreType} from "../../../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -32,9 +31,13 @@ const MainStore = namespace(StoreType.MAIN);
     template: `
         <div>
             <div class="portfolio-management-tab__wrapper">
-                <v-switch v-model="access" @change="onAccessChange" class="margB20">
+                <v-switch v-model="access" @change="onAccessChange" :readonly="settingsNotAllowed" class="margB20">
                     <template #label>
                         <span>Публичный доступ {{access ? "открыт" : "закрыт"}}</span>
+                        <tooltip v-if="settingsNotAllowed">
+                            Публичный доступ к портфелю недоступен на Бесплатном тарифе<br/>
+                            Пожалуйста обновите тариф, чтобы воспользоваться всеми преимуществами сервиса.
+                        </tooltip>
                     </template>
                 </v-switch>
             </div>
@@ -64,16 +67,16 @@ const MainStore = namespace(StoreType.MAIN);
                     <div class="portfolio-management-tab__wrapper" key="2">
                         <v-layout column class="default-access-content">
                             <v-flex xs12 class="mb-2">
-                                <v-tooltip content-class="custom-tooltip-wrap" bottom>
-                                    <v-checkbox slot="activator" v-model="linkAccess" @change="onAccessChange"
-                                                hide-details class="shrink mr-2 mt-0 portfolio-default-text"
-                                                label="Доступ только по ссылке"></v-checkbox>
-                                    <span>
-                                        Если включено, портфель не будет публиковаться в разделе Публичные портфели
-                                        и пользователи сервиса не смогут просмотреть или проголосовать за него
-                                    </span>
-                                </v-tooltip>
-
+                                <v-checkbox slot="activator" v-model="linkAccess" @change="onAccessChange"
+                                            hide-details class="shrink mr-2 mt-0 portfolio-default-text">
+                                    <template #label>
+                                        Доступ только по ссылке
+                                        <tooltip>
+                                            Если включено, портфель не будет публиковаться в разделе Публичные портфели
+                                            и пользователи сервиса не смогут просмотреть или проголосовать за него
+                                        </tooltip>
+                                    </template>
+                                </v-checkbox>
                             </v-flex>
                             <v-flex xs12 class="mb-2">
                                 <v-checkbox v-model="portfolio.dividendsAccess" :true-value="false" :false-value="true"
@@ -141,24 +144,16 @@ export class PortfolioManagementShareTab extends UI {
     /** Сервис по работе с нформацией о клиенте */
     @Inject
     private clientService: ClientService;
-
-    private shareOption: PortfoliosDialogType = null;
-
+    /** Публичный доступ */
     private access = false;
+    /** Доступ только по ссылке */
     private linkAccess = false;
-    private expiredDate: string = DateUtils.formatDate(dayjs().add(7, "day"), DateFormat.DATE2);
-    private userId = "";
-    private shareUrlsCache: { [key: string]: string } = {
-        [PortfoliosDialogType.DEFAULT_ACCESS.code]: null,
-        [PortfoliosDialogType.BY_LINK.code]: null,
-    };
     /** Публичное имя пользователя */
     private publicName = "";
     /** Ссылка на публичный ресурс пользователя */
     private publicLink = "";
 
     async created(): Promise<void> {
-        this.shareOption = PortfoliosDialogType.DEFAULT_ACCESS;
         if (this.portfolio.access === 2) {
             this.access = true;
         } else if (this.portfolio.access === 1) {
@@ -210,6 +205,10 @@ export class PortfolioManagementShareTab extends UI {
 
     private get link(): string {
         return `${window.location.protocol}//${window.location.host}/public-portfolio/${this.portfolio.id}/`;
+    }
+
+    private get settingsNotAllowed(): boolean {
+        return this.clientInfo.user.tariff === Tariff.FREE;
     }
 
     private copyLink(): void {

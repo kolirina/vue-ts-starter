@@ -15,12 +15,11 @@
  */
 
 import {Inject} from "typescript-ioc";
-import Component from "vue-class-component";
 import {namespace} from "vuex-class/lib/bindings";
-import {UI} from "../../app/ui";
+import {Component, UI} from "../../app/ui";
 import {ChangeTariffDialog} from "../../components/dialogs/changeTariffDialog";
+import {PortfoliosTile} from "../../components/portfoliosTile";
 import {PortfoliosTable} from "../../components/tables/portfoliosTable";
-import {PortfoliosTile} from "../../components/tables/portfoliosTile";
 import {Storage} from "../../platform/services/storage";
 import {ClientInfo} from "../../services/clientService";
 import {PortfolioParams} from "../../services/portfolioService";
