@@ -87,8 +87,25 @@
       }
 
       &-referrals {background: url("../img/public-portfolio/icon-referrals.svg") no-repeat left center}
-      &-like {background: url("../img/public-portfolio/icon-like.svg") no-repeat left center}
-      &-dislike {background: url("../img/public-portfolio/icon-dislike.svg") no-repeat left center}
+
+      &-like {
+        background: url("../img/public-portfolio/icon-like.svg") no-repeat left center;
+
+        &.active {background-image: url("../img/public-portfolio/icon-like-active.svg")}
+      }
+
+      &-dislike {
+        background: url("../img/public-portfolio/icon-dislike.svg") no-repeat left center;
+
+        &.active {background-image: url("../img/public-portfolio/icon-dislike-active.svg")}
+      }
+
+      &-like,
+      &-dislike {
+        transition: opacity 0.15s linear;
+
+        &:hover {opacity: 0.8}
+      }
     }
   }
 
