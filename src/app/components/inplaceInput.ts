@@ -3,7 +3,7 @@
  */
 import Component from "vue-class-component";
 import {Prop} from "vue-property-decorator";
-import {UI} from "../app/ui";
+import {UI, Watch} from "../app/ui";
 
 @Component({
     // language=Vue
@@ -64,6 +64,12 @@ export class InplaceInput extends UI {
     created(): void {
         this.editableValue = this.value;
         this.oldValue = this.editableValue;
+    }
+
+    @Watch("value")
+    onValueChange(newValue: string): void {
+        this.value = newValue;
+        this.editableValue = newValue;
     }
 
     /**

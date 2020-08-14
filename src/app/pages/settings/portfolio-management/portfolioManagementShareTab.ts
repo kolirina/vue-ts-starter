@@ -31,13 +31,9 @@ const MainStore = namespace(StoreType.MAIN);
     template: `
         <div>
             <div class="portfolio-management-tab__wrapper">
-                <v-switch v-model="access" @change="onAccessChange" :readonly="settingsNotAllowed" class="margB20">
+                <v-switch v-model="access" @change="onAccessChange" class="margB20">
                     <template #label>
                         <span>Публичный доступ {{access ? "открыт" : "закрыт"}}</span>
-                        <tooltip v-if="settingsNotAllowed">
-                            Публичный доступ к портфелю недоступен на Бесплатном тарифе<br/>
-                            Пожалуйста обновите тариф, чтобы воспользоваться всеми преимуществами сервиса.
-                        </tooltip>
                     </template>
                 </v-switch>
             </div>
@@ -182,9 +178,16 @@ export class PortfolioManagementShareTab extends UI {
         this.publicLink = CommonUtils.isBlank(publicLink) ? this.clientInfo.user.publicLink : publicLink;
         // отправляем запрос только если действительно поменяли
         if (this.publicLink !== this.clientInfo.user.publicLink) {
+            this.$validator.attach({name: "value", rules: {regex: /^http[s]?:\/\//}});
+            const result = await this.$validator.validate("value", this.publicLink);
+            if (!result) {
+                this.publicLink = this.clientInfo.user.publicLink;
+                this.$snotify.warning("Неверное значение публичной ссылки. Ссылка должна начинаться с http:// или https://");
+                return;
+            }
             await this.clientService.changePublicLink(this.publicLink);
             this.clientInfo.user.publicLink = this.publicLink;
-            this.$snotify.info("Новое Публичная ссылка успешно сохранена");
+            this.$snotify.info("Новая Публичная ссылка успешно сохранена");
         }
     }
 
@@ -205,10 +208,6 @@ export class PortfolioManagementShareTab extends UI {
 
     private get link(): string {
         return `${window.location.protocol}//${window.location.host}/public-portfolio/${this.portfolio.id}/`;
-    }
-
-    private get settingsNotAllowed(): boolean {
-        return this.clientInfo.user.tariff === Tariff.FREE;
     }
 
     private copyLink(): void {
