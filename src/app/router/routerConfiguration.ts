@@ -400,12 +400,12 @@ export class RouterConfiguration {
                 }
             },
             {
-                name: "public-portfolio",
-                path: "/public-portfolio",
+                name: "public-portfolios",
+                path: "/public-portfolios",
                 component: PublicPortfolioPage,
                 meta: {
                     title: "Публичные портфели",
-                    tourName: "public-portfolio",
+                    tourName: "public-portfolios",
                     tariffAllowed: true
                 }
             },
