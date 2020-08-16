@@ -12,8 +12,16 @@
       color: #040427;
     }
 
-  @media all and (max-width: $xs-breakpoint){
+  @media all and (max-width: $sm-breakpoint){
     &__wrapper-title {padding-left: 0}
+  }
+}
+
+.template-wrapper {
+  padding: 24px 32px;
+
+  @media only screen and (max-width: $sm-breakpoint) {
+    padding: 16px;
   }
 }
 
@@ -54,8 +62,15 @@
     }
   }
 
+  &-menu {
+    .v-list__tile__title {
+      font-size: 14px;
+      line-height: 18px;
+    }
+  }
+
   @media only screen and (max-width: $sm-breakpoint) {
-    display: block;
+    flex-wrap: wrap;
 
     .v-btn {margin-top: 16px !important;}
   }

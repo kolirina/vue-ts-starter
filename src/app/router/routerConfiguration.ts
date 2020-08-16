@@ -14,12 +14,15 @@ import {DividendsPage} from "../pages/dividendsPage";
 import {EventsPage} from "../pages/eventsPage";
 import {HelpPage} from "../pages/helpPage";
 import {PortfolioPage} from "../pages/portfolioPage";
+import {PublicPortfolioPage} from "../pages/public-portfolio/publicPortfolioPage";
+import {PublicPortfolioViewPage} from "../pages/public-portfolio/publicPortfolioViewPage";
 import {QuotesPage} from "../pages/quotes/quotesPage";
 import {RebalancingPage} from "../pages/rebalancingPage";
 import {ExportPage} from "../pages/settings/exportPage";
 import {ImportHistoryPage} from "../pages/settings/importHistoryPage";
 import {ImportPage} from "../pages/settings/importPage";
 import {NotificationsPage} from "../pages/settings/notificationsPage";
+import {PortfolioManagementEditPage} from "../pages/settings/portfolio-management/portfolioManagementEditPage";
 import {PortfoliosManagementPage} from "../pages/settings/portfoliosManagementPage";
 import {ProfileInterfacePage} from "../pages/settings/profile/profileInterfacePage";
 import {ProfileMainPage} from "../pages/settings/profile/profileMainPage";
@@ -258,6 +261,14 @@ export class RouterConfiguration {
                         component: PortfoliosManagementPage
                     },
                     {
+                        name: "portfolio-management-edit",
+                        path: "/settings/portfolio-management/:id",
+                        component: PortfolioManagementEditPage,
+                        meta: {
+                            title: "Управление портфелями"
+                        }
+                    },
+                    {
                         name: "export",
                         path: "export",
                         component: ExportPage,
@@ -386,6 +397,16 @@ export class RouterConfiguration {
                 component: BalancesPage,
                 meta: {
                     title: "Балансы"
+                }
+            },
+            {
+                name: "public-portfolios",
+                path: "/public-portfolios",
+                component: PublicPortfolioPage,
+                meta: {
+                    title: "Публичные портфели",
+                    tourName: "public-portfolios",
+                    tariffAllowed: true
                 }
             },
         ];

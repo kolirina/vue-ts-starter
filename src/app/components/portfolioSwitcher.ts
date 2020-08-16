@@ -29,8 +29,10 @@ const MainStore = namespace(StoreType.MAIN);
                                      v-for="currency in currencyList">
                                     {{ currency }}
                                 </div>
-                                <i v-if="selected.access" class="public-portfolio-icon" title="Публичный"></i>
-                                <i v-if="selected.professionalMode" class="professional-mode-icon" title="Профессиональный режим"></i>
+                                <i v-if="selected.access === 2" class="public-portfolio-icon" title="Публичный"></i>
+                                <!-- todo public иконка для доступа Публичный по ссылке -->
+                                <i v-if="selected.access === 1" class="public-portfolio-icon" title="Публичный по ссылке"></i>
+                                <div v-if="selected.professionalMode" class="professional-mode-icon" title="Профессиональный режим"></div>
                             </v-layout>
                         </div>
                         <div v-if="!sideBarOpened || isMobile" class="portfolios-arrow">
@@ -42,14 +44,17 @@ const MainStore = namespace(StoreType.MAIN);
                         <v-list-tile v-for="(portfolio, index) in clientInfo.user.portfolios" class="portfolios-list-tile" :key="index"
                                      @click="onSelect(portfolio)">
                             <div :class="['portfolios-list-tile__icon', getBrokerIconClass(portfolio.brokerId)]"></div>
-                            <div>
+                            <div class="portfolios-list-tile__info">
                                 <v-list-tile-title class="ellipsis">{{ portfolio.name }}</v-list-tile-title>
                                 <v-layout align-center class="portfolios-list-icons">
                                     <i :class="portfolio.viewCurrency.toLowerCase()" title="Валюта"></i>
-                                    <i v-if="portfolio.access" class="public-portfolio-icon" title="Публичный"></i>
-                                    <i v-if="portfolio.professionalMode" class="professional-mode-icon" title="Профессиональный режим"></i>
+                                    <i v-if="portfolio.access === 2" class="public-portfolio-icon" title="Публичный"></i>
+                                    <!-- todo public иконка для доступа Публичный по ссылке -->
+                                    <i v-if="selected.access === 1" class="public-portfolio-icon" title="Публичный по ссылке"></i>
+                                    <div v-if="portfolio.professionalMode" class="professional-mode-icon" title="Профессиональный режим"></div>
                                 </v-layout>
                             </div>
+                            <div @click="goToPortfolioSettings(portfolio.id)" class="portfolios-list__settings" title="Управление портфелем"></div>
                         </v-list-tile>
                     </v-list>
                 </v-menu>
@@ -124,6 +129,10 @@ export class PortfolioSwitcher extends UI {
     private async changeCurrency(currencyCode: string): Promise<void> {
         await this.portfolioService.changeCurrency(this.selected.id, currencyCode);
         await this.reloadPortfolio(this.selected.id);
+    }
+
+    private goToPortfolioSettings(id: number): void {
+        this.$router.push({name: "portfolio-management-edit", params: {id: String(id)}});
     }
 
     private get broker(): DealsImportProvider {

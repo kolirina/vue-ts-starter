@@ -29,6 +29,7 @@ input[type="search"] {
 .margT50 {margin-top: 50px}
 .margT70 {margin-top: 70px}
 
+.margLAuto {margin-left: auto}
 .margL8 {margin-left: 8px !important}
 .margL12 {margin-left: 12px !important}
 .margL16 {margin-left: 16px !important}
@@ -42,7 +43,7 @@ input[type="search"] {
 .margR60 {margin-right: 60px}
 .margR100 {margin-right: 100px}
 
-.margB8 {margin-bottom: 8px}
+.margB8 {margin-bottom: 8px !important}
 .margB16 {margin-bottom: 16px !important}
 .margB20 {margin-bottom: 20px}
 .margB24 {margin-bottom: 24px}
@@ -86,6 +87,7 @@ input[type="search"] {
 .mw640 {max-width: 640px}
 .mw540 {max-width: 540px}
 .mw520 {max-width: 520px}
+.mw378 {max-width: 378px}
 .mw320 {max-width: 320px}
 .mw218 {max-width: 218px}
 .w506 {width: 506px}
@@ -211,3 +213,4 @@ input[type="search"] {
 .initial-flex {flex: initial !important}
 .rotate-icons {transform: rotate(90deg)}
 .vAlignSuper {vertical-align: super !important;}
+.lh36 {line-height: 36px !important;}

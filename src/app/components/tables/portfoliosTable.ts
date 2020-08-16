@@ -32,12 +32,10 @@ import {Portfolio, TableHeader} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {ExportUtils} from "../../utils/exportUtils";
 import {SortUtils} from "../../utils/sortUtils";
-import {ActionType} from "../../vuex/actionType";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 import {ConfirmDialog} from "../dialogs/confirmDialog";
 import {EmbeddedBlocksDialog} from "../dialogs/embeddedBlocksDialog";
-import {PortfolioEditDialog} from "../dialogs/portfolioEditDialog";
 import {SharePortfolioDialog} from "../dialogs/sharePortfolioDialog";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -65,8 +63,8 @@ const MainStore = namespace(StoreType.MAIN);
                                     Активирован профессиональный режим
                                 </div>
                             </v-tooltip>
-                            <v-tooltip transition="slide-y-transition" open-on-hover
-                                       content-class="menu-icons" left bottom v-if="props.item.access"
+                            <v-tooltip v-if="props.item.access" transition="slide-y-transition" open-on-hover
+                                       content-class="menu-icons" left bottom
                                        nudge-right="122" nudge-top="10"
                                        :class="['hint-for-icon-name-section', props.item.access && !props.item.professionalMode ? 'pl-3' : 'pl-2']">
                                 <i class="public-portfolio-icon" slot="activator"></i>
@@ -86,7 +84,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 <span class="menuDots"></span>
                             </v-btn>
                             <v-list dense>
-                                <v-list-tile @click="openDialogForEdit(props.item)">
+                                <v-list-tile @click="goToEdit(props.item.id)">
                                     <v-list-tile-title>
                                         Редактировать
                                     </v-list-tile-title>
@@ -96,7 +94,8 @@ const MainStore = namespace(StoreType.MAIN);
                                         Создать копию
                                     </v-list-tile-title>
                                 </v-list-tile>
-                                <v-list-tile @click="downloadFile(props.item.id)" :disabled="downloadNotAllowed">
+                                <v-list-tile @click="downloadFile(props.item.id)" :disabled="downloadNotAllowed"
+                                             :title="downloadNotAllowed ? 'Экспорт на вашем тарифе недоступен' : 'Экспорт всех сделок в csv формате'">
                                     <v-list-tile-title>
                                         Экспорт в csv
                                     </v-list-tile-title>
@@ -106,7 +105,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         Экспорт в xlsx
                                     </v-list-tile-title>
                                 </v-list-tile>
-                                <v-divider v-if="!props.item.parentTradeId"></v-divider>
+                                <v-divider></v-divider>
                                 <v-list-tile @click="clearPortfolio(props.item)">
                                     <v-list-tile-title class="delete-btn">
                                         Очистить
@@ -185,7 +184,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         <span class="bold">Заметка:</span>
                                         <div class="text-truncate">{{ props.item.note }}</div>
                                     </div>
-                                    <a v-else @click.stop="openDialogForEdit(props.item)">Создать заметку</a>
+                                    <a v-else @click.stop="goToEdit(props.item.id)">Создать заметку</a>
                                 </v-flex>
                             </v-layout>
                         </div>
@@ -231,8 +230,8 @@ export class PortfoliosTable extends UI {
     @Prop({default: [], required: true})
     private portfolios: PortfolioParams[];
 
-    private async openDialogForEdit(portfolioParams: PortfolioParams): Promise<void> {
-        await new PortfolioEditDialog().show({store: this.$store.state[StoreType.MAIN], router: this.$router, portfolioParams});
+    private goToEdit(id: number): void {
+        this.$router.push({name: "portfolio-management-edit", params: {id: String(id)}});
     }
 
     private async deletePortfolio(portfolio: PortfolioParams): Promise<void> {
@@ -261,7 +260,7 @@ export class PortfoliosTable extends UI {
 
     @ShowProgress
     @DisableConcurrentExecution
-    private async clonePortfolio(id: string): Promise<void> {
+    private async clonePortfolio(id: number): Promise<void> {
         await this.portfolioService.createPortfolioCopy(id);
         this.$snotify.info("Копия портфеля успешно создана");
         UI.emit(EventType.PORTFOLIO_CREATED);

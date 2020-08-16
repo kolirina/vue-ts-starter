@@ -44,5 +44,7 @@ export enum StoreKeys {
     /** Ключ под которым хранится название темы */
     THEME = "theme",
     /** Ключ под которым хранится признак скрытия панели быстрых действия в диалоге добавления сделки */
-    ADD_TRADE_DIALOG_QUICK_ACTIONS_PANEL = "add_trade_dialog_quick_actions_panel"
+    ADD_TRADE_DIALOG_QUICK_ACTIONS_PANEL = "add_trade_dialog_quick_actions_panel",
+    /** Ключ под которым хранится режим отображения портфелей */
+    PORTFOLIO_DISPLAY_MODE_KEY = "PORTFOLIO_DISPLAY_MODE",
 }

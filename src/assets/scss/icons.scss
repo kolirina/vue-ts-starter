@@ -89,6 +89,8 @@
   display: block;
   cursor: pointer;
   background: url('../img/common/dots_more.svg') no-repeat center;
+
+  &_dark {background: url('../img/common/dots_more-dark.svg') no-repeat center}
 }
 
 .hamburger-icon {
@@ -107,12 +109,22 @@
   background: url('../img/portfolio/share.svg') no-repeat center;
 }
 
-.professional-mode-icon {
-  width: 27px;
-  height: 13px;
-  display: inline-block;
-  cursor: pointer;
-  background: url('../img/portfolio/pro.svg') no-repeat center;
+.professional-mode-icon{
+  margin-left: 6px;
+
+  &:before {
+    content: "PRO";
+    display: flex;
+    border: 1px solid $sidebar-blue-color;
+    color: $sidebar-blue-color;
+    font-style: normal;
+    border-radius: 2px;
+    font-size: 9px;
+    line-height: 1;
+    text-transform: uppercase;
+    padding: 1px 2px;
+    cursor: pointer;
+  }
 }
 
 .quotes-share {

@@ -69,4 +69,12 @@ input.highcharts-range-selector:focus {
 .info-block {
   @extend %info-panel;
   padding: 12px;
+
+  > a.big-link {
+    display: inline-block;
+    font-size: 14px;
+    line-height: 20px;
+    padding: 8px 24px;
+    margin-top: 8px;
+  }
 }

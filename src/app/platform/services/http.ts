@@ -40,6 +40,8 @@ export class Http {
 
     /** Ключ заголовка в ответе для необходимости обновления однодневного токена */
     private readonly NEED_TO_REFRESH_TOKEN_HEADER = "__CALL_REFRESH_TOKEN__";
+    /** Ключ заголовка источника запроса */
+    private readonly SOURCE_HEADER_KEY = "Request-source";
 
     private readonly BASE_URL: string = `${window.location.protocol}//${window.location.host}/api`;
 
@@ -47,6 +49,7 @@ export class Http {
         const token = this.localStorage.get(StoreKeys.TOKEN_KEY, null);
         if (!CommonUtils.isBlank(token)) {
             const headers: MapType = {"Authorization": `Bearer ${token}`};
+            headers[this.SOURCE_HEADER_KEY] = "WEB";
             const refreshToken = this.localStorage.get(StoreKeys.REFRESH_TOKEN, null);
             if (!CommonUtils.isBlank(refreshToken)) {
                 headers[StoreKeys.REFRESH_TOKEN] = refreshToken;
@@ -137,19 +140,8 @@ export class Http {
      */
     private prepareRequestParams(method: string, requestUrl: string, params: { options: any, body?: any, urlParams?: UrlParams }, customBaseUrl: boolean = false): ParamsInit {
         let url = requestUrl;
-        const requestParams = this.getDefaultRequestInit();
+        const requestParams = this.getDefaultRequestInit(params);
         requestParams.method = method;
-        const token = this.localStorage.get(StoreKeys.TOKEN_KEY, null);
-        requestParams.headers = {
-            "Content-Type": "application/json;charset=UTF-8"
-        };
-        if (!CommonUtils.isBlank(token)) {
-            requestParams.headers.Authorization = `Bearer ${token}`;
-        }
-        const refreshToken = this.localStorage.get<string>(StoreKeys.REFRESH_TOKEN, null);
-        if (!CommonUtils.isBlank(refreshToken)) {
-            requestParams.headers[StoreKeys.REFRESH_TOKEN] = refreshToken;
-        }
 
         if (params.options) {
             this.setRequestInitOptions(requestParams, params.options);
@@ -262,17 +254,30 @@ export class Http {
 
     /**
      * Возвращает пользовательские параметры, которые необходимо применить к запросу по умолчанию
+     * @param params объект с параметрами для проверки и формирования заголовков к запросу по умолчанию
      * @return {RequestInit} пользовательские параметры по умолчанию
      */
-    private getDefaultRequestInit(): RequestInit {
+    private getDefaultRequestInit(params: RequestInit): RequestInit {
+        const headers: HeadersInit = {
+            "Accept-Language": "ru_RU"
+        };
+        if (!(params.body instanceof FormData)) {
+            headers["Content-Type"] = "application/json;charset=UTF-8";
+        }
+        headers[this.SOURCE_HEADER_KEY] = "WEB";
+        const token = this.localStorage.get(StoreKeys.TOKEN_KEY, null);
+        if (!CommonUtils.isBlank(token)) {
+            headers.Authorization = `Bearer ${token}`;
+        }
+        const refreshToken = this.localStorage.get<string>(StoreKeys.REFRESH_TOKEN, null);
+        if (!CommonUtils.isBlank(refreshToken)) {
+            headers[StoreKeys.REFRESH_TOKEN] = refreshToken;
+        }
         return {
             /** параметр передачи учетных данных в запросе */
             credentials: "same-origin",
             /** заголовки запроса */
-            headers: {
-                "Content-Type": "application/json;charset=UTF-8",
-                "Accept-Language": "ru_RU"
-            }
+            headers: headers
         };
     }
 

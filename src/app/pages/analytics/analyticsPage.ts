@@ -309,6 +309,7 @@ export class AnalyticsPage extends UI {
     @Watch("portfolio")
     private async onPortfolioChange(): Promise<void> {
         this.portfolioLineChartData = null;
+        this.profitLineChartEvents = null;
         await this.init();
     }
 

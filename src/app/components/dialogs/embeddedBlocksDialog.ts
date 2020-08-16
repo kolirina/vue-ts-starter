@@ -79,7 +79,7 @@ export class EmbeddedBlocksDialog extends CustomDialog<string, BtnReturn> {
     }
 }
 
-type EmbeddedOption = {
+export type EmbeddedOption = {
     name: string,
     value: string
 };

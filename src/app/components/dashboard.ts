@@ -88,7 +88,7 @@ export class DashboardBrickComponent extends UI {
     // language=Vue
     template: `
         <v-container v-if="overview" px-0 grid-list-md text-xs-center fluid>
-            <v-layout class="dashboard-wrap px-4 selectable" row wrap :class="{'menu-open': !sideBarOpened}">
+            <v-layout class="dashboard-wrap selectable" row wrap :class="{'menu-open': !sideBarOpened}">
                 <v-flex class="dashboard-item" xl3 lg3 md6 sm6 xs12>
                     <dashboard-brick-component :block="blocks[0]"></dashboard-brick-component>
                 </v-flex>
