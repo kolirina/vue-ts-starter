@@ -55,17 +55,26 @@ export class PortfolioManagementIntegrationTab extends UI {
     private portfolio: PortfolioParams;
 
     private embeddedOptions: EmbeddedOption[] = [
-        {name: "Диаграмма по акциям и ETF", value: "stocks-diagram"},
-        {name: "Таблица облигаций", value: "bonds-table"},
-        {name: "Диаграмма по облигациям", value: "bonds-diagram"},
-        {name: "График суммарной стоимости портфеля", value: "portfolio-history-chart"},
-        {name: "Таблица со сделками", value: "trades-table"}
+        {name: "Таблица Акции", value: "stocks-table"},
+        {name: "Таблица Облигации", value: "bonds-table"},
+        {name: "Таблица ПИФы/ETF", value: "stocks-table"},
+        {name: "Таблица Прочие активы", value: "assets-table"},
+        {name: "Таблица Сделки", value: "trades-table"},
+        {name: "Диаграмма Акции", value: "stocks-diagram"},
+        {name: "Диаграмма Облигации", value: "bonds-diagram"},
+        {name: "Диаграмма ПИФы/ETF", value: "etf-diagram"},
+        {name: "Диаграмма Прочие активы", value: "asset-diagram"},
+        {name: "Диаграмма состав портфеля", value: "aggregate-diagram"},
+        {name: "Диаграмма Сектора", value: "sectors-diagram"},
+        {name: "Диаграмма Типы облигаций", value: "bond-sectors-diagram"},
+        {name: "График стоимости портфеля", value: "portfolio-history-chart"},
+        {name: "График прибыли портфеля", value: "portfolio-profit-chart"}
     ];
 
     private embeddedOption = this.embeddedOptions[0];
 
     private get embeddedCode(): string {
-        return `<iframe src="${window.location.protocol}//${window.location.host}/public-portfolio/${this.portfolio}/${this.embeddedOption.value}"` +
+        return `<iframe src="${window.location.protocol}//${window.location.host}/public-portfolio/${this.portfolio.id}/${this.embeddedOption.value}"` +
             `style="height: 600px; width: 100%; margin: 10px 0; display: block;" frameborder="0"></iframe>`;
     }
 

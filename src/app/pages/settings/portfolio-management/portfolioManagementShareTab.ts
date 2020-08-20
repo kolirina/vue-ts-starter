@@ -108,14 +108,9 @@ const MainStore = namespace(StoreType.MAIN);
                                     <div class="form-row" key="3">
                                         <div class="profile__subtitle form-row__title">
                                             Цель портфеля
-                                            <v-tooltip content-class="custom-tooltip-wrap" bottom>
-                                                <sup class="custom-tooltip" slot="activator">
-                                                    <v-icon>fas fa-info-circle</v-icon>
-                                                </sup>
-                                                <span>Цель портфеля, описание, которое будет использовано для отображения на карточке публичного портфеля</span>
-                                            </v-tooltip>
+                                            <tooltip>Цель портфеля, описание, которое будет использовано для отображения на карточке публичного портфеля</tooltip>
                                         </div>
-                                        <v-text-field name="target" v-model="portfolio.description" label="Цель портфеля" :counter="120"></v-text-field>
+                                        <v-text-field name="target" v-model.trim="portfolio.description" label="Цель портфеля" :counter="120"></v-text-field>
                                     </div>
                                 </template>
                             </v-fade-transition>
