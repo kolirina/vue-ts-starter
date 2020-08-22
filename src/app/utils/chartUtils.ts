@@ -445,6 +445,9 @@ export class ChartUtils {
     static drawLineChart(container: HTMLElement, eventsChartData: HighStockEventsGroup[], ranges: Highstock.RangeSelectorButton[],
                          selectedRangeIndex: number, decimals: number, title: string = "", yAxisTitle: string = "",
                          callback: () => void = null, portfolioAvg: number = null, compareData: LineChartSeries[] = [], compare: boolean = false): ChartObject {
+        if (!container) {
+            return null;
+        }
         const compareSeries: IndividualSeriesOptions[] = compareData.map(series => {
             return {
                 type: "area",
@@ -574,6 +577,9 @@ export class ChartUtils {
     }
 
     static drawSimpleLineChart(container: HTMLElement, data: SimpleChartData, tooltip: string): ChartObject {
+        if (!container) {
+            return null;
+        }
         return Highcharts.chart(container, {
             chart: {
                 backgroundColor: "#F7F9FB",
@@ -637,6 +643,9 @@ export class ChartUtils {
      */
     static drawPieChart(container: HTMLElement, chartData: any[], balloonTitle: string, title: string = "", viewCurrency: string = "",
                         tooltipFormat: PieChartTooltipFormat = PieChartTooltipFormat.COMMON): ChartObject {
+        if (!container) {
+            return null;
+        }
         const isMobile = CommonUtils.isMobile();
         return Highcharts.chart(container, {
             chart: {
@@ -684,6 +693,9 @@ export class ChartUtils {
     }
 
     static drawMicroLineChart(container: HTMLElement, chartData: any[], callback: () => void = null): ChartObject {
+        if (!container) {
+            return null;
+        }
         return Highstock.stockChart(container, {
             chart: {
                 backgroundColor: null,
@@ -751,6 +763,9 @@ export class ChartUtils {
      */
     static drawBarChart(container: HTMLElement, chartData: ColumnChartData, title: string = "", viewCurrency: string = "",
                         tooltipFormat: PieChartTooltipFormat = PieChartTooltipFormat.COMMON): ChartObject {
+        if (!container) {
+            return null;
+        }
         return Highcharts.chart(container, {
             chart: {
                 type: "bar",
@@ -878,6 +893,9 @@ export class ChartUtils {
      */
     static drawColumnChart(container: HTMLElement, chartData: ColumnChartData, title: string = "", viewCurrency: string = "",
                            tooltipFormat: PieChartTooltipFormat = PieChartTooltipFormat.COMMON): ChartObject {
+        if (!container) {
+            return null;
+        }
         return Highcharts.chart(container, {
             chart: {
                 type: "column",

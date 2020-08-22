@@ -52,7 +52,7 @@ const MainStore = namespace(StoreType.MAIN);
             <v-layout v-if="portfolio" class="profile" column>
                 <div v-if="!isNew" class="card__header">
                     <div class="card__header-title">
-                        <div :class="['provider__image', selectedBroker?.code.toLowerCase()]"></div>
+                        <div :class="['provider__image', selectedBroker ? selectedBroker.code.toLowerCase() : '']"></div>
                         <div class="margRAuto">
                             <span>{{ portfolioName }}</span>
                             <div @click="goBack" class="back-btn">Назад</div>
