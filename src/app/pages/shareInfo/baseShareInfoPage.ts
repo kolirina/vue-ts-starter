@@ -400,6 +400,7 @@ export class BaseShareInfoPage extends UI {
         await this.loadShareInfo();
         this.portfolioAvgPrice = await this.getPortfolioAvgPrice();
         UI.on(EventType.TRADE_CREATED, async () => {
+            this.portfolioAvgPrice = null;
             this.portfolioAvgPrice = await this.getPortfolioAvgPrice();
         });
     }
@@ -414,6 +415,7 @@ export class BaseShareInfoPage extends UI {
      */
     @Watch("ticker")
     private async onTickerChange(): Promise<void> {
+        this.portfolioAvgPrice = null;
         await this.loadShareInfo();
         this.portfolioAvgPrice = await this.getPortfolioAvgPrice();
     }
@@ -422,9 +424,11 @@ export class BaseShareInfoPage extends UI {
     @ShowProgress
     private async onPortfolioChange(): Promise<void> {
         if (this.share) {
+            this.portfolioAvgPrice = null;
             this.events = [];
             this.events.push(...this.shareEvents);
             await this.loadTradeEvents();
+            this.portfolioAvgPrice = await this.getPortfolioAvgPrice();
         }
     }
 

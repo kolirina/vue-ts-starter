@@ -221,6 +221,7 @@ export class BondInfoPage extends UI {
     private AssetType = AssetType;
     /** Признак, если бумага не была найдена */
     private shareNotFound = false;
+    /** Средняя цена по бумаге в портфеле */
     private portfolioAvgPrice: number = null;
 
     /**
@@ -232,6 +233,7 @@ export class BondInfoPage extends UI {
         this.portfolioAvgPrice = this.getPortfolioAvgPrice();
         UI.on(EventType.TRADE_CREATED, async () => {
             await this.reloadPortfolio(this.portfolio.id);
+            this.portfolioAvgPrice = null;
             this.portfolioAvgPrice = this.getPortfolioAvgPrice();
         });
     }
@@ -248,6 +250,7 @@ export class BondInfoPage extends UI {
     private async onRouterChange(): Promise<void> {
         this.isin = this.$route.params.isin;
         await this.loadBondInfo();
+        this.portfolioAvgPrice = null;
         this.portfolioAvgPrice = this.getPortfolioAvgPrice();
     }
 
@@ -258,6 +261,7 @@ export class BondInfoPage extends UI {
             this.events = [];
             this.events.push(...this.shareEvents);
             await this.loadTradeEvents();
+            this.portfolioAvgPrice = this.getPortfolioAvgPrice();
         }
     }
 
