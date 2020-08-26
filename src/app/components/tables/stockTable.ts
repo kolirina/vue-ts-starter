@@ -79,7 +79,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     :ticker="String(props.item.share.id)">{{ props.item.share.shortname }}
                         </asset-link>
                         &nbsp;
-                        <span v-if="props.item.share && props.item.quantity !== '0'"
+                        <span v-if="props.item.share && props.item.quantity !== '0'" title="Изменение за день"
                               :class="markupClasses(Number(props.item.share.change))">{{ props.item.share.change }}&nbsp;%</span>
                     </td>
                     <td v-if="tableHeadersState.ticker" class="text-xs-left">

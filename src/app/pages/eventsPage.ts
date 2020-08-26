@@ -36,262 +36,273 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-container v-if="portfolio" fluid class="events">
-            <v-card flat class="header-first-card">
-                <v-card-title class="header-first-card__wrapper-title">
-                    <div class="section-title header-first-card__title-text">События</div>
-                    <v-spacer></v-spacer>
-                    <v-btn @click.stop="openDialog" class="primary">
-                        Добавить событие
-                    </v-btn>
-                </v-card-title>
-            </v-card>
+        <v-slide-x-reverse-transition>
+            <template v-if="initialized">
+                <v-container v-if="portfolio" fluid class="events">
+                    <v-card flat class="header-first-card">
+                        <v-card-title class="header-first-card__wrapper-title">
+                            <div class="section-title header-first-card__title-text">События</div>
+                            <v-spacer></v-spacer>
+                            <v-btn @click.stop="openDialog" class="primary">
+                                Добавить событие
+                            </v-btn>
+                        </v-card-title>
+                    </v-card>
 
-            <v-card class="events__card" flat data-v-step="0">
-                <div v-if="showHintPanel" class="events__info-panel">
-                    Данный раздел является местом аккумуляции нескольких источников информации о таких начислениях, как дивиденды, купоны, амортизация и погашение.<br>
-                    Все используемые источники являются официальными каналами предоставления информации, однако это не исключает, что:<br>
-                    <b>- по отдельным активам в разделе нет Событий;<br>
-                        - некоторые События предоставлены с ошибкой.</b><br><br>
-                    Поэтому обращаем ваше внимание, что <b>перед исполнением начислений проверяйте, пожалуйста, правильность данных.</b><br>
-                    Это позволит сохранять данные портфеля корректными.<br>
-                    Если же по какой-либо из ваших бумаг нет события в календаре или новостях, добавьте сделку по начислению вручную.<br>
-                    <a @click="hideHintsPanel">Больше не показывать</a>
-                </div>
-                <v-card-title class="events__card-title">
-                    Новые события
-                    <v-spacer></v-spacer>
-                    <v-menu v-if="events.length" transition="slide-y-transition" bottom left>
-                        <v-btn slot="activator" class="events__menu-btn" flat icon dark>
-                            <span class="menuDots"></span>
-                        </v-btn>
-                        <v-list dense style="cursor: pointer;">
-                            <v-list-tile @click.native="executeAllEvents">
-                                <v-list-tile-title>
-                                    Исполнить события с зачислением денег
-                                </v-list-tile-title>
-                            </v-list-tile>
-                            <v-list-tile @click.native="executeAllEventsWithoutMoney"
-                                         title="Полезно, если вы хотите быстро учесть все начисления в доходности портфеля, а текущий баланс укажете самостоятельно.">
-                                <v-list-tile-title>
-                                    Исполнить события без зачисления денег
-                                </v-list-tile-title>
-                            </v-list-tile>
-                            <v-list-tile @click.native="confirmDeleteAllEvents" style="color: #ff5b5d;">
-                                <v-list-tile-title class="delete-btn">
-                                    Удалить все
-                                </v-list-tile-title>
-                            </v-list-tile>
-                        </v-list>
-                    </v-menu>
-                </v-card-title>
+                    <v-card class="events__card" flat data-v-step="0">
+                        <div v-if="showHintPanel" class="events__info-panel">
+                            Данный раздел является местом аккумуляции нескольких источников информации о таких начислениях, как дивиденды, купоны, амортизация и погашение.<br>
+                            Все используемые источники являются официальными каналами предоставления информации, однако это не исключает, что:<br>
+                            <b>- по отдельным активам в разделе нет Событий;<br>
+                                - некоторые События предоставлены с ошибкой.</b><br><br>
+                            Поэтому обращаем ваше внимание, что <b>перед исполнением начислений проверяйте, пожалуйста, правильность данных.</b><br>
+                            Это позволит сохранять данные портфеля корректными.<br>
+                            Если же по какой-либо из ваших бумаг нет события в календаре или новостях, добавьте сделку по начислению вручную.<br>
+                            <a @click="hideHintsPanel">Больше не показывать</a>
+                        </div>
+                        <v-card-title class="events__card-title">
+                            Новые события
+                            <v-spacer></v-spacer>
+                            <v-menu v-if="events.length && allowActions" transition="slide-y-transition" bottom left>
+                                <v-btn slot="activator" class="events__menu-btn" flat icon dark>
+                                    <span class="menuDots"></span>
+                                </v-btn>
+                                <v-list dense style="cursor: pointer;">
+                                    <v-list-tile @click.native="executeAllEvents">
+                                        <v-list-tile-title>
+                                            Исполнить события с зачислением денег
+                                        </v-list-tile-title>
+                                    </v-list-tile>
+                                    <v-list-tile @click.native="executeAllEventsWithoutMoney"
+                                                 title="Полезно, если вы хотите быстро учесть все начисления в доходности портфеля, а текущий баланс укажете самостоятельно.">
+                                        <v-list-tile-title>
+                                            Исполнить события без зачисления денег
+                                        </v-list-tile-title>
+                                    </v-list-tile>
+                                    <v-list-tile @click.native="confirmDeleteAllEvents" style="color: #ff5b5d;">
+                                        <v-list-tile-title class="delete-btn">
+                                            Удалить все
+                                        </v-list-tile-title>
+                                    </v-list-tile>
+                                </v-list>
+                            </v-menu>
+                        </v-card-title>
 
-                <v-card-text>
-                    <div class="eventsAggregateInfo" v-if="eventsAggregateInfo">
-                        <span class="item-block dividend_news">
-                            <span :class="['item-block__amount', currency]">Дивиденды {{ eventsAggregateInfo.totalDividendsAmount | number }} </span>
-                        </span>
+                        <v-card-text>
+                            <div class="eventsAggregateInfo" v-if="eventsAggregateInfo">
+                                <span class="item-block dividend_news">
+                                    <span :class="['item-block__amount', currency]">Дивиденды {{ eventsAggregateInfo.totalDividendsAmount | number }} </span>
+                                </span>
+                                <span class="item-block coupon">
+                                    <span :class="['item-block__amount', currency]">Купоны {{ eventsAggregateInfo.totalCouponsAmount | number }} </span>
+                                </span>
+                                <span class="item-block amortization">
+                                    <span :class="['item-block__amount', currency]">Амортизация {{ eventsAggregateInfo.totalAmortizationsAmount | number }} </span>
+                                </span>
+                                <span class="item-block repayment">
+                                    <span :class="['item-block__amount', currency]">Погашения {{ eventsAggregateInfo.totalRepaymentsAmount | number }} </span>
+                                </span>
+                                <span class="item-block total">
+                                    <span :class="['item-block__amount', currency]">Всего выплат {{ eventsAggregateInfo.totalAmount | number }} </span>
+                                </span>
+                            </div>
 
-                        <span class="item-block coupon">
-                            <span :class="['item-block__amount', currency]">Купоны {{ eventsAggregateInfo.totalCouponsAmount | number }} </span>
-                        </span>
+                            <v-data-table v-if="events.length" :headers="eventsHeaders" :items="events" item-key="id" :custom-sort="customSortEvents"
+                                          class="data-table events-table" :pagination.sync="eventsPagination" hide-actions must-sort>
+                                <template #items="props">
+                                    <tr class="selectable">
+                                        <td class="text-xs-left pl-30">{{ props.item.label }}</td>
+                                        <td class="text-xs-left">{{ props.item.share.shortname }}</td>
+                                        <td class="text-xs-left">
+                                            <stock-link v-if="props.item.type === 'DIVIDEND'" :ticker="props.item.share.ticker"></stock-link>
 
-                        <span class="item-block amortization">
-                            <span :class="['item-block__amount', currency]">Амортизация {{ eventsAggregateInfo.totalAmortizationsAmount | number }} </span>
-                        </span>
+                                            <bond-link v-if="props.item.type !== 'DIVIDEND'" :ticker="props.item.share.ticker"></bond-link>
+                                        </td>
+                                        <td class="text-xs-right">{{ props.item.date | date }}</td>
+                                        <td class="text-xs-center">{{ props.item.period }}</td>
+                                        <td class="text-xs-right ii-number-cell">
+                                            {{ props.item.cleanAmount | amount(true) }}
+                                            <span class="amount__currency">{{ props.item.cleanAmount | currencySymbol }}</span>
+                                        </td>
+                                        <td v-if="allowActions" class="justify-end layout pr-3" @click.stop>
+                                            <v-menu transition="slide-y-transition" bottom left>
+                                                <v-btn slot="activator" flat icon dark>
+                                                    <span class="menuDots"></span>
+                                                </v-btn>
+                                                <v-list dense>
+                                                    <v-list-tile @click="openTradeDialog(props.item)">
+                                                        <v-list-tile-title>
+                                                            Исполнить
+                                                        </v-list-tile-title>
+                                                    </v-list-tile>
+                                                    <v-list-tile @click="rejectEvent(props.item)">
+                                                        <v-list-tile-title class="delete-btn">
+                                                            Удалить
+                                                        </v-list-tile-title>
+                                                    </v-list-tile>
+                                                </v-list>
+                                            </v-menu>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </v-data-table>
 
-                        <span class="item-block repayment">
-                            <span :class="['item-block__amount', currency]">Погашения {{ eventsAggregateInfo.totalRepaymentsAmount | number }} </span>
-                        </span>
+                            <div v-else class="events-table__empty">{{ emptyTableText }}</div>
+                        </v-card-text>
+                    </v-card>
 
-                        <span class="item-block total">
-                            <span :class="['item-block__amount', currency]">Всего выплат {{ eventsAggregateInfo.totalAmount | number }} </span>
-                        </span>
-                    </div>
+                    <v-card style="margin-top: 30px" flat data-v-step="1">
+                        <v-card-title class="events__card-title">Дивидендные новости</v-card-title>
 
-                    <v-data-table v-if="events.length" :headers="eventsHeaders" :items="events" item-key="id" :custom-sort="customSortEvents"
-                                  class="data-table events-table" :pagination.sync="eventsPagination" hide-actions must-sort>
-                        <template #items="props">
-                            <tr class="selectable">
-                                <td class="text-xs-left pl-30">{{ props.item.label }}</td>
-                                <td class="text-xs-left">{{ props.item.share.shortname }}</td>
-                                <td class="text-xs-left">
-                                    <stock-link v-if="props.item.type === 'DIVIDEND'" :ticker="props.item.share.ticker"></stock-link>
-
-                                    <bond-link v-if="props.item.type !== 'DIVIDEND'" :ticker="props.item.share.ticker"></bond-link>
-                                </td>
-                                <td class="text-xs-right">{{ props.item.date | date }}</td>
-                                <td class="text-xs-center">{{ props.item.period }}</td>
-                                <td class="text-xs-right ii-number-cell">
-                                    {{ props.item.cleanAmount | amount(true) }}
-                                    <span class="amount__currency">{{ props.item.cleanAmount | currencySymbol }}</span>
-                                </td>
-                                <td class="justify-end layout pr-3" @click.stop>
-                                    <v-menu transition="slide-y-transition" bottom left>
-                                        <v-btn slot="activator" flat icon dark>
-                                            <span class="menuDots"></span>
-                                        </v-btn>
-                                        <v-list dense>
-                                            <v-list-tile @click="openTradeDialog(props.item)">
-                                                <v-list-tile-title>
-                                                    Исполнить
-                                                </v-list-tile-title>
-                                            </v-list-tile>
-                                            <v-list-tile @click="rejectEvent(props.item)">
-                                                <v-list-tile-title class="delete-btn">
-                                                    Удалить
-                                                </v-list-tile-title>
-                                            </v-list-tile>
-                                        </v-list>
-                                    </v-menu>
-                                </td>
-                            </tr>
-                        </template>
-                    </v-data-table>
-
-                    <div v-else class="events-table__empty">{{ emptyTableText }}</div>
-                </v-card-text>
-            </v-card>
-
-            <v-card style="margin-top: 30px" flat data-v-step="1">
-                <v-card-title class="events__card-title">Дивидендные новости</v-card-title>
-
-                <v-card-text>
-                    <v-data-table v-if="dividendNews.length" :headers="dividendNewsHeaders" :items="dividendNews" item-key="id" :custom-sort="customSortNews"
-                                  class="data-table dividend-news-table events-table" hide-actions must-sort>
-                        <template #headerCell="props">
-                            <v-tooltip v-if="props.header.tooltip" content-class="custom-tooltip-wrap" bottom>
-                                <template #activator="{ on }">
-                                    <span class="data-table__header-with-tooltip" v-on="on">
+                        <v-card-text>
+                            <v-data-table v-if="dividendNews.length" :headers="dividendNewsHeaders" :items="dividendNews" item-key="id" :custom-sort="customSortNews"
+                                          class="data-table dividend-news-table events-table" hide-actions must-sort>
+                                <template #headerCell="props">
+                                    <v-tooltip v-if="props.header.tooltip" content-class="custom-tooltip-wrap" bottom>
+                                        <template #activator="{ on }">
+                                            <span class="data-table__header-with-tooltip" v-on="on">
+                                                {{ props.header.text }}
+                                            </span>
+                                        </template>
+                                        <span>
+                                          {{ props.header.tooltip }}
+                                        </span>
+                                    </v-tooltip>
+                                    <span v-else>
                                         {{ props.header.text }}
                                     </span>
                                 </template>
-                                <span>
-                                  {{ props.header.tooltip }}
-                                </span>
-                            </v-tooltip>
-                            <span v-else>
-                                {{ props.header.text }}
-                            </span>
-                        </template>
-                        <template #items="props">
-                            <tr class="selectable">
-                                <td class="text-xs-left pl-30">
-                                    <stock-link :ticker="props.item.ticker"></stock-link>
-                                </td>
-                                <td class="text-xs-left">{{ props.item.shortname }}</td>
-                                <td class="text-xs-right">{{ props.item.meetDate | date }}</td>
-                                <td class="text-xs-right">{{ props.item.cutDate | date }}</td>
-                                <td class="text-xs-right ii-number-cell">
-                                    {{ props.item.recCommonValue | number }}
-                                    <span class="amount__currency">{{ props.item.currency | currencySymbolByCurrency }}</span>
-                                    ({{ props.item.yield }} %)
-                                </td>
-                                <td class="text-xs-center pr-3">{{ props.item.source }}</td>
-                            </tr>
-                        </template>
-                    </v-data-table>
-
-                    <div v-else class="dividend-news-table__empty">Дивидендных новостей по вашим бумагам нет</div>
-                </v-card-text>
-            </v-card>
-
-            <v-card class="events__card" flat style="margin-top: 30px" data-v-step="2">
-                <v-card-title class="events__card-title">
-                    <v-layout class="px-0 py-0" align-center>
-                        Календарь событий
-                        <v-spacer></v-spacer>
-                        <div class="import-wrapper-content pr-1">
-                            <span v-if="customFilter" class="event-calendar-active-filter" title="Настроен фильтр"></span>
-                            <v-menu content-class="dialog-settings-menu" transition="slide-y-transition" nudge-bottom="36" left bottom class="settings-menu my-0 mx-0"
-                                    :close-on-content-click="false" min-width="255">
-                                <v-btn class="btn" slot="activator">
-                                    Настройки
-                                </v-btn>
-                                <v-list dense>
-                                    <div class="title-settings">
-                                        Тип события
-                                    </div>
-                                    <v-flex>
-                                        <v-checkbox v-for="event in calendarEventsTypes.values()" :input-value="isCalendarTypeChecked(event.code)"
-                                                    @change="changeFilter(event.code)" :key="event.code" hide-details class="checkbox-settings">
-                                            <template #label>
-                                                <span>
-                                                    {{ event.description }}
-                                                </span>
-                                            </template>
-                                        </v-checkbox>
-                                    </v-flex>
-                                </v-list>
-                            </v-menu>
-                        </div>
-                    </v-layout>
-                </v-card-title>
-                <v-card-text v-if="calendarEvents" class="events-calendar-wrap">
-                    <div class="restriction-calendar-width">
-                        <v-layout class="pl-3">
-                            <div class="pl-3">
-                                <v-menu v-model="calendarMenu" :close-on-content-click="false" full-width bottom right nudge-bottom="23" nudge-right="6" max-width="290">
-                                    <template v-slot:activator="{ on }">
-                                        <v-flex :class="['select-date-input', calendarMenu ? 'rotate-icons' : '']">
-                                            <v-input append-icon="keyboard_arrow_down" v-on="on" hide-details>
-                                                {{ formattedDate }}
-                                            </v-input>
-                                        </v-flex>
-                                    </template>
-                                    <v-date-picker v-model="calendarStartDate" type="month" locale="ru" @change="changeMonth()"></v-date-picker>
-                                </v-menu>
-                            </div>
-                        </v-layout>
-                        <v-sheet>
-                            <v-calendar :now="today" :value="calendarRequestParams.start" :weekdays="weekdays" color="primary" locale="ru">
-                                <template v-slot:day="{ date }">
-                                    <div class="wrap-list-events">
-                                        <div>
-                                            <div v-for="(calendarEvent, index) in calendarEvents[date]" :key="index">
-                                                <v-menu max-width="267" right nudge-right="150" content-class="fs13 info-about-event" :close-on-content-click="false">
-                                                    <template v-slot:activator="{ on }">
-                                                        <div v-on="on" :class="[calendarEvent.type.toLowerCase(), 'fs13', 'calendar-events-title', 'pl-2', 'selectable']">
-                                                            {{ calendarEvent.ticker }} {{ calendarEvent.description }}
-                                                        </div>
-                                                    </template>
-                                                    <v-card class="selectable" flat>
-                                                        <div v-if="['COUPON', 'AMORTIZATION', 'REPAYMENT'].includes(calendarEvent.type)">
-                                                            <span>
-                                                                {{ calendarEvent.description }} по облигации
-                                                                <bond-link :ticker="calendarEvent.ticker"></bond-link>
-                                                                ({{ calendarEvent.shortName }})
-                                                                в размере {{ calendarEvent.amount }} {{ calendarEvent.currency | currencySymbolByCurrency}}
-                                                            </span>
-                                                            <div class="margT10">
-                                                                <a @click="openTradeDialogForEvent(calendarEvent.ticker, AssetType.BOND)">Добавить в портфель</a>
-                                                            </div>
-                                                        </div>
-                                                        <div v-if="['DIVIDEND_HISTORY', 'DIVIDEND_NEWS'].includes(calendarEvent.type)">
-                                                            <span v-if="calendarEvent.type === 'DIVIDEND_HISTORY'">Выплата дивиденда по акции</span>
-                                                            <span v-if="calendarEvent.type === 'DIVIDEND_NEWS'">Планируемый дивиденд по акции</span>
-                                                            <stock-link :ticker="calendarEvent.ticker"></stock-link>
-                                                            ({{ calendarEvent.shortName }}) в размере {{ calendarEvent.amount }}
-                                                            {{ calendarEvent.currency | currencySymbolByCurrency}}
-                                                            <div class="margT10">
-                                                                <a @click="openTradeDialogForEvent(calendarEvent.ticker, AssetType.STOCK)">Добавить в портфель</a>
-                                                            </div>
-                                                        </div>
-                                                    </v-card>
-                                                </v-menu>
-                                            </div>
-                                        </div>
-                                    </div>
+                                <template #items="props">
+                                    <tr class="selectable">
+                                        <td class="text-xs-left pl-30">
+                                            <stock-link :ticker="props.item.ticker"></stock-link>
+                                        </td>
+                                        <td class="text-xs-left">{{ props.item.shortname }}</td>
+                                        <td class="text-xs-right">{{ props.item.meetDate | date }}</td>
+                                        <td class="text-xs-right">{{ props.item.cutDate | date }}</td>
+                                        <td class="text-xs-right ii-number-cell">
+                                            {{ props.item.recCommonValue | number }}
+                                            <span class="amount__currency">{{ props.item.currency | currencySymbolByCurrency }}</span>
+                                            <span title="Доходность относительно текущей цены">({{ props.item.yield }} %)</span>
+                                        </td>
+                                        <td class="text-xs-center pr-3">{{ props.item.source }}</td>
+                                    </tr>
                                 </template>
-                            </v-calendar>
-                        </v-sheet>
-                    </div>
-                </v-card-text>
-            </v-card>
-        </v-container>
+                            </v-data-table>
+
+                            <div v-else class="dividend-news-table__empty">Дивидендных новостей по вашим бумагам нет</div>
+                        </v-card-text>
+                    </v-card>
+
+                    <v-card class="events__card" flat style="margin-top: 30px" data-v-step="2">
+                        <v-card-title class="events__card-title">
+                            <v-layout class="px-0 py-0" align-center>
+                                Календарь событий
+                                <v-spacer></v-spacer>
+                                <div class="import-wrapper-content pr-1">
+                                    <span v-if="customFilter" class="event-calendar-active-filter" title="Настроен фильтр"></span>
+                                    <v-menu content-class="dialog-settings-menu" transition="slide-y-transition" nudge-bottom="36" left bottom class="settings-menu my-0 mx-0"
+                                            :close-on-content-click="false" min-width="255">
+                                        <v-btn class="btn" slot="activator">
+                                            Настройки
+                                        </v-btn>
+                                        <v-list dense>
+                                            <div class="title-settings">
+                                                Тип события
+                                            </div>
+                                            <v-flex>
+                                                <v-checkbox v-for="event in calendarEventsTypes.values()" :input-value="isCalendarTypeChecked(event.code)"
+                                                            @change="changeFilter(event.code)" :key="event.code" hide-details class="checkbox-settings">
+                                                    <template #label>
+                                                        <span>
+                                                            {{ event.description }}
+                                                        </span>
+                                                    </template>
+                                                </v-checkbox>
+                                            </v-flex>
+                                        </v-list>
+                                    </v-menu>
+                                </div>
+                            </v-layout>
+                        </v-card-title>
+                        <v-card-text v-if="calendarEvents" class="events-calendar-wrap">
+                            <div class="restriction-calendar-width">
+                                <v-layout class="pl-3">
+                                    <div class="pl-3">
+                                        <v-menu v-model="calendarMenu" :close-on-content-click="false" full-width bottom right nudge-bottom="23" nudge-right="6" max-width="290">
+                                            <template v-slot:activator="{ on }">
+                                                <v-flex :class="['select-date-input', calendarMenu ? 'rotate-icons' : '']">
+                                                    <v-input append-icon="keyboard_arrow_down" v-on="on" hide-details>
+                                                        {{ formattedDate }}
+                                                    </v-input>
+                                                </v-flex>
+                                            </template>
+                                            <v-date-picker v-model="calendarStartDate" type="month" locale="ru" @change="changeMonth()"></v-date-picker>
+                                        </v-menu>
+                                    </div>
+                                </v-layout>
+                                <v-sheet>
+                                    <v-calendar :now="today" :value="calendarRequestParams.start" :weekdays="weekdays" color="primary" locale="ru">
+                                        <template v-slot:day="{ date }">
+                                            <div class="wrap-list-events">
+                                                <div>
+                                                    <div v-for="(calendarEvent, index) in calendarEvents[date]" :key="index">
+                                                        <v-menu max-width="267" right nudge-right="150" content-class="fs13 info-about-event" :close-on-content-click="false">
+                                                            <template v-slot:activator="{ on }">
+                                                                <div v-on="on" :class="[calendarEvent.type.toLowerCase(), 'fs13', 'calendar-events-title', 'pl-2', 'selectable']">
+                                                                    {{ calendarEvent.ticker }} {{ calendarEvent.description }}
+                                                                </div>
+                                                            </template>
+                                                            <v-card class="selectable" flat>
+                                                                <div v-if="['COUPON', 'AMORTIZATION', 'REPAYMENT'].includes(calendarEvent.type)">
+                                                                    <span>
+                                                                        {{ calendarEvent.description }} по облигации
+                                                                        <bond-link :ticker="calendarEvent.ticker"></bond-link>
+                                                                        ({{ calendarEvent.shortName }})
+                                                                        в размере {{ calendarEvent.amount }} {{ calendarEvent.currency | currencySymbolByCurrency}}
+                                                                    </span>
+                                                                    <div class="margT10">
+                                                                        <a @click="openTradeDialogForEvent(calendarEvent.ticker, AssetType.BOND)">Добавить в портфель</a>
+                                                                    </div>
+                                                                </div>
+                                                                <div v-if="['DIVIDEND_HISTORY', 'DIVIDEND_NEWS'].includes(calendarEvent.type)">
+                                                                    <span v-if="calendarEvent.type === 'DIVIDEND_HISTORY'">Выплата дивиденда по акции</span>
+                                                                    <span v-if="calendarEvent.type === 'DIVIDEND_NEWS'">Планируемый дивиденд по акции</span>
+                                                                    <stock-link :ticker="calendarEvent.ticker"></stock-link>
+                                                                    ({{ calendarEvent.shortName }}) в размере {{ calendarEvent.amount }}
+                                                                    {{ calendarEvent.currency | currencySymbolByCurrency}}
+                                                                    <div class="margT10">
+                                                                        <a @click="openTradeDialogForEvent(calendarEvent.ticker, AssetType.STOCK)">Добавить в портфель</a>
+                                                                    </div>
+                                                                </div>
+                                                            </v-card>
+                                                        </v-menu>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </v-calendar>
+                                </v-sheet>
+                            </div>
+                        </v-card-text>
+                    </v-card>
+                </v-container>
+            </template>
+            <template v-else>
+                <content-loader class="content-loader" :height="800" :width="800" :speed="1" primaryColor="#f3f3f3" secondaryColor="#ecebeb">
+                    <rect x="0" y="20" rx="5" ry="5" width="801.11" height="100"/>
+                    <rect x="0" y="140" rx="5" ry="5" width="801.11" height="100"/>
+                    <rect x="0" y="260" rx="5" ry="5" width="801.11" height="100"/>
+                    <rect x="0" y="380" rx="5" ry="5" width="801.11" height="100"/>
+                    <rect x="0" y="500" rx="5" ry="5" width="801.11" height="100"/>
+                </content-loader>
+            </template>
+        </v-slide-x-reverse-transition>
     `
 })
 export class EventsPage extends UI {
+
+    private static readonly ACTION_HEADER = {text: "", value: "actions", align: "center", width: "25", sortable: false};
 
     @MainStore.Getter
     private portfolio: Portfolio;
@@ -313,7 +324,6 @@ export class EventsPage extends UI {
         {text: "Дата выплаты/Закрытия реестра", align: "right", value: "date", width: "50"},
         {text: "Период", align: "center", value: "period", sortable: false, width: "180"},
         {text: "Начислено", align: "right", value: "cleanAmount", width: "150"},
-        {text: "", value: "actions", align: "center", width: "25", sortable: false}
     ];
     /** Заголовки таблицы Дивидендные новости */
     private dividendNewsHeaders: TableHeader[] = [
@@ -350,6 +360,8 @@ export class EventsPage extends UI {
     });
     /** Признак отображения панели с подсказкой */
     private showHintPanel = this.localStorage.get("eventsHintPanel", true);
+    /** Признак инициализации */
+    private initialized = false;
 
     /**
      * Инициализация данных
@@ -362,6 +374,9 @@ export class EventsPage extends UI {
         this.typeCalendarEvents = eventsFromStorage ? eventsFromStorage : this.getDefaultFilter();
         this.calendarRequestParams.calendarEventTypes = this.typeCalendarEvents.map(e => e.toUpperCase() as CalendarType);
         await this.loadAllData();
+        if (this.allowActions) {
+            this.eventsHeaders.push(EventsPage.ACTION_HEADER);
+        }
         UI.on(EventType.TRADE_CREATED, async () => {
             await this.reloadPortfolio(this.portfolio.id);
             await this.loadAllData();
@@ -373,22 +388,32 @@ export class EventsPage extends UI {
     }
 
     private async loadAllData(): Promise<void> {
-        await Promise.all([
-                this.updateEvents(),
-                this.loadDividendNews(),
-                this.loadCalendarEvents(),
-            ]
-        );
+        this.initialized = false;
+        try {
+            await Promise.all([
+                    this.loadEvents(),
+                    this.loadDividendNews(),
+                    this.loadCalendarEvents(),
+                ]
+            );
+        } finally {
+            this.initialized = true;
+        }
     }
 
     @Watch("portfolio")
     @ShowProgress
     private async onPortfolioChange(): Promise<void> {
-        await this.updateEvents();
-        await this.loadDividendNews();
-        // если выбран фильтр Пользовательские, нужно перезагрузить календарь
-        if (this.typeCalendarEvents.includes(CalendarEventType.USER.code.toLowerCase())) {
-            await this.loadCalendarEvents();
+        this.initialized = false;
+        try {
+            await this.loadEvents();
+            await this.loadDividendNews();
+            // если выбран фильтр Пользовательские, нужно перезагрузить календарь
+            if (this.typeCalendarEvents.includes(CalendarEventType.USER.code.toLowerCase())) {
+                await this.loadCalendarEvents();
+            }
+        } finally {
+            this.initialized = true;
         }
     }
 
@@ -418,7 +443,13 @@ export class EventsPage extends UI {
 
     @ShowProgress
     private async loadCalendarEvents(): Promise<void> {
-        const calendarEvents: CalendarEvent[] = await this.eventService.getCalendarEvents(this.calendarRequestParams);
+        let calendarEvents: CalendarEvent[] = [];
+        if (this.portfolio.portfolioParams.combinedFlag) {
+            calendarEvents = await this.eventService.getCalendarEventsCombined(this.calendarRequestParams, this.portfolio.portfolioParams.viewCurrency,
+                this.portfolio.portfolioParams.combinedIds);
+        } else {
+            calendarEvents = await this.eventService.getCalendarEvents(this.calendarRequestParams);
+        }
         this.calendarEvents = this.getFilteredCalendarEvents(calendarEvents);
     }
 
@@ -475,8 +506,12 @@ export class EventsPage extends UI {
         await this.loadCalendarEvents();
     }
 
-    private async updateEvents(): Promise<void> {
-        this.eventsResponse = await this.eventService.getEvents(this.portfolio.id);
+    private async loadEvents(): Promise<void> {
+        if (this.portfolio.portfolioParams.combinedFlag) {
+            this.eventsResponse = await this.eventService.getEventsCombined(this.portfolio.portfolioParams.viewCurrency, this.portfolio.portfolioParams.combinedIds);
+        } else {
+            this.eventsResponse = await this.eventService.getEvents(this.portfolio.id);
+        }
     }
 
     /** События */
@@ -490,7 +525,11 @@ export class EventsPage extends UI {
     }
 
     private async loadDividendNews(): Promise<void> {
-        this.dividendNews = await this.eventService.getDividendNews(this.portfolio.id);
+        if (this.portfolio.portfolioParams.combinedFlag) {
+            this.dividendNews = await this.eventService.getDividendNewsCombined(this.portfolio.portfolioParams.viewCurrency, this.portfolio.portfolioParams.combinedIds);
+        } else {
+            this.dividendNews = await this.eventService.getDividendNews(this.portfolio.id);
+        }
     }
 
     private async openTradeDialog(event: ShareEvent): Promise<void> {
@@ -537,7 +576,7 @@ export class EventsPage extends UI {
     @ShowProgress
     private async deleteAllEvents(): Promise<void> {
         await this.eventService.deleteAllEvents(this.portfolio.id);
-        await this.updateEvents();
+        await this.loadEvents();
         this.$snotify.info("Начисления успешно удалены");
     }
 
@@ -566,7 +605,7 @@ export class EventsPage extends UI {
             shareId: event.share.id,
             type: event.type
         });
-        await this.updateEvents();
+        await this.loadEvents();
         this.$snotify.info("Начисление удалено");
     }
 
@@ -599,5 +638,9 @@ export class EventsPage extends UI {
      */
     private get customFilter(): boolean {
         return this.typeCalendarEvents.length !== CalendarEventType.values().length;
+    }
+
+    private get allowActions(): boolean {
+        return !this.portfolio.portfolioParams.combinedFlag;
     }
 }

@@ -2,13 +2,12 @@ import {Container} from "typescript-ioc";
 import {ActionContext, Module} from "vuex";
 import {Storage} from "../platform/services/storage";
 import {Client, ClientInfo, ClientService} from "../services/clientService";
-import {EventService, EventsResponse} from "../services/eventService";
+import {EventService} from "../services/eventService";
 import {OverviewService} from "../services/overviewService";
 import {PortfolioParams, PortfolioService} from "../services/portfolioService";
 import {StoreKeys} from "../types/storeKeys";
-import {Portfolio, TariffHint} from "../types/types";
+import {CombinedInfoRequest, Overview, Portfolio, TariffHint} from "../types/types";
 import {TariffUtils} from "../utils/tariffUtils";
-import {ActionType} from "./actionType";
 import {GetterType} from "./getterType";
 import {MutationType} from "./mutationType";
 
@@ -33,6 +32,7 @@ export class StateHolder {
     version = "1.0";
     /** Признак открытого меню */
     sideBarOpened: boolean = true;
+    /** Координаты подсказки об истечении тарифа */
     tariffExpiredHintCoords: TariffHint = {
         x: "0px",
         y: "0px",
@@ -69,7 +69,18 @@ const Mutations = {
     },
     [MutationType.SET_CURRENT_PORTFOLIO](state: StateHolder, portfolio: Portfolio): void {
         state.currentPortfolio = portfolio;
-        state.clientInfo.user.currentPortfolioId = portfolio.id;
+        if (portfolio.id) {
+            state.clientInfo.user.currentPortfolioId = portfolio.id;
+        }
+    },
+    [MutationType.UPDATE_COMBINED_PORTFOLIO](state: StateHolder, viewCurrency: string): void {
+        const combinedIds: number[] = state.clientInfo.user.portfolios.filter(value => value.combined).map(value => value.id);
+        const combinedPortfolio = state.clientInfo.user.portfolios.find(portfolio => portfolio.combinedFlag);
+        console.log(combinedPortfolio, combinedIds);
+        if (combinedPortfolio) {
+            combinedPortfolio.combinedIds = combinedIds;
+            combinedPortfolio.viewCurrency = viewCurrency;
+        }
     },
     [MutationType.SET_DEFAULT_PORTFOLIO](state: StateHolder, id: number): void {
         state.clientInfo.user.currentPortfolioId = id;
@@ -103,6 +114,23 @@ const Actions = {
     [MutationType.SET_CURRENT_PORTFOLIO](context: ActionContext<StateHolder, void>, id: number): Promise<Portfolio> {
         return new Promise<Portfolio>((resolve): void => {
             overviewService.getById(id).then((portfolio: Portfolio) => {
+                context.commit(MutationType.SET_CURRENT_PORTFOLIO, portfolio);
+                resolve(portfolio);
+            });
+        });
+    },
+    [MutationType.SET_CURRENT_COMBINED_PORTFOLIO](context: ActionContext<StateHolder, void>, portfolioParams: PortfolioParams): Promise<Portfolio> {
+        return new Promise<Portfolio>((resolve): void => {
+            const request: CombinedInfoRequest = {
+                ids: portfolioParams.combinedIds,
+                viewCurrency: portfolioParams.viewCurrency
+            };
+            overviewService.getPortfolioOverviewCombined(request).then((overview: Overview) => {
+                const portfolio: Portfolio = {
+                    id: null,
+                    portfolioParams: {...portfolioParams},
+                    overview: overview
+                };
                 context.commit(MutationType.SET_CURRENT_PORTFOLIO, portfolio);
                 resolve(portfolio);
             });

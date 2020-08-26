@@ -74,7 +74,12 @@ export class DividendsPage extends UI {
     private async loadDividendAggregateInfo(): Promise<void> {
         this.initialized = false;
         try {
-            this.dividendInfo = await this.dividendService.getDividendAggregateInfo(this.portfolio.id);
+            if (this.portfolio.id) {
+                this.dividendInfo = await this.dividendService.getDividendAggregateInfo(this.portfolio.id);
+            } else {
+                this.dividendInfo = await this.dividendService.getDividendAggregateInfoCombined(this.portfolio.portfolioParams.viewCurrency,
+                    this.portfolio.portfolioParams.combinedIds);
+            }
         } finally {
             this.initialized = true;
         }

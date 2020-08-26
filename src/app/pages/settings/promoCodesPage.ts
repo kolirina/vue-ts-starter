@@ -4,7 +4,6 @@ import {namespace} from "vuex-class/lib/bindings";
 import {Component, UI} from "../../app/ui";
 import {PartnerProgramJoiningDialog} from "../../components/dialogs/partnerProgramJoiningDialog";
 import {PartnershipWithdrawalRequestDialog} from "../../components/dialogs/partnershipWithdrawalRequestDialog";
-import {ExpandedPanel} from "../../components/expandedPanel";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {ClientInfo, ClientService} from "../../services/clientService";
@@ -124,8 +123,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-flex>
             </v-layout>
         </v-container>
-    `,
-    components: {ExpandedPanel}
+    `
 })
 export class PromoCodesPage extends UI {
 

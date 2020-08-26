@@ -21,7 +21,6 @@ import {DividendsByTickerTable} from "../components/dividends/dividendsByTickerT
 import {DividendsByYearAndTickerTable} from "../components/dividends/dividendsByYearAndTickerTable";
 import {DividendsByYearTable} from "../components/dividends/dividendsByYearTable";
 import {DividendTradesTable} from "../components/dividends/dividendTradesTable";
-import {ExpandedPanel} from "../components/expandedPanel";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {DividendAggregateInfo} from "../services/dividendService";
 import {ExportService, ExportType} from "../services/exportService";
@@ -34,7 +33,7 @@ import {Portfolio} from "../types/types";
             <dividend-dashboard-component :data="dividendInfo.dividendDashboard" :side-bar-opened="sideBarOpened"
                                           :view-currency="portfolio.portfolioParams.viewCurrency"></dividend-dashboard-component>
 
-            <expanded-panel :value="$uistate.sumYearDivsTablePanel" :withMenu="true" :name="ExportType.DIVIDENDS_BY_YEAR" :state="$uistate.SUM_YEAR_DIVIDENDS">
+            <expanded-panel :value="$uistate.sumYearDivsTablePanel" :withMenu="allowExport" :name="ExportType.DIVIDENDS_BY_YEAR" :state="$uistate.SUM_YEAR_DIVIDENDS">
                 <template #header>Сумма дивидендов по годам</template>
                 <template #list>
                     <v-list-tile-title @click="exportTable(ExportType.DIVIDENDS_BY_YEAR)">Экспорт в xlsx</v-list-tile-title>
@@ -42,7 +41,7 @@ import {Portfolio} from "../types/types";
                 <dividends-by-year-table :rows="dividendInfo.summaryDividendsByYear"></dividends-by-year-table>
             </expanded-panel>
 
-            <expanded-panel :value="$uistate.sumDivsTablePanel" :withMenu="true" :name="ExportType.DIVIDENDS_BY_TICKER" :state="$uistate.SUM_DIVS" class="margT20">
+            <expanded-panel :value="$uistate.sumDivsTablePanel" :withMenu="allowExport" :name="ExportType.DIVIDENDS_BY_TICKER" :state="$uistate.SUM_DIVS" class="margT20">
                 <template #header>Дивиденды по тикерам</template>
                 <template #list>
                     <v-list-tile-title @click="exportTable(ExportType.DIVIDENDS_BY_TICKER)">Экспорт в xlsx</v-list-tile-title>
@@ -50,7 +49,7 @@ import {Portfolio} from "../types/types";
                 <dividends-by-ticker-table :rows="dividendInfo.summaryDividendsByTicker"></dividends-by-ticker-table>
             </expanded-panel>
 
-            <expanded-panel :value="$uistate.yearDivsTablePanel" :withMenu="true" :name="ExportType.DIVIDENDS_BY_YEAR_AND_TICKER" :state="$uistate.YEAR_DIV_LIST" class="margT20">
+            <expanded-panel :value="$uistate.yearDivsTablePanel" :withMenu="allowExport" :name="ExportType.DIVIDENDS_BY_YEAR_AND_TICKER" :state="$uistate.YEAR_DIV_LIST" class="margT20">
                 <template #header>Дивиденды по годам</template>
                 <template #list>
                     <v-list-tile-title @click="exportTable(ExportType.DIVIDENDS_BY_YEAR_AND_TICKER)">Экспорт в xlsx</v-list-tile-title>
@@ -58,7 +57,7 @@ import {Portfolio} from "../types/types";
                 <dividends-by-year-and-ticker-table :rows="dividendInfo.summaryDividendsByYearAndTicker"></dividends-by-year-and-ticker-table>
             </expanded-panel>
 
-            <expanded-panel :value="$uistate.divTradesTablePanel" :withMenu="true" :name="ExportType.DIVIDENDS" :state="$uistate.DIV_LIST" class="margT20">
+            <expanded-panel :value="$uistate.divTradesTablePanel" :withMenu="allowExport" :name="ExportType.DIVIDENDS" :state="$uistate.DIV_LIST" class="margT20">
                 <template #header>Сделки по дивидендам</template>
                 <template #list>
                     <v-list-tile-title @click="exportTable(ExportType.DIVIDENDS)">Экспорт в xlsx</v-list-tile-title>
@@ -67,7 +66,7 @@ import {Portfolio} from "../types/types";
             </expanded-panel>
         </v-container>
     `,
-    components: {ExpandedPanel, DividendDashboardComponent, DividendsByYearTable, DividendsByTickerTable, DividendsByYearAndTickerTable, DividendTradesTable}
+    components: {DividendDashboardComponent, DividendsByYearTable, DividendsByTickerTable, DividendsByYearAndTickerTable, DividendTradesTable}
 })
 export class BaseDividendsPage extends UI {
 
@@ -87,5 +86,9 @@ export class BaseDividendsPage extends UI {
     @ShowProgress
     private async exportTable(exportType: ExportType): Promise<void> {
         await this.exportService.exportReport(this.portfolio.id, exportType);
+    }
+
+    private get allowExport(): boolean {
+        return !this.portfolio.portfolioParams.combinedFlag;
     }
 }

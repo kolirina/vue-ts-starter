@@ -1,7 +1,7 @@
 import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {Http} from "../platform/services/http";
-import {DeleteTradeRequest} from "./tradeService";
+import {CombinedInfoRequest} from "../types/types";
 
 @Service("DividendService")
 @Singleton
@@ -17,6 +17,17 @@ export class DividendService {
      */
     async getDividendAggregateInfo(id: number): Promise<DividendAggregateInfo> {
         return this.http.get<DividendAggregateInfo>(`/dividends/${id}`);
+    }
+
+    /**
+     * Загружает и возвращает агрегированную информацию по дивидендам в портфеле
+     * @param viewCurrency валюта портфеля
+     * @param ids идентификаторы портфелей
+     * @returns {Promise<DividendAggregateInfo>}
+     */
+    async getDividendAggregateInfoCombined(viewCurrency: string, ids: number[]): Promise<DividendAggregateInfo> {
+        const request: CombinedInfoRequest = {viewCurrency, ids};
+        return this.http.post<DividendAggregateInfo>(`/dividends/combined`, request);
     }
 
     /**

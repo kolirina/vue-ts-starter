@@ -5,7 +5,6 @@ import {CustomDialog} from "../../platform/dialogs/customDialog";
 import {OverviewService} from "../../services/overviewService";
 import {PortfolioParams} from "../../services/portfolioService";
 import {ALLOWED_CURRENCIES, Currency} from "../../types/currency";
-import {CombinedData} from "../../types/eventObjects";
 import {CombinedPortfoliosTable} from "../combinedPortfoliosTable";
 
 @Component({
@@ -21,7 +20,7 @@ import {CombinedPortfoliosTable} from "../combinedPortfoliosTable";
                 </div>
                 <div class="scroll-dialog__body">
                     <div>
-                        <combined-portfolios-table :portfolios="data.portfolio" @change="onSetCombined"></combined-portfolios-table>
+                        <combined-portfolios-table :portfolios="data.portfolios" @change="onSetCombined"></combined-portfolios-table>
                     </div>
                     <div class="choose-currency">
                         <div class="choose-currency__description mb-1">
@@ -45,7 +44,7 @@ import {CombinedPortfoliosTable} from "../combinedPortfoliosTable";
     `,
     components: {CombinedPortfoliosTable}
 })
-export class CompositePortfolioManagement extends CustomDialog<PortfolioManagementParams, string> {
+export class CompositePortfolioManagementDialog extends CustomDialog<PortfolioManagementParams, string> {
     /** Валюта просмотра портфеля */
     private viewCurrency: string = Currency.RUB;
     /** Список валют */
@@ -62,12 +61,12 @@ export class CompositePortfolioManagement extends CustomDialog<PortfolioManageme
     }
 
     @ShowProgress
-    private async onSetCombined(data: CombinedData): Promise<void> {
-        await this.overviewService.setCombinedFlag(data.id, data.combined);
+    private async onSetCombined(portfolioParams: PortfolioParams): Promise<void> {
+        await this.overviewService.setCombinedFlag(portfolioParams.id, portfolioParams.combined);
     }
 }
 
 type PortfolioManagementParams = {
-    portfolio: PortfolioParams[],
+    portfolios: PortfolioParams[],
     viewCurrency: string
 };

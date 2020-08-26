@@ -6,7 +6,7 @@ import {namespace} from "vuex-class/lib/bindings";
 import {Resolver} from "../../../typings/vue";
 import {Component, UI} from "../app/ui";
 import {BlockByTariffDialog} from "../components/dialogs/blockByTariffDialog";
-import {CompositePortfolioManagement} from "../components/dialogs/compositePortfolioManagement";
+import {CompositePortfolioManagementDialog} from "../components/dialogs/compositePortfolioManagementDialog";
 import {Storage} from "../platform/services/storage";
 import {ClientInfo, ClientService} from "../services/clientService";
 import {ExportService} from "../services/exportService";
@@ -84,6 +84,8 @@ export class CombinedPortfolioPage extends UI {
     private sideBarOpened: boolean;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
     private reloadPortfolio: (id: number) => Promise<void>;
+    @MainStore.Mutation(MutationType.UPDATE_COMBINED_PORTFOLIO)
+    private updateCombinedPortfolio: (viewCurrency: string) => void;
     @Inject
     private overviewService: OverviewService;
     @Inject
@@ -157,9 +159,10 @@ export class CombinedPortfolioPage extends UI {
     }
 
     private async showDialogCompositePortfolio(): Promise<void> {
-        const result = await new CompositePortfolioManagement().show({portfolio: this.clientInfo.user.portfolios, viewCurrency: this.viewCurrency});
+        const result = await new CompositePortfolioManagementDialog().show({portfolios: this.clientInfo.user.portfolios, viewCurrency: this.viewCurrency});
         if (result) {
             this.viewCurrency = result;
+            this.updateCombinedPortfolio(this.viewCurrency);
             this.setIds();
             await this.doCombinedPortfolio();
         }

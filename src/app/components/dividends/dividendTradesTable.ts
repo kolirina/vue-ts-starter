@@ -15,10 +15,8 @@
  */
 
 import {Inject} from "typescript-ioc";
-import Component from "vue-class-component";
-import {Prop} from "vue-property-decorator";
 import {namespace} from "vuex-class";
-import {UI} from "../../app/ui";
+import {Component, Prop, UI} from "../../app/ui";
 import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
@@ -78,7 +76,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </td>
                     <td class="text-xs-right ii-number-cell">{{ props.item.yield }}&nbsp;<span class="second-value">%</span></td>
                     <td class="text-xs-left">{{ props.item.note }}</td>
-                    <td class="px-0">
+                    <td v-if="allowActions" class="px-0">
                         <v-layout align-center justify-center>
                             <v-menu transition="slide-y-transition" bottom right>
                                 <v-btn slot="activator" flat icon dark>
@@ -106,6 +104,8 @@ const MainStore = namespace(StoreType.MAIN);
 })
 export class DividendTradesTable extends UI {
 
+    private static readonly ACTION_HEADER = {text: "", align: "center", value: "action", sortable: false, width: "50"};
+
     @MainStore.Getter
     private portfolio: Portfolio;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
@@ -117,6 +117,7 @@ export class DividendTradesTable extends UI {
     @Inject
     private clientService: ClientService;
 
+    /** Заголовки таблицы */
     private headers: TableHeader[] = [
         {text: "Тикер", align: "left", value: "ticker", width: "45"},
         {text: "Компания", align: "left", value: "shortName", width: "120"},
@@ -129,7 +130,6 @@ export class DividendTradesTable extends UI {
             tooltip: "Дивидендная доходность посчитанная по отношению к исторической цене акции на дату выплаты."
         },
         {text: "Заметка", align: "center", value: "note", width: "150"},
-        {text: "", align: "center", value: "action", sortable: false, width: "50"}
     ];
 
     @Prop({default: [], required: true})
@@ -144,6 +144,9 @@ export class DividendTradesTable extends UI {
     async created(): Promise<void> {
         const clientInfo = await this.clientService.getClientInfo();
         this.portfolioProModeEnabled = TradeUtils.isPortfolioProModeEnabled(this.portfolio, clientInfo);
+        if (this.allowActions) {
+            this.headers.push(DividendTradesTable.ACTION_HEADER);
+        }
     }
 
     private async openEditTradeDialog(trade: DividendInfo): Promise<void> {
@@ -198,5 +201,9 @@ export class DividendTradesTable extends UI {
         const date = TradeUtils.getDateString(dateString);
         const time = TradeUtils.getTimeString(dateString);
         return this.portfolioProModeEnabled && !!time ? Filters.formatDate(`${date} ${time}`, DateFormat.DATE_TIME) : Filters.formatDate(date, DateFormat.DATE);
+    }
+
+    private get allowActions(): boolean {
+        return !this.portfolio.portfolioParams.combinedFlag;
     }
 }

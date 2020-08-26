@@ -383,6 +383,10 @@ export interface PortfolioParams extends BasePortfolioParams {
     accountType: PortfolioAccountType;
     /** Тип ИИС */
     iisType?: IisType;
+    /** Идентификаторы составных портфелей */
+    combinedIds?: number[];
+    /** Признак комбинированного портфеля (используется только на фронте) */
+    combinedFlag?: boolean;
 }
 
 /** Запрос на получение url для доступа к портфеля */

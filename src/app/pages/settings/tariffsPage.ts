@@ -5,7 +5,6 @@ import {namespace} from "vuex-class/lib/bindings";
 import {Prop, UI} from "../../app/ui";
 import {ApplyPromoCodeDialog} from "../../components/dialogs/applyPromoCodeDialog";
 import {ConfirmDialog} from "../../components/dialogs/confirmDialog";
-import {ExpandedPanel} from "../../components/expandedPanel";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {ClientInfo, ClientService} from "../../services/clientService";
@@ -163,7 +162,7 @@ export class TariffLimitExceedInfo extends UI {
             </v-layout>
         </v-layout>
     `,
-    components: {TariffLimitExceedInfo, ExpandedPanel}
+    components: {TariffLimitExceedInfo}
 })
 export class TariffBlock extends UI {
 

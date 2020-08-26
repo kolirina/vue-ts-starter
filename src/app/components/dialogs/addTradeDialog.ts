@@ -32,7 +32,7 @@ import {CommonUtils} from "../../utils/commonUtils";
 import {DateUtils} from "../../utils/dateUtils";
 import {TariffUtils} from "../../utils/tariffUtils";
 import {TradeUtils} from "../../utils/tradeUtils";
-import {MainStore} from "../../vuex/mainStore";
+import {StateHolder} from "../../vuex/mainStore";
 import {TradeQuickAction, TradeQuickActions} from "../tradeQuickActions";
 import {FeedbackDialog} from "./feedbackDialog";
 import {TariffExpiredDialog} from "./tariffExpiredDialog";
@@ -55,7 +55,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                             </span>
                             <v-list dense>
                                 <v-flex>
-                                    <div class="menu-text" v-for="portfolioParams in clientInfo.portfolios" :key="portfolioParams.id" @click="setPortfolio(portfolioParams)">
+                                    <div class="menu-text" v-for="portfolioParams in availablePortfolios" :key="portfolioParams.id" @click="setPortfolio(portfolioParams)">
                                         {{ portfolioParams.name }}
                                     </div>
                                 </v-flex>
@@ -435,7 +435,12 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         this.showQuickActionsPanel = this.localStorage.get(StoreKeys.ADD_TRADE_DIALOG_QUICK_ACTIONS_PANEL, true);
         this.clientInfo = await this.clientService.getClientInfo();
         await this.checkAllowedAddTrade();
-        this.portfolio = (this.data.store as any).currentPortfolio;
+        if (this.data.store.currentPortfolio.portfolioParams.combinedFlag) {
+            this.portfolio = await this.overviewService.getById(this.data.store.clientInfo.user.currentPortfolioId);
+            await this.updatePortfolioInfo();
+        } else {
+            this.portfolio = this.data.store.currentPortfolio;
+        }
         await this.setDialogParams();
     }
 
@@ -1232,6 +1237,13 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         return freeBalanceRow ? freeBalanceRow.currCost : null;
     }
 
+    /**
+     * Возвращает список портфелей доступных для переключения
+     */
+    private get availablePortfolios(): PortfolioParams[] {
+        return this.clientInfo.portfolios.filter(portfolio => !portfolio.combinedFlag);
+    }
+
     // tslint:disable
     getShare(): Share {
         return this.share;
@@ -1302,7 +1314,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 }
 
 export type TradeDialogData = {
-    store: MainStore,
+    store: StateHolder,
     router: VueRouter,
     tradeId?: string,
     editedMoneyTradeId?: string,

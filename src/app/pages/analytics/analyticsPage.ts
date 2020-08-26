@@ -325,7 +325,11 @@ export class AnalyticsPage extends UI {
     }
 
     private async loadDiagramData(): Promise<void> {
-        this.yieldCompareData = await this.analyticsService.getComparedYields(this.portfolio.id.toString());
+        if (this.portfolio.portfolioParams.combinedFlag) {
+            this.yieldCompareData = await this.analyticsService.getComparedYieldsCombined(this.portfolio.portfolioParams.viewCurrency, this.portfolio.portfolioParams.combinedIds);
+        } else {
+            this.yieldCompareData = await this.analyticsService.getComparedYields(this.portfolio.id);
+        }
         this.monthlyInflationData = ChartUtils.makeSimpleChartData(await this.analyticsService.getInflationForLastSixMonths());
         this.depositRatesData = ChartUtils.makeSimpleChartData(await this.analyticsService.getRatesForLastSixMonths());
     }
@@ -340,14 +344,28 @@ export class AnalyticsPage extends UI {
 
     private async loadProfitLineChart(): Promise<void> {
         if (!this.portfolioLineChartData) {
-            this.portfolioLineChartData = await this.overviewService.getCostChart(this.portfolio.id);
+            if (this.portfolio.portfolioParams.combinedFlag) {
+                this.portfolioLineChartData = await this.overviewService.getCostChartCombined({
+                    ids: this.portfolio.portfolioParams.combinedIds,
+                    viewCurrency: this.portfolio.portfolioParams.viewCurrency
+                });
+            } else {
+                this.portfolioLineChartData = await this.overviewService.getCostChart(this.portfolio.id);
+            }
         }
         // TODO сделать независимую загрузку по признаку в localStorage
         if (this.portfolio.overview.firstTradeDate && !this.indexLineChartData) {
             this.indexLineChartData = await this.marketHistoryService.getIndexHistory("MMVB", dayjs(this.portfolio.overview.firstTradeDate).format("DD.MM.YYYY"));
         }
         if (!CommonUtils.exists(this.profitLineChartEvents)) {
-            this.profitLineChartEvents = await this.overviewService.getEventsChartDataWithDefaults(this.portfolio.id, false);
+            if (this.portfolio.portfolioParams.combinedFlag) {
+                this.profitLineChartEvents = await this.overviewService.getEventsChartDataCombined({
+                    ids: this.portfolio.portfolioParams.combinedIds,
+                    viewCurrency: this.portfolio.portfolioParams.viewCurrency
+                }, false);
+            } else {
+                this.profitLineChartEvents = await this.overviewService.getEventsChartDataWithDefaults(this.portfolio.id, false);
+            }
             this.profitLineChartEvents.forEach(item => item.onSeries = "totalProfit");
         }
         this.profitByMonthsChartData = await this.doPortfolioProfitMonthData();
@@ -397,7 +415,9 @@ export class AnalyticsPage extends UI {
     }
 
     private async loadTotalDepositInCurrentYear(): Promise<void> {
-        this.totalDepositInCurrentYear = await this.portfolioService.totalDepositInCurrentYear(this.portfolio.id);
+        if (!this.portfolio.portfolioParams.combinedFlag) {
+            this.totalDepositInCurrentYear = await this.portfolioService.totalDepositInCurrentYear(this.portfolio.id);
+        }
     }
 
     private async exportTo(chart: ChartType, type: string): Promise<void> {

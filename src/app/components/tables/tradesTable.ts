@@ -108,7 +108,7 @@ const MainStore = namespace(StoreType.MAIN);
                             </v-tooltip>
                         </v-layout>
                     </td>
-                    <td class="px-0" @click.stop>
+                    <td v-if="allowActions" class="px-0" @click.stop>
                         <v-layout align-center justify-center>
                             <v-menu transition="slide-y-transition" bottom left>
                                 <v-btn slot="activator" flat icon dark>
@@ -234,6 +234,7 @@ export class TradesTable extends UI {
     private AssetType = AssetType;
     /** Признак доступности профессионального режима */
     private portfolioProModeEnabled = false;
+    /** Типы сделок */
     private tradeType = TradeType;
 
     /**
@@ -401,5 +402,9 @@ export class TradesTable extends UI {
 
     private notZero(value: string): boolean {
         return TradeUtils.notZero(value);
+    }
+
+    private get allowActions(): boolean {
+        return !this.portfolio.portfolioParams.combinedFlag;
     }
 }

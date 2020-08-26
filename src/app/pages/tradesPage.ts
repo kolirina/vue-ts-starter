@@ -6,7 +6,6 @@ import {UI} from "../app/ui";
 import {AdditionalPagination} from "../components/additionalPagination";
 import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog";
 import {EmptySearchResult} from "../components/emptySearchResult";
-import {ExpandedPanel} from "../components/expandedPanel";
 import {TradesTable} from "../components/tables/tradesTable";
 import {TradesTableFilter} from "../components/tradesTableFilter";
 import {ShowProgress} from "../platform/decorators/showProgress";
@@ -47,14 +46,14 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-layout>
                     <empty-search-result v-if="isEmptySearchResult" @resetFilter="resetFilter"></empty-search-result>
                     <trades-table v-else :trades="trades" :pagination="pagination" @copyTrade="copyTrade" @moveTrade="moveTrade"
-                                  :headers="getHeaders(TABLES_NAME.TRADE)" @delete="onDelete" @resetFilter="resetFilter" @update:pagination="onTablePaginationChange"
+                                  :headers="getHeaders()" @delete="onDelete" @resetFilter="resetFilter" @update:pagination="onTablePaginationChange"
                                   data-v-step="2">
                     </trades-table>
                 </expanded-panel>
             </v-container>
         </div>
     `,
-    components: {TradesTable, ExpandedPanel, TradesTableFilter, AdditionalPagination, EmptySearchResult}
+    components: {TradesTable, TradesTableFilter, AdditionalPagination, EmptySearchResult}
 })
 export class TradesPage extends UI {
 
@@ -111,8 +110,8 @@ export class TradesPage extends UI {
         UI.on(EventType.TRADE_UPDATED, async () => await this.reloadPortfolio(this.portfolio.id));
     }
 
-    getHeaders(name: string): TableHeader[] {
-        return this.tablesService.getFilterHeaders(name);
+    getHeaders(): TableHeader[] {
+        return this.tablesService.getFilterHeaders(this.TABLES_NAME.TRADE, !this.allowActions);
     }
 
     private get isEmptyBlockShowed(): boolean {
@@ -179,7 +178,8 @@ export class TradesPage extends UI {
             this.pagination.rowsPerPage,
             this.pagination.sortBy,
             this.pagination.descending,
-            this.tradesFilterService.getTradesFilterRequest(this.tradesFilter)
+            this.tradesFilterService.getTradesFilterRequest(this.tradesFilter),
+            this.portfolio.portfolioParams.combinedIds
         );
         this.trades = result.content;
         this.pagination.totalItems = result.totalItems;
@@ -216,5 +216,9 @@ export class TradesPage extends UI {
      */
     private isDownloadNotAllowed(): boolean {
         return ExportUtils.isDownloadNotAllowed(this.clientInfo);
+    }
+
+    private get allowActions(): boolean {
+        return !this.portfolio.portfolioParams.combinedFlag;
     }
 }

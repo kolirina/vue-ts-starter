@@ -110,7 +110,7 @@ export class TradeService {
      * @returns {Promise<TradeRow[]>}
      */
     async loadTrades(id: number, offset: number = 0, limit: number = 50, sortColumn: string, descending: boolean = false,
-                     filter: TradesFilterRequest): Promise<PageableResponse<TradeRow>> {
+                     filter: TradesFilterRequest, portfolioIds: number[] = []): Promise<PageableResponse<TradeRow>> {
         const filteredParams: MapType = {};
         Object.keys(filter).forEach(filterParam => {
             const filterValue = (filter as MapType)[filterParam];
@@ -118,6 +118,9 @@ export class TradeService {
                 (filteredParams as MapType)[filterParam] = filterValue;
             }
         });
+        if (portfolioIds?.length) {
+            (filteredParams as any)["portfolioId"] = portfolioIds.map(portfolioId => String(portfolioId));
+        }
         const urlParams: UrlParams = {offset, limit, ...filteredParams};
         if (sortColumn) {
             urlParams.sortColumn = sortColumn.toUpperCase();
@@ -125,7 +128,7 @@ export class TradeService {
         if (CommonUtils.exists(descending)) {
             urlParams.descending = descending;
         }
-        const result = await this.http.get<PageableResponse<TradeRow>>(`/trades/pageable/${id}`, urlParams);
+        const result = await this.http.get<PageableResponse<TradeRow>>(portfolioIds?.length ? "/trades/combined" : `/trades/pageable/${id}`, urlParams);
         result.content = result.content.map(this.correctMoneyOperation);
         return result;
     }

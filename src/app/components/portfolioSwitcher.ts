@@ -4,11 +4,14 @@ import {Component, Prop, UI, Watch} from "../app/ui";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {ClientInfo} from "../services/clientService";
 import {DealsImportProvider} from "../services/importService";
-import {PortfolioParams, PortfolioService} from "../services/portfolioService";
-import {CurrencyUnit} from "../types/currency";
+import {PortfolioAccountType, PortfolioParams, PortfolioService} from "../services/portfolioService";
+import {Currency, CurrencyUnit} from "../types/currency";
+import {Tariff} from "../types/tariff";
 import {Portfolio} from "../types/types";
+import {DateUtils} from "../utils/dateUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
+import {CompositePortfolioManagementDialog} from "./dialogs/compositePortfolioManagementDialog";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -29,9 +32,8 @@ const MainStore = namespace(StoreType.MAIN);
                                      v-for="currency in currencyList">
                                     {{ currency }}
                                 </div>
-                                <i v-if="selected.access === 2" class="public-portfolio-icon" title="Публичный"></i>
-                                <!-- todo public иконка для доступа Публичный по ссылке -->
-                                <i v-if="selected.access === 1" class="public-portfolio-icon" title="Публичный по ссылке"></i>
+                                <i v-if="selected.access !== 0" class="public-portfolio-icon" :title="selected.access === 2 ? 'Публичный' : 'Публичный по ссылке'"></i>
+                                <!-- todo иконка составного портфеля -->
                                 <div v-if="selected.professionalMode" class="professional-mode-icon" title="Профессиональный режим"></div>
                             </v-layout>
                         </div>
@@ -41,20 +43,20 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-layout>
 
                     <v-list class="portfolios-list">
-                        <v-list-tile v-for="(portfolio, index) in clientInfo.user.portfolios" class="portfolios-list-tile" :key="index"
+                        <v-list-tile v-for="(portfolio, index) in portfolios" class="portfolios-list-tile" :key="index"
                                      @click="onSelect(portfolio)">
                             <div :class="['portfolios-list-tile__icon', getBrokerIconClass(portfolio.brokerId)]"></div>
                             <div class="portfolios-list-tile__info">
                                 <v-list-tile-title class="ellipsis">{{ portfolio.name }}</v-list-tile-title>
                                 <v-layout align-center class="portfolios-list-icons">
                                     <i :class="portfolio.viewCurrency.toLowerCase()" title="Валюта"></i>
-                                    <i v-if="portfolio.access === 2" class="public-portfolio-icon" title="Публичный"></i>
-                                    <!-- todo public иконка для доступа Публичный по ссылке -->
-                                    <i v-if="selected.access === 1" class="public-portfolio-icon" title="Публичный по ссылке"></i>
+                                    <i v-if="portfolio.access !== 0" class="public-portfolio-icon" :title="portfolio.access === 2 ? 'Публичный' : 'Публичный по ссылке'"></i>
+                                    <!-- todo иконка составного портфеля -->
                                     <div v-if="portfolio.professionalMode" class="professional-mode-icon" title="Профессиональный режим"></div>
                                 </v-layout>
                             </div>
                             <div @click="goToPortfolioSettings(portfolio.id)" class="portfolios-list__settings" title="Управление портфелем"></div>
+                            <div @click="setCombinedPortfolio" class="portfolios-list__settings" title="Управление портфелем"></div>
                         </v-list-tile>
                     </v-list>
                 </v-menu>
@@ -64,13 +66,31 @@ const MainStore = namespace(StoreType.MAIN);
 })
 export class PortfolioSwitcher extends UI {
 
+    /** Комбинированный портфель */
+    private readonly COMBINED_PORTFOLIO: PortfolioParams = {
+        id: null,
+        name: "Составной портфель",
+        accountType: PortfolioAccountType.BROKERAGE,
+        openDate: DateUtils.currentDate(),
+        viewCurrency: CurrencyUnit.RUB.code,
+        access: 0,
+        combinedFlag: true,
+        combinedIds: []
+    };
+
     @MainStore.Getter
     private clientInfo: ClientInfo;
     @MainStore.Getter
     private portfolio: Portfolio;
 
+    @MainStore.Mutation(MutationType.UPDATE_COMBINED_PORTFOLIO)
+    private updateCombinedPortfolio: (viewCurrency: string) => void;
+
     @MainStore.Action(MutationType.SET_CURRENT_PORTFOLIO)
     private setCurrentPortfolio: (id: number) => Promise<Portfolio>;
+
+    @MainStore.Action(MutationType.SET_CURRENT_COMBINED_PORTFOLIO)
+    private setCurrentCombinedPortfolio: (portfolio: PortfolioParams) => Promise<Portfolio>;
 
     @MainStore.Action(MutationType.SET_DEFAULT_PORTFOLIO)
     private setDefaultPortfolio: (id: number) => Promise<void>;
@@ -86,20 +106,37 @@ export class PortfolioSwitcher extends UI {
 
     @Prop({default: false, required: false})
     private isMobile: boolean;
-
+    /** Выбранный портфель */
     private selected: PortfolioParams = null;
-
+    /** Список портфелей */
+    private portfolios: PortfolioParams[] = [];
     /** Список валют */
     private currencyList = [CurrencyUnit.RUB, CurrencyUnit.USD, CurrencyUnit.EUR].map(currency => currency.code);
+    /** Валюта просмотра портфеля */
+    private viewCurrency: string = Currency.RUB;
 
+    /**
+     * Инициализация портфелей
+     */
     async created(): Promise<void> {
         this.selected = this.getSelected();
+        this.portfolios = this.clientInfo.user.portfolios;
+        if (this.portfolios.length > 1 && this.clientInfo.user.tariff !== Tariff.FREE) {
+            this.COMBINED_PORTFOLIO.combinedIds = this.clientInfo.user.portfolios.filter(portfolio => portfolio.combined).map(portfolio => portfolio.id);
+            if (!this.portfolios.some(portfolio => portfolio.combinedFlag)) {
+                this.portfolios.push(this.COMBINED_PORTFOLIO);
+            }
+        }
     }
 
     @ShowProgress
     private async onSelect(selected: PortfolioParams): Promise<void> {
-        await this.setDefaultPortfolio(selected.id);
-        await this.setCurrentPortfolio(selected.id);
+        if (selected.id) {
+            await this.setDefaultPortfolio(selected.id);
+            await this.setCurrentPortfolio(selected.id);
+        } else {
+            await this.setCurrentCombinedPortfolio(selected);
+        }
         this.selected = selected;
     }
 
@@ -127,12 +164,23 @@ export class PortfolioSwitcher extends UI {
      * @param currencyCode валюта
      */
     private async changeCurrency(currencyCode: string): Promise<void> {
+        if (this.selected?.combinedIds) {
+            this.viewCurrency = currencyCode;
+            return;
+        }
         await this.portfolioService.changeCurrency(this.selected.id, currencyCode);
         await this.reloadPortfolio(this.selected.id);
     }
 
     private goToPortfolioSettings(id: number): void {
         this.$router.push({name: "portfolio-management-edit", params: {id: String(id)}});
+    }
+
+    private async setCombinedPortfolio(): Promise<void> {
+        const result = await new CompositePortfolioManagementDialog().show({portfolios: this.clientInfo.user.portfolios, viewCurrency: this.viewCurrency});
+        if (result) {
+            this.updateCombinedPortfolio(result);
+        }
     }
 
     private get broker(): DealsImportProvider {

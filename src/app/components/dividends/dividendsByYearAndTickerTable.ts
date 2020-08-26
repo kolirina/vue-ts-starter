@@ -15,10 +15,8 @@
  */
 
 import {Inject} from "typescript-ioc";
-import Component from "vue-class-component";
-import {Prop} from "vue-property-decorator";
 import {namespace} from "vuex-class";
-import {UI} from "../../app/ui";
+import {Component, Prop, UI} from "../../app/ui";
 import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
@@ -67,8 +65,7 @@ const MainStore = namespace(StoreType.MAIN);
                         {{ props.item.amount | amount(true) }}&nbsp;<span class="second-value">{{ props.item.amount | currencySymbol }}</span>
                     </td>
                     <td class="text-xs-right ii-number-cell">{{ props.item.yield }}&nbsp;<span class="second-value">%</span></td>
-
-                    <td class="px-0">
+                    <td v-if="allowActions" class="px-0">
                         <v-layout align-center justify-center>
                             <v-menu transition="slide-y-transition" bottom left>
                                 <v-btn slot="activator" flat icon dark>
@@ -91,6 +88,8 @@ const MainStore = namespace(StoreType.MAIN);
 })
 export class DividendsByYearAndTickerTable extends UI {
 
+    private static readonly ACTION_HEADER = {text: "", align: "center", value: "actions", sortable: false, width: "25"};
+
     @MainStore.Getter
     private portfolio: Portfolio;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
@@ -106,11 +105,16 @@ export class DividendsByYearAndTickerTable extends UI {
         {text: "На одну акцию", align: "right", value: "perOne", width: "65"},
         {text: "Сумма", align: "right", value: "amount", width: "65"},
         {text: "Доходность, %", align: "right", value: "yield", width: "80", tooltip: "Дивидендная доходность посчитанная по отношению к исторической цене акции на конец года."},
-        {text: "", align: "center", value: "actions", sortable: false, width: "25"}
     ];
 
     @Prop({default: [], required: true})
     private rows: DividendInfo[];
+
+    created(): void {
+        if (this.allowActions) {
+            this.headers.push(DividendsByYearAndTickerTable.ACTION_HEADER);
+        }
+    }
 
     private async deleteAllTrades(dividendTrade: DividendInfo): Promise<void> {
         const result = await new ConfirmDialog().show(`Вы уверены, что хотите удалить все дивиденды по выбранной акции?`);
@@ -129,5 +133,9 @@ export class DividendsByYearAndTickerTable extends UI {
 
     private customSort(items: DividendInfo[], index: string, isDesc: boolean): DividendInfo[] {
         return SortUtils.simpleSort(items, index, isDesc);
+    }
+
+    private get allowActions(): boolean {
+        return !this.portfolio.portfolioParams.combinedFlag;
     }
 }

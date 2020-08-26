@@ -76,7 +76,7 @@ const MainStore = namespace(StoreType.MAIN);
                                    :ticker="props.item.bond.ticker">{{ props.item.bond.shortname }}
                         </bond-link>
                         &nbsp;
-                        <span v-if="props.item.bond && props.item.quantity !== '0'"
+                        <span v-if="props.item.bond && props.item.quantity !== '0'" title="Изменение за день"
                               :class="markupClasses(Number(props.item.bond.change))">{{ props.item.bond.change }}&nbsp;%</span>
                     </td>
                     <td v-if="tableHeadersState.ticker" class="text-xs-left">

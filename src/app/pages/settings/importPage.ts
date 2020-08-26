@@ -6,7 +6,6 @@ import {BrokerSwitcher} from "../../components/brokerSwitcher";
 import {CurrencyBalances} from "../../components/currencyBalances";
 import {ConfirmDialog} from "../../components/dialogs/confirmDialog";
 import {FeedbackDialog} from "../../components/dialogs/feedbackDialog";
-import {ExpandedPanel} from "../../components/expandedPanel";
 import {ImportResultComponent} from "../../components/importResultComponent";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
@@ -262,7 +261,7 @@ const MainStore = namespace(StoreType.MAIN);
             </template>
         </v-slide-x-reverse-transition>
     `,
-    components: {BrokerSwitcher, CurrencyBalances, ImportInstructions, "import-result": ImportResultComponent, ExpandedPanel}
+    components: {BrokerSwitcher, CurrencyBalances, ImportInstructions, "import-result": ImportResultComponent}
 })
 export class ImportPage extends UI {
 
