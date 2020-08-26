@@ -9,7 +9,6 @@ import {NotificationUpdateDialog} from "../components/dialogs/notificationUpdate
 import {ErrorHandler} from "../components/errorHandler";
 import {FooterContent} from "../components/footerContent";
 import {HelpDeskWidget} from "../components/helpDeskWidget";
-import {MenuBottomNavigation} from "../components/menu/menuBottomNavigation";
 import {MenuHeader} from "../components/menu/menuHeader";
 import {NavigationList} from "../components/menu/navigationList";
 import {SignIn} from "../components/signIn";
@@ -24,7 +23,6 @@ import {StoreKeys} from "../types/storeKeys";
 import {NavBarItem, Portfolio, SignInData, Theme} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
 import {ThemeUtils} from "../utils/ThemeUtils";
-import {ActionType} from "../vuex/actionType";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {UI} from "./ui";
@@ -48,24 +46,20 @@ const MainStore = namespace(StoreType.MAIN);
 
             <template v-if="!loading && loggedIn">
                 <v-navigation-drawer disable-resize-watcher fixed stateless app class="sidebar" v-model="drawer" :mini-variant="sideBarOpened" width="320">
-                    <div>
-                        <menu-header :side-bar-opened="sideBarOpened" :portfolio="portfolio" :clientInfo="clientInfo" @togglePanel="togglePanel"></menu-header>
-                        <div v-if="!sideBarOpened" :class="['wrap-toogle-menu-btn', 'small-screen-hide-toogle-menu-btn']">
-                            <v-btn @click="togglePanel" fab dark small depressed color="#F0F3F8" class="toogle-menu-btn">
-                                <v-icon dark>keyboard_arrow_left</v-icon>
-                            </v-btn>
-                        </div>
-                        <navigation-list :mainSection="mainSection" :side-bar-opened="sideBarOpened"
-                                         @openDialog="openDialog"></navigation-list>
+                    <menu-header :side-bar-opened="sideBarOpened" :portfolio="portfolio" :clientInfo="clientInfo" @togglePanel="togglePanel"></menu-header>
+                    <div v-if="!sideBarOpened" :class="['wrap-toogle-menu-btn', 'small-screen-hide-toogle-menu-btn']">
+                        <v-btn @click="togglePanel" fab dark small depressed color="#F0F3F8" class="toogle-menu-btn">
+                            <v-icon dark>keyboard_arrow_left</v-icon>
+                        </v-btn>
                     </div>
-                    <menu-bottom-navigation :side-bar-opened="sideBarOpened"></menu-bottom-navigation>
+                    <navigation-list :mainSection="mainSection" :side-bar-opened="sideBarOpened"
+                                     @openDialog="openDialog"></navigation-list>
                 </v-navigation-drawer>
                 <v-content>
                     <div class="mobile-wrapper-menu">
                         <menu-header :side-bar-opened="sideBarOpened" :isMobile="true" :portfolio="portfolio" :clientInfo="clientInfo" @togglePanel="togglePanel"></menu-header>
                         <navigation-list :mainSection="mainSection" :sideBarOpened="sideBarOpened"
                                          @openDialog="openDialog" :class="sideBarOpened ? 'part-mobile-menu' : ''"></navigation-list>
-                        <menu-bottom-navigation :class="sideBarOpened ? 'part-mobile-menu' : ''"></menu-bottom-navigation>
                     </div>
                     <v-container fluid :class="['paddT0', 'fb-0', sideBarOpened ? '' : 'hide-main-content']">
                         <v-slide-y-transition mode="out-in">
@@ -99,7 +93,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-content>
             </template>
         </v-app>`,
-    components: {ContentLoader, ErrorHandler, FeedbackDialog, SignIn, FooterContent, MenuHeader, NavigationList, MenuBottomNavigation, TariffExpiredHint, Tours, HelpDeskWidget}
+    components: {ContentLoader, ErrorHandler, FeedbackDialog, SignIn, FooterContent, MenuHeader, NavigationList, TariffExpiredHint, Tours, HelpDeskWidget}
 })
 export class AppFrame extends UI {
 
