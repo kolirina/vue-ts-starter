@@ -56,7 +56,7 @@ const MainStore = namespace(StoreType.MAIN);
                                      @openDialog="openDialog"></navigation-list>
                 </v-navigation-drawer>
                 <v-content>
-                    <div class="mobile-wrapper-menu">
+                    <div :class="['mobile-wrapper-menu', sideBarOpened ? '' : 'open']">
                         <menu-header :side-bar-opened="sideBarOpened" :isMobile="true" :portfolio="portfolio" :clientInfo="clientInfo" @togglePanel="togglePanel"></menu-header>
                         <navigation-list :mainSection="mainSection" :sideBarOpened="sideBarOpened"
                                          @openDialog="openDialog" :class="sideBarOpened ? 'part-mobile-menu' : ''"></navigation-list>
