@@ -714,6 +714,12 @@ export interface RebalancingModel {
     maxShare: string;
 }
 
+export interface CombinedPortfolioParams {
+    viewCurrency?: string;
+    selected?: boolean;
+    ids?: number[];
+}
+
 export interface MapType {
     [key: string]: string;
 }

@@ -18,11 +18,9 @@ import {Inject} from "typescript-ioc";
 import * as versionConfig from "../../version.json";
 import {Storage} from "../platform/services/storage";
 import {StoreKeys} from "../types/storeKeys";
-import {TableHeader} from "../types/types";
-import {BROWSER} from "../types/types";
-import {CommonUtils} from "../utils/commonUtils";
+import {CombinedPortfolioParams} from "../types/types";
 import {DateUtils} from "../utils/dateUtils";
-import {TableHeaders, TABLES_NAME, TablesService} from "./tablesService";
+import {TablesService} from "./tablesService";
 
 export class LocalStorageUpdater {
 
@@ -47,7 +45,17 @@ export class LocalStorageUpdater {
     updateLocalStorage(): void {
         if (versionConfig.date !== this.localStorage.get<string>(StoreKeys.LOCAL_STORAGE_LAST_UPDATE_DATE_KEY, null)) {
             // this.updateTableColumns();
+            this.updateCombinedPortfolioParams();
             this.localStorage.set<string>(StoreKeys.LOCAL_STORAGE_LAST_UPDATE_DATE_KEY, versionConfig.date);
+        }
+    }
+
+    private updateCombinedPortfolioParams(): void {
+        const viewCurrency = this.localStorage.get(StoreKeys.COMBINED_VIEW_CURRENCY_KEY, null);
+        const params = this.localStorage.get(StoreKeys.COMBINED_PORTFOLIO_PARAMS_KEY, null);
+        if (viewCurrency && !params) {
+            this.localStorage.set(StoreKeys.COMBINED_PORTFOLIO_PARAMS_KEY, {viewCurrency} as CombinedPortfolioParams);
+            this.localStorage.delete(StoreKeys.COMBINED_VIEW_CURRENCY_KEY);
         }
     }
 

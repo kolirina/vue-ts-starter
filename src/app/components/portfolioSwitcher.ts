@@ -2,13 +2,14 @@ import {Inject} from "typescript-ioc";
 import {namespace} from "vuex-class/lib/bindings";
 import {Component, Prop, UI, Watch} from "../app/ui";
 import {ShowProgress} from "../platform/decorators/showProgress";
+import {Storage} from "../platform/services/storage";
 import {ClientInfo} from "../services/clientService";
 import {DealsImportProvider} from "../services/importService";
-import {PortfolioAccountType, PortfolioParams, PortfolioService} from "../services/portfolioService";
-import {Currency, CurrencyUnit} from "../types/currency";
+import {PortfolioParams, PortfolioService} from "../services/portfolioService";
+import {CurrencyUnit} from "../types/currency";
+import {StoreKeys} from "../types/storeKeys";
 import {Tariff} from "../types/tariff";
-import {Portfolio} from "../types/types";
-import {DateUtils} from "../utils/dateUtils";
+import {CombinedPortfolioParams, Portfolio} from "../types/types";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {CompositePortfolioManagementDialog} from "./dialogs/compositePortfolioManagementDialog";
@@ -67,17 +68,8 @@ const MainStore = namespace(StoreType.MAIN);
 export class PortfolioSwitcher extends UI {
 
     /** Комбинированный портфель */
-    private readonly COMBINED_PORTFOLIO: PortfolioParams = {
-        id: null,
-        name: "Составной портфель",
-        accountType: PortfolioAccountType.BROKERAGE,
-        openDate: DateUtils.currentDate(),
-        viewCurrency: CurrencyUnit.RUB.code,
-        access: 0,
-        combinedFlag: true,
-        combinedIds: []
-    };
-
+    @MainStore.Getter
+    private combinedPortfolioParams: PortfolioParams;
     @MainStore.Getter
     private clientInfo: ClientInfo;
     @MainStore.Getter
@@ -87,10 +79,9 @@ export class PortfolioSwitcher extends UI {
     private updateCombinedPortfolio: (viewCurrency: string) => void;
 
     @MainStore.Action(MutationType.SET_CURRENT_PORTFOLIO)
-    private setCurrentPortfolio: (id: number) => Promise<Portfolio>;
-
+    private loadAndSetCurrentPortfolio: (id: number) => Promise<Portfolio>;
     @MainStore.Action(MutationType.SET_CURRENT_COMBINED_PORTFOLIO)
-    private setCurrentCombinedPortfolio: (portfolio: PortfolioParams) => Promise<Portfolio>;
+    private setCurrentCombinedPortfolio: (portfolioParams: CombinedPortfolioParams) => Promise<Portfolio>;
 
     @MainStore.Action(MutationType.SET_DEFAULT_PORTFOLIO)
     private setDefaultPortfolio: (id: number) => Promise<void>;
@@ -100,7 +91,8 @@ export class PortfolioSwitcher extends UI {
 
     @Inject
     private portfolioService: PortfolioService;
-
+    @Inject
+    private localStorage: Storage;
     @Prop({default: false, required: false})
     private sideBarOpened: boolean;
 
@@ -112,31 +104,34 @@ export class PortfolioSwitcher extends UI {
     private portfolios: PortfolioParams[] = [];
     /** Список валют */
     private currencyList = [CurrencyUnit.RUB, CurrencyUnit.USD, CurrencyUnit.EUR].map(currency => currency.code);
-    /** Валюта просмотра портфеля */
-    private viewCurrency: string = Currency.RUB;
 
     /**
      * Инициализация портфелей
      */
     async created(): Promise<void> {
-        this.selected = this.getSelected();
         this.portfolios = this.clientInfo.user.portfolios;
         if (this.portfolios.length > 1 && this.clientInfo.user.tariff !== Tariff.FREE) {
-            this.COMBINED_PORTFOLIO.combinedIds = this.clientInfo.user.portfolios.filter(portfolio => portfolio.combined).map(portfolio => portfolio.id);
+            const portfolioParams = this.localStorage.get<CombinedPortfolioParams>(StoreKeys.COMBINED_PORTFOLIO_PARAMS_KEY, null);
             if (!this.portfolios.some(portfolio => portfolio.combinedFlag)) {
-                this.portfolios.push(this.COMBINED_PORTFOLIO);
+                this.portfolios.push(this.combinedPortfolioParams);
             }
+            this.updateCombinedPortfolio(portfolioParams?.viewCurrency || this.combinedPortfolioParams.viewCurrency);
         }
+        this.selected = this.getSelected();
     }
 
     @ShowProgress
     private async onSelect(selected: PortfolioParams): Promise<void> {
+        const portfolioParams = this.localStorage.get<CombinedPortfolioParams>(StoreKeys.COMBINED_PORTFOLIO_PARAMS_KEY, {});
         if (selected.id) {
             await this.setDefaultPortfolio(selected.id);
-            await this.setCurrentPortfolio(selected.id);
+            await this.loadAndSetCurrentPortfolio(selected.id);
+            portfolioParams.selected = false;
         } else {
-            await this.setCurrentCombinedPortfolio(selected);
+            await this.setCurrentCombinedPortfolio({ids: selected.combinedIds, viewCurrency: selected.viewCurrency} as CombinedPortfolioParams);
+            portfolioParams.selected = true;
         }
+        this.localStorage.set<CombinedPortfolioParams>(StoreKeys.COMBINED_PORTFOLIO_PARAMS_KEY, portfolioParams);
         this.selected = selected;
     }
 
@@ -148,6 +143,10 @@ export class PortfolioSwitcher extends UI {
     private getSelected(): PortfolioParams {
         const currentPortfolioId = this.portfolio.id;
         const portfolio = this.clientInfo.user.portfolios.find(p => p.id === currentPortfolioId);
+        const portfolioParams = this.localStorage.get<CombinedPortfolioParams>(StoreKeys.COMBINED_PORTFOLIO_PARAMS_KEY, null);
+        if (portfolioParams?.selected) {
+            return this.combinedPortfolioParams;
+        }
         if (!portfolio) {
             return this.clientInfo.user.portfolios[0];
         }
@@ -164,8 +163,12 @@ export class PortfolioSwitcher extends UI {
      * @param currencyCode валюта
      */
     private async changeCurrency(currencyCode: string): Promise<void> {
-        if (this.selected?.combinedIds) {
-            this.viewCurrency = currencyCode;
+        if (this.selected.combinedFlag) {
+            const portfolioParams = this.localStorage.get<CombinedPortfolioParams>(StoreKeys.COMBINED_PORTFOLIO_PARAMS_KEY, {});
+            portfolioParams.viewCurrency = currencyCode;
+            this.localStorage.set<CombinedPortfolioParams>(StoreKeys.COMBINED_PORTFOLIO_PARAMS_KEY, portfolioParams);
+            await this.setCurrentCombinedPortfolio({ids: this.selected.combinedIds, viewCurrency: currencyCode});
+            this.selected.viewCurrency = currencyCode;
             return;
         }
         await this.portfolioService.changeCurrency(this.selected.id, currencyCode);
@@ -177,7 +180,11 @@ export class PortfolioSwitcher extends UI {
     }
 
     private async setCombinedPortfolio(): Promise<void> {
-        const result = await new CompositePortfolioManagementDialog().show({portfolios: this.clientInfo.user.portfolios, viewCurrency: this.viewCurrency});
+        const portfolioParams = this.localStorage.get<CombinedPortfolioParams>(StoreKeys.COMBINED_PORTFOLIO_PARAMS_KEY, {});
+        const result = await new CompositePortfolioManagementDialog().show({
+            portfolios: this.clientInfo.user.portfolios,
+            viewCurrency: portfolioParams?.viewCurrency || CurrencyUnit.RUB.code
+        });
         if (result) {
             this.updateCombinedPortfolio(result);
         }

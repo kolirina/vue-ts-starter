@@ -4,9 +4,11 @@ import {Storage} from "../platform/services/storage";
 import {Client, ClientInfo, ClientService} from "../services/clientService";
 import {EventService} from "../services/eventService";
 import {OverviewService} from "../services/overviewService";
-import {PortfolioParams, PortfolioService} from "../services/portfolioService";
+import {PortfolioAccountType, PortfolioParams, PortfolioService} from "../services/portfolioService";
+import {CurrencyUnit} from "../types/currency";
 import {StoreKeys} from "../types/storeKeys";
-import {CombinedInfoRequest, Overview, Portfolio, TariffHint} from "../types/types";
+import {CombinedInfoRequest, CombinedPortfolioParams, Overview, Portfolio, TariffHint} from "../types/types";
+import {DateUtils} from "../utils/dateUtils";
 import {TariffUtils} from "../utils/tariffUtils";
 import {GetterType} from "./getterType";
 import {MutationType} from "./mutationType";
@@ -32,6 +34,17 @@ export class StateHolder {
     version = "1.0";
     /** Признак открытого меню */
     sideBarOpened: boolean = true;
+    /** Составной портфель */
+    combinedPortfolioParams: PortfolioParams = {
+        id: null,
+        name: "Составной портфель",
+        accountType: PortfolioAccountType.BROKERAGE,
+        openDate: DateUtils.currentDate(),
+        viewCurrency: CurrencyUnit.RUB.code,
+        access: 0,
+        combinedFlag: true,
+        combinedIds: []
+    };
     /** Координаты подсказки об истечении тарифа */
     tariffExpiredHintCoords: TariffHint = {
         x: "0px",
@@ -43,6 +56,9 @@ export class StateHolder {
 const Getters = {
     [GetterType.PORTFOLIO](state: StateHolder): Portfolio {
         return state.currentPortfolio;
+    },
+    [GetterType.COMBINED_PORTFOLIO_PARAMS](state: StateHolder): PortfolioParams {
+        return state.combinedPortfolioParams;
     },
     [GetterType.CLIENT_INFO](state: StateHolder): ClientInfo {
         return state.clientInfo;
@@ -74,13 +90,8 @@ const Mutations = {
         }
     },
     [MutationType.UPDATE_COMBINED_PORTFOLIO](state: StateHolder, viewCurrency: string): void {
-        const combinedIds: number[] = state.clientInfo.user.portfolios.filter(value => value.combined).map(value => value.id);
-        const combinedPortfolio = state.clientInfo.user.portfolios.find(portfolio => portfolio.combinedFlag);
-        console.log(combinedPortfolio, combinedIds);
-        if (combinedPortfolio) {
-            combinedPortfolio.combinedIds = combinedIds;
-            combinedPortfolio.viewCurrency = viewCurrency;
-        }
+        state.combinedPortfolioParams.combinedIds = state.clientInfo.user.portfolios.filter(value => value.combined).map(value => value.id);
+        state.combinedPortfolioParams.viewCurrency = viewCurrency;
     },
     [MutationType.SET_DEFAULT_PORTFOLIO](state: StateHolder, id: number): void {
         state.clientInfo.user.currentPortfolioId = id;
@@ -119,16 +130,14 @@ const Actions = {
             });
         });
     },
-    [MutationType.SET_CURRENT_COMBINED_PORTFOLIO](context: ActionContext<StateHolder, void>, portfolioParams: PortfolioParams): Promise<Portfolio> {
+    [MutationType.SET_CURRENT_COMBINED_PORTFOLIO](context: ActionContext<StateHolder, void>, combinedParams: CombinedPortfolioParams): Promise<Portfolio> {
         return new Promise<Portfolio>((resolve): void => {
-            const request: CombinedInfoRequest = {
-                ids: portfolioParams.combinedIds,
-                viewCurrency: portfolioParams.viewCurrency
-            };
+            const request: CombinedInfoRequest = {ids: combinedParams.ids, viewCurrency: combinedParams.viewCurrency};
             overviewService.getPortfolioOverviewCombined(request).then((overview: Overview) => {
+                context.commit(MutationType.UPDATE_COMBINED_PORTFOLIO, combinedParams.viewCurrency);
                 const portfolio: Portfolio = {
                     id: null,
-                    portfolioParams: {...portfolioParams},
+                    portfolioParams: {...context.state.combinedPortfolioParams},
                     overview: overview
                 };
                 context.commit(MutationType.SET_CURRENT_PORTFOLIO, portfolio);
