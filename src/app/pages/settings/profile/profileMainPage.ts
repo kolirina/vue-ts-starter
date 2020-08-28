@@ -73,7 +73,7 @@ const MainStore = namespace(StoreType.MAIN);
 
                     <template v-if="clientInfo.user.tariff !== Tariff.FREE">
                         <div class="profile__subtitle margB8 margT12">
-                            Публичное имя
+                            Публичное имя инвестора
                             <tooltip>Ваше имя (будет использовано для отображения на карточке публичного портфеля)</tooltip>
                         </div>
                         <inplace-input name="publicName" :value="publicName" :max-length="255" @input="onPublicNameChange"></inplace-input>
@@ -122,7 +122,7 @@ export class ProfileMainPage extends UI {
     private username = "";
     /** email пользователя */
     private email = "";
-    /** Публичное имя пользователя */
+    /** Публичное имя инвестора */
     private publicName = "";
     /** Ссылка на публичный ресурс пользователя */
     private publicLink = "";
@@ -208,7 +208,7 @@ export class ProfileMainPage extends UI {
         if (this.publicName !== this.clientInfo.user.publicName) {
             await this.clientService.changePublicName(this.publicName);
             this.clientInfo.user.publicName = this.publicName;
-            this.$snotify.info("Новое Публичное имя успешно сохранено");
+            this.$snotify.info("Новое Публичное имя инвестора успешно сохранено");
         }
     }
 
@@ -223,7 +223,7 @@ export class ProfileMainPage extends UI {
         if (this.publicLink !== this.clientInfo.user.publicLink) {
             await this.clientService.changePublicLink(this.publicLink);
             this.clientInfo.user.publicLink = this.publicLink;
-            this.$snotify.info("Новое Публичная ссылка успешно сохранена");
+            this.$snotify.info("Новая Публичная ссылка успешно сохранена");
         }
     }
 
