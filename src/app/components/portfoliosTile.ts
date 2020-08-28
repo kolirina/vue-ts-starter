@@ -210,7 +210,7 @@ export class PortfoliosTile extends UI {
 
     private async createNewPortfolio(): Promise<void> {
         if (this.clientInfo.user.tariff.maxPortfoliosCount < this.clientInfo.user.portfolios.length + 1) {
-            await new ChangeTariffDialog().show();
+            await new ChangeTariffDialog().show(this.$router);
             return;
         }
         await this.$router.push({name: "portfolio-management-edit", params: {id: "new"}});

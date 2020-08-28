@@ -23,7 +23,7 @@ import {Component, UI} from "../../../app/ui";
 import {DisableConcurrentExecution} from "../../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../../platform/decorators/showProgress";
 import {Enum, EnumType, IStaticEnum} from "../../../platform/enum";
-import {ClientInfo} from "../../../services/clientService";
+import {ClientInfo, ClientService} from "../../../services/clientService";
 import {ExportService, ExportType} from "../../../services/exportService";
 import {DealsImportProvider} from "../../../services/importService";
 import {IisType, PortfolioAccountType, PortfolioParams, PortfolioService} from "../../../services/portfolioService";
@@ -52,7 +52,7 @@ const MainStore = namespace(StoreType.MAIN);
             <v-layout v-if="portfolio" class="profile" column>
                 <div v-if="!isNew" class="card__header">
                     <div class="card__header-title">
-                        <div :class="['provider__image', selectedBroker?.code.toLowerCase()]"></div>
+                        <div :class="['provider__image', selectedBroker ? selectedBroker.code.toLowerCase() : '']"></div>
                         <div class="margRAuto">
                             <span>{{ portfolioName }}</span>
                             <div @click="goBack" class="back-btn">Назад</div>
@@ -83,7 +83,8 @@ const MainStore = namespace(StoreType.MAIN);
                         <portfolio-management-general-tab :portfolio="portfolio"></portfolio-management-general-tab>
                     </v-tab-item>
                     <v-tab-item>
-                        <portfolio-management-share-tab :portfolio="portfolio"></portfolio-management-share-tab>
+                        <portfolio-management-share-tab :portfolio="portfolio" :public-name="publicName" :public-link="publicLink"
+                                                        @publicNameChange="onPublicNameChange" @publicLinkChange="onPublicLinkChange"></portfolio-management-share-tab>
                     </v-tab-item>
                     <v-tab-item>
                         <portfolio-management-integration-tab :portfolio="portfolio"></portfolio-management-integration-tab>
@@ -100,7 +101,7 @@ const MainStore = namespace(StoreType.MAIN);
                         <v-icon color="blue">fas fa-spinner fa-spin</v-icon>
                       </span>
                     </v-btn>
-                    <v-btn @click="goBack">Отмена</v-btn>
+                    <v-btn @click="goBack">{{ isNew ? 'Отмена' : 'Назад' }}</v-btn>
                 </v-card-actions>
             </v-layout>
         </v-container>
@@ -120,6 +121,9 @@ export class PortfolioManagementEditPage extends UI {
     /** Сервис по работе с портфелями */
     @Inject
     private portfolioService: PortfolioService;
+    /** Сервис по работе с нформацией о клиенте */
+    @Inject
+    private clientService: ClientService;
     /** Сервис для экспорта портфеля */
     @Inject
     private exportService: ExportService;
@@ -137,6 +141,10 @@ export class PortfolioManagementEditPage extends UI {
     private processState = false;
     /** Статус прогресса */
     private portfolioName = "";
+    /** Публичное имя инвестора */
+    private publicName = "";
+    /** Ссылка на публичный ресурс пользователя */
+    private publicLink = "";
 
     /**
      * Инициализация портфеля
@@ -150,6 +158,8 @@ export class PortfolioManagementEditPage extends UI {
         UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
         await this.loadPortfolio(this.$route.params.id);
         this.portfolioName = this.portfolio.name;
+        this.publicName = this.clientInfo.user.publicName;
+        this.publicLink = this.clientInfo.user.publicLink;
     }
 
     beforeDestroy(): void {
@@ -162,6 +172,20 @@ export class PortfolioManagementEditPage extends UI {
     async beforeRouteUpdate(to: Route, from: Route, next: (to?: RawLocation | false | ((vm: Vue) => any) | void) => void): Promise<void> {
         await this.loadPortfolio(to.params.id);
         next();
+    }
+
+    /**
+     * Обрабатывает смену публичной ссылки
+     */
+    private onPublicLinkChange(publicLink: string): void {
+        this.publicLink = publicLink;
+    }
+
+    /**
+     * Обрабатывает смену публичного имени имени
+     */
+    private onPublicNameChange(publicName: string): void {
+        this.publicName = publicName;
     }
 
     /**
@@ -195,7 +219,7 @@ export class PortfolioManagementEditPage extends UI {
     @ShowProgress
     @DisableConcurrentExecution
     private async savePortfolio(): Promise<void> {
-        if (!this.isValid()) {
+        if (!await this.isValid()) {
             return;
         }
         this.processState = true;
@@ -206,6 +230,8 @@ export class PortfolioManagementEditPage extends UI {
             } else {
                 this.portfolio = await this.portfolioService.updatePortfolio(this.portfolio);
             }
+            await this.savePublicName();
+            await this.savePublicLink();
             this.portfolioName = this.portfolio.name;
         } catch (error) {
             // если 403 ошибки при добавлении портфеля, диалог уже отобразили, больше ошибок показывать не нужно
@@ -228,6 +254,7 @@ export class PortfolioManagementEditPage extends UI {
             } else {
                 UI.emit(EventType.PORTFOLIO_UPDATED, this.portfolio);
             }
+            await this.loadPortfolio(String(this.portfolio.id));
         }
     }
 
@@ -247,7 +274,7 @@ export class PortfolioManagementEditPage extends UI {
         return ExportUtils.isDownloadNotAllowed(this.clientInfo);
     }
 
-    private isValid(): boolean {
+    private async isValid(): Promise<boolean> {
         if (this.portfolio.name.length < 3 && this.portfolio.name.length > 40) {
             this.$snotify.warning("Имя портфеля должно быть от 3 до 40 символов");
             return false;
@@ -261,9 +288,17 @@ export class PortfolioManagementEditPage extends UI {
             return false;
         }
         if (this.portfolio.access === 2) {
-            if (!this.clientInfo.user.publicName) {
-                this.$snotify.warning("Публичное имя должно быть указано");
+            if (CommonUtils.isBlank(this.publicName)) {
+                this.$snotify.warning("Публичное имя инвестора должно быть указано");
                 return false;
+            }
+            if (!CommonUtils.isBlank(this.publicLink)) {
+                this.$validator.attach({name: "value", rules: {regex: /^http[s]?:\/\//}});
+                const result = await this.$validator.validate("value", this.publicLink);
+                if (!result) {
+                    this.$snotify.warning("Неверное значение публичной ссылки. Ссылка должна начинаться с http:// или https://");
+                    return false;
+                }
             }
             if (CommonUtils.isBlank(this.portfolio.description)) {
                 this.$snotify.warning("Цель портфеля должна быть указана");
@@ -271,6 +306,31 @@ export class PortfolioManagementEditPage extends UI {
             }
         }
         return true;
+    }
+
+    /**
+     * Сохраняет публичную ссылку
+     */
+    @ShowProgress
+    private async savePublicLink(): Promise<void> {
+        // отправляем запрос только если действительно поменяли
+        if (this.publicLink !== this.clientInfo.user.publicLink) {
+            await this.clientService.changePublicLink(this.publicLink);
+            this.clientInfo.user.publicLink = this.publicLink;
+        }
+    }
+
+    /**
+     * Сохраняет публичное имя инвестора
+     */
+    @ShowProgress
+    private async savePublicName(): Promise<void> {
+        this.publicName = CommonUtils.isBlank(this.publicName) ? this.clientInfo.user.publicName : this.publicName;
+        // отправляем запрос только если действительно поменяли
+        if (this.publicName !== this.clientInfo.user.publicName) {
+            await this.clientService.changePublicName(this.publicName);
+            this.clientInfo.user.publicName = this.publicName;
+        }
     }
 
     /** Возвращает к списку портфелей */

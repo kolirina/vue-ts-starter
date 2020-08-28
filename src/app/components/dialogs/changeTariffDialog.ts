@@ -32,8 +32,9 @@ import {CustomDialog} from "../../platform/dialogs/customDialog";
 export class ChangeTariffDialog extends CustomDialog<VueRouter, string> {
 
     private goToTariffs(): void {
-        if (this.$router.currentRoute.name !== "tariffs") {
-            this.$router.push({name: "tariffs"});
+        if (this.data.currentRoute.name !== "tariffs") {
+            this.data.push({name: "tariffs"});
+            this.close();
         }
     }
 }

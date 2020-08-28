@@ -14,9 +14,12 @@
  * (c) ООО "Интеллектуальные инвестиции", 2019
  */
 
+import * as versionConfig from "../../../src/version.json";
 import {StoreKeys} from "../types/storeKeys";
 import {BROWSER, Theme} from "../types/types";
 import {CommonUtils} from "./commonUtils";
+
+const version = `${versionConfig.date}build${versionConfig.build}`;
 
 export class ThemeUtils {
 
@@ -263,8 +266,8 @@ export class ThemeUtils {
 
     .sing-in-wrap .paired-section__right-section {background-image: url(../img/sign_in/bg-dark.svg)}
     .wrapper-payment-info__title.pan {background-image: url(../img/profile/done-light.svg) !important}
-    .btn-group .v-btn.btn_icon-list {background-image: url("../img/portfolio/list-light.svg")}
-    .btn-group .v-btn.btn_icon-tile {background-image: url("../img/portfolio/tile-light.svg")}
+    .btn-group .v-btn.btn_icon-list {background-image: url("../img/portfolio/list-light.svg?version=${version}")}
+    .btn-group .v-btn.btn_icon-tile {background-image: url("../img/portfolio/tile-light.svg?version=${version}")}
 
     .v-input input::-webkit-input-placeholder {color: #cfd0d4 !important}
     .v-input input::-ms-input-placeholder {color: #cfd0d4 !important}

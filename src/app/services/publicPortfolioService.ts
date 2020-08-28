@@ -51,7 +51,7 @@ export interface PublicPortfolio {
     viewCurrency: string;
     /** Описание портфеля */
     description: string;
-    /** Публичное имя пользовтеля (Для партнеров) */
+    /** Публичное имя инвестора (Для партнеров) */
     ownerName: string;
     /** Ссылка на публичный ресурс (Для партнеров) */
     ownerPublicLink: string;

@@ -146,46 +146,15 @@ const MainStore = namespace(StoreType.MAIN);
                                     </span>
                                 </v-tooltip>
                             </v-layout>
-                            <v-layout v-if="publicSettingsAllowed" class="setings-btn">
-                                <v-btn v-if="props.item.access" class="btn" v-clipboard="() => publicLink(props.item.id)" @click="copyPortfolioLink">
-                                    Копировать ссылку на портфель
-                                </v-btn>
-                                <v-menu content-class="dialog-type-menu"
-                                        transition="slide-y-transition"
-                                        nudge-bottom="36" right class="settings-menu"
-                                        :close-on-content-click="false">
-                                    <v-btn class="btn" slot="activator">
-                                        Настройка доступа
-                                    </v-btn>
-                                    <v-list dense>
-                                        <v-flex>
-                                            <div @click.stop="openSharePortfolioDialog(props.item, type)" class="menu-text" v-for="type in dialogTypes.values()" :key="type.code">
-                                                {{ type.description }}
-                                            </div>
-                                        </v-flex>
-                                    </v-list>
-                                </v-menu>
-                                <v-btn class="btn" @click.stop="openEmbeddedDialog(props.item.id)">
-                                    Встраиваемые блоки
-                                </v-btn>
-                            </v-layout>
 
                             <v-layout class="link-section" wrap>
-                                <v-flex v-if="publicSettingsAllowed" md3>
-                                    <div class="alignL">
-                                        <a class="portfolio-link portfolio-default-text fs14" :href="informerH(props.item.id)" target="_blank">Информер-картинка горизонтальный</a>
-                                    </div>
-                                    <div class="alignL">
-                                        <a class="portfolio-link portfolio-default-text fs14" :href="informerV(props.item.id)" target="_blank">Информер-картинка вертикальный</a>
-                                    </div>
-                                </v-flex>
-                                <v-flex md9 class="fs14 maxW500">
+                                <div class="fs14 maxW500">
                                     <div v-if="showNoteLink(props.item.note)" class="maxW500">
                                         <span class="bold">Заметка:</span>
                                         <div class="text-truncate">{{ props.item.note }}</div>
                                     </div>
                                     <a v-else @click.stop="goToEdit(props.item.id)">Создать заметку</a>
-                                </v-flex>
+                                </div>
                             </v-layout>
                         </div>
                     </v-card-text>
