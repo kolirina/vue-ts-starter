@@ -296,7 +296,7 @@ export class PortfolioManagementEditPage extends UI {
                 this.$validator.attach({name: "value", rules: {regex: /^http[s]?:\/\//}});
                 const result = await this.$validator.validate("value", this.publicLink);
                 if (!result) {
-                    this.$snotify.warning("Неверное значение публичной ссылки. Ссылка должна начинаться с http:// или https://");
+                    this.$snotify.warning("Неверное значение Личного сайта. Ссылка должна начинаться с http:// или https://");
                     return false;
                 }
             }

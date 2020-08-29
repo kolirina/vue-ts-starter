@@ -221,9 +221,15 @@ export class ProfileMainPage extends UI {
         this.publicLink = CommonUtils.isBlank(publicLink) ? this.clientInfo.user.publicLink : publicLink;
         // отправляем запрос только если действительно поменяли
         if (this.publicLink !== this.clientInfo.user.publicLink) {
+            this.$validator.attach({name: "value", rules: {regex: /^http[s]?:\/\//}});
+            const result = await this.$validator.validate("value", this.publicLink);
+            if (!result) {
+                this.$snotify.warning("Неверное значение Личного сайта. Ссылка должна начинаться с http:// или https://");
+                return;
+            }
             await this.clientService.changePublicLink(this.publicLink);
             this.clientInfo.user.publicLink = this.publicLink;
-            this.$snotify.info("Новая Публичная ссылка успешно сохранена");
+            this.$snotify.info("Личный сайт успешно обновлен");
         }
     }
 
