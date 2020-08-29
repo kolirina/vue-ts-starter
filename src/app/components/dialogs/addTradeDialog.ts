@@ -729,14 +729,22 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             }
             const msg = this.data.eventFields ? "Событие успешно исполнено" : `Сделка успешно ${this.editMode ? "отредактирована" : "добавлена"}`;
             this.$snotify.info(msg);
-            // отправляем в ответе true если выбранный портфель в диалоге совпадает с текущим,
             // так как данные перезагружать не нужно если добавили в другой портфель
-            const currentPortfolio = this.portfolio.id === this.clientInfo.currentPortfolioId;
+            const needResetCache = this.portfolio.id === this.data.store.currentPortfolio.portfolioParams.id ||
+                this.data.store.currentPortfolio.portfolioParams.combinedIds?.includes(this.portfolio.id);
             // сбрасываем кэш выбранного портфеля чтобы при переключении он загрузкился с новой сделкой
-            if (!currentPortfolio) {
-                this.overviewService.resetCacheForId(this.portfolio.id);
+            if (needResetCache) {
+                if (this.data.store.currentPortfolio.portfolioParams.combinedFlag) {
+                    this.overviewService.resetCacheForCombinedPortfolio({
+                        ids: this.data.store.currentPortfolio.portfolioParams.combinedIds,
+                        viewCurrency: this.data.store.currentPortfolio.portfolioParams.viewCurrency
+                    });
+                } else {
+                    this.overviewService.resetCacheForId(this.portfolio.id);
+
+                }
             }
-            this.close(currentPortfolio);
+            this.close();
         } catch (e) {
             this.handleError(e);
         } finally {

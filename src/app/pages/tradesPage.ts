@@ -18,7 +18,7 @@ import {TradesFilterService} from "../services/tradesFilterService";
 import {AssetType} from "../types/assetType";
 import {EventType} from "../types/eventType";
 import {StoreKeys} from "../types/storeKeys";
-import {Pagination, Portfolio, TableHeader, TradeRow} from "../types/types";
+import {CombinedPortfolioParams, Pagination, Portfolio, TableHeader, TradeRow} from "../types/types";
 import {ExportUtils} from "../utils/exportUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
@@ -75,6 +75,8 @@ export class TradesPage extends UI {
     private portfolio: Portfolio;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
     private reloadPortfolio: (id: number) => Promise<void>;
+    @MainStore.Action(MutationType.SET_CURRENT_COMBINED_PORTFOLIO)
+    private setCurrentCombinedPortfolio: (portfolioParams: CombinedPortfolioParams) => Promise<Portfolio>;
     @MainStore.Getter
     private sideBarOpened: boolean;
     /** Ключи для сохранения информации */
@@ -106,8 +108,16 @@ export class TradesPage extends UI {
      */
     async created(): Promise<void> {
         this.tradesFilter = this.tradesFilterService.getFilter(StoreKeys.TRADES_FILTER_SETTINGS_KEY);
-        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
-        UI.on(EventType.TRADE_UPDATED, async () => await this.reloadPortfolio(this.portfolio.id));
+        UI.on(EventType.TRADE_CREATED, async () => await this.updateCurrentPortfolio());
+        UI.on(EventType.TRADE_UPDATED, async () => await this.updateCurrentPortfolio());
+    }
+
+    private async updateCurrentPortfolio(): Promise<void> {
+        if (this.portfolio.id) {
+            await this.reloadPortfolio(this.portfolio.id);
+        } else {
+            await this.setCurrentCombinedPortfolio({ids: this.portfolio.portfolioParams.combinedIds, viewCurrency: this.portfolio.portfolioParams.viewCurrency});
+        }
     }
 
     getHeaders(): TableHeader[] {

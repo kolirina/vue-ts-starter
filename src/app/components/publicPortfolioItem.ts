@@ -45,7 +45,7 @@ import {ChartUtils} from "../utils/chartUtils";
                 </div>
                 <div class="margRAuto">
                     <div class="public-portfolio-item__footer-title">Доходность</div>
-                    <span class="public-portfolio-positive">{{ portfolio.yearYield }}%</span>
+                    <span :class="[portfolio.yearYield >= 0 ? 'public-portfolio-positive' : 'public-portfolio-negative']">{{ portfolio.yearYield }}%</span>
                 </div>
                 <div class="public-portfolio-item__footer-social" @click.stop>
                     <div class="public-portfolio-item__footer-referrals" title="Количество подписчиков">
