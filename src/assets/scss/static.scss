@@ -19,17 +19,22 @@ input[type="search"] {
 
 // Отступы =============================================================================================================
 
+.margTAuto {margin-top: auto}
+.margT0 {margin-top: 0 !important}
 .margT4 {margin-top: 4px}
 .margT10 {margin-top: 10px}
 .margT12 {margin-top: 12px}
+.margT14 {margin-top: 14px}
 .margT16 {margin-top: 16px}
+.margT20 {margin-top: 20px !important}
 .margT24 {margin-top: 24px !important}
-.margT40 {margin-top: 40px}
 .margT30 {margin-top: 30px}
+.margT32 {margin-top: 32px}
+.margT40 {margin-top: 40px}
 .margT50 {margin-top: 50px}
 .margT70 {margin-top: 70px}
 
-.margLAuto {margin-left: auto}
+.margLA {margin-left: auto}
 .margL8 {margin-left: 8px !important}
 .margL12 {margin-left: 12px !important}
 .margL16 {margin-left: 16px !important}
@@ -51,12 +56,6 @@ input[type="search"] {
 .margB32 {margin-bottom: 32px}
 .margB35 {margin-bottom: 35px !important}
 .margB64 {margin-bottom: 64px}
-
-.margT14 {margin-top: 14px}
-.margT20 {margin-top: 20px !important}
-.margT32 {margin-top: 32px}
-.margT50 {margin-top: 50px}
-.margT0 {margin-top: 0 !important}
 
 // Паддинги =============================================================================================================
 
@@ -111,6 +110,8 @@ input[type="search"] {
 .flex0 {
   flex: 0 !important;
 }
+
+.flexN {flex: none}
 
 // ===============================
 

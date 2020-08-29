@@ -3,8 +3,11 @@ import {Component, Prop, UI} from "../../app/ui";
 import {ClientInfo} from "../../services/clientService";
 import {Tariff} from "../../types/tariff";
 import {NavBarItem} from "../../types/types";
+import {DateUtils} from "../../utils/dateUtils";
+import {TariffUtils} from "../../utils/tariffUtils";
 import {StoreType} from "../../vuex/storeType";
 import {PortfolioSwitcher} from "../portfolioSwitcher";
+import {MenuBottomNavigation} from "./menuBottomNavigation";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -18,6 +21,7 @@ const MainStore = namespace(StoreType.MAIN);
                         <v-icon dark>add</v-icon>
                     </v-btn>
                 </div>
+                <menu-bottom-navigation :side-bar-opened="sideBarOpened"></menu-bottom-navigation>
             </v-layout>
             <v-layout v-if="!sideBarOpened" column class="wrap-list-menu">
                 <div v-if="showFreeTariffBlock" class="tariff-notification">
@@ -47,10 +51,14 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-list-tile-content>
                     </v-list-tile>
                 </div>
+                <v-tooltip v-if="!sideBarOpened" content-class="custom-tooltip-wrap" class="margTAuto" max-width="340px" top nudge-right="55">
+                    <div slot="activator" @click="goToTariffs" :class="{'subscribe-status': true, 'subscribe-status_warning': false}">{{ subscribeDescription }}</div>
+                    <span>{{ expirationDescription }}</span>
+                </v-tooltip>
             </v-layout>
         </v-layout>
     `,
-    components: {PortfolioSwitcher}
+    components: {PortfolioSwitcher, MenuBottomNavigation}
 })
 export class NavigationList extends UI {
 
@@ -74,12 +82,24 @@ export class NavigationList extends UI {
     }
 
     private goToTariffs(): void {
-        if (this.$router.currentRoute.path !== "/settings/tariffs") {
-            this.$router.push("/settings/tariffs");
+        if (this.$router.currentRoute.name !== "tariffs") {
+            this.$router.push({name: "tariffs"});
         }
     }
 
     private get showFreeTariffBlock(): boolean {
         return this.clientInfo.user.tariff === Tariff.FREE;
+    }
+
+    private get subscribeDescription(): string {
+        return TariffUtils.getSubscribeDescription(this.clientInfo.user);
+    }
+
+    private get expirationDescription(): string {
+        return `${TariffUtils.getSubscribeDescription(this.clientInfo.user, true)} ${this.expirationDate}`;
+    }
+
+    private get expirationDate(): string {
+        return DateUtils.formatDate(DateUtils.parseDate(this.clientInfo.user.paidTill));
     }
 }

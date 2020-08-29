@@ -57,7 +57,7 @@ export class AuthComponent extends UI {
         }
         const fromRegistration = this.$route.query.fromRegistration;
         if (fromRegistration === "true") {
-            this.$snotify.info("Поздравляем с успешной регистрацией! Письмо в паролем отправлено вам на почту.");
+            this.$snotify.info("Поздравляем с успешной регистрацией! Письмо c паролем отправлено вам на почту.");
         }
     }
 

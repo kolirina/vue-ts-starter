@@ -213,7 +213,7 @@ export interface BaseClient {
     referralAwardType: string;
     /** Промокод пользователя */
     promoCode: PromoCode;
-    /** Публичное имя пользовтеля (Для партнеров) */
+    /** Публичное имя инвестора (Для партнеров) */
     publicName: string;
     /** Ссылка на публичный ресурс (Для партнеров) */
     publicLink: string;

@@ -29,7 +29,7 @@ const MainStore = namespace(StoreType.MAIN);
                             <li>Смена Email</li>
                         </ul>
                         <ul>
-                            <li>Публичное имя</li>
+                            <li>Публичное имя инвестора</li>
                             <li>Ссылка на личный сайт</li>
                         </ul>
                     </div>

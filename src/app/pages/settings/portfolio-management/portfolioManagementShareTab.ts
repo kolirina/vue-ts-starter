@@ -14,14 +14,10 @@
  * (c) ООО "Интеллектуальные инвестиции", 2020
  */
 
-import {Inject} from "typescript-ioc";
 import {Component, namespace, Prop, UI} from "../../../app/ui";
 import {BrokerSwitcher} from "../../../components/brokerSwitcher";
-import {ShowProgress} from "../../../platform/decorators/showProgress";
-import {ClientInfo, ClientService} from "../../../services/clientService";
-import {PortfolioParams, PortfolioService} from "../../../services/portfolioService";
-import {Tariff} from "../../../types/tariff";
-import {CommonUtils} from "../../../utils/commonUtils";
+import {ClientInfo} from "../../../services/clientService";
+import {PortfolioParams} from "../../../services/portfolioService";
 import {StoreType} from "../../../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -58,6 +54,9 @@ const MainStore = namespace(StoreType.MAIN);
                                     </v-flex>
                                 </v-list>
                             </v-menu>
+                            <v-btn class="btn" :href="link" target="_blank">
+                                Перейти <v-icon>fas fa-arrow-right</v-icon>
+                            </v-btn>
                         </div>
                     </div>
                     <div class="portfolio-management-tab__wrapper" key="2">
@@ -93,17 +92,18 @@ const MainStore = namespace(StoreType.MAIN);
                                 <template v-if="portfolio.access === 2">
                                     <div class="form-row margT24" key="1">
                                         <div class="profile__subtitle form-row__title">
-                                            Публичное имя
+                                            Публичное имя инвестора
                                             <tooltip>Ваше имя (будет использовано для отображения на карточке публичного портфеля)</tooltip>
                                         </div>
-                                        <inplace-input name="publicName" :value="publicName" :max-length="255" @input="onPublicNameChange"></inplace-input>
+                                        <v-text-field name="publicName" :value="publicName" :counter="255" label="Публичное имя инвестора"
+                                                      @input="onPublicNameChange"></v-text-field>
                                     </div>
                                     <div class="form-row" key="2">
                                         <div class="profile__subtitle form-row__title">
                                             Личный сайт
                                             <tooltip>Ссылка на профиль, блог, сайт (будет использована для отображения на карточке публичного портфеля)</tooltip>
                                         </div>
-                                        <inplace-input name="publicLink" :value="publicLink" :max-length="1024" @input="onPublicLinkChange"></inplace-input>
+                                        <v-text-field name="publicLink" :value="publicLink" :counter="1024" label="Личный сайт" @input="onPublicLinkChange"></v-text-field>
                                     </div>
                                     <div class="form-row" key="3">
                                         <div class="profile__subtitle form-row__title">
@@ -126,23 +126,18 @@ export class PortfolioManagementShareTab extends UI {
 
     @MainStore.Getter
     private clientInfo: ClientInfo;
-
     @Prop()
     private portfolio: PortfolioParams;
-
-    @Inject
-    private portfolioService: PortfolioService;
-    /** Сервис по работе с нформацией о клиенте */
-    @Inject
-    private clientService: ClientService;
+    /** Публичное имя инвестора */
+    @Prop({type: String, required: false})
+    private publicName: string;
+    /** Ссылка на публичный ресурс пользователя */
+    @Prop({type: String, required: false})
+    private publicLink: string;
     /** Публичный доступ */
     private access = false;
     /** Доступ только по ссылке */
     private linkAccess = false;
-    /** Публичное имя пользователя */
-    private publicName = "";
-    /** Ссылка на публичный ресурс пользователя */
-    private publicLink = "";
 
     async created(): Promise<void> {
         if (this.portfolio.access === 2) {
@@ -151,8 +146,6 @@ export class PortfolioManagementShareTab extends UI {
             this.access = true;
             this.linkAccess = true;
         }
-        this.publicName = this.clientInfo.user.publicName;
-        this.publicLink = this.clientInfo.user.publicLink;
     }
 
     /** Устанавливает доступ к портфелю: 0 - приватный, 1 - публичный только по ссылке, 2 - полностью публичный */
@@ -166,39 +159,16 @@ export class PortfolioManagementShareTab extends UI {
 
     /**
      * Обрабатывает смену публичной ссылки
-     * @param publicLink
      */
-    @ShowProgress
-    private async onPublicLinkChange(publicLink: string): Promise<void> {
-        this.publicLink = CommonUtils.isBlank(publicLink) ? this.clientInfo.user.publicLink : publicLink;
-        // отправляем запрос только если действительно поменяли
-        if (this.publicLink !== this.clientInfo.user.publicLink) {
-            this.$validator.attach({name: "value", rules: {regex: /^http[s]?:\/\//}});
-            const result = await this.$validator.validate("value", this.publicLink);
-            if (!result) {
-                this.publicLink = this.clientInfo.user.publicLink;
-                this.$snotify.warning("Неверное значение публичной ссылки. Ссылка должна начинаться с http:// или https://");
-                return;
-            }
-            await this.clientService.changePublicLink(this.publicLink);
-            this.clientInfo.user.publicLink = this.publicLink;
-            this.$snotify.info("Новая Публичная ссылка успешно сохранена");
-        }
+    private onPublicLinkChange(newValue: string): void {
+        this.$emit("publicLinkChange", newValue);
     }
 
     /**
      * Обрабатывает смену публичного имени имени
-     * @param publicName
      */
-    @ShowProgress
-    private async onPublicNameChange(publicName: string): Promise<void> {
-        this.publicName = CommonUtils.isBlank(publicName) ? this.clientInfo.user.publicName : publicName;
-        // отправляем запрос только если действительно поменяли
-        if (this.publicName !== this.clientInfo.user.publicName) {
-            await this.clientService.changePublicName(this.publicName);
-            this.clientInfo.user.publicName = this.publicName;
-            this.$snotify.info("Новое Публичное имя успешно сохранено");
-        }
+    private onPublicNameChange(newValue: string): void {
+        this.$emit("publicNameChange", newValue);
     }
 
     private get link(): string {
