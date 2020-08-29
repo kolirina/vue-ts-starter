@@ -247,7 +247,7 @@
       flex-wrap: wrap;
 
       .v-btn {
-        margin-left: 12px !important;
+        margin-right: 12px !important;
         height: auto !important
       }
 
@@ -261,12 +261,24 @@
         width: 378px;
         max-width: 378px
       }
+
+      .v-input {margin-right: 12px;}
     }
 
     &__wrap-row {
       display: flex;
 
-      .v-btn {height: 52px !important;}
+      .v-btn {
+        height: 52px !important;
+        margin-left: 0 !important;
+
+        .v-icon {
+          font-size: 16px;
+          margin-left: 8px;
+        }
+      }
+
+      .settings-menu {margin-right: 0}
     }
   }
 
@@ -294,10 +306,13 @@
           width: 100%;
           max-width: 100%;
         }
+
+        .v-input {margin-right: 0;}
       }
 
       &__wrap-row {
         margin-left: 0;
+        flex-wrap: wrap;
 
         .v-btn {
           margin-top: 12px !important;

@@ -54,6 +54,9 @@ const MainStore = namespace(StoreType.MAIN);
                                     </v-flex>
                                 </v-list>
                             </v-menu>
+                            <v-btn class="btn" :href="link" target="_blank">
+                                Перейти <v-icon>fas fa-arrow-right</v-icon>
+                            </v-btn>
                         </div>
                     </div>
                     <div class="portfolio-management-tab__wrapper" key="2">
