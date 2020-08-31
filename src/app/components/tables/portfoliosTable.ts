@@ -248,26 +248,6 @@ export class PortfoliosTable extends UI {
         }
     }
 
-    private publicLink(id: string): string {
-        return `${window.location.protocol}//${window.location.host}/public-portfolio/${id}/`;
-    }
-
-    private informerV(id: string): string {
-        return `${window.location.protocol}//${window.location.host}/informer/v/${id}.png`;
-    }
-
-    private informerH(id: string): string {
-        return `${window.location.protocol}//${window.location.host}/informer/h/${id}.png`;
-    }
-
-    private async openEmbeddedDialog(id: string): Promise<void> {
-        await new EmbeddedBlocksDialog().show(id);
-    }
-
-    private async openSharePortfolioDialog(portfolio: PortfolioParams, type: PortfoliosDialogType): Promise<void> {
-        await new SharePortfolioDialog().show({portfolio: portfolio, clientInfo: this.clientInfo, type: type});
-    }
-
     @ShowProgress
     private async onProfessionalModeChange(portfolio: PortfolioParams): Promise<void> {
         const result = await this.portfolioService.updatePortfolio(portfolio);

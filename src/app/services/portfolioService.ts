@@ -101,14 +101,6 @@ export class PortfolioService {
     }
 
     /**
-     * Отправляет запрос на создание нового портфеля или обновление
-     * @param portfolio портфель
-     */
-    async createOrUpdatePortfolio(portfolio: PortfolioParams): Promise<PortfolioParams> {
-        return portfolio.id ? this.updatePortfolio(portfolio) : this.createPortfolio(portfolio);
-    }
-
-    /**
      * Отправляет запрос на создание нового портфеля и возвращает созданную сущность
      * @param portfolio портфель
      */

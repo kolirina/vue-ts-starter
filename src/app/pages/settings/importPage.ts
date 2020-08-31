@@ -338,7 +338,7 @@ export class ImportPage extends UI {
         try {
             this.importProviderFeaturesByProvider = await this.importService.getImportProviderFeatures();
             await this.loadImportHistory();
-            this.portfolioParams = {...this.portfolio.portfolioParams};
+            this.portfolioParams = {id: this.portfolio.id, ...this.portfolio.portfolioParams};
             this.selectUserProvider();
             this.showInstruction = [this.portfolioParams.brokerId ? 0 : 1];
         } finally {
@@ -496,7 +496,7 @@ export class ImportPage extends UI {
                 }
             }
             if (this.isFinam && this.portfolioParams.fixFee !== this.portfolio.portfolioParams.fixFee) {
-                await this.portfolioService.createOrUpdatePortfolio(this.portfolioParams);
+                await this.portfolioService.updatePortfolio(this.portfolioParams);
             }
             this.importResult = await this.importReport();
             await this.handleUploadResponse();
