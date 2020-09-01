@@ -39,7 +39,6 @@ const MainStore = namespace(StoreType.MAIN);
                                      :share-notes="portfolio.portfolioParams.shareNotes"
                                      :professional-mode="portfolio.portfolioParams.professionalMode"
                                      :current-money-remainder="currentMoneyRemainder"
-                                     :ids="portfolio.portfolioParams.combinedIds"
                                      @reloadLineChart="loadPortfolioLineChart"
                                      @exportTable="onExportTable"
                                      exportable>

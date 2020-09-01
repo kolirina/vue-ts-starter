@@ -38,7 +38,6 @@ const MainStore = namespace(StoreType.MAIN);
                                      :view-currency="viewCurrency"
                                      :state-key-prefix="StoreKeys.PORTFOLIO_COMBINED_CHART"
                                      :side-bar-opened="sideBarOpened"
-                                     :ids="portfolio.portfolioParams.combinedIds"
                                      @reloadLineChart="loadPortfolioLineChart">
                     <template #afterDashboard>
                         <v-layout align-center>
