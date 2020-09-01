@@ -12,6 +12,7 @@ import {ShowProgress} from "../platform/decorators/showProgress";
 import {ClientInfo} from "../services/clientService";
 import {ExportService, ExportType} from "../services/exportService";
 import {OverviewService} from "../services/overviewService";
+import {PortfolioParams} from "../services/portfolioService";
 import {TableHeaders, TABLES_NAME, TablesService} from "../services/tablesService";
 import {CopyMoveTradeRequest, TradeService, TradesFilter} from "../services/tradeService";
 import {TradesFilterService} from "../services/tradesFilterService";
@@ -20,6 +21,7 @@ import {EventType} from "../types/eventType";
 import {StoreKeys} from "../types/storeKeys";
 import {CombinedPortfolioParams, Pagination, Portfolio, TableHeader, TradeRow} from "../types/types";
 import {ExportUtils} from "../utils/exportUtils";
+import {PortfolioUtils} from "../utils/portfolioUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 
@@ -73,6 +75,9 @@ export class TradesPage extends UI {
     private clientInfo: ClientInfo;
     @MainStore.Getter
     private portfolio: Portfolio;
+    /** Комбинированный портфель */
+    @MainStore.Getter
+    private combinedPortfolioParams: PortfolioParams;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
     private reloadPortfolio: (id: number) => Promise<void>;
     @MainStore.Action(MutationType.SET_CURRENT_COMBINED_PORTFOLIO)
@@ -120,7 +125,7 @@ export class TradesPage extends UI {
         }
     }
 
-    getHeaders(): TableHeader[] {
+    private getHeaders(): TableHeader[] {
         return this.tablesService.getFilterHeaders(this.TABLES_NAME.TRADE, !this.allowActions);
     }
 
@@ -136,6 +141,7 @@ export class TradesPage extends UI {
     private async copyTrade(requestData: CopyMoveTradeRequest): Promise<void> {
         await this.tradeService.copyTrade(requestData);
         this.overviewService.resetCacheForId(requestData.toPortfolioId);
+        this.resetCombinedOverviewCache(requestData.toPortfolioId);
         this.$snotify.info("Сделка успешно копирована");
     }
 
@@ -143,6 +149,8 @@ export class TradesPage extends UI {
         await this.tradeService.moveTrade(requestData);
         this.overviewService.resetCacheForId(requestData.fromPortfolioId);
         this.overviewService.resetCacheForId(requestData.toPortfolioId);
+        this.resetCombinedOverviewCache(requestData.fromPortfolioId);
+        this.resetCombinedOverviewCache(requestData.toPortfolioId);
         await this.loadTrades();
         this.$snotify.info("Сделка успешно перемещена");
     }
@@ -176,6 +184,7 @@ export class TradesPage extends UI {
         await this.tradeService.deleteTrade({portfolioId: this.portfolio.id, tradeId: tradeRow.id});
         await this.reloadPortfolio(this.portfolio.id);
         await this.loadTrades();
+        this.resetCombinedOverviewCache(tradeRow.portfolioId);
         const assetType = AssetType.valueByName(tradeRow.asset);
         this.$snotify.info(`Операция '${tradeRow.operationLabel}' ${assetType === AssetType.MONEY ? "" :
             `по ${assetType === AssetType.ASSET ? "активу" : "бумаге"} ${tradeRow.ticker}`} была успешно удалена`);
@@ -215,6 +224,10 @@ export class TradesPage extends UI {
         // при смене фильтра сбрасываем паджинацию чтобы не остаться на несуществующей странице
         this.pagination.page = 1;
         this.tradesFilterService.saveFilter(StoreKeys.TRADES_FILTER_SETTINGS_KEY, this.tradesFilter);
+    }
+
+    private resetCombinedOverviewCache(portfolioId: number): void {
+        PortfolioUtils.resetCombinedOverviewCache(this.combinedPortfolioParams, portfolioId, this.overviewService);
     }
 
     private get isDefaultFilter(): boolean {

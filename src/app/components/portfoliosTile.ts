@@ -28,6 +28,7 @@ import {EventType} from "../types/eventType";
 import {Tariff} from "../types/tariff";
 import {Portfolio} from "../types/types";
 import {ExportUtils} from "../utils/exportUtils";
+import {PortfolioUtils} from "../utils/portfolioUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {ChangeTariffDialog} from "./dialogs/changeTariffDialog";
@@ -49,7 +50,7 @@ const MainStore = namespace(StoreType.MAIN);
                             </template>
                             <span>{{ portfolio.note }}</span>
                         </v-tooltip>
-                        <v-tooltip  v-if="portfolio.professionalMode" transition="slide-y-transition" open-on-hover
+                        <v-tooltip v-if="portfolio.professionalMode" transition="slide-y-transition" open-on-hover
                                    content-class="menu-icons" right bottom nudge-right="122" nudge-top="10" class="hint-for-icon-name-section">
                             <i class="professional-mode-icon" slot="activator"></i>
                             <div class="pa-3">
@@ -127,6 +128,9 @@ export class PortfoliosTile extends UI {
     private clientInfo: ClientInfo;
     @MainStore.Getter
     private portfolio: Portfolio;
+    /** Комбинированный портфель */
+    @MainStore.Getter
+    private combinedPortfolioParams: PortfolioParams;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIOS)
     private reloadPortfolios: () => Promise<void>;
     @MainStore.Action(MutationType.SET_CURRENT_PORTFOLIO)
@@ -168,6 +172,7 @@ export class PortfoliosTile extends UI {
             await this.setCurrentPortfolio(this.clientInfo.user.portfolios[0].id);
         }
         this.$snotify.info("Портфель успешно удален");
+        UI.emit(EventType.PORTFOLIO_LIST_UPDATED);
     }
 
     @ShowProgress
@@ -184,6 +189,7 @@ export class PortfoliosTile extends UI {
         if (result === BtnReturn.YES) {
             await this.portfolioService.clearPortfolio(portfolioId);
             this.overviewService.resetCacheForId(portfolioId);
+            this.resetCombinedOverviewCache(portfolioId);
             if (this.portfolio.id === portfolioId) {
                 await this.reloadPortfolio(portfolioId);
             }
@@ -214,6 +220,10 @@ export class PortfoliosTile extends UI {
             return;
         }
         await this.$router.push({name: "portfolio-management-edit", params: {id: "new"}});
+    }
+
+    private resetCombinedOverviewCache(portfolioId: number): void {
+        PortfolioUtils.resetCombinedOverviewCache(this.combinedPortfolioParams, portfolioId, this.overviewService);
     }
 
     /**

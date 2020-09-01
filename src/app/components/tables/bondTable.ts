@@ -24,14 +24,16 @@ import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {Filters} from "../../platform/filters/Filters";
 import {Storage} from "../../platform/services/storage";
-import {PortfolioService} from "../../services/portfolioService";
+import {OverviewService} from "../../services/overviewService";
+import {PortfolioParams, PortfolioService} from "../../services/portfolioService";
 import {TableHeadersState, TABLES_NAME, TablesService} from "../../services/tablesService";
 import {TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
 import {BigMoney} from "../../types/bigMoney";
 import {Operation} from "../../types/operation";
-import {BondPortfolioRow, Pagination, Portfolio, ShareType, TableHeader} from "../../types/types";
+import {BondPortfolioRow, Pagination, ShareType, TableHeader} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
+import {PortfolioUtils} from "../../utils/portfolioUtils";
 import {SortUtils} from "../../utils/sortUtils";
 import {TradeUtils} from "../../utils/tradeUtils";
 import {MutationType} from "../../vuex/mutationType";
@@ -166,8 +168,8 @@ const MainStore = namespace(StoreType.MAIN);
                                         Погашение
                                     </v-list-tile-title>
                                 </v-list-tile>
-                                <v-divider></v-divider>
-                                <v-list-tile @click="deleteAllTrades(props.item)">
+                                <v-divider v-if="portfolioId"></v-divider>
+                                <v-list-tile v-if="portfolioId" @click="deleteAllTrades(props.item)">
                                     <v-list-tile-title class="delete-btn">
                                         Удалить
                                     </v-list-tile-title>
@@ -279,15 +281,16 @@ export class BondTable extends UI {
     @Inject
     private tablesService: TablesService;
     @Inject
+    private overviewService: OverviewService;
+    @Inject
     private portfolioService: PortfolioService;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
     private reloadPortfolio: (id: number) => Promise<void>;
-    /** Если работаем из составного портфеля и добавляем сделку в текущий портфель, надо перезагрузить его */
+    /** Комбинированный портфель */
     @MainStore.Getter
-    private portfolio: Portfolio;
-
+    private combinedPortfolioParams: PortfolioParams;
     /** Идентификатор портфеля */
-    @Prop({default: null, type: String, required: true})
+    @Prop({default: null, type: String, required: false})
     private portfolioId: string;
     /** Айди портфелей для комбинирования */
     @Prop({default: [], required: false})
@@ -421,6 +424,7 @@ export class BondTable extends UI {
             portfolioId: Number(this.portfolioId)
         });
         await this.reloadPortfolio(Number(this.portfolioId));
+        this.resetCombinedOverviewCache(Number(this.portfolioId));
     }
 
     private amount(value: string): number {
@@ -466,6 +470,10 @@ export class BondTable extends UI {
 
     private markupClasses(amount: number): string[] {
         return TradeUtils.markupClasses(amount);
+    }
+
+    private resetCombinedOverviewCache(portfolioId: number): void {
+        PortfolioUtils.resetCombinedOverviewCache(this.combinedPortfolioParams, portfolioId, this.overviewService);
     }
 
     private get portfolioCurrency(): string {

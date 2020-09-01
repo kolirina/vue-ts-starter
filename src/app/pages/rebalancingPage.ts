@@ -317,6 +317,9 @@ export class RebalancingPage extends UI {
     }
 
     private async loadRebalancingModel(): Promise<void> {
+        if (!this.portfolio.id) {
+            return;
+        }
         this.rebalancingModel = await this.overviewService.getPortfolioRebalancing(this.portfolio.id);
         if (!this.rebalancingModel) {
             this.rebalancingModel = {
@@ -348,6 +351,9 @@ export class RebalancingPage extends UI {
     }
 
     private async saveRebalancing(calculateRow: CalculateRow[]): Promise<void> {
+        if (!this.portfolio.id) {
+            return;
+        }
         this.rebalancingModel.instrumentRebalancingModels = [];
         calculateRow.forEach(row => {
             this.rebalancingModel.instrumentRebalancingModels.push({

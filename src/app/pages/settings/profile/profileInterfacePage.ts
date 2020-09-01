@@ -21,7 +21,7 @@ import {ShowProgress} from "../../../platform/decorators/showProgress";
 import {ClientInfo, ClientService} from "../../../services/clientService";
 import {EventType} from "../../../types/eventType";
 import {Portfolio} from "../../../types/types";
-import {HelpDeskUtils} from "../../../utils/HelpDeskUtils";
+import {HelpDeskUtils} from "../../../utils/helpDeskUtils";
 import {MutationType} from "../../../vuex/mutationType";
 import {StoreType} from "../../../vuex/storeType";
 

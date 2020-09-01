@@ -1,12 +1,13 @@
 import {Inject} from "typescript-ioc";
 import {namespace} from "vuex-class/lib/bindings";
-import {Component, Prop, UI, Watch} from "../app/ui";
+import {Component, Prop, UI} from "../app/ui";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {Storage} from "../platform/services/storage";
 import {ClientInfo} from "../services/clientService";
 import {DealsImportProvider} from "../services/importService";
 import {PortfolioParams, PortfolioService} from "../services/portfolioService";
 import {CurrencyUnit} from "../types/currency";
+import {EventType} from "../types/eventType";
 import {StoreKeys} from "../types/storeKeys";
 import {Tariff} from "../types/tariff";
 import {CombinedPortfolioParams, Portfolio} from "../types/types";
@@ -21,7 +22,7 @@ const MainStore = namespace(StoreType.MAIN);
     template: `
         <v-list-tile class="text-xs-center sidebar-list-item">
             <v-list-tile-content class="portfolio-content">
-                <v-menu offset-y transition="slide-y-transition" class="portfolios-drop portfolios-menu">
+                <v-menu v-model="menu" offset-y transition="slide-y-transition" class="portfolios-drop portfolios-menu">
                     <v-layout slot="activator" class="pa-0 w100pc" justify-center align-center row>
                         <span :class="['portfolio-switcher-icon', sideBarOpened ? '' : 'mx-3', isMobile ? 'mx-3' : '', brokerIcon]"
                               :title="brokerDescription"></span>
@@ -44,8 +45,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-layout>
 
                     <v-list class="portfolios-list">
-                        <v-list-tile v-for="(portfolio, index) in portfolios" class="portfolios-list-tile" :key="index"
-                                     @click="onSelect(portfolio)">
+                        <v-list-tile v-for="(portfolio, index) in clientInfo.user.portfolios" class="portfolios-list-tile" :key="index" @click="onSelect(portfolio)">
                             <div :class="['portfolios-list-tile__icon', getBrokerIconClass(portfolio.brokerId)]"></div>
                             <div class="portfolios-list-tile__info">
                                 <v-list-tile-title class="ellipsis">{{ portfolio.name }}</v-list-tile-title>
@@ -56,8 +56,8 @@ const MainStore = namespace(StoreType.MAIN);
                                     <div v-if="portfolio.professionalMode" class="professional-mode-icon" title="Профессиональный режим"></div>
                                 </v-layout>
                             </div>
-                            <div @click="goToPortfolioSettings(portfolio.id)" class="portfolios-list__settings" title="Управление портфелем"></div>
-                            <div @click="setCombinedPortfolio" class="portfolios-list__settings" title="Управление портфелем"></div>
+                            <div v-if="portfolio.id" @click.stop="goToPortfolioSettings(portfolio.id)" class="portfolios-list__settings" title="Управление портфелем"></div>
+                            <div v-else @click.stop="setCombinedPortfolio" class="portfolios-list__settings" title="Управление портфелем"></div>
                         </v-list-tile>
                     </v-list>
                 </v-menu>
@@ -100,20 +100,28 @@ export class PortfolioSwitcher extends UI {
     private isMobile: boolean;
     /** Выбранный портфель */
     private selected: PortfolioParams = null;
-    /** Список портфелей */
-    private portfolios: PortfolioParams[] = [];
     /** Список валют */
     private currencyList = [CurrencyUnit.RUB, CurrencyUnit.USD, CurrencyUnit.EUR].map(currency => currency.code);
+    /** Активатор меню */
+    private menu = false;
 
     /**
      * Инициализация портфелей
      */
     async created(): Promise<void> {
-        this.portfolios = this.clientInfo.user.portfolios;
-        if (this.portfolios.length > 1 && this.clientInfo.user.tariff !== Tariff.FREE) {
+        this.initCombinedPortfolio();
+        UI.on(EventType.PORTFOLIO_LIST_UPDATED, () => this.initCombinedPortfolio());
+    }
+
+    beforeDestroy(): void {
+        UI.off(EventType.PORTFOLIO_LIST_UPDATED);
+    }
+
+    private initCombinedPortfolio(): void {
+        if (this.clientInfo.user.portfolios.length > 1 && this.clientInfo.user.tariff !== Tariff.FREE) {
             const portfolioParams = this.localStorage.get<CombinedPortfolioParams>(StoreKeys.COMBINED_PORTFOLIO_PARAMS_KEY, null);
-            if (!this.portfolios.some(portfolio => portfolio.combinedFlag)) {
-                this.portfolios.push(this.combinedPortfolioParams);
+            if (!this.clientInfo.user.portfolios.some(portfolio => portfolio.combinedFlag)) {
+                this.clientInfo.user.portfolios.push(this.combinedPortfolioParams);
             }
             this.updateCombinedPortfolio(portfolioParams?.viewCurrency || this.combinedPortfolioParams.viewCurrency);
         }
@@ -135,9 +143,8 @@ export class PortfolioSwitcher extends UI {
         this.selected = selected;
     }
 
-    @Watch("clientInfo.user.portfolios", {deep: true})
     private onPortfoliosChange(): void {
-        this.selected = this.getSelected();
+        this.initCombinedPortfolio();
     }
 
     private getSelected(): PortfolioParams {
@@ -180,6 +187,7 @@ export class PortfolioSwitcher extends UI {
     }
 
     private async setCombinedPortfolio(): Promise<void> {
+        this.menu = false;
         const portfolioParams = this.localStorage.get<CombinedPortfolioParams>(StoreKeys.COMBINED_PORTFOLIO_PARAMS_KEY, {});
         const result = await new CompositePortfolioManagementDialog().show({
             portfolios: this.clientInfo.user.portfolios,

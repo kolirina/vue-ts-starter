@@ -280,7 +280,7 @@ export class BasePortfolioPage extends UI {
     @Prop({default: "", type: String, required: false})
     private portfolioName: string;
     /** Идентификатор портфеля */
-    @Prop({default: "", type: String, required: false})
+    @Prop({default: null, type: String, required: false})
     private portfolioId: string;
     /** Заметки по бумагам портфеля */
     @Prop({default: null, type: Object, required: false})

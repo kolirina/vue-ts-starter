@@ -31,6 +31,7 @@ import {Tariff} from "../../types/tariff";
 import {Portfolio, TableHeader} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {ExportUtils} from "../../utils/exportUtils";
+import {PortfolioUtils} from "../../utils/portfolioUtils";
 import {SortUtils} from "../../utils/sortUtils";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
@@ -169,6 +170,9 @@ export class PortfoliosTable extends UI {
     private clientInfo: ClientInfo;
     @MainStore.Getter
     private portfolio: Portfolio;
+    /** Комбинированный портфель */
+    @MainStore.Getter
+    private combinedPortfolioParams: PortfolioParams;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIOS)
     private reloadPortfolios: () => Promise<void>;
     @MainStore.Action(MutationType.SET_CURRENT_PORTFOLIO)
@@ -225,6 +229,7 @@ export class PortfoliosTable extends UI {
             await this.setCurrentPortfolio(this.clientInfo.user.portfolios[0].id);
         }
         this.$snotify.info("Портфель успешно удален");
+        UI.emit(EventType.PORTFOLIO_LIST_UPDATED);
     }
 
     @ShowProgress
@@ -241,6 +246,7 @@ export class PortfoliosTable extends UI {
         if (result === BtnReturn.YES) {
             await this.portfolioService.clearPortfolio(portfolioId);
             this.overviewService.resetCacheForId(portfolioId);
+            this.resetCombinedOverviewCache(portfolioId);
             if (this.portfolio.id === portfolioId) {
                 await this.reloadPortfolio(portfolioId);
             }
@@ -289,6 +295,10 @@ export class PortfoliosTable extends UI {
 
     private showNoteLink(note: string): boolean {
         return !CommonUtils.isBlank(note);
+    }
+
+    private resetCombinedOverviewCache(portfolioId: number): void {
+        PortfolioUtils.resetCombinedOverviewCache(this.combinedPortfolioParams, portfolioId, this.overviewService);
     }
 
     /**

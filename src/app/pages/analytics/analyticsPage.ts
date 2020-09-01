@@ -252,14 +252,14 @@ export class AnalyticsPage extends UI {
         profitYearChart: ColumnChart,
     };
 
-    @Inject
-    private localStorage: Storage;
     @MainStore.Getter
     private clientInfo: ClientInfo;
     @MainStore.Getter
     private portfolio: Portfolio;
     @MainStore.Action(MutationType.RELOAD_CLIENT_INFO)
     private reloadUser: () => Promise<void>;
+    @Inject
+    private localStorage: Storage;
     @Inject
     private adviceService: AdviceService;
     @Inject

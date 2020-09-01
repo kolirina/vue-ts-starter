@@ -21,7 +21,10 @@ import {DisableConcurrentExecution} from "../../platform/decorators/disableConcu
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {DividendInfo, DividendService} from "../../services/dividendService";
+import {OverviewService} from "../../services/overviewService";
+import {PortfolioParams} from "../../services/portfolioService";
 import {Portfolio, TableHeader} from "../../types/types";
+import {PortfolioUtils} from "../../utils/portfolioUtils";
 import {SortUtils} from "../../utils/sortUtils";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
@@ -90,8 +93,13 @@ export class DividendsByYearAndTickerTable extends UI {
 
     private static readonly ACTION_HEADER = {text: "", align: "center", value: "actions", sortable: false, width: "25"};
 
+    @Inject
+    private overviewService: OverviewService;
     @MainStore.Getter
     private portfolio: Portfolio;
+    /** Комбинированный портфель */
+    @MainStore.Getter
+    private combinedPortfolioParams: PortfolioParams;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
     private reloadPortfolio: (id: number) => Promise<void>;
     @Inject
@@ -127,12 +135,17 @@ export class DividendsByYearAndTickerTable extends UI {
     @DisableConcurrentExecution
     private async deleteAllTradesAndShowMessage(dividendTrade: DividendInfo): Promise<void> {
         await this.dividendService.deleteAllTrades({ticker: dividendTrade.ticker, year: dividendTrade.year, portfolioId: this.portfolio.id});
+        this.resetCombinedOverviewCache(this.portfolio.id);
         await this.reloadPortfolio(this.portfolio.id);
         this.$snotify.info(`Все дивидендные сделки по тикеру ${dividendTrade.ticker} были успешно удалены`);
     }
 
     private customSort(items: DividendInfo[], index: string, isDesc: boolean): DividendInfo[] {
         return SortUtils.simpleSort(items, index, isDesc);
+    }
+
+    private resetCombinedOverviewCache(portfolioId: number): void {
+        PortfolioUtils.resetCombinedOverviewCache(this.combinedPortfolioParams, portfolioId, this.overviewService);
     }
 
     private get allowActions(): boolean {

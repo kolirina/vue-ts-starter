@@ -23,14 +23,16 @@ import {Filters} from "../../platform/filters/Filters";
 import {Storage} from "../../platform/services/storage";
 import {AssetCategory} from "../../services/assetService";
 import {ClientInfo} from "../../services/clientService";
-import {PortfolioService} from "../../services/portfolioService";
+import {OverviewService} from "../../services/overviewService";
+import {PortfolioParams, PortfolioService} from "../../services/portfolioService";
 import {TableHeadersState, TABLES_NAME, TablesService, TableType} from "../../services/tablesService";
 import {TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
 import {BigMoney} from "../../types/bigMoney";
 import {Operation} from "../../types/operation";
-import {Asset, Pagination, Portfolio, Share, ShareType, StockTypePortfolioRow, TableHeader} from "../../types/types";
+import {Asset, Pagination, Share, ShareType, StockTypePortfolioRow, TableHeader} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
+import {PortfolioUtils} from "../../utils/portfolioUtils";
 import {SortUtils} from "../../utils/sortUtils";
 import {TradeUtils} from "../../utils/tradeUtils";
 import {MutationType} from "../../vuex/mutationType";
@@ -199,8 +201,8 @@ const MainStore = namespace(StoreType.MAIN);
                                         Дивиденд
                                     </v-list-tile-title>
                                 </v-list-tile>
-                                <v-divider></v-divider>
-                                <v-list-tile @click="deleteAllTrades(props.item)">
+                                <v-divider v-if="portfolioId"></v-divider>
+                                <v-list-tile v-if="portfolioId" @click="deleteAllTrades(props.item)">
                                     <v-list-tile-title class="delete-btn">
                                         Удалить
                                     </v-list-tile-title>
@@ -236,7 +238,7 @@ const MainStore = namespace(StoreType.MAIN);
                             <div class="ext-info__item">
                                 Прибыль по сделкам {{ props.item.exchangeProfit | amount(true) }} <span>{{ portfolioCurrency }}</span><br>
                                 Прибыль по сделкам {{ props.item.exchangeProfitPercent | number }} <span>%</span><br>
-                                Прибыль {{ props.item.profit| amount(true, 2, true, true) }} <span>{{ portfolioCurrency }}</span> ({{ props.item.percProfit | number }} %)<br>
+                                Прибыль {{ props.item.profit | amount(true, 2, true, true) }} <span>{{ portfolioCurrency }}</span> ({{ props.item.percProfit | number }} %)<br>
                                 Доходность {{ props.item.yearYield | number }} <span>%</span>
                             </div>
                         </td>
@@ -283,16 +285,18 @@ export class StockTable extends UI {
     @Inject
     private tablesService: TablesService;
     @Inject
+    private overviewService: OverviewService;
+    @Inject
     private portfolioService: PortfolioService;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
     private reloadPortfolio: (id: number) => Promise<void>;
-    /** Если работаем из составного портфеля и добавляем сделку в текущий портфель, надо перезагрузить его */
-    @MainStore.Getter
-    private portfolio: Portfolio;
     @MainStore.Getter
     private clientInfo: ClientInfo;
+    /** Комбинированный портфель */
+    @MainStore.Getter
+    private combinedPortfolioParams: PortfolioParams;
     /** Идентификатор портфеля */
-    @Prop({default: null, type: String, required: true})
+    @Prop({default: null, type: String, required: false})
     private portfolioId: string;
     /** Айди портфелей для комбинирования */
     @Prop({default: [], required: false})
@@ -366,6 +370,11 @@ export class StockTable extends UI {
         this.setFilteredRows();
     }
 
+    @Watch("pagination")
+    paginationChange(): void {
+        this.localStorage.set(`${this.tableType}Pagination`, this.pagination);
+    }
+
     setFilteredRows(): void {
         if (this.filter.hideSoldRows) {
             this.filteredRows = [...this.rows.filter(row => !CommonUtils.exists(row.share) || Number(row.quantity) !== 0)];
@@ -420,6 +429,7 @@ export class StockTable extends UI {
         if (result) {
             if (result.needUpdate) {
                 await this.reloadPortfolio(Number(this.portfolioId));
+                this.resetCombinedOverviewCache(Number(this.portfolioId));
             }
             share.ticker = result.asset.ticker;
             share.shortname = result.asset.name;
@@ -481,6 +491,7 @@ export class StockTable extends UI {
         }
         this.$snotify.info(`Сделки по бумаге ${stockRow.share.name} успешно удалены`);
         await this.reloadPortfolio(Number(this.portfolioId));
+        this.resetCombinedOverviewCache(Number(this.portfolioId));
     }
 
     private amount(value: string): number {
@@ -489,11 +500,6 @@ export class StockTable extends UI {
         }
         const amount = new BigMoney(value);
         return amount.amount.toNumber();
-    }
-
-    @Watch("pagination")
-    private paginationChange(): void {
-        this.localStorage.set(`${this.tableType}Pagination`, this.pagination);
     }
 
     private customSort(items: StockTypePortfolioRow[], sortby: string, isDesc: boolean): StockTypePortfolioRow[] {
@@ -532,6 +538,10 @@ export class StockTable extends UI {
         const asset = stockRow.share as Asset;
         return asset.shareType === ShareType.STOCK || (["STOCK", "BOND", "ETF"].includes(asset.category) &&
             !(asset.source || "").includes("investfunds.ru"));
+    }
+
+    private resetCombinedOverviewCache(portfolioId: number): void {
+        PortfolioUtils.resetCombinedOverviewCache(this.combinedPortfolioParams, portfolioId, this.overviewService);
     }
 
     private get portfolioCurrency(): string {

@@ -151,8 +151,10 @@ export class PortfolioManagementEditPage extends UI {
      * @inheritDoc
      */
     async mounted(): Promise<void> {
-        UI.on(EventType.PORTFOLIO_CREATED, async () => this.reloadPortfolios());
-        UI.on(EventType.PORTFOLIO_CREATED, async () => this.reloadPortfolios());
+        UI.on(EventType.PORTFOLIO_CREATED, async () => {
+            await this.reloadPortfolios();
+            UI.emit(EventType.PORTFOLIO_LIST_UPDATED);
+        });
         UI.on(EventType.PORTFOLIO_UPDATED, async (portfolio: PortfolioParams) => this.updatePortfolio(portfolio));
         UI.on(EventType.PORTFOLIO_RELOAD, async (portfolio: PortfolioParams) => await this.reloadPortfolio(portfolio.id));
         UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));

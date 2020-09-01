@@ -719,31 +719,30 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         try {
             if (this.editMode) {
                 await this.editTrade(tradeFields);
-                UI.emit(EventType.TRADE_UPDATED);
             } else {
                 if (this.newCustomAsset) {
                     await this.saveAsset(tradeFields);
                 }
                 await this.saveTrade(tradeFields);
-                UI.emit(EventType.TRADE_CREATED, {portfolioId: this.portfolio.id});
             }
-            const msg = this.data.eventFields ? "Событие успешно исполнено" : `Сделка успешно ${this.editMode ? "отредактирована" : "добавлена"}`;
-            this.$snotify.info(msg);
             // так как данные перезагружать не нужно если добавили в другой портфель
             const needResetCache = this.portfolio.id === this.data.store.currentPortfolio.portfolioParams.id ||
                 this.data.store.currentPortfolio.portfolioParams.combinedIds?.includes(this.portfolio.id);
             // сбрасываем кэш выбранного портфеля чтобы при переключении он загрузкился с новой сделкой
             if (needResetCache) {
-                if (this.data.store.currentPortfolio.portfolioParams.combinedFlag) {
-                    this.overviewService.resetCacheForCombinedPortfolio({
-                        ids: this.data.store.currentPortfolio.portfolioParams.combinedIds,
-                        viewCurrency: this.data.store.currentPortfolio.portfolioParams.viewCurrency
-                    });
-                } else {
-                    this.overviewService.resetCacheForId(this.portfolio.id);
-
-                }
+                this.overviewService.resetCacheForCombinedPortfolio({
+                    ids: this.data.store.currentPortfolio.portfolioParams.combinedIds,
+                    viewCurrency: this.data.store.currentPortfolio.portfolioParams.viewCurrency
+                });
+                this.overviewService.resetCacheForId(this.portfolio.id);
             }
+            if (this.editMode) {
+                UI.emit(EventType.TRADE_UPDATED);
+            } else {
+                UI.emit(EventType.TRADE_CREATED, {portfolioId: this.portfolio.id});
+            }
+            const msg = this.data.eventFields ? "Событие успешно исполнено" : `Сделка успешно ${this.editMode ? "отредактирована" : "добавлена"}`;
+            this.$snotify.info(msg);
             this.close();
         } catch (e) {
             this.handleError(e);

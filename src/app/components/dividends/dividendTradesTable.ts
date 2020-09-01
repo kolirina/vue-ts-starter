@@ -23,6 +23,8 @@ import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {Filters} from "../../platform/filters/Filters";
 import {ClientService} from "../../services/clientService";
 import {DividendInfo, DividendService} from "../../services/dividendService";
+import {OverviewService} from "../../services/overviewService";
+import {PortfolioParams} from "../../services/portfolioService";
 import {TradeFields, TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
 import {BigMoney} from "../../types/bigMoney";
@@ -30,6 +32,7 @@ import {Operation} from "../../types/operation";
 import {Portfolio, TableHeader} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {DateFormat} from "../../utils/dateUtils";
+import {PortfolioUtils} from "../../utils/portfolioUtils";
 import {SortUtils} from "../../utils/sortUtils";
 import {TradeUtils} from "../../utils/tradeUtils";
 import {MutationType} from "../../vuex/mutationType";
@@ -106,8 +109,13 @@ export class DividendTradesTable extends UI {
 
     private static readonly ACTION_HEADER = {text: "", align: "center", value: "action", sortable: false, width: "50"};
 
+    @Inject
+    private overviewService: OverviewService;
     @MainStore.Getter
     private portfolio: Portfolio;
+    /** Комбинированный портфель */
+    @MainStore.Getter
+    private combinedPortfolioParams: PortfolioParams;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
     private reloadPortfolio: (id: number) => Promise<void>;
     @Inject
@@ -189,6 +197,7 @@ export class DividendTradesTable extends UI {
     @DisableConcurrentExecution
     private async deleteDividendTradeAndShowMessage(dividendTrade: DividendInfo): Promise<void> {
         await this.tradesService.deleteTrade({tradeId: dividendTrade.id, portfolioId: this.portfolio.id});
+        this.resetCombinedOverviewCache(this.portfolio.id);
         await this.reloadPortfolio(this.portfolio.id);
         this.$snotify.info("Сделка успешно удалена");
     }
@@ -201,6 +210,10 @@ export class DividendTradesTable extends UI {
         const date = TradeUtils.getDateString(dateString);
         const time = TradeUtils.getTimeString(dateString);
         return this.portfolioProModeEnabled && !!time ? Filters.formatDate(`${date} ${time}`, DateFormat.DATE_TIME) : Filters.formatDate(date, DateFormat.DATE);
+    }
+
+    private resetCombinedOverviewCache(portfolioId: number): void {
+        PortfolioUtils.resetCombinedOverviewCache(this.combinedPortfolioParams, portfolioId, this.overviewService);
     }
 
     private get allowActions(): boolean {
