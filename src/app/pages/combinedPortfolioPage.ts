@@ -14,10 +14,10 @@ import {MarketHistoryService} from "../services/marketHistoryService";
 import {OverviewService} from "../services/overviewService";
 import {HighStockEventsGroup, LineChartItem, PortfolioLineChartData} from "../types/charts/types";
 import {Currency} from "../types/currency";
-import {AddTradeEvent, EventType} from "../types/eventType";
+import {EventType} from "../types/eventType";
 import {Permission} from "../types/permission";
 import {StoreKeys} from "../types/storeKeys";
-import {ForbiddenCode, Overview} from "../types/types";
+import {CombinedPortfolioParams, ForbiddenCode, Portfolio} from "../types/types";
 import {UiStateHelper} from "../utils/uiStateHelper";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
@@ -29,10 +29,16 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-slide-x-reverse-transition>
-            <template v-if="overview">
-                <base-portfolio-page :overview="overview" :line-chart-data="lineChartData" :line-chart-events="lineChartEvents" :index-line-chart-data="indexLineChartData"
-                                     portfolio-name="Составной портфель" :view-currency="viewCurrency" :state-key-prefix="StoreKeys.PORTFOLIO_COMBINED_CHART"
-                                     :side-bar-opened="sideBarOpened" :ids="ids"
+            <template v-if="initialized">
+                <base-portfolio-page :overview="portfolio.overview"
+                                     :line-chart-data="lineChartData"
+                                     :line-chart-events="lineChartEvents"
+                                     :index-line-chart-data="indexLineChartData"
+                                     portfolio-name="Составной портфель"
+                                     :view-currency="viewCurrency"
+                                     :state-key-prefix="StoreKeys.PORTFOLIO_COMBINED_CHART"
+                                     :side-bar-opened="sideBarOpened"
+                                     :ids="portfolio.portfolioParams.combinedIds"
                                      @reloadLineChart="loadPortfolioLineChart">
                     <template #afterDashboard>
                         <v-layout align-center>
@@ -81,9 +87,11 @@ export class CombinedPortfolioPage extends UI {
     @MainStore.Getter
     private clientInfo: ClientInfo;
     @MainStore.Getter
+    private portfolio: Portfolio;
+    @MainStore.Getter
     private sideBarOpened: boolean;
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
+    @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
+    private reloadPortfolio: () => Promise<void>;
     @MainStore.Mutation(MutationType.UPDATE_COMBINED_PORTFOLIO)
     private updateCombinedPortfolio: (viewCurrency: string) => void;
     @Inject
@@ -94,8 +102,6 @@ export class CombinedPortfolioPage extends UI {
     private marketHistoryService: MarketHistoryService;
     @Inject
     private exportService: ExportService;
-    /** Данные комбинированного портфеля */
-    private overview: Overview = null;
     /** Валюта просмотра портфеля */
     private viewCurrency: string = Currency.RUB;
     /** Данные графика стоимости портфеля */
@@ -108,24 +114,25 @@ export class CombinedPortfolioPage extends UI {
     private indexLineChartData: any[] = null;
     /** Ключи для сохранения информации */
     private StoreKeys = StoreKeys;
-    /** Айди портфелей для комбинирования */
-    private ids: number[] = [];
+    /** Признак инициализации */
+    private initialized = false;
 
     /**
      * Инициализация данных компонента
      * @inheritDoc
      */
     async created(): Promise<void> {
-        this.viewCurrency = this.storage.get<string>(StoreKeys.COMBINED_VIEW_CURRENCY_KEY, Currency.RUB);
-        this.setIds();
-        await this.doCombinedPortfolio();
-        UI.on(EventType.TRADE_CREATED, async (event: AddTradeEvent): Promise<void> => {
-            await this.reloadPortfolio(event.portfolioId);
-            // перезагружаем информацию если сделка была добавлена в портфель входящий в составной
-            if (this.ids.includes(event.portfolioId)) {
+        try {
+            const portfolioParams = this.storage.get<CombinedPortfolioParams>(StoreKeys.COMBINED_PORTFOLIO_PARAMS_KEY, {});
+            this.viewCurrency = portfolioParams.viewCurrency || Currency.RUB;
+            await this.doCombinedPortfolio();
+            UI.on(EventType.TRADE_CREATED, async (): Promise<void> => {
+                await this.reloadPortfolio();
                 await this.doCombinedPortfolio();
-            }
-        });
+            });
+        } finally {
+            this.initialized = true;
+        }
     }
 
     beforeDestroy(): void {
@@ -151,49 +158,46 @@ export class CombinedPortfolioPage extends UI {
         next();
     }
 
-    /**
-     * Подготавливает идентификаторы портфелей
-     */
-    private setIds(): void {
-        this.ids = this.clientInfo.user.portfolios.filter(value => value.combined).map(value => value.id);
-    }
-
     private async showDialogCompositePortfolio(): Promise<void> {
         const result = await new CompositePortfolioManagementDialog().show({portfolios: this.clientInfo.user.portfolios, viewCurrency: this.viewCurrency});
         if (result) {
             this.viewCurrency = result;
             this.updateCombinedPortfolio(this.viewCurrency);
-            this.setIds();
+            const portfolioParams = this.storage.get<CombinedPortfolioParams>(StoreKeys.COMBINED_PORTFOLIO_PARAMS_KEY, {});
+            portfolioParams.viewCurrency = this.viewCurrency;
+            this.storage.set(StoreKeys.COMBINED_PORTFOLIO_PARAMS_KEY, portfolioParams);
             await this.doCombinedPortfolio();
         }
     }
 
     private async doCombinedPortfolio(): Promise<void> {
-        this.overview = null;
-        this.overview = await this.overviewService.getPortfolioOverviewCombined({ids: this.ids, viewCurrency: this.viewCurrency});
-        await this.loadPortfolioLineChart();
-        this.storage.set(StoreKeys.COMBINED_VIEW_CURRENCY_KEY, this.viewCurrency);
+        this.initialized = false;
+        try {
+            await this.loadPortfolioLineChart();
+        } finally {
+            this.initialized = true;
+        }
     }
 
     /**
      * Экспортирует данные комбинированного портфеля в xlsx
      */
     private async exportPortfolio(): Promise<void> {
-        await this.exportService.exportCombinedReport({ids: this.ids, viewCurrency: this.viewCurrency});
+        await this.exportService.exportCombinedReport({ids: this.portfolio.portfolioParams.combinedIds, viewCurrency: this.viewCurrency});
     }
 
     private blockNotEmpty(): boolean {
-        return this.overview.totalTradesCount !== 0;
+        return this.portfolio.overview.totalTradesCount !== 0;
     }
 
     private async loadPortfolioLineChart(): Promise<void> {
         if (UiStateHelper.historyPanel[0] === 1) {
-            this.portfolioLineChartData = await this.overviewService.getCostChartCombined({ids: this.ids, viewCurrency: this.viewCurrency});
+            this.portfolioLineChartData = await this.overviewService.getCostChartCombined({ids: this.portfolio.portfolioParams.combinedIds, viewCurrency: this.viewCurrency});
             this.lineChartData = this.portfolioLineChartData.lineChartData;
-            if (this.overview.firstTradeDate) {
-                this.indexLineChartData = await this.marketHistoryService.getIndexHistory("MMVB", dayjs(this.overview.firstTradeDate).format("DD.MM.YYYY"));
+            if (this.portfolio.overview.firstTradeDate) {
+                this.indexLineChartData = await this.marketHistoryService.getIndexHistory("MMVB", dayjs(this.portfolio.overview.firstTradeDate).format("DD.MM.YYYY"));
             }
-            this.lineChartEvents = await this.overviewService.getEventsChartDataCombined({ids: this.ids, viewCurrency: this.viewCurrency});
+            this.lineChartEvents = await this.overviewService.getEventsChartDataCombined({ids: this.portfolio.portfolioParams.combinedIds, viewCurrency: this.viewCurrency});
         }
     }
 }

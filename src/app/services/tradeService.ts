@@ -41,22 +41,22 @@ export class TradeService {
 
     /**
      * Загружает и возвращает сделки по тикеру в портфеле
-     * @param {string} id идентификатор портфеля
+     * @param {string} portfolioId идентификатор портфеля
      * @param {string} ticker тикер
      * @returns {Promise<TradeRow[]>}
      */
-    async getShareTrades(id: string, ticker: string): Promise<TradeRow[]> {
-        return this.http.get<TradeRow[]>(`/trades/${id}/${ticker}`);
+    async getShareTrades(portfolioId: number, ticker: string): Promise<TradeRow[]> {
+        return this.http.get<TradeRow[]>(`/trades/${portfolioId}/${ticker}`);
     }
 
     /**
      * Загружает и возвращает сделки по тикеру в портфеле
-     * @param {string} id идентификатор портфеля
+     * @param {string} portfolioId идентификатор портфеля
      * @param {string} assetId идентификатор актива
      * @returns {Promise<TradeRow[]>}
      */
-    async getAssetShareTrades(id: string, assetId: number): Promise<TradeRow[]> {
-        return this.http.get<TradeRow[]>(`/trades/${id}/asset/${assetId}`);
+    async getAssetShareTrades(portfolioId: number, assetId: number): Promise<TradeRow[]> {
+        return this.http.get<TradeRow[]>(`/trades/${portfolioId}/asset/${assetId}`);
     }
 
     /**

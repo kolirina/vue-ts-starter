@@ -280,8 +280,8 @@ export class ImportPage extends UI {
     private clientInfo: ClientInfo;
     @MainStore.Getter
     private portfolio: Portfolio;
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
+    @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
+    private reloadPortfolio: () => Promise<void>;
     @Inject
     private importService: ImportService;
     @Inject
@@ -344,7 +344,7 @@ export class ImportPage extends UI {
         } finally {
             this.initialized = true;
         }
-        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio());
     }
 
     beforeDestroy(): void {
@@ -355,7 +355,10 @@ export class ImportPage extends UI {
         const result = await new ConfirmDialog().show("Вы собираетесь откатить импорт, это приведет к удалению информации о нем из портфеля");
         if (result === BtnReturn.YES) {
             await this.revertImportConfirmed(userImportId);
-            await this.reloadPortfolio(this.portfolio.id);
+            // todo проверка
+            if (this.portfolio.id === this.portfolio.id) {
+                await this.reloadPortfolio();
+            }
             this.$snotify.info("Результаты импорта были успешно отменены");
         }
     }
@@ -549,7 +552,10 @@ export class ImportPage extends UI {
             this.previousImportValidatedTradesCount = this.importResult.validatedTradesCount;
         }
         if (this.importResult.validatedTradesCount) {
-            await this.reloadPortfolio(this.portfolio.id);
+            // todo проверка
+            if (this.portfolio.id === this.portfolio.id) {
+                await this.reloadPortfolio();
+            }
         }
         // если это повторная загрузка после сохранения алиасов, поторно в этот блок не заходи и сразу идем на третий шаг
         if (!retryUpload && this.importResult.errors && this.importResult.errors.length) {
@@ -584,7 +590,6 @@ export class ImportPage extends UI {
     }
 
     private async goToPortfolio(): Promise<void> {
-        await this.reloadPortfolio(this.portfolio.id);
         this.$router.push("portfolio");
     }
 

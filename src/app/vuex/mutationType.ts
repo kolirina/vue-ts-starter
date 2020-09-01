@@ -15,8 +15,8 @@ export enum MutationType {
     UPDATE_COMBINED_PORTFOLIO = "UPDATE_COMBINED_PORTFOLIO",
     /** Команда установки портфеля по умолчанию */
     SET_DEFAULT_PORTFOLIO = "SET_DEFAULT_PORTFOLIO",
-    /** Команда обновления портфеля */
-    RELOAD_PORTFOLIO = "RELOAD_PORTFOLIO",
+    /** Команда обновления текущего портфеля */
+    RELOAD_CURRENT_PORTFOLIO = "RELOAD_CURRENT_PORTFOLIO",
     /** Команда обновления информации о клиенте */
     RELOAD_CLIENT_INFO = "RELOAD_CLIENT_INFO",
     /** Запрос на обновление списка портфелей */

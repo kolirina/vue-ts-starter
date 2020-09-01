@@ -1152,8 +1152,8 @@ const MainStore = namespace(StoreType.MAIN);
 })
 export class HelpPage extends UI {
 
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
+    @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
+    private reloadPortfolio: () => Promise<void>;
     @MainStore.Getter
     private portfolio: Portfolio;
     @MainStore.Getter
@@ -1198,7 +1198,7 @@ export class HelpPage extends UI {
                 await this.scrollTo(section);
             }, 800);
         }
-        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio());
     }
 
     beforeDestroy(): void {

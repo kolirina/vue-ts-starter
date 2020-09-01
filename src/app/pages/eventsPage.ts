@@ -306,8 +306,8 @@ export class EventsPage extends UI {
 
     @MainStore.Getter
     private portfolio: Portfolio;
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
+    @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
+    private reloadPortfolio: () => Promise<void>;
     @Inject
     private eventService: EventService;
     @Inject
@@ -378,7 +378,7 @@ export class EventsPage extends UI {
             this.eventsHeaders.push(EventsPage.ACTION_HEADER);
         }
         UI.on(EventType.TRADE_CREATED, async () => {
-            await this.reloadPortfolio(this.portfolio.id);
+            await this.reloadPortfolio();
             await this.loadAllData();
         });
     }
@@ -583,14 +583,14 @@ export class EventsPage extends UI {
     @ShowProgress
     private async executeAllEventsWithoutMoney(): Promise<void> {
         await this.eventService.executeAllEvents(this.portfolio.id, false);
-        await this.reloadPortfolio(this.portfolio.id);
+        await this.reloadPortfolio();
         this.$snotify.info("Начисления успешно исполнены");
     }
 
     @ShowProgress
     private async executeAllEvents(): Promise<void> {
         await this.eventService.executeAllEvents(this.portfolio.id, true);
-        await this.reloadPortfolio(this.portfolio.id);
+        await this.reloadPortfolio();
         this.$snotify.info("Начисления успешно исполнены");
     }
 

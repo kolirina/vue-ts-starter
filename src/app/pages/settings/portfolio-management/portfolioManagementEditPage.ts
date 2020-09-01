@@ -116,8 +116,8 @@ export class PortfolioManagementEditPage extends UI {
     private reloadPortfolios: () => Promise<void>;
     @MainStore.Mutation(MutationType.UPDATE_PORTFOLIO)
     private updatePortfolio: (portfolio: PortfolioParams) => Promise<void>;
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
+    @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
+    private reloadPortfolio: () => Promise<void>;
     /** Сервис по работе с портфелями */
     @Inject
     private portfolioService: PortfolioService;
@@ -156,8 +156,12 @@ export class PortfolioManagementEditPage extends UI {
             UI.emit(EventType.PORTFOLIO_LIST_UPDATED);
         });
         UI.on(EventType.PORTFOLIO_UPDATED, async (portfolio: PortfolioParams) => this.updatePortfolio(portfolio));
-        UI.on(EventType.PORTFOLIO_RELOAD, async (portfolio: PortfolioParams) => await this.reloadPortfolio(portfolio.id));
-        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
+        UI.on(EventType.PORTFOLIO_RELOAD, async (portfolio: PortfolioParams) => {
+            if (this.portfolio.id === portfolio.id) {
+                await this.reloadPortfolio();
+            }
+        });
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio());
         await this.loadPortfolio(this.$route.params.id);
         this.portfolioName = this.portfolio.name;
         this.publicName = this.clientInfo.user.publicName;

@@ -209,8 +209,6 @@ export class TradesTable extends UI {
     private tablesService: TablesService;
     @Inject
     private clientService: ClientService;
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
     @MainStore.Getter
     private portfolio: Portfolio;
     @MainStore.Getter

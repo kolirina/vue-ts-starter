@@ -78,10 +78,8 @@ export class TradesPage extends UI {
     /** Комбинированный портфель */
     @MainStore.Getter
     private combinedPortfolioParams: PortfolioParams;
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
-    @MainStore.Action(MutationType.SET_CURRENT_COMBINED_PORTFOLIO)
-    private setCurrentCombinedPortfolio: (portfolioParams: CombinedPortfolioParams) => Promise<Portfolio>;
+    @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
+    private reloadPortfolio: () => Promise<void>;
     @MainStore.Getter
     private sideBarOpened: boolean;
     /** Ключи для сохранения информации */
@@ -113,16 +111,8 @@ export class TradesPage extends UI {
      */
     async created(): Promise<void> {
         this.tradesFilter = this.tradesFilterService.getFilter(StoreKeys.TRADES_FILTER_SETTINGS_KEY);
-        UI.on(EventType.TRADE_CREATED, async () => await this.updateCurrentPortfolio());
-        UI.on(EventType.TRADE_UPDATED, async () => await this.updateCurrentPortfolio());
-    }
-
-    private async updateCurrentPortfolio(): Promise<void> {
-        if (this.portfolio.id) {
-            await this.reloadPortfolio(this.portfolio.id);
-        } else {
-            await this.setCurrentCombinedPortfolio({ids: this.portfolio.portfolioParams.combinedIds, viewCurrency: this.portfolio.portfolioParams.viewCurrency});
-        }
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio());
+        UI.on(EventType.TRADE_UPDATED, async () => await this.reloadPortfolio());
     }
 
     private getHeaders(): TableHeader[] {
@@ -182,7 +172,7 @@ export class TradesPage extends UI {
     @ShowProgress
     private async onDelete(tradeRow: TradeRow): Promise<void> {
         await this.tradeService.deleteTrade({portfolioId: this.portfolio.id, tradeId: tradeRow.id});
-        await this.reloadPortfolio(this.portfolio.id);
+        await this.reloadPortfolio();
         await this.loadTrades();
         this.resetCombinedOverviewCache(tradeRow.portfolioId);
         const assetType = AssetType.valueByName(tradeRow.asset);

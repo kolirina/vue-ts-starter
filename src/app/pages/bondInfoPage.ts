@@ -194,8 +194,8 @@ export class BondInfoPage extends UI {
         chartComponent: BondPaymentsChart
     };
 
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
+    @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
+    private reloadPortfolio: () => Promise<void>;
     @MainStore.Getter
     private portfolio: Portfolio;
     @MainStore.Getter
@@ -232,7 +232,7 @@ export class BondInfoPage extends UI {
         await this.loadBondInfo();
         this.portfolioAvgPrice = this.getPortfolioAvgPrice();
         UI.on(EventType.TRADE_CREATED, async () => {
-            await this.reloadPortfolio(this.portfolio.id);
+            await this.reloadPortfolio();
             this.portfolioAvgPrice = null;
             this.portfolioAvgPrice = this.getPortfolioAvgPrice();
         });

@@ -39,8 +39,8 @@ export class NegativeBalanceNotification extends UI {
 
     @MainStore.Getter
     private portfolio: Portfolio;
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
+    @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
+    private reloadPortfolio: () => Promise<void>;
 
     private goToCalculations(): void {
         window.open("https://blog.intelinvest.ru/calculations-explained");
@@ -51,7 +51,7 @@ export class NegativeBalanceNotification extends UI {
             store: this.$store.state[StoreType.MAIN]
         });
         if (result === BtnReturn.YES) {
-            await this.reloadPortfolio(this.portfolio.id);
+            await this.reloadPortfolio();
         }
     }
 }

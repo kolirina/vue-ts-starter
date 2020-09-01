@@ -92,22 +92,34 @@ const Mutations = {
     [MutationType.UPDATE_COMBINED_PORTFOLIO](state: StateHolder, viewCurrency: string): void {
         state.combinedPortfolioParams.combinedIds = state.clientInfo.user.portfolios.filter(value => value.combined).map(value => value.id);
         state.combinedPortfolioParams.viewCurrency = viewCurrency;
+        const portfolioParams = localStorage.get<CombinedPortfolioParams>(StoreKeys.COMBINED_PORTFOLIO_PARAMS_KEY, {});
+        localStorage.set<CombinedPortfolioParams>(StoreKeys.COMBINED_PORTFOLIO_PARAMS_KEY, {
+            ids: state.combinedPortfolioParams.combinedIds,
+            viewCurrency: state.combinedPortfolioParams.viewCurrency,
+            selected: portfolioParams.selected
+        } as CombinedPortfolioParams);
     },
     [MutationType.SET_DEFAULT_PORTFOLIO](state: StateHolder, id: number): void {
         state.clientInfo.user.currentPortfolioId = id;
     },
-    [MutationType.RELOAD_PORTFOLIO](state: StateHolder, portfolio: Portfolio): void {
+    [MutationType.RELOAD_CURRENT_PORTFOLIO](state: StateHolder, portfolio: Portfolio): void {
         state.currentPortfolio = portfolio;
         const withoutCurrent = state.clientInfo.user.portfolios.filter(p => p.id !== portfolio.id);
         state.clientInfo.user.portfolios = [...withoutCurrent, portfolio.portfolioParams];
+        state.clientInfo.user.portfolios = state.clientInfo.user.portfolios.filter(p => !!p.id);
+        state.clientInfo.user.portfolios.push(state.combinedPortfolioParams);
     },
     [MutationType.RELOAD_PORTFOLIOS](state: StateHolder, portfolios: PortfolioParams[]): void {
         state.clientInfo.user.portfolios = [...portfolios];
+        state.clientInfo.user.portfolios = state.clientInfo.user.portfolios.filter(p => !!p.id);
+        state.clientInfo.user.portfolios.push(state.combinedPortfolioParams);
     },
     [MutationType.UPDATE_PORTFOLIO](state: StateHolder, portfolio: PortfolioParams): void {
         const withoutCurrent = state.clientInfo.user.portfolios.filter(p => p.id !== portfolio.id);
         state.clientInfo.user.portfolios = [...withoutCurrent, portfolio];
         state.currentPortfolio.portfolioParams = portfolio;
+        state.clientInfo.user.portfolios = state.clientInfo.user.portfolios.filter(p => !!p.id);
+        state.clientInfo.user.portfolios.push(state.combinedPortfolioParams);
     },
     [MutationType.CHANGE_SIDEBAR_STATE](state: StateHolder, sideBarState: boolean): void {
         state.sideBarOpened = sideBarState;
@@ -161,12 +173,29 @@ const Actions = {
             });
         });
     },
-    [MutationType.RELOAD_PORTFOLIO](context: ActionContext<StateHolder, void>, id: number): Promise<void> {
+    [MutationType.RELOAD_CURRENT_PORTFOLIO](context: ActionContext<StateHolder, void>): Promise<void> {
         return new Promise<void>((resolve): void => {
-            overviewService.reloadPortfolio(id).then((portfolio: Portfolio): void => {
-                context.commit(MutationType.RELOAD_PORTFOLIO, portfolio);
-                resolve();
-            });
+            if (context.state.currentPortfolio.id) {
+                overviewService.reloadPortfolio(context.state.currentPortfolio.id).then((portfolio: Portfolio): void => {
+                    context.commit(MutationType.RELOAD_CURRENT_PORTFOLIO, portfolio);
+                    resolve();
+                });
+            } else {
+                const request: CombinedInfoRequest = {
+                    ids: context.state.currentPortfolio.portfolioParams.combinedIds,
+                    viewCurrency: context.state.currentPortfolio.portfolioParams.viewCurrency
+                };
+                overviewService.getPortfolioOverviewCombined(request).then((overview: Overview) => {
+                    context.commit(MutationType.UPDATE_COMBINED_PORTFOLIO, context.state.currentPortfolio.portfolioParams.viewCurrency);
+                    const portfolio: Portfolio = {
+                        id: null,
+                        portfolioParams: {...context.state.combinedPortfolioParams},
+                        overview: overview
+                    };
+                    context.commit(MutationType.SET_CURRENT_PORTFOLIO, portfolio);
+                    resolve();
+                });
+            }
         });
     },
     [MutationType.RELOAD_PORTFOLIOS](context: ActionContext<StateHolder, void>): Promise<void> {

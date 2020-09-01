@@ -23,6 +23,7 @@ import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {ClientInfo} from "../../services/clientService";
 import {ImportProviderFeatures, ImportProviderFeaturesByProvider, ImportService, UserImport} from "../../services/importService";
+import {EventType} from "../../types/eventType";
 import {Portfolio, Status} from "../../types/types";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
@@ -98,8 +99,8 @@ export class ImportHistoryPage extends UI {
     private clientInfo: ClientInfo;
     @MainStore.Getter
     private portfolio: Portfolio;
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
+    @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
+    private reloadPortfolio: () => Promise<void>;
     @Inject
     private importService: ImportService;
     /** История импорта */
@@ -120,13 +121,21 @@ export class ImportHistoryPage extends UI {
         await this.loadImportHistory();
         this.importProviderFeaturesByProvider = await this.importService.getImportProviderFeatures();
         this.initialized = true;
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio());
+    }
+
+    beforeDestroy(): void {
+        UI.off(EventType.TRADE_CREATED);
     }
 
     private async revertImport(userImportId: number): Promise<void> {
         const result = await new ConfirmDialog().show("Вы собираетесь откатить импорт, это приведет к удалению информации о нем из портфеля");
         if (result === BtnReturn.YES) {
             await this.revertImportConfirmed(userImportId);
-            await this.reloadPortfolio(this.portfolio.id);
+            // todo проверка
+            if (this.portfolio.id === this.portfolio.id) {
+                await this.reloadPortfolio();
+            }
             this.$snotify.info("Результаты импорта были успешно отменены");
         }
     }
@@ -149,7 +158,6 @@ export class ImportHistoryPage extends UI {
     }
 
     private async goBack(): Promise<void> {
-        await this.reloadPortfolio(this.portfolio.id);
         this.$router.push("import");
     }
 

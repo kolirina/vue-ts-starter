@@ -731,8 +731,8 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             // сбрасываем кэш выбранного портфеля чтобы при переключении он загрузкился с новой сделкой
             if (needResetCache) {
                 this.overviewService.resetCacheForCombinedPortfolio({
-                    ids: this.data.store.currentPortfolio.portfolioParams.combinedIds,
-                    viewCurrency: this.data.store.currentPortfolio.portfolioParams.viewCurrency
+                    ids: this.data.store.combinedPortfolioParams.combinedIds,
+                    viewCurrency: this.data.store.combinedPortfolioParams.viewCurrency
                 });
                 this.overviewService.resetCacheForId(this.portfolio.id);
             }

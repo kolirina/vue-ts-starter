@@ -64,10 +64,8 @@ export class PortfolioPage extends UI {
     private portfolio: Portfolio;
     @MainStore.Getter
     private sideBarOpened: boolean;
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
-    @MainStore.Action(MutationType.SET_CURRENT_COMBINED_PORTFOLIO)
-    private setCurrentCombinedPortfolio: (portfolioParams: CombinedPortfolioParams) => Promise<Portfolio>;
+    @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
+    private reloadPortfolio: () => Promise<void>;
     @Inject
     private localStorage: Storage;
     @Inject
@@ -118,7 +116,7 @@ export class PortfolioPage extends UI {
             // по умолчанию выбран за весь период
             this.selectedPeriod = this.periods[this.periods.length - 1];
             UI.on(EventType.TRADE_CREATED, async () => {
-                await this.updateCurrentPortfolio();
+                await this.reloadPortfolio();
                 // срабатывает вотчер на портфеле
             });
         } finally {
@@ -128,14 +126,6 @@ export class PortfolioPage extends UI {
 
     beforeDestroy(): void {
         UI.off(EventType.TRADE_CREATED);
-    }
-
-    private async updateCurrentPortfolio(): Promise<void> {
-        if (this.portfolio.id) {
-            await this.reloadPortfolio(this.portfolio.id);
-        } else {
-            await this.setCurrentCombinedPortfolio({ids: this.portfolio.portfolioParams.combinedIds, viewCurrency: this.portfolio.portfolioParams.viewCurrency});
-        }
     }
 
     @Watch("portfolio")

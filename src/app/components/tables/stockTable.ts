@@ -30,7 +30,7 @@ import {TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
 import {BigMoney} from "../../types/bigMoney";
 import {Operation} from "../../types/operation";
-import {Asset, Pagination, Share, ShareType, StockTypePortfolioRow, TableHeader} from "../../types/types";
+import {Asset, Pagination, Portfolio, Share, ShareType, StockTypePortfolioRow, TableHeader} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {PortfolioUtils} from "../../utils/portfolioUtils";
 import {SortUtils} from "../../utils/sortUtils";
@@ -201,8 +201,8 @@ const MainStore = namespace(StoreType.MAIN);
                                         Дивиденд
                                     </v-list-tile-title>
                                 </v-list-tile>
-                                <v-divider v-if="portfolioId"></v-divider>
-                                <v-list-tile v-if="portfolioId" @click="deleteAllTrades(props.item)">
+                                <v-divider v-if="portfolio.id"></v-divider>
+                                <v-list-tile v-if="portfolio.id" @click="deleteAllTrades(props.item)">
                                     <v-list-tile-title class="delete-btn">
                                         Удалить
                                     </v-list-tile-title>
@@ -288,19 +288,15 @@ export class StockTable extends UI {
     private overviewService: OverviewService;
     @Inject
     private portfolioService: PortfolioService;
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
+    @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
+    private reloadPortfolio: () => Promise<void>;
     @MainStore.Getter
     private clientInfo: ClientInfo;
+    @MainStore.Getter
+    private portfolio: Portfolio;
     /** Комбинированный портфель */
     @MainStore.Getter
     private combinedPortfolioParams: PortfolioParams;
-    /** Идентификатор портфеля */
-    @Prop({default: null, type: String, required: false})
-    private portfolioId: string;
-    /** Айди портфелей для комбинирования */
-    @Prop({default: [], required: false})
-    private ids: number[];
     /** Валюта просмотра информации */
     @Prop({required: true, type: String})
     private viewCurrency: string;
@@ -389,17 +385,17 @@ export class StockTable extends UI {
 
     private async openShareTradesDialog(share: Share): Promise<void> {
         let trades = [];
-        if (this.portfolioId) {
+        if (this.portfolio.id) {
             if (share.shareType === ShareType.ASSET) {
-                trades = await this.tradeService.getAssetShareTrades(this.portfolioId, share.id);
+                trades = await this.tradeService.getAssetShareTrades(this.portfolio.id, share.id);
             } else {
-                trades = await this.tradeService.getShareTrades(this.portfolioId, share.ticker);
+                trades = await this.tradeService.getShareTrades(this.portfolio.id, share.ticker);
             }
         } else {
             if (share.shareType === ShareType.ASSET) {
-                trades = await this.tradeService.getAssetTradesByIdForCombinedPortfolio(String(share.id), this.viewCurrency, this.ids);
+                trades = await this.tradeService.getAssetTradesByIdForCombinedPortfolio(String(share.id), this.viewCurrency, this.portfolio.portfolioParams.combinedIds);
             } else {
-                trades = await this.tradeService.getTradesCombinedPortfolio(share.ticker, this.viewCurrency, this.ids);
+                trades = await this.tradeService.getTradesCombinedPortfolio(share.ticker, this.viewCurrency, this.portfolio.portfolioParams.combinedIds);
             }
         }
         await new ShareTradesDialog().show({trades, ticker: share.ticker, shareType: ShareType.ASSET});
@@ -428,8 +424,8 @@ export class StockTable extends UI {
         });
         if (result) {
             if (result.needUpdate) {
-                await this.reloadPortfolio(Number(this.portfolioId));
-                this.resetCombinedOverviewCache(Number(this.portfolioId));
+                await this.reloadPortfolio();
+                this.resetCombinedOverviewCache();
             }
             share.ticker = result.asset.ticker;
             share.shortname = result.asset.name;
@@ -451,7 +447,7 @@ export class StockTable extends UI {
 
     @ShowProgress
     private async editShareNote(data: EditShareNoteDialogData, shareType: ShareType): Promise<void> {
-        await this.portfolioService.updateShareNotes(this.portfolioId, this.shareNotes, data);
+        await this.portfolioService.updateShareNotes(this.portfolio.id, this.shareNotes, data);
         this.$snotify.info(`Заметка по ${shareType === ShareType.ASSET ? "активу" : "бумаге"} ${data.ticker} была успешно сохранена`);
     }
 
@@ -481,17 +477,17 @@ export class StockTable extends UI {
             await this.tradeService.deleteAllTrades({
                 assetType: AssetType.STOCK.enumName,
                 ticker: stockRow.share.ticker,
-                portfolioId: Number(this.portfolioId)
+                portfolioId: this.portfolio.id
             });
         } else if (stockRow.assetType === AssetType.ASSET.enumName) {
             await this.tradeService.deleteAllAssetTrades({
                 assetId: stockRow.share.id,
-                portfolioId: Number(this.portfolioId)
+                portfolioId: this.portfolio.id
             });
         }
         this.$snotify.info(`Сделки по бумаге ${stockRow.share.name} успешно удалены`);
-        await this.reloadPortfolio(Number(this.portfolioId));
-        this.resetCombinedOverviewCache(Number(this.portfolioId));
+        this.resetCombinedOverviewCache();
+        await this.reloadPortfolio();
     }
 
     private amount(value: string): number {
@@ -540,8 +536,8 @@ export class StockTable extends UI {
             !(asset.source || "").includes("investfunds.ru"));
     }
 
-    private resetCombinedOverviewCache(portfolioId: number): void {
-        PortfolioUtils.resetCombinedOverviewCache(this.combinedPortfolioParams, portfolioId, this.overviewService);
+    private resetCombinedOverviewCache(): void {
+        PortfolioUtils.resetCombinedOverviewCache(this.combinedPortfolioParams, this.portfolio.id, this.overviewService);
     }
 
     private get portfolioCurrency(): string {

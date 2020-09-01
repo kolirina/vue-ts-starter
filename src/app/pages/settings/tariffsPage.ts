@@ -12,7 +12,6 @@ import {TariffService, UserPaymentInfo} from "../../services/tariffService";
 import {EventType} from "../../types/eventType";
 import {Permission} from "../../types/permission";
 import {Tariff} from "../../types/tariff";
-import {Portfolio} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {DateUtils} from "../../utils/dateUtils";
 import {TariffUtils} from "../../utils/tariffUtils";
@@ -390,12 +389,10 @@ export class TariffsPage extends UI {
     private tariffService: TariffService;
     @MainStore.Getter
     private clientInfo: ClientInfo;
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
+    @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
+    private reloadPortfolio: () => Promise<void>;
     @MainStore.Getter
     private expiredTariff: boolean;
-    @MainStore.Getter
-    private portfolio: Portfolio;
     @MainStore.Action(MutationType.RELOAD_CLIENT_INFO)
     private reloadUser: () => Promise<void>;
     /** Тарифы */
@@ -427,7 +424,7 @@ export class TariffsPage extends UI {
             this.$snotify.info("Оплата заказа успешно завершена");
             this.$router.push({name: "tariffs"});
         }
-        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio());
     }
 
     beforeDestroy(): void {

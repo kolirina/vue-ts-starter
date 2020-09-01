@@ -116,8 +116,8 @@ export class DividendTradesTable extends UI {
     /** Комбинированный портфель */
     @MainStore.Getter
     private combinedPortfolioParams: PortfolioParams;
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
+    @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
+    private reloadPortfolio: () => Promise<void>;
     @Inject
     private dividendService: DividendService;
     @Inject
@@ -198,7 +198,7 @@ export class DividendTradesTable extends UI {
     private async deleteDividendTradeAndShowMessage(dividendTrade: DividendInfo): Promise<void> {
         await this.tradesService.deleteTrade({tradeId: dividendTrade.id, portfolioId: this.portfolio.id});
         this.resetCombinedOverviewCache(this.portfolio.id);
-        await this.reloadPortfolio(this.portfolio.id);
+        await this.reloadPortfolio();
         this.$snotify.info("Сделка успешно удалена");
     }
 

@@ -106,10 +106,8 @@ export class ExportPage extends UI {
     /** Текущий портфель */
     @MainStore.Getter
     private portfolio: Portfolio;
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
-    @MainStore.Action(MutationType.SET_CURRENT_COMBINED_PORTFOLIO)
-    private setCurrentCombinedPortfolio: (portfolioParams: CombinedPortfolioParams) => Promise<Portfolio>;
+    @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
+    private reloadPortfolio: () => Promise<void>;
     /** Сервис для экспорта портфеля */
     @Inject
     private exportService: ExportService;
@@ -127,19 +125,11 @@ export class ExportPage extends UI {
     async created(): Promise<void> {
         this.portfolios = this.clientInfo.user.portfolios;
         await this.loadPortfolioBackup();
-        UI.on(EventType.TRADE_CREATED, async () => await this.updateCurrentPortfolio());
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio());
     }
 
     beforeDestroy(): void {
         UI.off(EventType.TRADE_CREATED);
-    }
-
-    private async updateCurrentPortfolio(): Promise<void> {
-        if (this.portfolio.id) {
-            await this.reloadPortfolio(this.portfolio.id);
-        } else {
-            await this.setCurrentCombinedPortfolio({ids: this.portfolio.portfolioParams.combinedIds, viewCurrency: this.portfolio.portfolioParams.viewCurrency});
-        }
     }
 
     private goToTariffs(): void {

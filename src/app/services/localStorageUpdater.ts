@@ -51,11 +51,11 @@ export class LocalStorageUpdater {
     }
 
     private updateCombinedPortfolioParams(): void {
-        const viewCurrency = this.localStorage.get(StoreKeys.COMBINED_VIEW_CURRENCY_KEY, null);
+        const viewCurrency = this.localStorage.get("combined_view_currency", null);
         const params = this.localStorage.get(StoreKeys.COMBINED_PORTFOLIO_PARAMS_KEY, null);
         if (viewCurrency && !params) {
             this.localStorage.set(StoreKeys.COMBINED_PORTFOLIO_PARAMS_KEY, {viewCurrency} as CombinedPortfolioParams);
-            this.localStorage.delete(StoreKeys.COMBINED_VIEW_CURRENCY_KEY);
+            this.localStorage.delete("combined_view_currency");
         }
     }
 

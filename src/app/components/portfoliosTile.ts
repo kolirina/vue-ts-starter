@@ -135,8 +135,10 @@ export class PortfoliosTile extends UI {
     private reloadPortfolios: () => Promise<void>;
     @MainStore.Action(MutationType.SET_CURRENT_PORTFOLIO)
     private setCurrentPortfolio: (id: number) => Promise<Portfolio>;
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
+    @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
+    private reloadPortfolio: () => Promise<void>;
+    @MainStore.Mutation(MutationType.UPDATE_COMBINED_PORTFOLIO)
+    private updateCombinedPortfolio: (viewCurrency: string) => void;
     /** Сервис по работе с портфелями */
     @Inject
     private portfolioService: PortfolioService;
@@ -164,13 +166,21 @@ export class PortfoliosTile extends UI {
     private async deletePortfolioAndShowMessage(id: number): Promise<void> {
         await this.portfolioService.deletePortfolio(id);
         // запоминаем текущий портфель, иначе ниже они может быть обновлен
-        const currentPortfolioId = this.clientInfo.user.currentPortfolioId;
+        const currentPortfolioId = this.portfolio.id;
+        this.overviewService.resetCacheForId(currentPortfolioId);
+        this.resetCombinedOverviewCache(currentPortfolioId);
         await this.reloadPortfolios();
-        // нужно обновлять данные только если удаляемый портфель был выбран текущим и соответственно теперь выбран другой
+        // если портфель был установлен по умолчанию, но не был выбран в списке портфелей, перезагружаем информацию о клиенте
+        if (id === this.clientInfo.user.currentPortfolioId && id !== currentPortfolioId) {
+            this.clientInfo.user.currentPortfolioId = this.clientInfo.user.portfolios[0].id;
+        }
+        // если портфель был выбран в списке портфелей и установлен по умолчанию, перезагружаем портфель
         if (id === currentPortfolioId) {
             // могли удалить текущий портфель, надо выставить портфель по умолчанию
             await this.setCurrentPortfolio(this.clientInfo.user.portfolios[0].id);
         }
+        // мог удалиться портфель входящий в составной
+        this.updateCombinedPortfolio(this.combinedPortfolioParams.viewCurrency);
         this.$snotify.info("Портфель успешно удален");
         UI.emit(EventType.PORTFOLIO_LIST_UPDATED);
     }
@@ -191,7 +201,7 @@ export class PortfoliosTile extends UI {
             this.overviewService.resetCacheForId(portfolioId);
             this.resetCombinedOverviewCache(portfolioId);
             if (this.portfolio.id === portfolioId) {
-                await this.reloadPortfolio(portfolioId);
+                await this.reloadPortfolio();
             }
             this.$snotify.info("Портфель успешно очищен");
         }

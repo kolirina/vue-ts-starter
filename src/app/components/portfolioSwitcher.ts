@@ -86,8 +86,8 @@ export class PortfolioSwitcher extends UI {
     @MainStore.Action(MutationType.SET_DEFAULT_PORTFOLIO)
     private setDefaultPortfolio: (id: number) => Promise<void>;
 
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
+    @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
+    private reloadPortfolio: () => Promise<void>;
 
     @Inject
     private portfolioService: PortfolioService;
@@ -121,6 +121,10 @@ export class PortfolioSwitcher extends UI {
         if (this.clientInfo.user.portfolios.length > 1 && this.clientInfo.user.tariff !== Tariff.FREE) {
             const portfolioParams = this.localStorage.get<CombinedPortfolioParams>(StoreKeys.COMBINED_PORTFOLIO_PARAMS_KEY, null);
             if (!this.clientInfo.user.portfolios.some(portfolio => portfolio.combinedFlag)) {
+                this.clientInfo.user.portfolios.push(this.combinedPortfolioParams);
+            } else {
+                // составной портфель должен быть всегда последним
+                this.clientInfo.user.portfolios = this.clientInfo.user.portfolios.filter(portfolio => !portfolio.combinedFlag);
                 this.clientInfo.user.portfolios.push(this.combinedPortfolioParams);
             }
             this.updateCombinedPortfolio(portfolioParams?.viewCurrency || this.combinedPortfolioParams.viewCurrency);
@@ -179,7 +183,7 @@ export class PortfolioSwitcher extends UI {
             return;
         }
         await this.portfolioService.changeCurrency(this.selected.id, currencyCode);
-        await this.reloadPortfolio(this.selected.id);
+        await this.reloadPortfolio();
     }
 
     private goToPortfolioSettings(id: number): void {

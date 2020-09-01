@@ -80,8 +80,8 @@ export class BalancesTable extends UI {
     /** Комбинированный портфель */
     @MainStore.Getter
     private combinedPortfolioParams: PortfolioParams;
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
+    @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
+    private reloadPortfolio: () => Promise<void>;
 
     private balancesTableRow: BalancesTableRow[] = [];
 
@@ -122,7 +122,7 @@ export class BalancesTable extends UI {
                 portfolioId: this.portfolio.id
             });
             this.resetCombinedOverviewCache(this.portfolio.id);
-            await this.reloadPortfolio(this.portfolio.id);
+            await this.reloadPortfolio();
         }
     }
 

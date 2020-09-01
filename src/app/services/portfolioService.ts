@@ -169,7 +169,7 @@ export class PortfolioService {
     /**
      * Обновляет заметки по бумагам в портфеле
      */
-    async updateShareNotes(portfolioId: string, shareNotes: { [key: string]: string }, data: EditShareNoteDialogData): Promise<{ [key: string]: string }> {
+    async updateShareNotes(portfolioId: number, shareNotes: { [key: string]: string }, data: EditShareNoteDialogData): Promise<{ [key: string]: string }> {
         const shareNotesRequest = shareNotes || {};
         shareNotes[data.ticker] = data.note;
         shareNotesRequest[data.ticker] = data.note;

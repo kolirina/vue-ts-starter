@@ -31,7 +31,7 @@ import {TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
 import {BigMoney} from "../../types/bigMoney";
 import {Operation} from "../../types/operation";
-import {BondPortfolioRow, Pagination, ShareType, TableHeader} from "../../types/types";
+import {BondPortfolioRow, Pagination, Portfolio, ShareType, TableHeader} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {PortfolioUtils} from "../../utils/portfolioUtils";
 import {SortUtils} from "../../utils/sortUtils";
@@ -168,8 +168,8 @@ const MainStore = namespace(StoreType.MAIN);
                                         Погашение
                                     </v-list-tile-title>
                                 </v-list-tile>
-                                <v-divider v-if="portfolioId"></v-divider>
-                                <v-list-tile v-if="portfolioId" @click="deleteAllTrades(props.item)">
+                                <v-divider v-if="portfolio.id"></v-divider>
+                                <v-list-tile v-if="portfolio.id" @click="deleteAllTrades(props.item)">
                                     <v-list-tile-title class="delete-btn">
                                         Удалить
                                     </v-list-tile-title>
@@ -284,17 +284,13 @@ export class BondTable extends UI {
     private overviewService: OverviewService;
     @Inject
     private portfolioService: PortfolioService;
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
+    @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
+    private reloadPortfolio: () => Promise<void>;
+    @MainStore.Getter
+    private portfolio: Portfolio;
     /** Комбинированный портфель */
     @MainStore.Getter
     private combinedPortfolioParams: PortfolioParams;
-    /** Идентификатор портфеля */
-    @Prop({default: null, type: String, required: false})
-    private portfolioId: string;
-    /** Айди портфелей для комбинирования */
-    @Prop({default: [], required: false})
-    private ids: number[];
     /** Валюта просмотра информации */
     @Prop({required: true, type: String})
     private viewCurrency: string;
@@ -373,10 +369,10 @@ export class BondTable extends UI {
 
     private async openShareTradesDialog(ticker: string): Promise<void> {
         let trades = [];
-        if (this.portfolioId) {
-            trades = await this.tradeService.getShareTrades(this.portfolioId, ticker);
+        if (this.portfolio.id) {
+            trades = await this.tradeService.getShareTrades(this.portfolio.id, ticker);
         } else {
-            trades = await this.tradeService.getTradesCombinedPortfolio(ticker, this.viewCurrency, this.ids);
+            trades = await this.tradeService.getTradesCombinedPortfolio(ticker, this.viewCurrency, this.portfolio.portfolioParams.combinedIds);
         }
         await new ShareTradesDialog().show({trades, ticker, shareType: ShareType.BOND});
     }
@@ -405,7 +401,7 @@ export class BondTable extends UI {
 
     @ShowProgress
     private async editShareNote(data: EditShareNoteDialogData): Promise<void> {
-        await this.portfolioService.updateShareNotes(this.portfolioId, this.shareNotes, data);
+        await this.portfolioService.updateShareNotes(this.portfolio.id, this.shareNotes, data);
         this.$snotify.info(`Заметка по бумаге ${data.ticker} была успешно сохранена`);
     }
 
@@ -421,10 +417,10 @@ export class BondTable extends UI {
         await this.tradeService.deleteAllTrades({
             assetType: AssetType.BOND.enumName,
             ticker: bondRow.bond.ticker,
-            portfolioId: Number(this.portfolioId)
+            portfolioId: this.portfolio.id
         });
-        await this.reloadPortfolio(Number(this.portfolioId));
-        this.resetCombinedOverviewCache(Number(this.portfolioId));
+        await this.reloadPortfolio();
+        this.resetCombinedOverviewCache(this.portfolio.id);
     }
 
     private amount(value: string): number {

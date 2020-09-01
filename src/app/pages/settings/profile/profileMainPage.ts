@@ -25,7 +25,6 @@ import {ClientInfo, ClientService, DeleteProfileRequest} from "../../../services
 import {TariffService} from "../../../services/tariffService";
 import {EventType} from "../../../types/eventType";
 import {Tariff} from "../../../types/tariff";
-import {Portfolio} from "../../../types/types";
 import {CommonUtils} from "../../../utils/commonUtils";
 import {MutationType} from "../../../vuex/mutationType";
 import {StoreType} from "../../../vuex/storeType";
@@ -106,10 +105,8 @@ export class ProfileMainPage extends UI {
 
     @MainStore.Getter
     private clientInfo: ClientInfo;
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
-    @MainStore.Getter
-    private portfolio: Portfolio;
+    @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
+    private reloadPortfolio: () => Promise<void>;
     /** Сервис для работы с данными клиента */
     @Inject
     private clientService: ClientService;
@@ -137,7 +134,7 @@ export class ProfileMainPage extends UI {
         this.email = this.clientInfo.user.email;
         this.publicName = this.clientInfo.user.publicName;
         this.publicLink = this.clientInfo.user.publicLink;
-        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio());
     }
 
     beforeDestroy(): void {

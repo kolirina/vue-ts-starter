@@ -100,8 +100,8 @@ export class DividendsByYearAndTickerTable extends UI {
     /** Комбинированный портфель */
     @MainStore.Getter
     private combinedPortfolioParams: PortfolioParams;
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
+    @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
+    private reloadPortfolio: () => Promise<void>;
     @Inject
     private dividendService: DividendService;
 
@@ -136,7 +136,7 @@ export class DividendsByYearAndTickerTable extends UI {
     private async deleteAllTradesAndShowMessage(dividendTrade: DividendInfo): Promise<void> {
         await this.dividendService.deleteAllTrades({ticker: dividendTrade.ticker, year: dividendTrade.year, portfolioId: this.portfolio.id});
         this.resetCombinedOverviewCache(this.portfolio.id);
-        await this.reloadPortfolio(this.portfolio.id);
+        await this.reloadPortfolio();
         this.$snotify.info(`Все дивидендные сделки по тикеру ${dividendTrade.ticker} были успешно удалены`);
     }
 
