@@ -1,11 +1,13 @@
 import {Inject} from "typescript-ioc";
 import {Component, UI} from "../../app/ui";
+import {AdditionalPagination} from "../../components/additionalPagination";
 import {PublicPortfolioItem} from "../../components/publicPortfolioItem";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {Storage} from "../../platform/services/storage";
 import {PortfolioService} from "../../services/portfolioService";
 import {PublicPortfolio, PublicPortfolioService} from "../../services/publicPortfolioService";
 import {PortfolioVote} from "../../types/eventObjects";
+import {Pagination} from "../../types/types";
 
 @Component({
     // language=Vue
@@ -17,22 +19,25 @@ import {PortfolioVote} from "../../types/eventObjects";
                 </v-card-title>
             </v-card>
             <v-card flat class="template-wrapper">
-                <div v-if="showHintPanel" class="info-block margB16">
-                    Данный раздел поможет Вам быть в курсе тенденций инвестирования, узнать стратегии распределения активов успешных инвесторов,
-                    а также поделиться своими идеями по ведению портфеля.<br><br>
-                    Чтобы опубликовать портфель перейдите в раздел
-                    <router-link :to="{name: 'portfolio-management'}">Управление портфелями</router-link>
-                    → Выберете портфель, которым хотите поделиться,
-                    и нажмите кнопку Опубликовать.<br>
-                    <a class="big-link" @click="hideHintsPanel">Больше не показывать</a>
-                </div>
+                <v-slide-y-reverse-transition>
+                    <div v-if="showHintPanel" class="info-block margB16">
+                        Данный раздел поможет Вам быть в курсе тенденций инвестирования, узнать стратегии распределения активов успешных инвесторов,
+                        а также поделиться своими идеями по ведению портфеля.<br><br>
+                        Чтобы опубликовать портфель перейдите в раздел
+                        <router-link :to="{name: 'portfolio-management'}">Управление портфелями</router-link>
+                        → Выберете портфель, которым хотите поделиться,
+                        и нажмите кнопку Опубликовать.<br>
+                        <a class="big-link" @click="hideHintsPanel">Больше не показывать</a>
+                    </div>
+                </v-slide-y-reverse-transition>
+                <additional-pagination :pagination="pagination" @update:pagination="onTablePaginationChange"></additional-pagination>
                 <div class="public-portfolio-list">
                     <public-portfolio-item v-for="portfolio in publicPortfolios" :key="portfolio.id" :portfolio="portfolio" @vote="onVote"></public-portfolio-item>
                 </div>
             </v-card>
         </v-container>
     `,
-    components: {PublicPortfolioItem}
+    components: {AdditionalPagination, PublicPortfolioItem}
 })
 export class PublicPortfolioPage extends UI {
 
@@ -47,6 +52,13 @@ export class PublicPortfolioPage extends UI {
     /** Признак отображения панели с подсказкой */
     private showHintPanel = true;
 
+    private pagination: Pagination = {
+        page: 1,
+        rowsPerPage: 20,
+        totalItems: 0,
+        pages: 0
+    };
+
     /**
      * Загрузка данных компонента
      * @inheritDoc
@@ -54,7 +66,26 @@ export class PublicPortfolioPage extends UI {
     @ShowProgress
     async created(): Promise<void> {
         this.showHintPanel = this.localStorage.get("publicPortfolioHintPanel", true);
-        this.publicPortfolios = await this.publicPortfolioService.getPublicPortfolios();
+        await this.loadPortfolios();
+    }
+
+    /**
+     * Обрыбатывает событие изменения паджинации и загружает данные
+     * @param pagination
+     */
+    private async onTablePaginationChange(pagination: Pagination): Promise<void> {
+        this.pagination = pagination;
+        await this.loadPortfolios();
+    }
+
+    private async loadPortfolios(): Promise<void> {
+        const result = await this.publicPortfolioService.getPublicPortfolios(
+            this.pagination.rowsPerPage * (this.pagination.page - 1),
+            this.pagination.rowsPerPage
+        );
+        this.publicPortfolios = result.content;
+        this.pagination.totalItems = result.totalItems;
+        this.pagination.pages = result.pages;
     }
 
     /** Скрывает панель с подсказкой */

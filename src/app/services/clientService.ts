@@ -219,6 +219,8 @@ export interface BaseClient {
     publicLink: string;
     /** Количество всех рефералов */
     referralsCount: number;
+    /** Количество активных платников-рефералов с учетом предыдущих */
+    referralsPaidCountWithPrevious: number;
     /** Количество активных платников-рефералов */
     referralsPaidCount: number;
     /** Признак блокировки аккаунта */

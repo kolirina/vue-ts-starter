@@ -53,7 +53,7 @@ import {ChartUtils} from "../utils/chartUtils";
                 </div>
                 <div class="public-portfolio-item__footer-social" @click.stop>
                     <div class="public-portfolio-item__footer-referrals" title="Количество подписчиков">
-                        {{ portfolio.referralsCount | friendlyNumber }}
+                        {{ portfolio.referralsPaidCountWithPrevious | friendlyNumber }}
                     </div>
                     <div :class="['public-portfolio-item__footer-like', alreadyVoted(1) ? 'active' : '']" @click="vote(1)">{{ portfolio.likes | friendlyNumber }}</div>
                     <div :class="['public-portfolio-item__footer-dislike', alreadyVoted(-1) ? 'active' : '']" @click="vote(-1)">{{ portfolio.dislikes | friendlyNumber }}</div>
