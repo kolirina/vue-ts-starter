@@ -17,7 +17,6 @@
 import {Inject} from "typescript-ioc";
 import {Component, Prop, UI} from "../../../app/ui";
 import {BrokerSwitcher} from "../../../components/brokerSwitcher";
-import {EmbeddedOption} from "../../../components/dialogs/embeddedBlocksDialog";
 import {PortfolioParams, PortfolioService} from "../../../services/portfolioService";
 
 @Component({
@@ -54,7 +53,7 @@ export class PortfolioManagementIntegrationTab extends UI {
     @Prop()
     private portfolio: PortfolioParams;
 
-    private embeddedOptions: EmbeddedOption[] = [
+    private embeddedOptions: Array<{ name: string, value: string }> = [
         {name: "Таблица Акции", value: "stocks-table"},
         {name: "Таблица Облигации", value: "bonds-table"},
         {name: "Таблица ПИФы/ETF", value: "stocks-table"},
