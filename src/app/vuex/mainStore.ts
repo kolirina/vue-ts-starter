@@ -98,6 +98,9 @@ const Mutations = {
             viewCurrency: state.combinedPortfolioParams.viewCurrency,
             selected: portfolioParams.selected
         } as CombinedPortfolioParams);
+        if (state.currentPortfolio?.portfolioParams.combinedFlag) {
+            state.currentPortfolio = {...state.currentPortfolio, portfolioParams: state.combinedPortfolioParams};
+        }
     },
     [MutationType.SET_DEFAULT_PORTFOLIO](state: StateHolder, id: number): void {
         state.clientInfo.user.currentPortfolioId = id;
@@ -149,7 +152,7 @@ const Actions = {
                 context.commit(MutationType.UPDATE_COMBINED_PORTFOLIO, combinedParams.viewCurrency);
                 const portfolio: Portfolio = {
                     id: null,
-                    portfolioParams: {...context.state.combinedPortfolioParams},
+                    portfolioParams: context.state.combinedPortfolioParams,
                     overview: overview
                 };
                 context.commit(MutationType.SET_CURRENT_PORTFOLIO, portfolio);
@@ -189,10 +192,10 @@ const Actions = {
                     context.commit(MutationType.UPDATE_COMBINED_PORTFOLIO, context.state.currentPortfolio.portfolioParams.viewCurrency);
                     const portfolio: Portfolio = {
                         id: null,
-                        portfolioParams: {...context.state.combinedPortfolioParams},
+                        portfolioParams: context.state.combinedPortfolioParams,
                         overview: overview
                     };
-                    context.commit(MutationType.SET_CURRENT_PORTFOLIO, portfolio);
+                    context.commit(MutationType.RELOAD_CURRENT_PORTFOLIO, portfolio);
                     resolve();
                 });
             }

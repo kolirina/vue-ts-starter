@@ -47,7 +47,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                 <v-card-title class="paddB0">
                     <span class="fs16 bold">{{ dialogTitle }}</span>
                     <span v-if="!editMode && clientInfo && portfolio" class="items-dialog-title fs16 bold">
-                        <v-menu bottom content-class="dialog-type-menu" nudge-bottom="20" bottom right max-height="480">
+                        <v-menu content-class="dialog-type-menu" nudge-bottom="20" bottom right max-height="480">
                             <span slot="activator">
                                 <span>
                                     {{ portfolio.portfolioParams.name }}
