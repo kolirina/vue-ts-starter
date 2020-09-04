@@ -910,6 +910,9 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         this.moneyAmount = TradeUtils.decimal(this.data.tradeFields.moneyAmount, true);
         this.currency = this.data.tradeFields.currency;
         this.feeCurrency = this.data.tradeFields.feeCurrency;
+        if (this.operation === Operation.DIVIDEND) {
+            this.dividendCurrency = this.data.tradeFields.currency;
+        }
     }
 
     private async setShareFromTicker(shareId: string): Promise<void> {

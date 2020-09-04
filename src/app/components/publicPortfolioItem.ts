@@ -41,15 +41,19 @@ import {ChartUtils} from "../utils/chartUtils";
                 </div>
                 <div>
                     <div class="public-portfolio-item__footer-title">Прибыль</div>
-                    <span class="public-portfolio-positive">{{ portfolio.percentProfit }}%</span>
+                    <span :class="[isPositive(portfolio.percentProfit) ? 'public-portfolio-positive' : 'public-portfolio-negative']">
+                        {{ portfolio.percentProfit }}%
+                    </span>
                 </div>
                 <div class="margRAuto">
                     <div class="public-portfolio-item__footer-title">Доходность</div>
-                    <span :class="[portfolio.yearYield >= 0 ? 'public-portfolio-positive' : 'public-portfolio-negative']">{{ portfolio.yearYield }}%</span>
+                    <span :class="[isPositive(portfolio.yearYield) ? 'public-portfolio-positive' : 'public-portfolio-negative']">
+                        {{ portfolio.yearYield }}%
+                    </span>
                 </div>
                 <div class="public-portfolio-item__footer-social" @click.stop>
                     <div class="public-portfolio-item__footer-referrals" title="Количество подписчиков">
-                        {{ portfolio.referralsCount | friendlyNumber }}
+                        {{ portfolio.referralsPaidCountWithPrevious | friendlyNumber }}
                     </div>
                     <div :class="['public-portfolio-item__footer-like', alreadyVoted(1) ? 'active' : '']" @click="vote(1)">{{ portfolio.likes | friendlyNumber }}</div>
                     <div :class="['public-portfolio-item__footer-dislike', alreadyVoted(-1) ? 'active' : '']" @click="vote(-1)">{{ portfolio.dislikes | friendlyNumber }}</div>
@@ -76,12 +80,16 @@ export class PublicPortfolioItem extends UI {
         return ChartUtils.convertToDotsWithStartPoint(chartData, "amount", false);
     }
 
-    private vote( vote: number): void {
+    private vote(vote: number): void {
         this.$emit("vote", {id: this.portfolio.id, vote: vote} as PortfolioVote);
     }
 
     private alreadyVoted(vote: number): boolean {
         return this.portfolio.voteHistory?.value === vote;
+    }
+
+    private isPositive(value: string): boolean {
+        return Number(value) >= 0;
     }
 
     private get shortDescription(): string {
