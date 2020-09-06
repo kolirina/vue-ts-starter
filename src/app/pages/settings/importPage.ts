@@ -8,6 +8,7 @@ import {ConfirmDialog} from "../../components/dialogs/confirmDialog";
 import {FeedbackDialog} from "../../components/dialogs/feedbackDialog";
 import {ExpandedPanel} from "../../components/expandedPanel";
 import {ImportResultComponent} from "../../components/importResultComponent";
+import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {ClientInfo} from "../../services/clientService";
@@ -484,6 +485,7 @@ export class ImportPage extends UI {
     /**
      * Отправляет отчет на сервер и обрабатывает ответ
      */
+    @DisableConcurrentExecution
     private async uploadFile(): Promise<void> {
         if (this.files && this.files.length && this.selectedProvider) {
             this.importInProgress = true;

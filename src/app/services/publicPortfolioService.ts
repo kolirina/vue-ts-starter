@@ -18,6 +18,7 @@ import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {Http} from "../platform/services/http";
 import {LineChartItem} from "../types/charts/types";
+import {PageableResponse} from "../types/types";
 
 @Service("PublicPortfolioService")
 @Singleton
@@ -31,10 +32,9 @@ export class PublicPortfolioService {
     /**
      * Возвращает список публичных портфелей
      */
-    async getPublicPortfolios(): Promise<PublicPortfolio[]> {
-        return this.http.get<PublicPortfolio[]>(`${this.ENDPOINT_BASE}/list`);
+    async getPublicPortfolios(offset: number, limit: number): Promise<PageableResponse<PublicPortfolio>> {
+        return this.http.get<PageableResponse<PublicPortfolio>>(`${this.ENDPOINT_BASE}/list`, {offset, limit});
     }
-
 }
 
 /** Информация по публичному портфелю */
@@ -57,6 +57,8 @@ export interface PublicPortfolio {
     ownerPublicLink: string;
     /** Количество всех рефералов */
     referralsCount: number;
+    /** Количество активных платников-рефералов с учетом предыдущих */
+    referralsPaidCountWithPrevious: number;
     /** Количество активных платников-рефералов */
     referralsPaidCount: number;
     /** Количество лайков */
