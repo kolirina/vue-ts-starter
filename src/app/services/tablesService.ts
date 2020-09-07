@@ -308,9 +308,16 @@ export class TablesService {
     /**
      * Возвращает заголовки со свойством active: true.
      * @param name {string} Название таблицы заголовков
+     * @param hideActions признак скрытия заголовка с действиями
      */
-    getFilterHeaders(name: string): TableHeader[] {
-        return (this.headers[name] || []).filter(el => el.active);
+    getFilterHeaders(name: string, hideActions: boolean = false): TableHeader[] {
+        const headers = (this.headers[name] || []).filter(el => el.active);
+        if (hideActions) {
+            headers.splice(headers.length - 1, 1);
+            return headers;
+        } else {
+            return headers;
+        }
     }
 
     /**

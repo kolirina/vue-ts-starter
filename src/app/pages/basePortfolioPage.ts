@@ -75,7 +75,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                     </template>
                     <portfolio-rows-table-filter :filter.sync="stockFilter" :store-key="StoreKeys.STOCKS_TABLE_FILTER_KEY"></portfolio-rows-table-filter>
                     <stock-table :rows="stockRows" :headers="getHeaders(TABLES_NAME.STOCK)" :search="stockFilter.search" :filter="stockFilter" :table-type="TableType.STOCK"
-                                 :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes" :ids="ids"></stock-table>
+                                 :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes"></stock-table>
                 </expanded-panel>
 
                 <expanded-panel v-if="blockNotEmpty(emptyBlockType.BOND_PORTFOLIO)" :value="$uistate.bondsTablePanel"
@@ -95,7 +95,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                     </template>
                     <portfolio-rows-table-filter :filter.sync="bondFilter" :store-key="StoreKeys.BONDS_TABLE_FILTER_KEY"></portfolio-rows-table-filter>
                     <bond-table :rows="bondRows" :headers="getHeaders(TABLES_NAME.BOND)" :search="bondFilter.search" :filter="bondFilter"
-                                :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes" :ids="ids"></bond-table>
+                                :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes"></bond-table>
                 </expanded-panel>
 
                 <expanded-panel v-if="blockNotEmpty(emptyBlockType.ETF_PORTFOLIO)" :value="$uistate.etfTablePanel"
@@ -115,7 +115,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                     </template>
                     <portfolio-rows-table-filter :filter.sync="etfFilter" :store-key="StoreKeys.ETF_TABLE_FILTER_KEY"></portfolio-rows-table-filter>
                     <stock-table :rows="etfRows" :headers="getHeaders(TABLES_NAME.ETF)" :search="etfFilter.search" :filter="etfFilter" :table-type="TableType.ETF"
-                                 :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes" :ids="ids"></stock-table>
+                                 :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes"></stock-table>
                 </expanded-panel>
 
                 <expanded-panel v-if="blockNotEmpty(emptyBlockType.ASSETS)" :value="$uistate.assetsTablePanel"
@@ -136,7 +136,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                     </template>
                     <portfolio-rows-table-filter :filter.sync="assetFilter" :store-key="StoreKeys.ASSETS_TABLE_FILTER_KEY"></portfolio-rows-table-filter>
                     <stock-table :rows="assetRows" :headers="getHeaders(TABLES_NAME.ASSET)" :search="assetFilter.search" :filter="assetFilter" :table-type="TableType.ASSET"
-                                 :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes" :ids="ids"></stock-table>
+                                 :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes"></stock-table>
                 </expanded-panel>
 
                 <expanded-panel v-if="blockNotEmpty(emptyBlockType.HISTORY_PANEL)" :value="$uistate.historyPanel"
@@ -273,14 +273,11 @@ export class BasePortfolioPage extends UI {
     /** Данные по портфелю */
     @Prop({default: null, required: true})
     private overview: Overview;
-    /** Айди портфелей для комбинирования */
-    @Prop({default: (): number[] => [], required: false})
-    private ids: number[];
     /** Название портфеля */
     @Prop({default: "", type: String, required: false})
     private portfolioName: string;
     /** Идентификатор портфеля */
-    @Prop({default: "", type: String, required: false})
+    @Prop({default: null, type: String, required: false})
     private portfolioId: string;
     /** Заметки по бумагам портфеля */
     @Prop({default: null, type: Object, required: false})

@@ -20,7 +20,7 @@ import {Storage} from "../platform/services/storage";
 import {ClientInfo, ClientService} from "../services/clientService";
 import {OnBoardingTourService} from "../services/onBoardingTourService";
 import {StoreKeys} from "../types/storeKeys";
-import {NavBarItem, Portfolio, SignInData, Theme} from "../types/types";
+import {CombinedPortfolioParams, NavBarItem, Portfolio, SignInData, Theme} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
 import {ThemeUtils} from "../utils/ThemeUtils";
 import {MutationType} from "../vuex/mutationType";
@@ -116,8 +116,8 @@ export class AppFrame extends UI {
     @MainStore.Action(MutationType.SET_CURRENT_PORTFOLIO)
     private setCurrentPortfolio: (id: string) => Promise<Portfolio>;
 
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
+    @MainStore.Action(MutationType.SET_CURRENT_COMBINED_PORTFOLIO)
+    private setCurrentCombinedPortfolio: (portfolioParams: CombinedPortfolioParams) => void;
 
     @MainStore.Mutation(MutationType.CHANGE_SIDEBAR_STATE)
     private changeSideBarState: (sideBarState: boolean) => void;
@@ -206,11 +206,21 @@ export class AppFrame extends UI {
         try {
             const client = await this.clientService.getClientInfo();
             await this.loadUser({token: this.localStorage.get(StoreKeys.TOKEN_KEY, null), refreshToken: this.localStorage.get(StoreKeys.REFRESH_TOKEN, null), user: client});
-            await this.setCurrentPortfolio(this.$store.state[StoreType.MAIN].clientInfo.user.currentPortfolioId);
+            await this.loadCurrentPortfolio();
             await this.loadOnBoardingTours();
             this.loggedIn = true;
         } finally {
             this.loading = false;
+        }
+    }
+
+    private async loadCurrentPortfolio(): Promise<void> {
+        const portfolioParams = this.localStorage.get<CombinedPortfolioParams>(StoreKeys.COMBINED_PORTFOLIO_PARAMS_KEY, {});
+        const combinedIds: number[] = this.clientInfo.user.portfolios.filter(portfolio => portfolio.combined).map(portfolio => portfolio.id);
+        if (portfolioParams && portfolioParams.selected && portfolioParams.viewCurrency && combinedIds?.length) {
+            await this.setCurrentCombinedPortfolio({ids: combinedIds, viewCurrency: portfolioParams.viewCurrency});
+        } else {
+            await this.setCurrentPortfolio(this.$store.state[StoreType.MAIN].clientInfo.user.currentPortfolioId);
         }
     }
 
@@ -224,7 +234,7 @@ export class AppFrame extends UI {
             this.localStorage.set(StoreKeys.REMEMBER_ME_KEY, signInData.rememberMe);
             const clientInfo = await this.clientService.login({username: signInData.username, password: signInData.password});
             await this.loadUser(clientInfo);
-            await this.setCurrentPortfolio(this.$store.state[StoreType.MAIN].clientInfo.user.currentPortfolioId);
+            await this.loadCurrentPortfolio();
             await this.loadOnBoardingTours();
             this.loggedIn = true;
             this.$snotify.clear();

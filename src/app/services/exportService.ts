@@ -21,6 +21,18 @@ export class ExportService {
     }
 
     /**
+     * Скачивает файл со сделками в формате csv
+     * @param viewCurrency валюта портфеля
+     * @param ids идентификаторы портфелей
+     */
+    async exportTradesCombined(viewCurrency: string, ids: number[]): Promise<any> {
+        const request: CombinedInfoRequest = {viewCurrency, ids};
+        const response = await this.http.post<Response>("/export/csv/combined", request);
+        const fileName = this.getFileNameFromHeaders(response.headers);
+        await this.download(response, fileName);
+    }
+
+    /**
      * Скачивает файл с отчетом в формате xlsx
      * @param portfolioId идентификатор портфеля
      * @param exportType тип отчета для экспорта
@@ -63,6 +75,19 @@ export class ExportService {
      * @param exportType тип экспорта
      */
     private getFileName(headers: Headers, portfolioId: number, exportType: ExportType): string {
+        return this.getFileNameFromHeaders(headers) || `${exportType.toLowerCase()}_portfolio_${portfolioId}.${exportType === ExportType.TRADES_CSV ? "csv" : "xlsx"}`;
+    }
+
+    /**
+     * Возвращает имя файла
+     * @param headers заголовки ответа
+     * @param portfolioIds идентификаторы портфелей
+     */
+    private getCombinedFileName(headers: Headers, portfolioIds: number[]): string {
+        return this.getFileNameFromHeaders(headers) || `complex_portfolio_[${portfolioIds.join(",")}].xlsx`;
+    }
+
+    private getFileNameFromHeaders(headers: Headers): string {
         try {
             for (const entry of headers.entries()) {
                 if (entry[0] === "content-disposition") {
@@ -74,21 +99,7 @@ export class ExportService {
             }
         } catch (e) {
         }
-        return `${exportType.toLowerCase()}_portfolio_${portfolioId}.${exportType === ExportType.TRADES_CSV ? "csv" : "xlsx"}`;
-    }
-
-    /**
-     * Возвращает имя файла
-     * @param headers заголовки ответа
-     * @param portfolioIds идентификаторы портфелей
-     */
-    private getCombinedFileName(headers: Headers, portfolioIds: number[]): string {
-        try {
-            const contentDisposition = (headers as any)["content-disposition"];
-            return contentDisposition.substring(contentDisposition.indexOf("=") + 1).trim();
-        } catch (e) {
-            return `combined_portfolio_[${portfolioIds.join(",")}].xlsx`;
-        }
+        return null;
     }
 }
 

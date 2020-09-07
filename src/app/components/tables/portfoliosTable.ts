@@ -31,6 +31,7 @@ import {Tariff} from "../../types/tariff";
 import {Portfolio, TableHeader} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {ExportUtils} from "../../utils/exportUtils";
+import {PortfolioUtils} from "../../utils/portfolioUtils";
 import {SortUtils} from "../../utils/sortUtils";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
@@ -169,12 +170,17 @@ export class PortfoliosTable extends UI {
     private clientInfo: ClientInfo;
     @MainStore.Getter
     private portfolio: Portfolio;
+    /** Комбинированный портфель */
+    @MainStore.Getter
+    private combinedPortfolioParams: PortfolioParams;
     @MainStore.Action(MutationType.RELOAD_PORTFOLIOS)
     private reloadPortfolios: () => Promise<void>;
     @MainStore.Action(MutationType.SET_CURRENT_PORTFOLIO)
     private setCurrentPortfolio: (id: number) => Promise<Portfolio>;
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
+    @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
+    private reloadPortfolio: () => Promise<void>;
+    @MainStore.Mutation(MutationType.UPDATE_COMBINED_PORTFOLIO)
+    private updateCombinedPortfolio: (viewCurrency: string) => void;
     /** Сервис по работе с портфелями */
     @Inject
     private portfolioService: PortfolioService;
@@ -217,14 +223,23 @@ export class PortfoliosTable extends UI {
     private async deletePortfolioAndShowMessage(id: number): Promise<void> {
         await this.portfolioService.deletePortfolio(id);
         // запоминаем текущий портфель, иначе ниже они может быть обновлен
-        const currentPortfolioId = this.clientInfo.user.currentPortfolioId;
+        const currentPortfolioId = this.portfolio.id;
+        this.overviewService.resetCacheForId(currentPortfolioId);
+        this.resetCombinedOverviewCache(currentPortfolioId);
         await this.reloadPortfolios();
-        // нужно обновлять данные только если удаляемый портфель был выбран текущим и соответственно теперь выбран другой
+        // если портфель был установлен по умолчанию, но не был выбран в списке портфелей, перезагружаем информацию о клиенте
+        if (id === this.clientInfo.user.currentPortfolioId && id !== currentPortfolioId) {
+            this.clientInfo.user.currentPortfolioId = this.clientInfo.user.portfolios[0].id;
+        }
+        // если портфель был выбран в списке портфелей и установлен по умолчанию, перезагружаем портфель
         if (id === currentPortfolioId) {
             // могли удалить текущий портфель, надо выставить портфель по умолчанию
             await this.setCurrentPortfolio(this.clientInfo.user.portfolios[0].id);
         }
+        // мог удалиться портфель входящий в составной
+        this.updateCombinedPortfolio(this.combinedPortfolioParams.viewCurrency);
         this.$snotify.info("Портфель успешно удален");
+        UI.emit(EventType.PORTFOLIO_LIST_UPDATED);
     }
 
     @ShowProgress
@@ -241,31 +256,12 @@ export class PortfoliosTable extends UI {
         if (result === BtnReturn.YES) {
             await this.portfolioService.clearPortfolio(portfolioId);
             this.overviewService.resetCacheForId(portfolioId);
+            this.resetCombinedOverviewCache(portfolioId);
             if (this.portfolio.id === portfolioId) {
-                await this.reloadPortfolio(portfolioId);
+                await this.reloadPortfolio();
             }
             this.$snotify.info("Портфель успешно очищен");
         }
-    }
-
-    private publicLink(id: string): string {
-        return `${window.location.protocol}//${window.location.host}/public-portfolio/${id}/`;
-    }
-
-    private informerV(id: string): string {
-        return `${window.location.protocol}//${window.location.host}/informer/v/${id}.png`;
-    }
-
-    private informerH(id: string): string {
-        return `${window.location.protocol}//${window.location.host}/informer/h/${id}.png`;
-    }
-
-    private async openEmbeddedDialog(id: string): Promise<void> {
-        await new EmbeddedBlocksDialog().show(id);
-    }
-
-    private async openSharePortfolioDialog(portfolio: PortfolioParams, type: PortfoliosDialogType): Promise<void> {
-        await new SharePortfolioDialog().show({portfolio: portfolio, clientInfo: this.clientInfo, type: type});
     }
 
     @ShowProgress
@@ -309,6 +305,10 @@ export class PortfoliosTable extends UI {
 
     private showNoteLink(note: string): boolean {
         return !CommonUtils.isBlank(note);
+    }
+
+    private resetCombinedOverviewCache(portfolioId: number): void {
+        PortfolioUtils.resetCombinedOverviewCache(this.combinedPortfolioParams, portfolioId, this.overviewService);
     }
 
     /**

@@ -15,15 +15,16 @@
  */
 
 import {Inject} from "typescript-ioc";
-import Component from "vue-class-component";
-import {Prop} from "vue-property-decorator";
 import {namespace} from "vuex-class";
-import {UI} from "../../app/ui";
+import {Component, Prop, UI} from "../../app/ui";
 import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {DividendInfo, DividendService} from "../../services/dividendService";
+import {OverviewService} from "../../services/overviewService";
+import {PortfolioParams} from "../../services/portfolioService";
 import {Portfolio, TableHeader} from "../../types/types";
+import {PortfolioUtils} from "../../utils/portfolioUtils";
 import {SortUtils} from "../../utils/sortUtils";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
@@ -67,8 +68,7 @@ const MainStore = namespace(StoreType.MAIN);
                         {{ props.item.amount | amount(true) }}&nbsp;<span class="second-value">{{ props.item.amount | currencySymbol }}</span>
                     </td>
                     <td class="text-xs-right ii-number-cell">{{ props.item.yield }}&nbsp;<span class="second-value">%</span></td>
-
-                    <td class="px-0">
+                    <td v-if="allowActions" class="px-0">
                         <v-layout align-center justify-center>
                             <v-menu transition="slide-y-transition" bottom left>
                                 <v-btn slot="activator" flat icon dark>
@@ -91,10 +91,17 @@ const MainStore = namespace(StoreType.MAIN);
 })
 export class DividendsByYearAndTickerTable extends UI {
 
+    private static readonly ACTION_HEADER = {text: "", align: "center", value: "actions", sortable: false, width: "25"};
+
+    @Inject
+    private overviewService: OverviewService;
     @MainStore.Getter
     private portfolio: Portfolio;
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
+    /** Комбинированный портфель */
+    @MainStore.Getter
+    private combinedPortfolioParams: PortfolioParams;
+    @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
+    private reloadPortfolio: () => Promise<void>;
     @Inject
     private dividendService: DividendService;
 
@@ -106,11 +113,16 @@ export class DividendsByYearAndTickerTable extends UI {
         {text: "На одну акцию", align: "right", value: "perOne", width: "65"},
         {text: "Сумма", align: "right", value: "amount", width: "65"},
         {text: "Доходность, %", align: "right", value: "yield", width: "80", tooltip: "Дивидендная доходность посчитанная по отношению к исторической цене акции на конец года."},
-        {text: "", align: "center", value: "actions", sortable: false, width: "25"}
     ];
 
     @Prop({default: [], required: true})
     private rows: DividendInfo[];
+
+    created(): void {
+        if (this.allowActions) {
+            this.headers.push(DividendsByYearAndTickerTable.ACTION_HEADER);
+        }
+    }
 
     private async deleteAllTrades(dividendTrade: DividendInfo): Promise<void> {
         const result = await new ConfirmDialog().show(`Вы уверены, что хотите удалить все дивиденды по выбранной акции?`);
@@ -123,11 +135,20 @@ export class DividendsByYearAndTickerTable extends UI {
     @DisableConcurrentExecution
     private async deleteAllTradesAndShowMessage(dividendTrade: DividendInfo): Promise<void> {
         await this.dividendService.deleteAllTrades({ticker: dividendTrade.ticker, year: dividendTrade.year, portfolioId: this.portfolio.id});
-        await this.reloadPortfolio(this.portfolio.id);
+        this.resetCombinedOverviewCache(this.portfolio.id);
+        await this.reloadPortfolio();
         this.$snotify.info(`Все дивидендные сделки по тикеру ${dividendTrade.ticker} были успешно удалены`);
     }
 
     private customSort(items: DividendInfo[], index: string, isDesc: boolean): DividendInfo[] {
         return SortUtils.simpleSort(items, index, isDesc);
+    }
+
+    private resetCombinedOverviewCache(portfolioId: number): void {
+        PortfolioUtils.resetCombinedOverviewCache(this.combinedPortfolioParams, portfolioId, this.overviewService);
+    }
+
+    private get allowActions(): boolean {
+        return !this.portfolio.portfolioParams.combinedFlag;
     }
 }

@@ -36,6 +36,6 @@ export class CombinedPortfoliosTable extends UI {
     private portfolios: PortfolioParams[];
 
     private onSetCombined(portfolioParams: PortfolioParams): void {
-        this.$emit("change", {id: portfolioParams.id, combined: portfolioParams.combined});
+        this.$emit("change", portfolioParams);
     }
 }

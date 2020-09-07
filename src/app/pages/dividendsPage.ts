@@ -40,8 +40,8 @@ export class DividendsPage extends UI {
     private portfolio: Portfolio;
     @MainStore.Getter
     private sideBarOpened: boolean;
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
+    @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
+    private reloadPortfolio: () => Promise<void>;
     @Inject
     private dividendService: DividendService;
     /** Информация по дивидендам */
@@ -56,7 +56,7 @@ export class DividendsPage extends UI {
     async created(): Promise<void> {
         await this.loadDividendAggregateInfo();
         UI.on(EventType.TRADE_CREATED, async () => {
-            await this.reloadPortfolio(this.portfolio.id);
+            await this.reloadPortfolio();
             await this.loadDividendAggregateInfo();
         });
     }
@@ -74,7 +74,12 @@ export class DividendsPage extends UI {
     private async loadDividendAggregateInfo(): Promise<void> {
         this.initialized = false;
         try {
-            this.dividendInfo = await this.dividendService.getDividendAggregateInfo(this.portfolio.id);
+            if (this.portfolio.id) {
+                this.dividendInfo = await this.dividendService.getDividendAggregateInfo(this.portfolio.id);
+            } else {
+                this.dividendInfo = await this.dividendService.getDividendAggregateInfoCombined(this.portfolio.portfolioParams.viewCurrency,
+                    this.portfolio.portfolioParams.combinedIds);
+            }
         } finally {
             this.initialized = true;
         }

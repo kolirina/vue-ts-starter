@@ -20,8 +20,7 @@ import {ThemeSwitcher} from "../../../components/themeSwitcher";
 import {ShowProgress} from "../../../platform/decorators/showProgress";
 import {ClientInfo, ClientService} from "../../../services/clientService";
 import {EventType} from "../../../types/eventType";
-import {Portfolio} from "../../../types/types";
-import {HelpDeskUtils} from "../../../utils/HelpDeskUtils";
+import {HelpDeskUtils} from "../../../utils/helpDeskUtils";
 import {MutationType} from "../../../vuex/mutationType";
 import {StoreType} from "../../../vuex/storeType";
 
@@ -85,10 +84,8 @@ export class ProfileInterfacePage extends UI {
 
     @MainStore.Getter
     private clientInfo: ClientInfo;
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
-    @MainStore.Getter
-    private portfolio: Portfolio;
+    @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
+    private reloadPortfolio: () => Promise<void>;
     /** Сервис для работы с данными клиента */
     @Inject
     private clientService: ClientService;
@@ -96,7 +93,7 @@ export class ProfileInterfacePage extends UI {
     private widgetPanel = [0];
 
     created(): void {
-        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio());
     }
 
     beforeDestroy(): void {

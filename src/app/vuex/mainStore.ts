@@ -2,13 +2,14 @@ import {Container} from "typescript-ioc";
 import {ActionContext, Module} from "vuex";
 import {Storage} from "../platform/services/storage";
 import {Client, ClientInfo, ClientService} from "../services/clientService";
-import {EventService, EventsResponse} from "../services/eventService";
+import {EventService} from "../services/eventService";
 import {OverviewService} from "../services/overviewService";
-import {PortfolioParams, PortfolioService} from "../services/portfolioService";
+import {PortfolioAccountType, PortfolioParams, PortfolioService} from "../services/portfolioService";
+import {CurrencyUnit} from "../types/currency";
 import {StoreKeys} from "../types/storeKeys";
-import {Portfolio, TariffHint} from "../types/types";
+import {CombinedInfoRequest, CombinedPortfolioParams, Overview, Portfolio, TariffHint} from "../types/types";
+import {DateUtils} from "../utils/dateUtils";
 import {TariffUtils} from "../utils/tariffUtils";
-import {ActionType} from "./actionType";
 import {GetterType} from "./getterType";
 import {MutationType} from "./mutationType";
 
@@ -33,6 +34,18 @@ export class StateHolder {
     version = "1.0";
     /** Признак открытого меню */
     sideBarOpened: boolean = true;
+    /** Составной портфель */
+    combinedPortfolioParams: PortfolioParams = {
+        id: null,
+        name: "Составной портфель",
+        accountType: PortfolioAccountType.BROKERAGE,
+        openDate: DateUtils.currentDate(),
+        viewCurrency: CurrencyUnit.RUB.code,
+        access: 0,
+        combinedFlag: true,
+        combinedIds: []
+    };
+    /** Координаты подсказки об истечении тарифа */
     tariffExpiredHintCoords: TariffHint = {
         x: "0px",
         y: "0px",
@@ -43,6 +56,9 @@ export class StateHolder {
 const Getters = {
     [GetterType.PORTFOLIO](state: StateHolder): Portfolio {
         return state.currentPortfolio;
+    },
+    [GetterType.COMBINED_PORTFOLIO_PARAMS](state: StateHolder): PortfolioParams {
+        return state.combinedPortfolioParams;
     },
     [GetterType.CLIENT_INFO](state: StateHolder): ClientInfo {
         return state.clientInfo;
@@ -69,23 +85,44 @@ const Mutations = {
     },
     [MutationType.SET_CURRENT_PORTFOLIO](state: StateHolder, portfolio: Portfolio): void {
         state.currentPortfolio = portfolio;
-        state.clientInfo.user.currentPortfolioId = portfolio.id;
+        if (portfolio.id) {
+            state.clientInfo.user.currentPortfolioId = portfolio.id;
+        }
+    },
+    [MutationType.UPDATE_COMBINED_PORTFOLIO](state: StateHolder, viewCurrency: string): void {
+        state.combinedPortfolioParams.combinedIds = state.clientInfo.user.portfolios.filter(value => value.combined).map(value => value.id);
+        state.combinedPortfolioParams.viewCurrency = viewCurrency;
+        const portfolioParams = localStorage.get<CombinedPortfolioParams>(StoreKeys.COMBINED_PORTFOLIO_PARAMS_KEY, {});
+        localStorage.set<CombinedPortfolioParams>(StoreKeys.COMBINED_PORTFOLIO_PARAMS_KEY, {
+            ids: state.combinedPortfolioParams.combinedIds,
+            viewCurrency: state.combinedPortfolioParams.viewCurrency,
+            selected: portfolioParams.selected
+        } as CombinedPortfolioParams);
+        if (state.currentPortfolio?.portfolioParams.combinedFlag) {
+            state.currentPortfolio = {...state.currentPortfolio, portfolioParams: state.combinedPortfolioParams};
+        }
     },
     [MutationType.SET_DEFAULT_PORTFOLIO](state: StateHolder, id: number): void {
         state.clientInfo.user.currentPortfolioId = id;
     },
-    [MutationType.RELOAD_PORTFOLIO](state: StateHolder, portfolio: Portfolio): void {
+    [MutationType.RELOAD_CURRENT_PORTFOLIO](state: StateHolder, portfolio: Portfolio): void {
         state.currentPortfolio = portfolio;
         const withoutCurrent = state.clientInfo.user.portfolios.filter(p => p.id !== portfolio.id);
         state.clientInfo.user.portfolios = [...withoutCurrent, portfolio.portfolioParams];
+        state.clientInfo.user.portfolios = state.clientInfo.user.portfolios.filter(p => !!p.id);
+        state.clientInfo.user.portfolios.push(state.combinedPortfolioParams);
     },
     [MutationType.RELOAD_PORTFOLIOS](state: StateHolder, portfolios: PortfolioParams[]): void {
         state.clientInfo.user.portfolios = [...portfolios];
+        state.clientInfo.user.portfolios = state.clientInfo.user.portfolios.filter(p => !!p.id);
+        state.clientInfo.user.portfolios.push(state.combinedPortfolioParams);
     },
     [MutationType.UPDATE_PORTFOLIO](state: StateHolder, portfolio: PortfolioParams): void {
         const withoutCurrent = state.clientInfo.user.portfolios.filter(p => p.id !== portfolio.id);
         state.clientInfo.user.portfolios = [...withoutCurrent, portfolio];
         state.currentPortfolio.portfolioParams = portfolio;
+        state.clientInfo.user.portfolios = state.clientInfo.user.portfolios.filter(p => !!p.id);
+        state.clientInfo.user.portfolios.push(state.combinedPortfolioParams);
     },
     [MutationType.CHANGE_SIDEBAR_STATE](state: StateHolder, sideBarState: boolean): void {
         state.sideBarOpened = sideBarState;
@@ -108,6 +145,21 @@ const Actions = {
             });
         });
     },
+    [MutationType.SET_CURRENT_COMBINED_PORTFOLIO](context: ActionContext<StateHolder, void>, combinedParams: CombinedPortfolioParams): Promise<Portfolio> {
+        return new Promise<Portfolio>((resolve): void => {
+            const request: CombinedInfoRequest = {ids: combinedParams.ids, viewCurrency: combinedParams.viewCurrency};
+            overviewService.getPortfolioOverviewCombined(request).then((overview: Overview) => {
+                context.commit(MutationType.UPDATE_COMBINED_PORTFOLIO, combinedParams.viewCurrency);
+                const portfolio: Portfolio = {
+                    id: null,
+                    portfolioParams: context.state.combinedPortfolioParams,
+                    overview: overview
+                };
+                context.commit(MutationType.SET_CURRENT_PORTFOLIO, portfolio);
+                resolve(portfolio);
+            });
+        });
+    },
     [MutationType.SET_DEFAULT_PORTFOLIO](context: ActionContext<StateHolder, void>, id: number): Promise<void> {
         return new Promise<void>((resolve): void => {
             overviewService.setDefaultPortfolio(id).then(() => {
@@ -124,12 +176,29 @@ const Actions = {
             });
         });
     },
-    [MutationType.RELOAD_PORTFOLIO](context: ActionContext<StateHolder, void>, id: number): Promise<void> {
+    [MutationType.RELOAD_CURRENT_PORTFOLIO](context: ActionContext<StateHolder, void>): Promise<void> {
         return new Promise<void>((resolve): void => {
-            overviewService.reloadPortfolio(id).then((portfolio: Portfolio): void => {
-                context.commit(MutationType.RELOAD_PORTFOLIO, portfolio);
-                resolve();
-            });
+            if (context.state.currentPortfolio.id) {
+                overviewService.reloadPortfolio(context.state.currentPortfolio.id).then((portfolio: Portfolio): void => {
+                    context.commit(MutationType.RELOAD_CURRENT_PORTFOLIO, portfolio);
+                    resolve();
+                });
+            } else {
+                const request: CombinedInfoRequest = {
+                    ids: context.state.currentPortfolio.portfolioParams.combinedIds,
+                    viewCurrency: context.state.currentPortfolio.portfolioParams.viewCurrency
+                };
+                overviewService.getPortfolioOverviewCombined(request).then((overview: Overview) => {
+                    context.commit(MutationType.UPDATE_COMBINED_PORTFOLIO, context.state.currentPortfolio.portfolioParams.viewCurrency);
+                    const portfolio: Portfolio = {
+                        id: null,
+                        portfolioParams: context.state.combinedPortfolioParams,
+                        overview: overview
+                    };
+                    context.commit(MutationType.RELOAD_CURRENT_PORTFOLIO, portfolio);
+                    resolve();
+                });
+            }
         });
     },
     [MutationType.RELOAD_PORTFOLIOS](context: ActionContext<StateHolder, void>): Promise<void> {

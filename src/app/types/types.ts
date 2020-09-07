@@ -87,7 +87,9 @@ export type TradeRow = {
     /** Идентификатор связанной родительской сделки. Может быть null, если у сделки нет связи */
     parentTradeId?: string,
     /** Связанная сделка */
-    linkedTrade?: TradeRow
+    linkedTrade?: TradeRow,
+    /** Идентификатор портфеля, к которому относится сделка */
+    portfolioId: number;
 };
 
 export type _shareRow = _portfolioRow & {
@@ -712,6 +714,12 @@ export interface RebalancingModel {
     minShare: string;
     /** Максимальная доля любого инструмента внутри портфеля */
     maxShare: string;
+}
+
+export interface CombinedPortfolioParams {
+    viewCurrency?: string;
+    selected?: boolean;
+    ids?: number[];
 }
 
 export interface MapType {

@@ -20,7 +20,6 @@ import {ConfirmDialog} from "../../../components/dialogs/confirmDialog";
 import {BtnReturn} from "../../../platform/dialogs/customDialog";
 import {ClientInfo, ClientService} from "../../../services/clientService";
 import {EventType} from "../../../types/eventType";
-import {Portfolio} from "../../../types/types";
 import {MutationType} from "../../../vuex/mutationType";
 import {StoreType} from "../../../vuex/storeType";
 
@@ -73,16 +72,14 @@ export class ProfileSubscriptionPage extends UI {
     private clientInfo: ClientInfo;
     @MainStore.Action(MutationType.RELOAD_CLIENT_INFO)
     private reloadUser: () => Promise<void>;
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
-    @MainStore.Getter
-    private portfolio: Portfolio;
+    @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
+    private reloadPortfolio: () => Promise<void>;
     /** Сервис для работы с данными клиента */
     @Inject
     private clientService: ClientService;
 
     created(): void {
-        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio());
     }
 
     beforeDestroy(): void {

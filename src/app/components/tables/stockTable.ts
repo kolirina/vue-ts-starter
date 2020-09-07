@@ -23,7 +23,8 @@ import {Filters} from "../../platform/filters/Filters";
 import {Storage} from "../../platform/services/storage";
 import {AssetCategory} from "../../services/assetService";
 import {ClientInfo} from "../../services/clientService";
-import {PortfolioService} from "../../services/portfolioService";
+import {OverviewService} from "../../services/overviewService";
+import {PortfolioParams, PortfolioService} from "../../services/portfolioService";
 import {TableHeadersState, TABLES_NAME, TablesService, TableType} from "../../services/tablesService";
 import {TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
@@ -31,6 +32,7 @@ import {BigMoney} from "../../types/bigMoney";
 import {Operation} from "../../types/operation";
 import {Asset, Pagination, Portfolio, Share, ShareType, StockTypePortfolioRow, TableHeader} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
+import {PortfolioUtils} from "../../utils/portfolioUtils";
 import {SortUtils} from "../../utils/sortUtils";
 import {TradeUtils} from "../../utils/tradeUtils";
 import {MutationType} from "../../vuex/mutationType";
@@ -79,7 +81,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     :ticker="String(props.item.share.id)">{{ props.item.share.shortname }}
                         </asset-link>
                         &nbsp;
-                        <span v-if="props.item.share && props.item.quantity !== '0'"
+                        <span v-if="props.item.share && props.item.quantity !== '0'" title="Изменение за день"
                               :class="markupClasses(Number(props.item.share.change))">{{ props.item.share.change }}&nbsp;%</span>
                     </td>
                     <td v-if="tableHeadersState.ticker" class="text-xs-left">
@@ -199,8 +201,8 @@ const MainStore = namespace(StoreType.MAIN);
                                         Дивиденд
                                     </v-list-tile-title>
                                 </v-list-tile>
-                                <v-divider></v-divider>
-                                <v-list-tile @click="deleteAllTrades(props.item)">
+                                <v-divider v-if="portfolio.id"></v-divider>
+                                <v-list-tile v-if="portfolio.id" @click="deleteAllTrades(props.item)">
                                     <v-list-tile-title class="delete-btn">
                                         Удалить
                                     </v-list-tile-title>
@@ -236,7 +238,7 @@ const MainStore = namespace(StoreType.MAIN);
                             <div class="ext-info__item">
                                 Прибыль по сделкам {{ props.item.exchangeProfit | amount(true) }} <span>{{ portfolioCurrency }}</span><br>
                                 Прибыль по сделкам {{ props.item.exchangeProfitPercent | number }} <span>%</span><br>
-                                Прибыль {{ props.item.profit| amount(true, 2, true, true) }} <span>{{ portfolioCurrency }}</span> ({{ props.item.percProfit | number }} %)<br>
+                                Прибыль {{ props.item.profit | amount(true, 2, true, true) }} <span>{{ portfolioCurrency }}</span> ({{ props.item.percProfit | number }} %)<br>
                                 Доходность {{ props.item.yearYield | number }} <span>%</span>
                             </div>
                         </td>
@@ -283,20 +285,18 @@ export class StockTable extends UI {
     @Inject
     private tablesService: TablesService;
     @Inject
+    private overviewService: OverviewService;
+    @Inject
     private portfolioService: PortfolioService;
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
-    /** Если работаем из составного портфеля и добавляем сделку в текущий портфель, надо перезагрузить его */
-    @MainStore.Getter
-    private portfolio: Portfolio;
+    @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
+    private reloadPortfolio: () => Promise<void>;
     @MainStore.Getter
     private clientInfo: ClientInfo;
-    /** Идентификатор портфеля */
-    @Prop({default: null, type: String, required: true})
-    private portfolioId: string;
-    /** Айди портфелей для комбинирования */
-    @Prop({default: [], required: false})
-    private ids: number[];
+    @MainStore.Getter
+    private portfolio: Portfolio;
+    /** Комбинированный портфель */
+    @MainStore.Getter
+    private combinedPortfolioParams: PortfolioParams;
     /** Валюта просмотра информации */
     @Prop({required: true, type: String})
     private viewCurrency: string;
@@ -366,6 +366,11 @@ export class StockTable extends UI {
         this.setFilteredRows();
     }
 
+    @Watch("pagination")
+    paginationChange(): void {
+        this.localStorage.set(`${this.tableType}Pagination`, this.pagination);
+    }
+
     setFilteredRows(): void {
         if (this.filter.hideSoldRows) {
             this.filteredRows = [...this.rows.filter(row => !CommonUtils.exists(row.share) || Number(row.quantity) !== 0)];
@@ -380,18 +385,10 @@ export class StockTable extends UI {
 
     private async openShareTradesDialog(share: Share): Promise<void> {
         let trades = [];
-        if (this.portfolioId) {
-            if (share.shareType === ShareType.ASSET) {
-                trades = await this.tradeService.getAssetShareTrades(this.portfolioId, share.id);
-            } else {
-                trades = await this.tradeService.getShareTrades(this.portfolioId, share.ticker);
-            }
+        if (this.portfolio.id) {
+            trades = await this.tradeService.getShareTrades(this.portfolio.id, share.id, share.shareType);
         } else {
-            if (share.shareType === ShareType.ASSET) {
-                trades = await this.tradeService.getAssetTradesByIdForCombinedPortfolio(String(share.id), this.viewCurrency, this.ids);
-            } else {
-                trades = await this.tradeService.getTradesCombinedPortfolio(share.ticker, this.viewCurrency, this.ids);
-            }
+            trades = await this.tradeService.getTradesCombinedPortfolio(share.id, share.shareType, this.viewCurrency, this.portfolio.portfolioParams.combinedIds);
         }
         await new ShareTradesDialog().show({trades, ticker: share.ticker, shareType: ShareType.ASSET});
     }
@@ -419,7 +416,8 @@ export class StockTable extends UI {
         });
         if (result) {
             if (result.needUpdate) {
-                await this.reloadPortfolio(Number(this.portfolioId));
+                await this.reloadPortfolio();
+                this.resetCombinedOverviewCache();
             }
             share.ticker = result.asset.ticker;
             share.shortname = result.asset.name;
@@ -441,7 +439,7 @@ export class StockTable extends UI {
 
     @ShowProgress
     private async editShareNote(data: EditShareNoteDialogData, shareType: ShareType): Promise<void> {
-        await this.portfolioService.updateShareNotes(this.portfolioId, this.shareNotes, data);
+        await this.portfolioService.updateShareNotes(this.portfolio.id, this.shareNotes, data);
         this.$snotify.info(`Заметка по ${shareType === ShareType.ASSET ? "активу" : "бумаге"} ${data.ticker} была успешно сохранена`);
     }
 
@@ -471,16 +469,17 @@ export class StockTable extends UI {
             await this.tradeService.deleteAllTrades({
                 assetType: AssetType.STOCK.enumName,
                 ticker: stockRow.share.ticker,
-                portfolioId: Number(this.portfolioId)
+                portfolioId: this.portfolio.id
             });
         } else if (stockRow.assetType === AssetType.ASSET.enumName) {
             await this.tradeService.deleteAllAssetTrades({
                 assetId: stockRow.share.id,
-                portfolioId: Number(this.portfolioId)
+                portfolioId: this.portfolio.id
             });
         }
         this.$snotify.info(`Сделки по бумаге ${stockRow.share.name} успешно удалены`);
-        await this.reloadPortfolio(Number(this.portfolioId));
+        this.resetCombinedOverviewCache();
+        await this.reloadPortfolio();
     }
 
     private amount(value: string): number {
@@ -489,11 +488,6 @@ export class StockTable extends UI {
         }
         const amount = new BigMoney(value);
         return amount.amount.toNumber();
-    }
-
-    @Watch("pagination")
-    private paginationChange(): void {
-        this.localStorage.set(`${this.tableType}Pagination`, this.pagination);
     }
 
     private customSort(items: StockTypePortfolioRow[], sortby: string, isDesc: boolean): StockTypePortfolioRow[] {
@@ -532,6 +526,10 @@ export class StockTable extends UI {
         const asset = stockRow.share as Asset;
         return asset.shareType === ShareType.STOCK || (["STOCK", "BOND", "ETF"].includes(asset.category) &&
             !(asset.source || "").includes("investfunds.ru"));
+    }
+
+    private resetCombinedOverviewCache(): void {
+        PortfolioUtils.resetCombinedOverviewCache(this.combinedPortfolioParams, this.portfolio.id, this.overviewService);
     }
 
     private get portfolioCurrency(): string {

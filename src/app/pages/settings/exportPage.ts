@@ -8,7 +8,7 @@ import {ClientInfo} from "../../services/clientService";
 import {ExportService, ExportType} from "../../services/exportService";
 import {PortfolioParams, PortfolioService} from "../../services/portfolioService";
 import {EventType} from "../../types/eventType";
-import {Portfolio, PortfolioBackup} from "../../types/types";
+import {CombinedPortfolioParams, Portfolio, PortfolioBackup} from "../../types/types";
 import {ExportUtils} from "../../utils/exportUtils";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
@@ -106,8 +106,8 @@ export class ExportPage extends UI {
     /** Текущий портфель */
     @MainStore.Getter
     private portfolio: Portfolio;
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
+    @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
+    private reloadPortfolio: () => Promise<void>;
     /** Сервис для экспорта портфеля */
     @Inject
     private exportService: ExportService;
@@ -121,22 +121,15 @@ export class ExportPage extends UI {
     /** Типы экспорта таблиц */
     private ExportType = ExportType;
 
-    created(): void {
-        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
+    @ShowProgress
+    async created(): Promise<void> {
+        this.portfolios = this.clientInfo.user.portfolios;
+        await this.loadPortfolioBackup();
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio());
     }
 
     beforeDestroy(): void {
         UI.off(EventType.TRADE_CREATED);
-    }
-
-    /**
-     * Инициализация компонента, загрузка портфелей
-     * @inheritDoc
-     */
-    @ShowProgress
-    async mounted(): Promise<void> {
-        this.portfolios = this.clientInfo.user.portfolios;
-        await this.loadPortfolioBackup();
     }
 
     private goToTariffs(): void {
@@ -158,7 +151,11 @@ export class ExportPage extends UI {
      */
     @ShowProgress
     private async downloadFile(): Promise<void> {
-        await this.exportService.exportTrades(this.portfolio.id);
+        if (this.portfolio.id) {
+            await this.exportService.exportTrades(this.portfolio.id);
+        } else {
+            await this.exportService.exportTradesCombined(this.portfolio.portfolioParams.viewCurrency, this.portfolio.portfolioParams.combinedIds);
+        }
     }
 
     private async openBackupDialog(): Promise<void> {
@@ -187,6 +184,10 @@ export class ExportPage extends UI {
 
     @ShowProgress
     private async exportPortfolio(): Promise<void> {
-        await this.exportService.exportReport(this.portfolio.id, ExportType.COMPLEX);
+        if (this.portfolio.id) {
+            await this.exportService.exportReport(this.portfolio.id, ExportType.COMPLEX);
+        } else {
+            await this.exportService.exportCombinedReport({ids: this.portfolio.portfolioParams.combinedIds, viewCurrency: this.portfolio.portfolioParams.viewCurrency});
+        }
     }
 }

@@ -6,21 +6,22 @@ import {UI} from "../app/ui";
 import {AdditionalPagination} from "../components/additionalPagination";
 import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog";
 import {EmptySearchResult} from "../components/emptySearchResult";
-import {ExpandedPanel} from "../components/expandedPanel";
 import {TradesTable} from "../components/tables/tradesTable";
 import {TradesTableFilter} from "../components/tradesTableFilter";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {ClientInfo} from "../services/clientService";
 import {ExportService, ExportType} from "../services/exportService";
 import {OverviewService} from "../services/overviewService";
+import {PortfolioParams} from "../services/portfolioService";
 import {TableHeaders, TABLES_NAME, TablesService} from "../services/tablesService";
 import {CopyMoveTradeRequest, TradeService, TradesFilter} from "../services/tradeService";
 import {TradesFilterService} from "../services/tradesFilterService";
 import {AssetType} from "../types/assetType";
 import {EventType} from "../types/eventType";
 import {StoreKeys} from "../types/storeKeys";
-import {Pagination, Portfolio, TableHeader, TradeRow} from "../types/types";
+import {CombinedPortfolioParams, Pagination, Portfolio, TableHeader, TradeRow} from "../types/types";
 import {ExportUtils} from "../utils/exportUtils";
+import {PortfolioUtils} from "../utils/portfolioUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 
@@ -47,14 +48,14 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-layout>
                     <empty-search-result v-if="isEmptySearchResult" @resetFilter="resetFilter"></empty-search-result>
                     <trades-table v-else :trades="trades" :pagination="pagination" @copyTrade="copyTrade" @moveTrade="moveTrade"
-                                  :headers="getHeaders(TABLES_NAME.TRADE)" @delete="onDelete" @resetFilter="resetFilter" @update:pagination="onTablePaginationChange"
+                                  :headers="getHeaders()" @delete="onDelete" @resetFilter="resetFilter" @update:pagination="onTablePaginationChange"
                                   data-v-step="2">
                     </trades-table>
                 </expanded-panel>
             </v-container>
         </div>
     `,
-    components: {TradesTable, ExpandedPanel, TradesTableFilter, AdditionalPagination, EmptySearchResult}
+    components: {TradesTable, TradesTableFilter, AdditionalPagination, EmptySearchResult}
 })
 export class TradesPage extends UI {
 
@@ -74,8 +75,11 @@ export class TradesPage extends UI {
     private clientInfo: ClientInfo;
     @MainStore.Getter
     private portfolio: Portfolio;
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
+    /** Комбинированный портфель */
+    @MainStore.Getter
+    private combinedPortfolioParams: PortfolioParams;
+    @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
+    private reloadPortfolio: () => Promise<void>;
     @MainStore.Getter
     private sideBarOpened: boolean;
     /** Ключи для сохранения информации */
@@ -107,12 +111,12 @@ export class TradesPage extends UI {
      */
     async created(): Promise<void> {
         this.tradesFilter = this.tradesFilterService.getFilter(StoreKeys.TRADES_FILTER_SETTINGS_KEY);
-        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
-        UI.on(EventType.TRADE_UPDATED, async () => await this.reloadPortfolio(this.portfolio.id));
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio());
+        UI.on(EventType.TRADE_UPDATED, async () => await this.reloadPortfolio());
     }
 
-    getHeaders(name: string): TableHeader[] {
-        return this.tablesService.getFilterHeaders(name);
+    private getHeaders(): TableHeader[] {
+        return this.tablesService.getFilterHeaders(this.TABLES_NAME.TRADE, !this.allowActions);
     }
 
     private get isEmptyBlockShowed(): boolean {
@@ -127,6 +131,7 @@ export class TradesPage extends UI {
     private async copyTrade(requestData: CopyMoveTradeRequest): Promise<void> {
         await this.tradeService.copyTrade(requestData);
         this.overviewService.resetCacheForId(requestData.toPortfolioId);
+        this.resetCombinedOverviewCache(requestData.toPortfolioId);
         this.$snotify.info("Сделка успешно копирована");
     }
 
@@ -134,6 +139,8 @@ export class TradesPage extends UI {
         await this.tradeService.moveTrade(requestData);
         this.overviewService.resetCacheForId(requestData.fromPortfolioId);
         this.overviewService.resetCacheForId(requestData.toPortfolioId);
+        this.resetCombinedOverviewCache(requestData.fromPortfolioId);
+        this.resetCombinedOverviewCache(requestData.toPortfolioId);
         await this.loadTrades();
         this.$snotify.info("Сделка успешно перемещена");
     }
@@ -165,8 +172,9 @@ export class TradesPage extends UI {
     @ShowProgress
     private async onDelete(tradeRow: TradeRow): Promise<void> {
         await this.tradeService.deleteTrade({portfolioId: this.portfolio.id, tradeId: tradeRow.id});
-        await this.reloadPortfolio(this.portfolio.id);
+        await this.reloadPortfolio();
         await this.loadTrades();
+        this.resetCombinedOverviewCache(tradeRow.portfolioId);
         const assetType = AssetType.valueByName(tradeRow.asset);
         this.$snotify.info(`Операция '${tradeRow.operationLabel}' ${assetType === AssetType.MONEY ? "" :
             `по ${assetType === AssetType.ASSET ? "активу" : "бумаге"} ${tradeRow.ticker}`} была успешно удалена`);
@@ -179,7 +187,8 @@ export class TradesPage extends UI {
             this.pagination.rowsPerPage,
             this.pagination.sortBy,
             this.pagination.descending,
-            this.tradesFilterService.getTradesFilterRequest(this.tradesFilter)
+            this.tradesFilterService.getTradesFilterRequest(this.tradesFilter),
+            this.portfolio.portfolioParams.combinedIds
         );
         this.trades = result.content;
         this.pagination.totalItems = result.totalItems;
@@ -207,6 +216,10 @@ export class TradesPage extends UI {
         this.tradesFilterService.saveFilter(StoreKeys.TRADES_FILTER_SETTINGS_KEY, this.tradesFilter);
     }
 
+    private resetCombinedOverviewCache(portfolioId: number): void {
+        PortfolioUtils.resetCombinedOverviewCache(this.combinedPortfolioParams, portfolioId, this.overviewService);
+    }
+
     private get isDefaultFilter(): boolean {
         return this.tradesFilterService.isDefaultFilter(this.tradesFilter);
     }
@@ -216,5 +229,9 @@ export class TradesPage extends UI {
      */
     private isDownloadNotAllowed(): boolean {
         return ExportUtils.isDownloadNotAllowed(this.clientInfo);
+    }
+
+    private get allowActions(): boolean {
+        return !this.portfolio.portfolioParams.combinedFlag;
     }
 }

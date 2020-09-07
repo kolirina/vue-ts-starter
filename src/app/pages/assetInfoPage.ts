@@ -35,10 +35,8 @@ const MainStore = namespace(StoreType.MAIN);
 })
 export class AssetInfoPage extends UI {
 
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
-    @MainStore.Getter
-    private portfolio: Portfolio;
+    @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
+    private reloadPortfolio: () => Promise<void>;
     /** Код ценной бумаги */
     private ticker: string = null;
     /** Типы активов */
@@ -50,7 +48,7 @@ export class AssetInfoPage extends UI {
      */
     async created(): Promise<void> {
         this.ticker = this.$route.params.ticker;
-        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio());
     }
 
     beforeDestroy(): void {

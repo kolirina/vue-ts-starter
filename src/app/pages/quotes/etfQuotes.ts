@@ -15,7 +15,7 @@ import {AssetType} from "../../types/assetType";
 import {EventType} from "../../types/eventType";
 import {Operation} from "../../types/operation";
 import {StoreKeys} from "../../types/storeKeys";
-import {Pagination, Portfolio, Share, StockTypeShare, TableHeader} from "../../types/types";
+import {Pagination, Share, StockTypeShare, TableHeader} from "../../types/types";
 import {TradeUtils} from "../../utils/tradeUtils";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
@@ -25,7 +25,7 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-container v-if="portfolio" fluid class="pa-0" data-v-step="0">
+        <v-container fluid class="pa-0" data-v-step="0">
             <quotes-filter-table :filter="filter" @input="tableSearch" @changeShowUserShares="changeShowUserShares" @filter="onFilterChange" :min-length="1" placeholder="Поиск"
                                  :store-key="StoreKeys.ETF_QUOTES_FILTER_KEY">
                 <additional-pagination :pagination="pagination" @update:pagination="onTablePaginationChange"></additional-pagination>
@@ -94,14 +94,12 @@ const MainStore = namespace(StoreType.MAIN);
 })
 export class EtfQuotes extends UI {
 
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
-    @MainStore.Getter
-    private portfolio: Portfolio;
+    @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
+    private reloadPortfolio: () => Promise<void>;
     /** Текущая операция */
     private operation = Operation;
     @Inject
-    private marketservice: MarketService;
+    private marketService: MarketService;
     @Inject
     private localStorage: Storage;
     @Inject
@@ -136,12 +134,12 @@ export class EtfQuotes extends UI {
         totalItems: 0,
         pages: 0
     };
-
+    /** Список ETF */
     private etf: StockTypeShare[] = [];
 
     async created(): Promise<void> {
         this.filter.showUserShares = this.localStorage.get<boolean>("showUserStocks", false);
-        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio());
     }
 
     beforeDestroy(): void {
@@ -184,7 +182,7 @@ export class EtfQuotes extends UI {
 
     @ShowProgress
     private async loadEtf(): Promise<void> {
-        const response = await this.marketservice.loadEtf(this.pagination, this.filter);
+        const response = await this.marketService.loadEtf(this.pagination, this.filter);
         this.etf = response.content;
         this.pagination.totalItems = response.totalItems;
         this.pagination.pages = response.pages;

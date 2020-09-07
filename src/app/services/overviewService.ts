@@ -20,6 +20,7 @@ export class OverviewService {
     private cacheService: Cache;
 
     private cache: { [key: number]: Portfolio } = {};
+    private combinedPortfoliosCache: { [key: string]: Overview } = {};
 
     private overviewByPeriod: { [key: number]: { [key: string]: Overview } } = {};
 
@@ -52,11 +53,38 @@ export class OverviewService {
     }
 
     /**
+     * Сбрасывает из кеша портфель по переданному идентификатору
+     * @param request параметры запроса составного портфеля
+     */
+    resetCacheForCombinedPortfolio(request: CombinedInfoRequest): void {
+        const key = `${request.ids.sort((a, b) => a - b).join(",")}${request.viewCurrency}`;
+        this.combinedPortfoliosCache[key] = null;
+    }
+
+    /**
      * Возвращает данные по комбинированному портфелю
-     * @param request
+     * @param request запрос
      * @return {Promise<>}
      */
     async getPortfolioOverviewCombined(request: CombinedInfoRequest): Promise<Overview> {
+        const key = `${request.ids.sort((a, b) => a - b).join(",")}${request.viewCurrency}`;
+        let overview = this.combinedPortfoliosCache[key];
+        if (!overview) {
+            overview = await this.loadCombinedPortfolioOverview(request);
+            this.combinedPortfoliosCache[key] = overview;
+            return overview;
+        }
+        return overview;
+    }
+
+    async reloadCombinedPortfolioOverview(request: CombinedInfoRequest): Promise<Overview> {
+        const key = `${request.ids.sort((a, b) => a - b).join(",")}${request.viewCurrency}`;
+        const overview = await this.loadCombinedPortfolioOverview(request);
+        this.combinedPortfoliosCache[key] = overview;
+        return overview;
+    }
+
+    async loadCombinedPortfolioOverview(request: CombinedInfoRequest): Promise<Overview> {
         const overview = await this.http.post<Overview>(`/portfolios/overview-combined`, request);
         this.prepareOverview(overview);
         return overview;

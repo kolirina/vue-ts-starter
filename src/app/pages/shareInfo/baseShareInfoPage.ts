@@ -461,8 +461,12 @@ export class BaseShareInfoPage extends UI {
     }
 
     private async loadTradeEvents(): Promise<void> {
-        const tradeEvents = this.isStockAsset ? await this.tradeService.getShareTradesEvent(this.portfolio.id, this.share.ticker) :
-            await this.tradeService.getAssetShareTradesEvent(this.portfolio.id, String(this.share.id));
+        let tradeEvents = [];
+        if (this.portfolio.id) {
+            tradeEvents = await this.tradeService.getShareTradesEvent(this.portfolio.id, this.share.id, this.share.shareType);
+        } else {
+            tradeEvents = await this.tradeService.getShareTradesEventCombined(this.portfolio.portfolioParams.combinedIds, this.share.id, this.share.shareType);
+        }
         this.events.push(...ChartUtils.processEventsChartData(tradeEvents, true, "flags", "dataseries", "circlepin", 10, "rgba(20,140,0,0.45)"));
     }
 
