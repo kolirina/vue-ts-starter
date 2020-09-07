@@ -345,13 +345,9 @@ export class RebalancingPage extends UI {
         }
     }
 
-    private async saveRules(): Promise<void> {
-        await this.saveRebalancing(this.calculateRows);
-        this.$snotify.info("Правила успешно сохранены");
-    }
-
     private async saveRebalancing(calculateRow: CalculateRow[]): Promise<void> {
         if (!this.portfolio.id) {
+            this.$snotify.warning("Сохранение настроек для составного портфеля недоступно");
             return;
         }
         this.rebalancingModel.instrumentRebalancingModels = [];
