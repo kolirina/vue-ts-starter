@@ -313,7 +313,7 @@ export class BondInfoPage extends UI {
         if (!this.portfolio.id) {
             return;
         }
-        const tradeEvents = await this.tradeService.getShareTradesEvent(this.portfolio.id, this.share.ticker);
+        const tradeEvents = await this.tradeService.getShareTradesEvent(this.portfolio.id, this.share.id, ShareType.BOND);
         this.events.push(...ChartUtils.processEventsChartData(tradeEvents, true, "flags", "dataseries", "circlepin", 10, "rgba(20,140,0,0.45)"));
     }
 

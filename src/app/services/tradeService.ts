@@ -42,61 +42,45 @@ export class TradeService {
     /**
      * Загружает и возвращает сделки по тикеру в портфеле
      * @param {string} portfolioId идентификатор портфеля
-     * @param {string} ticker тикер
+     * @param shareId идентификатор бумаги
+     * @param shareType тип бумаги
      * @returns {Promise<TradeRow[]>}
      */
-    async getShareTrades(portfolioId: number, ticker: string): Promise<TradeRow[]> {
-        return this.http.get<TradeRow[]>(`/trades/${portfolioId}/${ticker}`);
-    }
-
-    /**
-     * Загружает и возвращает сделки по тикеру в портфеле
-     * @param {string} portfolioId идентификатор портфеля
-     * @param {string} assetId идентификатор актива
-     * @returns {Promise<TradeRow[]>}
-     */
-    async getAssetShareTrades(portfolioId: number, assetId: number): Promise<TradeRow[]> {
-        return this.http.get<TradeRow[]>(`/trades/${portfolioId}/asset/${assetId}`);
+    async getShareTrades(portfolioId: number, shareId: number, shareType: string): Promise<TradeRow[]> {
+        return this.http.get<TradeRow[]>(`/trades/${portfolioId}/${shareType}/${shareId}`);
     }
 
     /**
      * Возвращает список сделок для комбинированного портфеля
-     * @param ticker тикер
+     * @param shareId идентификатор бумаги
+     * @param shareType тип бумаги
      * @param viewCurrency валюта
      * @param ids идентификаторы портфелей
      */
-    async getTradesCombinedPortfolio(ticker: string, viewCurrency: string, ids: number[]): Promise<TradeRow[]> {
-        return this.http.post<TradeRow[]>(`/trades/combined/${ticker}`, {ids, viewCurrency});
-    }
-
-    /**
-     * Возвращает список сделок для комбинированного портфеля
-     * @param assetId идентификатор актива
-     * @param viewCurrency валюта
-     * @param ids идентификаторы портфелей
-     */
-    async getAssetTradesByIdForCombinedPortfolio(assetId: string, viewCurrency: string, ids: number[]): Promise<TradeRow[]> {
-        return this.http.post<TradeRow[]>(`/trades/combined/asset/${assetId}`, {ids, viewCurrency});
+    async getTradesCombinedPortfolio(shareId: number, shareType: string, viewCurrency: string, ids: number[]): Promise<TradeRow[]> {
+        return this.http.post<TradeRow[]>(`/trades/combined/${shareType}/${shareId}`, {ids, viewCurrency});
     }
 
     /**
      * Загружает и возвращает события по сделкам по тикеру в портфеле
      * @param {string} id идентификатор портфеля
-     * @param {string} ticker тикер
+     * @param shareId идентификатор бумаги
+     * @param shareType тип бумаги
      * @returns {Promise<TradeRow[]>}
      */
-    async getShareTradesEvent(id: number, ticker: string): Promise<EventChartData[]> {
-        return this.http.get<EventChartData[]>(`/trades/${id}/events/${ticker}`);
+    async getShareTradesEvent(id: number, shareId: number, shareType: string): Promise<EventChartData[]> {
+        return this.http.get<EventChartData[]>(`/trades/${id}/events/${shareType}/${shareId}`);
     }
 
     /**
      * Загружает и возвращает события по сделкам по тикеру в портфеле
-     * @param {string} id идентификатор портфеля
-     * @param {string} shareId идентификатор актива
+     * @param portfolioIds идентификаторы портфелей
+     * @param shareId идентификатор бумаги
+     * @param shareType тип бумаги
      * @returns {Promise<TradeRow[]>}
      */
-    async getAssetShareTradesEvent(id: number, shareId: string): Promise<EventChartData[]> {
-        return this.http.get<EventChartData[]>(`/trades/${id}/asset/events/${shareId}`);
+    async getShareTradesEventCombined(portfolioIds: number[], shareId: number, shareType: string): Promise<EventChartData[]> {
+        return this.http.post<EventChartData[]>(`/trades/combined/events/${shareType}/${shareId}`, {ids: portfolioIds});
     }
 
     /**
@@ -107,6 +91,7 @@ export class TradeService {
      * @param sortColumn колонка сортировка
      * @param descending направление сортировки
      * @param filter фильтр
+     * @param portfolioIds идентификаторы портфелей (для составного портфеля)
      * @returns {Promise<TradeRow[]>}
      */
     async loadTrades(id: number, offset: number = 0, limit: number = 50, sortColumn: string, descending: boolean = false,

@@ -386,17 +386,9 @@ export class StockTable extends UI {
     private async openShareTradesDialog(share: Share): Promise<void> {
         let trades = [];
         if (this.portfolio.id) {
-            if (share.shareType === ShareType.ASSET) {
-                trades = await this.tradeService.getAssetShareTrades(this.portfolio.id, share.id);
-            } else {
-                trades = await this.tradeService.getShareTrades(this.portfolio.id, share.ticker);
-            }
+            trades = await this.tradeService.getShareTrades(this.portfolio.id, share.id, share.shareType);
         } else {
-            if (share.shareType === ShareType.ASSET) {
-                trades = await this.tradeService.getAssetTradesByIdForCombinedPortfolio(String(share.id), this.viewCurrency, this.portfolio.portfolioParams.combinedIds);
-            } else {
-                trades = await this.tradeService.getTradesCombinedPortfolio(share.ticker, this.viewCurrency, this.portfolio.portfolioParams.combinedIds);
-            }
+            trades = await this.tradeService.getTradesCombinedPortfolio(share.id, share.shareType, this.viewCurrency, this.portfolio.portfolioParams.combinedIds);
         }
         await new ShareTradesDialog().show({trades, ticker: share.ticker, shareType: ShareType.ASSET});
     }

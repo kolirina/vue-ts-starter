@@ -31,7 +31,7 @@ import {TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
 import {BigMoney} from "../../types/bigMoney";
 import {Operation} from "../../types/operation";
-import {BondPortfolioRow, Pagination, Portfolio, ShareType, TableHeader} from "../../types/types";
+import {BondPortfolioRow, Pagination, Portfolio, Share, ShareType, TableHeader} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {PortfolioUtils} from "../../utils/portfolioUtils";
 import {SortUtils} from "../../utils/sortUtils";
@@ -132,7 +132,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 <span class="menuDots"></span>
                             </v-btn>
                             <v-list dense>
-                                <v-list-tile @click="openShareTradesDialog(props.item.bond.ticker)">
+                                <v-list-tile @click="openShareTradesDialog(props.item.bond)">
                                     <v-list-tile-title>
                                         Все сделки
                                     </v-list-tile-title>
@@ -367,14 +367,14 @@ export class BondTable extends UI {
         this.tableHeadersState = this.tablesService.getHeadersState(this.headers);
     }
 
-    private async openShareTradesDialog(ticker: string): Promise<void> {
+    private async openShareTradesDialog(share: Share): Promise<void> {
         let trades = [];
         if (this.portfolio.id) {
-            trades = await this.tradeService.getShareTrades(this.portfolio.id, ticker);
+            trades = await this.tradeService.getShareTrades(this.portfolio.id, share.id, share.shareType);
         } else {
-            trades = await this.tradeService.getTradesCombinedPortfolio(ticker, this.viewCurrency, this.portfolio.portfolioParams.combinedIds);
+            trades = await this.tradeService.getTradesCombinedPortfolio(share.id, share.shareType, this.viewCurrency, this.portfolio.portfolioParams.combinedIds);
         }
-        await new ShareTradesDialog().show({trades, ticker, shareType: ShareType.BOND});
+        await new ShareTradesDialog().show({trades, ticker: share.ticker, shareType: ShareType.BOND});
     }
 
     private async openTradeDialog(bondRow: BondPortfolioRow, operation: Operation): Promise<void> {

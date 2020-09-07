@@ -30,6 +30,7 @@ import {Portfolio, Share, Status} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {DateUtils} from "../../utils/dateUtils";
 import {FileUtils} from "../../utils/fileUtils";
+import {PortfolioUtils} from "../../utils/portfolioUtils";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 import {ImportInstructions} from "./importInstructions";
@@ -90,11 +91,30 @@ const MainStore = namespace(StoreType.MAIN);
                                         <div :class="['provider__image', selectedProvider.code.toLowerCase()]"></div>
                                         <div class="provider__name">
                                             {{ selectedProvider.description }}
-                                            <div v-if="portfolio.overview.totalTradesCount">Дата последней сделки: {{ portfolio.overview.lastTradeDate | date }}</div>
+                                            <div v-if="selectedPortfolio && selectedPortfolio.overview.totalTradesCount">
+                                                Дата последней сделки: {{ selectedPortfolio.overview.lastTradeDate | date }}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <broker-switcher @selectProvider="onSelectProvider" :class="{'margR12': importHistory.length}"></broker-switcher>
+                                <broker-switcher @selectProvider="onSelectProvider" class="margR12"></broker-switcher>
+                                <v-menu content-class="dialog-type-menu" :class="{'margR12': showImportHistory}"
+                                        nudge-bottom="20" bottom right max-height="480">
+                                    <span slot="activator">
+                                        <v-btn>
+                                            <v-icon left>icon-edit-portfolio</v-icon>
+                                            {{ selectedPortfolio ? portfolioParams.name : 'Выберите портфель' }}
+                                        </v-btn>
+                                    </span>
+                                    <v-list dense>
+                                        <v-flex>
+                                            <div class="menu-text" v-for="portfolioParams in availablePortfolios" :key="portfolioParams.id"
+                                                 @click="changePortfolio(portfolioParams.id)">
+                                                {{ portfolioParams.name }}
+                                            </div>
+                                        </v-flex>
+                                    </v-list>
+                                </v-menu>
                                 <v-btn v-if="showImportHistory" @click="goToImportHistory" color="#EBEFF7">
                                     <v-icon left>icon-import-history</v-icon>
                                     История импорта
@@ -174,9 +194,9 @@ const MainStore = namespace(StoreType.MAIN);
                                             </div>
                                         </div>
 
-                                        <v-divider class="margT32 margB24"></v-divider>
+                                        <v-divider v-if="portfolioParams" class="margT32 margB24"></v-divider>
 
-                                        <expanded-panel :value="showInstruction" class="promo-codes__statistics">
+                                        <expanded-panel v-if="portfolioParams" :value="showInstruction" class="promo-codes__statistics">
                                             <template #header>Как выгрузить отчет брокера?</template>
                                             <import-instructions :provider="selectedProvider" @selectProvider="onSelectProvider"
                                                                  @changePortfolioParams="changePortfolioParams" :portfolio-params="portfolioParams"
@@ -193,7 +213,8 @@ const MainStore = namespace(StoreType.MAIN);
                                                     В отчете брокера не указаны остатки денежных средств на данный момент.
                                                     Чтобы исключить несоответствие портфеля, пожалуйста укажите текущие остатки денежных средств в полях ввода
                                                 </tooltip>
-                                                <currency-balances ref="currencyBalances" :portfolio-id="portfolio.id" class="currency-balances"></currency-balances>
+                                                <currency-balances v-if="selectedPortfolio" ref="currencyBalances" :portfolio-id="selectedPortfolio.id"
+                                                                   class="currency-balances"></currency-balances>
 
                                                 <v-divider class="margB24"></v-divider>
                                             </template>
@@ -283,6 +304,9 @@ export class ImportPage extends UI {
     private portfolio: Portfolio;
     @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
     private reloadPortfolio: () => Promise<void>;
+    /** Комбинированный портфель */
+    @MainStore.Getter
+    private combinedPortfolioParams: PortfolioParams;
     @Inject
     private importService: ImportService;
     @Inject
@@ -291,6 +315,8 @@ export class ImportPage extends UI {
     private portfolioService: PortfolioService;
     @Inject
     private eventService: EventService;
+    /** Текущий портфель */
+    private selectedPortfolio: Portfolio = null;
     /** Все провайдеры импорта */
     private importProviderFeaturesByProvider: ImportProviderFeaturesByProvider = null;
     /** Настройки импорта для выбранного провайдера */
@@ -338,10 +364,11 @@ export class ImportPage extends UI {
     async created(): Promise<void> {
         try {
             this.importProviderFeaturesByProvider = await this.importService.getImportProviderFeatures();
-            await this.loadImportHistory();
-            this.portfolioParams = {id: this.portfolio.id, ...this.portfolio.portfolioParams};
-            this.selectUserProvider();
-            this.showInstruction = [this.portfolioParams.brokerId ? 0 : 1];
+            // если выбран обычный портфель, загружаем данные по нему, иначе пользователь должен сам выбрать портфель
+            if (this.portfolio.id) {
+                await this.changePortfolio(this.portfolio.id);
+                this.showInstruction = [this.portfolioParams.brokerId ? 0 : 1];
+            }
         } finally {
             this.initialized = true;
         }
@@ -352,14 +379,26 @@ export class ImportPage extends UI {
         UI.off(EventType.TRADE_CREATED);
     }
 
+    @Watch("portfolio")
+    @ShowProgress
+    private async onPortfolioChange(): Promise<void> {
+        if (this.importInProgress) {
+            return;
+        }
+        this.portfolioParams = {...this.clientInfo.user.portfolios.find(portfolio => portfolio.id === this.clientInfo.user.currentPortfolioId)};
+        this.selectUserProvider();
+        await this.loadImportHistory();
+    }
+
     private async revertImport(userImportId: number): Promise<void> {
         const result = await new ConfirmDialog().show("Вы собираетесь откатить импорт, это приведет к удалению информации о нем из портфеля");
         if (result === BtnReturn.YES) {
             await this.revertImportConfirmed(userImportId);
-            // todo проверка
-            if (this.portfolio.id === this.portfolio.id) {
+            if (this.selectedPortfolio.id === this.clientInfo.user.currentPortfolioId) {
                 await this.reloadPortfolio();
             }
+            this.overviewService.resetCacheForId(this.selectedPortfolio.id);
+            this.resetCombinedOverviewCache(this.selectedPortfolio.id);
             this.$snotify.info("Результаты импорта были успешно отменены");
         }
     }
@@ -371,7 +410,7 @@ export class ImportPage extends UI {
 
     @ShowProgress
     private async revertImportConfirmed(userImportId: number): Promise<void> {
-        await this.importService.revertImport(userImportId, this.portfolio.id);
+        await this.importService.revertImport(userImportId, this.portfolioParams.id);
         await this.loadImportHistory();
     }
 
@@ -421,7 +460,7 @@ export class ImportPage extends UI {
         }
         // если начисления импортируем из отчета, дополнительно проверяем что в Событиях ничего нового не появилось
         if (!this.importProviderFeatures.autoEvents || !this.autoEvents) {
-            this.hasNewEventsAfterImport = (await this.eventService.getEvents(this.portfolio.id)).events.length > 0;
+            this.hasNewEventsAfterImport = (await this.eventService.getEvents(this.portfolioParams.id)).events.length > 0;
         }
         this.currentStep = ImportStep._3;
     }
@@ -430,18 +469,8 @@ export class ImportPage extends UI {
         return `${shareAlias.alias}${shareAlias.currency ? ", " + CurrencyUnit.valueByCode(shareAlias.currency).symbol : ""}`;
     }
 
-    @Watch("portfolio")
-    @ShowProgress
-    private async onPortfolioChange(): Promise<void> {
-        if (this.importInProgress) {
-            return;
-        }
-        this.selectUserProvider();
-        await this.loadImportHistory();
-    }
-
     private selectUserProvider(): void {
-        const userProvider = DealsImportProvider.values().find(provider => provider.id === this.portfolio.portfolioParams.brokerId);
+        const userProvider = DealsImportProvider.values().find(provider => provider.id === this.portfolioParams.brokerId);
         if (userProvider) {
             this.onSelectProvider(userProvider);
         } else {
@@ -489,9 +518,10 @@ export class ImportPage extends UI {
      */
     @DisableConcurrentExecution
     private async uploadFile(): Promise<void> {
+        this.validate();
         if (this.files && this.files.length && this.selectedProvider) {
             this.importInProgress = true;
-            if (this.portfolio.portfolioParams.brokerId && this.portfolio.portfolioParams.brokerId !== this.selectedProvider.id) {
+            if (this.portfolioParams.brokerId && this.portfolioParams.brokerId !== this.selectedProvider.id) {
                 const result = await new ConfirmDialog().show(`Внимание! Вы загружаете отчет брокера ${this.selectedProvider.description} в портфель,
                     в который ранее были загружены отчеты брокера ${this.getNameCurrentBroker}.
                     При продолжении импорта, могут возникнуть дубли существующих в вашем портфеле сделок.
@@ -500,7 +530,7 @@ export class ImportPage extends UI {
                     return;
                 }
             }
-            if (this.isFinam && this.portfolioParams.fixFee !== this.portfolio.portfolioParams.fixFee) {
+            if (this.isFinam && this.portfolioParams.fixFee !== this.portfolioParams.fixFee) {
                 await this.portfolioService.updatePortfolio(this.portfolioParams);
             }
             this.importResult = await this.importReport();
@@ -508,8 +538,14 @@ export class ImportPage extends UI {
         }
     }
 
+    private validate(): void {
+        if (!this.selectedPortfolio) {
+            throw new Error("Выберите портфель для импорта.");
+        }
+    }
+
     private get getNameCurrentBroker(): string {
-        const provider = this.providers.values().find(item => item.id === this.portfolio.portfolioParams.brokerId);
+        const provider = this.providers.values().find(item => item.id === this.portfolioParams.brokerId);
         return provider ? provider.description : "";
     }
 
@@ -518,7 +554,7 @@ export class ImportPage extends UI {
      */
     @ShowProgress
     private async importReport(): Promise<ImportResponse> {
-        const results = await this.importService.importReport(this.selectedProvider.code, this.portfolio.id, this.files,
+        const results = await this.importService.importReport(this.selectedProvider.code, this.portfolioParams.id, this.files,
             {...this.importProviderFeatures, autoEvents: this.showImportSettings ? this.autoEvents : this.importProviderFeatures.autoEvents});
         if (results.length > 1) {
             const hasErrorStatus = results.some(result => result.status === Status.ERROR);
@@ -554,10 +590,11 @@ export class ImportPage extends UI {
             this.previousImportValidatedTradesCount = this.importResult.validatedTradesCount;
         }
         if (this.importResult.validatedTradesCount) {
-            // todo проверка
-            if (this.portfolio.id === this.portfolio.id) {
+            if (this.selectedPortfolio.id === this.clientInfo.user.currentPortfolioId) {
                 await this.reloadPortfolio();
             }
+            this.overviewService.resetCacheForId(this.selectedPortfolio.id);
+            this.resetCombinedOverviewCache(this.selectedPortfolio.id);
         }
         // если это повторная загрузка после сохранения алиасов, поторно в этот блок не заходи и сразу идем на третий шаг
         if (!retryUpload && this.importResult.errors && this.importResult.errors.length) {
@@ -619,6 +656,32 @@ export class ImportPage extends UI {
         this.previousImportValidatedTradesCount = 0;
         this.shareAliases = [];
         this.autoEvents = true;
+    }
+
+    /**
+     * Устанавливает информацию о выбранном портфеле
+     * @param portfolioParams
+     */
+    private changePortfolioParams(portfolioParams: PortfolioParams): void {
+        this.portfolioParams = {...portfolioParams};
+    }
+
+    /**
+     * Устанавливает информацию о выбранном портфеле
+     * @param portfolioId идентификатор портфеля
+     */
+    @ShowProgress
+    private async changePortfolio(portfolioId: number): Promise<void> {
+        this.selectedPortfolio = await this.overviewService.getById(portfolioId);
+        this.portfolioParams = {...this.selectedPortfolio.portfolioParams};
+        await this.loadImportHistory();
+        if (!this.selectedProvider) {
+            this.selectUserProvider();
+        }
+    }
+
+    private resetCombinedOverviewCache(portfolioId: number): void {
+        PortfolioUtils.resetCombinedOverviewCache(this.combinedPortfolioParams, portfolioId, this.overviewService);
     }
 
     private get providerAllowedExtensions(): string {
@@ -710,8 +773,11 @@ export class ImportPage extends UI {
         return DateUtils.parseDate(this.importResult?.lastTradeDate).get("year") < dayjs().get("year");
     }
 
-    private changePortfolioParams(portfolioParams: PortfolioParams): void {
-        this.portfolioParams = portfolioParams;
+    /**
+     * Возвращает список портфелей доступных для переключения
+     */
+    private get availablePortfolios(): PortfolioParams[] {
+        return this.clientInfo.user.portfolios.filter(portfolio => !portfolio.combinedFlag);
     }
 }
 
