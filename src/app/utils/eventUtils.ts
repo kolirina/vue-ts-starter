@@ -32,7 +32,7 @@ export class EventUtils {
         return event.clipboardData
             ? event.clipboardData.getData("text/plain")
             : (window as any).clipboardData.getData("Text");
-    };
+    }
 
     /**
      * Добавить обработчик событий
