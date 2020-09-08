@@ -9,7 +9,6 @@ import {AnalyticsPage} from "../pages/analytics/analyticsPage";
 import {AssetInfoPage} from "../pages/assetInfoPage";
 import {BalancesPage} from "../pages/balancesPage";
 import {BondInfoPage} from "../pages/bondInfoPage";
-import {CombinedPortfolioPage} from "../pages/combinedPortfolioPage";
 import {DividendsPage} from "../pages/dividendsPage";
 import {EventsPage} from "../pages/eventsPage";
 import {HelpPage} from "../pages/helpPage";
@@ -122,7 +121,7 @@ export class RouterConfiguration {
             },
             {
                 name: "portfolio",
-                path: "/portfolio",
+                path: "/portfolio/:combined(combined)?",
                 component: PortfolioPage,
                 meta: {
                     tariffAllowed: true,
@@ -178,12 +177,7 @@ export class RouterConfiguration {
             {
                 name: "combined-portfolio",
                 path: "/combined-portfolio",
-                component: CombinedPortfolioPage,
-                meta: {
-                    tariffAllowed: true,
-                    title: "Составной портфель",
-                    tourName: "combined_portfolio"
-                }
+                redirect: "/portfolio/combined"
             },
             {
                 path: "/quotes",

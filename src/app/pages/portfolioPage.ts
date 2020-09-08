@@ -2,11 +2,15 @@ import dayjs from "dayjs";
 import {Inject} from "typescript-ioc";
 import {namespace} from "vuex-class/lib/bindings";
 import {Component, UI, Watch} from "../app/ui";
+import {CompositePortfolioManagementDialog} from "../components/dialogs/compositePortfolioManagementDialog";
+import {DisableConcurrentExecution} from "../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {Storage} from "../platform/services/storage";
+import {ClientInfo} from "../services/clientService";
 import {ExportService, ExportType} from "../services/exportService";
 import {MarketHistoryService} from "../services/marketHistoryService";
 import {OverviewService} from "../services/overviewService";
+import {PortfolioParams} from "../services/portfolioService";
 import {HighStockEventsGroup, LineChartItem, PortfolioLineChartData} from "../types/charts/types";
 import {EventType} from "../types/eventType";
 import {StoreKeys} from "../types/storeKeys";
@@ -42,6 +46,33 @@ const MainStore = namespace(StoreType.MAIN);
                                      @reloadLineChart="loadPortfolioLineChart"
                                      @exportTable="onExportTable"
                                      exportable>
+                    <template v-if="showCombinedInfoBlock" #afterDashboard>
+                        <v-layout align-center>
+                            <div :class="['control-portfolios-title', !isEmptyBlockShowed ? '' : 'pl-3']">
+                                Управление составным портфелем
+                            </div>
+                            <v-spacer></v-spacer>
+                            <div v-if="!isEmptyBlockShowed" class="control-portfolios__btns">
+                                <v-btn class="btn" color="primary" @click="exportPortfolio">
+                                    Экспорт в xlsx
+                                </v-btn>
+                                <v-btn class="btn" color="primary" @click.stop="showDialogCompositePortfolio">
+                                    Сформировать
+                                </v-btn>
+                            </div>
+                        </v-layout>
+                        <v-layout v-if="isEmptyBlockShowed" column class="empty-station px-4 py-4 mt-3">
+                            <div class="empty-station__description" data-v-step="0">
+                                Здесь вы можете объединить для просмотра несколько портфелей в один, и проанализировать
+                                состав и доли каждой акции, если, например, она входит в состав нескольких портфелей.
+                            </div>
+                            <div class="mt-4">
+                                <v-btn class="btn" color="primary" @click.stop="showDialogCompositePortfolio">
+                                    Сформировать
+                                </v-btn>
+                            </div>
+                        </v-layout>
+                    </template>
                 </base-portfolio-page>
             </template>
             <template v-else>
@@ -60,11 +91,18 @@ const MainStore = namespace(StoreType.MAIN);
 export class PortfolioPage extends UI {
 
     @MainStore.Getter
+    private clientInfo: ClientInfo;
+    @MainStore.Getter
     private portfolio: Portfolio;
+    /** Комбинированный портфель */
+    @MainStore.Getter
+    private combinedPortfolioParams: PortfolioParams;
     @MainStore.Getter
     private sideBarOpened: boolean;
     @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
     private reloadPortfolio: () => Promise<void>;
+    @MainStore.Mutation(MutationType.UPDATE_COMBINED_PORTFOLIO)
+    private updateCombinedPortfolio: (viewCurrency: string) => void;
     @Inject
     private localStorage: Storage;
     @Inject
@@ -132,6 +170,7 @@ export class PortfolioPage extends UI {
         await this.loadPortfolioData();
     }
 
+    @DisableConcurrentExecution
     private async loadPortfolioData(): Promise<void> {
         this.initialized = false;
         try {
@@ -181,6 +220,34 @@ export class PortfolioPage extends UI {
         }
     }
 
+    private async showDialogCompositePortfolio(): Promise<void> {
+        const result = await new CompositePortfolioManagementDialog().show({
+            portfolios: this.clientInfo.user.portfolios,
+            viewCurrency: this.portfolio.portfolioParams.viewCurrency
+        });
+        if (result) {
+            this.overviewService.resetCacheForCombinedPortfolio({
+                ids: this.combinedPortfolioParams.combinedIds,
+                viewCurrency: this.combinedPortfolioParams.viewCurrency
+            });
+            this.updateCombinedPortfolio(result);
+            const portfolioParams = this.localStorage.get<CombinedPortfolioParams>(StoreKeys.COMBINED_PORTFOLIO_PARAMS_KEY, {});
+            portfolioParams.viewCurrency = result;
+            this.localStorage.set(StoreKeys.COMBINED_PORTFOLIO_PARAMS_KEY, portfolioParams);
+            await this.reloadPortfolio();
+        }
+    }
+
+    /**
+     * Экспортирует данные комбинированного портфеля в xlsx
+     */
+    private async exportPortfolio(): Promise<void> {
+        await this.exportService.exportCombinedReport({
+            ids: this.combinedPortfolioParams.combinedIds,
+            viewCurrency: this.portfolio.portfolioParams.viewCurrency
+        }, ExportType.COMPLEX);
+    }
+
     @ShowProgress
     private async onExportTable(exportType: ExportType): Promise<void> {
         if (this.portfolio.id) {
@@ -195,6 +262,10 @@ export class PortfolioPage extends UI {
 
     private get isEmptyBlockShowed(): boolean {
         return this.portfolio && this.portfolio.overview.totalTradesCount === 0;
+    }
+
+    private get showCombinedInfoBlock(): boolean {
+        return this.$route.params.combined === "combined";
     }
 }
 
