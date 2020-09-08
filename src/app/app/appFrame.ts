@@ -146,7 +146,7 @@ export class AppFrame extends UI {
         {title: "Сделки", action: "trades"},
         {
             title: "Инструменты", subMenu: [
-                {title: "Дивиденды", action: "dividends"},
+                {title: "Начисления", action: "calculations"},
                 {title: "Составной портфель", action: "combined-portfolio"},
                 {title: "События", action: "events"},
                 {title: "Уведомления", action: "notifications"}
