@@ -34,7 +34,12 @@ import {Portfolio} from "../types/types";
                                           :view-currency="portfolio.portfolioParams.viewCurrency"></dividend-dashboard-component>
 
             <expanded-panel :value="$uistate.sumYearDivsTablePanel" :withMenu="allowExport" :name="ExportType.DIVIDENDS_BY_YEAR" :state="$uistate.SUM_YEAR_DIVIDENDS">
-                <template #header>Сумма дивидендов по годам</template>
+                <template #header>
+                    Сумма начислений по годам
+                    <tooltip>
+                        Учитываются сделки по дивидендам и купонам
+                    </tooltip>
+                </template>
                 <template #list>
                     <v-list-tile-title @click="exportTable(ExportType.DIVIDENDS_BY_YEAR)">Экспорт в xlsx</v-list-tile-title>
                 </template>
@@ -42,15 +47,26 @@ import {Portfolio} from "../types/types";
             </expanded-panel>
 
             <expanded-panel :value="$uistate.sumDivsTablePanel" :withMenu="allowExport" :name="ExportType.DIVIDENDS_BY_TICKER" :state="$uistate.SUM_DIVS" class="margT20">
-                <template #header>Дивиденды по тикерам</template>
+                <template #header>
+                    Начисления по тикерам
+                    <tooltip>
+                        Учитываются сделки по дивидендам и купонам
+                    </tooltip>
+                </template>
                 <template #list>
                     <v-list-tile-title @click="exportTable(ExportType.DIVIDENDS_BY_TICKER)">Экспорт в xlsx</v-list-tile-title>
                 </template>
                 <dividends-by-ticker-table :rows="dividendInfo.summaryDividendsByTicker"></dividends-by-ticker-table>
             </expanded-panel>
 
-            <expanded-panel :value="$uistate.yearDivsTablePanel" :withMenu="allowExport" :name="ExportType.DIVIDENDS_BY_YEAR_AND_TICKER" :state="$uistate.YEAR_DIV_LIST" class="margT20">
-                <template #header>Дивиденды по годам</template>
+            <expanded-panel :value="$uistate.yearDivsTablePanel" :withMenu="allowExport" :name="ExportType.DIVIDENDS_BY_YEAR_AND_TICKER" :state="$uistate.YEAR_DIV_LIST"
+                            class="margT20">
+                <template #header>
+                    Начисления по годам
+                    <tooltip>
+                        Учитываются сделки по дивидендам и купонам
+                    </tooltip>
+                </template>
                 <template #list>
                     <v-list-tile-title @click="exportTable(ExportType.DIVIDENDS_BY_YEAR_AND_TICKER)">Экспорт в xlsx</v-list-tile-title>
                 </template>
@@ -58,7 +74,12 @@ import {Portfolio} from "../types/types";
             </expanded-panel>
 
             <expanded-panel :value="$uistate.divTradesTablePanel" :withMenu="allowExport" :name="ExportType.DIVIDENDS" :state="$uistate.DIV_LIST" class="margT20">
-                <template #header>Сделки по дивидендам</template>
+                <template #header>
+                    Сделки по начислениям
+                    <tooltip>
+                        Учитываются сделки по дивидендам и купонам
+                    </tooltip>
+                </template>
                 <template #list>
                     <v-list-tile-title @click="exportTable(ExportType.DIVIDENDS)">Экспорт в xlsx</v-list-tile-title>
                 </template>

@@ -44,13 +44,13 @@ export class DividendsPage extends UI {
     private reloadPortfolio: () => Promise<void>;
     @Inject
     private dividendService: DividendService;
-    /** Информация по дивидендам */
+    /** Информация по начислениям */
     private dividendInfo: DividendAggregateInfo = null;
     /** Признак инициализации */
     private initialized = false;
 
     /**
-     * Загружает данные по дивидендам
+     * Загружает данные по начислениям
      * @inheritDoc
      */
     async created(): Promise<void> {

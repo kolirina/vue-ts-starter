@@ -23,6 +23,7 @@ import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {DividendInfo, DividendService} from "../../services/dividendService";
 import {OverviewService} from "../../services/overviewService";
 import {PortfolioParams} from "../../services/portfolioService";
+import {TradeService} from "../../services/tradeService";
 import {Portfolio, TableHeader} from "../../types/types";
 import {PortfolioUtils} from "../../utils/portfolioUtils";
 import {SortUtils} from "../../utils/sortUtils";
@@ -104,15 +105,17 @@ export class DividendsByYearAndTickerTable extends UI {
     private reloadPortfolio: () => Promise<void>;
     @Inject
     private dividendService: DividendService;
+    @Inject
+    private tradeService: TradeService;
 
     private headers: TableHeader[] = [
         {text: "Тикер", align: "left", value: "ticker", width: "45"},
         {text: "Компания", align: "left", value: "shortName", width: "120"},
         {text: "Год", align: "right", value: "year", width: "30"},
         {text: "Кол-во, шт.", align: "right", value: "quantity", width: "65"},
-        {text: "На одну акцию", align: "right", value: "perOne", width: "65"},
+        {text: "На одну бумагу", align: "right", value: "perOne", width: "65"},
         {text: "Сумма", align: "right", value: "amount", width: "65"},
-        {text: "Доходность, %", align: "right", value: "yield", width: "80", tooltip: "Дивидендная доходность посчитанная по отношению к исторической цене акции на конец года."},
+        {text: "Доходность, %", align: "right", value: "yield", width: "80", tooltip: "Доходность посчитанная по отношению к исторической цене бумаги на конец года."},
     ];
 
     @Prop({default: [], required: true})
@@ -134,7 +137,7 @@ export class DividendsByYearAndTickerTable extends UI {
     @ShowProgress
     @DisableConcurrentExecution
     private async deleteAllTradesAndShowMessage(dividendTrade: DividendInfo): Promise<void> {
-        await this.dividendService.deleteAllTrades({ticker: dividendTrade.ticker, year: dividendTrade.year, portfolioId: this.portfolio.id});
+        await this.tradeService.deleteAllTrades({shareId: dividendTrade.shareId, shareType: dividendTrade.shareType, portfolioId: this.portfolio.id});
         this.resetCombinedOverviewCache(this.portfolio.id);
         await this.reloadPortfolio();
         this.$snotify.info(`Все дивидендные сделки по тикеру ${dividendTrade.ticker} были успешно удалены`);

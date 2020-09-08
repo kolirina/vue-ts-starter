@@ -30,7 +30,6 @@ import {Pagination, Portfolio, TableHeader, TradeRow} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {DateFormat} from "../../utils/dateUtils";
 import {TradeUtils} from "../../utils/tradeUtils";
-import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 import {AddTradeDialog} from "../dialogs/addTradeDialog";
 import {ChoosePortfolioDialog} from "../dialogs/choosePortfolioDialog";
@@ -96,7 +95,7 @@ const MainStore = namespace(StoreType.MAIN);
                         {{ props.item.totalWithoutFee | amount(true) }}&nbsp;<span class="second-value">{{ props.item.totalWithoutFee | currencySymbol }}</span>
                     </td>
                     <td class="px-0" style="text-align: center" @click.stop>
-                        <v-layout align-center justify-center v-if="props.item.parentTradeId">
+                        <v-layout v-if="props.item.parentTradeId" align-center justify-center>
                             <v-tooltip transition="slide-y-transition"
                                        content-class="menu-icons" bottom
                                        class="hint-for-icon-name-section"
