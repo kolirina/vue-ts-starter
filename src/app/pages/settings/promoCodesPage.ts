@@ -31,60 +31,57 @@ const MainStore = namespace(StoreType.MAIN);
                             {{ tab.description }}
                         </v-tab>
                     </v-tabs>
-                    <div v-if="currentTab === promoCodesTab.USER" class="section-content">
+                    <div class="section-content">
                         <div class="promo-codes">
-                            <div class="promo-codes__title">
-                                <img src="./img/promocodes/user.svg" alt="Партнерам">
-                                <span>Учитывайте инвестиции бесплатно!</span>
-                            </div>
-                            <ul>
-                                <li>Поделитесь ссылкой с друзьями</li>
-                                <li>Получите месяц в подарок за каждую оплату приглашенного Вами пользователя</li>
-                            </ul>
+                            <template v-if="isPartnerTab">
+                                <div class="promo-codes__title">
+                                    <img src="./img/promocodes/partner.svg" alt="Партнерам">
+                                    <span>Зарабатывайте с Intelinvest!</span>
+                                </div>
+                                <ul>
+                                    <li>Рекомендуйте нас в социальных сетях, блоге или обучающем курсе</li>
+                                    <li>Получайте 30% от оплат рефералов</li>
+                                    <li>Выводите вознаграждение от 5000 до 100 000 рублей</li>
+                                </ul>
+                            </template>
+                            <template v-else>
+                                <div class="promo-codes__title">
+                                    <img src="./img/promocodes/user.svg" alt="Пользователям">
+                                    <span>Учитывайте инвестиции бесплатно!</span>
+                                </div>
+                                <ul>
+                                    <li>Поделитесь ссылкой с друзьями</li>
+                                    <li>Получите месяц в подарок за каждую оплату приглашенного Вами пользователя</li>
+                                </ul>
+                            </template>
                             <v-radio-group v-model="currentShareType">
                                 <v-radio v-for="type in shareTypes" :key="type.code" :label="type.description"
                                          :value="type" @change="onShareTypeChange"></v-radio>
                             </v-radio-group>
-                            <div class="promo-code__wrapper">
-                                <div class="promo-code selectable">{{ clientInfo.user.promoCode.val }}</div>
-                                <div class="btns">
-                                    <v-btn v-if="currentShareType === shareType.PROMO_CODE" v-clipboard="() => clientInfo.user.promoCode.val" @click="copyPromoCode">Копировать</v-btn>
-                                    <v-btn v-else v-clipboard="() => refLink" @click="copyRefLink">Копировать</v-btn>
+                            <div class="share-box">
+                                <div class="promo-code__wrapper">
+                                    <v-text-field :value="shareValue" placeholder="url для доступа к портфелю" readonly hide-details class="public-link"></v-text-field>
+                                    <v-btn v-clipboard="() => shareValue" @click="copyShareValue">Копировать</v-btn>
+                                </div>
+                                <div class="share-box__links">
+                                    <a class="intel-icon icon-circle-vk"></a>
+                                    <a class="intel-icon icon-circle-fb"></a>
+                                    <a class="intel-icon icon-circle-telegram"></a>
+                                    <a class="intel-icon icon-circle-mail"></a>
+                                    <a class="intel-icon icon-circle-more"></a>
                                 </div>
                             </div>
-                            <div class="rewards">
-                                <template v-if="clientInfo.user.referralAwardType === 'SUBSCRIPTION'">
-                                    <div class="promo-codes__subtitle">Ваше вознаграждение</div>
-                                    <div>
-                                        Вы получаете месяц бесплатной подписки после оплаты каждого приглашенного пользователя.
-                                    </div>
-                                    <div class="mt-3">
-                                        <div class="promo-codes__subtitle">Предлагаем стать Партнером</div>
-                                        <div class="body-2">
-                                            У вас свой блог или канал?<br/>
-                                            Станьте нашим партнером и получайте до 150 000 руб. в месяц
-                                        </div>
-                                        <div class="body-1">
-                                            Платим 30% с каждой оплаты приглашенного пользователя в течение 2 лет.<br/>
-                                            Выделяем персонального менеджера.
-                                        </div>
-                                    </div>
-                                    <a @click.stop="openPartnerProgramJoiningDialog">Стать партнером</a>
-                                </template>
-                                <div v-if="clientInfo.user.referralAwardType === 'PAYMENT'" class="mt-3">
-                                    <div>
-                                        <div class="promo-codes__subtitle mb-2">Связаться по вопросам сотрудничества</div>
-                                        <div>Ваш менеджер: Евгений</div>
-                                        Telegram: <a href="https://telegram.me/intelinvest_partner" title="Задайте вопрос в Telegram"
-                                                     target="_blank" class="decorationNone">@intelinvest_partner</a><br/>
-                                        ВК: <a href="https://vk.com/intelinvest_partner" target="_blank" class="decorationNone">https://vk.com/intelinvest_partner</a><br/>
-                                        Email: <a href="mailto:partner@intelinvest.ru" target="_blank" class="decorationNone">partner@intelinvest.ru</a><br/>
-                                    </div>
-                                    <v-btn v-if="showRequestWithdrawal" class="mt-3" primary @click.stop="requestWithdrawal">Запрос на вывод вознаграждения</v-btn>
+                            <div v-if="isPartnerTab" class="achievements">
+                                <div class="promo-codes__title"><span>Достижения</span></div>
+                                <div class="achievements__items">
+                                    <div class="achievements__item intel-icon icon-achievement-1"></div>
+                                    <div class="achievements__item intel-icon icon-achievement-5"></div>
+                                    <div class="achievements__item intel-icon icon-achievement-lock"></div>
+                                    <div class="achievements__item intel-icon icon-achievement-lock"></div>
+                                    <div class="achievements__item intel-icon icon-achievement-lock"></div>
                                 </div>
                             </div>
                         </div>
-
                         <expanded-panel v-if="promoCodeStatistics" :value="$uistate.referralStatisticsPanel" :state="$uistate.REFERRAL_STATISTICS_PANEL"
                                         class="promo-codes__statistics">
                             <template #header>Статистика по реферальной программе</template>
@@ -97,7 +94,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     <span>Из них хоть раз оплативших:</span>
                                     <span>{{ promoCodeStatistics.hasPaymentsReferralCount }}</span>
                                 </div>
-                                <template v-if="clientInfo.user.referralAwardType === 'PAYMENT'">
+                                <template v-if="isPartnerTab">
                                     <div>
                                         <span>Всего заработано:</span>
                                         <span>
@@ -122,87 +119,27 @@ const MainStore = namespace(StoreType.MAIN);
                                 </template>
                             </div>
                         </expanded-panel>
-                    </div>
-                    <div v-if="currentTab === promoCodesTab.PARTNER" class="section-content">
-                        <div class="promo-codes">
-                            <div class="promo-codes__subtitle">Промокод</div>
-                            <div class="promo-code__wrapper">
-                                <div class="promo-code selectable">{{ clientInfo.user.promoCode.val }}</div>
-                                <div class="btns">
-                                    <v-btn v-clipboard="() => clientInfo.user.promoCode.val" @click="copyPromoCode">Копировать промокод</v-btn>
-                                    <v-btn v-clipboard="() => refLink" @click="copyRefLink">Копировать ссылку</v-btn>
-                                </div>
-                            </div>
-                            <div class="rewards">
-                                <template v-if="clientInfo.user.referralAwardType === 'SUBSCRIPTION'">
-                                    <div class="promo-codes__subtitle">Ваше вознаграждение</div>
-                                    <div>
-                                        Вы получаете месяц бесплатной подписки после оплаты каждого приглашенного пользователя.
-                                    </div>
-                                    <div class="mt-3">
-                                        <div class="promo-codes__subtitle">Предлагаем стать Партнером</div>
-                                        <div class="body-2">
-                                            У вас свой блог или канал?<br/>
-                                            Станьте нашим партнером и получайте до 150 000 руб. в месяц
-                                        </div>
-                                        <div class="body-1">
-                                            Платим 30% с каждой оплаты приглашенного пользователя в течение 2 лет.<br/>
-                                            Выделяем персонального менеджера.
-                                        </div>
-                                    </div>
-                                    <a @click.stop="openPartnerProgramJoiningDialog">Стать партнером</a>
-                                </template>
-                                <div v-if="clientInfo.user.referralAwardType === 'PAYMENT'" class="mt-3">
-                                    <div>
-                                        <div class="promo-codes__subtitle mb-2">Связаться по вопросам сотрудничества</div>
-                                        <div>Ваш менеджер: Евгений</div>
-                                        Telegram: <a href="https://telegram.me/intelinvest_partner" title="Задайте вопрос в Telegram"
-                                                     target="_blank" class="decorationNone">@intelinvest_partner</a><br/>
-                                        ВК: <a href="https://vk.com/intelinvest_partner" target="_blank" class="decorationNone">https://vk.com/intelinvest_partner</a><br/>
-                                        Email: <a href="mailto:partner@intelinvest.ru" target="_blank" class="decorationNone">partner@intelinvest.ru</a><br/>
-                                    </div>
-                                    <v-btn v-if="showRequestWithdrawal" class="mt-3" primary @click.stop="requestWithdrawal">Запрос на вывод вознаграждения</v-btn>
-                                </div>
-                            </div>
-                        </div>
-
-                        <expanded-panel v-if="promoCodeStatistics" :value="$uistate.referralStatisticsPanel" :state="$uistate.REFERRAL_STATISTICS_PANEL"
-                                        class="promo-codes__statistics">
-                            <template #header>Статистика по реферальной программе</template>
-                            <div class="statistics">
+                        <expanded-panel v-if="isPartnerTab" class="rewards promo-codes__statistics">
+                            <template #header>Связаться по вопросам сотрудничества</template>
                                 <div>
-                                    <span>Привлеченных пользователей:</span>
-                                    <span>{{ promoCodeStatistics.referralCount }}</span>
+                                    <span>Ваш менеджер:</span>
+                                    <span>Евгений</span>
                                 </div>
                                 <div>
-                                    <span>Из них хоть раз оплативших:</span>
-                                    <span>{{ promoCodeStatistics.hasPaymentsReferralCount }}</span>
+                                    <span>Telegram:</span>
+                                    <span><a href="https://telegram.me/intelinvest_partner" title="Задайте вопрос в Telegram"
+                                             target="_blank" class="decorationNone">@intelinvest_partner</a></span>
                                 </div>
-                                <template v-if="clientInfo.user.referralAwardType === 'PAYMENT'">
-                                    <div>
-                                        <span>Всего заработано:</span>
-                                        <span>
-                                            {{ promoCodeStatistics.referrerPaymentsTotal | number }}
-                                            <span class="rewards-currency rub"></span>
-                                        </span>
-                                    </div>
-                                    <div>
-                                        <span>Всего выплачено:</span>
-                                        <span>
-                                            {{ promoCodeStatistics.referrerPaymentsTotalPaid | number }}
-                                            <span class="rewards-currency rub"></span>
-                                        </span>
-                                    </div>
-                                    <div class="statistics__label">
-                                        <span>Остаток для выплаты:</span>
-                                        <span>
-                                            {{ promoCodeStatistics.referrerPaymentsTotalUnpaid | number }}
-                                            <span class="rewards-currency rub"></span>
-                                        </span>
-                                    </div>
-                                </template>
-                            </div>
+                                <div>
+                                    <span>VK:</span>
+                                    <span><a href="https://vk.com/intelinvest_partner" target="_blank" class="decorationNone">https://vk.com/intelinvest_partner</a></span>
+                                </div>
+                                <div>
+                                    <span>Email:</span>
+                                    <span><a href="mailto:partner@intelinvest.ru" target="_blank" class="decorationNone">partner@intelinvest.ru</a></span>
+                                </div>
                         </expanded-panel>
+                        <v-btn v-if="showRequestWithdrawal" class="mt-3" primary @click.stop="requestWithdrawal">Запрос на вывод вознаграждения</v-btn>
                     </div>
                 </v-flex>
             </v-layout>
@@ -278,12 +215,8 @@ export class PromoCodesPage extends UI {
         }
     }
 
-    private copyPromoCode(): void {
-        this.$snotify.info("Промокод скопирован");
-    }
-
-    private copyRefLink(): void {
-        this.$snotify.info("Реферальная ссылка скопирована");
+    private copyShareValue(): void {
+        this.$snotify.info(this.currentShareType === ShareType.PROMO_CODE ? "Промокод скопирован" : "Реферальная ссылка скопирована");
     }
 
     private onShareTypeChange(type: ShareType): void {
@@ -295,6 +228,16 @@ export class PromoCodesPage extends UI {
      */
     private get refLink(): string {
         return `${window.location.protocol}//${window.location.host}/?registration=true&ref=${this.clientInfo.user.id}`;
+    }
+
+    /** Значение поля "Поделиться" */
+    private get shareValue(): string {
+        return this.currentShareType === ShareType.PROMO_CODE ? this.clientInfo.user.promoCode.val : this.refLink;
+    }
+
+    /** Признак того, что выбратнный таб "Партнер" */
+    private get isPartnerTab(): boolean {
+        return this.currentTab === PromoCodesTab.PARTNER;
     }
 
     /**
