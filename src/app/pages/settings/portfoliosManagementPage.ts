@@ -50,8 +50,8 @@ const MainStore = namespace(StoreType.MAIN);
                             </v-btn>
                         </v-card-title>
                     </v-card>
-                    <portfolios-tile v-if="displayMode === DisplayMode.TILE" :portfolios="clientInfo.user.portfolios"></portfolios-tile>
-                    <portfolios-table v-if="displayMode === DisplayMode.LIST" :portfolios="clientInfo.user.portfolios"></portfolios-table>
+                    <portfolios-tile v-if="displayMode === DisplayMode.TILE" :portfolios="availablePortfolios"></portfolios-tile>
+                    <portfolios-table v-if="displayMode === DisplayMode.LIST" :portfolios="availablePortfolios"></portfolios-table>
                 </v-flex>
             </v-layout>
         </v-container>
@@ -105,11 +105,18 @@ export class PortfoliosManagementPage extends UI {
     }
 
     private async createNewPortfolio(): Promise<void> {
-        if (this.clientInfo.user.tariff.maxPortfoliosCount < this.clientInfo.user.portfolios.length + 1) {
+        if (this.clientInfo.user.tariff.maxPortfoliosCount < this.availablePortfolios.length + 1) {
             await new ChangeTariffDialog().show(this.$router);
             return;
         }
         await this.$router.push({name: "portfolio-management-edit", params: {id: "new"}});
+    }
+
+    /**
+     * Возвращает список портфелей доступных для переключения
+     */
+    private get availablePortfolios(): PortfolioParams[] {
+        return this.clientInfo.user.portfolios.filter(portfolio => !portfolio.combinedFlag);
     }
 }
 

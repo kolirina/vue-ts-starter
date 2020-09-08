@@ -20,7 +20,7 @@ import {CombinedPortfoliosTable} from "../combinedPortfoliosTable";
                 </div>
                 <div class="scroll-dialog__body">
                     <div>
-                        <combined-portfolios-table :portfolios="data.portfolios" @change="onSetCombined"></combined-portfolios-table>
+                        <combined-portfolios-table :portfolios="availablePortfolios" @change="onSetCombined"></combined-portfolios-table>
                     </div>
                     <div class="choose-currency">
                         <div class="choose-currency__description mb-1">
@@ -63,6 +63,13 @@ export class CompositePortfolioManagementDialog extends CustomDialog<PortfolioMa
     @ShowProgress
     private async onSetCombined(portfolioParams: PortfolioParams): Promise<void> {
         await this.overviewService.setCombinedFlag(portfolioParams.id, portfolioParams.combined);
+    }
+
+    /**
+     * Возвращает список портфелей доступных для переключения
+     */
+    private get availablePortfolios(): PortfolioParams[] {
+        return this.data.portfolios.filter(portfolio => !portfolio.combinedFlag);
     }
 }
 

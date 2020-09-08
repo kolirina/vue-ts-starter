@@ -21,6 +21,7 @@ import {namespace} from "vuex-class";
 import {UI} from "../../app/ui";
 import {Filters} from "../../platform/filters/Filters";
 import {ClientInfo, ClientService} from "../../services/clientService";
+import {PortfolioParams} from "../../services/portfolioService";
 import {TableHeadersState, TABLES_NAME, TablesService} from "../../services/tablesService";
 import {TradeFields, TradeType} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
@@ -30,7 +31,6 @@ import {Pagination, Portfolio, TableHeader, TradeRow} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {DateFormat} from "../../utils/dateUtils";
 import {TradeUtils} from "../../utils/tradeUtils";
-import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 import {AddTradeDialog} from "../dialogs/addTradeDialog";
 import {ChoosePortfolioDialog} from "../dialogs/choosePortfolioDialog";
@@ -316,7 +316,7 @@ export class TradesTable extends UI {
 
     private async copyTrade(trade: TradeRow): Promise<void> {
         const toPortfolioId = await new ChoosePortfolioDialog().show({
-            portfolios: this.clientInfo.user.portfolios, currentPortfolioId: this.portfolio.id,
+            portfolios: this.availablePortfolios, currentPortfolioId: this.portfolio.id,
             titleDialog: "Копирование сделки в", buttonTitle: "Копировать"
         });
         if (!toPortfolioId) {
@@ -327,7 +327,7 @@ export class TradesTable extends UI {
 
     private async moveTrade(trade: TradeRow): Promise<void> {
         const toPortfolioId = await new ChoosePortfolioDialog().show({
-            portfolios: this.clientInfo.user.portfolios, currentPortfolioId: this.portfolio.id,
+            portfolios: this.availablePortfolios, currentPortfolioId: this.portfolio.id,
             titleDialog: "Перемещение сделки в", buttonTitle: "Переместить"
         });
         if (!toPortfolioId) {
@@ -404,5 +404,12 @@ export class TradesTable extends UI {
 
     private get allowActions(): boolean {
         return !this.portfolio.portfolioParams.combinedFlag;
+    }
+
+    /**
+     * Возвращает список портфелей доступных для переключения
+     */
+    private get availablePortfolios(): PortfolioParams[] {
+        return this.clientInfo.user.portfolios.filter(portfolio => !portfolio.combinedFlag);
     }
 }

@@ -8,7 +8,7 @@ import {ClientInfo} from "../../services/clientService";
 import {ExportService, ExportType} from "../../services/exportService";
 import {PortfolioParams, PortfolioService} from "../../services/portfolioService";
 import {EventType} from "../../types/eventType";
-import {CombinedPortfolioParams, Portfolio, PortfolioBackup} from "../../types/types";
+import {Portfolio, PortfolioBackup} from "../../types/types";
 import {ExportUtils} from "../../utils/exportUtils";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
@@ -123,7 +123,7 @@ export class ExportPage extends UI {
 
     @ShowProgress
     async created(): Promise<void> {
-        this.portfolios = this.clientInfo.user.portfolios;
+        this.portfolios = this.availablePortfolios;
         await this.loadPortfolioBackup();
         UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio());
     }
@@ -187,7 +187,17 @@ export class ExportPage extends UI {
         if (this.portfolio.id) {
             await this.exportService.exportReport(this.portfolio.id, ExportType.COMPLEX);
         } else {
-            await this.exportService.exportCombinedReport({ids: this.portfolio.portfolioParams.combinedIds, viewCurrency: this.portfolio.portfolioParams.viewCurrency});
+            await this.exportService.exportCombinedReport({
+                ids: this.portfolio.portfolioParams.combinedIds,
+                viewCurrency: this.portfolio.portfolioParams.viewCurrency
+            }, ExportType.COMPLEX);
         }
+    }
+
+    /**
+     * Возвращает список портфелей доступных для переключения
+     */
+    private get availablePortfolios(): PortfolioParams[] {
+        return this.clientInfo.user.portfolios.filter(portfolio => !portfolio.combinedFlag);
     }
 }

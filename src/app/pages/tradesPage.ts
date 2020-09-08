@@ -19,7 +19,7 @@ import {TradesFilterService} from "../services/tradesFilterService";
 import {AssetType} from "../types/assetType";
 import {EventType} from "../types/eventType";
 import {StoreKeys} from "../types/storeKeys";
-import {CombinedPortfolioParams, Pagination, Portfolio, TableHeader, TradeRow} from "../types/types";
+import {Pagination, Portfolio, TableHeader, TradeRow} from "../types/types";
 import {ExportUtils} from "../utils/exportUtils";
 import {PortfolioUtils} from "../utils/portfolioUtils";
 import {MutationType} from "../vuex/mutationType";
@@ -198,7 +198,11 @@ export class TradesPage extends UI {
 
     @ShowProgress
     private async exportTable(exportType: ExportType): Promise<void> {
-        await this.exportService.exportReport(this.portfolio.id, exportType);
+        if (this.portfolio.id) {
+            await this.exportService.exportReport(this.portfolio.id, exportType);
+        } else {
+            await this.exportService.exportCombinedReport({ids: this.combinedPortfolioParams.combinedIds, viewCurrency: this.combinedPortfolioParams.viewCurrency}, exportType);
+        }
     }
 
     /**
@@ -206,7 +210,11 @@ export class TradesPage extends UI {
      */
     @ShowProgress
     private async downloadFile(): Promise<void> {
-        await this.exportService.exportTrades(this.portfolio.id);
+        if (this.portfolio.id) {
+            await this.exportService.exportTrades(this.portfolio.id);
+        } else {
+            await this.exportService.exportTradesCombined(this.combinedPortfolioParams.viewCurrency, this.combinedPortfolioParams.combinedIds);
+        }
     }
 
     private async onFilterChange(): Promise<void> {

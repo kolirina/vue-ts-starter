@@ -185,6 +185,11 @@ export class PortfolioPage extends UI {
     private async onExportTable(exportType: ExportType): Promise<void> {
         if (this.portfolio.id) {
             await this.exportService.exportReport(this.portfolio.id, exportType);
+        } else {
+            await this.exportService.exportCombinedReport({
+                ids: this.portfolio.portfolioParams.combinedIds,
+                viewCurrency: this.portfolio.portfolioParams.viewCurrency
+            }, exportType);
         }
     }
 

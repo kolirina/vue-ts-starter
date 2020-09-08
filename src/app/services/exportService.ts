@@ -46,9 +46,10 @@ export class ExportService {
     /**
      * Скачивает файл с отчетом в формате xlsx
      * @param request запрос экспорта комбинированного портфеля
+     * @param exportType тип отчета для экспорта
      */
-    async exportCombinedReport(request: CombinedInfoRequest): Promise<any> {
-        const response = await this.http.post<Response>("/export/combined", request);
+    async exportCombinedReport(request: CombinedInfoRequest, exportType: ExportType): Promise<any> {
+        const response = await this.http.post<Response>(`/export/combined/${exportType}`, request);
         const fileName = this.getCombinedFileName(response.headers, request.ids);
         await this.download(response, fileName);
     }
@@ -116,5 +117,4 @@ export enum ExportType {
     DIVIDENDS_BY_YEAR_AND_TICKER = "DIVIDENDS_BY_YEAR_AND_TICKER",
     DIVIDENDS_BY_YEAR = "DIVIDENDS_BY_YEAR",
     COMPLEX = "COMPLEX",
-    BOND_CALCULATIONS = "BOND_CALCULATIONS"
 }

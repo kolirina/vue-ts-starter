@@ -7,11 +7,13 @@ import {Resolver} from "../../../typings/vue";
 import {Component, UI} from "../app/ui";
 import {BlockByTariffDialog} from "../components/dialogs/blockByTariffDialog";
 import {CompositePortfolioManagementDialog} from "../components/dialogs/compositePortfolioManagementDialog";
+import {ShowProgress} from "../platform/decorators/showProgress";
 import {Storage} from "../platform/services/storage";
 import {ClientInfo, ClientService} from "../services/clientService";
-import {ExportService} from "../services/exportService";
+import {ExportService, ExportType} from "../services/exportService";
 import {MarketHistoryService} from "../services/marketHistoryService";
 import {OverviewService} from "../services/overviewService";
+import {PortfolioParams} from "../services/portfolioService";
 import {HighStockEventsGroup, LineChartItem, PortfolioLineChartData} from "../types/charts/types";
 import {Currency} from "../types/currency";
 import {EventType} from "../types/eventType";
@@ -35,10 +37,11 @@ const MainStore = namespace(StoreType.MAIN);
                                      :line-chart-events="lineChartEvents"
                                      :index-line-chart-data="indexLineChartData"
                                      portfolio-name="Составной портфель"
-                                     :view-currency="viewCurrency"
+                                     :view-currency="portfolio.portfolioParams.viewCurrency"
                                      :state-key-prefix="StoreKeys.PORTFOLIO_COMBINED_CHART"
                                      :side-bar-opened="sideBarOpened"
-                                     @reloadLineChart="loadPortfolioLineChart">
+                                     @reloadLineChart="loadPortfolioLineChart"
+                                     @exportTable="onExportTable">
                     <template #afterDashboard>
                         <v-layout align-center>
                             <div :class="['control-portfolios-title', blockNotEmpty() ? '' : 'pl-3']">
@@ -87,6 +90,9 @@ export class CombinedPortfolioPage extends UI {
     private clientInfo: ClientInfo;
     @MainStore.Getter
     private portfolio: Portfolio;
+    /** Комбинированный портфель */
+    @MainStore.Getter
+    private combinedPortfolioParams: PortfolioParams;
     @MainStore.Getter
     private sideBarOpened: boolean;
     @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
@@ -101,8 +107,6 @@ export class CombinedPortfolioPage extends UI {
     private marketHistoryService: MarketHistoryService;
     @Inject
     private exportService: ExportService;
-    /** Валюта просмотра портфеля */
-    private viewCurrency: string = Currency.RUB;
     /** Данные графика стоимости портфеля */
     private lineChartData: LineChartItem[] = null;
     /** Данные графика портфеля */
@@ -123,7 +127,7 @@ export class CombinedPortfolioPage extends UI {
     async created(): Promise<void> {
         try {
             const portfolioParams = this.storage.get<CombinedPortfolioParams>(StoreKeys.COMBINED_PORTFOLIO_PARAMS_KEY, {});
-            this.viewCurrency = portfolioParams.viewCurrency || Currency.RUB;
+            this.updateCombinedPortfolio(portfolioParams.viewCurrency || Currency.RUB);
             await this.doCombinedPortfolio();
             UI.on(EventType.TRADE_CREATED, async (): Promise<void> => {
                 await this.reloadPortfolio();
@@ -158,12 +162,14 @@ export class CombinedPortfolioPage extends UI {
     }
 
     private async showDialogCompositePortfolio(): Promise<void> {
-        const result = await new CompositePortfolioManagementDialog().show({portfolios: this.clientInfo.user.portfolios, viewCurrency: this.viewCurrency});
+        const result = await new CompositePortfolioManagementDialog().show({
+            portfolios: this.clientInfo.user.portfolios,
+            viewCurrency: this.portfolio.portfolioParams.viewCurrency
+        });
         if (result) {
-            this.viewCurrency = result;
-            this.updateCombinedPortfolio(this.viewCurrency);
+            this.updateCombinedPortfolio(result);
             const portfolioParams = this.storage.get<CombinedPortfolioParams>(StoreKeys.COMBINED_PORTFOLIO_PARAMS_KEY, {});
-            portfolioParams.viewCurrency = this.viewCurrency;
+            portfolioParams.viewCurrency = result;
             this.storage.set(StoreKeys.COMBINED_PORTFOLIO_PARAMS_KEY, portfolioParams);
             await this.doCombinedPortfolio();
         }
@@ -178,11 +184,22 @@ export class CombinedPortfolioPage extends UI {
         }
     }
 
+    @ShowProgress
+    private async onExportTable(exportType: ExportType): Promise<void> {
+        await this.exportService.exportCombinedReport({
+            ids: this.portfolio.portfolioParams.combinedIds,
+            viewCurrency: this.portfolio.portfolioParams.viewCurrency
+        }, exportType);
+    }
+
     /**
      * Экспортирует данные комбинированного портфеля в xlsx
      */
     private async exportPortfolio(): Promise<void> {
-        await this.exportService.exportCombinedReport({ids: this.portfolio.portfolioParams.combinedIds, viewCurrency: this.viewCurrency});
+        await this.exportService.exportCombinedReport({
+            ids: this.combinedPortfolioParams.combinedIds,
+            viewCurrency: this.portfolio.portfolioParams.viewCurrency
+        }, ExportType.COMPLEX);
     }
 
     private blockNotEmpty(): boolean {
@@ -191,12 +208,18 @@ export class CombinedPortfolioPage extends UI {
 
     private async loadPortfolioLineChart(): Promise<void> {
         if (UiStateHelper.historyPanel[0] === 1) {
-            this.portfolioLineChartData = await this.overviewService.getCostChartCombined({ids: this.portfolio.portfolioParams.combinedIds, viewCurrency: this.viewCurrency});
+            this.portfolioLineChartData = await this.overviewService.getCostChartCombined({
+                ids: this.combinedPortfolioParams.combinedIds,
+                viewCurrency: this.portfolio.portfolioParams.viewCurrency
+            });
             this.lineChartData = this.portfolioLineChartData.lineChartData;
             if (this.portfolio.overview.firstTradeDate) {
                 this.indexLineChartData = await this.marketHistoryService.getIndexHistory("MMVB", dayjs(this.portfolio.overview.firstTradeDate).format("DD.MM.YYYY"));
             }
-            this.lineChartEvents = await this.overviewService.getEventsChartDataCombined({ids: this.portfolio.portfolioParams.combinedIds, viewCurrency: this.viewCurrency});
+            this.lineChartEvents = await this.overviewService.getEventsChartDataCombined({
+                ids: this.combinedPortfolioParams.combinedIds,
+                viewCurrency: this.portfolio.portfolioParams.viewCurrency
+            });
         }
     }
 }
