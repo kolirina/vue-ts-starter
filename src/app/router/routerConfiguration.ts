@@ -177,7 +177,12 @@ export class RouterConfiguration {
             {
                 name: "combined-portfolio",
                 path: "/combined-portfolio",
-                redirect: "/portfolio/combined"
+                component: PortfolioPage,
+                meta: {
+                    tariffAllowed: true,
+                    title: "Составной портфель",
+                    tourName: "combined_portfolio"
+                }
             },
             {
                 path: "/quotes",

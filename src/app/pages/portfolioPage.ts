@@ -265,7 +265,7 @@ export class PortfolioPage extends UI {
     }
 
     private get showCombinedInfoBlock(): boolean {
-        return this.$route.params.combined === "combined";
+        return this.$route.name === "combined-portfolio";
     }
 }
 
