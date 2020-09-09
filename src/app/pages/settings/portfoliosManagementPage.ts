@@ -50,8 +50,8 @@ const MainStore = namespace(StoreType.MAIN);
                             </v-btn>
                         </v-card-title>
                     </v-card>
-                    <portfolios-tile v-if="displayMode === DisplayMode.TILE" :portfolios="availablePortfolios"></portfolios-tile>
-                    <portfolios-table v-if="displayMode === DisplayMode.LIST" :portfolios="availablePortfolios"></portfolios-table>
+                    <portfolios-tile v-if="displayMode === DisplayMode.TILE" :portfolios="availablePortfolios" data-v-step="0"></portfolios-tile>
+                    <portfolios-table v-if="displayMode === DisplayMode.LIST" :portfolios="availablePortfolios" data-v-step="0"></portfolios-table>
                 </v-flex>
             </v-layout>
         </v-container>

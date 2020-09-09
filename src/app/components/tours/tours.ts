@@ -146,6 +146,9 @@ export class Tours extends UI {
         if (meta.tourName) {
             const tabName = currentRoute.params.tab ?? "";
             this.tourName = `${meta.tourName}${tabName ? "_" + tabName : ""}`;
+            if (currentRoute.params.combined === "combined") {
+                this.tourName = "combined_portfolio";
+            }
             this.tourSteps = await this.onBoardingTourService.getTourSteps(this.tourName, this.portfolio.overview);
             if (this.tourSteps.length) {
                 this.start();

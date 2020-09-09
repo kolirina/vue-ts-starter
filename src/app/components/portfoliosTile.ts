@@ -40,7 +40,7 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-card class="import-wrapper">
-            <div class="portfolio-list">
+            <div class="portfolio-list" data-v-step="1">
                 <div v-for="portfolio in portfolios" :key="portfolio.id" @click="goToEdit(portfolio.id)" class="portfolio-item">
                     <div class="portfolio-item__header">
                         <div class="portfolio-item__header-description">{{ portfolio.name }}</div>
