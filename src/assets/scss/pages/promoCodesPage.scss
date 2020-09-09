@@ -43,17 +43,17 @@
     font-size: 16px;
     line-height: 22px;
 
-    .v-tooltip {
+    i {
+      font-size: 16px;
       margin-left: 12px;
-
-      i {font-size: 16px;}
-
-      > span {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
     }
+  }
+
+  &__hint {
+    font-size: 13px;
+    padding: 16px;
+    background-color: #fff;
+    max-width: 438px;
   }
 
   &__img-partner,

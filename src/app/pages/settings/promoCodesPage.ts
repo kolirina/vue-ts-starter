@@ -37,23 +37,23 @@ const MainStore = namespace(StoreType.MAIN);
                                 <div class="promo-codes__title">
                                     <div class="promo-codes__img-partner"></div>
                                     <div>Зарабатывайте с Intelinvest!</div>
-                                    <v-tooltip content-class="custom-tooltip-wrap" :max-width="450" bottom right>
+                                    <v-menu :close-on-content-click="false" :nudge-width="300" :nudge-bottom="24" z-index="100" bottom content-class="promo-codes__hint">
                                         <v-icon slot="activator">far fa-question-circle</v-icon>
                                         <span>
                                             <b>Условия партнерской программы:</b>
                                             <p class="margT16">1. Зарегистрироваться в Intelinvest и принять партнерское соглашение</p>
                                             <p>2. Скопировать индивидуальную ссылку и разместить ее в социальных сетях, блоге или курсе обучения</p>
                                             <p>3. Продемонстрировать полезность использования сервиса и предложить воспользоваться 20% скидкой</p>
-                                            <p>4. Отслеживать результаты в личном кабинете и выводить<br>от 5 000 рублей в любой момент</p>
+                                            <p>4. Отслеживать результаты в личном кабинете и выводить <span class="no-wrap">от 5 000 рублей</span> в любой момент</p>
                                             <!-- TODO: добавить ссылку-->
                                             <a href="#" class="decorationNone">Узнать подробнее</a>
                                         </span>
-                                    </v-tooltip>
+                                    </v-menu>
                                 </div>
                                 <ul>
                                     <li>Рекомендуйте нас в социальных сетях, блоге или обучающем курсе</li>
                                     <li>Получайте 30% от оплат рефералов</li>
-                                    <li>Выводите вознаграждение от 5000 до 100 000 рублей</li>
+                                    <li>Выводите вознаграждение от 5 000 до 100 000 рублей</li>
                                 </ul>
                             </template>
                             <template v-else>
@@ -184,6 +184,8 @@ export class PromoCodesPage extends UI {
     private shareType = ShareType;
     /** Выбранная радиокнопка */
     private currentShareType: ShareType = ShareType.PROMO_CODE;
+    /** Признак отображения подсказки */
+    private showTooltip = false;
 
     /**
      * Инициализация компонента
