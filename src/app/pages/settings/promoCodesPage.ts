@@ -35,8 +35,20 @@ const MainStore = namespace(StoreType.MAIN);
                         <div class="promo-codes">
                             <template v-if="isPartnerTab">
                                 <div class="promo-codes__title">
-                                    <img src="./img/promocodes/partner.svg" alt="Партнерам">
-                                    <span>Зарабатывайте с Intelinvest!</span>
+                                    <div class="promo-codes__img-partner"></div>
+                                    <div>Зарабатывайте с Intelinvest!</div>
+                                    <v-tooltip content-class="custom-tooltip-wrap" :max-width="450" bottom right>
+                                        <v-icon slot="activator">far fa-question-circle</v-icon>
+                                        <span>
+                                            <b>Условия партнерской программы:</b>
+                                            <p class="margT16">1. Зарегистрироваться в Intelinvest и принять партнерское соглашение</p>
+                                            <p>2. Скопировать индивидуальную ссылку и разместить ее в социальных сетях, блоге или курсе обучения</p>
+                                            <p>3. Продемонстрировать полезность использования сервиса и предложить воспользоваться 20% скидкой</p>
+                                            <p>4. Отслеживать результаты в личном кабинете и выводить<br>от 5 000 рублей в любой момент</p>
+                                            <!-- TODO: добавить ссылку-->
+                                            <a href="#" class="decorationNone">Узнать подробнее</a>
+                                        </span>
+                                    </v-tooltip>
                                 </div>
                                 <ul>
                                     <li>Рекомендуйте нас в социальных сетях, блоге или обучающем курсе</li>
@@ -46,7 +58,7 @@ const MainStore = namespace(StoreType.MAIN);
                             </template>
                             <template v-else>
                                 <div class="promo-codes__title">
-                                    <img src="./img/promocodes/user.svg" alt="Пользователям">
+                                    <div class="promo-codes__img-user"></div>
                                     <span>Учитывайте инвестиции бесплатно!</span>
                                 </div>
                                 <ul>
@@ -122,20 +134,20 @@ const MainStore = namespace(StoreType.MAIN);
                         <expanded-panel v-if="isPartnerTab" class="rewards promo-codes__statistics">
                             <template #header>Связаться по вопросам сотрудничества</template>
                                 <div>
-                                    <span>Ваш менеджер:</span>
+                                    <span>Ваш менеджер</span>
                                     <span>Евгений</span>
                                 </div>
                                 <div>
-                                    <span>Telegram:</span>
+                                    <span>Telegram</span>
                                     <span><a href="https://telegram.me/intelinvest_partner" title="Задайте вопрос в Telegram"
                                              target="_blank" class="decorationNone">@intelinvest_partner</a></span>
                                 </div>
                                 <div>
-                                    <span>VK:</span>
+                                    <span>VK</span>
                                     <span><a href="https://vk.com/intelinvest_partner" target="_blank" class="decorationNone">https://vk.com/intelinvest_partner</a></span>
                                 </div>
                                 <div>
-                                    <span>Email:</span>
+                                    <span>Email</span>
                                     <span><a href="mailto:partner@intelinvest.ru" target="_blank" class="decorationNone">partner@intelinvest.ru</a></span>
                                 </div>
                         </expanded-panel>
