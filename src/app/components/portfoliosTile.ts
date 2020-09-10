@@ -20,11 +20,14 @@ import {Component, Prop, UI} from "../app/ui";
 import {DisableConcurrentExecution} from "../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {BtnReturn} from "../platform/dialogs/customDialog";
+import {Storage} from "../platform/services/storage";
 import {ClientInfo} from "../services/clientService";
 import {ExportService, ExportType} from "../services/exportService";
 import {OverviewService} from "../services/overviewService";
 import {PortfolioAccountType, PortfolioParams, PortfolioService} from "../services/portfolioService";
+import {CurrencyUnit} from "../types/currency";
 import {EventType} from "../types/eventType";
+import {StoreKeys} from "../types/storeKeys";
 import {Tariff} from "../types/tariff";
 import {CombinedPortfolioParams, Portfolio} from "../types/types";
 import {ExportUtils} from "../utils/exportUtils";
@@ -32,11 +35,8 @@ import {PortfolioUtils} from "../utils/portfolioUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {ChangeTariffDialog} from "./dialogs/changeTariffDialog";
-import {ConfirmDialog} from "./dialogs/confirmDialog";
-import {StoreKeys} from "../types/storeKeys";
 import {CompositePortfolioManagementDialog} from "./dialogs/compositePortfolioManagementDialog";
-import {CurrencyUnit} from "../types/currency";
-import {Storage} from "../platform/services/storage";
+import {ConfirmDialog} from "./dialogs/confirmDialog";
 
 const MainStore = namespace(StoreType.MAIN);
 

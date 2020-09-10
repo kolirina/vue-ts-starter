@@ -8,9 +8,9 @@ import {AssetType} from "../types/assetType";
 import {EventType} from "../types/eventType";
 import {Operation} from "../types/operation";
 import {Portfolio} from "../types/types";
+import {DateUtils} from "../utils/dateUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
-import {DateUtils} from "../utils/dateUtils";
 
 const MainStore = namespace(StoreType.MAIN);
 
