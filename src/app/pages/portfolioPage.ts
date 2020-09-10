@@ -46,7 +46,7 @@ const MainStore = namespace(StoreType.MAIN);
                                      @reloadLineChart="loadPortfolioLineChart"
                                      @exportTable="onExportTable"
                                      exportable>
-                    <template v-if="combinedPage" #afterDashboard>
+                    <template #afterDashboard>
                         <v-layout align-center>
                             <div :class="['control-portfolios-title', !isEmptyBlockShowed ? '' : 'pl-3']">
                                 Управление составным портфелем
