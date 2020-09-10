@@ -46,7 +46,7 @@ const MainStore = namespace(StoreType.MAIN);
                                      @reloadLineChart="loadPortfolioLineChart"
                                      @exportTable="onExportTable"
                                      exportable>
-                    <template v-if="showCombinedInfoBlock" #afterDashboard>
+                    <template v-if="combinedPage" #afterDashboard>
                         <v-layout align-center>
                             <div :class="['control-portfolios-title', !isEmptyBlockShowed ? '' : 'pl-3']">
                                 Управление составным портфелем
@@ -103,6 +103,8 @@ export class PortfolioPage extends UI {
     private reloadPortfolio: () => Promise<void>;
     @MainStore.Mutation(MutationType.UPDATE_COMBINED_PORTFOLIO)
     private updateCombinedPortfolio: (viewCurrency: string) => void;
+    @MainStore.Action(MutationType.SET_CURRENT_COMBINED_PORTFOLIO)
+    private setCurrentCombinedPortfolio: (portfolioParams: CombinedPortfolioParams) => void;
     @Inject
     private localStorage: Storage;
     @Inject
@@ -136,9 +138,12 @@ export class PortfolioPage extends UI {
      */
     async created(): Promise<void> {
         try {
-            const portfolioParams = this.localStorage.get<CombinedPortfolioParams>(StoreKeys.COMBINED_PORTFOLIO_PARAMS_KEY, null);
-            await this.loadPortfolioLineChart();
-            await this.getCurrentMoneyRemainder();
+            if (this.combinedPage) {
+                UI.emit(EventType.SET_PORTFOLIO, this.combinedPortfolioParams);
+            } else {
+                await this.loadPortfolioLineChart();
+                await this.getCurrentMoneyRemainder();
+            }
             const firstTradeYear = DateUtils.getYearDate(this.portfolio.overview.firstTradeDate);
             const currentYear = dayjs().year();
 
@@ -152,6 +157,7 @@ export class PortfolioPage extends UI {
             }));
             // по умолчанию выбран за весь период
             this.selectedPeriod = this.periods[this.periods.length - 1];
+
             UI.on(EventType.TRADE_CREATED, async () => {
                 await this.reloadPortfolio();
                 // срабатывает вотчер на портфеле
@@ -264,7 +270,7 @@ export class PortfolioPage extends UI {
         return this.portfolio && this.portfolio.overview.totalTradesCount === 0;
     }
 
-    private get showCombinedInfoBlock(): boolean {
+    private get combinedPage(): boolean {
         return this.$route.name === "combined-portfolio";
     }
 }

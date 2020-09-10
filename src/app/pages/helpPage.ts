@@ -10,6 +10,7 @@ import {Operation} from "../types/operation";
 import {Portfolio} from "../types/types";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
+import {DateUtils} from "../utils/dateUtils";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -61,7 +62,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <div class="wrapper-list-reference__item-content-wrapper">
                         <a @click.stop="scrollTo('events')">Страница События</a>
                     </div>
-                    <div class="wrapper-list-reference__item-content-wrapper">
+                    <div v-if="showCombinedPortfolioBlock" class="wrapper-list-reference__item-content-wrapper">
                         <a @click.stop="scrollTo('combined_portfolio')">Составной портфель</a>
                     </div>
                 </div>
@@ -806,7 +807,7 @@ const MainStore = namespace(StoreType.MAIN);
                             </div>
                         </v-card>
                     </v-expansion-panel-content>
-                    <v-expansion-panel-content>
+                    <v-expansion-panel-content v-if="showCombinedPortfolioBlock">
                         <template #actions>
                             <i class="custom-action-icon"></i>
                         </template>
@@ -1182,8 +1183,9 @@ export class HelpPage extends UI {
         true,
         true,
         true,
-        true,
     ];
+    /** Дата новой версии */
+    private readonly NEW_USERS_DATE = DateUtils.parseDate("2020-09-12");
 
     /**
      * Осуществляет переход к заданной секции, если она указана в роутинге
@@ -1197,6 +1199,9 @@ export class HelpPage extends UI {
             setTimeout(async () => {
                 await this.scrollTo(section);
             }, 800);
+        }
+        if (this.showCombinedPortfolioBlock) {
+            this.configExpansionPanel.push(true);
         }
         UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio());
     }
@@ -1240,5 +1245,9 @@ export class HelpPage extends UI {
     /* Диалог обратной связи */
     private async openFeedBackDialog(): Promise<void> {
         await new FeedbackDialog().show({clientInfo: this.clientInfo.user});
+    }
+
+    private get showCombinedPortfolioBlock(): boolean {
+        return DateUtils.parseDate(this.clientInfo.user.regDate).isBefore(this.NEW_USERS_DATE);
     }
 }

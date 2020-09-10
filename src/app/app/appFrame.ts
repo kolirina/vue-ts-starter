@@ -26,6 +26,7 @@ import {ThemeUtils} from "../utils/ThemeUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {UI} from "./ui";
+import {DateUtils} from "../utils/dateUtils";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -127,6 +128,8 @@ export class AppFrame extends UI {
 
     /* Пользователь уведомлен об обновлениях */
     private isNotifyAccepted = false;
+    /** Дата новой версии */
+    private readonly NEW_USERS_DATE = DateUtils.parseDate("2020-09-12");
 
     /**
      * Названия кэшируемых компонентов (страниц). В качестве названия необходимо указывать либо имя файла компонента (это его name)
@@ -139,37 +142,7 @@ export class AppFrame extends UI {
     private drawer = true;
     private loading = false;
 
-    private mainSection: NavBarItem[] = [
-        // {title: "Публичные портфели", action: "public-portfolios"},
-        {title: "Портфель", action: "portfolio"},
-        {title: "Аналитика", action: "adviser"},
-        {title: "Сделки", action: "trades"},
-        {
-            title: "Инструменты", subMenu: [
-                {title: "Дивиденды", action: "dividends"},
-                {title: "Составной портфель", action: "combined-portfolio"},
-                {title: "События", action: "events"},
-                {title: "Уведомления", action: "notifications"}
-            ]
-        },
-        {
-            title: "Рынок", subMenu: [
-                {title: "Котировки", path: "/quotes"},
-                {title: "Поиск бумаги", path: "/share-info"},
-            ]
-        },
-        {
-            title: "Настройки", action: "settings", subMenu: [
-                {title: "Управление портфелями", action: "portfolio-management"},
-                {title: "Профиль", action: "profile"},
-                {title: "Импорт сделок", action: "import"},
-                {title: "Экспорт сделок", action: "export"},
-                {title: "Тарифы", action: "tariffs"},
-                {title: "Партнерская программа", action: "promo-codes"},
-            ]
-        },
-        {title: "Помощь", action: "help"}
-    ];
+    private mainSection: NavBarItem[] = [];
 
     @ShowProgress
     async created(): Promise<void> {
@@ -183,6 +156,37 @@ export class AppFrame extends UI {
             await this.loadOnBoardingTours();
             this.loggedIn = true;
         }
+        this.mainSection = [
+            // {title: "Публичные портфели", action: "public-portfolios"},
+            {title: "Портфель", action: "portfolio"},
+            {title: "Аналитика", action: "adviser"},
+            {title: "Сделки", action: "trades"},
+            {
+                title: "Инструменты", subMenu: [
+                    {title: "Дивиденды", action: "dividends"},
+                    {title: "Составной портфель", action: "combined-portfolio", active: !DateUtils.parseDate(this.clientInfo.user.regDate).isBefore(this.NEW_USERS_DATE)},
+                    {title: "События", action: "events"},
+                    {title: "Уведомления", action: "notifications"}
+                ]
+            },
+            {
+                title: "Рынок", subMenu: [
+                    {title: "Котировки", path: "/quotes"},
+                    {title: "Поиск бумаги", path: "/share-info"},
+                ]
+            },
+            {
+                title: "Настройки", action: "settings", subMenu: [
+                    {title: "Управление портфелями", action: "portfolio-management"},
+                    {title: "Профиль", action: "profile"},
+                    {title: "Импорт сделок", action: "import"},
+                    {title: "Экспорт сделок", action: "export"},
+                    {title: "Тарифы", action: "tariffs"},
+                    {title: "Партнерская программа", action: "promo-codes"},
+                ]
+            },
+            {title: "Помощь", action: "help"}
+        ];
     }
 
     private applyTheme(): void {

@@ -111,10 +111,12 @@ export class PortfolioSwitcher extends UI {
     async created(): Promise<void> {
         this.initCombinedPortfolio();
         UI.on(EventType.PORTFOLIO_LIST_UPDATED, () => this.initCombinedPortfolio());
+        UI.on(EventType.SET_PORTFOLIO, (portfolioParams: PortfolioParams) => this.onSelect(portfolioParams));
     }
 
     beforeDestroy(): void {
         UI.off(EventType.PORTFOLIO_LIST_UPDATED);
+        UI.off(EventType.SET_PORTFOLIO);
     }
 
     private initCombinedPortfolio(): void {

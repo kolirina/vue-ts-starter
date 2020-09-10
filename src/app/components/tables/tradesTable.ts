@@ -54,7 +54,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-layout>
                     <td v-if="tableHeadersState.ticker" class="text-xs-left">
                         <stock-link v-if="props.item.asset === tradeType.STOCK.code" :ticker="props.item.ticker"></stock-link>
-                        <asset-link v-if="props.item.asset === tradeType.ASSET.code" :ticker="props.item.shareId">{{ props.item.ticker }}</asset-link>
+                        <asset-link v-if="props.item.asset === tradeType.ASSET.code" :ticker="String(props.item.shareId)">{{ props.item.ticker }}</asset-link>
                         <bond-link v-if="props.item.asset === tradeType.BOND.code" :ticker="props.item.ticker"></bond-link>
                         <span v-if="props.item.asset === tradeType.MONEY.code">{{ props.item.ticker }}</span>
                     </td>
