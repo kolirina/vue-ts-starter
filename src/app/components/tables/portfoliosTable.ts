@@ -28,7 +28,7 @@ import {OverviewService} from "../../services/overviewService";
 import {PortfolioParams, PortfoliosDialogType, PortfolioService} from "../../services/portfolioService";
 import {EventType} from "../../types/eventType";
 import {Tariff} from "../../types/tariff";
-import {Portfolio, TableHeader} from "../../types/types";
+import {CombinedPortfolioParams, Portfolio, TableHeader} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {ExportUtils} from "../../utils/exportUtils";
 import {PortfolioUtils} from "../../utils/portfolioUtils";
@@ -38,6 +38,10 @@ import {StoreType} from "../../vuex/storeType";
 import {ConfirmDialog} from "../dialogs/confirmDialog";
 import {EmbeddedBlocksDialog} from "../dialogs/embeddedBlocksDialog";
 import {SharePortfolioDialog} from "../dialogs/sharePortfolioDialog";
+import {StoreKeys} from "../../types/storeKeys";
+import {CompositePortfolioManagementDialog} from "../dialogs/compositePortfolioManagementDialog";
+import {CurrencyUnit} from "../../types/currency";
+import {Storage} from "../../platform/services/storage";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -46,9 +50,10 @@ const MainStore = namespace(StoreType.MAIN);
     template: `
         <v-data-table :headers="headers" :items="portfolios" item-key="id" :custom-sort="customSort" hide-actions class="data-table portfolios-content-table" must-sort>
             <template #items="props">
-                <tr class="selectable" @dblclick="props.expanded = !props.expanded">
+                <tr class="selectable" @dblclick="props.expanded = !props.item.combinedFlag && !props.expanded">
                     <td data-v-step="2">
-                        <span @click="props.expanded = !props.expanded" class="data-table-cell" :class="{'data-table-cell-open': props.expanded, 'path': true}"></span>
+                        <span v-if="!props.item.combinedFlag" @click="props.expanded = !props.expanded" class="data-table-cell"
+                              :class="{'data-table-cell-open': props.expanded, 'path': true}"></span>
                     </td>
                     <td class="pl-0">
                         <v-layout align-center>
@@ -74,7 +79,7 @@ const MainStore = namespace(StoreType.MAIN);
                             </v-tooltip>
                         </v-layout>
                     </td>
-                    <td class="text-xs-right">{{ props.item.fixFee }}&nbsp;<span class="second-value">%</span></td>
+                    <td class="text-xs-right">{{ props.item.combinedFlag ? '-' : props.item.fixFee }}&nbsp;<span class="second-value">%</span></td>
                     <td class="text-xs-center">{{ props.item.viewCurrency | currencySymbolByCurrency }}</td>
                     <td class="text-xs-left">{{ props.item.accountType.description }}</td>
                     <td class="text-xs-right">{{ props.item.openDate }}</td>
@@ -84,38 +89,40 @@ const MainStore = namespace(StoreType.MAIN);
                                 <span class="menuDots"></span>
                             </v-btn>
                             <v-list dense>
-                                <v-list-tile @click="goToEdit(props.item.id)">
+                                <v-list-tile @click.stop="goToEdit(props.item)">
                                     <v-list-tile-title>
-                                        Редактировать
+                                        {{ props.item.combinedFlag ? 'Настроить' : 'Редактировать' }}
                                     </v-list-tile-title>
                                 </v-list-tile>
-                                <v-list-tile @click="clonePortfolio(props.item.id)">
-                                    <v-list-tile-title>
-                                        Создать копию
-                                    </v-list-tile-title>
-                                </v-list-tile>
-                                <v-list-tile @click="downloadFile(props.item.id)" :disabled="downloadNotAllowed"
-                                             :title="downloadNotAllowed ? 'Экспорт на вашем тарифе недоступен' : 'Экспорт всех сделок в csv формате'">
-                                    <v-list-tile-title>
-                                        Экспорт в csv
-                                    </v-list-tile-title>
-                                </v-list-tile>
-                                <v-list-tile @click="exportPortfolio(props.item.id)">
-                                    <v-list-tile-title>
-                                        Экспорт в xlsx
-                                    </v-list-tile-title>
-                                </v-list-tile>
-                                <v-divider></v-divider>
-                                <v-list-tile @click="clearPortfolio(props.item)">
-                                    <v-list-tile-title class="delete-btn">
-                                        Очистить
-                                    </v-list-tile-title>
-                                </v-list-tile>
-                                <v-list-tile @click="deletePortfolio(props.item)">
-                                    <v-list-tile-title class="delete-btn">
-                                        Удалить
-                                    </v-list-tile-title>
-                                </v-list-tile>
+                                <template v-if="!props.item.combinedFlag">
+                                    <v-list-tile @click="clonePortfolio(props.item.id)">
+                                        <v-list-tile-title>
+                                            Создать копию
+                                        </v-list-tile-title>
+                                    </v-list-tile>
+                                    <v-list-tile @click="downloadFile(props.item.id)" :disabled="downloadNotAllowed"
+                                                 :title="downloadNotAllowed ? 'Экспорт на вашем тарифе недоступен' : 'Экспорт всех сделок в csv формате'">
+                                        <v-list-tile-title>
+                                            Экспорт в csv
+                                        </v-list-tile-title>
+                                    </v-list-tile>
+                                    <v-list-tile @click="exportPortfolio(props.item.id)">
+                                        <v-list-tile-title>
+                                            Экспорт в xlsx
+                                        </v-list-tile-title>
+                                    </v-list-tile>
+                                    <v-divider></v-divider>
+                                    <v-list-tile @click="clearPortfolio(props.item)">
+                                        <v-list-tile-title class="delete-btn">
+                                            Очистить
+                                        </v-list-tile-title>
+                                    </v-list-tile>
+                                    <v-list-tile @click="deletePortfolio(props.item)">
+                                        <v-list-tile-title class="delete-btn">
+                                            Удалить
+                                        </v-list-tile-title>
+                                    </v-list-tile>
+                                </template>
                             </v-list>
                         </v-menu>
                     </td>
@@ -153,7 +160,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         <span class="bold">Заметка:</span>
                                         <div class="text-truncate">{{ props.item.note }}</div>
                                     </div>
-                                    <a v-else @click.stop="goToEdit(props.item.id)">Создать заметку</a>
+                                    <a v-else @click.stop="goToEdit(props.item)">Создать заметку</a>
                                 </div>
                             </v-layout>
                         </div>
@@ -180,6 +187,8 @@ export class PortfoliosTable extends UI {
     private reloadPortfolio: () => Promise<void>;
     @MainStore.Mutation(MutationType.UPDATE_COMBINED_PORTFOLIO)
     private updateCombinedPortfolio: (viewCurrency: string) => void;
+    @MainStore.Action(MutationType.SET_CURRENT_COMBINED_PORTFOLIO)
+    private setCurrentCombinedPortfolio: (portfolioParams: CombinedPortfolioParams) => void;
     /** Сервис по работе с портфелями */
     @Inject
     private portfolioService: PortfolioService;
@@ -188,6 +197,8 @@ export class PortfoliosTable extends UI {
     private exportService: ExportService;
     @Inject
     private overviewService: OverviewService;
+    @Inject
+    private localStorage: Storage;
     /** Типы диалогов */
     private dialogTypes = PortfoliosDialogType;
 
@@ -204,8 +215,24 @@ export class PortfoliosTable extends UI {
     @Prop({default: [], required: true})
     private portfolios: PortfolioParams[];
 
-    private goToEdit(id: number): void {
-        this.$router.push({name: "portfolio-management-edit", params: {id: String(id)}});
+    private async goToEdit(portfolioParams: PortfolioParams): Promise<void> {
+        if (portfolioParams.id) {
+            this.$router.push({name: "portfolio-management-edit", params: {id: String(portfolioParams.id)}});
+        } else {
+            await this.setCombinedPortfolio();
+        }
+    }
+
+    private async setCombinedPortfolio(): Promise<void> {
+        const portfolioParams = this.localStorage.get<CombinedPortfolioParams>(StoreKeys.COMBINED_PORTFOLIO_PARAMS_KEY, {});
+        const result = await new CompositePortfolioManagementDialog().show({
+            portfolios: this.clientInfo.user.portfolios,
+            viewCurrency: portfolioParams?.viewCurrency || CurrencyUnit.RUB.code
+        });
+        if (result) {
+            this.updateCombinedPortfolio(result);
+            await this.setCurrentCombinedPortfolio({ids: this.combinedPortfolioParams.combinedIds, viewCurrency: result});
+        }
     }
 
     private async deletePortfolio(portfolio: PortfolioParams): Promise<void> {
@@ -274,6 +301,9 @@ export class PortfoliosTable extends UI {
         items.sort((a: PortfolioParams, b: PortfolioParams): number => {
             const first = (a as any)[index];
             const second = (b as any)[index];
+            if (a.combinedFlag || b.combinedFlag) {
+                return 1;
+            }
             if (!isDesc) {
                 const result = SortUtils.compareValues(first, second) * -1;
                 return result === 0 ? Number(b.id) - Number(a.id) : result;

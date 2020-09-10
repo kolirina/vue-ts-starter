@@ -109,16 +109,6 @@ export class OverviewService {
     }
 
     /**
-     * Проставляет флаг combined в портфеле
-     * @param {string} id
-     * @param {boolean} combined
-     * @return {Promise<void>}
-     */
-    async setCombinedFlag(id: number, combined: boolean): Promise<void> {
-        await this.http.post(`/portfolios/${id}/combined/${combined}`, {});
-    }
-
-    /**
      * Устанавливает выбранный портфель по умолчанию
      * @param {string} id идентификатор портфеля по умолчанию
      * @return {Promise<void>}

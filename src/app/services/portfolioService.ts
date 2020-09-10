@@ -62,6 +62,16 @@ export class PortfolioService {
     }
 
     /**
+     * Проставляет флаг combined в портфеле
+     * @param {string} id
+     * @param {boolean} combined
+     * @return {Promise<void>}
+     */
+    async setCombinedFlag(id: number, combined: boolean): Promise<void> {
+        await this.http.post(`/portfolio-info/${id}/combined/${combined}`, {});
+    }
+
+    /**
      * Возвращает url для публичного доступа к портфелю
      * @param request запрос
      */

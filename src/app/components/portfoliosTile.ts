@@ -26,13 +26,17 @@ import {OverviewService} from "../services/overviewService";
 import {PortfolioAccountType, PortfolioParams, PortfolioService} from "../services/portfolioService";
 import {EventType} from "../types/eventType";
 import {Tariff} from "../types/tariff";
-import {Portfolio} from "../types/types";
+import {CombinedPortfolioParams, Portfolio} from "../types/types";
 import {ExportUtils} from "../utils/exportUtils";
 import {PortfolioUtils} from "../utils/portfolioUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {ChangeTariffDialog} from "./dialogs/changeTariffDialog";
 import {ConfirmDialog} from "./dialogs/confirmDialog";
+import {StoreKeys} from "../types/storeKeys";
+import {CompositePortfolioManagementDialog} from "./dialogs/compositePortfolioManagementDialog";
+import {CurrencyUnit} from "../types/currency";
+import {Storage} from "../platform/services/storage";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -41,7 +45,7 @@ const MainStore = namespace(StoreType.MAIN);
     template: `
         <v-card class="import-wrapper">
             <div class="portfolio-list" data-v-step="1">
-                <div v-for="portfolio in portfolios" :key="portfolio.id" @click="goToEdit(portfolio.id)" class="portfolio-item">
+                <div v-for="portfolio in portfolios" :key="portfolio.id" @click.stop="goToEdit(portfolio)" class="portfolio-item">
                     <div class="portfolio-item__header">
                         <div class="portfolio-item__header-description">{{ portfolio.name }}</div>
                         <v-tooltip v-if="portfolio.note" content-class="custom-tooltip-wrap modal-tooltip" bottom>
@@ -65,51 +69,55 @@ const MainStore = namespace(StoreType.MAIN);
                             </div>
                         </v-tooltip>
                         <div @click.stop class="margLAuto">
-                            <v-menu transition="slide-y-transition" bottom left min-width="173" nudge-bottom="30">
+                            <v-menu transition="slide-y-transition" bottom left min-width="173" nudge-bottom="20">
                                 <v-btn slot="activator" flat icon dark>
                                     <span class="menuDots menuDots_dark"></span>
                                 </v-btn>
                                 <v-list dense>
-                                    <v-list-tile @click="goToEdit(portfolio.id)">
+                                    <v-list-tile @click.stop="goToEdit(portfolio)">
                                         <v-list-tile-title>
-                                            Редактировать
+                                            {{ portfolio.combinedFlag ? 'Настроить' : 'Редактировать' }}
                                         </v-list-tile-title>
                                     </v-list-tile>
-                                    <v-list-tile @click="clonePortfolio(portfolio.id)">
-                                        <v-list-tile-title>
-                                            Создать копию
-                                        </v-list-tile-title>
-                                    </v-list-tile>
-                                    <v-list-tile @click="downloadFile(portfolio.id)" :disabled="downloadNotAllowed">
-                                        <v-list-tile-title>
-                                            Экспорт в csv
-                                        </v-list-tile-title>
-                                    </v-list-tile>
-                                    <v-list-tile @click="exportPortfolio(portfolio.id)">
-                                        <v-list-tile-title>
-                                            Экспорт в xlsx
-                                        </v-list-tile-title>
-                                    </v-list-tile>
-                                    <v-divider></v-divider>
-                                    <v-list-tile @click="clearPortfolio(portfolio)">
-                                        <v-list-tile-title class="delete-btn">
-                                            Очистить
-                                        </v-list-tile-title>
-                                    </v-list-tile>
-                                    <v-list-tile @click="deletePortfolio(portfolio)">
-                                        <v-list-tile-title class="delete-btn">
-                                            Удалить
-                                        </v-list-tile-title>
-                                    </v-list-tile>
+                                    <template v-if="!portfolio.combinedFlag">
+                                        <v-list-tile @click="clonePortfolio(portfolio.id)">
+                                            <v-list-tile-title>
+                                                Создать копию
+                                            </v-list-tile-title>
+                                        </v-list-tile>
+                                        <v-list-tile @click="downloadFile(portfolio.id)" :disabled="downloadNotAllowed">
+                                            <v-list-tile-title>
+                                                Экспорт в csv
+                                            </v-list-tile-title>
+                                        </v-list-tile>
+                                        <v-list-tile @click="exportPortfolio(portfolio.id)">
+                                            <v-list-tile-title>
+                                                Экспорт в xlsx
+                                            </v-list-tile-title>
+                                        </v-list-tile>
+                                        <v-divider></v-divider>
+                                        <v-list-tile @click="clearPortfolio(portfolio)">
+                                            <v-list-tile-title class="delete-btn">
+                                                Очистить
+                                            </v-list-tile-title>
+                                        </v-list-tile>
+                                        <v-list-tile @click="deletePortfolio(portfolio)">
+                                            <v-list-tile-title class="delete-btn">
+                                                Удалить
+                                            </v-list-tile-title>
+                                        </v-list-tile>
+                                    </template>
                                 </v-list>
                             </v-menu>
                         </div>
                     </div>
                     <div class="portfolio-item__body">
                         <div class="portfolio-item__body-info">
-                            <div><span>Фиксированная комиссия</span><span>{{ portfolio.fixFee }} %</span></div>
+                            <div v-if="!portfolio.combinedFlag"><span>Фиксированная комиссия</span><span>{{ portfolio.fixFee }} %</span></div>
                             <div><span>Валюта</span><span>{{ portfolio.viewCurrency }}</span></div>
-                            <div><span>Тип счета</span><span>{{ portfolio.accountType.description }}</span></div>
+                            <div v-if="!portfolio.combinedFlag">
+                                <span>Тип счета</span><span>{{ portfolio.accountType.description }}</span>
+                            </div>
                             <div v-if="portfolio.accountType === PortfolioAccountType.IIS">
                                 <span>Тип ИИС</span>
                                 <span>{{portfolio.iisType.description}}</span>
@@ -139,6 +147,8 @@ export class PortfoliosTile extends UI {
     private reloadPortfolio: () => Promise<void>;
     @MainStore.Mutation(MutationType.UPDATE_COMBINED_PORTFOLIO)
     private updateCombinedPortfolio: (viewCurrency: string) => void;
+    @MainStore.Action(MutationType.SET_CURRENT_COMBINED_PORTFOLIO)
+    private setCurrentCombinedPortfolio: (portfolioParams: CombinedPortfolioParams) => void;
     /** Сервис по работе с портфелями */
     @Inject
     private portfolioService: PortfolioService;
@@ -147,6 +157,8 @@ export class PortfoliosTile extends UI {
     private exportService: ExportService;
     @Inject
     private overviewService: OverviewService;
+    @Inject
+    private localStorage: Storage;
     @Prop({default: [], required: true})
     private portfolios: PortfolioParams[];
     /** Типы счетов портфеля */
@@ -220,8 +232,12 @@ export class PortfoliosTile extends UI {
         await this.exportService.exportReport(id, ExportType.COMPLEX);
     }
 
-    private goToEdit(id: number): void {
-        this.$router.push({name: "portfolio-management-edit", params: {id: String(id)}});
+    private async goToEdit(portfolioParams: PortfolioParams): Promise<void> {
+        if (portfolioParams.id) {
+            this.$router.push({name: "portfolio-management-edit", params: {id: String(portfolioParams.id)}});
+        } else {
+            await this.setCombinedPortfolio();
+        }
     }
 
     private async createNewPortfolio(): Promise<void> {
@@ -234,6 +250,18 @@ export class PortfoliosTile extends UI {
 
     private resetCombinedOverviewCache(portfolioId: number): void {
         PortfolioUtils.resetCombinedOverviewCache(this.combinedPortfolioParams, portfolioId, this.overviewService);
+    }
+
+    private async setCombinedPortfolio(): Promise<void> {
+        const portfolioParams = this.localStorage.get<CombinedPortfolioParams>(StoreKeys.COMBINED_PORTFOLIO_PARAMS_KEY, {});
+        const result = await new CompositePortfolioManagementDialog().show({
+            portfolios: this.clientInfo.user.portfolios,
+            viewCurrency: portfolioParams?.viewCurrency || CurrencyUnit.RUB.code
+        });
+        if (result) {
+            this.updateCombinedPortfolio(result);
+            await this.setCurrentCombinedPortfolio({ids: this.combinedPortfolioParams.combinedIds, viewCurrency: result});
+        }
     }
 
     /**
