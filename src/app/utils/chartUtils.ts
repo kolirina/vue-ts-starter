@@ -160,7 +160,7 @@ export class ChartUtils {
         });
         const now = new Date().getTime();
         // это нужно для того чтобы будущие события не ломали график стоимости
-        mapped = mapped.filter(item => item.x < now);
+        mapped = mapped.filter(item => item.x <= now);
         const grouped = ChartUtils.groupEvents(mapped);
         eventsGroups.push({
             type: flags,
