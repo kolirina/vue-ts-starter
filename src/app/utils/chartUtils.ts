@@ -153,11 +153,14 @@ export class ChartUtils {
                                   width: number = 10, color: string = "rgba(5,0,217,0.4)"): HighStockEventsGroup[] {
         const eventsGroups: HighStockEventsGroup[] = [];
         const eventsByCount: { [key: string]: HighStockEventData[] } = {};
-        const mapped = data.filter(item => withMoneyTrades || item.text !== "M").map(item => {
+        let mapped = data.filter(item => withMoneyTrades || item.text !== "M" && item.date).map(item => {
             const parsedDate = DateUtils.parseDate(item.date);
             const date = Date.UTC(parsedDate.year(), parsedDate.month(), parsedDate.date());
             return {x: date, title: item.text, text: item.description, color: item.backgroundColor};
         });
+        const now = new Date().getTime();
+        // это нужно для того чтобы будущие события не ломали график стоимости
+        mapped = mapped.filter(item => item.x < now);
         const grouped = ChartUtils.groupEvents(mapped);
         eventsGroups.push({
             type: flags,
@@ -481,7 +484,8 @@ export class ChartUtils {
             rangeSelector: {
                 buttons: ranges,
                 selected: selectedRangeIndex,
-                inputEnabled: true
+                inputEnabled: true,
+                inputDateFormat: "%Y-%m-%d"
             },
             xAxis: {
                 type: "datetime",
