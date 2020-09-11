@@ -19,6 +19,7 @@ import {Inject} from "typescript-ioc";
 import {RawLocation, Route} from "vue-router";
 import {Vue} from "vue/types/vue";
 import {namespace} from "vuex-class/lib/bindings";
+import {Resolver} from "../../../../../typings/vue";
 import {Component, UI} from "../../../app/ui";
 import {DisableConcurrentExecution} from "../../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../../platform/decorators/showProgress";
@@ -175,7 +176,7 @@ export class PortfolioManagementEditPage extends UI {
         UI.off(EventType.TRADE_CREATED);
     }
 
-    async beforeRouteUpdate(to: Route, from: Route, next: (to?: RawLocation | false | ((vm: Vue) => any) | void) => void): Promise<void> {
+    async beforeRouteUpdate?(to: Route, from: Route, next: Resolver): Promise<void> {
         await this.loadPortfolio(to.params.id);
         next();
     }

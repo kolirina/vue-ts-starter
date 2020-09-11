@@ -121,7 +121,7 @@ export class RouterConfiguration {
             },
             {
                 name: "portfolio",
-                path: "/portfolio/:combined(combined)?",
+                path: "/portfolio",
                 component: PortfolioPage,
                 meta: {
                     tariffAllowed: true,

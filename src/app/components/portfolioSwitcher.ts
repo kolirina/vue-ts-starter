@@ -5,6 +5,7 @@ import {ShowProgress} from "../platform/decorators/showProgress";
 import {Storage} from "../platform/services/storage";
 import {ClientInfo} from "../services/clientService";
 import {DealsImportProvider} from "../services/importService";
+import {OverviewService} from "../services/overviewService";
 import {PortfolioParams, PortfolioService} from "../services/portfolioService";
 import {CurrencyUnit} from "../types/currency";
 import {EventType} from "../types/eventType";
@@ -93,6 +94,8 @@ export class PortfolioSwitcher extends UI {
     private portfolioService: PortfolioService;
     @Inject
     private localStorage: Storage;
+    @Inject
+    private overviewService: OverviewService;
     @Prop({default: false, required: false})
     private sideBarOpened: boolean;
 
@@ -200,7 +203,12 @@ export class PortfolioSwitcher extends UI {
             viewCurrency: portfolioParams?.viewCurrency || CurrencyUnit.RUB.code
         });
         if (result) {
+            this.overviewService.resetCacheForCombinedPortfolio({
+                ids: this.combinedPortfolioParams.combinedIds,
+                viewCurrency: this.combinedPortfolioParams.viewCurrency
+            });
             this.updateCombinedPortfolio(result);
+            await this.reloadPortfolio();
         }
     }
 

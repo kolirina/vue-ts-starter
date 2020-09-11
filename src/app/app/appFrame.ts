@@ -221,7 +221,7 @@ export class AppFrame extends UI {
     private async loadCurrentPortfolio(): Promise<void> {
         const portfolioParams = this.localStorage.get<CombinedPortfolioParams>(StoreKeys.COMBINED_PORTFOLIO_PARAMS_KEY, {});
         const combinedIds: number[] = this.clientInfo.user.portfolios.filter(portfolio => portfolio.combined).map(portfolio => portfolio.id);
-        if (portfolioParams && portfolioParams.selected && portfolioParams.viewCurrency && combinedIds?.length) {
+        if (portfolioParams && portfolioParams.selected && portfolioParams.viewCurrency) {
             await this.setCurrentCombinedPortfolio({ids: combinedIds, viewCurrency: portfolioParams.viewCurrency});
         } else {
             await this.setCurrentPortfolio(this.$store.state[StoreType.MAIN].clientInfo.user.currentPortfolioId);

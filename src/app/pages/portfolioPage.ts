@@ -2,7 +2,6 @@ import dayjs from "dayjs";
 import {Inject} from "typescript-ioc";
 import {namespace} from "vuex-class/lib/bindings";
 import {Component, UI, Watch} from "../app/ui";
-import {CompositePortfolioManagementDialog} from "../components/dialogs/compositePortfolioManagementDialog";
 import {DisableConcurrentExecution} from "../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {Storage} from "../platform/services/storage";
@@ -14,13 +13,14 @@ import {PortfolioParams} from "../services/portfolioService";
 import {HighStockEventsGroup, LineChartItem, PortfolioLineChartData} from "../types/charts/types";
 import {EventType} from "../types/eventType";
 import {StoreKeys} from "../types/storeKeys";
-import {CombinedPortfolioParams, OverviewPeriod, Portfolio} from "../types/types";
+import {OverviewPeriod, Portfolio} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
 import {DateUtils} from "../utils/dateUtils";
 import {UiStateHelper} from "../utils/uiStateHelper";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {BasePortfolioPage} from "./basePortfolioPage";
+import {PortfolioBasedPage} from "./portfolioBasedPage";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -29,7 +29,7 @@ const MainStore = namespace(StoreType.MAIN);
     template: `
         <v-slide-x-reverse-transition>
             <template v-if="initialized">
-                <empty-portfolio-stub v-if="isEmptyBlockShowed"></empty-portfolio-stub>
+                <empty-portfolio-stub v-if="isEmptyBlockShowed" @openCombinedDialog="showDialogCompositePortfolio"></empty-portfolio-stub>
                 <base-portfolio-page v-else
                                      :overview="portfolio.overview"
                                      :portfolio-name="portfolio.portfolioParams.name"
@@ -46,7 +46,7 @@ const MainStore = namespace(StoreType.MAIN);
                                      @reloadLineChart="loadPortfolioLineChart"
                                      @exportTable="onExportTable"
                                      exportable>
-                    <template #afterDashboard>
+                    <template v-if="combinedPortfolioSelected" #afterDashboard>
                         <v-layout align-center>
                             <div :class="['control-portfolios-title', !isEmptyBlockShowed ? '' : 'pl-3']">
                                 Управление составным портфелем
@@ -88,27 +88,23 @@ const MainStore = namespace(StoreType.MAIN);
     `,
     components: {BasePortfolioPage}
 })
-export class PortfolioPage extends UI {
+export class PortfolioPage extends PortfolioBasedPage {
 
     @MainStore.Getter
-    private clientInfo: ClientInfo;
+    protected clientInfo: ClientInfo;
     @MainStore.Getter
-    private portfolio: Portfolio;
+    protected portfolio: Portfolio;
     /** Комбинированный портфель */
     @MainStore.Getter
-    private combinedPortfolioParams: PortfolioParams;
+    protected combinedPortfolioParams: PortfolioParams;
     @MainStore.Getter
-    private sideBarOpened: boolean;
+    protected sideBarOpened: boolean;
     @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
-    private reloadPortfolio: () => Promise<void>;
-    @MainStore.Mutation(MutationType.UPDATE_COMBINED_PORTFOLIO)
-    private updateCombinedPortfolio: (viewCurrency: string) => void;
-    @MainStore.Action(MutationType.SET_CURRENT_COMBINED_PORTFOLIO)
-    private setCurrentCombinedPortfolio: (portfolioParams: CombinedPortfolioParams) => void;
+    protected reloadPortfolio: () => Promise<void>;
     @Inject
-    private localStorage: Storage;
+    protected localStorage: Storage;
     @Inject
-    private overviewService: OverviewService;
+    protected overviewService: OverviewService;
     @Inject
     private marketHistoryService: MarketHistoryService;
     @Inject
@@ -137,8 +133,21 @@ export class PortfolioPage extends UI {
      * @inheritDoc
      */
     async created(): Promise<void> {
+        await this.init();
+    }
+
+    beforeDestroy(): void {
+        UI.off(EventType.TRADE_CREATED);
+    }
+
+    @Watch("$route.name")
+    async onRouteChange(): Promise<void> {
+        await this.init();
+    }
+
+    private async init(): Promise<void> {
         try {
-            if (this.combinedPage) {
+            if (this.$route.name === "combined-portfolio") {
                 UI.emit(EventType.SET_PORTFOLIO, this.combinedPortfolioParams);
             } else {
                 await this.loadPortfolioLineChart();
@@ -165,10 +174,6 @@ export class PortfolioPage extends UI {
         } finally {
             this.initialized = true;
         }
-    }
-
-    beforeDestroy(): void {
-        UI.off(EventType.TRADE_CREATED);
     }
 
     @Watch("portfolio")
@@ -226,24 +231,6 @@ export class PortfolioPage extends UI {
         }
     }
 
-    private async showDialogCompositePortfolio(): Promise<void> {
-        const result = await new CompositePortfolioManagementDialog().show({
-            portfolios: this.clientInfo.user.portfolios,
-            viewCurrency: this.portfolio.portfolioParams.viewCurrency
-        });
-        if (result) {
-            this.overviewService.resetCacheForCombinedPortfolio({
-                ids: this.combinedPortfolioParams.combinedIds,
-                viewCurrency: this.combinedPortfolioParams.viewCurrency
-            });
-            this.updateCombinedPortfolio(result);
-            const portfolioParams = this.localStorage.get<CombinedPortfolioParams>(StoreKeys.COMBINED_PORTFOLIO_PARAMS_KEY, {});
-            portfolioParams.viewCurrency = result;
-            this.localStorage.set(StoreKeys.COMBINED_PORTFOLIO_PARAMS_KEY, portfolioParams);
-            await this.reloadPortfolio();
-        }
-    }
-
     /**
      * Экспортирует данные комбинированного портфеля в xlsx
      */
@@ -264,14 +251,6 @@ export class PortfolioPage extends UI {
                 viewCurrency: this.portfolio.portfolioParams.viewCurrency
             }, exportType);
         }
-    }
-
-    private get isEmptyBlockShowed(): boolean {
-        return this.portfolio && this.portfolio.overview.totalTradesCount === 0;
-    }
-
-    private get combinedPage(): boolean {
-        return this.$route.name === "combined-portfolio";
     }
 }
 

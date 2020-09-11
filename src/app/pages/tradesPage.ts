@@ -24,6 +24,7 @@ import {ExportUtils} from "../utils/exportUtils";
 import {PortfolioUtils} from "../utils/portfolioUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
+import {PortfolioBasedPage} from "./portfolioBasedPage";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -31,7 +32,7 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <div v-if="portfolio" class="h100pc">
-            <empty-portfolio-stub v-if="isEmptyBlockShowed"></empty-portfolio-stub>
+            <empty-portfolio-stub v-if="isEmptyBlockShowed" @openCombinedDialog="showDialogCompositePortfolio"></empty-portfolio-stub>
             <v-container v-else fluid class="paddT0 h100pc">
                 <dashboard :overview="portfolio.overview" :side-bar-opened="sideBarOpened" :view-currency="portfolio.portfolioParams.viewCurrency"></dashboard>
                 <expanded-panel name="trades" :value="[true]" class="auto-cursor" data-v-step="0" disabled with-menu always-open>
@@ -57,29 +58,29 @@ const MainStore = namespace(StoreType.MAIN);
     `,
     components: {TradesTable, TradesTableFilter, AdditionalPagination, EmptySearchResult}
 })
-export class TradesPage extends UI {
+export class TradesPage extends PortfolioBasedPage {
 
     @Inject
-    tablesService: TablesService;
+    protected overviewService: OverviewService;
     @Inject
-    private tradeService: TradeService;
+    protected tablesService: TablesService;
     @Inject
-    private tradesFilterService: TradesFilterService;
+    protected tradeService: TradeService;
     @Inject
-    private exportService: ExportService;
+    protected tradesFilterService: TradesFilterService;
     @Inject
-    private overviewService: OverviewService;
+    protected exportService: ExportService;
 
     /** Инофрмация о пользователе */
     @MainStore.Getter
-    private clientInfo: ClientInfo;
+    protected clientInfo: ClientInfo;
     @MainStore.Getter
-    private portfolio: Portfolio;
+    protected portfolio: Portfolio;
     /** Комбинированный портфель */
     @MainStore.Getter
-    private combinedPortfolioParams: PortfolioParams;
+    protected combinedPortfolioParams: PortfolioParams;
     @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
-    private reloadPortfolio: () => Promise<void>;
+    protected reloadPortfolio: () => Promise<void>;
     @MainStore.Getter
     private sideBarOpened: boolean;
     /** Ключи для сохранения информации */
@@ -117,10 +118,6 @@ export class TradesPage extends UI {
 
     private getHeaders(): TableHeader[] {
         return this.tablesService.getFilterHeaders(this.TABLES_NAME.TRADE, !this.allowActions);
-    }
-
-    private get isEmptyBlockShowed(): boolean {
-        return this.portfolio && this.portfolio.overview.totalTradesCount === 0;
     }
 
     private async onTablePaginationChange(pagination: Pagination): Promise<void> {

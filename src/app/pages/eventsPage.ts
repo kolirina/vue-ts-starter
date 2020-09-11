@@ -6,6 +6,7 @@ import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
 import {ConfirmDialog} from "../components/dialogs/confirmDialog";
+import {DisableConcurrentExecution} from "../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {BtnReturn} from "../platform/dialogs/customDialog";
 import {Storage} from "../platform/services/storage";
@@ -30,6 +31,7 @@ import {SortUtils} from "../utils/sortUtils";
 import {TradeUtils} from "../utils/tradeUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
+import {PortfolioBasedPage} from "./portfolioBasedPage";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -38,7 +40,8 @@ const MainStore = namespace(StoreType.MAIN);
     template: `
         <v-slide-x-reverse-transition>
             <template v-if="initialized">
-                <v-container v-if="portfolio" fluid class="events">
+                <empty-portfolio-stub v-if="isEmptyBlockShowed" @openCombinedDialog="showDialogCompositePortfolio"></empty-portfolio-stub>
+                <v-container v-else fluid class="events">
                     <v-card flat class="header-first-card">
                         <v-card-title class="header-first-card__wrapper-title">
                             <div class="section-title header-first-card__title-text">События</div>
@@ -300,18 +303,18 @@ const MainStore = namespace(StoreType.MAIN);
         </v-slide-x-reverse-transition>
     `
 })
-export class EventsPage extends UI {
+export class EventsPage extends PortfolioBasedPage {
 
     private static readonly ACTION_HEADER = {text: "", value: "actions", align: "center", width: "25", sortable: false};
 
     @MainStore.Getter
-    private portfolio: Portfolio;
+    protected portfolio: Portfolio;
     @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
-    private reloadPortfolio: () => Promise<void>;
+    protected reloadPortfolio: () => Promise<void>;
     @Inject
-    private eventService: EventService;
+    protected eventService: EventService;
     @Inject
-    private localStorage: Storage;
+    protected localStorage: Storage;
     /** Ответ по событиям */
     private eventsResponse: EventsResponse = null;
     /** Дивидендные новости */
@@ -390,6 +393,9 @@ export class EventsPage extends UI {
     private async loadAllData(): Promise<void> {
         this.initialized = false;
         try {
+            if (this.isEmptyBlockShowed) {
+                return;
+            }
             await Promise.all([
                     this.loadEvents(),
                     this.loadDividendNews(),
@@ -403,9 +409,13 @@ export class EventsPage extends UI {
 
     @Watch("portfolio")
     @ShowProgress
+    @DisableConcurrentExecution
     private async onPortfolioChange(): Promise<void> {
         this.initialized = false;
         try {
+            if (this.isEmptyBlockShowed) {
+                return;
+            }
             await this.loadEvents();
             await this.loadDividendNews();
             // если выбран фильтр Пользовательские, нужно перезагрузить календарь

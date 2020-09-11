@@ -1041,7 +1041,7 @@ export class ChartUtils {
                                 // r: args.r,
                                 start: args.start,
                                 end: args.end
-                            }, series.options.animation);
+                            }, series.options?.animation);
                         }, 100);
                     }
                 });
