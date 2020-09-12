@@ -154,8 +154,8 @@ export class BalancesPage extends UI implements TradeDataHolder {
     private marketHistoryService: MarketHistoryService;
     @Inject
     private tradeService: TradeService;
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
+    @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
+    private reloadPortfolio: () => Promise<void>;
     @MainStore.Getter
     private portfolio: Portfolio;
 
@@ -220,14 +220,14 @@ export class BalancesPage extends UI implements TradeDataHolder {
     @ShowProgress
     async created(): Promise<void> {
         this.topShares = await this.marketService.loadTopStocks();
-        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio());
     }
 
     beforeDestroy(): void {
         UI.off(EventType.TRADE_CREATED);
     }
     private async specifyResidues(): Promise<void> {
-        await this.reloadPortfolio(this.portfolio.id);
+        await this.reloadPortfolio();
     }
 
     private async popularPaper(): Promise<void> {
@@ -304,7 +304,7 @@ export class BalancesPage extends UI implements TradeDataHolder {
                 createLinkedTrade: this.keepMoney,
                 fields: trade
             });
-            await this.reloadPortfolio(this.portfolio.id);
+            await this.reloadPortfolio();
             this.resetForm();
             this.$snotify.info("Баланс успешно сохранен");
         } catch (e) {

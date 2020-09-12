@@ -17,7 +17,7 @@
 import {namespace} from "vuex-class";
 import {Component, UI} from "../app/ui";
 import {ClientInfo} from "../services/clientService";
-import {HelpDeskUtils} from "../utils/HelpDeskUtils";
+import {HelpDeskUtils} from "../utils/helpDeskUtils";
 import {StoreType} from "../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);

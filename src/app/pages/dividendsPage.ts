@@ -3,6 +3,7 @@ import Component from "vue-class-component";
 import {Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
+import {DisableConcurrentExecution} from "../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {DividendAggregateInfo, DividendService} from "../services/dividendService";
 import {EventType} from "../types/eventType";
@@ -10,6 +11,7 @@ import {Portfolio} from "../types/types";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {BaseDividendsPage} from "./baseDividendsPage";
+import {PortfolioBasedPage} from "./portfolioBasedPage";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -18,7 +20,7 @@ const MainStore = namespace(StoreType.MAIN);
     template: `
         <v-slide-x-reverse-transition>
             <template v-if="initialized">
-                <empty-portfolio-stub v-if="isEmptyBlockShowed"></empty-portfolio-stub>
+                <empty-portfolio-stub v-if="isEmptyBlockShowed" @openCombinedDialog="showDialogCompositePortfolio"></empty-portfolio-stub>
                 <base-dividends-page v-else :portfolio="portfolio" :dividend-info="dividendInfo" :side-bar-opened="sideBarOpened"></base-dividends-page>
             </template>
             <template v-else>
@@ -34,14 +36,14 @@ const MainStore = namespace(StoreType.MAIN);
     `,
     components: {BaseDividendsPage}
 })
-export class DividendsPage extends UI {
+export class DividendsPage extends PortfolioBasedPage {
 
     @MainStore.Getter
-    private portfolio: Portfolio;
+    protected portfolio: Portfolio;
     @MainStore.Getter
-    private sideBarOpened: boolean;
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
+    protected sideBarOpened: boolean;
+    @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
+    protected reloadPortfolio: () => Promise<void>;
     @Inject
     private dividendService: DividendService;
     /** Информация по дивидендам */
@@ -56,7 +58,7 @@ export class DividendsPage extends UI {
     async created(): Promise<void> {
         await this.loadDividendAggregateInfo();
         UI.on(EventType.TRADE_CREATED, async () => {
-            await this.reloadPortfolio(this.portfolio.id);
+            await this.reloadPortfolio();
             await this.loadDividendAggregateInfo();
         });
     }
@@ -71,16 +73,18 @@ export class DividendsPage extends UI {
     }
 
     @ShowProgress
+    @DisableConcurrentExecution
     private async loadDividendAggregateInfo(): Promise<void> {
         this.initialized = false;
         try {
-            this.dividendInfo = await this.dividendService.getDividendAggregateInfo(this.portfolio.id);
+            if (this.portfolio.id) {
+                this.dividendInfo = await this.dividendService.getDividendAggregateInfo(this.portfolio.id);
+            } else {
+                this.dividendInfo = await this.dividendService.getDividendAggregateInfoCombined(this.portfolio.portfolioParams.viewCurrency,
+                    this.portfolio.portfolioParams.combinedIds);
+            }
         } finally {
             this.initialized = true;
         }
-    }
-
-    private get isEmptyBlockShowed(): boolean {
-        return this.portfolio && this.portfolio.overview.totalTradesCount === 0;
     }
 }

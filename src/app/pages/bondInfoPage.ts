@@ -194,8 +194,8 @@ export class BondInfoPage extends UI {
         chartComponent: BondPaymentsChart
     };
 
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
+    @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
+    private reloadPortfolio: () => Promise<void>;
     @MainStore.Getter
     private portfolio: Portfolio;
     @MainStore.Getter
@@ -232,7 +232,7 @@ export class BondInfoPage extends UI {
         await this.loadBondInfo();
         this.portfolioAvgPrice = this.getPortfolioAvgPrice();
         UI.on(EventType.TRADE_CREATED, async () => {
-            await this.reloadPortfolio(this.portfolio.id);
+            await this.reloadPortfolio();
             this.portfolioAvgPrice = null;
             this.portfolioAvgPrice = this.getPortfolioAvgPrice();
         });
@@ -310,7 +310,10 @@ export class BondInfoPage extends UI {
     }
 
     private async loadTradeEvents(): Promise<void> {
-        const tradeEvents = await this.tradeService.getShareTradesEvent(this.portfolio.id, this.share.ticker);
+        if (!this.portfolio.id) {
+            return;
+        }
+        const tradeEvents = await this.tradeService.getShareTradesEvent(this.portfolio.id, this.share.id, ShareType.BOND);
         this.events.push(...ChartUtils.processEventsChartData(tradeEvents, true, "flags", "dataseries", "circlepin", 10, "rgba(20,140,0,0.45)"));
     }
 

@@ -88,32 +88,31 @@ import {DateUtils} from "../../../utils/dateUtils";
                 </broker-switcher>
             </div>
             <v-layout wrap class="wrap-calendar-section">
+                <ii-number-field label="Фиксированная комиссия в %" v-model="portfolio.fixFee"
+                                 hint="Для автоматического рассчета комиссии при внесении сделок." :decimals="5" @keyup.enter="savePortfolio">
+                </ii-number-field>
 
-                    <ii-number-field label="Фиксированная комиссия в %" v-model="portfolio.fixFee"
-                                     hint="Для автоматического рассчета комиссии при внесении сделок." :decimals="5" @keyup.enter="savePortfolio">
-                    </ii-number-field>
-
-                    <v-menu ref="dateMenu"
-                            :close-on-content-click="false"
-                            v-model="dateMenuValue"
-                            :return-value.sync="portfolio.openDate"
-                            lazy
-                            transition="scale-transition"
-                            offset-y
-                            full-width
-                            min-width="290px">
-                        <v-text-field
-                                slot="activator"
-                                v-model="portfolio.openDate"
-                                :error-messages="errors.collect('openDate')"
-                                name="openDate"
-                                label="Дата открытия"
-                                required
-                                append-icon="event"
-                                readonly></v-text-field>
-                        <v-date-picker v-model="portfolio.openDate" :no-title="true" locale="ru" :first-day-of-week="1"
-                                       @input="onDateSelected"></v-date-picker>
-                    </v-menu>
+                <v-menu ref="dateMenu"
+                        :close-on-content-click="false"
+                        v-model="dateMenuValue"
+                        :return-value.sync="portfolio.openDate"
+                        lazy
+                        transition="scale-transition"
+                        offset-y
+                        full-width
+                        min-width="290px">
+                    <v-text-field
+                            slot="activator"
+                            v-model="portfolio.openDate"
+                            :error-messages="errors.collect('openDate')"
+                            name="openDate"
+                            label="Дата открытия"
+                            required
+                            append-icon="event"
+                            readonly></v-text-field>
+                    <v-date-picker v-model="portfolio.openDate" :no-title="true" locale="ru" :first-day-of-week="1"
+                                   @input="onDateSelected"></v-date-picker>
+                </v-menu>
             </v-layout>
 
             <v-layout>
@@ -147,9 +146,12 @@ export class PortfolioManagementGeneralTab extends UI {
 
     /** Включение/выключение профессионального режима */
     private async onProfessionalModeChange(): Promise<void> {
-        const result = await this.portfolioService.updatePortfolio(this.portfolio);
-        this.$snotify.info(`Профессиональный режим для портфеля ${result.professionalMode ? "включен" : "выключен"}`);
-        UI.emit(EventType.PORTFOLIO_UPDATED, result);
+        // портфель еще может не быть сохранен
+        if (this.portfolio.id) {
+            const result = await this.portfolioService.updatePortfolio(this.portfolio);
+            this.$snotify.info(`Профессиональный режим для портфеля ${result.professionalMode ? "включен" : "выключен"}`);
+            UI.emit(EventType.PORTFOLIO_UPDATED, result);
+        }
     }
 
     /**

@@ -330,7 +330,7 @@ export const TOUR_STEPS: { [key: string]: TourStep[] } = {
             target: `[data-v-step="1"]`,
             content: "Меню управления портфелем. Доступно Редактирование, Создание копии, Очистка и Удаление портфеля.",
             params: {
-                placement: "left",
+                placement: "bottom",
                 enableScrolling: false
             }
         },

@@ -18,6 +18,7 @@ import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {Http} from "../platform/services/http";
 import {AnalyticsChartPoint, YieldCompareData} from "../types/charts/types";
+import {CombinedInfoRequest} from "../types/types";
 
 @Service("AnalyticsService")
 @Singleton
@@ -30,8 +31,18 @@ export class AnalyticsService {
      * Возвращает данные по доходностям бенчмарков в сравнении с доходностью портфеля
      * @param portfolioId
      */
-    async getComparedYields(portfolioId: string): Promise<YieldCompareData> {
+    async getComparedYields(portfolioId: number): Promise<YieldCompareData> {
         return this.http.get<YieldCompareData>(`/analytics/compare-yields/${portfolioId}`);
+    }
+
+    /**
+     * Возвращает данные по доходностям бенчмарков в сравнении с доходностью портфеля по составному портфелю
+     * @param viewCurrency валюта портфеля
+     * @param ids идентификаторы портфелей
+     */
+    async getComparedYieldsCombined(viewCurrency: string, ids: number[]): Promise<YieldCompareData> {
+        const request: CombinedInfoRequest = {viewCurrency, ids};
+        return this.http.post<YieldCompareData>("/analytics/compare-yields/combined", request);
     }
 
     /**

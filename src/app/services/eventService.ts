@@ -2,7 +2,7 @@ import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {Enum, EnumType, IStaticEnum} from "../platform/enum";
 import {Http} from "../platform/services/http";
-import {Share} from "../types/types";
+import {CombinedInfoRequest, Share} from "../types/types";
 import {DateFormat, DateUtils} from "../utils/dateUtils";
 
 @Service("EventService")
@@ -21,11 +21,38 @@ export class EventService {
     }
 
     /**
+     * Загружает события и агрегированную информацию по ним для составного портфеля
+     * @param viewCurrency валюта портфеля
+     * @param ids идентификаторы портфелей
+     */
+    async getEventsCombined(viewCurrency: string, ids: number[]): Promise<EventsResponse> {
+        const request: CombinedInfoRequest = {viewCurrency, ids};
+        return this.http.post<EventsResponse>("/events/list/combined", request);
+    }
+
+    /**
      * Получаем данные ивентов календаря
      * @param dateParams даты начала и конца месяца
      */
     async getCalendarEvents(dateParams: CalendarDateParams): Promise<CalendarEvent[]> {
-        const events = await this.http.post<CalendarEvent[]>(`/events/calendar`, dateParams);
+        const events = await this.http.post<CalendarEvent[]>("/events/calendar", dateParams);
+        return events.map(event => {
+            return {
+                ...event,
+                date: DateUtils.formatDate(DateUtils.parseDate(event.date), DateFormat.DATE2)
+            } as CalendarEvent;
+        });
+    }
+
+    /**
+     * Возвращает данные событий календаря для составного портфеля
+     * @param dateParams даты начала и конца месяца
+     * @param viewCurrency валюта портфеля
+     * @param ids идентификаторы портфелей
+     */
+    async getCalendarEventsCombined(dateParams: CalendarDateParams, viewCurrency: string, ids: number[]): Promise<CalendarEvent[]> {
+        const request = {...dateParams, viewCurrency, ids};
+        const events = await this.http.post<CalendarEvent[]>("/events/calendar/combined", request);
         return events.map(event => {
             return {
                 ...event,
@@ -40,6 +67,16 @@ export class EventService {
      */
     async getDividendNews(portfolioId: number): Promise<DividendNewsItem[]> {
         return this.http.get<DividendNewsItem[]>(`/events/news/${portfolioId}`);
+    }
+
+    /**
+     * Возвращает список дивидендных новостей для составного портфеля
+     * @param viewCurrency валюта портфеля
+     * @param ids идентификаторы портфелей
+     */
+    async getDividendNewsCombined(viewCurrency: string, ids: number[]): Promise<DividendNewsItem[]> {
+        const request: CombinedInfoRequest = {viewCurrency, ids};
+        return this.http.post<DividendNewsItem[]>("/events/news/combined", request);
     }
 
     /**

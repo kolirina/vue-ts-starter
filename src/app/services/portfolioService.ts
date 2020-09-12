@@ -62,6 +62,16 @@ export class PortfolioService {
     }
 
     /**
+     * Проставляет флаг combined в портфеле
+     * @param {string} id
+     * @param {boolean} combined
+     * @return {Promise<void>}
+     */
+    async setCombinedFlag(id: number, combined: boolean): Promise<void> {
+        await this.http.post(`/portfolio-info/${id}/combined/${combined}`, {});
+    }
+
+    /**
      * Возвращает url для публичного доступа к портфелю
      * @param request запрос
      */
@@ -87,25 +97,15 @@ export class PortfolioService {
     /**
      * Возвращает портфель пользователя по id
      * @param id идентификатор портфеля
-     * todo: нужно возвращать название брокера на английском для икноки
      */
     async getPortfolioById(id: number): Promise<PortfolioParams> {
-        const portfolios: PortfolioParamsResponse[] = await this.http.get<PortfolioParamsResponse[]>(`/${this.ENDPOINT_BASE}`);
-        const portfolio = portfolios.find(item => item.id === id);
+        const portfolio: PortfolioParamsResponse = await this.http.get<PortfolioParamsResponse>(`/${this.ENDPOINT_BASE}/${id}`);
         return {
             ...portfolio,
             accountType: portfolio.accountType ? PortfolioAccountType.valueByName(portfolio.accountType) : null,
             iisType: portfolio.iisType ? IisType.valueByName(portfolio.iisType) : null,
             shareNotes: portfolio.shareNotes ? portfolio.shareNotes : {}
         } as PortfolioParams;
-    }
-
-    /**
-     * Отправляет запрос на создание нового портфеля или обновление
-     * @param portfolio портфель
-     */
-    async createOrUpdatePortfolio(portfolio: PortfolioParams): Promise<PortfolioParams> {
-        return portfolio.id ? this.updatePortfolio(portfolio) : this.createPortfolio(portfolio);
     }
 
     /**
@@ -179,7 +179,7 @@ export class PortfolioService {
     /**
      * Обновляет заметки по бумагам в портфеле
      */
-    async updateShareNotes(portfolioId: string, shareNotes: { [key: string]: string }, data: EditShareNoteDialogData): Promise<{ [key: string]: string }> {
+    async updateShareNotes(portfolioId: number, shareNotes: { [key: string]: string }, data: EditShareNoteDialogData): Promise<{ [key: string]: string }> {
         const shareNotesRequest = shareNotes || {};
         shareNotes[data.ticker] = data.note;
         shareNotesRequest[data.ticker] = data.note;
@@ -383,6 +383,10 @@ export interface PortfolioParams extends BasePortfolioParams {
     accountType: PortfolioAccountType;
     /** Тип ИИС */
     iisType?: IisType;
+    /** Идентификаторы составных портфелей */
+    combinedIds?: number[];
+    /** Признак комбинированного портфеля (используется только на фронте) */
+    combinedFlag?: boolean;
 }
 
 /** Запрос на получение url для доступа к портфеля */

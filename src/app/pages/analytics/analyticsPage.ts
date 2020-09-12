@@ -9,6 +9,7 @@ import {ColumnChart} from "../../components/charts/columnChart";
 import {PieChart} from "../../components/charts/pieChart";
 import {ProfitLineChart} from "../../components/charts/profitLineChart";
 import {SimpleLineChart} from "../../components/charts/simpleLineChart";
+import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {Filters} from "../../platform/filters/Filters";
 import {Storage} from "../../platform/services/storage";
@@ -27,6 +28,7 @@ import {CommonUtils} from "../../utils/commonUtils";
 import {UiStateHelper} from "../../utils/uiStateHelper";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
+import {PortfolioBasedPage} from "../portfolioBasedPage";
 import {AnalysisResult} from "./analysisResult";
 import {ChooseRisk} from "./chooseRisk";
 import {EmptyAdvice} from "./emptyAdvice";
@@ -37,181 +39,184 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-container class="adviser-wrap">
-            <empty-portfolio-stub v-if="isEmptyBlockShowed"></empty-portfolio-stub>
-            <expanded-panel v-show="showAnalyticsPanel" :value="$uistate.adviserDiagramPanel" :with-menu="false" :state="$uistate.ADVISER_DIAGRAM_PANEL">
-                <template #header>Аналитическая сводка по портфелю</template>
-                <v-layout wrap class="adviser-diagram-section mt-3">
-                    <v-flex xs12 sm12 md12 lg6 class="pr-2 left-section profitability-diagram">
-                        <v-flex v-if="yieldCompareData" class="margT30 pa-2">
-                            <v-layout class="item-header">
-                                <span class="fs13">Сравнение среднегодовой доходности</span>
-                                <v-tooltip content-class="custom-tooltip-wrap" bottom>
-                                    <template #activator="{ on }">
-                                        <v-icon v-on="on" class="ml-2">far fa-question-circle</v-icon>
-                                    </template>
-                                    <span>
+        <v-slide-x-reverse-transition>
+            <v-container v-if="initialized" class="adviser-wrap">
+                <empty-portfolio-stub v-if="isEmptyBlockShowed" @openCombinedDialog="showDialogCompositePortfolio"></empty-portfolio-stub>
+                <template v-else>
+                    <expanded-panel v-show="showAnalyticsPanel" :value="$uistate.adviserDiagramPanel" :with-menu="false" :state="$uistate.ADVISER_DIAGRAM_PANEL">
+                        <template #header>Аналитическая сводка по портфелю</template>
+                        <v-layout wrap class="adviser-diagram-section mt-3">
+                            <v-flex xs12 sm12 md12 lg6 class="pr-2 left-section profitability-diagram">
+                                <v-flex v-if="yieldCompareData" class="margT30 pa-2">
+                                    <v-layout class="item-header">
+                                        <span class="fs13">Сравнение среднегодовой доходности</span>
+                                        <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                                            <template #activator="{ on }">
+                                                <v-icon v-on="on" class="ml-2">far fa-question-circle</v-icon>
+                                            </template>
+                                            <span>
                                         Сравнение доходности портфеля с доходностью Индекса MOEX, инфляцией и
                                         ставкой по депозиту рассчитаными за период с даты первой сделки по текущий день
                                         в процентах годовых.
                                     </span>
-                                </v-tooltip>
-                            </v-layout>
-                            <average-annual-yield-chart :data="yieldCompareData"></average-annual-yield-chart>
-                        </v-flex>
-                    </v-flex>
-                    <v-flex xs12 sm12 md12 lg6 class="pl-2 right-section">
-                        <v-flex v-if="monthlyInflationData" class="margT30 pa-2">
-                            <v-layout class="item-header" align-center>
-                                <span class="fs13">Инфляция по месяцам</span>
-                                <v-tooltip content-class="custom-tooltip-wrap" bottom>
-                                    <template #activator="{ on }">
-                                        <v-icon v-on="on" class="ml-2">far fa-question-circle</v-icon>
-                                    </template>
-                                    <span>
+                                        </v-tooltip>
+                                    </v-layout>
+                                    <average-annual-yield-chart :data="yieldCompareData"></average-annual-yield-chart>
+                                </v-flex>
+                            </v-flex>
+                            <v-flex xs12 sm12 md12 lg6 class="pl-2 right-section">
+                                <v-flex v-if="monthlyInflationData" class="margT30 pa-2">
+                                    <v-layout class="item-header" align-center>
+                                        <span class="fs13">Инфляция по месяцам</span>
+                                        <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                                            <template #activator="{ on }">
+                                                <v-icon v-on="on" class="ml-2">far fa-question-circle</v-icon>
+                                            </template>
+                                            <span>
                                         Официальная инфляция по данным открытых источников.
                                     </span>
-                                </v-tooltip>
-                            </v-layout>
-                            <simple-line-chart :data="monthlyInflationData" :tooltip="'Инфляция за'"></simple-line-chart>
-                        </v-flex>
-                        <v-flex v-if="depositRatesData" class="mt-3 pa-2">
-                            <v-layout class="item-header">
-                                <span class="fs13">Ставки по депозитам</span>
-                                <v-tooltip content-class="custom-tooltip-wrap" bottom>
-                                    <template #activator="{ on }">
-                                        <v-icon v-on="on" class="ml-2">far fa-question-circle</v-icon>
-                                    </template>
-                                    <span>
+                                        </v-tooltip>
+                                    </v-layout>
+                                    <simple-line-chart :data="monthlyInflationData" :tooltip="'Инфляция за'"></simple-line-chart>
+                                </v-flex>
+                                <v-flex v-if="depositRatesData" class="mt-3 pa-2">
+                                    <v-layout class="item-header">
+                                        <span class="fs13">Ставки по депозитам</span>
+                                        <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                                            <template #activator="{ on }">
+                                                <v-icon v-on="on" class="ml-2">far fa-question-circle</v-icon>
+                                            </template>
+                                            <span>
                                         Информация по ставкам депозитов официальная с ЦБ РФ.
                                     </span>
-                                </v-tooltip>
-                            </v-layout>
-                            <simple-line-chart :data="depositRatesData" :tooltip="'Ставка по депозитам за'"></simple-line-chart>
-                        </v-flex>
-                    </v-flex>
-                </v-layout>
-            </expanded-panel>
-
-            <expanded-panel v-if="showProfitChart" :value="$uistate.profitChartPanel"
-                            :state="$uistate.PROFIT_CHART_PANEL" @click="onProfitPanelStateChange" customMenu class="mt-3"
-                            :data-v-step="0">
-                <template #header>
-                    Прибыль портфеля
-                    <tooltip>
-                        График изменения прибыли портфеля<br/>
-                        Можно отобразить как Суммарную прибыль, так и<br/>
-                        Курсовую, По сделкам, От начислений
-                    </tooltip>
-                </template>
-                <template #customMenu>
-                    <chart-export-menu v-if="portfolioLineChartData && profitLineChartEvents" @print="print(ChartType.PROFIT_LINE_CHART)"
-                                       @exportTo="exportTo(ChartType.PROFIT_LINE_CHART, $event)"
-                                       class="exp-panel-menu"></chart-export-menu>
-                </template>
-
-                <v-card-text class="px-1">
-                    <profit-line-chart v-if="portfolioLineChartData && profitLineChartEvents" :ref="ChartType.PROFIT_LINE_CHART" :data="portfolioLineChartData.lineChartData"
-                                       :moex-index-data="indexLineChartData" state-key-prefix="ANALYTICS"
-                                       :events-chart-data="profitLineChartEvents" :balloon-title="portfolio.portfolioParams.name"></profit-line-chart>
-                    <v-container v-else grid-list-md text-xs-center>
-                        <v-layout row wrap>
-                            <v-flex xs12>
-                                <v-progress-circular :size="70" :width="7" indeterminate color="indigo"></v-progress-circular>
+                                        </v-tooltip>
+                                    </v-layout>
+                                    <simple-line-chart :data="depositRatesData" :tooltip="'Ставка по депозитам за'"></simple-line-chart>
+                                </v-flex>
                             </v-flex>
                         </v-layout>
-                    </v-container>
-                </v-card-text>
-            </expanded-panel>
+                    </expanded-panel>
 
-            <expanded-panel v-if="profitByMonthsChartData && profitByMonthsChartData.categoryNames.length" :value="$uistate.profitMonthChartPanel"
-                            :state="$uistate.PROFIT_MONTH_CHART_PANEL" @click="onProfitPanelStateChange" custom-menu class="mt-3">
-                <template #header>
-                    Прибыль по месяцам
-                    <tooltip>
-                        Диаграмма, показывающая прибыль портфеля по месяцам<br/>
-                        Процент изменения считается по отношению к предыдущему периоду
-                    </tooltip>
-                </template>
-                <template #customMenu>
-                    <chart-export-menu @print="print(ChartType.PROFIT_MONTH_CHART)" @exportTo="exportTo(ChartType.PROFIT_MONTH_CHART, $event)"
-                                       class="exp-panel-menu"></chart-export-menu>
-                </template>
-                <v-card-text>
-                    <column-chart :ref="ChartType.PROFIT_MONTH_CHART" :data="profitByMonthsChartData" :view-currency="viewCurrency"
-                                  tooltip-format="PROFIT" v-tariff-expired-hint></column-chart>
-                </v-card-text>
-            </expanded-panel>
+                    <expanded-panel v-if="showProfitChart" :value="$uistate.profitChartPanel"
+                                    :state="$uistate.PROFIT_CHART_PANEL" @click="onProfitPanelStateChange" customMenu class="mt-3"
+                                    :data-v-step="0">
+                        <template #header>
+                            Прибыль портфеля
+                            <tooltip>
+                                График изменения прибыли портфеля<br/>
+                                Можно отобразить как Суммарную прибыль, так и<br/>
+                                Курсовую, По сделкам, От начислений
+                            </tooltip>
+                        </template>
+                        <template #customMenu>
+                            <chart-export-menu v-if="portfolioLineChartData && profitLineChartEvents" @print="print(ChartType.PROFIT_LINE_CHART)"
+                                               @exportTo="exportTo(ChartType.PROFIT_LINE_CHART, $event)"
+                                               class="exp-panel-menu"></chart-export-menu>
+                        </template>
 
-            <expanded-panel v-if="profitByYearsChartData && profitByYearsChartData.categoryNames.length" :value="$uistate.profitYearChartPanel"
-                            :state="$uistate.PROFIT_YEAR_CHART_PANEL" @click="onProfitPanelStateChange" custom-menu class="mt-3">
-                <template #header>
-                    Прибыль по годам
-                    <tooltip>
-                        Диаграмма, показывающая прибыль портфеля по годам<br/>
-                        Процент изменения считается по отношению к предыдущему периоду
-                    </tooltip>
-                </template>
-                <template #customMenu>
-                    <chart-export-menu @print="print(ChartType.PROFIT_YEAR_CHART)" @exportTo="exportTo(ChartType.PROFIT_YEAR_CHART, $event)"
-                                       class="exp-panel-menu"></chart-export-menu>
-                </template>
-                <v-card-text>
-                    <column-chart :ref="ChartType.PROFIT_YEAR_CHART" :data="profitByYearsChartData" :view-currency="viewCurrency"
-                                  tooltip-format="PROFIT" v-tariff-expired-hint></column-chart>
-                </v-card-text>
-            </expanded-panel>
+                        <v-card-text class="px-1">
+                            <profit-line-chart v-if="portfolioLineChartData && profitLineChartEvents" :ref="ChartType.PROFIT_LINE_CHART"
+                                               :data="portfolioLineChartData.lineChartData"
+                                               :moex-index-data="indexLineChartData" state-key-prefix="ANALYTICS"
+                                               :events-chart-data="profitLineChartEvents" :balloon-title="portfolio.portfolioParams.name"></profit-line-chart>
+                            <v-container v-else grid-list-md text-xs-center>
+                                <v-layout row wrap>
+                                    <v-flex xs12>
+                                        <v-progress-circular :size="70" :width="7" indeterminate color="indigo"></v-progress-circular>
+                                    </v-flex>
+                                </v-layout>
+                            </v-container>
+                        </v-card-text>
+                    </expanded-panel>
 
-            <expanded-panel v-if="yieldContributorsChartData && yieldContributorsChartData.categoryNames.length" :value="$uistate.yieldContributorsChart"
-                            :state="$uistate.YIELD_CONTRIBUTORS_CHART_PANEL" custom-menu class="mt-3">
-                <template #header>
-                    Эффективность бумаг в портфеле
-                    <tooltip>
-                        Диаграмма бумаг, оказавших максимальный эффект на доходность портфеля
-                    </tooltip>
-                </template>
-                <template #customMenu>
-                    <chart-export-menu @print="print(ChartType.YIELD_CONTRIBUTORS_CHART)" @exportTo="exportTo(ChartType.YIELD_CONTRIBUTORS_CHART, $event)"
-                                       class="exp-panel-menu"></chart-export-menu>
-                </template>
-                <v-card-text>
-                    <bar-chart :ref="ChartType.YIELD_CONTRIBUTORS_CHART" :data="yieldContributorsChartData" :view-currency="viewCurrency"
-                               tooltip-format="YIELDS" v-tariff-expired-hint></bar-chart>
-                </v-card-text>
-            </expanded-panel>
+                    <expanded-panel v-if="profitByMonthsChartData && profitByMonthsChartData.categoryNames.length" :value="$uistate.profitMonthChartPanel"
+                                    :state="$uistate.PROFIT_MONTH_CHART_PANEL" @click="onProfitPanelStateChange" custom-menu class="mt-3">
+                        <template #header>
+                            Прибыль по месяцам
+                            <tooltip>
+                                Диаграмма, показывающая прибыль портфеля по месяцам<br/>
+                                Процент изменения считается по отношению к предыдущему периоду
+                            </tooltip>
+                        </template>
+                        <template #customMenu>
+                            <chart-export-menu @print="print(ChartType.PROFIT_MONTH_CHART)" @exportTo="exportTo(ChartType.PROFIT_MONTH_CHART, $event)"
+                                               class="exp-panel-menu"></chart-export-menu>
+                        </template>
+                        <v-card-text>
+                            <column-chart :ref="ChartType.PROFIT_MONTH_CHART" :data="profitByMonthsChartData" :view-currency="viewCurrency"
+                                          tooltip-format="PROFIT" v-tariff-expired-hint></column-chart>
+                        </v-card-text>
+                    </expanded-panel>
 
-            <expanded-panel v-if="wholePortfolioSharesAllocationChartData.length" :value="$uistate.wholePortfolioSharesAllocationChart"
-                            :state="$uistate.WHOLE_PORTFOLIO_SHARES_ALLOCATION_CHART_PANEL"
-                            custom-menu class="mt-3">
-                <template #header>
-                    Распределение всех активов в портфеле
-                    <tooltip>
-                        Диаграмма сквозного распределения всех ваших активов, включая денежные средства, в портфеле
-                    </tooltip>
-                </template>
-                <template #customMenu>
-                    <chart-export-menu @print="print(ChartType.WHOLE_PORTFOLIO_SHARES_ALLOCATION_CHART)"
-                                       @exportTo="exportTo(ChartType.WHOLE_PORTFOLIO_SHARES_ALLOCATION_CHART, $event)"
-                                       class="exp-panel-menu"></chart-export-menu>
-                </template>
-                <v-card-text>
-                    <pie-chart :ref="ChartType.WHOLE_PORTFOLIO_SHARES_ALLOCATION_CHART" :data="wholePortfolioSharesAllocationChartData" :view-currency="viewCurrency"
-                               balloon-title="Распределение всех активов в портфеле" tooltip-format="YIELDS" v-tariff-expired-hint></pie-chart>
-                </v-card-text>
-            </expanded-panel>
+                    <expanded-panel v-if="profitByYearsChartData && profitByYearsChartData.categoryNames.length" :value="$uistate.profitYearChartPanel"
+                                    :state="$uistate.PROFIT_YEAR_CHART_PANEL" @click="onProfitPanelStateChange" custom-menu class="mt-3">
+                        <template #header>
+                            Прибыль по годам
+                            <tooltip>
+                                Диаграмма, показывающая прибыль портфеля по годам<br/>
+                                Процент изменения считается по отношению к предыдущему периоду
+                            </tooltip>
+                        </template>
+                        <template #customMenu>
+                            <chart-export-menu @print="print(ChartType.PROFIT_YEAR_CHART)" @exportTo="exportTo(ChartType.PROFIT_YEAR_CHART, $event)"
+                                               class="exp-panel-menu"></chart-export-menu>
+                        </template>
+                        <v-card-text>
+                            <column-chart :ref="ChartType.PROFIT_YEAR_CHART" :data="profitByYearsChartData" :view-currency="viewCurrency"
+                                          tooltip-format="PROFIT" v-tariff-expired-hint></column-chart>
+                        </v-card-text>
+                    </expanded-panel>
 
-            <expanded-panel v-show="showInfoPanel && false" :value="$uistate.analyticsInfoPanel" :withMenu="false" :state="$uistate.ANALYTICS_INFO_PANEL" class="mt-3">
-                <template #header>Информация об ИИС</template>
+                    <expanded-panel v-if="yieldContributorsChartData && yieldContributorsChartData.categoryNames.length" :value="$uistate.yieldContributorsChart"
+                                    :state="$uistate.YIELD_CONTRIBUTORS_CHART_PANEL" custom-menu class="mt-3">
+                        <template #header>
+                            Эффективность бумаг в портфеле
+                            <tooltip>
+                                Диаграмма бумаг, оказавших максимальный эффект на доходность портфеля
+                            </tooltip>
+                        </template>
+                        <template #customMenu>
+                            <chart-export-menu @print="print(ChartType.YIELD_CONTRIBUTORS_CHART)" @exportTo="exportTo(ChartType.YIELD_CONTRIBUTORS_CHART, $event)"
+                                               class="exp-panel-menu"></chart-export-menu>
+                        </template>
+                        <v-card-text>
+                            <bar-chart :ref="ChartType.YIELD_CONTRIBUTORS_CHART" :data="yieldContributorsChartData" :view-currency="viewCurrency"
+                                       tooltip-format="YIELDS" v-tariff-expired-hint></bar-chart>
+                        </v-card-text>
+                    </expanded-panel>
 
-                <v-layout v-if="showInfoPanel" wrap class="adviser-diagram-section mt-3">
-                    <v-flex xs12 sm12 md12 lg6 class="pr-2 left-section">
-                        <v-layout wrap align-center justify-center row fill-height>
-                            <v-flex class="pa-4">
-                                <v-progress-circular :rotate="-90" :size="100" :width="15" :value="currentYearPercent" color="primary">
-                                    <span>{{ currentYearPercent + '%'}}</span>
-                                </v-progress-circular>
+                    <expanded-panel v-if="wholePortfolioSharesAllocationChartData.length" :value="$uistate.wholePortfolioSharesAllocationChart"
+                                    :state="$uistate.WHOLE_PORTFOLIO_SHARES_ALLOCATION_CHART_PANEL"
+                                    custom-menu class="mt-3">
+                        <template #header>
+                            Распределение всех активов в портфеле
+                            <tooltip>
+                                Диаграмма сквозного распределения всех ваших активов, включая денежные средства, в портфеле
+                            </tooltip>
+                        </template>
+                        <template #customMenu>
+                            <chart-export-menu @print="print(ChartType.WHOLE_PORTFOLIO_SHARES_ALLOCATION_CHART)"
+                                               @exportTo="exportTo(ChartType.WHOLE_PORTFOLIO_SHARES_ALLOCATION_CHART, $event)"
+                                               class="exp-panel-menu"></chart-export-menu>
+                        </template>
+                        <v-card-text>
+                            <pie-chart :ref="ChartType.WHOLE_PORTFOLIO_SHARES_ALLOCATION_CHART" :data="wholePortfolioSharesAllocationChartData" :view-currency="viewCurrency"
+                                       balloon-title="Распределение всех активов в портфеле" tooltip-format="YIELDS" v-tariff-expired-hint></pie-chart>
+                        </v-card-text>
+                    </expanded-panel>
 
-                                <span class="ml-2">
+                    <expanded-panel v-show="showInfoPanel && false" :value="$uistate.analyticsInfoPanel" :withMenu="false" :state="$uistate.ANALYTICS_INFO_PANEL" class="mt-3">
+                        <template #header>Информация об ИИС</template>
+
+                        <v-layout v-if="showInfoPanel" wrap class="adviser-diagram-section mt-3">
+                            <v-flex xs12 sm12 md12 lg6 class="pr-2 left-section">
+                                <v-layout wrap align-center justify-center row fill-height>
+                                    <v-flex class="pa-4">
+                                        <v-progress-circular :rotate="-90" :size="100" :width="15" :value="currentYearPercent" color="primary">
+                                            <span>{{ currentYearPercent + '%'}}</span>
+                                        </v-progress-circular>
+
+                                        <span class="ml-2">
                                     <span>Внесения на ИИС</span>
                                     <v-tooltip content-class="custom-tooltip-wrap" bottom>
                                         <sup class="custom-tooltip" slot="activator">
@@ -226,24 +231,35 @@ const MainStore = namespace(StoreType.MAIN);
                                         </span>
                                     </v-tooltip>
                                 </span>
+                                    </v-flex>
+                                </v-layout>
                             </v-flex>
-                        </v-layout>
-                    </v-flex>
 
-                    <v-flex xs12 sm12 md12 lg6 class="pl-2 right-section">
-                        <v-layout wrap align-center justify-center row fill-height>
-                            <v-flex style="padding: 62px">
-                                <span>Здесь будет что-то интересное</span>
+                            <v-flex xs12 sm12 md12 lg6 class="pl-2 right-section">
+                                <v-layout wrap align-center justify-center row fill-height>
+                                    <v-flex style="padding: 62px">
+                                        <span>Здесь будет что-то интересное</span>
+                                    </v-flex>
+                                </v-layout>
                             </v-flex>
                         </v-layout>
-                    </v-flex>
-                </v-layout>
-            </expanded-panel>
-        </v-container>
+                    </expanded-panel>
+                </template>
+            </v-container>
+            <template v-else>
+                <content-loader class="content-loader" :height="800" :width="800" :speed="1" primaryColor="#f3f3f3" secondaryColor="#ecebeb">
+                    <rect x="0" y="20" rx="5" ry="5" width="801.11" height="100"/>
+                    <rect x="0" y="140" rx="5" ry="5" width="801.11" height="100"/>
+                    <rect x="0" y="260" rx="5" ry="5" width="801.11" height="100"/>
+                    <rect x="0" y="380" rx="5" ry="5" width="801.11" height="100"/>
+                    <rect x="0" y="500" rx="5" ry="5" width="801.11" height="100"/>
+                </content-loader>
+            </template>
+        </v-slide-x-reverse-transition>
     `,
     components: {ChooseRisk, Preloader, AnalysisResult, EmptyAdvice, AverageAnnualYieldChart, ProfitLineChart, SimpleLineChart}
 })
-export class AnalyticsPage extends UI {
+export class AnalyticsPage extends PortfolioBasedPage {
 
     $refs: {
         yieldContributorsChart: PieChart,
@@ -252,14 +268,16 @@ export class AnalyticsPage extends UI {
         profitYearChart: ColumnChart,
     };
 
-    @Inject
-    private localStorage: Storage;
     @MainStore.Getter
-    private clientInfo: ClientInfo;
+    protected clientInfo: ClientInfo;
     @MainStore.Getter
-    private portfolio: Portfolio;
+    protected portfolio: Portfolio;
     @MainStore.Action(MutationType.RELOAD_CLIENT_INFO)
-    private reloadUser: () => Promise<void>;
+    protected reloadUser: () => Promise<void>;
+    @Inject
+    protected localStorage: Storage;
+    @Inject
+    protected overviewService: OverviewService;
     @Inject
     private adviceService: AdviceService;
     @Inject
@@ -268,8 +286,6 @@ export class AnalyticsPage extends UI {
     private analyticsService: AnalyticsService;
     @Inject
     private portfolioService: PortfolioService;
-    @Inject
-    private overviewService: OverviewService;
     @Inject
     private marketHistoryService: MarketHistoryService;
     /** Данные для сравнения доходностей */
@@ -296,6 +312,8 @@ export class AnalyticsPage extends UI {
     private indexLineChartData: any[] = null;
     /** Типы круговых диаграмм */
     private ChartType = ChartType;
+    /** Признак инициализации */
+    private initialized = false;
 
     async created(): Promise<void> {
         await this.init();
@@ -314,18 +332,28 @@ export class AnalyticsPage extends UI {
     }
 
     @ShowProgress
+    @DisableConcurrentExecution
     private async init(): Promise<void> {
-        await this.loadDiagramData();
-        await this.loadTotalDepositInCurrentYear();
-        if (this.showProfitChart && (UiStateHelper.profitChartPanel[0] === 1 || UiStateHelper.profitMonthChartPanel[0] === 1 || UiStateHelper.profitYearChartPanel[0] === 1)) {
-            await this.loadProfitLineChart();
+        this.initialized = false;
+        try {
+            await this.loadDiagramData();
+            await this.loadTotalDepositInCurrentYear();
+            if (this.showProfitChart && (UiStateHelper.profitChartPanel[0] === 1 || UiStateHelper.profitMonthChartPanel[0] === 1 || UiStateHelper.profitYearChartPanel[0] === 1)) {
+                await this.loadProfitLineChart();
+            }
+            this.yieldContributorsChartData = await this.doYieldContributorsChartData();
+            this.wholePortfolioSharesAllocationChartData = await this.doWholePortfolioSharesAllocationChartData();
+        } finally {
+            this.initialized = true;
         }
-        this.yieldContributorsChartData = await this.doYieldContributorsChartData();
-        this.wholePortfolioSharesAllocationChartData = await this.doWholePortfolioSharesAllocationChartData();
     }
 
     private async loadDiagramData(): Promise<void> {
-        this.yieldCompareData = await this.analyticsService.getComparedYields(this.portfolio.id.toString());
+        if (this.portfolio.portfolioParams.combinedFlag) {
+            this.yieldCompareData = await this.analyticsService.getComparedYieldsCombined(this.portfolio.portfolioParams.viewCurrency, this.portfolio.portfolioParams.combinedIds);
+        } else {
+            this.yieldCompareData = await this.analyticsService.getComparedYields(this.portfolio.id);
+        }
         this.monthlyInflationData = ChartUtils.makeSimpleChartData(await this.analyticsService.getInflationForLastSixMonths());
         this.depositRatesData = ChartUtils.makeSimpleChartData(await this.analyticsService.getRatesForLastSixMonths());
     }
@@ -340,14 +368,28 @@ export class AnalyticsPage extends UI {
 
     private async loadProfitLineChart(): Promise<void> {
         if (!this.portfolioLineChartData) {
-            this.portfolioLineChartData = await this.overviewService.getCostChart(this.portfolio.id);
+            if (this.portfolio.portfolioParams.combinedFlag) {
+                this.portfolioLineChartData = await this.overviewService.getCostChartCombined({
+                    ids: this.portfolio.portfolioParams.combinedIds,
+                    viewCurrency: this.portfolio.portfolioParams.viewCurrency
+                });
+            } else {
+                this.portfolioLineChartData = await this.overviewService.getCostChart(this.portfolio.id);
+            }
         }
         // TODO сделать независимую загрузку по признаку в localStorage
         if (this.portfolio.overview.firstTradeDate && !this.indexLineChartData) {
             this.indexLineChartData = await this.marketHistoryService.getIndexHistory("MMVB", dayjs(this.portfolio.overview.firstTradeDate).format("DD.MM.YYYY"));
         }
         if (!CommonUtils.exists(this.profitLineChartEvents)) {
-            this.profitLineChartEvents = await this.overviewService.getEventsChartDataWithDefaults(this.portfolio.id, false);
+            if (this.portfolio.portfolioParams.combinedFlag) {
+                this.profitLineChartEvents = await this.overviewService.getEventsChartDataCombined({
+                    ids: this.portfolio.portfolioParams.combinedIds,
+                    viewCurrency: this.portfolio.portfolioParams.viewCurrency
+                }, false);
+            } else {
+                this.profitLineChartEvents = await this.overviewService.getEventsChartDataWithDefaults(this.portfolio.id, false);
+            }
             this.profitLineChartEvents.forEach(item => item.onSeries = "totalProfit");
         }
         this.profitByMonthsChartData = await this.doPortfolioProfitMonthData();
@@ -356,10 +398,6 @@ export class AnalyticsPage extends UI {
 
     private get viewCurrency(): string {
         return Filters.currencySymbolByCurrency(this.portfolio.portfolioParams.viewCurrency);
-    }
-
-    private get isEmptyBlockShowed(): boolean {
-        return this.portfolio && this.portfolio.overview.totalTradesCount === 0;
     }
 
     private get showInfoPanel(): boolean {
@@ -397,7 +435,9 @@ export class AnalyticsPage extends UI {
     }
 
     private async loadTotalDepositInCurrentYear(): Promise<void> {
-        this.totalDepositInCurrentYear = await this.portfolioService.totalDepositInCurrentYear(this.portfolio.id);
+        if (!this.portfolio.portfolioParams.combinedFlag) {
+            this.totalDepositInCurrentYear = await this.portfolioService.totalDepositInCurrentYear(this.portfolio.id);
+        }
     }
 
     private async exportTo(chart: ChartType, type: string): Promise<void> {

@@ -6,7 +6,6 @@ import {ShowProgress} from "../../platform/decorators/showProgress";
 import {MarketService} from "../../services/marketService";
 import {Currency, CurrencyItem} from "../../types/currency";
 import {EventType} from "../../types/eventType";
-import {Portfolio} from "../../types/types";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 
@@ -30,13 +29,11 @@ const MainStore = namespace(StoreType.MAIN);
 })
 export class CurrencyQuotes extends UI {
 
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
-    @MainStore.Getter
-    private portfolio: Portfolio;
+    @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
+    private reloadPortfolio: () => Promise<void>;
     @Inject
-    private marketservice: MarketService;
-
+    private marketService: MarketService;
+    /** Валюты */
     private currencies: CurrencyItem[] = [];
 
     /**
@@ -45,10 +42,10 @@ export class CurrencyQuotes extends UI {
      */
     @ShowProgress
     async created(): Promise<void> {
-        const array = await this.marketservice.loadCurrencies();
+        const array = await this.marketService.loadCurrencies();
         const sortBy: string[] = [Currency.EUR, Currency.USD, Currency.GBP];
         this.currencies = array.sort((a, b) => sortBy.indexOf(b.charCode) - sortBy.indexOf(a.charCode));
-        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio());
     }
 
     beforeDestroy(): void {

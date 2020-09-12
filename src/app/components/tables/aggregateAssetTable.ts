@@ -117,8 +117,6 @@ const MainStore = namespace(StoreType.MAIN);
 })
 export class AggregateAssetTable extends UI {
 
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
     @MainStore.Getter
     private portfolio: Portfolio;
 

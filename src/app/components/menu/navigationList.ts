@@ -37,7 +37,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     <v-icon color="grey lighten-1">keyboard_arrow_down</v-icon>
                                 </v-list-tile-action>
                             </v-list-tile>
-                            <v-list-tile active-class="active-link" v-for="subItem in item.subMenu" :key="subItem.action"
+                            <v-list-tile active-class="active-link" v-for="subItem in item.subMenu.filter(item => !item.active)" :key="subItem.action"
                                          :to="{path: subItem.path, name: subItem.action, params: subItem.params}">
                                 <v-list-tile-content>
                                     <v-list-tile-title>{{ subItem.title }}</v-list-tile-title>

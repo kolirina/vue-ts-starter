@@ -19,6 +19,7 @@ import {Inject} from "typescript-ioc";
 import {RawLocation, Route} from "vue-router";
 import {Vue} from "vue/types/vue";
 import {namespace} from "vuex-class/lib/bindings";
+import {Resolver} from "../../../../../typings/vue";
 import {Component, UI} from "../../../app/ui";
 import {DisableConcurrentExecution} from "../../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../../platform/decorators/showProgress";
@@ -116,8 +117,8 @@ export class PortfolioManagementEditPage extends UI {
     private reloadPortfolios: () => Promise<void>;
     @MainStore.Mutation(MutationType.UPDATE_PORTFOLIO)
     private updatePortfolio: (portfolio: PortfolioParams) => Promise<void>;
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
+    @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
+    private reloadPortfolio: () => Promise<void>;
     /** Сервис по работе с портфелями */
     @Inject
     private portfolioService: PortfolioService;
@@ -151,11 +152,17 @@ export class PortfolioManagementEditPage extends UI {
      * @inheritDoc
      */
     async mounted(): Promise<void> {
-        UI.on(EventType.PORTFOLIO_CREATED, async () => this.reloadPortfolios());
-        UI.on(EventType.PORTFOLIO_CREATED, async () => this.reloadPortfolios());
+        UI.on(EventType.PORTFOLIO_CREATED, async () => {
+            await this.reloadPortfolios();
+            UI.emit(EventType.PORTFOLIO_LIST_UPDATED);
+        });
         UI.on(EventType.PORTFOLIO_UPDATED, async (portfolio: PortfolioParams) => this.updatePortfolio(portfolio));
-        UI.on(EventType.PORTFOLIO_RELOAD, async (portfolio: PortfolioParams) => await this.reloadPortfolio(portfolio.id));
-        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
+        UI.on(EventType.PORTFOLIO_RELOAD, async (portfolio: PortfolioParams) => {
+            if (this.portfolio.id === portfolio.id) {
+                await this.reloadPortfolio();
+            }
+        });
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio());
         await this.loadPortfolio(this.$route.params.id);
         this.portfolioName = this.portfolio.name;
         this.publicName = this.clientInfo.user.publicName;
@@ -169,7 +176,7 @@ export class PortfolioManagementEditPage extends UI {
         UI.off(EventType.TRADE_CREATED);
     }
 
-    async beforeRouteUpdate(to: Route, from: Route, next: (to?: RawLocation | false | ((vm: Vue) => any) | void) => void): Promise<void> {
+    async beforeRouteUpdate?(to: Route, from: Route, next: Resolver): Promise<void> {
         await this.loadPortfolio(to.params.id);
         next();
     }

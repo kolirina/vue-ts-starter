@@ -15,6 +15,8 @@
  */
 
 import {PortfolioBlockType} from "../services/onBoardingTourService";
+import {OverviewService} from "../services/overviewService";
+import {PortfolioParams} from "../services/portfolioService";
 import {Overview} from "../types/types";
 
 export class PortfolioUtils {
@@ -95,5 +97,17 @@ export class PortfolioUtils {
                 true;
         }
         return true;
+    }
+
+    static resetCombinedOverviewCache(combinedPortfolioParams: PortfolioParams, portfolioId: number, overviewService: OverviewService): void {
+        // так как данные перезагружать не нужно если добавили в другой портфель
+        const needResetCache = combinedPortfolioParams.combinedIds?.includes(portfolioId);
+        // сбрасываем кэш выбранного портфеля чтобы при переключении он загрузкился с новой сделкой
+        if (needResetCache) {
+            overviewService.resetCacheForCombinedPortfolio({
+                ids: combinedPortfolioParams.combinedIds,
+                viewCurrency: combinedPortfolioParams.viewCurrency
+            });
+        }
     }
 }

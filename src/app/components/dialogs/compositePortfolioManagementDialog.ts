@@ -2,10 +2,8 @@ import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {CustomDialog} from "../../platform/dialogs/customDialog";
-import {OverviewService} from "../../services/overviewService";
-import {PortfolioParams} from "../../services/portfolioService";
+import {PortfolioParams, PortfolioService} from "../../services/portfolioService";
 import {ALLOWED_CURRENCIES, Currency} from "../../types/currency";
-import {CombinedData} from "../../types/eventObjects";
 import {CombinedPortfoliosTable} from "../combinedPortfoliosTable";
 
 @Component({
@@ -21,7 +19,7 @@ import {CombinedPortfoliosTable} from "../combinedPortfoliosTable";
                 </div>
                 <div class="scroll-dialog__body">
                     <div>
-                        <combined-portfolios-table :portfolios="data.portfolio" @change="onSetCombined"></combined-portfolios-table>
+                        <combined-portfolios-table :portfolios="availablePortfolios" @change="onSetCombined"></combined-portfolios-table>
                     </div>
                     <div class="choose-currency">
                         <div class="choose-currency__description mb-1">
@@ -45,13 +43,13 @@ import {CombinedPortfoliosTable} from "../combinedPortfoliosTable";
     `,
     components: {CombinedPortfoliosTable}
 })
-export class CompositePortfolioManagement extends CustomDialog<PortfolioManagementParams, string> {
+export class CompositePortfolioManagementDialog extends CustomDialog<PortfolioManagementParams, string> {
     /** Валюта просмотра портфеля */
     private viewCurrency: string = Currency.RUB;
     /** Список валют */
     private currencyList = ALLOWED_CURRENCIES;
     @Inject
-    private overviewService: OverviewService;
+    private portfolioService: PortfolioService;
 
     mounted(): void {
         this.viewCurrency = this.data.viewCurrency;
@@ -62,12 +60,19 @@ export class CompositePortfolioManagement extends CustomDialog<PortfolioManageme
     }
 
     @ShowProgress
-    private async onSetCombined(data: CombinedData): Promise<void> {
-        await this.overviewService.setCombinedFlag(data.id, data.combined);
+    private async onSetCombined(portfolioParams: PortfolioParams): Promise<void> {
+        await this.portfolioService.setCombinedFlag(portfolioParams.id, portfolioParams.combined);
+    }
+
+    /**
+     * Возвращает список портфелей доступных для переключения
+     */
+    private get availablePortfolios(): PortfolioParams[] {
+        return this.data.portfolios.filter(portfolio => !portfolio.combinedFlag);
     }
 }
 
 type PortfolioManagementParams = {
-    portfolio: PortfolioParams[],
+    portfolios: PortfolioParams[],
     viewCurrency: string
 };

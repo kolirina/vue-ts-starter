@@ -69,10 +69,8 @@ const MainStore = namespace(StoreType.MAIN);
 })
 export class ProfilePage extends UI {
 
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
-    @MainStore.Getter
-    private portfolio: Portfolio;
+    @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
+    private reloadPortfolio: () => Promise<void>;
 
     /**
      * Инициализирует данные компонента
@@ -80,7 +78,7 @@ export class ProfilePage extends UI {
      */
     @ShowProgress
     async created(): Promise<void> {
-        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio());
     }
 
     beforeDestroy(): void {

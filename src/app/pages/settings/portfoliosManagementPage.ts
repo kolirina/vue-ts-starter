@@ -50,8 +50,8 @@ const MainStore = namespace(StoreType.MAIN);
                             </v-btn>
                         </v-card-title>
                     </v-card>
-                    <portfolios-tile v-if="displayMode === DisplayMode.TILE" :portfolios="clientInfo.user.portfolios"></portfolios-tile>
-                    <portfolios-table v-if="displayMode === DisplayMode.LIST" :portfolios="clientInfo.user.portfolios"></portfolios-table>
+                    <portfolios-tile v-if="displayMode === DisplayMode.TILE" :portfolios="clientInfo.user.portfolios" data-v-step="0"></portfolios-tile>
+                    <portfolios-table v-if="displayMode === DisplayMode.LIST" :portfolios="clientInfo.user.portfolios" data-v-step="0"></portfolios-table>
                 </v-flex>
             </v-layout>
         </v-container>
@@ -70,18 +70,26 @@ export class PortfoliosManagementPage extends UI {
     private reloadPortfolios: () => Promise<void>;
     @MainStore.Mutation(MutationType.UPDATE_PORTFOLIO)
     private updatePortfolio: (portfolio: PortfolioParams) => Promise<void>;
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
+    @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
+    private reloadPortfolio: () => Promise<void>;
+    /** Режимы отображения портфелей */
     private DisplayMode = DisplayMode;
     /** Режим отображения списка */
     private displayMode = DisplayMode.TILE;
 
     created(): void {
         this.displayMode = this.localStorage.get(StoreKeys.PORTFOLIO_DISPLAY_MODE_KEY, DisplayMode.TILE);
-        UI.on(EventType.PORTFOLIO_CREATED, async () => this.reloadPortfolios());
-        UI.on(EventType.PORTFOLIO_UPDATED, async (portfolio: PortfolioParams) => this.updatePortfolio(portfolio));
-        UI.on(EventType.PORTFOLIO_RELOAD, async (portfolio: PortfolioParams) => await this.reloadPortfolio(portfolio.id));
-        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
+        UI.on(EventType.PORTFOLIO_CREATED, async () => {
+            await this.reloadPortfolios();
+            UI.emit(EventType.PORTFOLIO_LIST_UPDATED);
+        });
+        UI.on(EventType.PORTFOLIO_UPDATED, async (portfolio: PortfolioParams) => await this.updatePortfolio(portfolio));
+        UI.on(EventType.PORTFOLIO_RELOAD, async (portfolio: PortfolioParams) => {
+            if (this.portfolio.id === portfolio.id) {
+                await this.reloadPortfolio();
+            }
+        });
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio());
     }
 
     beforeDestroy(): void {
@@ -97,11 +105,18 @@ export class PortfoliosManagementPage extends UI {
     }
 
     private async createNewPortfolio(): Promise<void> {
-        if (this.clientInfo.user.tariff.maxPortfoliosCount < this.clientInfo.user.portfolios.length + 1) {
+        if (this.clientInfo.user.tariff.maxPortfoliosCount < this.availablePortfolios.length + 1) {
             await new ChangeTariffDialog().show(this.$router);
             return;
         }
         await this.$router.push({name: "portfolio-management-edit", params: {id: "new"}});
+    }
+
+    /**
+     * Возвращает список портфелей доступных для переключения
+     */
+    private get availablePortfolios(): PortfolioParams[] {
+        return this.clientInfo.user.portfolios.filter(portfolio => !portfolio.combinedFlag);
     }
 }
 

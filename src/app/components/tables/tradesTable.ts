@@ -21,6 +21,7 @@ import {namespace} from "vuex-class";
 import {UI} from "../../app/ui";
 import {Filters} from "../../platform/filters/Filters";
 import {ClientInfo, ClientService} from "../../services/clientService";
+import {PortfolioParams} from "../../services/portfolioService";
 import {TableHeadersState, TABLES_NAME, TablesService} from "../../services/tablesService";
 import {TradeFields, TradeType} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
@@ -30,7 +31,6 @@ import {Pagination, Portfolio, TableHeader, TradeRow} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {DateFormat} from "../../utils/dateUtils";
 import {TradeUtils} from "../../utils/tradeUtils";
-import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 import {AddTradeDialog} from "../dialogs/addTradeDialog";
 import {ChoosePortfolioDialog} from "../dialogs/choosePortfolioDialog";
@@ -54,7 +54,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-layout>
                     <td v-if="tableHeadersState.ticker" class="text-xs-left">
                         <stock-link v-if="props.item.asset === tradeType.STOCK.code" :ticker="props.item.ticker"></stock-link>
-                        <asset-link v-if="props.item.asset === tradeType.ASSET.code" :ticker="props.item.shareId">{{ props.item.ticker }}</asset-link>
+                        <asset-link v-if="props.item.asset === tradeType.ASSET.code" :ticker="String(props.item.shareId)">{{ props.item.ticker }}</asset-link>
                         <bond-link v-if="props.item.asset === tradeType.BOND.code" :ticker="props.item.ticker"></bond-link>
                         <span v-if="props.item.asset === tradeType.MONEY.code">{{ props.item.ticker }}</span>
                     </td>
@@ -108,7 +108,7 @@ const MainStore = namespace(StoreType.MAIN);
                             </v-tooltip>
                         </v-layout>
                     </td>
-                    <td class="px-0" @click.stop>
+                    <td v-if="allowActions" class="px-0" @click.stop>
                         <v-layout align-center justify-center>
                             <v-menu transition="slide-y-transition" bottom left>
                                 <v-btn slot="activator" flat icon dark>
@@ -209,8 +209,6 @@ export class TradesTable extends UI {
     private tablesService: TablesService;
     @Inject
     private clientService: ClientService;
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
     @MainStore.Getter
     private portfolio: Portfolio;
     @MainStore.Getter
@@ -234,6 +232,7 @@ export class TradesTable extends UI {
     private AssetType = AssetType;
     /** Признак доступности профессионального режима */
     private portfolioProModeEnabled = false;
+    /** Типы сделок */
     private tradeType = TradeType;
 
     /**
@@ -317,7 +316,7 @@ export class TradesTable extends UI {
 
     private async copyTrade(trade: TradeRow): Promise<void> {
         const toPortfolioId = await new ChoosePortfolioDialog().show({
-            portfolios: this.clientInfo.user.portfolios, currentPortfolioId: this.portfolio.id,
+            portfolios: this.availablePortfolios, currentPortfolioId: this.portfolio.id,
             titleDialog: "Копирование сделки в", buttonTitle: "Копировать"
         });
         if (!toPortfolioId) {
@@ -328,7 +327,7 @@ export class TradesTable extends UI {
 
     private async moveTrade(trade: TradeRow): Promise<void> {
         const toPortfolioId = await new ChoosePortfolioDialog().show({
-            portfolios: this.clientInfo.user.portfolios, currentPortfolioId: this.portfolio.id,
+            portfolios: this.availablePortfolios, currentPortfolioId: this.portfolio.id,
             titleDialog: "Перемещение сделки в", buttonTitle: "Переместить"
         });
         if (!toPortfolioId) {
@@ -401,5 +400,16 @@ export class TradesTable extends UI {
 
     private notZero(value: string): boolean {
         return TradeUtils.notZero(value);
+    }
+
+    private get allowActions(): boolean {
+        return !this.portfolio.portfolioParams.combinedFlag;
+    }
+
+    /**
+     * Возвращает список портфелей доступных для переключения
+     */
+    private get availablePortfolios(): PortfolioParams[] {
+        return this.clientInfo.user.portfolios.filter(portfolio => !portfolio.combinedFlag);
     }
 }

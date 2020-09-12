@@ -1,6 +1,7 @@
 import {Decimal} from "decimal.js";
 import {Inject} from "typescript-ioc";
-import {Component, namespace, UI, Watch} from "../app/ui";
+import {Component, namespace, Watch} from "../app/ui";
+import {DisableConcurrentExecution} from "../platform/decorators/disableConcurrentExecution";
 import {Filters} from "../platform/filters/Filters";
 import {ClientInfo} from "../services/clientService";
 import {OverviewService} from "../services/overviewService";
@@ -15,6 +16,7 @@ import {SortUtils} from "../utils/sortUtils";
 import {TariffUtils} from "../utils/tariffUtils";
 import {TradeUtils} from "../utils/tradeUtils";
 import {StoreType} from "../vuex/storeType";
+import {PortfolioBasedPage} from "./portfolioBasedPage";
 
 const MainStore = namespace(StoreType.MAIN);
 
@@ -210,24 +212,24 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-fade-transition>
             </v-card>
 
-            <empty-portfolio-stub v-else></empty-portfolio-stub>
+            <empty-portfolio-stub v-else @openCombinedDialog="showDialogCompositePortfolio"></empty-portfolio-stub>
         </v-container>
     `
 })
-export class RebalancingPage extends UI {
+export class RebalancingPage extends PortfolioBasedPage {
 
     readonly ZERO = new Decimal("0.00");
     @Inject
-    private rebalancingService: RebalancingService;
+    protected overviewService: OverviewService;
     @Inject
-    private tradeService: TradeService;
+    protected rebalancingService: RebalancingService;
     @Inject
-    private overviewService: OverviewService;
+    protected tradeService: TradeService;
 
     @MainStore.Getter
-    private portfolio: Portfolio;
+    protected portfolio: Portfolio;
     @MainStore.Getter
-    private clientInfo: ClientInfo;
+    protected clientInfo: ClientInfo;
     private calculationsInLots = true;
     private onlyBuyTrades = true;
 
@@ -273,6 +275,7 @@ export class RebalancingPage extends UI {
     }
 
     @Watch("portfolio")
+    @DisableConcurrentExecution
     private async onPortfolioChange(): Promise<void> {
         this.currency = this.portfolio.portfolioParams.viewCurrency;
         this.passedSteps = [Step.FIRST];
@@ -317,6 +320,9 @@ export class RebalancingPage extends UI {
     }
 
     private async loadRebalancingModel(): Promise<void> {
+        if (!this.portfolio.id) {
+            return;
+        }
         this.rebalancingModel = await this.overviewService.getPortfolioRebalancing(this.portfolio.id);
         if (!this.rebalancingModel) {
             this.rebalancingModel = {
@@ -342,12 +348,11 @@ export class RebalancingPage extends UI {
         }
     }
 
-    private async saveRules(): Promise<void> {
-        await this.saveRebalancing(this.calculateRows);
-        this.$snotify.info("Правила успешно сохранены");
-    }
-
     private async saveRebalancing(calculateRow: CalculateRow[]): Promise<void> {
+        if (!this.portfolio.id) {
+            this.$snotify.warning("Сохранение настроек для составного портфеля недоступно");
+            return;
+        }
         this.rebalancingModel.instrumentRebalancingModels = [];
         calculateRow.forEach(row => {
             this.rebalancingModel.instrumentRebalancingModels.push({

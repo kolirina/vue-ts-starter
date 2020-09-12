@@ -18,11 +18,14 @@ import {Inject} from "typescript-ioc";
 import {namespace} from "vuex-class/lib/bindings";
 import {Component, Prop, UI, Watch} from "../../app/ui";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
+import {OverviewService} from "../../services/overviewService";
+import {PortfolioParams} from "../../services/portfolioService";
 import {TradeService} from "../../services/tradeService";
 import {BigMoney} from "../../types/bigMoney";
 import {CurrencyUnit} from "../../types/currency";
 import {Operation} from "../../types/operation";
 import {AssetRow, Pagination, Portfolio, StockPortfolioRow, TableHeader} from "../../types/types";
+import {PortfolioUtils} from "../../utils/portfolioUtils";
 import {SortUtils} from "../../utils/sortUtils";
 import {TradeUtils} from "../../utils/tradeUtils";
 import {MutationType} from "../../vuex/mutationType";
@@ -69,12 +72,16 @@ export class BalancesTable extends UI {
 
     @Inject
     private tradeService: TradeService;
+    @Inject
+    private overviewService: OverviewService;
 
     @MainStore.Getter
     private portfolio: Portfolio;
-
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
+    /** Комбинированный портфель */
+    @MainStore.Getter
+    private combinedPortfolioParams: PortfolioParams;
+    @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
+    private reloadPortfolio: () => Promise<void>;
 
     private balancesTableRow: BalancesTableRow[] = [];
 
@@ -114,7 +121,8 @@ export class BalancesTable extends UI {
                 ticker: stockRow.ticker,
                 portfolioId: this.portfolio.id
             });
-            await this.reloadPortfolio(this.portfolio.id);
+            this.resetCombinedOverviewCache(this.portfolio.id);
+            await this.reloadPortfolio();
         }
     }
 
@@ -168,6 +176,10 @@ export class BalancesTable extends UI {
 
     private markupClasses(amount: number, highlightPositive: boolean = true): string[] {
         return TradeUtils.markupClasses(amount, highlightPositive);
+    }
+
+    private resetCombinedOverviewCache(portfolioId: number): void {
+        PortfolioUtils.resetCombinedOverviewCache(this.combinedPortfolioParams, portfolioId, this.overviewService);
     }
 }
 

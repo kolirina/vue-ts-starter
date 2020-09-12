@@ -98,8 +98,8 @@ const MainStore = namespace(StoreType.MAIN);
 })
 export class CommonAssetQuotes extends UI {
 
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
+    @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
+    private reloadPortfolio: () => Promise<void>;
     @MainStore.Getter
     private portfolio: Portfolio;
     /** Текущая операция */
@@ -143,7 +143,7 @@ export class CommonAssetQuotes extends UI {
     private isEmptySearchResult: boolean = false;
 
     created(): void {
-        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio(this.portfolio.id));
+        UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio());
     }
 
     beforeDestroy(): void {

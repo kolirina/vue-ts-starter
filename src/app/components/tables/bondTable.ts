@@ -24,14 +24,16 @@ import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {Filters} from "../../platform/filters/Filters";
 import {Storage} from "../../platform/services/storage";
-import {PortfolioService} from "../../services/portfolioService";
+import {OverviewService} from "../../services/overviewService";
+import {PortfolioParams, PortfolioService} from "../../services/portfolioService";
 import {TableHeadersState, TABLES_NAME, TablesService} from "../../services/tablesService";
 import {TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
 import {BigMoney} from "../../types/bigMoney";
 import {Operation} from "../../types/operation";
-import {BondPortfolioRow, Pagination, Portfolio, ShareType, TableHeader} from "../../types/types";
+import {BondPortfolioRow, Pagination, Portfolio, Share, ShareType, TableHeader} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
+import {PortfolioUtils} from "../../utils/portfolioUtils";
 import {SortUtils} from "../../utils/sortUtils";
 import {TradeUtils} from "../../utils/tradeUtils";
 import {MutationType} from "../../vuex/mutationType";
@@ -76,7 +78,7 @@ const MainStore = namespace(StoreType.MAIN);
                                    :ticker="props.item.bond.ticker">{{ props.item.bond.shortname }}
                         </bond-link>
                         &nbsp;
-                        <span v-if="props.item.bond && props.item.quantity !== '0'"
+                        <span v-if="props.item.bond && props.item.quantity !== '0'" title="Изменение за день"
                               :class="markupClasses(Number(props.item.bond.change))">{{ props.item.bond.change }}&nbsp;%</span>
                     </td>
                     <td v-if="tableHeadersState.ticker" class="text-xs-left">
@@ -130,7 +132,7 @@ const MainStore = namespace(StoreType.MAIN);
                                 <span class="menuDots"></span>
                             </v-btn>
                             <v-list dense>
-                                <v-list-tile @click="openShareTradesDialog(props.item.bond.ticker)">
+                                <v-list-tile @click="openShareTradesDialog(props.item.bond)">
                                     <v-list-tile-title>
                                         Все сделки
                                     </v-list-tile-title>
@@ -166,8 +168,8 @@ const MainStore = namespace(StoreType.MAIN);
                                         Погашение
                                     </v-list-tile-title>
                                 </v-list-tile>
-                                <v-divider></v-divider>
-                                <v-list-tile @click="deleteAllTrades(props.item)">
+                                <v-divider v-if="portfolio.id"></v-divider>
+                                <v-list-tile v-if="portfolio.id" @click="deleteAllTrades(props.item)">
                                     <v-list-tile-title class="delete-btn">
                                         Удалить
                                     </v-list-tile-title>
@@ -279,19 +281,16 @@ export class BondTable extends UI {
     @Inject
     private tablesService: TablesService;
     @Inject
+    private overviewService: OverviewService;
+    @Inject
     private portfolioService: PortfolioService;
-    @MainStore.Action(MutationType.RELOAD_PORTFOLIO)
-    private reloadPortfolio: (id: number) => Promise<void>;
-    /** Если работаем из составного портфеля и добавляем сделку в текущий портфель, надо перезагрузить его */
+    @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
+    private reloadPortfolio: () => Promise<void>;
     @MainStore.Getter
     private portfolio: Portfolio;
-
-    /** Идентификатор портфеля */
-    @Prop({default: null, type: String, required: true})
-    private portfolioId: string;
-    /** Айди портфелей для комбинирования */
-    @Prop({default: [], required: false})
-    private ids: number[];
+    /** Комбинированный портфель */
+    @MainStore.Getter
+    private combinedPortfolioParams: PortfolioParams;
     /** Валюта просмотра информации */
     @Prop({required: true, type: String})
     private viewCurrency: string;
@@ -368,14 +367,14 @@ export class BondTable extends UI {
         this.tableHeadersState = this.tablesService.getHeadersState(this.headers);
     }
 
-    private async openShareTradesDialog(ticker: string): Promise<void> {
+    private async openShareTradesDialog(share: Share): Promise<void> {
         let trades = [];
-        if (this.portfolioId) {
-            trades = await this.tradeService.getShareTrades(this.portfolioId, ticker);
+        if (this.portfolio.id) {
+            trades = await this.tradeService.getShareTrades(this.portfolio.id, share.id, share.shareType);
         } else {
-            trades = await this.tradeService.getTradesCombinedPortfolio(ticker, this.viewCurrency, this.ids);
+            trades = await this.tradeService.getTradesCombinedPortfolio(share.id, share.shareType, this.viewCurrency, this.portfolio.portfolioParams.combinedIds);
         }
-        await new ShareTradesDialog().show({trades, ticker, shareType: ShareType.BOND});
+        await new ShareTradesDialog().show({trades, ticker: share.ticker, shareType: ShareType.BOND});
     }
 
     private async openTradeDialog(bondRow: BondPortfolioRow, operation: Operation): Promise<void> {
@@ -402,7 +401,7 @@ export class BondTable extends UI {
 
     @ShowProgress
     private async editShareNote(data: EditShareNoteDialogData): Promise<void> {
-        await this.portfolioService.updateShareNotes(this.portfolioId, this.shareNotes, data);
+        await this.portfolioService.updateShareNotes(this.portfolio.id, this.shareNotes, data);
         this.$snotify.info(`Заметка по бумаге ${data.ticker} была успешно сохранена`);
     }
 
@@ -418,9 +417,10 @@ export class BondTable extends UI {
         await this.tradeService.deleteAllTrades({
             assetType: AssetType.BOND.enumName,
             ticker: bondRow.bond.ticker,
-            portfolioId: Number(this.portfolioId)
+            portfolioId: this.portfolio.id
         });
-        await this.reloadPortfolio(Number(this.portfolioId));
+        await this.reloadPortfolio();
+        this.resetCombinedOverviewCache(this.portfolio.id);
     }
 
     private amount(value: string): number {
@@ -466,6 +466,10 @@ export class BondTable extends UI {
 
     private markupClasses(amount: number): string[] {
         return TradeUtils.markupClasses(amount);
+    }
+
+    private resetCombinedOverviewCache(portfolioId: number): void {
+        PortfolioUtils.resetCombinedOverviewCache(this.combinedPortfolioParams, portfolioId, this.overviewService);
     }
 
     private get portfolioCurrency(): string {
