@@ -1,5 +1,6 @@
 import {Inject} from "typescript-ioc";
 import Component from "vue-class-component";
+import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {BtnReturn, CustomDialog} from "../../platform/dialogs/customDialog";
 import {ClientService} from "../../services/clientService";
 import {StoreKeys} from "../../types/storeKeys";
@@ -40,6 +41,7 @@ export class RegistrationDialog extends CustomDialog<string, BtnReturn> {
     // tslint:disable-next-line
     private emailRule = new RegExp(/^(?=.{1,254}$)(?=.{1,64}@)[-!#$%&'*+/0-9=?A-Z^_`a-z{|}~]+(\.[-!#$%&'*+/0-9=?A-Z^_`a-z{|}~]+)*@[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?(\.[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?)+$/);
 
+    @DisableConcurrentExecution
     private async registration(): Promise<void> {
         if (!this.isEmailValid) {
             return;
