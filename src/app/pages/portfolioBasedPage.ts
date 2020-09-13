@@ -67,7 +67,6 @@ export class PortfolioBasedPage extends UI {
     }
 
     protected get isEmptyBlockShowed(): boolean {
-        console.log(this.portfolio?.overview.totalTradesCount);
         return this.portfolio && this.portfolio.overview.totalTradesCount === 0;
     }
 

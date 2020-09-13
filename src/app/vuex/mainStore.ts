@@ -98,9 +98,6 @@ const Mutations = {
             viewCurrency: state.combinedPortfolioParams.viewCurrency,
             selected: portfolioParams.selected
         } as CombinedPortfolioParams);
-        if (state.currentPortfolio?.portfolioParams.combinedFlag) {
-            state.currentPortfolio = {...state.currentPortfolio, portfolioParams: state.combinedPortfolioParams};
-        }
     },
     [MutationType.SET_DEFAULT_PORTFOLIO](state: StateHolder, id: number): void {
         state.clientInfo.user.currentPortfolioId = id;

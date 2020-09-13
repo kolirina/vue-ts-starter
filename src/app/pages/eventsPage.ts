@@ -422,6 +422,11 @@ export class EventsPage extends PortfolioBasedPage {
             if (this.typeCalendarEvents.includes(CalendarEventType.USER.code.toLowerCase())) {
                 await this.loadCalendarEvents();
             }
+            if (this.allowActions) {
+                this.eventsHeaders.push(EventsPage.ACTION_HEADER);
+            } else {
+                this.eventsHeaders.splice(this.eventsHeaders.length - 1, 1);
+            }
         } finally {
             this.initialized = true;
         }
