@@ -161,7 +161,7 @@ export class OverviewService {
      * @return {Promise<Portfolio>}
      */
     private async loadPortfolio(id: number): Promise<Portfolio> {
-        const portfolioResponse: PortfolioParamsResponse = await this.http.get<PortfolioParamsResponse>(`/portfolios/${id}`);
+        const portfolioResponse: PortfolioParamsResponse = await this.http.get<PortfolioParamsResponse>(`/portfolio-info/${id}`);
         const portfolio = {
             ...portfolioResponse,
             accountType: portfolioResponse.accountType ? PortfolioAccountType.valueByName(portfolioResponse.accountType) : null,

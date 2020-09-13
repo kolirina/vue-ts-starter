@@ -1,6 +1,6 @@
 import {Inject} from "typescript-ioc";
 import {namespace} from "vuex-class/lib/bindings";
-import {Component, Prop, UI} from "../app/ui";
+import {Component, Prop, UI, Watch} from "../app/ui";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {Storage} from "../platform/services/storage";
 import {ClientInfo} from "../services/clientService";
@@ -120,6 +120,14 @@ export class PortfolioSwitcher extends UI {
     beforeDestroy(): void {
         UI.off(EventType.PORTFOLIO_LIST_UPDATED);
         UI.off(EventType.SET_PORTFOLIO);
+    }
+
+    /**
+     * Чтобы обновились параметры портфеля, например, валюта
+     */
+    @Watch("portfolio", {deep: true})
+    private onPortfolioChange(): void {
+        this.selected = this.getSelected();
     }
 
     private initCombinedPortfolio(): void {
