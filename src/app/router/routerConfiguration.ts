@@ -148,11 +148,11 @@ export class RouterConfiguration {
                 }
             },
             {
-                name: "dividends",
-                path: "/dividends",
+                name: "calculations",
+                path: "/calculations",
                 component: DividendsPage,
                 meta: {
-                    title: "Дивиденды"
+                    title: "Начисления"
                 }
             },
             {

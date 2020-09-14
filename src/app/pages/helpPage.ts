@@ -68,7 +68,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </div>
                 <div class="wrapper-list-reference__item">
                     <div class="wrapper-list-reference__item-content-wrapper">
-                        <a @click.stop="scrollTo('dividends')">Дивиденды</a>
+                        <a @click.stop="scrollTo('calculations')">Начисления</a>
                     </div>
                     <div class="wrapper-list-reference__item-content-wrapper">
                         <a @click.stop="scrollTo('quotes')">Котировки</a>
@@ -834,40 +834,40 @@ const MainStore = namespace(StoreType.MAIN);
                             <i class="custom-action-icon"></i>
                         </template>
                         <template #header>
-                            <div id="dividends">Страница Дивиденды</div>
+                            <div id="calculations">Страница Начисления</div>
                         </template>
                         <v-card>
                             <div class="wrapper-content-panel">
                                 <div class="wrapper-content-panel__paired-section">
                                     <div class="wrapper-content-panel__paired-section-item">
                                         <p>
-                                            <a href="#/dividends">Здесь</a> представлено четыре
-                                            таблицы. Суммарные дивиденды. Отображаются суммарные
-                                            выплаты и доходность по каждой акции.
+                                            <a href="#/calculations">Здесь</a> представлено четыре
+                                            таблицы. Суммарные начисления. Отображаются суммарные
+                                            выплаты и доходность по каждой акции или облигации.
                                         </p>
                                         <p>
                                             <img src="./img/help/dividends_1.png" @click.stop="openImageDialog"/>
                                         </p>
                                         <p>
-                                            Дивиденды по годам. Отображаются суммарные выплаты и
+                                            Начисления по годам. Отображаются суммарные выплаты и
                                             доходность в разбивке по тикеру и году.
                                         </p>
                                     </div>
                                     <div class="wrapper-content-panel__paired-section-item">
                                         <p>
-                                            Сделки по дивидендам. Отображаются все внесенные сделки по
-                                            дивидендам.
+                                            Сделки по начислениям. Отображаются все внесенные сделки по
+                                            дивидендам и купонам.
                                         </p>
                                         <p>
-                                            Сумма дивидендов по годам. Отображается информация в
+                                            Сумма начислений по годам. Отображается информация в
                                             разрезе по годам.
                                         </p>
                                         <p>
-                                            Стоимость портфеля на конец года и дивидендная доходность
+                                            Стоимость портфеля на конец года и доходность
                                             портфеля рассчитанная относительно этой стоимости.
                                         </p>
                                         <p>
-                                            Позволяет оценить тенденцию дивидендной доходности
+                                            Позволяет оценить тенденцию доходности
                                             портфеля.
                                         </p>
                                     </div>

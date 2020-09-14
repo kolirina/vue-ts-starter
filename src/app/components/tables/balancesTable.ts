@@ -24,7 +24,7 @@ import {TradeService} from "../../services/tradeService";
 import {BigMoney} from "../../types/bigMoney";
 import {CurrencyUnit} from "../../types/currency";
 import {Operation} from "../../types/operation";
-import {AssetRow, Pagination, Portfolio, StockPortfolioRow, TableHeader} from "../../types/types";
+import {AssetRow, Pagination, Portfolio, ShareType, StockPortfolioRow, TableHeader} from "../../types/types";
 import {PortfolioUtils} from "../../utils/portfolioUtils";
 import {SortUtils} from "../../utils/sortUtils";
 import {TradeUtils} from "../../utils/tradeUtils";
@@ -117,8 +117,8 @@ export class BalancesTable extends UI {
         const result = await new ConfirmDialog().show(`Вы уверены, что хотите удалить все сделки по ценной бумаге?`);
         if (result === BtnReturn.YES) {
             await this.tradeService.deleteAllTrades({
-                assetType: "STOCK",
-                ticker: stockRow.ticker,
+                shareType: stockRow.shareType,
+                shareId: stockRow.shareId,
                 portfolioId: this.portfolio.id
             });
             this.resetCombinedOverviewCache(this.portfolio.id);
@@ -142,6 +142,8 @@ export class BalancesTable extends UI {
                 type: "STOCK",
                 company: row.share.shortname,
                 ticker: row.share.ticker,
+                shareId: row.share.id,
+                shareType: row.share.shareType,
                 quantity: Number(row.quantity),
                 avgBuy: row.avgBuy,
                 currCost: row.currCost
@@ -188,6 +190,8 @@ type BalancesTableRow = {
     type: string,
     company: string,
     ticker: string,
+    shareId?: number,
+    shareType?: ShareType,
     quantity: number,
     avgBuy: string,
     currCost: string

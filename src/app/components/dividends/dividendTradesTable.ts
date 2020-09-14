@@ -131,11 +131,11 @@ export class DividendTradesTable extends UI {
         {text: "Компания", align: "left", value: "shortName", width: "120"},
         {text: "Дата", align: "left", value: "date", width: "55"},
         {text: "Кол-во, шт.", align: "right", value: "quantity", width: "65"},
-        {text: "На одну акцию", align: "right", value: "perOne", width: "65"},
+        {text: "На одну бумагу", align: "right", value: "perOne", width: "65"},
         {text: "Сумма", align: "right", value: "amount", width: "65"},
         {
             text: "Доходность, %", align: "right", value: "yield", width: "80",
-            tooltip: "Дивидендная доходность посчитанная по отношению к исторической цене акции на дату выплаты."
+            tooltip: "Доходность посчитанная по отношению к исторической цене бумаги на дату выплаты."
         },
         {text: "Заметка", align: "center", value: "note", width: "150"},
     ];

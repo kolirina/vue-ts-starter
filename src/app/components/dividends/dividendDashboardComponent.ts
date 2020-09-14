@@ -99,23 +99,22 @@ export class DividendDashboardComponent extends UI {
         const secondCurrency = new BigMoney(newValue.dividendsTotalInAlternativeCurrency).currency.toLowerCase();
 
         this.blocks[0] = {
-            name: "Всего получено дивидендов",
+            name: "Всего дивидендов и купонов",
             mainValue: Filters.formatMoneyAmount(newValue.dividendsTotal, true),
             secondValue: Filters.formatMoneyAmount(newValue.dividendsTotalInAlternativeCurrency, true),
             hasNotBorderLeft: true,
             mainCurrency,
             secondCurrency: secondCurrency,
-            tooltip: "Общая сумма полученных дивидендов за все время ведения портфеля"
+            tooltip: "Общая сумма полученных дивидендов и купонов за все время ведения портфеля"
         };
         this.blocks[1] = {
-            name: "Дивидендная доходность",
+            name: "Доходность",
             mainValue: newValue.avgProfit,
             secondValue: newValue.lastYearYield,
             secondValueDesc: "Прибыль за последний год",
             mainCurrency: "percent",
             secondCurrency: "percent",
-            tooltip: "Дивидендная доходность выраженная в процентах годовых, по отношению " +
-                "к текущей стоимости инвестиций."
+            tooltip: "Доходность выраженная в процентах годовых, по отношению к текущей стоимости инвестиций."
         };
     }
 }
