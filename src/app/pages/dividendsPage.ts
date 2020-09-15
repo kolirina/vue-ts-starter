@@ -56,10 +56,14 @@ export class DividendsPage extends PortfolioBasedPage {
      * @inheritDoc
      */
     async created(): Promise<void> {
-        await this.loadDividendAggregateInfo();
+        this.initialized = false;
+        try {
+            await this.loadDividendAggregateInfo();
+        } finally {
+            this.initialized = true;
+        }
         UI.on(EventType.TRADE_CREATED, async () => {
             await this.reloadPortfolio();
-            await this.loadDividendAggregateInfo();
         });
     }
 
@@ -75,16 +79,11 @@ export class DividendsPage extends PortfolioBasedPage {
     @ShowProgress
     @DisableConcurrentExecution
     private async loadDividendAggregateInfo(): Promise<void> {
-        this.initialized = false;
-        try {
-            if (this.portfolio.id) {
-                this.dividendInfo = await this.dividendService.getDividendAggregateInfo(this.portfolio.id);
-            } else {
-                this.dividendInfo = await this.dividendService.getDividendAggregateInfoCombined(this.portfolio.portfolioParams.viewCurrency,
-                    this.portfolio.portfolioParams.combinedIds);
-            }
-        } finally {
-            this.initialized = true;
+        if (this.portfolio.id) {
+            this.dividendInfo = await this.dividendService.getDividendAggregateInfo(this.portfolio.id);
+        } else {
+            this.dividendInfo = await this.dividendService.getDividendAggregateInfoCombined(this.portfolio.portfolioParams.viewCurrency,
+                this.portfolio.portfolioParams.combinedIds);
         }
     }
 }

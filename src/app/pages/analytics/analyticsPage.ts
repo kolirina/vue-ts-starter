@@ -316,7 +316,12 @@ export class AnalyticsPage extends PortfolioBasedPage {
     private initialized = false;
 
     async created(): Promise<void> {
-        await this.init();
+        this.initialized = false;
+        try {
+            await this.init();
+        } finally {
+            this.initialized = true;
+        }
         UI.on(EventType.TRADE_CREATED, async () => await this.init());
     }
 
@@ -334,18 +339,13 @@ export class AnalyticsPage extends PortfolioBasedPage {
     @ShowProgress
     @DisableConcurrentExecution
     private async init(): Promise<void> {
-        this.initialized = false;
-        try {
-            await this.loadDiagramData();
-            await this.loadTotalDepositInCurrentYear();
-            if (this.showProfitChart && (UiStateHelper.profitChartPanel[0] === 1 || UiStateHelper.profitMonthChartPanel[0] === 1 || UiStateHelper.profitYearChartPanel[0] === 1)) {
-                await this.loadProfitLineChart();
-            }
-            this.yieldContributorsChartData = await this.doYieldContributorsChartData();
-            this.wholePortfolioSharesAllocationChartData = await this.doWholePortfolioSharesAllocationChartData();
-        } finally {
-            this.initialized = true;
+        await this.loadDiagramData();
+        await this.loadTotalDepositInCurrentYear();
+        if (this.showProfitChart && (UiStateHelper.profitChartPanel[0] === 1 || UiStateHelper.profitMonthChartPanel[0] === 1 || UiStateHelper.profitYearChartPanel[0] === 1)) {
+            await this.loadProfitLineChart();
         }
+        this.yieldContributorsChartData = await this.doYieldContributorsChartData();
+        this.wholePortfolioSharesAllocationChartData = await this.doWholePortfolioSharesAllocationChartData();
     }
 
     private async loadDiagramData(): Promise<void> {

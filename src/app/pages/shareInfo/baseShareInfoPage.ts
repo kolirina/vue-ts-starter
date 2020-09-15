@@ -154,9 +154,6 @@ const MainStore = namespace(StoreType.MAIN);
                                         </span>
                                         <span class="info-about-stock__content-legend">шт.</span>
                                     </td>
-                                    <td v-else>
-                                        <span class="info-about-stock__content-value">н/д</span>
-                                    </td>
                                 </tr>
                                 <tr v-if="share.issueCapitalization && Number(share.issueCapitalization) > 0">
                                     <td class="info-about-stock__content-title">Рыночная капитализация</td>
@@ -165,9 +162,6 @@ const MainStore = namespace(StoreType.MAIN);
                                             {{ share.issueCapitalization | number }}
                                         </span>
                                         <span class="info-about-stock__content-legend">{{ currencySymbol }}</span>
-                                    </td>
-                                    <td v-else>
-                                        <span class="info-about-stock__content-value">н/д</span>
                                     </td>
                                 </tr>
                                 </tbody>

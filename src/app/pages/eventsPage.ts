@@ -372,17 +372,21 @@ export class EventsPage extends PortfolioBasedPage {
      */
     @ShowProgress
     async created(): Promise<void> {
-        this.setCalendarRequestParams(DateUtils.getYearDate(this.calendarStartDate), DateUtils.getMonthDate(this.calendarStartDate));
-        const eventsFromStorage = this.localStorage.get<string[]>("calendarEvents", null);
-        this.typeCalendarEvents = eventsFromStorage ? eventsFromStorage : this.getDefaultFilter();
-        this.calendarRequestParams.calendarEventTypes = this.typeCalendarEvents.map(e => e.toUpperCase() as CalendarType);
-        await this.loadAllData();
-        if (this.allowActions) {
-            this.eventsHeaders.push(EventsPage.ACTION_HEADER);
+        this.initialized = false;
+        try {
+            this.setCalendarRequestParams(DateUtils.getYearDate(this.calendarStartDate), DateUtils.getMonthDate(this.calendarStartDate));
+            const eventsFromStorage = this.localStorage.get<string[]>("calendarEvents", null);
+            this.typeCalendarEvents = eventsFromStorage ? eventsFromStorage : this.getDefaultFilter();
+            this.calendarRequestParams.calendarEventTypes = this.typeCalendarEvents.map(e => e.toUpperCase() as CalendarType);
+            await this.loadAllData();
+            if (this.allowActions) {
+                this.eventsHeaders.push(EventsPage.ACTION_HEADER);
+            }
+        } finally {
+            this.initialized = true;
         }
         UI.on(EventType.TRADE_CREATED, async () => {
             await this.reloadPortfolio();
-            await this.loadAllData();
         });
     }
 
@@ -391,44 +395,34 @@ export class EventsPage extends PortfolioBasedPage {
     }
 
     private async loadAllData(): Promise<void> {
-        this.initialized = false;
-        try {
-            if (this.isEmptyBlockShowed) {
-                return;
-            }
-            await Promise.all([
-                    this.loadEvents(),
-                    this.loadDividendNews(),
-                    this.loadCalendarEvents(),
-                ]
-            );
-        } finally {
-            this.initialized = true;
+        if (this.isEmptyBlockShowed) {
+            return;
         }
+        await Promise.all([
+                this.loadEvents(),
+                this.loadDividendNews(),
+                this.loadCalendarEvents(),
+            ]
+        );
     }
 
     @Watch("portfolio")
     @ShowProgress
     @DisableConcurrentExecution
     private async onPortfolioChange(): Promise<void> {
-        this.initialized = false;
-        try {
-            if (this.isEmptyBlockShowed) {
-                return;
-            }
-            await this.loadEvents();
-            await this.loadDividendNews();
-            // если выбран фильтр Пользовательские, нужно перезагрузить календарь
-            if (this.typeCalendarEvents.includes(CalendarEventType.USER.code.toLowerCase())) {
-                await this.loadCalendarEvents();
-            }
-            if (this.allowActions) {
-                this.eventsHeaders.push(EventsPage.ACTION_HEADER);
-            } else {
-                this.eventsHeaders.splice(this.eventsHeaders.length - 1, 1);
-            }
-        } finally {
-            this.initialized = true;
+        if (this.isEmptyBlockShowed) {
+            return;
+        }
+        await this.loadEvents();
+        await this.loadDividendNews();
+        // если выбран фильтр Пользовательские, нужно перезагрузить календарь
+        if (this.typeCalendarEvents.includes(CalendarEventType.USER.code.toLowerCase())) {
+            await this.loadCalendarEvents();
+        }
+        if (this.allowActions) {
+            this.eventsHeaders.push(EventsPage.ACTION_HEADER);
+        } else {
+            this.eventsHeaders.splice(this.eventsHeaders.length - 1, 1);
         }
     }
 
