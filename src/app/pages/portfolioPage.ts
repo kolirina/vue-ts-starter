@@ -183,15 +183,10 @@ export class PortfolioPage extends PortfolioBasedPage {
 
     @DisableConcurrentExecution
     private async loadPortfolioData(): Promise<void> {
-        this.initialized = false;
-        try {
-            this.lineChartData = null;
-            this.lineChartEvents = null;
-            await this.loadPortfolioLineChart();
-            await this.getCurrentMoneyRemainder();
-        } finally {
-            this.initialized = true;
-        }
+        this.lineChartData = null;
+        this.lineChartEvents = null;
+        await this.loadPortfolioLineChart();
+        await this.getCurrentMoneyRemainder();
     }
 
     /**

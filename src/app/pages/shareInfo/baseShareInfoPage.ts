@@ -146,28 +146,22 @@ const MainStore = namespace(StoreType.MAIN);
                                         </span>
                                     </td>
                                 </tr>
-                                <tr>
+                                <tr v-if="share.issueSize && Number(share.issueSize) > 0">
                                     <td class="info-about-stock__content-title">Кол-во бумаг в обращении</td>
-                                    <td v-if="share.issueSize">
+                                    <td>
                                         <span class="info-about-stock__content-value">
                                             {{ share.issueSize | integer }}
                                         </span>
                                         <span class="info-about-stock__content-legend">шт.</span>
                                     </td>
-                                    <td v-else>
-                                        <span class="info-about-stock__content-value">н/д</span>
-                                    </td>
                                 </tr>
-                                <tr>
+                                <tr v-if="share.issueCapitalization && Number(share.issueCapitalization) > 0">
                                     <td class="info-about-stock__content-title">Рыночная капитализация</td>
-                                    <td v-if="share.issueCapitalization">
+                                    <td>
                                         <span class="info-about-stock__content-value">
                                             {{ share.issueCapitalization | number }}
                                         </span>
                                         <span class="info-about-stock__content-legend">{{ currencySymbol }}</span>
-                                    </td>
-                                    <td v-else>
-                                        <span class="info-about-stock__content-value">н/д</span>
                                     </td>
                                 </tr>
                                 </tbody>
