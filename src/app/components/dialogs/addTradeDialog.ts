@@ -682,6 +682,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             return;
         }
         this.currency = this.share.currency;
+        this.dividendCurrency = this.share.currency;
         if (this.assetType === AssetType.STOCK) {
             this.setPriceFromStockTypeShare(this.share.price);
         } else if (this.assetType === AssetType.ASSET) {
@@ -934,9 +935,6 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             this.fee = "";
         } else {
             this.price = TradeUtils.decimal(this.data.eventFields.amount);
-        }
-        if (this.operation === Operation.DIVIDEND) {
-            this.dividendCurrency = this.share.currency;
         }
         this.currency = this.share.currency;
         this.quantity = this.data.eventFields.quantity;

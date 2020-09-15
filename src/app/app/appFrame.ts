@@ -164,7 +164,7 @@ export class AppFrame extends UI {
             {
                 title: "Инструменты", subMenu: [
                     {title: "Начисления", action: "calculations"},
-                    {title: "Составной портфель", action: "combined-portfolio", active: !DateUtils.parseDate(this.clientInfo.user.regDate).isBefore(this.NEW_USERS_DATE)},
+                    {title: "Составной портфель", action: "combined-portfolio", active: !DateUtils.parseDate(this.clientInfo?.user.regDate).isBefore(this.NEW_USERS_DATE)},
                     {title: "События", action: "events"},
                     {title: "Уведомления", action: "notifications"}
                 ]
