@@ -218,9 +218,6 @@ export class PortfolioManagementEditPage extends UI {
             this.isNew = false;
             this.portfolio = await this.portfolioService.getPortfolioById(Number(id));
         }
-        if (!this.portfolio.iisType) {
-            this.portfolio.iisType = IisType.TYPE_A;
-        }
     }
 
     @ShowProgress
