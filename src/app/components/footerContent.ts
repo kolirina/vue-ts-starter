@@ -14,7 +14,7 @@ import {FeedbackDialog} from "./dialogs/feedbackDialog";
                     <span>Напишите нам</span> <i class="fas fa-envelope"></i>
                 </a>
 
-                <a class="fs14 decorationNone" href="https://tlgg.ru/intelinvestSupportBot">
+                <a class="fs14 decorationNone" href="https://t.me/intelinvestSupportBot">
                     <span>Telegram</span> <i class="fab fa-telegram"></i>
                 </a>
             </div>

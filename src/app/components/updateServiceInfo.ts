@@ -334,7 +334,7 @@ import {Component, Prop, UI} from "../app/ui";
                 Почитать обо всех обновлениях сервиса более подробно вы можете на нашем блоге
                 <a href="http://blog.intelinvest.ru/" target="_blank" class="decorationNone">blog.intelinvest.ru</a><br/>
                 Оперативно получить поддержку можно через
-                <a href="https://tlgg.ru/intelinvestSupportBot" title="Задайте вопрос в Telegram" target="_blank">telegram</a>,
+                <a href="https://t.me/intelinvestSupportBot" title="Задайте вопрос в Telegram" target="_blank">telegram</a>,
                 наши специалисты с радостью вам ответят и помогут.<br/>
                 Также вы можете присоединиться к общению с нами и пользователями сервиса в
                 <a href="https://t.me/intelinvest_chat" title="Чат в Telegram" target="_blank">чате telegram</a><br/>
