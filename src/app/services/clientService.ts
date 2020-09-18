@@ -258,6 +258,8 @@ export interface BaseClient {
     partnershipAgreement: boolean;
     /** Признак возможности голосовать за портфели */
     canLikePortfolio: boolean;
+    /** Признак верифицированного пользователя */
+    verified: boolean;
 }
 
 export interface ClientResponse extends BaseClient {
