@@ -8,7 +8,7 @@ import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {Enum, EnumType, IStaticEnum} from "../../platform/enum";
 import {ClientInfo, ClientService} from "../../services/clientService";
-import {PromoCodeService, PromoCodeStatistics} from "../../services/promoCodeService";
+import {PromoCodeService, PromoCodeStatistics, ReferralAwardType} from "../../services/promoCodeService";
 import {EventType} from "../../types/eventType";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
@@ -27,8 +27,14 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-card-title>
                     </v-card>
                     <v-tabs>
-                        <v-tab v-for="tab in promoCodesTabs" :key="tab.code" @change="currentTab = tab" :class="{'active': tab === currentTab}" :ripple="false">
-                            {{ tab.description }}
+                        <v-tab :value="ReferralAwardType.SUBSCRIPTION" @change="currentTab = ReferralAwardType.SUBSCRIPTION"
+                               :class="{'active': ReferralAwardType.SUBSCRIPTION === currentTab}" :ripple="false"
+                               :disabled="currentTab === ReferralAwardType.PAYMENT">
+                            {{ ReferralAwardType.SUBSCRIPTION.description }}
+                        </v-tab>
+                        <v-tab :value="ReferralAwardType.PAYMENT" @click.stop="openPartnerProgramJoiningDialog" :class="{'active': ReferralAwardType.PAYMENT === currentTab}"
+                               :ripple="false">
+                            {{ ReferralAwardType.PAYMENT.description }}
                         </v-tab>
                     </v-tabs>
                     <div class="section-content">
@@ -45,8 +51,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             <p>2. Скопировать индивидуальную ссылку и разместить ее в социальных сетях, блоге или курсе обучения</p>
                                             <p>3. Продемонстрировать полезность использования сервиса и предложить воспользоваться 20% скидкой</p>
                                             <p>4. Отслеживать результаты в личном кабинете и выводить <span class="no-wrap">от 5 000 рублей</span> в любой момент</p>
-                                            <!-- TODO: добавить ссылку-->
-                                            <a href="#" class="decorationNone">Узнать подробнее</a>
+                                            <a href="https://intelinvest.ru/partnership-agreement" target="_blank" class="decorationNone">Узнать подробнее</a>
                                         </span>
                                     </v-menu>
                                 </div>
@@ -67,15 +72,15 @@ const MainStore = namespace(StoreType.MAIN);
                                 </ul>
                             </template>
                             <v-radio-group v-model="currentShareType">
-                                <v-radio v-for="type in shareTypes" :key="type.code" :label="type.description"
-                                         :value="type" @change="onShareTypeChange"></v-radio>
+                                <v-radio v-for="type in shareTypes" :key="type.code" :label="type.description" :value="type" @change="onShareTypeChange"></v-radio>
                             </v-radio-group>
                             <div class="share-box">
                                 <div class="promo-code__wrapper">
                                     <v-text-field :value="shareValue" placeholder="url для доступа к портфелю" readonly hide-details class="public-link"></v-text-field>
                                     <v-btn v-clipboard="() => shareValue" @click="copyShareValue">Копировать</v-btn>
                                 </div>
-                                <div class="share-box__links">
+                                <!-- todo реализация шаринга -->
+                                <div v-if="false" class="share-box__links">
                                     <a class="intel-icon icon-circle-vk"></a>
                                     <a class="intel-icon icon-circle-fb"></a>
                                     <a class="intel-icon icon-circle-telegram"></a>
@@ -83,7 +88,8 @@ const MainStore = namespace(StoreType.MAIN);
                                     <a class="intel-icon icon-circle-more"></a>
                                 </div>
                             </div>
-                            <div v-if="isPartnerTab" class="achievements">
+                            <!-- todo реализация достижений -->
+                            <div v-if="false && isPartnerTab" class="achievements">
                                 <div class="promo-codes__title"><span>Достижения</span></div>
                                 <div class="achievements__items">
                                     <div class="achievements__item intel-icon icon-achievement-1"></div>
@@ -131,25 +137,25 @@ const MainStore = namespace(StoreType.MAIN);
                                 </template>
                             </div>
                         </expanded-panel>
-                        <expanded-panel v-if="isPartnerTab" class="rewards promo-codes__statistics">
+                        <expanded-panel v-if="isPartnerTab" class="rewards promo-codes__statistics" :value="[1]">
                             <template #header>Связаться по вопросам сотрудничества</template>
-                                <div>
-                                    <span>Ваш менеджер</span>
-                                    <span>Евгений</span>
-                                </div>
-                                <div>
-                                    <span>Telegram</span>
-                                    <span><a href="https://telegram.me/intelinvest_partner" title="Задайте вопрос в Telegram"
-                                             target="_blank" class="decorationNone">@intelinvest_partner</a></span>
-                                </div>
-                                <div>
-                                    <span>VK</span>
-                                    <span><a href="https://vk.com/intelinvest_partner" target="_blank" class="decorationNone">https://vk.com/intelinvest_partner</a></span>
-                                </div>
-                                <div>
-                                    <span>Email</span>
-                                    <span><a href="mailto:partner@intelinvest.ru" target="_blank" class="decorationNone">partner@intelinvest.ru</a></span>
-                                </div>
+                            <div>
+                                <span>Ваш менеджер</span>
+                                <span>Евгений</span>
+                            </div>
+                            <div>
+                                <span>Telegram</span>
+                                <span><a href="https://telegram.me/intelinvest_partner" title="Задайте вопрос в Telegram"
+                                         target="_blank" class="decorationNone">@intelinvest_partner</a></span>
+                            </div>
+                            <div>
+                                <span>VK</span>
+                                <span><a href="https://vk.com/intelinvest_partner" target="_blank" class="decorationNone">https://vk.com/intelinvest_partner</a></span>
+                            </div>
+                            <div>
+                                <span>Email</span>
+                                <span><a href="mailto:partner@intelinvest.ru" target="_blank" class="decorationNone">partner@intelinvest.ru</a></span>
+                            </div>
                         </expanded-panel>
                         <v-btn v-if="showRequestWithdrawal" class="mt-3" primary @click.stop="requestWithdrawal">Запрос на вывод вознаграждения</v-btn>
                     </div>
@@ -173,17 +179,17 @@ export class PromoCodesPage extends UI {
     /** Статистика по промокоду */
     private promoCodeStatistics: PromoCodeStatistics = null;
     /** Текущий таб */
-    private currentTab: PromoCodesTab = PromoCodesTab.USER;
+    private currentTab: ReferralAwardType = null;
     /** Типы табов */
-    private promoCodesTab = PromoCodesTab;
+    private ReferralAwardType = ReferralAwardType;
     /** Список табок */
-    private promoCodesTabs = PromoCodesTab.values();
+    private promoCodesTabs = ReferralAwardType.values();
     /** Список радиокнопок */
     private shareTypes = ShareType.values();
     /** Типы радиокнопок */
     private shareType = ShareType;
     /** Выбранная радиокнопка */
-    private currentShareType: ShareType = ShareType.PROMO_CODE;
+    private currentShareType: ShareType = ShareType.LINK;
     /** Признак отображения подсказки */
     private showTooltip = false;
 
@@ -194,6 +200,7 @@ export class PromoCodesPage extends UI {
     @ShowProgress
     async created(): Promise<void> {
         this.promoCodeStatistics = await this.promoCodeService.getPromoCodeStatistics();
+        this.currentTab = this.clientInfo.user.referralAwardType ? this.clientInfo.user.referralAwardType : ReferralAwardType.SUBSCRIPTION;
         UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio());
     }
 
@@ -205,11 +212,15 @@ export class PromoCodesPage extends UI {
      * Открывает диалог принятия условия партнерской программы
      */
     private async openPartnerProgramJoiningDialog(): Promise<void> {
+        if (this.clientInfo.user.referralAwardType === this.ReferralAwardType.PAYMENT) {
+            return;
+        }
         const result = await new PartnerProgramJoiningDialog().show();
         if (result === BtnReturn.YES) {
             await this.becamePartner();
             this.clientInfo.user.partnershipAgreement = true;
-            this.clientInfo.user.referralAwardType = "PAYMENT";
+            this.clientInfo.user.referralAwardType = ReferralAwardType.PAYMENT;
+            this.currentTab = this.ReferralAwardType.PAYMENT;
             this.$snotify.info("Вы успешно зарегистрированы в партнерской программе");
         }
     }
@@ -218,7 +229,7 @@ export class PromoCodesPage extends UI {
     private async becamePartner(): Promise<void> {
         await Promise.all([
             this.clientService.setPartnerShipAgreement(),
-            this.promoCodeService.changeReferralAwardType("PAYMENT")
+            this.promoCodeService.changeReferralAwardType(ReferralAwardType.PAYMENT.code)
         ]);
     }
 
@@ -251,33 +262,23 @@ export class PromoCodesPage extends UI {
 
     /** Признак того, что выбратнный таб "Партнер" */
     private get isPartnerTab(): boolean {
-        return this.currentTab === PromoCodesTab.PARTNER;
+        return this.currentTab === ReferralAwardType.PAYMENT;
     }
 
     /**
      * Возвращает признак отображения кнопки Запрос на вывод вознаграждения, если причитаемая сумма больше или равно 5000 рублей
      */
     private get showRequestWithdrawal(): boolean {
-        return this.promoCodeStatistics && new Decimal(this.promoCodeStatistics.referrerPaymentsTotalUnpaid).comparedTo(new Decimal("5000")) >= 0;
-    }
-}
-
-@Enum("code")
-export class PromoCodesTab extends (EnumType as IStaticEnum<PromoCodesTab>) {
-
-    static readonly USER = new PromoCodesTab("user", "Пользователям");
-    static readonly PARTNER = new PromoCodesTab("partner", "Партнерам");
-
-    private constructor(public code: string, public description: string) {
-        super();
+        return this.promoCodeStatistics && this.clientInfo.user.referralAwardType === this.ReferralAwardType.PAYMENT &&
+            new Decimal(this.promoCodeStatistics.referrerPaymentsTotalUnpaid).comparedTo(new Decimal("5000")) >= 0;
     }
 }
 
 @Enum("code")
 export class ShareType extends (EnumType as IStaticEnum<ShareType>) {
 
-    static readonly PROMO_CODE = new ShareType("PROMO_CODE", "Промокод");
     static readonly LINK = new ShareType("LINK", "Ссылка");
+    static readonly PROMO_CODE = new ShareType("PROMO_CODE", "Промокод");
 
     private constructor(public code: string, public description: string) {
         super();
