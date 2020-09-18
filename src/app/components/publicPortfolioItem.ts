@@ -110,6 +110,6 @@ export class PublicPortfolioItem extends UI {
     }
 
     private get verification(): boolean {
-        return this.clientInfo.user.verified;
+        return this.portfolio.verified;
     }
 }
