@@ -219,9 +219,9 @@ export class PortfolioPage extends PortfolioBasedPage {
                 this.lineChartEvents = await this.overviewService.getEventsChartDataCombined({
                     ids: this.portfolio.portfolioParams.combinedIds,
                     viewCurrency: this.portfolio.portfolioParams.viewCurrency
-                }, false);
+                });
             } else {
-                this.lineChartEvents = await this.overviewService.getEventsChartDataWithDefaults(this.portfolio.id, false);
+                this.lineChartEvents = await this.overviewService.getEventsChartDataWithDefaults(this.portfolio.id);
             }
         }
     }
