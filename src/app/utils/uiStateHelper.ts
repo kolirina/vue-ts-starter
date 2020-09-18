@@ -12,6 +12,7 @@ export class UiStateHelper {
     static readonly PROFIT_CHART_PANEL = "profitChartPanel";
     static readonly PROFIT_MONTH_CHART_PANEL = "profitMonthChartPanel";
     static readonly PROFIT_YEAR_CHART_PANEL = "profitYearChartPanel";
+    static readonly FUTURE_EVENTS_CHART_PANEL = "futureEventsChartPanel";
     static readonly STOCK_CHART_PANEL = "stocksChartPanel";
     static readonly ETF_CHART_PANEL = "etfChartPanel";
     static readonly BOND_CHART_PANEL = "bondsChartPanel";
@@ -171,6 +172,14 @@ export class UiStateHelper {
 
     static get profitYearChartPanel(): number[] {
         return [localStorage.get(UiStateHelper.PROFIT_YEAR_CHART_PANEL, 0)];
+    }
+
+    static set futureEventsChartPanel(value: number[]) {
+        localStorage.set(UiStateHelper.FUTURE_EVENTS_CHART_PANEL, value);
+    }
+
+    static get futureEventsChartPanel(): number[] {
+        return [localStorage.get(UiStateHelper.FUTURE_EVENTS_CHART_PANEL, 0)];
     }
 
     static set stockGraph(value: number[]) {

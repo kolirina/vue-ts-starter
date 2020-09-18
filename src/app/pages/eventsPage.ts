@@ -6,6 +6,7 @@ import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
 import {ConfirmDialog} from "../components/dialogs/confirmDialog";
+import {EventsAggregateInfoComponent} from "../components/eventsAggregateInfoComponent";
 import {DisableConcurrentExecution} from "../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {BtnReturn} from "../platform/dialogs/customDialog";
@@ -23,12 +24,16 @@ import {
     ShareEvent
 } from "../services/eventService";
 import {AssetType} from "../types/assetType";
+import {ChartType, ColumnChartData} from "../types/charts/types";
 import {EventType} from "../types/eventType";
 import {Operation} from "../types/operation";
 import {Pagination, Portfolio, ShareType, TableHeader} from "../types/types";
+import {ChartUtils} from "../utils/chartUtils";
 import {DateUtils} from "../utils/dateUtils";
 import {SortUtils} from "../utils/sortUtils";
+import {TariffUtils} from "../utils/tariffUtils";
 import {TradeUtils} from "../utils/tradeUtils";
+import {UiStateHelper} from "../utils/uiStateHelper";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {PortfolioBasedPage} from "./portfolioBasedPage";
@@ -92,23 +97,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-card-title>
 
                         <v-card-text>
-                            <div class="eventsAggregateInfo" v-if="eventsAggregateInfo">
-                                <span class="item-block dividend_news">
-                                    <span :class="['item-block__amount', currency]">Дивиденды {{ eventsAggregateInfo.totalDividendsAmount | number }} </span>
-                                </span>
-                                <span class="item-block coupon">
-                                    <span :class="['item-block__amount', currency]">Купоны {{ eventsAggregateInfo.totalCouponsAmount | number }} </span>
-                                </span>
-                                <span class="item-block amortization">
-                                    <span :class="['item-block__amount', currency]">Амортизация {{ eventsAggregateInfo.totalAmortizationsAmount | number }} </span>
-                                </span>
-                                <span class="item-block repayment">
-                                    <span :class="['item-block__amount', currency]">Погашения {{ eventsAggregateInfo.totalRepaymentsAmount | number }} </span>
-                                </span>
-                                <span class="item-block total">
-                                    <span :class="['item-block__amount', currency]">Всего выплат {{ eventsAggregateInfo.totalAmount | number }} </span>
-                                </span>
-                            </div>
+                            <events-aggregate-info :events-aggregate-info="eventsAggregateInfo" :viewCurrency="currencyClass"></events-aggregate-info>
 
                             <v-data-table v-if="events.length" :headers="eventsHeaders" :items="events" item-key="id" :custom-sort="customSortEvents"
                                           class="data-table events-table" :pagination.sync="eventsPagination" hide-actions must-sort>
@@ -196,6 +185,29 @@ const MainStore = namespace(StoreType.MAIN);
                             <div v-else class="dividend-news-table__empty">Дивидендных новостей по вашим бумагам нет</div>
                         </v-card-text>
                     </v-card>
+
+                    <expanded-panel :value="$uistate.futureEventsChartPanel"
+                                    :state="$uistate.FUTURE_EVENTS_CHART_PANEL" @click="onFutureEventsPanelStateChange" custom-menu class="mt-3">
+                        <template #header>
+                            Будущие выплаты
+                            <tooltip>
+                                График будущих событий, позволяет оценить потоки будущих платежей.<br/>
+                                По облигациям данные получаются из графика выплат.<br/>
+                                Дивиденды формируются на основании прошлых выплат, с учетом, что они останутся на том же уровне.
+                            </tooltip>
+                        </template>
+                        <template #customMenu>
+                            <chart-export-menu @print="print(ChartType.FUTURE_EVENTS_CHART)" @exportTo="exportTo(ChartType.FUTURE_EVENTS_CHART, $event)"
+                                               class="exp-panel-menu"></chart-export-menu>
+                        </template>
+                        <v-card-text>
+                            <events-aggregate-info :events-aggregate-info="eventsAggregateInfoFuture" :viewCurrency="currencyClass" class="margT20"></events-aggregate-info>
+
+                            <column-chart v-if="futureEventsChartData && futureEventsChartData.categoryNames.length" :ref="ChartType.FUTURE_EVENTS_CHART"
+                                          :data="futureEventsChartData" :view-currency="currency"
+                                          tooltip-format="EVENTS" v-tariff-expired-hint></column-chart>
+                        </v-card-text>
+                    </expanded-panel>
 
                     <v-card class="events__card" flat style="margin-top: 30px" data-v-step="2">
                         <v-card-title class="events__card-title">
@@ -301,7 +313,10 @@ const MainStore = namespace(StoreType.MAIN);
                 </content-loader>
             </template>
         </v-slide-x-reverse-transition>
-    `
+    `,
+    components: {
+        "events-aggregate-info": EventsAggregateInfoComponent
+    }
 })
 export class EventsPage extends PortfolioBasedPage {
 
@@ -317,6 +332,10 @@ export class EventsPage extends PortfolioBasedPage {
     protected localStorage: Storage;
     /** Ответ по событиям */
     private eventsResponse: EventsResponse = null;
+    /** Ответ по событиям на следуюущий год */
+    private eventsFutureResponse: EventsResponse = null;
+    /** Данные для диаграммы будущих выплат */
+    private futureEventsChartData: ColumnChartData = null;
     /** Дивидендные новости */
     private dividendNews: DividendNewsItem[] = [];
     /** Зголовки таблицы События */
@@ -362,9 +381,11 @@ export class EventsPage extends PortfolioBasedPage {
         rowsPerPage: -1
     });
     /** Признак отображения панели с подсказкой */
-    private showHintPanel = this.localStorage.get("eventsHintPanel", true);
+    private showHintPanel = true;
     /** Признак инициализации */
     private initialized = false;
+    /** Типы круговых диаграмм */
+    private ChartType = ChartType;
 
     /**
      * Инициализация данных
@@ -372,8 +393,8 @@ export class EventsPage extends PortfolioBasedPage {
      */
     @ShowProgress
     async created(): Promise<void> {
-        this.initialized = false;
         try {
+            this.showHintPanel = this.localStorage.get("eventsHintPanel", true);
             this.setCalendarRequestParams(DateUtils.getYearDate(this.calendarStartDate), DateUtils.getMonthDate(this.calendarStartDate));
             const eventsFromStorage = this.localStorage.get<string[]>("calendarEvents", null);
             this.typeCalendarEvents = eventsFromStorage ? eventsFromStorage : this.getDefaultFilter();
@@ -400,6 +421,7 @@ export class EventsPage extends PortfolioBasedPage {
         }
         await Promise.all([
                 this.loadEvents(),
+                this.loadFutureEvents(),
                 this.loadDividendNews(),
                 this.loadCalendarEvents(),
             ]
@@ -414,6 +436,7 @@ export class EventsPage extends PortfolioBasedPage {
             return;
         }
         await this.loadEvents();
+        await this.loadFutureEvents();
         await this.loadDividendNews();
         // если выбран фильтр Пользовательские, нужно перезагрузить календарь
         if (this.typeCalendarEvents.includes(CalendarEventType.USER.code.toLowerCase())) {
@@ -429,6 +452,14 @@ export class EventsPage extends PortfolioBasedPage {
     @Watch("eventsPagination")
     private paginationChange(): void {
         this.localStorage.set("eventsPagination", this.eventsPagination);
+    }
+
+    private async onFutureEventsPanelStateChange(): Promise<void> {
+        if (UiStateHelper.futureEventsChartPanel[0] === 1) {
+            if (!this.eventsFutureResponse) {
+                await this.loadFutureEvents();
+            }
+        }
     }
 
     private hideHintsPanel(): void {
@@ -454,8 +485,7 @@ export class EventsPage extends PortfolioBasedPage {
     private async loadCalendarEvents(): Promise<void> {
         let calendarEvents: CalendarEvent[] = [];
         if (this.portfolio.portfolioParams.combinedFlag) {
-            calendarEvents = await this.eventService.getCalendarEventsCombined(this.calendarRequestParams, this.portfolio.portfolioParams.viewCurrency,
-                this.portfolio.portfolioParams.combinedIds);
+            calendarEvents = await this.eventService.getCalendarEventsCombined(this.calendarRequestParams, this.currency, this.portfolio.portfolioParams.combinedIds);
         } else {
             calendarEvents = await this.eventService.getCalendarEvents(this.calendarRequestParams);
         }
@@ -517,9 +547,34 @@ export class EventsPage extends PortfolioBasedPage {
 
     private async loadEvents(): Promise<void> {
         if (this.portfolio.portfolioParams.combinedFlag) {
-            this.eventsResponse = await this.eventService.getEventsCombined(this.portfolio.portfolioParams.viewCurrency, this.portfolio.portfolioParams.combinedIds);
+            this.eventsResponse = await this.eventService.getEventsCombined(this.currency, this.portfolio.portfolioParams.combinedIds);
         } else {
             this.eventsResponse = await this.eventService.getEvents(this.portfolio.id);
+        }
+    }
+
+    /**
+     * Загружает события за следующий год
+     */
+    private async loadFutureEvents(): Promise<void> {
+        if (TariffUtils.isTariffExpired(this.clientInfo.user)) {
+            return;
+        }
+        // todo подумать как от этого избавиться
+        if (UiStateHelper.futureEventsChartPanel[0] === 0) {
+            return;
+        }
+        if (this.portfolio.portfolioParams.combinedFlag) {
+            this.eventsFutureResponse = await this.eventService.getFutureEventsCombined(this.currency, this.portfolio.portfolioParams.combinedIds);
+        } else {
+            this.eventsFutureResponse = await this.eventService.getFutureEvents(this.portfolio.id);
+        }
+        await this.doFutureEventsChartData();
+    }
+
+    private async doFutureEventsChartData(): Promise<void> {
+        if (this.eventsFutureResponse) {
+            this.futureEventsChartData = ChartUtils.doFutureEventsChartData(this.eventsFutureResponse.events);
         }
     }
 
@@ -533,9 +588,14 @@ export class EventsPage extends PortfolioBasedPage {
         return this.eventsResponse ? this.eventsResponse.eventsAggregateInfo : null;
     }
 
+    /** Агрегированная информация по будущим событиям */
+    private get eventsAggregateInfoFuture(): EventsAggregateInfo {
+        return this.eventsFutureResponse ? this.eventsFutureResponse.eventsAggregateInfo : null;
+    }
+
     private async loadDividendNews(): Promise<void> {
         if (this.portfolio.portfolioParams.combinedFlag) {
-            this.dividendNews = await this.eventService.getDividendNewsCombined(this.portfolio.portfolioParams.viewCurrency, this.portfolio.portfolioParams.combinedIds);
+            this.dividendNews = await this.eventService.getDividendNewsCombined(this.currency, this.portfolio.portfolioParams.combinedIds);
         } else {
             this.dividendNews = await this.eventService.getDividendNews(this.portfolio.id);
         }
@@ -631,8 +691,12 @@ export class EventsPage extends PortfolioBasedPage {
         return SortUtils.customSortNews(items, index, isDesc);
     }
 
-    private get currency(): string {
+    private get currencyClass(): string {
         return this.portfolio.portfolioParams.viewCurrency.toLowerCase();
+    }
+
+    private get currency(): string {
+        return this.portfolio.portfolioParams.viewCurrency;
     }
 
     /**

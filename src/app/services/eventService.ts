@@ -21,6 +21,24 @@ export class EventService {
     }
 
     /**
+     * Загружает события и агрегированную информацию по ним
+     * @param portfolioId идентификатор портфеля
+     */
+    async getFutureEvents(portfolioId: number): Promise<EventsResponse> {
+        return this.http.get<EventsResponse>(`/events/list/${portfolioId}/future`);
+    }
+
+    /**
+     * Загружает события и агрегированную информацию по ним
+     * @param viewCurrency валюта портфеля
+     * @param ids идентификаторы портфелей
+     */
+    async getFutureEventsCombined(viewCurrency: string, ids: number[]): Promise<EventsResponse> {
+        const request: CombinedInfoRequest = {viewCurrency, ids};
+        return this.http.post<EventsResponse>(`/events/list/combined/future`, request);
+    }
+
+    /**
      * Загружает события и агрегированную информацию по ним для составного портфеля
      * @param viewCurrency валюта портфеля
      * @param ids идентификаторы портфелей
