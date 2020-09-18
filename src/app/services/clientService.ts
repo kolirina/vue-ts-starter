@@ -5,6 +5,7 @@ import {Http} from "../platform/services/http";
 import {Tariff} from "../types/tariff";
 import {LoginRequest} from "../types/types";
 import {IisType, PortfolioAccountType, PortfolioParams, PortfolioParamsResponse} from "./portfolioService";
+import {ReferralAwardType} from "./promoCodeService";
 
 @Service("ClientService")
 @Singleton
@@ -144,6 +145,7 @@ export class ClientService {
             user: {
                 ...clientInfoResponse.user,
                 tariff: Tariff.valueByName(clientInfoResponse.user.tariff),
+                referralAwardType: ReferralAwardType.valueByName(clientInfoResponse.user.referralAwardType),
                 portfolios: clientInfoResponse.user.portfolios.map(item => {
                     return {
                         ...item,
@@ -159,6 +161,7 @@ export class ClientService {
         return {
             ...clientResponse,
             tariff: Tariff.valueByName(clientResponse.tariff),
+            referralAwardType: ReferralAwardType.valueByName(clientResponse.referralAwardType),
             portfolios: clientResponse.portfolios.map(item => {
                 return {
                     ...item,
@@ -209,8 +212,6 @@ export interface BaseClient {
     emailConfirmed: string;
     /** Текущий идентификатор портфеля */
     currentPortfolioId: number;
-    /** Тип вознаграждения за реферальную программу */
-    referralAwardType: string;
     /** Промокод пользователя */
     promoCode: PromoCode;
     /** Публичное имя инвестора (Для партнеров) */
@@ -264,6 +265,8 @@ export interface ClientResponse extends BaseClient {
     portfolios: PortfolioParamsResponse[];
     /** Тариф */
     tariff: string;
+    /** Тип вознаграждения за реферальную программу */
+    referralAwardType: string;
 }
 
 export interface Client extends BaseClient {
@@ -271,6 +274,8 @@ export interface Client extends BaseClient {
     portfolios: PortfolioParams[];
     /** Тариф */
     tariff: Tariff;
+    /** Тип вознаграждения за реферальную программу */
+    referralAwardType: ReferralAwardType;
 }
 
 /** Запрос на смену пароля пользователя */

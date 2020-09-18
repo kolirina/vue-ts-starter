@@ -82,7 +82,8 @@ export class ThemeUtils {
     .empty-station {background: #2C3040 !important;}
 
     .tariff-description-wrap div:nth-child(even),
-    .theme--light.v-tabs__bar {background-color: #2C3040}
+    .theme--light.v-tabs__bar,
+    .section-content {background-color: #2C3040}
 
     .v-content__wrap,
     .header-first-card,
@@ -164,7 +165,7 @@ export class ThemeUtils {
     .snotifyToast__buttons button, .update-service-dialog__content,
     .custom-v-menu .v-menu-content, .section-title, .public-portfolio-item__title, .public-portfolio-item__footer-title,
     .public-portfolio-item__footer-social > div, .portfolio-item__body-info>div>span:first-child,
-    .v-date-picker-years, .empty-station__description, .v-tabs .v-tabs__item {color: #fff}
+    .v-date-picker-years, .empty-station__description, .v-tabs .v-tabs__item, .promo-codes ul {color: #fff}
 
     .theme--light.v-label,
     .fs12-opacity,
@@ -192,8 +193,8 @@ export class ThemeUtils {
     .import-wrapper-content .setings-menu .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light,
     .import-wrapper-content .setings-menu .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
     .wrapper-content-panel__privacy-section-up-page-btn, .free-subscribe, .events__info-panel, .info-block,
-    .sing-in-wrap .pre-footer, .promo-codes__steps, .tariff-notification, .import-history-block,
-    .import-result-info .exp-panel, .import-result-info .exp-panel .v-card,
+    .sing-in-wrap .pre-footer, .tariff-notification, .import-history-block, .promo-codes__img-user, .promo-codes__img-partner,
+    .import-result-info .exp-panel, .import-result-info .exp-panel .v-card, .achievements__item,
     input.highcharts-range-selector:focus, .inplace-custom-input, .currency-card.v-card {background-color: #252A35 !important}
 
     .dashboard-wrap {background-color: #0a0d19;}
