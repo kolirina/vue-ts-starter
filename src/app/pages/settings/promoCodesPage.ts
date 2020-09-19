@@ -41,19 +41,27 @@ const MainStore = namespace(StoreType.MAIN);
                         <div class="promo-codes">
                             <template v-if="isPartnerTab">
                                 <div class="promo-codes__title">
-                                    <div class="promo-codes__img-partner"></div>
-                                    <div>Зарабатывайте с Intelinvest!</div>
-                                    <v-menu :close-on-content-click="false" :nudge-width="300" :nudge-bottom="24" z-index="100" bottom content-class="promo-codes__hint">
-                                        <v-icon slot="activator">far fa-question-circle</v-icon>
-                                        <span>
-                                            <b>Условия партнерской программы:</b>
-                                            <p class="margT16">1. Зарегистрироваться в Intelinvest и принять партнерское соглашение</p>
-                                            <p>2. Скопировать индивидуальную ссылку и разместить ее в социальных сетях, блоге или курсе обучения</p>
-                                            <p>3. Продемонстрировать полезность использования сервиса и предложить воспользоваться 20% скидкой</p>
-                                            <p>4. Отслеживать результаты в личном кабинете и выводить <span class="no-wrap">от 5 000 рублей</span> в любой момент</p>
-                                            <a href="https://intelinvest.ru/partnership-agreement" target="_blank" class="decorationNone">Узнать подробнее</a>
-                                        </span>
-                                    </v-menu>
+                                    <div class="promo-codes__title-wrapper">
+                                        <div class="promo-codes__img-partner"></div>
+                                        <div>
+                                            <span class="margR12 vAlignM">Зарабатывайте с Intelinvest!</span>
+                                            <v-menu :close-on-content-click="false" :nudge-width="300" :nudge-bottom="24" z-index="100" bottom content-class="promo-codes__hint">
+                                                <v-icon slot="activator">far fa-question-circle</v-icon>
+                                                <span>
+                                                    <b>Условия партнерской программы:</b>
+                                                    <p class="margT16">1. Зарегистрироваться в Intelinvest и принять партнерское соглашение</p>
+                                                    <p>2. Скопировать индивидуальную ссылку и разместить ее в социальных сетях, блоге или курсе обучения</p>
+                                                    <p>3. Продемонстрировать полезность использования сервиса и предложить воспользоваться 20% скидкой</p>
+                                                    <p>4. Отслеживать результаты в личном кабинете и выводить <span class="no-wrap">от 5 000 рублей</span> в любой момент</p>
+                                                    <a href="https://intelinvest.ru/partnership-agreement" target="_blank" class="decorationNone">Узнать подробнее</a>
+                                                </span>
+                                            </v-menu>
+                                        </div>
+                                    </div>
+                                    <v-btn primary color="#EBEFF7" @click.stop="requestWithdrawal" class="promo-codes__withdrawal-btn">
+                                        <span class="intel-icon icon-withdrawal"></span>
+                                        Вывод вознаграждения
+                                    </v-btn>
                                 </div>
                                 <ul>
                                     <li>Рекомендуйте нас в социальных сетях, блоге или обучающем курсе</li>
@@ -157,7 +165,6 @@ const MainStore = namespace(StoreType.MAIN);
                                 <span><a href="mailto:partner@intelinvest.ru" target="_blank" class="decorationNone">partner@intelinvest.ru</a></span>
                             </div>
                         </expanded-panel>
-                        <v-btn v-if="showRequestWithdrawal" class="mt-3" primary @click.stop="requestWithdrawal">Запрос на вывод вознаграждения</v-btn>
                     </div>
                 </v-flex>
             </v-layout>
