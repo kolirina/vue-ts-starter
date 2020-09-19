@@ -58,7 +58,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             </v-menu>
                                         </div>
                                     </div>
-                                    <v-btn primary color="#EBEFF7" @click.stop="requestWithdrawal" class="promo-codes__withdrawal-btn">
+                                    <v-btn v-if="showRequestWithdrawal" primary color="#EBEFF7" @click.stop="requestWithdrawal" class="promo-codes__withdrawal-btn">
                                         <span class="intel-icon icon-withdrawal"></span>
                                         Вывод вознаграждения
                                     </v-btn>
