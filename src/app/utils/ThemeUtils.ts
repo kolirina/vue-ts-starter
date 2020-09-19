@@ -277,7 +277,7 @@ export class ThemeUtils {
     .v-input input::-moz-placeholder {color: #cfd0d4 !important}
 
     .public-portfolio-item .highcharts-background {fill: none !important}
-    .public-portfolio-item__chart:after {background: linear-gradient(to top, #2c3040 20%,transparent 50%);}
+    .public-portfolio-item__chart:after {background-image: url(../img/public-portfolio/chart-bg-dark.png)}
 
     .theme--light.v-tabs__bar .v-tabs__item--disabled {
         color: #fff;
