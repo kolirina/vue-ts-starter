@@ -64,7 +64,7 @@ export class DashboardBrickComponent extends UI {
                     <dashboard-brick-component :block="blocks[0]"></dashboard-brick-component>
                 </v-flex>
                 <v-flex xl6 lg6 md6 sm12 xs12 :align-content-start="true">
-                    <dashboard-brick-component :block="blocks[1]"></dashboard-brick-component>
+                    <dashboard-brick-component :block="blocks[1]" v-tariff-expired-hint></dashboard-brick-component>
                 </v-flex>
             </v-layout>
         </v-container>

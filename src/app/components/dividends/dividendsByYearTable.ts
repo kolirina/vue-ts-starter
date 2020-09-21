@@ -48,19 +48,19 @@ import {SortUtils} from "../../utils/sortUtils";
                         <span @click="props.expanded = !props.expanded" class="data-table-cell" :class="{'data-table-cell-open': props.expanded, 'path': true}"></span>
                     </v-layout>
                     <td class="text-xs-left">{{ props.item.year }}</td>
-                    <td class="text-xs-right ii-number-cell">
+                    <td class="text-xs-right ii-number-cell" v-tariff-expired-hint>
                         {{ props.item.totalAmount | amount(true) }}&nbsp;<span class="second-value">{{ props.item.totalAmount | currencySymbol }}</span>
                     </td>
-                    <td class="text-xs-right ii-number-cell">
+                    <td class="text-xs-right ii-number-cell" v-tariff-expired-hint>
                         {{ props.item.portfolioCosts | amount(true) }}&nbsp;<span class="second-value">{{ props.item.portfolioCosts | currencySymbol }}</span>
                     </td>
-                    <td class="text-xs-right ii-number-cell">{{ props.item.yield }}&nbsp;<span class="second-value">%</span></td>
+                    <td class="text-xs-right ii-number-cell" v-tariff-expired-hint>{{ props.item.yield }}&nbsp;<span class="second-value">%</span></td>
                 </tr>
             </template>
 
             <template #expand="props">
                 <table class="ext-info selectable" @click.stop>
-                    <tr>
+                    <tr v-tariff-expired-hint>
                         <td>
                             <div class="ext-info__item">
                                 Получено дивидендов {{ props.item.dividendsAmount | amount(true) }} <span>{{ props.item.dividendsAmount | currencySymbol }}</span><br>
