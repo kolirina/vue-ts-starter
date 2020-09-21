@@ -34,7 +34,7 @@ const MainStore = namespace(StoreType.MAIN);
         <div :key="portfolio.id" @click="openPublicPortfolio(portfolio.id)" class="public-portfolio-item">
             <div :class="['public-portfolio-item__header', verification ? 'verification' : '']"
                  :title="verification ? 'Верифицированный инвестор' : 'Инвестор'">
-                {{ portfolio.ownerName }}
+                <span>{{ portfolio.ownerName }}</span>
             </div>
             <div class="public-portfolio-item__title" :title="portfolio.description">
                 {{ shortDescription }}
