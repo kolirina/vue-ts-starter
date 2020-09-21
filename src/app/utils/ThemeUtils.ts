@@ -102,7 +102,8 @@ export class ThemeUtils {
     .portfolio-rows-filter__button:hover,
     .v-tooltip__content.menu-icons,
     .theme--light.application, .mobile-wrapper-menu,
-    .custom-v-menu .v-menu-content{background: #21232F !important}
+    .custom-v-menu .v-menu-content,
+    .promo-codes__hint {background: #21232F !important}
 
     .active-link, .wrap-list-menu .v-list__tile:hover,
     .header-first-card__title-text,
@@ -124,6 +125,7 @@ export class ThemeUtils {
 
     .data-table tbody .selectable td,
     .custom-tooltip-wrap,
+    .promo-codes__hint,
     .theme--light.v-list,
     .theme--light.v-data-iterator .v-data-iterator__actions tbody .selectable td,
     .theme--light.v-expansion-panel .v-expansion-panel__container .v-expansion-panel__header .v-expansion-panel__header__icon .v-icon tbody .selectable td,
@@ -275,7 +277,12 @@ export class ThemeUtils {
     .v-input input::-moz-placeholder {color: #cfd0d4 !important}
 
     .public-portfolio-item .highcharts-background {fill: none !important}
-    .public-portfolio-item__chart:after {background: linear-gradient(to top, #2c3040 20%,transparent 50%);}
+    .public-portfolio-item__chart:after {background-image: url(../img/public-portfolio/chart-bg-dark.png)}
+
+    .theme--light.v-tabs__bar .v-tabs__item--disabled {
+        color: #fff;
+        opacity: 0.5;
+    }
     `;
 
     static setStyles(nightTheme: boolean): void {

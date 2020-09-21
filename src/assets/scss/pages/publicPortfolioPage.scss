@@ -49,7 +49,8 @@
         bottom: 0;
         height: 100%;
         width: 100%;
-        background: linear-gradient(to top, #fff 20%, transparent 50%);
+        // не использовать градиент с transparent - баг в Сафари, браузер считает что transparent это rgba (0,0,0, 0)
+        background: url("../img/public-portfolio/chart-bg.png") repeat-x bottom;
       }
 
       > div {

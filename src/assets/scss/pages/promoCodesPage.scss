@@ -1,6 +1,5 @@
 .section-content {
   padding: 24px 32px 32px;
-  min-width: 900px;
   margin-top: 24px;
   background-color: #fff;
 
@@ -38,14 +37,19 @@
   &__title {
     display: flex;
     align-items: center;
-    margin-bottom: 8px;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
     font-weight: 600;
     font-size: 16px;
     line-height: 22px;
+    border-bottom: 1px solid $sidebar-hr-color;
 
-    i {
-      font-size: 16px;
-      margin-left: 12px;
+    i {font-size: 16px}
+
+    &-wrapper {
+      display: flex;
+      align-items: center;
+      margin-right: auto;
     }
   }
 
@@ -54,6 +58,12 @@
     padding: 16px;
     background-color: #fff;
     max-width: 438px;
+  }
+
+  &__withdrawal-btn {
+    margin-left: 24px !important;
+
+    .intel-icon {display: none}
   }
 
   &__img-partner,
@@ -183,6 +193,17 @@
     .share-box {
       &__links a {
         font-size: 40px;
+      }
+    }
+
+    &__withdrawal-btn {
+      font-size: 0;
+      min-width: auto;
+
+      .intel-icon {
+        display: inline;
+        font-size: 24px;
+        color: #96A5BE;
       }
     }
   }
