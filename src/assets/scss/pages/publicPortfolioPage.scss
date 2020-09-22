@@ -19,13 +19,31 @@
     &:nth-child(2n) {margin-right: 0}
 
     &__header {
-      @extend .ellipsis;
       font-size: 14px;
       line-height: 22px;
 
+      span {
+        @extend .ellipsis;
+        display: inline-block;
+        vertical-align: middle;
+        max-width: 100%;
+      }
+
       &.verification {
-        padding-right: 24px;
-        background: url("../img/public-portfolio/verification.svg") no-repeat right center;
+
+        span {
+          max-width: calc(100% - 24px);
+          margin-right: 8px;
+        }
+
+        &:after {
+          content: "";
+          display: inline-block;
+          width: 16px;
+          height: 16px;
+          vertical-align: middle;
+          background: url("../img/public-portfolio/verification.svg") no-repeat center;
+        }
       }
     }
 
