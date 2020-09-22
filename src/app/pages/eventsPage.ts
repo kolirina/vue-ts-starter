@@ -400,6 +400,7 @@ export class EventsPage extends PortfolioBasedPage {
      */
     @ShowProgress
     async created(): Promise<void> {
+        this.initialized = false;
         try {
             this.showHintPanel = this.localStorage.get("eventsHintPanel", true);
             this.setCalendarRequestParams(DateUtils.getYearDate(this.calendarStartDate), DateUtils.getMonthDate(this.calendarStartDate));
