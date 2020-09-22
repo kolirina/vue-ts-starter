@@ -8,13 +8,13 @@ export const MAX = 0x7fffffff;
 export class Tariff extends (EnumType as IStaticEnum<Tariff>) {
 
     static readonly STANDARD = new Tariff("STANDARD", "Стандарт", MAX, 2, "199", "99", "2388", "2388",
-        Permission.COMBINED_PORTFOLIO | Permission.INVESTMENTS, "Базовый функционал");
+        Permission.COMBINED_PORTFOLIO | Permission.INVESTMENTS, "Основной функционал");
 
     static readonly PRO = new Tariff("PRO", "Профессионал", MAX, MAX, "399", "199", "4788", "4788",
         Permission.FOREIGN_SHARES | Permission.COMBINED_PORTFOLIO | Permission.INVESTMENTS | Permission.PROFF_MODE, "Расширенный функционал");
 
     static readonly FREE = new Tariff("FREE", "Бесплатный", 7, 1, "0", "0", "0", "0", 0,
-        "Ограниченный функционал");
+        "Базовый функционал");
 
     static readonly TRIAL = new Tariff("TRIAL", "Профессионал (демо)", MAX, MAX, "399", "199", "4788", "4788",
         Permission.FOREIGN_SHARES | Permission.COMBINED_PORTFOLIO | Permission.INVESTMENTS | Permission.PROFF_MODE, "");

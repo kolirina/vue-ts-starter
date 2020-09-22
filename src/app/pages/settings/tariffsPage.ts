@@ -64,7 +64,7 @@ export class TariffLimitExceedInfo extends UI {
 @Component({
     // language=Vue
     template: `
-        <v-layout :class="['tariff-item', 'margB30', tariff === Tariff.PRO ? 'pro-tariff' : '']" column>
+        <v-layout :class="['tariff-item', tariff === Tariff.PRO ? 'pro-tariff' : '']" column>
             <div v-if="tariff === Tariff.PRO" class="alignC fs13 tariff-most-popular">
                 Выбор инвесторов
             </div>
@@ -79,7 +79,7 @@ export class TariffLimitExceedInfo extends UI {
                     <div v-if="!monthly" class="tariff__plan_year-price">{{ tariff === Tariff.FREE ? "&nbsp;" : "при оплате за год" }}</div>
                     <div v-if="monthly" class="tariff__plan_year-price">&nbsp;</div>
                 </div>
-                <div class="fs13 bold margT24 margB24">
+                <div class="fs13 bold margT4 margB24">
                     <span v-if="tariff === Tariff.FREE">7 ценных бумаг,</span>
                     <span v-else>&infin; кол-во бумаг,</span>
                     <span class="mt-1">
@@ -108,7 +108,7 @@ export class TariffLimitExceedInfo extends UI {
                         <span v-if="!busyState[tariff.name]">{{ buttonLabel }}</span>
                         <v-progress-circular v-if="busyState[tariff.name]" indeterminate color="white" :size="20"></v-progress-circular>
                     </v-btn>
-                    <expanded-panel :value="notAvailablePanelState" class="promo-codes__statistics w100pc">
+                    <expanded-panel :value="notAvailablePanelState" class="margT16 promo-codes__statistics w100pc">
                         <template #header>{{ available ? 'Подробнее' : 'Почему мне недоступен тариф?' }}</template>
                         <div class="statistics">
                             <tariff-limit-exceed-info v-if="!available" :portfolios-count="clientInfo.user.portfoliosCount" :tariff="tariff"
@@ -121,7 +121,7 @@ export class TariffLimitExceedInfo extends UI {
                     </expanded-panel>
                 </template>
                 <v-btn v-if="available && !isTariffsDifferent" @click.stop="makePayment(tariff)"
-                       :class="{'big_btn margT24': true, 'selected': selected}"
+                       :class="{'big_btn': true, 'selected': selected}"
                        :style="disabled ? 'opacity: 0.7;' : ''"
                        :disabled="disabled">
                     <span v-if="!busyState[tariff.name]">{{ buttonLabel }}</span>
@@ -135,28 +135,38 @@ export class TariffLimitExceedInfo extends UI {
                         Средства списываются регулярно.<br>Отказаться от подписки можно в любой момент
                     </template>
                 </div>
-                <div v-if="tariff === Tariff.STANDARD" class="tariff-description-wrap">
-                    <div>Базовые возможности</div>
-                    <div>Возможность учета произвольных инструментов</div>
-                    <div>Возможность публичного доступа к портфелю</div>
-                    <div>Формирование составного портфеля из портфелей различных брокеров</div>
+                <div class="tariff-description-wrap">
+                    <div>Учет акций, облигаций, ПИФов и&nbsp;драгметаллов</div>
+                    <div>Учёт активов номинированных в&nbsp;рублях и&nbsp;валюте</div>
+                    <div>Импорт отчетов 18 брокеров</div>
+                    <div>Полная аналитика по портфелю</div>
+                    <div>Учет дивидендов, купонов, комиссий и&nbsp;амортизации</div>
+                    <div>Уведомления о ценах и событиях</div>
                     <div>Мобильное приложение</div>
-                </div>
-                <div v-if="tariff === Tariff.PRO" class="tariff-description-wrap">
-                    <div>Возможности тарифа Стандарт</div>
-                    <div>Операции с валютой</div>
-                    <div>Учет бумаг номинированных в валюте, валютных активов, коротких позиций и криптовалют</div>
-                    <div>Приоритетная поддержка в чате в Telegram</div>
-                    <div>Приоритетный доступ к функциональности, которая будет добавляться в сервис в будущем</div>
-                </div>
-                <div v-if="tariff === Tariff.FREE" class="tariff-description-wrap">
-                    <div>Импорт и экспорт сделок</div>
-                    <div>Полная аналитика портфеля</div>
-                    <div>Учет акций, облигаций, ПИФов, драгметаллов</div>
-                    <div>Учет дивидендов, купонов, комиссий и амортизации</div>
-                    <div>Котировки и актуальная информация об эмитенте</div>
-                    <div>Уведомления о ценах акций и облигаций</div>
-                    <div>Дивидендный анализ</div>
+                    <div>
+                        <span>
+                            Публичный доступ к портфелю
+                            <tooltip>Текст подсказки</tooltip>
+                        </span>
+                    </div>
+                    <template v-if="tariff === Tariff.STANDARD || tariff === Tariff.PRO">
+                        <div>
+                            <span>
+                                Произвольные активы (недвижимость, депозиты, кредиты, и тд.)
+                                <tooltip>Текст подсказки</tooltip>
+                            </span>
+                        </div>
+                        <div>Возможность объединения двух и&nbsp;более портфелей</div>
+                    </template>
+                    <template v-if="tariff === Tariff.PRO">
+                        <div>
+                            <span>
+                                Учет сделок маржинальной торговли (РЕПО)
+                                <tooltip>Текст подсказки</tooltip>
+                            </span>
+                        </div>
+                        <div>Учет валютных пар и криптовалюты</div>
+                    </template>
                 </div>
             </v-layout>
         </v-layout>
@@ -307,7 +317,7 @@ export class TariffBlock extends UI {
 @Component({
     // language=Vue
     template: `
-        <v-container fluid>
+        <v-container class="page-wrapper" fluid>
             <v-card flat class="header-first-card">
                 <v-card-title class="header-first-card__wrapper-title">
                     <div class="section-title header-first-card__title-text">Тарифы</div>
@@ -317,12 +327,12 @@ export class TariffBlock extends UI {
                 <div class="tariff">
                     <div class="tariff__header">
                         <div>
-                            Выберите подходящее для вас решение
+                            <div class="tariff__header-title">Выберите подходящее для вас решение</div>
                             <div>
                                 <v-radio-group v-model="monthly" class="radio-horizontal">
                                     <v-radio label="На год" :value="false"></v-radio>
-                                    &nbsp;
-                                    <v-radio label="На месяц" :value="true"></v-radio>
+                                    <b>&nbsp;-50%</b>
+                                    <v-radio label="На месяц" :value="true" class="margL20"></v-radio>
                                 </v-radio-group>
                             </div>
                         </div>
@@ -350,7 +360,7 @@ export class TariffBlock extends UI {
                         <template v-if="clientInfo.user.nextPurchaseDiscountExpired">(срок действия скидки до {{ clientInfo.user.nextPurchaseDiscountExpired | date }})</template>
                     </p>
 
-                    <v-layout class="wrap-tariffs-sentence justify-space-around" wrap>
+                    <v-layout class="wrap-tariffs-sentence" wrap>
                         <tariff-block v-for="item in availableTariffs" :key="item.name" @pay="makePayment" :tariff="item" :client-info="clientInfo" :monthly="monthly"
                                       :busy-state="busyState" :is-progress="isProgress" :payment-info="paymentInfo"></tariff-block>
                     </v-layout>
