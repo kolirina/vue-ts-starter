@@ -90,7 +90,7 @@ export class TariffExpiredHint extends UI {
      * Возвращает true если текущие показатели пользователя превышают лимиты тарифа по портфелям/бумагам/содержанию
      */
     private get limitsExceeded(): boolean {
-        return this.exceedLimitByPortfolios || this.exceedLimitByShareCount || this.exceedLimitByForeignShares;
+        return this.clientInfo.user.tariff === Tariff.FREE && (this.exceedLimitByPortfolios || this.exceedLimitByShareCount || this.exceedLimitByForeignShares);
     }
 
     private get tariffExpired(): boolean {

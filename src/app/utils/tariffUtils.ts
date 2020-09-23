@@ -47,7 +47,7 @@ export class TariffUtils {
 
     static limitsExceeded(clientInfo: Client): boolean {
         const tariff = clientInfo.tariff;
-        return clientInfo.portfoliosCount > tariff.maxPortfoliosCount || clientInfo.sharesCount > tariff.maxSharesCount ||
+        return tariff === Tariff.FREE && clientInfo.portfoliosCount > tariff.maxPortfoliosCount || clientInfo.sharesCount > tariff.maxSharesCount ||
             (clientInfo.foreignShares && !tariff.hasPermission(Permission.FOREIGN_SHARES));
     }
 
