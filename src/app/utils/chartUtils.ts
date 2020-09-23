@@ -4,6 +4,7 @@ import {Decimal} from "decimal.js";
 import Highcharts, {AreaChart, ChartObject, DataPoint, Gradient, IndividualSeriesOptions, PlotLines, SeriesChart} from "highcharts";
 import Highstock from "highcharts/highstock";
 import {Filters} from "../platform/filters/Filters";
+import {ShareEvent} from "../services/eventService";
 import {BigMoney} from "../types/bigMoney";
 import {
     AnalyticsChartPoint,
@@ -35,7 +36,8 @@ export class ChartUtils {
         YIELDS: "<b>Прибыль: {point.profit} {point.currencySymbol} ({point.description})</b>",
         // todo profit расскоментировать проценты прибыли
         // PROFIT: "<b>{point.period}</b>: {point.profit} {point.currencySymbol} <b>({point.description})</b>"
-        PROFIT: "<b>{point.period}</b>: {point.profit} {point.currencySymbol}"
+        PROFIT: "<b>{point.period}</b>: {point.profit} {point.currencySymbol}",
+        EVENTS: "<b>{point.name}</b>: {point.y}<br/>{point.description}<br/><b>Всего</b>: {point.totalAmount}",
     };
     /** Цвета операций */
     static OPERATION_COLORS: { [key: string]: string } = {
@@ -146,6 +148,88 @@ export class ChartUtils {
                 {name: "Прибыль", data: positive, color: "#1f83c8"},
                 {name: "Убыток", data: negative, color: this.NEGATIVE_COLOR}
             ], categoryNames: categoryNames
+        };
+    }
+
+    static doFutureEventsChartData(futureEvents: ShareEvent[]): ColumnChartData {
+        const dividends: CustomDataPoint[] = [];
+        const coupons: CustomDataPoint[] = [];
+        const amortizations: CustomDataPoint[] = [];
+        const categoryNames: string[] = [];
+        const reduced: { [key: string]: ShareEvent[] } = {};
+        // группируем события в разбивке по периоду (Месяц Год)
+        futureEvents
+            .map(event => {
+                return {date: DateUtils.parseDate(event.date), event: event};
+            })
+            .sort((a, b) => a.date.isAfter(b.date) ? 1 : a.date.isSame(b.date) ? 0 : -1)
+            .forEach((item: { date?: dayjs.Dayjs, event: ShareEvent }) => {
+                const event = item.event;
+                const label = DateUtils.formatDate(DateUtils.parseDate(event.date), "MMMM YYYY");
+                const shareEvents = reduced[label] || [];
+                shareEvents.push(event);
+                reduced[label] = shareEvents;
+            });
+        // по каждому периоду:
+        // группируем события по типу: Дивиденд, Купон, Амортизация
+        // внутри группы события дополинтельно группируем по тикери, так как для составного портфеля они могли быть зачислены разными датами
+        // добавляем точку в каждый набор данных для графика чтобы корректно работал режим stacked
+        Object.keys(reduced).forEach(period => {
+            const shareEvents = reduced[period];
+            const eventsByType: { [key: string]: ShareEvent[] } = {};
+            shareEvents.forEach(event => {
+                const byType = eventsByType[event.type] || [];
+                byType.push(event);
+                eventsByType[event.type] = byType;
+            });
+            const totalAmountInPeriod = shareEvents.map(event => new BigMoney(event.totalAmount).amount)
+                .reduce((result: Decimal, current: Decimal) => result.add(current), new Decimal("0"));
+            const grouped: { [key: string]: CustomDataPoint } = {};
+            Object.keys(eventsByType).forEach(eventType => {
+                const events = eventsByType[eventType];
+                const totalAmountByType = events.map(event => new BigMoney(event.totalAmount).amount)
+                    .reduce((result: Decimal, current: Decimal) => result.add(current), new Decimal("0"));
+                const currencySymbol = new BigMoney(shareEvents[0].totalAmount).currencySymbol;
+                const operation = Operation.valueByName(eventType);
+
+                const reducesByTicker: { [key: string]: ShareEvent[] } = {};
+                events.forEach(event => {
+                    const key = `${event.share.ticker}${event.share.currency}`;
+                    const byTicker = reducesByTicker[key] || [];
+                    byTicker.push(event);
+                    reducesByTicker[key] = byTicker;
+                });
+                const comment = Object.keys(reducesByTicker).map(key => {
+                    const eventsByTicker = reducesByTicker[key];
+                    const ticker = eventsByTicker[0]?.share.ticker;
+                    const date = eventsByTicker[0]?.date;
+                    const amountByTicker = eventsByTicker.map(event => new BigMoney(event.totalAmount).amount)
+                        .reduce((result: Decimal, current: Decimal) => result.add(current), new Decimal("0"));
+                    const formattedAmount = Filters.formatNumber(amountByTicker.toDP(2, Decimal.ROUND_HALF_UP).toString());
+                    const fromNews = eventsByTicker.some(event => event.comment === "На основе новостей");
+                    const dateString = DateUtils.formatDate(DateUtils.parseDate(date)) + (fromNews ? " Новости" : "");
+                    return `<b>${ticker}</b>: ${formattedAmount} ${currencySymbol} (~${dateString})`;
+                }).join(",<br/>");
+
+                grouped[eventType] = {
+                    name: operation.description,
+                    y: totalAmountByType.toDP(2, Decimal.ROUND_HALF_UP).toNumber(),
+                    currencySymbol: currencySymbol,
+                    period: period,
+                    description: comment,
+                    totalAmount: `${Filters.formatNumber(totalAmountInPeriod.toDP(2, Decimal.ROUND_HALF_UP).toString())} ${currencySymbol}`
+                };
+            });
+            dividends.push(grouped[Operation.DIVIDEND.enumName] || {name: Operation.DIVIDEND.description, y: 0});
+            coupons.push(grouped[Operation.COUPON.enumName] || {name: Operation.COUPON.description, y: 0});
+            amortizations.push(grouped[Operation.AMORTIZATION.enumName] || {name: Operation.AMORTIZATION.description, y: 0});
+        });
+        return {
+            series: [
+                {name: Operation.DIVIDEND.description, data: dividends, color: this.OPERATION_COLORS[Operation.DIVIDEND.description]},
+                {name: Operation.COUPON.description, data: coupons, color: this.OPERATION_COLORS[Operation.COUPON.description]},
+                {name: Operation.AMORTIZATION.description, data: amortizations, color: this.OPERATION_COLORS[Operation.AMORTIZATION.description]}
+            ], categoryNames: Object.keys(reduced)
         };
     }
 
@@ -915,6 +999,7 @@ export class ChartUtils {
             plotOptions: {
                 column: {
                     grouping: false,
+                    stacking: "normals",
                 },
             },
             xAxis: {
@@ -927,6 +1012,9 @@ export class ChartUtils {
                         color: "#040427"
                     }
                 },
+                stackLabels: {
+                    enabled: true,
+                }
             },
             yAxis: {
                 title: {
@@ -1003,14 +1091,14 @@ export class ChartUtils {
         data
             .filter(value => !!(value as any)[fieldName])
             .forEach(value => {
-            const parsedDate = DateUtils.parseDate(value.date);
-            const date = Date.UTC(parsedDate.year(), parsedDate.month(), parsedDate.date());
-            const amount = new BigMoney((value as any)[fieldName]).amount.toDP(2, Decimal.ROUND_HALF_UP).toNumber();
-            if (result.length === 0 && addStartZeroPoint) {
-                result.push([date - 1, 0]);
-            }
-            result.push([date, amount]);
-        });
+                const parsedDate = DateUtils.parseDate(value.date);
+                const date = Date.UTC(parsedDate.year(), parsedDate.month(), parsedDate.date());
+                const amount = new BigMoney((value as any)[fieldName]).amount.toDP(2, Decimal.ROUND_HALF_UP).toNumber();
+                if (result.length === 0 && addStartZeroPoint) {
+                    result.push([date - 1, 0]);
+                }
+                result.push([date, amount]);
+            });
         return result;
     }
 

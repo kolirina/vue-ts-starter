@@ -75,6 +75,8 @@ export interface PublicPortfolio {
     yearYield: string;
     /** Список данных для отрисовки графика */
     lineChartData: LineChartItem[];
+    /** Признак верифицированного инвестора-владельца портфеля */
+    verified: boolean;
 }
 
 /** Инофрмация об истории голоса пользователя за портфель */

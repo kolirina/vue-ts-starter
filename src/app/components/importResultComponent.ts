@@ -30,7 +30,7 @@ import {ImportErrorsTable} from "./imp/importErrorsTable";
     template: `
         <div class="import-result-info">
             <!-- Блок отображается если из отчета не импортируются начисления или если импортируются, и есть новые события -->
-            <expanded-panel v-if="hasNewEventsAfterImport || importProviderFeatures.autoEvents" name="dividends" :value="[expandPanels]"
+            <expanded-panel v-if="hasNewEventsAfterImport || importProviderFeatures.autoEvents" name="calculations" :value="[expandPanels]"
                             class="selectable import-history">
                 <template #header>
                     <span>Отчет {{ importProviderFeatures.autoEvents ? "не" : "" }} содержит информацию по дивидендам, купонам, амортизации</span>

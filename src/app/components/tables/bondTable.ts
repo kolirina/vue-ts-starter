@@ -415,8 +415,8 @@ export class BondTable extends UI {
     @ShowProgress
     private async deleteAllTradesAndReloadData(bondRow: BondPortfolioRow): Promise<void> {
         await this.tradeService.deleteAllTrades({
-            assetType: AssetType.BOND.enumName,
-            ticker: bondRow.bond.ticker,
+            shareType: bondRow.bond.shareType,
+            shareId: bondRow.bond.id,
             portfolioId: this.portfolio.id
         });
         await this.reloadPortfolio();

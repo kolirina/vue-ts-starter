@@ -1,19 +1,20 @@
 .section-content {
-  padding: 24px 40px 24px 24px;
-  min-width: 900px;
+  padding: 24px 32px 32px;
+  margin-top: 24px;
+  background-color: #fff;
 
-  @media all and (max-width: $sm-breakpoint){min-width: auto;}
+  @media all and (max-width: $sm-breakpoint) {
+    min-width: auto;
+    padding: 20px
+  }
 
-  @media all and (max-width: $xs-breakpoint){padding: 16px}
+  @media all and (max-width: $xs-breakpoint) {padding: 16px}
 }
 
 .light-text,
 .rewards-currency {color: #A1A6B6}
 
 .promo-codes {
-  margin: 0 0 20px 0;
-  padding-bottom: 48px;
-  border-bottom: 1px solid $sidebar-hr-color;
 
   .promo-code {
     color: $sidebar-blue-color;
@@ -23,76 +24,132 @@
     &__wrapper {
       display: flex;
       align-items: center;
+
+      .v-input {
+        max-width: 500px;
+        margin-right: 12px;
+      }
+
+      .v-btn {height: 52px !important;}
     }
   }
 
-  &__steps {
+  &__title {
     display: flex;
-    background: $sidebar-blue-color;
-    min-width: 900px;
-    counter-reset: step;
-    font-size: 14px;
-  }
-
-  &__step {
-    width: 33%;
-    padding: 24px;
-    color: #fff;
+    align-items: center;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    font-weight: 600;
+    font-size: 16px;
     line-height: 22px;
-    text-align: center;
-    counter-increment: step;
-    position: relative;
+    border-bottom: 1px solid $sidebar-hr-color;
 
-    &:before {
-      content: counter(step);
-      display: inline-flex;
+    i {font-size: 16px}
+
+    &-wrapper {
+      display: flex;
       align-items: center;
-      justify-content: center;
-      width: 52px;
-      height: 52px;
-      border-radius: 50%;
-      background-color: #fff;
-      color: $sidebar-blue-color;
-      margin-bottom: 16px;
-      font-size: 24px;
-    }
-
-    + .promo-codes__step:after {
-      content: '';
-      height: calc(100% - 25px);
-      width: 1px;
-      background-color: #fff;
-      opacity: 0.15;
-      position: absolute;
-      left: 0;
-      top: 15px;
+      margin-right: auto;
     }
   }
 
-  &__subtitle {
-    font-size: 12px;
-    color: #A1A6B6;
+  &__hint {
+    font-size: 13px;
+    padding: 16px;
+    background-color: #fff;
+    max-width: 438px;
   }
 
-  .rewards {
-    border-top: 1px solid $sidebar-hr-color;
-    margin-top: 30px;
-    padding-top: 24px;
+  &__withdrawal-btn {
+    margin-left: 24px !important;
+
+    .intel-icon {display: none}
+  }
+
+  &__img-partner,
+  &__img-user {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    flex: none;
+    margin-right: 16px;
+  }
+
+  &__img-partner {background: $main--bg-color url("../img/promocodes/partner.svg") center center}
+  &__img-user {background: $main--bg-color url("../img/promocodes/user.svg") center center}
+
+  ul {
     font-size: 14px;
-    color: $main--font-color;
+    line-height: 22px;
+    color: #000;
+    padding: 0 0 24px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid $sidebar-hr-color;
+
+    li {
+      list-style: none;
+      position: relative;
+      padding-left: 12px;
+
+      &:before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: calc(50% - 2px);
+        width: 4px;
+        height: 4px;
+        background-color: $main-color-1;
+        border-radius: 50%;
+      }
+
+      + li {margin-top: 8px}
+    }
+  }
+
+  .v-input--radio-group__input {
+    flex-direction: row;
+    align-items: center;
+
+    .v-radio {margin-bottom: 0 !important;}
+  }
+
+  .share-box {
+    padding-bottom: 32px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid $sidebar-hr-color;
+
+    &__links {
+      margin-top: 20px;
+      display: flex;
+
+      a {
+        font-size: 52px;
+        color: #CACED5;
+        transition: color 0.15s ease;
+        line-height: 1;
+
+        + a {margin-left: 12px}
+
+        &:hover {
+          color: $main-color-1;
+        }
+      }
+    }
   }
 
   &__statistics {
-    font-size: 13px;
+    font-size: 14px;
 
     .v-expansion-panel__header {
       padding: 0;
       font-family: "OpenSans", sans-serif;
       font-size: 14px;
+      min-height: auto;
 
       > div:first-child {
         flex: none;
         font-weight: normal;
+        max-width: calc(100% - 24px);
       }
 
       .v-expansion-panel__header__icon {
@@ -102,6 +159,7 @@
         margin-left: 16px;
         transform: rotate(180deg);
         transition: transform 0.2s ease;
+        flex: none;
 
         i {display: none}
       }
@@ -113,57 +171,70 @@
     .v-expansion-panel__container--active .v-expansion-panel__header__icon {transform: rotate(0deg)}
   }
 
-  @media all and (max-width: $sm-breakpoint) {
-    &__steps {min-width: auto}
-
-    &__step {
-      padding: 24px 12px;
-
-      > div {font-size: 13px}
-    }
-  }
-
   @media all and (max-width: $xs-breakpoint) {
     .promo-code {
       margin-top: 12px;
-    }
-
-    &__steps {
-      flex-direction: column;
-      padding: 8px 0;
-    }
-
-    &__step {
-      display: flex;
-      width: auto;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-      margin: 0 32px;
-      padding: 16px 0;
-
-      &:after {content: none !important;}
-
-      &:before {
-        width: 40px;
-        height: 40px;
-        font-size: 18px;
-        margin: 0 16px 0 0;
-      }
-
-      > div {text-align: left}
-
-      &:last-child {border-bottom: none}
     }
 
     .promo-code__wrapper {
       flex-direction: column;
       align-items: flex-start;
 
-      .btns {
-        flex-direction: column;
-
-        .v-btn {
-          margin: 12px 0 0 !important;}
+      .v-input {
+        width: 100%;
+        margin-right: 0 ;
       }
+
+      .v-btn {
+        margin: 12px 0 0 !important;
+      }
+    }
+
+    .share-box {
+      &__links a {
+        font-size: 40px;
+      }
+    }
+
+    &__withdrawal-btn {
+      font-size: 0;
+      min-width: auto;
+
+      .intel-icon {
+        display: inline;
+        font-size: 24px;
+        color: #96A5BE;
+      }
+    }
+  }
+
+  @media all and (max-width: $sm-breakpoint) {
+    .share-box {
+      &__links a {
+        font-size: 40px;
+      }
+    }
+  }
+}
+
+.rewards {
+  border-top: 1px solid $sidebar-hr-color;
+  margin-top: 20px;
+  padding-top: 20px;
+  font-size: 14px;
+  color: $main--font-color;
+
+  .v-expansion-panel__body .v-card {
+    margin-top: 16px;
+
+    > div {
+      margin: 0 0 8px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 320px;
+
+      > span:first-child {width: auto}
     }
   }
 }
@@ -173,7 +244,7 @@
   color: $main--font-color;
 
   div {
-    margin: 0 0 24px 20px;
+    margin: 0 0 8px 0;
 
     > span {
       &:first-child {
@@ -184,10 +255,9 @@
 
       &:last-child {white-space: nowrap}
     }
-
   }
 
-  @media all and (max-width: $xs-breakpoint){
+  @media all and (max-width: $xs-breakpoint) {
     div {
       display: flex;
       align-items: center;
@@ -198,6 +268,41 @@
         width: 194px;
         margin-right: 16px;
       }
+    }
+  }
+}
+
+.achievements {
+  padding-bottom: 32px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid $sidebar-hr-color;
+
+  &__items {
+    display: flex;
+    margin-top: 16px;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    height: 52px;
+    width: 52px;
+    border-radius: 50%;
+    background: #F7F9FB;
+    font-size: 24px;
+    color: $main-color-1;
+    margin-right: 12px;
+
+    &.icon-achievement-lock {color: #96A5BE}
+  }
+
+  @media all and (max-width: $sm-breakpoint) {
+    &__item {
+      height: 40px;
+      width: 40px;
+      font-size: 20px;
     }
   }
 }

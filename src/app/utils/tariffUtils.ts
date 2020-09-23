@@ -16,6 +16,7 @@
 
 import dayjs from "dayjs";
 import {Client, ClientInfo} from "../services/clientService";
+import {Permission} from "../types/permission";
 import {Tariff} from "../types/tariff";
 import {DateUtils} from "./dateUtils";
 
@@ -42,6 +43,12 @@ export class TariffUtils {
         const paidTill = DateUtils.parseDate(clientInfo.paidTill);
         const currentDate = dayjs();
         return clientInfo.tariff !== Tariff.FREE && paidTill.isBefore(currentDate) && !paidTill.isSame(currentDate, "date");
+    }
+
+    static limitsExceeded(clientInfo: Client): boolean {
+        const tariff = clientInfo.tariff;
+        return clientInfo.portfoliosCount > tariff.maxPortfoliosCount || clientInfo.sharesCount > tariff.maxSharesCount ||
+            (clientInfo.foreignShares && !tariff.hasPermission(Permission.FOREIGN_SHARES));
     }
 
     static getSubscribeDescription(clientInfo: Client, appendToSuffix: boolean = false): string {

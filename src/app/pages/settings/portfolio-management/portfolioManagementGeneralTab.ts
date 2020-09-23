@@ -66,6 +66,7 @@ import {DateUtils} from "../../../utils/dateUtils";
 
                 <v-flex class="select-section">
                     <v-select :items="accountTypes" v-model="portfolio.accountType" :return-object="true" item-text="description" dense hide-details
+                              @change="onAccountTypeChange"
                               label="Тип счета" :menu-props="{nudgeBottom:'22'}"></v-select>
                 </v-flex>
                 <v-flex class="select-section" v-if="portfolio.accountType === accountType.IIS">
@@ -173,6 +174,14 @@ export class PortfolioManagementGeneralTab extends UI {
      */
     private onSelectProvider(provider: DealsImportProvider): void {
         this.portfolio.brokerId = provider.id;
+    }
+
+    private onAccountTypeChange(): void {
+        if (this.portfolio.accountType === PortfolioAccountType.IIS && !this.portfolio.iisType) {
+            this.portfolio.iisType = IisType.TYPE_A;
+        } else if (this.portfolio.accountType === PortfolioAccountType.BROKERAGE) {
+            this.portfolio.iisType = null;
+        }
     }
 
     private removeBrokerId(): void {

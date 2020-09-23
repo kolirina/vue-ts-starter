@@ -52,7 +52,7 @@ const MainStore = namespace(StoreType.MAIN);
                             <div class="logo-wrap">
                                 <a href="https://intelinvest.ru/prices" target="_blank" class="fs14 decorationNone bold">Тарифы</a>
                                 <a href="https://blog.intelinvest.ru/" target="_blank" class="fs14 decorationNone bold">Блог</a>
-                                <a href="https://tlgg.ru/intelinvestSupportBot" target="_blank" class="fs14 decorationNone bold">Поддержка</a>
+                                <a href="https://t.me/intelinvestSupportBot" target="_blank" class="fs14 decorationNone bold">Поддержка</a>
                             </div>
                             <div class="bold fs16">Обновления сервиса</div>
                             <update-service-info></update-service-info>

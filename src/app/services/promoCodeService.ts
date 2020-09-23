@@ -1,5 +1,6 @@
 import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
+import {Enum, EnumType, IStaticEnum} from "../platform/enum";
 import {Http} from "../platform/services/http";
 
 @Service("PromoCodeService")
@@ -65,4 +66,16 @@ export interface PartnershipWithdrawalRequest {
     account: string;
     /** Всего оплачено пользователями от партнера */
     bankBic: string;
+}
+
+/** Тип доступа к портфелю */
+@Enum("code")
+export class ReferralAwardType extends (EnumType as IStaticEnum<ReferralAwardType>) {
+
+    static readonly PAYMENT = new ReferralAwardType("PAYMENT", "Партнерам");
+    static readonly SUBSCRIPTION = new ReferralAwardType("SUBSCRIPTION", "Пользователям");
+
+    private constructor(public code: string, public description: string) {
+        super();
+    }
 }

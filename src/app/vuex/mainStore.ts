@@ -71,6 +71,9 @@ const Getters = {
     },
     [GetterType.EXPIRED_TARIFF](state: StateHolder): boolean {
         return TariffUtils.isTariffExpired(state.clientInfo.user);
+    },
+    [GetterType.NEED_BLOCK_INTERFACE](state: StateHolder): boolean {
+        return TariffUtils.isTariffExpired(state.clientInfo.user) || TariffUtils.limitsExceeded(state.clientInfo.user);
     }
 };
 

@@ -16,7 +16,7 @@ export class TariffHint implements DirectiveOptions {
      */
     bind(el: HTMLElement): void {
         /** Проверяем истек ли тариф и что это не сама плашка с подсказкой */
-        if (!(store as any).getters["MAIN/expiredTariff"] || el.classList.contains("custom-v-menu")) {
+        if (!(store as any).getters["MAIN/needBlockInterface"] || el.classList.contains("custom-v-menu")) {
             return;
         }
 

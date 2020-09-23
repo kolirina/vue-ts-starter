@@ -4,6 +4,7 @@ import {Enum, EnumType, IStaticEnum} from "../../platform/enum";
 export interface CustomDataPoint extends DataPoint {
     profit?: string;
     period?: string;
+    totalAmount?: string;
     currencySymbol?: string;
 }
 
@@ -213,4 +214,5 @@ export enum ChartType {
     PROFIT_LINE_CHART = "profitLineChart",
     PROFIT_MONTH_CHART = "profitMonthChart",
     PROFIT_YEAR_CHART = "profitYearChart",
+    FUTURE_EVENTS_CHART = "futureEventsChart",
 }

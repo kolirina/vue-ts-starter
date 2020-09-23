@@ -29,14 +29,6 @@ export class DividendService {
         const request: CombinedInfoRequest = {viewCurrency, ids};
         return this.http.post<DividendAggregateInfo>(`/dividends/combined`, request);
     }
-
-    /**
-     * Отправляет запрос на удаление всех сделок
-     * @param deleteTradeRequest запрос на удаление всех сделок
-     */
-    async deleteAllTrades(deleteTradeRequest: DeleteAllDividendsTradeRequest): Promise<void> {
-        await this.http.post("/dividends/deleteAll", deleteTradeRequest);
-    }
 }
 
 /** Агрегированная информация по дивидендам в портфеле */
@@ -97,22 +89,24 @@ export interface DividendInfo {
 
 /** Строка с информацией о суммарных дивидендых выплатах за год */
 export interface DividendsByYearRow {
-    /** Сумма сделки */
+    /** Сумма начислений за год */
+    totalAmount: string;
+    /** Сумма дивидендов за год */
     dividendsAmount: string;
-    /** Сумма сделки */
+    /** Сумма купонов за год */
+    couponsAmount: string;
+    /** Стоимость портфеля на конец года */
     portfolioCosts: string;
-    /** Дивидендная доходность по тикеру */
+    /** Стоимость портфеля акций и активов на конец года */
+    stocksAndAssetsCost: string;
+    /** Стоимость портфеля облигаций на конец года */
+    bondsCost: string;
+    /** Общая доходность на конец года */
     yield: string;
-    /** Год */
-    year: string;
-}
-
-/** Запрос на удаление всех сделок по дивидендам */
-export interface DeleteAllDividendsTradeRequest {
-    /** Тикер */
-    ticker: string;
-    /** Идентификатор портфеля */
-    portfolioId: number;
+    /** Дивидендная доходность на конец года */
+    dividendsYield: string;
+    /** Доходность от купонов на конец года */
+    couponsYield: string;
     /** Год */
     year: string;
 }

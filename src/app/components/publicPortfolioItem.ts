@@ -17,17 +17,25 @@
 /**
  * Компонент для отображения ссылки на просмотр информации по акции
  */
+import {namespace} from "vuex-class";
 import {Component, Prop, UI} from "../app/ui";
+import {ClientInfo} from "../services/clientService";
 import {PublicPortfolio} from "../services/publicPortfolioService";
 import {LineChartItem} from "../types/charts/types";
 import {PortfolioVote} from "../types/eventObjects";
 import {ChartUtils} from "../utils/chartUtils";
+import {StoreType} from "../vuex/storeType";
+
+const MainStore = namespace(StoreType.MAIN);
 
 @Component({
     // language=Vue
     template: `
         <div :key="portfolio.id" @click="openPublicPortfolio(portfolio.id)" class="public-portfolio-item">
-            <div class="public-portfolio-item__header">{{ portfolio.ownerName }}</div>
+            <div :class="['public-portfolio-item__header', verification ? 'verification' : '']"
+                 :title="verification ? 'Верифицированный инвестор' : 'Инвестор'">
+                <span>{{ portfolio.ownerName }}</span>
+            </div>
             <div class="public-portfolio-item__title" :title="portfolio.description">
                 {{ shortDescription }}
             </div>
@@ -64,6 +72,8 @@ import {ChartUtils} from "../utils/chartUtils";
 })
 export class PublicPortfolioItem extends UI {
 
+    @MainStore.Getter
+    private clientInfo: ClientInfo;
     @Prop({type: Object, required: true})
     private portfolio: PublicPortfolio;
 
@@ -97,5 +107,9 @@ export class PublicPortfolioItem extends UI {
             return this.portfolio.description?.length > 80 ? `${this.portfolio.description.substr(0, 77)}...` : this.portfolio.description;
         }
         return this.portfolio.name;
+    }
+
+    private get verification(): boolean {
+        return this.portfolio.verified;
     }
 }

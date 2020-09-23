@@ -2,6 +2,7 @@ import {Inject} from "typescript-ioc";
 import {Component, UI} from "../../app/ui";
 import {AdditionalPagination} from "../../components/additionalPagination";
 import {PublicPortfolioItem} from "../../components/publicPortfolioItem";
+import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {Storage} from "../../platform/services/storage";
 import {PortfolioService} from "../../services/portfolioService";
@@ -73,6 +74,8 @@ export class PublicPortfolioPage extends UI {
      * Обрыбатывает событие изменения паджинации и загружает данные
      * @param pagination
      */
+    @DisableConcurrentExecution
+    @ShowProgress
     private async onTablePaginationChange(pagination: Pagination): Promise<void> {
         this.pagination = pagination;
         await this.loadPortfolios();
