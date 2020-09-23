@@ -127,8 +127,10 @@ export class TariffLimitExceedInfo extends UI {
                     <span v-if="!busyState[tariff.name]">{{ buttonLabel }}</span>
                     <v-progress-circular v-if="busyState[tariff.name]" indeterminate color="white" :size="20"></v-progress-circular>
                 </v-btn>
-                <div v-if="selected" class="tariff__plan_expires">
-                    {{ expirationDescription }}
+                <div class="tariff__plan_expires">
+                    <template v-if="selected">
+                        {{ expirationDescription }}
+                    </template>
                 </div>
                 <div class="tariff-agreement__notification">
                     <template v-if="tariff !== Tariff.FREE">

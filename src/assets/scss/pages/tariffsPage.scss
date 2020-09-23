@@ -148,6 +148,7 @@
       font-size: 12px;
       color: #A1A6B6;
       margin-top: 8px;
+      min-height: 18px;
     }
   }
 
@@ -234,6 +235,11 @@
       font-size: 12px;
 
       span {font-size: 14px}
+    }
+
+    &-agreement__notification,
+    &__plan_expires {
+      min-height: auto;
     }
   }
 }
