@@ -155,6 +155,7 @@ export class ChartUtils {
         const dividends: CustomDataPoint[] = [];
         const coupons: CustomDataPoint[] = [];
         const amortizations: CustomDataPoint[] = [];
+        const repayments: CustomDataPoint[] = [];
         const categoryNames: string[] = [];
         const reduced: { [key: string]: ShareEvent[] } = {};
         // группируем события в разбивке по периоду (Месяц Год)
@@ -171,7 +172,7 @@ export class ChartUtils {
                 reduced[label] = shareEvents;
             });
         // по каждому периоду:
-        // группируем события по типу: Дивиденд, Купон, Амортизация
+        // группируем события по типу: Дивиденд, Купон, Амортизация, Погашение
         // внутри группы события дополинтельно группируем по тикери, так как для составного портфеля они могли быть зачислены разными датами
         // добавляем точку в каждый набор данных для графика чтобы корректно работал режим stacked
         Object.keys(reduced).forEach(period => {
@@ -223,12 +224,14 @@ export class ChartUtils {
             dividends.push(grouped[Operation.DIVIDEND.enumName] || {name: Operation.DIVIDEND.description, y: 0});
             coupons.push(grouped[Operation.COUPON.enumName] || {name: Operation.COUPON.description, y: 0});
             amortizations.push(grouped[Operation.AMORTIZATION.enumName] || {name: Operation.AMORTIZATION.description, y: 0});
+            repayments.push(grouped[Operation.REPAYMENT.enumName] || {name: Operation.REPAYMENT.description, y: 0});
         });
         return {
             series: [
                 {name: Operation.DIVIDEND.description, data: dividends, color: this.OPERATION_COLORS[Operation.DIVIDEND.description]},
                 {name: Operation.COUPON.description, data: coupons, color: this.OPERATION_COLORS[Operation.COUPON.description]},
-                {name: Operation.AMORTIZATION.description, data: amortizations, color: this.OPERATION_COLORS[Operation.AMORTIZATION.description]}
+                {name: Operation.AMORTIZATION.description, data: amortizations, color: this.OPERATION_COLORS[Operation.AMORTIZATION.description]},
+                {name: Operation.REPAYMENT.description, data: repayments, color: this.OPERATION_COLORS[Operation.REPAYMENT.description]}
             ], categoryNames: Object.keys(reduced)
         };
     }
