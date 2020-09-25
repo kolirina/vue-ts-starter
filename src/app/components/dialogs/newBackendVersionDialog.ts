@@ -45,6 +45,12 @@ import {CustomDialog} from "../../platform/dialogs/customDialog";
 })
 export class NewBackendVersionDialog extends CustomDialog<void, void> {
 
+    static dialogName = "NewBackendVersionDialog";
+
+    protected getDialogName(): string {
+        return NewBackendVersionDialog.dialogName;
+    }
+
     private reload(): void {
         window.location.reload();
     }

@@ -16,6 +16,7 @@
 import {Inject} from "typescript-ioc";
 import Vue from "vue";
 import {NewBackendVersionDialog} from "../components/dialogs/newBackendVersionDialog";
+import {CustomDialog} from "../platform/dialogs/customDialog";
 import {Storage} from "../platform/services/storage";
 import {StoreKeys} from "../types/storeKeys";
 import {ApplicationService, AppVersion} from "./applicationService";
@@ -101,7 +102,7 @@ export class InactivityMonitor {
             try {
                 const version = await this.applicationService.getBackendVersion();
                 const versionFromLocalStorage = this.storage.get<AppVersion>(StoreKeys.BACKEND_VERSION_KEY, null);
-                if (version && versionFromLocalStorage && version.build !== versionFromLocalStorage.build) {
+                if (!CustomDialog.isModalOpened(NewBackendVersionDialog.dialogName) && version && versionFromLocalStorage && version.build !== versionFromLocalStorage.build) {
                     await new NewBackendVersionDialog().show();
                 }
             } catch (e) {
