@@ -16,7 +16,7 @@ import {Pagination} from "../../types/types";
         <v-container fluid>
             <v-card flat class="header-first-card">
                 <v-card-title class="header-first-card__wrapper-title">
-                    <div class="section-title header-first-card__title-text">Публичные портфели</div>
+                    <div class="section-title header-first-card__title-text">Инвестотека</div>
                 </v-card-title>
             </v-card>
             <v-card flat class="template-wrapper">

@@ -195,6 +195,8 @@ export interface ShareEvent {
     cleanAmount: string;
     /** Итоговая сумма начисления (включая налог) */
     totalAmount: string;
+    /** Сумма выплаты в оригинальной валюте */
+    totalAmountOriginal: string;
     /** Назавание события */
     label: string;
     /** Период выплаты */
