@@ -40,7 +40,7 @@ const MainStore = namespace(StoreType.MAIN);
                 {{ shortDescription }}
             </div>
             <div class="public-portfolio-item__chart">
-                <micro-line-chart :data="getChartData(portfolio.lineChartData)" :height="64"></micro-line-chart>
+                <micro-line-chart :data="getChartData(portfolio.lineChartData)" :height="128"></micro-line-chart>
             </div>
             <div class="public-portfolio-item__footer">
                 <div>
