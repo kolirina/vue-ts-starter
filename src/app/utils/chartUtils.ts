@@ -152,11 +152,7 @@ export class ChartUtils {
     }
 
     static doFutureEventsChartData(futureEvents: ShareEvent[]): ColumnChartData {
-        const dividends: CustomDataPoint[] = [];
-        const coupons: CustomDataPoint[] = [];
-        const amortizations: CustomDataPoint[] = [];
-        const repayments: CustomDataPoint[] = [];
-        const categoryNames: string[] = [];
+        const pointsByType: { [key: string]: CustomDataPoint[]} = {};
         const reduced: { [key: string]: ShareEvent[] } = {};
         // группируем события в разбивке по периоду (Месяц Год)
         futureEvents
@@ -221,18 +217,18 @@ export class ChartUtils {
                     totalAmount: `${Filters.formatNumber(totalAmountInPeriod.toDP(2, Decimal.ROUND_HALF_UP).toString())} ${currencySymbol}`
                 };
             });
-            dividends.push(grouped[Operation.DIVIDEND.enumName] || {name: Operation.DIVIDEND.description, y: 0});
-            coupons.push(grouped[Operation.COUPON.enumName] || {name: Operation.COUPON.description, y: 0});
-            amortizations.push(grouped[Operation.AMORTIZATION.enumName] || {name: Operation.AMORTIZATION.description, y: 0});
-            repayments.push(grouped[Operation.REPAYMENT.enumName] || {name: Operation.REPAYMENT.description, y: 0});
+            [Operation.DIVIDEND, Operation.COUPON, Operation.AMORTIZATION, Operation.REPAYMENT].forEach(eventType => {
+                const points = pointsByType[eventType.code] || [];
+                points.push(grouped[eventType.enumName] || {name: eventType.description, y: 0});
+                pointsByType[eventType.code] = points;
+            });
+        });
+        const series: ColumnDataSeries[] = [];
+        [Operation.DIVIDEND, Operation.COUPON, Operation.AMORTIZATION, Operation.REPAYMENT].forEach(eventType => {
+            series.push({name: eventType.description, data: pointsByType[eventType.code], color: this.OPERATION_COLORS[eventType.description]});
         });
         return {
-            series: [
-                {name: Operation.DIVIDEND.description, data: dividends, color: this.OPERATION_COLORS[Operation.DIVIDEND.description]},
-                {name: Operation.COUPON.description, data: coupons, color: this.OPERATION_COLORS[Operation.COUPON.description]},
-                {name: Operation.AMORTIZATION.description, data: amortizations, color: this.OPERATION_COLORS[Operation.AMORTIZATION.description]},
-                {name: Operation.REPAYMENT.description, data: repayments, color: this.OPERATION_COLORS[Operation.REPAYMENT.description]}
-            ], categoryNames: Object.keys(reduced)
+            series: series, categoryNames: Object.keys(reduced)
         };
     }
 

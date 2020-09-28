@@ -399,12 +399,12 @@ export class RouterConfiguration {
                 }
             },
             {
-                name: "public-portfolios",
-                path: "/public-portfolios",
+                name: "investoteka",
+                path: "/investoteka",
                 component: PublicPortfolioPage,
                 meta: {
-                    title: "Публичные портфели",
-                    tourName: "public-portfolios",
+                    title: "Инвестотека",
+                    tourName: "investoteka",
                     tariffAllowed: true
                 }
             },

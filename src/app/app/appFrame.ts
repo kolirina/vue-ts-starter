@@ -157,7 +157,7 @@ export class AppFrame extends UI {
             this.loggedIn = true;
         }
         this.mainSection = [
-            // {title: "Публичные портфели", action: "public-portfolios"},
+            {title: "Инвестотека", action: "investoteka"},
             {title: "Портфель", action: "portfolio"},
             {title: "Аналитика", action: "adviser"},
             {title: "Сделки", action: "trades"},

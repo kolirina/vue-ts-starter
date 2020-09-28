@@ -28,6 +28,10 @@ export class CustomDialog<ParamType, ReturnType> extends UI {
 
     protected showed = false;
 
+    static isModalOpened(dialogName: string = null): boolean {
+        return dialogName ? CustomDialog.instances.some(dialog => dialog.getDialogName() === dialogName) : CustomDialog.instances.length > 0;
+    }
+
     async show(data?: ParamType): Promise<ReturnType> {
         if (data) {
             this.data = data;
@@ -78,6 +82,10 @@ export class CustomDialog<ParamType, ReturnType> extends UI {
      */
     protected close(result?: ReturnType | MouseEvent): void {
         this.$emit("close", result);
+    }
+
+    protected getDialogName(): string {
+        return null;
     }
 
     private bindListeners(): void {

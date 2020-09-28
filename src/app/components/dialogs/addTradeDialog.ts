@@ -520,7 +520,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
 
     private calculateExchangeRate(): void {
         const fee = new Decimal(this.fee ? this.fee : "0");
-        this.currencyExchangeRate = new BigMoney(this.data.tradeFields.linkedTradeFields.moneyAmount).amount.abs().plus(fee.negated())
+        this.currencyExchangeRate = new BigMoney(this.data.tradeFields.linkedTradeFields.moneyAmount).amount.abs().plus(this.isCurrencyBuy ? fee.negated() : fee)
             .dividedBy(this.moneyAmount).toDP(6, Decimal.ROUND_HALF_UP).toString();
     }
 
