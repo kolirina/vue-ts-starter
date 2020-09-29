@@ -71,7 +71,6 @@
       &-description {@extend .ellipsis;}
 
       &-description,
-      &__make-deposit,
       .professional-mode-icon {margin-right: 12px}
 
       .v-btn {
@@ -89,17 +88,27 @@
       }
     }
 
-    &__make-deposit {
+    &__make-deposit,
+    &__combined-icon {
       flex: none;
+      margin-right: 12px;
+    }
+
+    &__make-deposit {
       width: 16px;
       height: 16px;
-      margin-right: 12px;
       background: url('../img/portfolio/deposit.svg') no-repeat center;
       transition: background 0.15s linear;
 
       &:hover {
         background: url('../img/portfolio/deposit-active.svg') no-repeat center;
       }
+    }
+
+    &__combined-icon {
+      width: 24px;
+      height: 24px;
+      background: url('../img/portfolio/combined-icon.svg') no-repeat center;
     }
 
     &__body {
