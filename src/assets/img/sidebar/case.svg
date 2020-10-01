@@ -1,6 +1,11 @@
-<svg width="24" height="23" viewBox="0 0 24 23" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path fill-rule="evenodd" clip-rule="evenodd" d="M1 13.3077V4H23V13.3077L12 15L1 13.3077Z" stroke="#96A5BE" stroke-width="2" stroke-linecap="round"/>
-<path d="M12 13V18" stroke="#96A5BE" stroke-width="2"/>
-<path d="M22 14V22H2V14" stroke="#96A5BE" stroke-width="2" stroke-linecap="round"/>
-<rect x="8" width="8" height="2" fill="#96A5BE"/>
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 24 24" style="enable-background:new 0 0 24 24;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#96A5BE;}
+</style>
+		<path class="st0" d="M12.1,14.9l-8.9-1.4V5H21v8.5L12.1,14.9z M4.9,12l7.2,1.1l7.2-1.1V6.8H4.9V12z"/>
+		<rect x="11.2" y="12.5" class="st0" width="1.8" height="3.7"/>
+		<path class="st0" d="M20.3,20H3.8v-6.8c0-0.5,0.4-0.9,0.9-0.9s0.9,0.4,0.9,0.9v5h12.9v-5c0-0.5,0.4-0.9,0.9-0.9s0.9,0.4,0.9,0.9
+			V20z"/>
+		<rect x="9.1" y="3" class="st0" width="5.9" height="1.5"/>
 </svg>
