@@ -44,7 +44,7 @@ export class LocalStorageUpdater {
      */
     updateLocalStorage(): void {
         if (versionConfig.date !== this.localStorage.get<string>(StoreKeys.LOCAL_STORAGE_LAST_UPDATE_DATE_KEY, null)) {
-            // this.updateTableColumns();
+            this.updateTableColumns();
             this.updateCombinedPortfolioParams();
             this.localStorage.set<string>(StoreKeys.LOCAL_STORAGE_LAST_UPDATE_DATE_KEY, versionConfig.date);
         }
@@ -74,8 +74,6 @@ export class LocalStorageUpdater {
      * Если дата в localStorage не совпадает с датой версии
      */
     private needUpdate(): boolean {
-        const currentDate = DateUtils.currentDate();
-        const lastUpdateDate = DateUtils.parseDate(this.localStorage.get<string>(StoreKeys.LOCAL_STORAGE_LAST_UPDATE_DATE_KEY, currentDate));
-        return !DateUtils.parseDate(versionConfig.date).isSame(lastUpdateDate, "day");
+        return DateUtils.parseDate(versionConfig.date).isBefore(DateUtils.parseDate("2020-10-02"), "day");
     }
 }
