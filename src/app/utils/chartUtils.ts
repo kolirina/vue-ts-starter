@@ -198,14 +198,14 @@ export class ChartUtils {
                 });
                 const comment = Object.keys(reducesByTicker).map(key => {
                     const eventsByTicker = reducesByTicker[key];
-                    const ticker = eventsByTicker[0]?.share.ticker;
+                    const shortname = eventsByTicker[0]?.share.shortname;
                     const date = eventsByTicker[0]?.date;
                     const amountByTicker = eventsByTicker.map(event => new BigMoney(event.totalAmount).amount)
                         .reduce((result: Decimal, current: Decimal) => result.add(current), new Decimal("0"));
                     const formattedAmount = Filters.formatNumber(amountByTicker.toDP(2, Decimal.ROUND_HALF_UP).toString());
                     const fromNews = eventsByTicker.some(event => event.comment === "На основе новостей");
                     const dateString = DateUtils.formatDate(DateUtils.parseDate(date)) + (fromNews ? " Новости" : "");
-                    return `<b>${ticker}</b>: ${formattedAmount} ${currencySymbol} (~${dateString})`;
+                    return `<b>${shortname}</b>: ${formattedAmount} ${currencySymbol} (~${dateString})`;
                 }).join(",<br/>");
 
                 grouped[eventType] = {
