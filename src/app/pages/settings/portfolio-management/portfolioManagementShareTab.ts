@@ -110,7 +110,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             Цель портфеля
                                             <tooltip>Цель портфеля, описание, которое будет использовано для отображения на карточке публичного портфеля</tooltip>
                                         </div>
-                                        <v-text-field name="target" v-model.trim="portfolio.description" label="Цель портфеля" :counter="120"></v-text-field>
+                                        <v-text-field name="target" v-model.trim="portfolio.description" label="Цель портфеля" :counter="150"></v-text-field>
                                     </div>
                                 </template>
                             </v-fade-transition>
