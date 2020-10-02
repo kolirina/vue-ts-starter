@@ -5,6 +5,12 @@ import {ImageDialog} from "../../../components/dialogs/imageDialog";
     // language=Vue
     template: `
         <div>
+            <div class="import-instructions__gallery">
+                <figure>
+                    <img :src="IMAGES[2]" alt="0" @click.stop="openImageDialog">
+                </figure>
+            </div>
+
             Для получения отчета перейдите в личный кабинет брокера →
             в верхнем меню выберите пункт <b>Отчеты</b> →
             в левом меню выберите <b>Брокерский отчет</b> →
@@ -31,6 +37,7 @@ export class VtbInstruction extends UI {
     private IMAGES: string[] = [
         "./img/import_instructions/vtb/4.png",
         "./img/import_instructions/vtb/5.png",
+        "./img/import_instructions/vtb/video.gif",
     ];
 
     private async openImageDialog(): Promise<void> {
