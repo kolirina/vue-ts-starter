@@ -74,6 +74,6 @@ export class LocalStorageUpdater {
      * Если дата в localStorage не совпадает с датой версии
      */
     private needUpdate(): boolean {
-        return DateUtils.parseDate(versionConfig.date).isBefore(DateUtils.parseDate("2020-10-02"), "day");
+        return DateUtils.parseDate(versionConfig.date).isBefore(DateUtils.parseDate("2020-10-04"), "day");
     }
 }
