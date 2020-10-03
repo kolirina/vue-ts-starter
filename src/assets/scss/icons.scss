@@ -194,6 +194,8 @@
   border-radius: 50%;
   width: 34px;
   height: 34px;
+
+  &.combined-icon {background-image: url('../img/sidebar/combined_portfolio.svg')}
 }
 
 .icon-circle-telegram:after {

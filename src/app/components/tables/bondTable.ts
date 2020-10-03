@@ -126,6 +126,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <td v-if="tableHeadersState.dailyPlPercent" :class="markupClasses(Number(props.item.dailyPlPercent))" v-tariff-expired-hint>{{ props.item.dailyPlPercent }}</td>
                     <td v-if="tableHeadersState.summFee" class="text-xs-right ii-number-cell" v-tariff-expired-hint>{{ props.item.summFee | amount(true) }}</td>
                     <td v-if="tableHeadersState.percCurrShare" class="text-xs-right ii-number-cell">{{ props.item.percCurrShare | number }}</td>
+                    <td v-if="tableHeadersState.percCurrShareInWholePortfolio" class="text-xs-right ii-number-cell">{{ props.item.percCurrShareInWholePortfolio | number }}</td>
                     <td class="justify-center layout px-0" @click.stop>
                         <v-menu v-if="props.item.bond" transition="slide-y-transition" bottom left>
                             <v-btn slot="activator" flat icon dark>

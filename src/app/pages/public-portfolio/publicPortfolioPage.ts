@@ -26,8 +26,7 @@ import {Pagination} from "../../types/types";
                         а также поделиться своими идеями по ведению портфеля.<br><br>
                         Чтобы опубликовать портфель перейдите в раздел
                         <router-link :to="{name: 'portfolio-management'}">Управление портфелями</router-link>
-                        → Выберете портфель, которым хотите поделиться,
-                        и нажмите кнопку Опубликовать.<br>
+                        → Выберете портфель, которым хотите поделиться, и установите Публичный доступ.<br>
                         <a class="big-link" @click="hideHintsPanel">Больше не показывать</a>
                     </div>
                 </v-slide-y-reverse-transition>
@@ -35,6 +34,7 @@ import {Pagination} from "../../types/types";
                 <div class="public-portfolio-list">
                     <public-portfolio-item v-for="portfolio in publicPortfolios" :key="portfolio.id" :portfolio="portfolio" @vote="onVote"></public-portfolio-item>
                 </div>
+                <additional-pagination :pagination="pagination" @update:pagination="onTablePaginationChange"></additional-pagination>
             </v-card>
         </v-container>
     `,

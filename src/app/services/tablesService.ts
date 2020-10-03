@@ -139,7 +139,15 @@ export class TablesService {
             tooltip: CommonTooltips[TABLE_HEADERS.DAILY_PL_PERCENT]
         },
         {text: "Комиссия", align: "right", value: TABLE_HEADERS.SUMM_FEE, active: false, width: "60", tooltip: StockTooltips[TABLE_HEADERS.SUMM_FEE], currency: true},
-        {text: "Тек. доля", align: "right", value: TABLE_HEADERS.PERC_CURR_SHARE, active: true, width: "50"},
+        {text: "Доля", align: "right", value: TABLE_HEADERS.PERC_CURR_SHARE, active: true, width: "50", tooltip: CommonTooltips[TABLE_HEADERS.PERC_CURR_SHARE]},
+        {
+            text: "Доля в портфеле",
+            align: "right",
+            value: TABLE_HEADERS.PERC_CURR_SHARE_WHOLE_PORTFOLIO,
+            active: false,
+            width: "50",
+            tooltip: CommonTooltips[TABLE_HEADERS.PERC_CURR_SHARE_WHOLE_PORTFOLIO]
+        },
         {text: "", align: "center", ghost: true, value: "actions", sortable: false, width: "25", active: true},
     ];
 
@@ -250,7 +258,15 @@ export class TablesService {
                 tooltip: CommonTooltips[TABLE_HEADERS.DAILY_PL_PERCENT]
             },
             {text: "Комиссия", align: "right", value: TABLE_HEADERS.SUMM_FEE, active: false, width: "65", tooltip: BondTooltips[TABLE_HEADERS.SUMM_FEE], currency: true},
-            {text: "Тек. доля", align: "right", value: TABLE_HEADERS.PERC_CURR_SHARE, active: true, width: "50", tooltip: BondTooltips[TABLE_HEADERS.PERC_CURR_SHARE]},
+            {text: "Доля", align: "right", value: TABLE_HEADERS.PERC_CURR_SHARE, active: true, width: "50", tooltip: CommonTooltips[TABLE_HEADERS.PERC_CURR_SHARE]},
+            {
+                text: "Доля в портфеле",
+                align: "right",
+                value: TABLE_HEADERS.PERC_CURR_SHARE_WHOLE_PORTFOLIO,
+                active: false,
+                width: "50",
+                tooltip: CommonTooltips[TABLE_HEADERS.PERC_CURR_SHARE_WHOLE_PORTFOLIO]
+            },
             {text: "", align: "center", value: "actions", ghost: true, sortable: false, width: "25", active: true},
         ],
 
@@ -357,6 +373,7 @@ export enum TABLE_HEADERS {
     BUY_NKD = "buyNkd",
     SELL_NKD = "sellNkd",
     PERC_CURR_SHARE = "percCurrShare",
+    PERC_CURR_SHARE_WHOLE_PORTFOLIO = "percCurrShareInWholePortfolio",
     NAME = "name",
     OPERATION_LABEL = "operationLabel",
     DATE = "date",
@@ -429,6 +446,8 @@ export interface TableHeadersState {
 export const CommonTooltips: { [key: string]: string } = {
     [TABLE_HEADERS.DAILY_PL]: "Это дневная прибыль/убыток, по отношению к предыдущему дню.",
     [TABLE_HEADERS.DAILY_PL_PERCENT]: "Это дневная прибыль/убыток, по отношению к предыдущему дню в процентах.",
+    [TABLE_HEADERS.PERC_CURR_SHARE]: "Доля бумаги посчитанная к суммарной стоимости активов, к которым относится бумага.",
+    [TABLE_HEADERS.PERC_CURR_SHARE_WHOLE_PORTFOLIO]: "Доля бумаги посчитанная к суммарной стоимости всего портфеля.",
 };
 
 /** Тултипы для акций */

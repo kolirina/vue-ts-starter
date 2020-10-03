@@ -5,6 +5,12 @@ import {ImageDialog} from "../../../components/dialogs/imageDialog";
     // language=Vue
     template: `
         <div class="tinkoff-instruction">
+            <div class="import-instructions__gallery">
+                <figure>
+                    <img :src="IMAGES[3]" alt="0" @click.stop="openImageDialog">
+                </figure>
+            </div>
+
             <div class="import-default-text-margin-t">
                 Вы можете загружать отчеты как за весь период, так и за отдельные месяцы.<br/>
                 Получить отчет за весь период в формате xls/xlsx можно двумя способами:
@@ -57,6 +63,7 @@ export class TinkoffInstruction extends UI {
         "./img/import_instructions/tinkoff/1.png",
         "./img/import_instructions/tinkoff/2.png",
         "./img/import_instructions/tinkoff/3.png",
+        "./img/import_instructions/tinkoff/video.gif",
     ];
 
     private async openImageDialog(): Promise<void> {
