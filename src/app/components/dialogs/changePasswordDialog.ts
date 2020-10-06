@@ -28,7 +28,6 @@ import {ClientInfo, ClientService} from "../../services/clientService";
                                     v-validate="'required|max:50|min:6'"
                                     :error-messages="errors.collect('password')"
                                     data-vv-name="password"
-                                    ref="Пароль"
                                     label="Текущий пароль"
                                     required
                                     autofocus
@@ -44,7 +43,7 @@ import {ClientInfo, ClientService} from "../../services/clientService";
                                     id="newPassword"
                                     v-model="newPassword"
                                     append-icon="visibility"
-                                    v-validate="'required|max:50|min:6|confirmed:Пароль'"
+                                    v-validate="'required|max:50|min:6'"
                                     :error-messages="errors.collect('newPassword')"
                                     data-vv-name="newPassword"
                                     label="Новый пароль"
