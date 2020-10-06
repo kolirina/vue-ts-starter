@@ -237,6 +237,7 @@ export class AppFrame extends UI {
         try {
             this.localStorage.set(StoreKeys.REMEMBER_ME_KEY, signInData.rememberMe);
             const clientInfo = await this.clientService.login({username: signInData.username, password: signInData.password});
+            this.localStorage.set(StoreKeys.REFRESH_TOKEN, clientInfo.refreshToken);
             await this.loadUser(clientInfo);
             await this.loadCurrentPortfolio();
             await this.loadOnBoardingTours();

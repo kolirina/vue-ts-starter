@@ -234,6 +234,9 @@ const MainStore = namespace(StoreType.MAIN);
                             <div class="ext-info__item">
                                 Прибыль от купонов {{ props.item.profitFromCoupons | amount(true, 2, true, true) }} <span>{{ portfolioCurrency }}</span><br>
                                 Прибыль от купонов {{ props.item.profitFromCouponsPercent | number }} <span>%</span><br>
+                                <template v-if="!isAmountZero(props.item.profitFromAmortization)">
+                                    Получено амортизации {{ props.item.profitFromAmortization | amount(true, 2, true, true) }} <span>{{ portfolioCurrency }}</span>
+                                </template>
                             </div>
                         </td>
                         <td>

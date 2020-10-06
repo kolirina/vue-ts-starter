@@ -162,6 +162,8 @@ export type BondPortfolioSumRow = _shareRow & {
     currPrice: string,
     /** Прибыль от выплаты купонов */
     profitFromCoupons: string,
+    /** Прибыль от выплаты амортизации */
+    profitFromAmortization: string,
     /** Прибыль от выплаты купонов в процентах */
     profitFromCouponsPercent: string,
     /** Суммарный выплаченный НКД при покупке облигаций */
