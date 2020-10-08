@@ -17,7 +17,7 @@ import {BtnReturn, CustomDialog} from "../../platform/dialogs/customDialog";
                         <div class="import-default-text-margin-t import-default-text">Продолжить?</div>
                     </v-card-text>
                     <v-card-actions>
-                        <v-btn color="primary" @click.native="close('YES')">Да</v-btn>
+                        <v-btn color="primary" @click.native="close('YES')" v-enter="closeConfirmed">Да</v-btn>
                         <v-btn @click.native="close('NO')">Нет</v-btn>
                     </v-card-actions>
                 </div>
@@ -26,4 +26,8 @@ import {BtnReturn, CustomDialog} from "../../platform/dialogs/customDialog";
     `
 })
 export class ConfirmDialog extends CustomDialog<string, BtnReturn> {
+
+    private closeConfirmed(): void {
+        this.close(BtnReturn.YES);
+    }
 }

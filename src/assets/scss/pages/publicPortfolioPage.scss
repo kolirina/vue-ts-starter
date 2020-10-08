@@ -19,13 +19,31 @@
     &:nth-child(2n) {margin-right: 0}
 
     &__header {
-      @extend .ellipsis;
       font-size: 14px;
       line-height: 22px;
 
+      span {
+        @extend .ellipsis;
+        display: inline-block;
+        vertical-align: middle;
+        max-width: 100%;
+      }
+
       &.verification {
-        padding-right: 24px;
-        background: url("../img/public-portfolio/verification.svg") no-repeat right center;
+
+        span {
+          max-width: calc(100% - 24px);
+          margin-right: 8px;
+        }
+
+        &:after {
+          content: "";
+          display: inline-block;
+          width: 16px;
+          height: 16px;
+          vertical-align: middle;
+          background: url("../img/public-portfolio/verification.svg") no-repeat center;
+        }
       }
     }
 
@@ -40,8 +58,9 @@
     }
 
     &__chart {
-      margin: 0 -16px auto;
+      margin: auto -16px -10px;
       position: relative;
+      height: 88px;
 
       &:after {
         content: "";
@@ -54,6 +73,8 @@
       }
 
       > div {
+        position: absolute;
+        bottom: 0;
         margin-left: -10px;
         width: calc(100% + 20px) !important;
       }
@@ -68,7 +89,7 @@
       align-items: flex-end;
       position: relative;
 
-      > div + div {margin-left: 12px}
+      > div {margin-right: 12px}
 
       &-title {
         font-size: 12px;
@@ -80,6 +101,7 @@
       &-social {
         display: flex;
         align-items: center;
+        margin: 0 0 0 auto;
 
         > div {
           padding-left: 20px;

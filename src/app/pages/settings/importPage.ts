@@ -213,7 +213,7 @@ const MainStore = namespace(StoreType.MAIN);
                                                     В отчете брокера не указаны остатки денежных средств на данный момент.
                                                     Чтобы исключить несоответствие портфеля, пожалуйста укажите текущие остатки денежных средств в полях ввода
                                                 </tooltip>
-                                                <currency-balances v-if="selectedPortfolio" ref="currencyBalances" :portfolio-id="selectedPortfolio.id"
+                                                <currency-balances v-if="currentStep === '2'" ref="currencyBalances" :portfolio-id="selectedPortfolio.id"
                                                                    class="currency-balances"></currency-balances>
 
                                                 <v-divider class="margB24"></v-divider>
@@ -439,6 +439,7 @@ export class ImportPage extends UI {
                 return;
             }
             await this.$refs.currencyBalances.saveOrUpdateCurrentMoney();
+            await this.resetPortfolioCache();
         }
         const filled = this.shareAliases.filter(shareAlias => !!shareAlias.share);
         const allFilled = filled.length === this.shareAliases.length;
@@ -590,11 +591,7 @@ export class ImportPage extends UI {
             this.previousImportValidatedTradesCount = this.importResult.validatedTradesCount;
         }
         if (this.importResult.validatedTradesCount) {
-            if (this.selectedPortfolio.id === this.clientInfo.user.currentPortfolioId) {
-                await this.reloadPortfolio();
-            }
-            this.overviewService.resetCacheForId(this.selectedPortfolio.id);
-            this.resetCombinedOverviewCache(this.selectedPortfolio.id);
+            await this.resetPortfolioCache();
         }
         // если это повторная загрузка после сохранения алиасов, поторно в этот блок не заходи и сразу идем на третий шаг
         if (!retryUpload && this.importResult.errors && this.importResult.errors.length) {
@@ -778,6 +775,17 @@ export class ImportPage extends UI {
      */
     private get availablePortfolios(): PortfolioParams[] {
         return this.clientInfo.user.portfolios.filter(portfolio => !portfolio.combinedFlag);
+    }
+
+    /**
+     * Сбрасывает кэш портфеля
+     */
+    private async resetPortfolioCache(): Promise<void> {
+        if (this.selectedPortfolio.id === this.clientInfo.user.currentPortfolioId) {
+            await this.reloadPortfolio();
+        }
+        this.overviewService.resetCacheForId(this.selectedPortfolio.id);
+        this.resetCombinedOverviewCache(this.selectedPortfolio.id);
     }
 }
 

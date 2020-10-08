@@ -68,6 +68,12 @@ const MainStore = namespace(StoreType.MAIN);
                                 Открыт публичный доступ к портфелю
                             </div>
                         </v-tooltip>
+                        <v-tooltip v-if="portfolio.combinedFlag" content-class="custom-tooltip-wrap modal-tooltip" bottom>
+                            <template v-slot:activator="{ on }">
+                                <div v-on="on" class="portfolio-item__combined-icon"></div>
+                            </template>
+                            <span>Составной портфель</span>
+                        </v-tooltip>
                         <div @click.stop class="margLAuto">
                             <v-menu transition="slide-y-transition" bottom left min-width="173" nudge-bottom="20">
                                 <v-btn slot="activator" flat icon dark>

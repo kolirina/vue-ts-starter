@@ -203,9 +203,16 @@ const MainStore = namespace(StoreType.MAIN);
                         <v-card-text>
                             <events-aggregate-info :events-aggregate-info="eventsAggregateInfoFuture" :viewCurrency="currencyClass" class="margT20"></events-aggregate-info>
 
-                            <column-chart v-if="futureEventsChartData && futureEventsChartData.categoryNames.length" :ref="ChartType.FUTURE_EVENTS_CHART"
-                                          :data="futureEventsChartData" :view-currency="currency"
-                                          tooltip-format="EVENTS" v-tariff-expired-hint></column-chart>
+                            <template v-if="futureEventsChartData && futureEventsChartData.categoryNames.length">
+                                <column-chart :ref="ChartType.FUTURE_EVENTS_CHART"
+                                              :data="futureEventsChartData" :view-currency="currency"
+                                              tooltip-format="EVENTS" v-tariff-expired-hint></column-chart>
+                            </template>
+                            <template v-else>
+                                <v-layout align-center column>
+                                    <div class="mt-3 mb-3">Будущих выплат нет</div>
+                                </v-layout>
+                            </template>
                         </v-card-text>
                     </expanded-panel>
 
@@ -393,6 +400,7 @@ export class EventsPage extends PortfolioBasedPage {
      */
     @ShowProgress
     async created(): Promise<void> {
+        this.initialized = false;
         try {
             this.showHintPanel = this.localStorage.get("eventsHintPanel", true);
             this.setCalendarRequestParams(DateUtils.getYearDate(this.calendarStartDate), DateUtils.getMonthDate(this.calendarStartDate));

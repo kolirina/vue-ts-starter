@@ -126,6 +126,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <td v-if="tableHeadersState.dailyPlPercent" :class="markupClasses(Number(props.item.dailyPlPercent))" v-tariff-expired-hint>{{ props.item.dailyPlPercent }}</td>
                     <td v-if="tableHeadersState.summFee" class="text-xs-right ii-number-cell" v-tariff-expired-hint>{{ props.item.summFee | amount(true) }}</td>
                     <td v-if="tableHeadersState.percCurrShare" class="text-xs-right ii-number-cell">{{ props.item.percCurrShare | number }}</td>
+                    <td v-if="tableHeadersState.percCurrShareInWholePortfolio" class="text-xs-right ii-number-cell">{{ props.item.percCurrShareInWholePortfolio | number }}</td>
                     <td class="justify-center layout px-0" @click.stop>
                         <v-menu v-if="props.item.bond" transition="slide-y-transition" bottom left>
                             <v-btn slot="activator" flat icon dark>
@@ -192,14 +193,18 @@ const MainStore = namespace(StoreType.MAIN);
                                 Время с первой сделки {{ props.item.ownedDays }} {{ props.item.ownedDays | declension("день", "дня", "дней") }},
                                 от {{ props.item.firstBuy | date }}<br>
                                 Дата погашения {{ props.item.bond.matdate }}<br>
-                                Количество {{ props.item.quantity | quantity(true) }}
-                                <span>{{ props.item.quantity | declension("облигация", "облигации", "облигаций") }}</span>
+                                <template v-if="Number(props.item.quantity)">
+                                    Количество {{ props.item.quantity | quantity(true) }}
+                                    <span>{{ props.item.quantity | declension("облигация", "облигации", "облигаций") }}</span>
+                                </template>
                             </div>
                         </td>
                         <td>
                             <div class="ext-info__item">
-                                Номинал покупки {{ props.item.nominal | amount(true) }} <span>{{ portfolioCurrency }}</span><br>
-                                Дисконт {{ props.item.amortization | amount(true) }} <span>{{ portfolioCurrency }}</span><br>
+                                <template v-if="!isAmountZero(props.item.nominal)">
+                                    Номинал покупки {{ props.item.nominal | amount(true) }} <span>{{ portfolioCurrency }}</span><br>
+                                    Дисконт {{ props.item.amortization | amount(true) }} <span>{{ portfolioCurrency }}</span><br>
+                                </template>
                                 <template v-if="!props.item.bond.repaid && props.item.bond.currency === viewCurrency">
                                     Купон {{ props.item.bond.couponvalue | amount(true) }} <span>{{ props.item.bond.currency | currencySymbolByCurrency }}</span><br>
                                 </template>
@@ -214,8 +219,12 @@ const MainStore = namespace(StoreType.MAIN);
                         <td>
                             <div class="ext-info__item">
                                 Средняя цена {{ props.item.avgBuy | number }} <span>%</span><br>
-                                Средняя цена {{ props.item.absoluteAvgPrice | amount(false, 2, false) }} <span>{{ portfolioCurrency }}</span><br>
-                                Средний номинал {{props.item.nominal | amount(true) }} <span>{{ portfolioCurrency }}</span><br>
+                                <template v-if="!isAmountZero(props.item.absoluteAvgPrice)">
+                                    Средняя цена {{ props.item.absoluteAvgPrice | amount(false, 2, false) }} <span>{{ portfolioCurrency }}</span><br>
+                                </template>
+                                <template v-if="!isAmountZero(props.item.nominal)">
+                                    Средний номинал {{props.item.nominal | amount(true) }} <span>{{ portfolioCurrency }}</span><br>
+                                </template>
                                 Текущая цена {{ props.item.currPrice | number }} <span>%</span>
                             </div>
                         </td>
@@ -225,6 +234,9 @@ const MainStore = namespace(StoreType.MAIN);
                             <div class="ext-info__item">
                                 Прибыль от купонов {{ props.item.profitFromCoupons | amount(true, 2, true, true) }} <span>{{ portfolioCurrency }}</span><br>
                                 Прибыль от купонов {{ props.item.profitFromCouponsPercent | number }} <span>%</span><br>
+                                <template v-if="!isAmountZero(props.item.profitFromAmortization)">
+                                    Получено амортизации {{ props.item.profitFromAmortization | amount(true, 2, true, true) }} <span>{{ portfolioCurrency }}</span>
+                                </template>
                             </div>
                         </td>
                         <td>
@@ -470,6 +482,10 @@ export class BondTable extends UI {
 
     private resetCombinedOverviewCache(portfolioId: number): void {
         PortfolioUtils.resetCombinedOverviewCache(this.combinedPortfolioParams, portfolioId, this.overviewService);
+    }
+
+    private isAmountZero(amount: string): boolean {
+        return amount && new BigMoney(amount).amount.isZero();
     }
 
     private get portfolioCurrency(): string {

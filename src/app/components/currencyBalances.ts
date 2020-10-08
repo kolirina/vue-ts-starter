@@ -43,6 +43,7 @@ import {Currency} from "../types/currency";
     `
 })
 export class CurrencyBalances extends UI {
+
     @Inject
     private overviewService: OverviewService;
     @Inject

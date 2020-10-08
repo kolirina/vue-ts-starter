@@ -25,7 +25,8 @@ const MainStore = namespace(StoreType.MAIN);
             <v-list-tile-content class="portfolio-content">
                 <v-menu v-model="menu" offset-y transition="slide-y-transition" class="portfolios-drop portfolios-menu">
                     <v-layout slot="activator" class="pa-0 w100pc" justify-center align-center row>
-                        <span :class="['portfolio-switcher-icon', sideBarOpened ? '' : 'mx-3', isMobile ? 'mx-3' : '', brokerIcon]"
+                        <span :class="['portfolio-switcher-icon', portfolio.portfolioParams.combinedFlag ? 'combined-icon' : '',
+                         sideBarOpened ? '' : 'mx-3', isMobile ? 'mx-3' : '', brokerIcon]"
                               :title="brokerDescription"></span>
                         <div v-if="!sideBarOpened || isMobile" class="portfolios-inner-content">
                             <span class="w140 fs13 ellipsis">{{ selected.name }}</span>
@@ -36,7 +37,6 @@ const MainStore = namespace(StoreType.MAIN);
                                     {{ currency }}
                                 </div>
                                 <i v-if="selected.access !== 0" class="public-portfolio-icon" :title="selected.access === 2 ? 'Публичный' : 'Публичный по ссылке'"></i>
-                                <!-- todo иконка составного портфеля -->
                                 <div v-if="selected.professionalMode" class="professional-mode-icon" title="Профессиональный режим"></div>
                             </v-layout>
                         </div>
@@ -47,13 +47,13 @@ const MainStore = namespace(StoreType.MAIN);
 
                     <v-list class="portfolios-list">
                         <v-list-tile v-for="(portfolio, index) in clientInfo.user.portfolios" class="portfolios-list-tile" :key="index" @click="onSelect(portfolio)">
-                            <div :class="['portfolios-list-tile__icon', getBrokerIconClass(portfolio.brokerId)]"></div>
+                            <div :class="['portfolios-list-tile__icon', portfolio.combinedFlag ? 'combined-icon' : '',
+                                            getBrokerIconClass(portfolio.brokerId)]"></div>
                             <div class="portfolios-list-tile__info">
                                 <v-list-tile-title class="ellipsis">{{ portfolio.name }}</v-list-tile-title>
                                 <v-layout align-center class="portfolios-list-icons">
                                     <i :class="portfolio.viewCurrency.toLowerCase()" title="Валюта"></i>
                                     <i v-if="portfolio.access !== 0" class="public-portfolio-icon" :title="portfolio.access === 2 ? 'Публичный' : 'Публичный по ссылке'"></i>
-                                    <!-- todo иконка составного портфеля -->
                                     <div v-if="portfolio.professionalMode" class="professional-mode-icon" title="Профессиональный режим"></div>
                                 </v-layout>
                             </div>

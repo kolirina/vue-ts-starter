@@ -152,10 +152,7 @@ export class ChartUtils {
     }
 
     static doFutureEventsChartData(futureEvents: ShareEvent[]): ColumnChartData {
-        const dividends: CustomDataPoint[] = [];
-        const coupons: CustomDataPoint[] = [];
-        const amortizations: CustomDataPoint[] = [];
-        const categoryNames: string[] = [];
+        const pointsByType: { [key: string]: CustomDataPoint[]} = {};
         const reduced: { [key: string]: ShareEvent[] } = {};
         // группируем события в разбивке по периоду (Месяц Год)
         futureEvents
@@ -171,7 +168,7 @@ export class ChartUtils {
                 reduced[label] = shareEvents;
             });
         // по каждому периоду:
-        // группируем события по типу: Дивиденд, Купон, Амортизация
+        // группируем события по типу: Дивиденд, Купон, Амортизация, Погашение
         // внутри группы события дополинтельно группируем по тикери, так как для составного портфеля они могли быть зачислены разными датами
         // добавляем точку в каждый набор данных для графика чтобы корректно работал режим stacked
         Object.keys(reduced).forEach(period => {
@@ -201,14 +198,20 @@ export class ChartUtils {
                 });
                 const comment = Object.keys(reducesByTicker).map(key => {
                     const eventsByTicker = reducesByTicker[key];
-                    const ticker = eventsByTicker[0]?.share.ticker;
+                    const shortname = eventsByTicker[0]?.share.shortname;
                     const date = eventsByTicker[0]?.date;
+                    const currencySymbolByTicker = Filters.currencySymbolByCurrency(eventsByTicker[0]?.share.currency);
                     const amountByTicker = eventsByTicker.map(event => new BigMoney(event.totalAmount).amount)
                         .reduce((result: Decimal, current: Decimal) => result.add(current), new Decimal("0"));
+                    const amountOriginalByTicker = eventsByTicker.map(event => new BigMoney(event.totalAmountOriginal).amount)
+                        .reduce((result: Decimal, current: Decimal) => result.add(current), new Decimal("0"));
                     const formattedAmount = Filters.formatNumber(amountByTicker.toDP(2, Decimal.ROUND_HALF_UP).toString());
+                    const formattedAmountOriginal = Filters.formatNumber(amountOriginalByTicker.toDP(2, Decimal.ROUND_HALF_UP).toString());
                     const fromNews = eventsByTicker.some(event => event.comment === "На основе новостей");
                     const dateString = DateUtils.formatDate(DateUtils.parseDate(date)) + (fromNews ? " Новости" : "");
-                    return `<b>${ticker}</b>: ${formattedAmount} ${currencySymbol} (~${dateString})`;
+                    const showOriginalAmount = currencySymbolByTicker !== currencySymbol;
+                    return `<b>${shortname}</b>: ${formattedAmount} ${currencySymbol}${showOriginalAmount ?
+                        " (" + formattedAmountOriginal + " " + currencySymbolByTicker + "), " : ""} (~${dateString})`;
                 }).join(",<br/>");
 
                 grouped[eventType] = {
@@ -220,16 +223,18 @@ export class ChartUtils {
                     totalAmount: `${Filters.formatNumber(totalAmountInPeriod.toDP(2, Decimal.ROUND_HALF_UP).toString())} ${currencySymbol}`
                 };
             });
-            dividends.push(grouped[Operation.DIVIDEND.enumName] || {name: Operation.DIVIDEND.description, y: 0});
-            coupons.push(grouped[Operation.COUPON.enumName] || {name: Operation.COUPON.description, y: 0});
-            amortizations.push(grouped[Operation.AMORTIZATION.enumName] || {name: Operation.AMORTIZATION.description, y: 0});
+            [Operation.DIVIDEND, Operation.COUPON, Operation.AMORTIZATION, Operation.REPAYMENT].forEach(eventType => {
+                const points = pointsByType[eventType.code] || [];
+                points.push(grouped[eventType.enumName] || {name: eventType.description, y: 0});
+                pointsByType[eventType.code] = points;
+            });
+        });
+        const series: ColumnDataSeries[] = [];
+        [Operation.DIVIDEND, Operation.COUPON, Operation.AMORTIZATION, Operation.REPAYMENT].forEach(eventType => {
+            series.push({name: eventType.description, data: pointsByType[eventType.code], color: this.OPERATION_COLORS[eventType.description]});
         });
         return {
-            series: [
-                {name: Operation.DIVIDEND.description, data: dividends, color: this.OPERATION_COLORS[Operation.DIVIDEND.description]},
-                {name: Operation.COUPON.description, data: coupons, color: this.OPERATION_COLORS[Operation.COUPON.description]},
-                {name: Operation.AMORTIZATION.description, data: amortizations, color: this.OPERATION_COLORS[Operation.AMORTIZATION.description]}
-            ], categoryNames: Object.keys(reduced)
+            series: series, categoryNames: Object.keys(reduced)
         };
     }
 
