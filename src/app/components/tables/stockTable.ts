@@ -231,7 +231,13 @@ const MainStore = namespace(StoreType.MAIN);
                                 </template>
                                 <template v-else>
                                     Кол-во полных лотов {{ props.item.lotCounts | number }} <span>шт.</span><br>
-                                    Всего {{ props.item.quantity | quantity(true) }} <span>{{ props.item.quantity | declension("акция", "акции", "акций") }}</span>
+                                    Всего {{ props.item.quantity | quantity(true) }}
+                                    <span v-if="props.item.share && props.item.assetType === 'STOCK'">
+                                    {{ props.item.quantity | declension("акция", "акции", "акций") }}
+                                    </span>
+                                    <span v-else>
+                                        {{ props.item.quantity | declension("штука", "штуки", "штук") }}
+                                    </span>
                                 </template>
                             </div>
                         </td>
