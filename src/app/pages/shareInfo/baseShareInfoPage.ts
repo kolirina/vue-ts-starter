@@ -459,7 +459,8 @@ export class BaseShareInfoPage extends UI {
         if (this.portfolio.id) {
             tradeEvents = await this.tradeService.getShareTradesEvent(this.portfolio.id, this.share.id, this.share.shareType);
         } else {
-            tradeEvents = await this.tradeService.getShareTradesEventCombined(this.portfolio.portfolioParams.combinedIds, this.share.id, this.share.shareType);
+            tradeEvents = await this.tradeService.getShareTradesEventCombined(this.portfolio.portfolioParams.combinedIds, this.portfolio.portfolioParams.viewCurrency,
+                this.share.id, this.share.shareType);
         }
         this.events.push(...ChartUtils.processEventsChartData(tradeEvents, true, "flags", "dataseries", "circlepin", 10, "rgba(20,140,0,0.45)"));
     }

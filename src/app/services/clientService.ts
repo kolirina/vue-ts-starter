@@ -142,6 +142,7 @@ export class ClientService {
     private mapClientInfoResponse(clientInfoResponse: ClientInfoResponse): ClientInfo {
         return {
             token: clientInfoResponse.token,
+            refreshToken: clientInfoResponse.refreshToken,
             user: {
                 ...clientInfoResponse.user,
                 tariff: Tariff.valueByName(clientInfoResponse.user.tariff),

@@ -74,13 +74,14 @@ export class TradeService {
 
     /**
      * Загружает и возвращает события по сделкам по тикеру в портфеле
-     * @param portfolioIds идентификаторы портфелей
+     * @param ids идентификаторы портфелей
+     * @param viewCurrency валюта
      * @param shareId идентификатор бумаги
      * @param shareType тип бумаги
      * @returns {Promise<TradeRow[]>}
      */
-    async getShareTradesEventCombined(portfolioIds: number[], shareId: number, shareType: string): Promise<EventChartData[]> {
-        return this.http.post<EventChartData[]>(`/trades/combined/events/${shareType}/${shareId}`, {ids: portfolioIds});
+    async getShareTradesEventCombined(ids: number[], viewCurrency: string, shareId: number, shareType: string): Promise<EventChartData[]> {
+        return this.http.post<EventChartData[]>(`/trades/combined/events/${shareType}/${shareId}`, {ids, viewCurrency});
     }
 
     /**

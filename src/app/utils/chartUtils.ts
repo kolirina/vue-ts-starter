@@ -200,12 +200,18 @@ export class ChartUtils {
                     const eventsByTicker = reducesByTicker[key];
                     const shortname = eventsByTicker[0]?.share.shortname;
                     const date = eventsByTicker[0]?.date;
+                    const currencySymbolByTicker = Filters.currencySymbolByCurrency(eventsByTicker[0]?.share.currency);
                     const amountByTicker = eventsByTicker.map(event => new BigMoney(event.totalAmount).amount)
                         .reduce((result: Decimal, current: Decimal) => result.add(current), new Decimal("0"));
+                    const amountOriginalByTicker = eventsByTicker.map(event => new BigMoney(event.totalAmountOriginal).amount)
+                        .reduce((result: Decimal, current: Decimal) => result.add(current), new Decimal("0"));
                     const formattedAmount = Filters.formatNumber(amountByTicker.toDP(2, Decimal.ROUND_HALF_UP).toString());
+                    const formattedAmountOriginal = Filters.formatNumber(amountOriginalByTicker.toDP(2, Decimal.ROUND_HALF_UP).toString());
                     const fromNews = eventsByTicker.some(event => event.comment === "На основе новостей");
                     const dateString = DateUtils.formatDate(DateUtils.parseDate(date)) + (fromNews ? " Новости" : "");
-                    return `<b>${shortname}</b>: ${formattedAmount} ${currencySymbol} (~${dateString})`;
+                    const showOriginalAmount = currencySymbolByTicker !== currencySymbol;
+                    return `<b>${shortname}</b>: ${formattedAmount} ${currencySymbol}${showOriginalAmount ?
+                        " (" + formattedAmountOriginal + " " + currencySymbolByTicker + "), " : ""} (~${dateString})`;
                 }).join(",<br/>");
 
                 grouped[eventType] = {

@@ -33,7 +33,7 @@ import {ShareType} from "../../types/types";
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="primary" @click.native="close(data)">Сохранить</v-btn>
+                    <v-btn color="primary" @click.native="close(data)" v-enter.useCtrl="closeDialog">Сохранить</v-btn>
                     <v-btn @click.native="close">Отмена</v-btn>
                 </v-card-actions>
             </v-card>
@@ -41,6 +41,10 @@ import {ShareType} from "../../types/types";
     `
 })
 export class EditShareNoteDialog extends CustomDialog<EditShareNoteDialogData, EditShareNoteDialogData> {
+
+    private closeDialog(): void {
+        this.close(this.data);
+    }
 
     private get title(): string {
         return `Заметка к ${this.data.shareType === ShareType.ASSET ? "активу" : "бумаге"}`;
