@@ -5,11 +5,13 @@ import {Client, ClientInfo, ClientService} from "../services/clientService";
 import {EventService} from "../services/eventService";
 import {OverviewService} from "../services/overviewService";
 import {PortfolioAccountType, PortfolioParams, PortfolioService} from "../services/portfolioService";
+import {SystemPropertiesService} from "../services/systemPropertiesService";
 import {CurrencyUnit} from "../types/currency";
 import {StoreKeys} from "../types/storeKeys";
-import {CombinedInfoRequest, CombinedPortfolioParams, Overview, Portfolio, TariffHint} from "../types/types";
+import {CombinedInfoRequest, CombinedPortfolioParams, MapType, Overview, Portfolio, TariffHint} from "../types/types";
 import {DateUtils} from "../utils/dateUtils";
 import {TariffUtils} from "../utils/tariffUtils";
+import {ActionType} from "./actionType";
 import {GetterType} from "./getterType";
 import {MutationType} from "./mutationType";
 
@@ -23,6 +25,8 @@ const portfolioService: PortfolioService = Container.get(PortfolioService);
 const eventService: EventService = Container.get(EventService);
 /** Сервис работы с localStorage */
 const localStorage: Storage = Container.get(Storage);
+/** Сервис работы с настройками intelinvest */
+const systemPropertiesService: SystemPropertiesService = Container.get(SystemPropertiesService);
 
 /** Состояния хранилища */
 export class StateHolder {
@@ -51,6 +55,7 @@ export class StateHolder {
         y: "0px",
         display: "none"
     };
+    systemProperties: MapType = {};
 }
 
 const Getters = {
@@ -73,7 +78,10 @@ const Getters = {
         return TariffUtils.isTariffExpired(state.clientInfo.user);
     },
     [GetterType.NEED_BLOCK_INTERFACE](state: StateHolder): boolean {
-        return TariffUtils.isTariffExpired(state.clientInfo.user) || TariffUtils.limitsExceeded(state.clientInfo.user);
+        return TariffUtils.isTariffExpired(state.clientInfo.user) || TariffUtils.limitsExceeded(state.clientInfo, state.systemProperties);
+    },
+    [GetterType.SYSTEM_PROPERTIES](state: StateHolder): MapType {
+        return state.systemProperties;
     }
 };
 
@@ -85,6 +93,9 @@ const Mutations = {
     },
     [MutationType.SET_CLIENT](state: StateHolder, client: Client): void {
         state.clientInfo.user = client;
+    },
+    [MutationType.SET_SYSTEM_PROPERTIES](state: StateHolder, systemProperties: MapType): void {
+        state.systemProperties = systemProperties;
     },
     [MutationType.SET_CURRENT_PORTFOLIO](state: StateHolder, portfolio: Portfolio): void {
         state.currentPortfolio = portfolio;
@@ -131,6 +142,15 @@ const Mutations = {
 
 /** Действия хранилища */
 const Actions = {
+    /** Дейстие загрузки системных свойств */
+    [ActionType.LOAD_SYSTEM_PROPERTIES](context: ActionContext<StateHolder, void>): Promise<void> {
+        return new Promise<void>((resolve): void => {
+            systemPropertiesService.getSystemProperties().then((systemProperties: MapType) => {
+                context.commit(MutationType.SET_SYSTEM_PROPERTIES, systemProperties);
+                resolve();
+            });
+        });
+    },
     /** Дейстие проставляющие информацию о клиенте */
     [MutationType.SET_CLIENT_INFO](context: ActionContext<StateHolder, void>, clientInfo: ClientInfo): void {
         localStorage.set(StoreKeys.TOKEN_KEY, clientInfo.token);

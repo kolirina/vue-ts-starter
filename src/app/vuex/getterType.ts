@@ -9,4 +9,5 @@ export enum GetterType {
     HINT_COORDS = "hintCoords",
     EXPIRED_TARIFF = "expiredTariff",
     NEED_BLOCK_INTERFACE = "needBlockInterface",
+    SYSTEM_PROPERTIES = "systemProperties",
 }
