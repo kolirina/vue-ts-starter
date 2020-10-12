@@ -133,6 +133,7 @@ export class UIRegistry {
         // фильтры
         UI.filter("amount", Filters.formatMoneyAmount);
         UI.filter("assetDesc", Filters.assetDesc);
+        UI.filter("operationDesc", Filters.operationDesc);
         UI.filter("number", Filters.formatNumber);
         UI.filter("quantity", Filters.formatQuantity);
         UI.filter("integer", Filters.formatInteger);
