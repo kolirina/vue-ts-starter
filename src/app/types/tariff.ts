@@ -7,16 +7,16 @@ export const MAX = 0x7fffffff;
 @Enum("name")
 export class Tariff extends (EnumType as IStaticEnum<Tariff>) {
 
-    static readonly STANDARD = new Tariff("STANDARD", "Стандарт", MAX, 2, "199", "99", "2388", "2388",
+    static readonly STANDARD = new Tariff("STANDARD", "Стандарт", MAX, 30, 2, "199", "99", "299", "149",
         Permission.COMBINED_PORTFOLIO | Permission.INVESTMENTS, "Основной функционал");
 
-    static readonly PRO = new Tariff("PRO", "Профессионал", MAX, MAX, "399", "199", "4788", "4788",
+    static readonly PRO = new Tariff("PRO", "Профессионал", MAX, MAX, MAX, "399", "199", "499", "249",
         Permission.FOREIGN_SHARES | Permission.COMBINED_PORTFOLIO | Permission.INVESTMENTS | Permission.PROFF_MODE, "Расширенный функционал");
 
-    static readonly FREE = new Tariff("FREE", "Бесплатный", 7, 1, "0", "0", "0", "0", 0,
+    static readonly FREE = new Tariff("FREE", "Бесплатный", 7, 7, 1, "0", "0", "0", "0", 0,
         "Базовый функционал");
 
-    static readonly TRIAL = new Tariff("TRIAL", "Профессионал (демо)", MAX, MAX, "399", "199", "4788", "4788",
+    static readonly TRIAL = new Tariff("TRIAL", "Профессионал (демо)", MAX, MAX, MAX, "399", "199", "499", "249",
         Permission.FOREIGN_SHARES | Permission.COMBINED_PORTFOLIO | Permission.INVESTMENTS | Permission.PROFF_MODE, "");
 
     /** Служебное название тарифа */
@@ -27,30 +27,33 @@ export class Tariff extends (EnumType as IStaticEnum<Tariff>) {
     permissions: number;
     /** Максимальное количество бумаг */
     maxSharesCount: number;
+    /** Максимальное количество бумаг */
+    maxSharesCountNew: number;
     /** Максимальное количество портфелей. NULL значит нет ограничений */
     maxPortfoliosCount: number;
     /** Цена за один месяц пользования сервисом */
     monthlyPrice: Decimal;
     /** Цена за один месяц пользования сервисом при расчете за год */
     monthlyYearPrice: Decimal;
-    /** Цена за один год пользования сервисом */
-    yearPrice: Decimal;
-    /** Цена за один год пользования сервисом без учета скидки */
-    yearFullPrice: Decimal;
+    /** Цена за один месяц пользования сервисом */
+    monthlyPriceNew: Decimal;
+    /** Цена за один месяц пользования сервисом при расчете за год */
+    monthlyYearPriceNew: Decimal;
     /** Функционал */
     functional: string;
 
-    private constructor(name: string, description: string, maxSharesCount: number, maxPortfoliosCount: number, monthlyPrice: string, monthlyYearPrice: string,
-                        yearPrice: string, yearFullPrice: string, permissions: number, functional: string) {
+    private constructor(name: string, description: string, maxSharesCount: number, maxSharesCountNew: number, maxPortfoliosCount: number,
+                        monthlyPrice: string, monthlyYearPrice: string, monthlyPriceNew: string, monthlyYearPriceNew: string, permissions: number, functional: string) {
         super();
         this.name = name;
         this.description = description;
         this.maxSharesCount = maxSharesCount;
+        this.maxSharesCountNew = maxSharesCountNew;
         this.maxPortfoliosCount = maxPortfoliosCount;
         this.monthlyPrice = new Decimal(monthlyPrice);
+        this.monthlyPriceNew = new Decimal(monthlyPriceNew);
         this.monthlyYearPrice = new Decimal(monthlyYearPrice);
-        this.yearPrice = new Decimal(yearPrice);
-        this.yearFullPrice = new Decimal(yearFullPrice);
+        this.monthlyYearPriceNew = new Decimal(monthlyYearPriceNew);
         this.permissions = permissions;
         this.functional = functional;
     }

@@ -301,6 +301,8 @@ export interface BasePortfolioParams {
     shareNotes?: { [key: string]: string };
     /** Цель портфеля */
     description?: string;
+    /** Общее количество ценнных бумаг в составе портфеля */
+    sharesCount?: number;
 }
 
 /** Запрос на создание портфеля */

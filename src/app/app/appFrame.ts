@@ -24,6 +24,7 @@ import {CombinedPortfolioParams, NavBarItem, Portfolio, SignInData, Theme} from 
 import {CommonUtils} from "../utils/commonUtils";
 import {DateUtils} from "../utils/dateUtils";
 import {ThemeUtils} from "../utils/ThemeUtils";
+import {ActionType} from "../vuex/actionType";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
 import {UI} from "./ui";
@@ -113,6 +114,9 @@ export class AppFrame extends UI {
 
     @MainStore.Action(MutationType.SET_CLIENT_INFO)
     private loadUser: (clientInfo: ClientInfo) => Promise<void>;
+
+    @MainStore.Action(ActionType.LOAD_SYSTEM_PROPERTIES)
+    private loadSystemProperties: () => Promise<void>;
 
     @MainStore.Action(MutationType.SET_CURRENT_PORTFOLIO)
     private setCurrentPortfolio: (id: string) => Promise<Portfolio>;
@@ -210,6 +214,7 @@ export class AppFrame extends UI {
         try {
             const client = await this.clientService.getClientInfo();
             await this.loadUser({token: this.localStorage.get(StoreKeys.TOKEN_KEY, null), refreshToken: this.localStorage.get(StoreKeys.REFRESH_TOKEN, null), user: client});
+            await this.loadSystemProperties();
             await this.loadCurrentPortfolio();
             await this.loadOnBoardingTours();
             this.loggedIn = true;
@@ -239,6 +244,7 @@ export class AppFrame extends UI {
             const clientInfo = await this.clientService.login({username: signInData.username, password: signInData.password});
             this.localStorage.set(StoreKeys.REFRESH_TOKEN, clientInfo.refreshToken);
             await this.loadUser(clientInfo);
+            await this.loadSystemProperties();
             await this.loadCurrentPortfolio();
             await this.loadOnBoardingTours();
             this.loggedIn = true;

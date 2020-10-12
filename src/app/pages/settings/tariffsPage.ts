@@ -8,10 +8,12 @@ import {ConfirmDialog} from "../../components/dialogs/confirmDialog";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {ClientInfo, ClientService} from "../../services/clientService";
+import {SystemPropertyName} from "../../services/systemPropertiesService";
 import {TariffService, UserPaymentInfo} from "../../services/tariffService";
 import {EventType} from "../../types/eventType";
 import {Permission} from "../../types/permission";
 import {Tariff} from "../../types/tariff";
+import {MapType} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {DateUtils} from "../../utils/dateUtils";
 import {TariffUtils} from "../../utils/tariffUtils";
@@ -29,7 +31,7 @@ const MainStore = namespace(StoreType.MAIN);
                 Создано портфелей: <b>{{ portfoliosCount }}</b> - Доступно на тарифе: <b>{{ maxPortfoliosCount }}</b>, <br>
                 добавлено ценных бумаг: <b>{{ sharesCount }}</b> - Доступно на тарифе: <b>{{ maxSharesCount }}</b> <br>
             </p>
-            <p v-if="foreignShares">
+            <p v-if="!newTariffsApplicable && foreignShares">
                 В ваших портфелях имеются сделки с валютой или по иностранным ценным бумагам<br>
                 Тариф {{ tariffForeignShares ? "" : "не " }}позволяет учитывать сделки по ценным бумагам в долларах или евро.
             </p>
@@ -48,6 +50,11 @@ export class TariffLimitExceedInfo extends UI {
     @Prop({required: true, type: Object})
     private tariff: Tariff;
 
+    @MainStore.Getter
+    private clientInfo: ClientInfo;
+    @MainStore.Getter
+    private systemProperties: MapType;
+
     get maxPortfoliosCount(): string {
         return this.tariff.maxPortfoliosCount === 0x7fffffff ? "Без ограничений" : String(this.tariff.maxPortfoliosCount);
     }
@@ -58,6 +65,10 @@ export class TariffLimitExceedInfo extends UI {
 
     get tariffForeignShares(): boolean {
         return this.tariff.hasPermission(Permission.FOREIGN_SHARES);
+    }
+
+    private get newTariffsApplicable(): boolean {
+        return DateUtils.parseDate(this.clientInfo.user.regDate).isAfter(DateUtils.parseDate(this.systemProperties[SystemPropertyName.NEW_TARIFFS_DATE_FROM]));
     }
 }
 
@@ -81,7 +92,9 @@ export class TariffLimitExceedInfo extends UI {
                 </div>
                 <div class="fs13 bold margT4 margB24">
                     <span v-if="tariff === Tariff.FREE">7 ценных бумаг,</span>
-                    <span v-else>&infin; кол-во бумаг,</span>
+                    <span v-if="tariff === Tariff.STANDARD && newTariffsApplicable">30 бумаг на портфель,</span>
+                    <span v-if="tariff === Tariff.STANDARD && !newTariffsApplicable">&infin; кол-во бумаг,</span>
+                    <span v-if="tariff === Tariff.PRO">&infin; кол-во бумаг,</span>
                     <span class="mt-1">
                         <template v-if="tariff === Tariff.PRO">
                             &infin; кол-во портфелей
@@ -139,7 +152,7 @@ export class TariffLimitExceedInfo extends UI {
                 </div>
                 <div class="tariff-description-wrap">
                     <div>Учет акций, облигаций, ПИФов и&nbsp;драгметаллов</div>
-                    <div>Учёт активов номинированных в&nbsp;рублях и&nbsp;валюте</div>
+                    <div v-if="newTariffsApplicable">Учёт активов номинированных в&nbsp;рублях и&nbsp;валюте</div>
                     <div>Импорт отчетов 18 брокеров</div>
                     <div>Полная аналитика по портфелю</div>
                     <div>Учет дивидендов, купонов, комиссий и&nbsp;амортизации</div>
@@ -148,23 +161,28 @@ export class TariffLimitExceedInfo extends UI {
                     <div>
                         <span>
                             Публичный доступ к портфелю
-                            <tooltip>Текст подсказки</tooltip>
+                            <tooltip>Возможность поделиться портфелем с друзьями, коллегами, подписчиками</tooltip>
                         </span>
                     </div>
                     <template v-if="tariff === Tariff.STANDARD || tariff === Tariff.PRO">
                         <div>
                             <span>
                                 Произвольные активы (недвижимость, депозиты, кредиты, и тд.)
-                                <tooltip>Текст подсказки</tooltip>
+                                <tooltip>Позволяет учитывать любые виды активо, которые не поддерживаются напрямую сервисом</tooltip>
                             </span>
                         </div>
                         <div>Возможность объединения двух и&nbsp;более портфелей</div>
                     </template>
+                    <template v-if="!newTariffsApplicable">
+                        <div v-if="tariff === Tariff.PRO">Учёт активов номинированных в&nbsp;рублях и&nbsp;валюте</div>
+                        <div v-if="tariff !== Tariff.PRO">Учёт активов номинированных в рублях</div>
+                    </template>
                     <template v-if="tariff === Tariff.PRO">
                         <div>
                             <span>
-                                Учет сделок маржинальной торговли (РЕПО)
-                                <tooltip>Текст подсказки</tooltip>
+                                Учет сделок маржинальной торговли (РЕПО) и&nbsp;
+                                коротких позиций
+                                <tooltip>Используйте профессиональные возможности для более точного учета</tooltip>
                             </span>
                         </div>
                         <div>Учет валютных пар и криптовалюты</div>
@@ -180,9 +198,6 @@ export class TariffBlock extends UI {
     /** Тариф */
     @Prop({required: true, type: Object})
     private tariff: Tariff;
-    /** Информация о клиенте */
-    @Prop({required: true, type: Object})
-    private clientInfo: ClientInfo;
     /** Признак оплаты за месяц. */
     @Prop({required: true, type: Boolean})
     private monthly: boolean;
@@ -199,7 +214,11 @@ export class TariffBlock extends UI {
     private notAvailablePanelState = [0];
 
     @MainStore.Getter
+    private clientInfo: ClientInfo;
+    @MainStore.Getter
     private expiredTariff: boolean;
+    @MainStore.Getter
+    private systemProperties: MapType;
 
     /** Тарифы */
     private Tariff = Tariff;
@@ -271,7 +290,11 @@ export class TariffBlock extends UI {
      * Возвращает цену без скидок, с учетом признака нового пользователя
      */
     private get commonPrice(): Decimal {
-        return this.monthly ? this.tariff.monthlyPrice : this.tariff.monthlyYearPrice;
+        if (this.newTariffsApplicable) {
+            return this.monthly ? this.tariff.monthlyPriceNew : this.tariff.monthlyYearPriceNew;
+        } else {
+            return this.monthly ? this.tariff.monthlyPrice : this.tariff.monthlyYearPrice;
+        }
     }
 
     /**
@@ -313,6 +336,10 @@ export class TariffBlock extends UI {
 
     private get isMobile(): boolean {
         return CommonUtils.isMobile();
+    }
+
+    private get newTariffsApplicable(): boolean {
+        return DateUtils.parseDate(this.clientInfo.user.regDate).isAfter(DateUtils.parseDate(this.systemProperties[SystemPropertyName.NEW_TARIFFS_DATE_FROM]));
     }
 }
 

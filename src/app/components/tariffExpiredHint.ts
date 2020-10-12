@@ -1,9 +1,11 @@
 import {namespace} from "vuex-class/lib/bindings";
 import {Component, UI} from "../app/ui";
 import {ClientInfo} from "../services/clientService";
+import {SystemPropertyName} from "../services/systemPropertiesService";
 import {Permission} from "../types/permission";
 import {Tariff} from "../types/tariff";
-import {TariffHint} from "../types/types";
+import {MapType, TariffHint} from "../types/types";
+import {DateUtils} from "../utils/dateUtils";
 import {TariffUtils} from "../utils/tariffUtils";
 import {StoreType} from "../vuex/storeType";
 
@@ -31,10 +33,10 @@ const MainStore = namespace(StoreType.MAIN);
                     Вы превысили условия вашего текущего тафира
                     <p>
                         <template v-if="exceedLimitByPortfolios">
-                            Создано портфелей: <b>{{ clientInfo.user.portfoliosCount }}</b> - Доступно на тарифе: <b>{{ maxPortfoliosCount }}</b>, <br/>
+                            Создано портфелей: <b>{{ clientInfo.user.portfoliosCount }}</b> Доступно на тарифе: <b>{{ maxPortfoliosCount }}</b>, <br/>
                         </template>
                         <template v-if="exceedLimitByShareCount">
-                            добавлено ценных бумаг: <b>{{ clientInfo.user.sharesCount }}</b> - Доступно на тарифе: <b>{{ maxSharesCount }}</b> <br/>
+                            добавлено ценных бумаг: <b>{{ clientInfo.user.sharesCount }}</b> Доступно на тарифе: <b>{{ maxSharesCount }}</b> <br/>
                         </template>
                     </p>
                     <p v-if="exceedLimitByForeignShares">
@@ -53,6 +55,8 @@ export class TariffExpiredHint extends UI {
     private hintCoords: TariffHint;
     @MainStore.Getter
     private clientInfo: ClientInfo;
+    @MainStore.Getter
+    private systemProperties: MapType;
 
     private goToTariff(): void {
         this.$router.push({path: "/settings/tariffs"});
@@ -79,6 +83,9 @@ export class TariffExpiredHint extends UI {
     }
 
     get maxSharesCount(): string {
+        if (this.newTariffsApplicable) {
+            return this.clientInfo.user.tariff.maxSharesCountNew === 0x7fffffff ? "Без ограничений" : String(this.clientInfo.user.tariff.maxSharesCountNew);
+        }
         return this.clientInfo.user.tariff.maxSharesCount === 0x7fffffff ? "Без ограничений" : String(this.clientInfo.user.tariff.maxSharesCount);
     }
 
@@ -90,6 +97,9 @@ export class TariffExpiredHint extends UI {
      * Возвращает true если текущие показатели пользователя превышают лимиты тарифа по портфелям/бумагам/содержанию
      */
     private get limitsExceeded(): boolean {
+        if (this.newTariffsApplicable) {
+            return this.exceedLimitByPortfolios || this.exceedLimitByShareCount;
+        }
         return this.clientInfo.user.tariff === Tariff.FREE && (this.exceedLimitByPortfolios || this.exceedLimitByShareCount || this.exceedLimitByForeignShares);
     }
 
@@ -102,10 +112,17 @@ export class TariffExpiredHint extends UI {
     }
 
     private get exceedLimitByShareCount(): boolean {
+        if (this.newTariffsApplicable) {
+            return this.clientInfo.user.portfolios.some(portfolio => portfolio.sharesCount > this.clientInfo.user.tariff.maxSharesCountNew);
+        }
         return this.clientInfo.user.sharesCount > this.clientInfo.user.tariff.maxSharesCount;
     }
 
     private get exceedLimitByForeignShares(): boolean {
-        return this.clientInfo.user.foreignShares && !this.clientInfo.user.tariff.hasPermission(Permission.FOREIGN_SHARES);
+        return !this.newTariffsApplicable && this.clientInfo.user.foreignShares && !this.clientInfo.user.tariff.hasPermission(Permission.FOREIGN_SHARES);
+    }
+
+    private get newTariffsApplicable(): boolean {
+        return DateUtils.parseDate(this.clientInfo.user.regDate).isAfter(DateUtils.parseDate(this.systemProperties[SystemPropertyName.NEW_TARIFFS_DATE_FROM]));
     }
 }
