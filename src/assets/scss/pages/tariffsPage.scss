@@ -152,12 +152,19 @@
     }
   }
 
+  &__limits {
+    text-align: center;
+    font-weight: bold;
+    margin: 4px 0 24px;
+  }
+
   .promotion {
     font-size: 16px;
     color: #F878A8;
     max-width: 800px;
     margin: 0 auto 0 auto;
     line-height: normal;
+    padding: 0 12px;
   }
 
   .promo-code-component {
@@ -241,6 +248,8 @@
     &__plan_expires {
       min-height: auto;
     }
+
+    &__limits > span {display: block}
   }
 }
 
