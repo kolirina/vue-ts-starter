@@ -23,7 +23,7 @@ import {DisableConcurrentExecution} from "../../platform/decorators/disableConcu
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {Storage} from "../../platform/services/storage";
-import {ClientInfo} from "../../services/clientService";
+import {ClientInfo, ClientService} from "../../services/clientService";
 import {ExportService, ExportType} from "../../services/exportService";
 import {OverviewService} from "../../services/overviewService";
 import {PortfolioParams, PortfoliosDialogType, PortfolioService} from "../../services/portfolioService";
@@ -189,6 +189,10 @@ export class PortfoliosTable extends UI {
     private updateCombinedPortfolio: (viewCurrency: string) => void;
     @MainStore.Action(MutationType.SET_CURRENT_COMBINED_PORTFOLIO)
     private setCurrentCombinedPortfolio: (portfolioParams: CombinedPortfolioParams) => void;
+    @MainStore.Action(MutationType.RELOAD_CLIENT_INFO)
+    private reloadUser: () => Promise<void>;
+    @Inject
+    private clientService: ClientService;
     /** Сервис по работе с портфелями */
     @Inject
     private portfolioService: PortfolioService;
@@ -253,6 +257,8 @@ export class PortfoliosTable extends UI {
         this.overviewService.resetCacheForId(currentPortfolioId);
         this.resetCombinedOverviewCache(currentPortfolioId);
         await this.reloadPortfolios();
+        this.clientService.resetClientInfo();
+        await this.reloadUser();
         // если портфель был установлен по умолчанию, но не был выбран в списке портфелей, перезагружаем информацию о клиенте
         if (id === this.clientInfo.user.currentPortfolioId && id !== currentPortfolioId) {
             this.clientInfo.user.currentPortfolioId = this.clientInfo.user.portfolios[0].id;
@@ -286,6 +292,8 @@ export class PortfoliosTable extends UI {
             if (this.portfolio.id === portfolioId) {
                 await this.reloadPortfolio();
             }
+            this.clientService.resetClientInfo();
+            await this.reloadUser();
             this.$snotify.info("Портфель успешно очищен");
         }
     }

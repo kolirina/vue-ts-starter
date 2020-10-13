@@ -10,7 +10,7 @@ import {ImportResultComponent} from "../../components/importResultComponent";
 import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
-import {ClientInfo} from "../../services/clientService";
+import {ClientInfo, ClientService} from "../../services/clientService";
 import {EventService} from "../../services/eventService";
 import {
     DealImportError,
@@ -304,9 +304,13 @@ export class ImportPage extends UI {
     private portfolio: Portfolio;
     @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
     private reloadPortfolio: () => Promise<void>;
+    @MainStore.Action(MutationType.RELOAD_CLIENT_INFO)
+    private reloadUser: () => Promise<void>;
     /** Комбинированный портфель */
     @MainStore.Getter
     private combinedPortfolioParams: PortfolioParams;
+    @Inject
+    private clientService: ClientService;
     @Inject
     private importService: ImportService;
     @Inject
@@ -592,6 +596,8 @@ export class ImportPage extends UI {
         }
         if (this.importResult.validatedTradesCount) {
             await this.resetPortfolioCache();
+            this.clientService.resetClientInfo();
+            await this.reloadUser();
         }
         // если это повторная загрузка после сохранения алиасов, поторно в этот блок не заходи и сразу идем на третий шаг
         if (!retryUpload && this.importResult.errors && this.importResult.errors.length) {

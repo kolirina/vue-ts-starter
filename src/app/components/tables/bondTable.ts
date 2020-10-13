@@ -84,11 +84,11 @@ const MainStore = namespace(StoreType.MAIN);
                     <td v-if="tableHeadersState.ticker" class="text-xs-left">
                         <bond-link v-if="props.item.bond" :ticker="props.item.bond.ticker"></bond-link>
                     </td>
-                    <td v-if="tableHeadersState.quantity" class="text-xs-right ii-number-cell" v-tariff-expired-hint>{{ props.item.quantity | quantity(!!props.item.bond) }}</td>
-                    <td v-if="tableHeadersState.avgBuy" class="text-xs-right ii-number-cell" v-tariff-expired-hint>
+                    <td v-if="tableHeadersState.quantity" class="text-xs-right ii-number-cell">{{ props.item.quantity | quantity(!!props.item.bond) }}</td>
+                    <td v-if="tableHeadersState.avgBuy" class="text-xs-right ii-number-cell">
                         <template>{{ props.item.avgBuy | number(false) }}</template>
                     </td>
-                    <td v-if="tableHeadersState.currPrice" class="text-xs-right ii-number-cell" v-tariff-expired-hint>
+                    <td v-if="tableHeadersState.currPrice" class="text-xs-right ii-number-cell">
                         <template>{{ props.item.currPrice | number(false) }}</template>
                     </td>
                     <td v-if="tableHeadersState.bcost" class="text-xs-right ii-number-cell" v-tariff-expired-hint>{{ props.item.bcost | amount(true) }}</td>

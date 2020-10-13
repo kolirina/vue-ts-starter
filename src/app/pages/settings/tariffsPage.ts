@@ -28,8 +28,13 @@ const MainStore = namespace(StoreType.MAIN);
         <span>
             Превышены лимиты
             <p>
-                Создано портфелей: <b>{{ portfoliosCount }}</b> - Доступно на тарифе: <b>{{ maxPortfoliosCount }}</b>, <br>
-                добавлено ценных бумаг: <b>{{ sharesCount }}</b> - Доступно на тарифе: <b>{{ maxSharesCount }}</b> <br>
+                Создано портфелей: <b>{{ portfoliosCount }}</b> Доступно на тарифе: <b>{{ maxPortfoliosCount }}</b><br>
+                <template v-if="newTariffsApplicable">
+                    В одном из портфелей превышено допустимое количество бумаг. Доступно на тарифе: <b>{{ maxSharesCount }}</b> на портфель <br>
+                </template>
+                <template v-else>
+                    Добавлено ценных бумаг: <b>{{ sharesCount }}</b> Доступно на тарифе: <b>{{ maxSharesCount }}</b> <br>
+                </template>
             </p>
             <p v-if="!newTariffsApplicable && foreignShares">
                 В ваших портфелях имеются сделки с валютой или по иностранным ценным бумагам<br>
@@ -40,12 +45,6 @@ const MainStore = namespace(StoreType.MAIN);
 })
 export class TariffLimitExceedInfo extends UI {
 
-    @Prop({required: true, type: Number})
-    private portfoliosCount: number;
-    @Prop({required: true, type: Number})
-    private sharesCount: number;
-    @Prop({default: false, type: Boolean})
-    private foreignShares: boolean;
     /** Тариф */
     @Prop({required: true, type: Object})
     private tariff: Tariff;
@@ -60,7 +59,10 @@ export class TariffLimitExceedInfo extends UI {
     }
 
     get maxSharesCount(): string {
-        return this.tariff.maxSharesCount === 0x7fffffff ? "Без ограничений" : String(this.tariff.maxSharesCount);
+        if (this.newTariffsApplicable) {
+            return this.clientInfo.user.tariff.maxSharesCountNew === 0x7fffffff ? "Без ограничений" : String(this.clientInfo.user.tariff.maxSharesCountNew);
+        }
+        return this.clientInfo.user.tariff.maxSharesCount === 0x7fffffff ? "Без ограничений" : String(this.clientInfo.user.tariff.maxSharesCount);
     }
 
     get tariffForeignShares(): boolean {
@@ -69,6 +71,21 @@ export class TariffLimitExceedInfo extends UI {
 
     private get newTariffsApplicable(): boolean {
         return DateUtils.parseDate(this.clientInfo.user.regDate).isAfter(DateUtils.parseDate(this.systemProperties[SystemPropertyName.NEW_TARIFFS_DATE_FROM]));
+    }
+
+    private get foreignShares(): boolean {
+        return this.clientInfo.user.foreignShares;
+    }
+
+    private get sharesCount(): number {
+        if (this.newTariffsApplicable) {
+            return this.clientInfo.user.portfolios.map(portfolio => portfolio.sharesCount).reduce((previousValue, currentValue) => previousValue + currentValue, 0);
+        }
+        return this.clientInfo.user.sharesCount;
+    }
+
+    private get portfoliosCount(): number {
+        return this.clientInfo.user.portfoliosCount;
     }
 }
 
@@ -109,11 +126,10 @@ export class TariffLimitExceedInfo extends UI {
                         <span v-if="!busyState[tariff.name]">{{ buttonLabel }}</span>
                         <v-progress-circular v-if="busyState[tariff.name]" indeterminate color="white" :size="20"></v-progress-circular>
                     </v-btn>
-                    <tariff-limit-exceed-info v-if="!available" :portfolios-count="clientInfo.user.portfoliosCount" :tariff="tariff"
-                                              :shares-count="clientInfo.user.sharesCount" :foreign-shares="clientInfo.user.foreignShares">
+                    <tariff-limit-exceed-info v-if="!available" :tariff="tariff">
                     </tariff-limit-exceed-info>
                     <div v-else class="pa-3">
-                        При переходе на данный тарифный план, остаток неиспользованных дней текущего тарифа пересчитаются согласно новому тарифу и продлит срок его действия
+                        При переходе на данный тарифный план, остаток неиспользованных дней текущего тарифа пересчитается согласно новому тарифу и продлит срок его действия
                     </div>
                 </v-tooltip>
                 <template v-if="isMobile && (!available || isTariffsDifferent)">
@@ -124,11 +140,10 @@ export class TariffLimitExceedInfo extends UI {
                     <expanded-panel :value="notAvailablePanelState" class="margT16 promo-codes__statistics w100pc">
                         <template #header>{{ available ? 'Подробнее' : 'Почему мне недоступен тариф?' }}</template>
                         <div class="statistics">
-                            <tariff-limit-exceed-info v-if="!available" :portfolios-count="clientInfo.user.portfoliosCount" :tariff="tariff"
-                                                      :shares-count="clientInfo.user.sharesCount" :foreign-shares="clientInfo.user.foreignShares">
+                            <tariff-limit-exceed-info v-if="!available" :tariff="tariff">
                             </tariff-limit-exceed-info>
                             <div v-else>
-                                При переходе на данный тарифный план, остаток неиспользованных дней текущего тарифа пересчитаются согласно новому тарифу и продлит срок его действия
+                                При переходе на данный тарифный план, остаток неиспользованных дней текущего тарифа пересчитается согласно новому тарифу и продлит срок его действия
                             </div>
                         </div>
                     </expanded-panel>
@@ -265,7 +280,7 @@ export class TariffBlock extends UI {
     }
 
     private get expirationDescription(): string {
-        return `${TariffUtils.getSubscribeDescription(this.clientInfo.user)} ${this.expirationDate}`;
+        return `${TariffUtils.getSubscribeDescription(this.clientInfo.user, true)} ${this.expirationDate}`;
     }
 
     private get expirationDate(): string {

@@ -33,10 +33,15 @@ const MainStore = namespace(StoreType.MAIN);
                     Вы превысили условия вашего текущего тафира
                     <p>
                         <template v-if="exceedLimitByPortfolios">
-                            Создано портфелей: <b>{{ clientInfo.user.portfoliosCount }}</b> Доступно на тарифе: <b>{{ maxPortfoliosCount }}</b>, <br/>
+                            Создано портфелей: <b>{{ clientInfo.user.portfoliosCount }}</b> Доступно на тарифе: <b>{{ maxPortfoliosCount }}</b><br/>
                         </template>
                         <template v-if="exceedLimitByShareCount">
-                            добавлено ценных бумаг: <b>{{ clientInfo.user.sharesCount }}</b> Доступно на тарифе: <b>{{ maxSharesCount }}</b> <br/>
+                            <template v-if="newTariffsApplicable">
+                                В одном из портфелей превышено допустимое количество бумаг. Доступно на тарифе: <b>{{ maxSharesCount }}</b> на портфель <br>
+                            </template>
+                            <template v-else>
+                                Добавлено ценных бумаг: <b>{{ sharesCount }}</b> Доступно на тарифе: <b>{{ maxSharesCount }}</b> <br>
+                            </template>
                         </template>
                     </p>
                     <p v-if="exceedLimitByForeignShares">
@@ -76,6 +81,13 @@ export class TariffExpiredHint extends UI {
 
     private get isExpiredPro(): boolean {
         return this.clientInfo.user.tariff === Tariff.PRO && this.tariffExpired;
+    }
+
+    private get sharesCount(): number {
+        if (this.newTariffsApplicable) {
+            return this.clientInfo.user.portfolios.map(portfolio => portfolio.sharesCount).reduce((previousValue, currentValue) => previousValue + currentValue, 0);
+        }
+        return this.clientInfo.user.sharesCount;
     }
 
     get maxPortfoliosCount(): string {

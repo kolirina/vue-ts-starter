@@ -100,7 +100,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-card-title>
 
                         <v-card-text>
-                            <events-aggregate-info :events-aggregate-info="eventsAggregateInfo" :viewCurrency="currencyClass"></events-aggregate-info>
+                            <events-aggregate-info v-if="eventsAggregateInfo" :events-aggregate-info="eventsAggregateInfo" :viewCurrency="currencyClass"></events-aggregate-info>
 
                             <v-data-table v-if="events.length" :headers="eventsHeaders" :items="events" item-key="id" :custom-sort="customSortEvents"
                                           class="data-table events-table" :pagination.sync="eventsPagination" hide-actions must-sort>
@@ -186,7 +186,8 @@ const MainStore = namespace(StoreType.MAIN);
                                                class="exp-panel-menu"></chart-export-menu>
                         </template>
                         <v-card-text>
-                            <events-aggregate-info :events-aggregate-info="eventsAggregateInfoFuture" :viewCurrency="currencyClass" class="margT20"></events-aggregate-info>
+                            <events-aggregate-info v-if="eventsAggregateInfoFuture" :events-aggregate-info="eventsAggregateInfoFuture" :viewCurrency="currencyClass"
+                                                   class="margT20"></events-aggregate-info>
 
                             <template v-if="futureEventsChartData && futureEventsChartData.categoryNames.length">
                                 <column-chart :ref="ChartType.FUTURE_EVENTS_CHART"
