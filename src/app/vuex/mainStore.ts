@@ -78,7 +78,7 @@ const Getters = {
         return TariffUtils.isTariffExpired(state.clientInfo.user);
     },
     [GetterType.NEED_BLOCK_INTERFACE](state: StateHolder): boolean {
-        return TariffUtils.isTariffExpired(state.clientInfo.user) || TariffUtils.limitsExceeded(state.clientInfo, state.systemProperties);
+        return TariffUtils.isTariffExpired(state.clientInfo.user) || TariffUtils.limitsExceeded(state.clientInfo.user, state.systemProperties);
     },
     [GetterType.SYSTEM_PROPERTIES](state: StateHolder): MapType {
         return state.systemProperties;

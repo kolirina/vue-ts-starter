@@ -47,17 +47,17 @@ export class TariffUtils {
         return clientInfo.tariff !== Tariff.FREE && paidTill.isBefore(currentDate) && !paidTill.isSame(currentDate, "date");
     }
 
-    static limitsExceeded(clientInfo: ClientInfo, systemProperties: MapType): boolean {
-        const tariff = clientInfo.user.tariff;
-        const isNewTariffsApplicable = DateUtils.parseDate(clientInfo.user.regDate).isAfter(DateUtils.parseDate(systemProperties[SystemPropertyName.NEW_TARIFFS_DATE_FROM]));
+    static limitsExceeded(clientInfo: Client, systemProperties: MapType): boolean {
+        const tariff = clientInfo.tariff;
+        const isNewTariffsApplicable = DateUtils.parseDate(clientInfo.regDate).isAfter(DateUtils.parseDate(systemProperties[SystemPropertyName.NEW_TARIFFS_DATE_FROM]));
         // если действуют новые тарифы, то проверяем на всех тарифах превышение лимитов, без учета превышения по зарубежным бумагам
         if (isNewTariffsApplicable) {
-            return clientInfo.user.portfoliosCount > tariff.maxPortfoliosCount ||
-                clientInfo.user.portfolios.some(portfolio => portfolio.sharesCount > tariff.maxSharesCountNew);
+            return clientInfo.portfoliosCount > tariff.maxPortfoliosCount ||
+                clientInfo.portfolios.some(portfolio => portfolio.sharesCount > tariff.maxSharesCountNew);
         } else {
-            return tariff === Tariff.FREE && (clientInfo.user.portfoliosCount > tariff.maxPortfoliosCount ||
-                clientInfo.user.portfolios.some(portfolio => portfolio.sharesCount > tariff.maxSharesCount) ||
-                (clientInfo.user.foreignShares && !tariff.hasPermission(Permission.FOREIGN_SHARES)));
+            return clientInfo.portfoliosCount > tariff.maxPortfoliosCount ||
+                clientInfo.portfolios.some(portfolio => portfolio.sharesCount > tariff.maxSharesCount) ||
+                (tariff === Tariff.FREE && clientInfo.foreignShares && !tariff.hasPermission(Permission.FOREIGN_SHARES));
         }
     }
 

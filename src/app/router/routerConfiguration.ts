@@ -4,6 +4,7 @@ import VueRouter, {Route} from "vue-router";
 import {RouteConfig} from "vue-router/types/router";
 import {Resolver} from "../../../typings/vue";
 import {AuthComponent} from "../app/authComponent";
+import {BlockByTariffDialog} from "../components/dialogs/blockByTariffDialog";
 import {TariffExpiredDialog} from "../components/dialogs/tariffExpiredDialog";
 import {AnalyticsPage} from "../pages/analytics/analyticsPage";
 import {AssetInfoPage} from "../pages/assetInfoPage";
@@ -36,8 +37,10 @@ import {TradesPage} from "../pages/tradesPage";
 import {Storage} from "../platform/services/storage";
 import {ClientService} from "../services/clientService";
 import {LogoutService} from "../services/logoutService";
+import {SystemPropertiesService} from "../services/systemPropertiesService";
 import {RouteMeta} from "../types/router/types";
 import {StoreKeys} from "../types/storeKeys";
+import {ForbiddenCode} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
 import {TariffUtils} from "../utils/tariffUtils";
 import {VuexConfiguration} from "../vuex/vuexConfiguration";
@@ -46,6 +49,8 @@ Vue.use(VueRouter);
 
 /** Сервис работы с клиентом */
 const clientService: ClientService = Container.get(ClientService);
+/** Сервис работы с настройками intelinvest */
+const systemPropertiesService: SystemPropertiesService = Container.get(SystemPropertiesService);
 /** Сервис работы с localStorage */
 const localStorage: Storage = Container.get(Storage);
 /** Стор приложения */
@@ -182,6 +187,17 @@ export class RouterConfiguration {
                     tariffAllowed: true,
                     title: "Составной портфель",
                     tourName: "combined_portfolio"
+                },
+                beforeEnter: async (to: Route, from: Route, next: Resolver): Promise<void> => {
+                    const client = await clientService.getClientInfo();
+                    const tariffLimitsExceeded = TariffUtils.limitsExceeded(client, await systemPropertiesService.getSystemProperties());
+
+                    if (tariffLimitsExceeded) {
+                        await new BlockByTariffDialog().show(ForbiddenCode.LIMIT_EXCEEDED);
+                        next(false);
+                        return;
+                    }
+                    next();
                 }
             },
             {
