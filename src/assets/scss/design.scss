@@ -66,15 +66,28 @@ input.highcharts-range-selector:focus {
   justify-content: center;
 }
 
+// Информационная плашка
 .info-block {
   @extend %info-panel;
   padding: 12px;
 
-  > a.big-link {
+  > .big-link {
     display: inline-block;
     font-size: 14px;
     line-height: 20px;
     padding: 8px 24px;
     margin-top: 8px;
+  }
+
+  &__warning {
+    border-color: $dashboard--red-color;
+    padding-left: 16px;
+
+    > .big-link {
+      text-decoration: none;
+      transition: opacity 0.15s ease;
+
+      &:hover {opacity: 0.8}
+    }
   }
 }
