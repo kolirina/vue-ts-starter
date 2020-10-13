@@ -150,7 +150,7 @@ const MainStore = namespace(StoreType.MAIN);
                         <v-card-title class="events__card-title">Дивидендные новости</v-card-title>
 
                         <v-card-text>
-                            <dividend-new-table v-if="dividendNews.length" :dividend-news="dividendNews"></dividend-new-table>
+                            <dividend-news-table v-if="dividendNews.length" :dividend-news="dividendNews"></dividend-news-table>
 
                             <div v-else class="dividend-news-table__empty">Дивидендных новостей по вашим бумагам нет</div>
                         </v-card-text>

@@ -48,7 +48,8 @@ import {SortUtils} from "../../utils/sortUtils";
                     <td class="text-xs-right">{{ props.item.meetDate | date }}</td>
                     <td class="text-xs-right">{{ props.item.cutDate | date }}</td>
                     <td class="text-xs-right ii-number-cell">
-                        {{ props.item.recCommonValue | number }}
+                        <template v-if="props.item.recCommonValue">{{ props.item.recCommonValue | number }}</template>
+                        <template v-if="props.item.recPrivilegedValue">{{ props.item.recPrivilegedValue | number }}</template>
                         <span class="amount__currency">{{ props.item.currency | currencySymbolByCurrency }}</span>
                         <span title="Доходность относительно текущей цены">({{ props.item.yield }} %)</span>
                     </td>
