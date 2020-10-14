@@ -121,6 +121,13 @@ const MainStore = namespace(StoreType.MAIN);
                                 </v-btn>
                             </div>
                             <v-stepper v-model="currentStep" class="provider__stepper">
+                                <!--  TODO: добавить условие -->
+                                <div v-if="false" class="info-block info-block__warning margB24">
+                                    <p>Превышены лимиты по сделкам.</p>
+                                    <p>Лимит бумаг в одном портфеле равен 30, чтобы снять ограничение подпишитесь<br>
+                                    на тарифный план «‎Профессионал» и получите полный набор инструментов для учета активов</p>
+                                    <router-link :to="{name: 'tariffs'}" class="big-link">Сменить тариф</router-link>
+                                </div>
                                 <v-stepper-header>
                                     <v-stepper-step step="1">Загрузка отчета</v-stepper-step>
                                     <v-stepper-step step="2">Дополнительные данные</v-stepper-step>

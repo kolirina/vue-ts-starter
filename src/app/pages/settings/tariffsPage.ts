@@ -107,7 +107,7 @@ export class TariffLimitExceedInfo extends UI {
                     <div v-if="!monthly" class="tariff__plan_year-price">{{ tariff === Tariff.FREE ? "&nbsp;" : "при оплате за год" }}</div>
                     <div v-if="monthly" class="tariff__plan_year-price">&nbsp;</div>
                 </div>
-                <div class="fs13 bold margT4 margB24">
+                <div class="tariff__limits fs13">
                     <span v-if="tariff === Tariff.FREE">7 ценных бумаг,</span>
                     <span v-if="tariff === Tariff.STANDARD && newTariffsApplicable">30 бумаг на портфель,</span>
                     <span v-if="tariff === Tariff.STANDARD && !newTariffsApplicable">&infin; кол-во бумаг,</span>
