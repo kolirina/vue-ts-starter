@@ -26,11 +26,12 @@ import {OverviewService} from "../../services/overviewService";
 import {PortfolioParams, PortfolioService} from "../../services/portfolioService";
 import {CurrencyUnit} from "../../types/currency";
 import {EventType} from "../../types/eventType";
-import {Portfolio, Share, Status} from "../../types/types";
+import {MapType, Portfolio, Share, Status} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {DateUtils} from "../../utils/dateUtils";
 import {FileUtils} from "../../utils/fileUtils";
 import {PortfolioUtils} from "../../utils/portfolioUtils";
+import {TariffUtils} from "../../utils/tariffUtils";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 import {ImportInstructions} from "./importInstructions";
@@ -121,13 +122,14 @@ const MainStore = namespace(StoreType.MAIN);
                                 </v-btn>
                             </div>
                             <v-stepper v-model="currentStep" class="provider__stepper">
-                                <!--  TODO: добавить условие -->
-                                <div v-if="false" class="info-block info-block__warning margB24">
+
+                                <div v-if="currentStep === '3' && tariffLimitExceeded" class="info-block info-block__warning margB24">
                                     <p>Превышены лимиты по сделкам.</p>
                                     <p>Лимит бумаг в одном портфеле равен 30, чтобы снять ограничение подпишитесь<br>
-                                    на тарифный план «‎Профессионал» и получите полный набор инструментов для учета активов</p>
+                                        на тарифный план "‎Профессионал" и получите полный набор инструментов для учета активов</p>
                                     <router-link :to="{name: 'tariffs'}" class="big-link">Сменить тариф</router-link>
                                 </div>
+
                                 <v-stepper-header>
                                     <v-stepper-step step="1">Загрузка отчета</v-stepper-step>
                                     <v-stepper-step step="2">Дополнительные данные</v-stepper-step>
@@ -316,6 +318,8 @@ export class ImportPage extends UI {
     /** Комбинированный портфель */
     @MainStore.Getter
     private combinedPortfolioParams: PortfolioParams;
+    @MainStore.Getter
+    private systemProperties: MapType;
     @Inject
     private clientService: ClientService;
     @Inject
@@ -788,6 +792,10 @@ export class ImportPage extends UI {
      */
     private get availablePortfolios(): PortfolioParams[] {
         return this.clientInfo.user.portfolios.filter(portfolio => !portfolio.combinedFlag);
+    }
+
+    private get tariffLimitExceeded(): boolean {
+        return TariffUtils.limitsExceeded(this.clientInfo.user, this.systemProperties);
     }
 
     /**
