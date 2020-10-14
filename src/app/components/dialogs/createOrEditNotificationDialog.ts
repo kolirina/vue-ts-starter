@@ -39,8 +39,39 @@ import {CommonUtils} from "../../utils/commonUtils";
                 </v-card-title>
                 <div>
                     <share-search :filteredShares="filteredShares" :assetType="assetType" @clear="onShareClear" @change="onShareSearchChange" class="margB32"></share-search>
-
+                    <!-- TODO: добавить логику-->
                     <v-switch v-model="buyPriceNotification">
+                        <template #label>
+                            <span>Получать уведомления об изменении цены</span>
+                            <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" bottom>
+                                <sup class="custom-tooltip" slot="activator">
+                                    <v-icon>fas fa-info-circle</v-icon>
+                                </sup>
+                                <span>
+                                  Для получения уведомлений задайте целевые цены и допуск. Например, вы хотите получить уведомление
+                                  для покупки бумаги <b>{{ share ? share.ticker : "SBER" }}</b> про цене <b>{{ sharePrice }}</b> {{ shareCurrency }}.
+                                  Для этого укажите в "Целевая цена покупки:" <b>{{ sharePrice }}</b>.
+                                  <br/>
+                                  <br/>
+                                  Задайте также допуск цены, например, 3, чтобы получать
+                                  уведомления для цен от {{ sharePrice }}-3  и до {{ sharePrice }}+3 {{ shareCurrency }}.
+                                  Для покупки акции это значение будет просуммированно с целевой ценой.
+                                  Допуск может быть нулевым.
+                                </span>
+                            </v-tooltip>
+                        </template>
+                    </v-switch>
+
+                    <v-expansion-panel :value="[buyPriceNotification]" expand>
+                        <v-expansion-panel-content>
+                            <div class="add-notification-conditional">
+                                <ii-number-field label="Целевая цена" v-model="notification.buyPrice" id="buyPrice"></ii-number-field>
+                                <ii-number-field label="Допуск цены" v-model="notification.buyVariation" id="buyVariation"></ii-number-field>
+                            </div>
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
+
+                    <!--v-switch v-model="buyPriceNotification">
                         <template #label>
                             <span>Получать уведомления об изменении цены покупки</span>
                             <v-tooltip content-class="custom-tooltip-wrap modal-tooltip" bottom>
@@ -100,7 +131,7 @@ import {CommonUtils} from "../../utils/commonUtils";
                                 <ii-number-field label="Допуск цены продажи" v-model="notification.sellVariation" id="sellVariation"></ii-number-field>
                             </div>
                         </v-expansion-panel-content>
-                    </v-expansion-panel>
+                    </v-expansion-panel-->
 
                     <v-switch v-if="isStockNotification" v-model="newsNotification" @change="onNewsNotificationChange">
                         <template #label>

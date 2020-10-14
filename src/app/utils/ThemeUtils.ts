@@ -137,7 +137,7 @@ export class ThemeUtils {
     .events-calendar-wrap .calendar-events-title,
     .theme--light.v-calendar-weekly .v-calendar-weekly__day,
     .theme--light.v-calendar-weekly .v-calendar-weekly__head-weekday.v-past,
-    .checkbox-settings span, .dialog-setings-menu .title-setings,
+    .checkbox-settings span, .dialog-settings-menu .title-settings,
     .control-portfolios-title,
     .export-page .info-block,
     .promo-codes .rewards,
@@ -160,11 +160,11 @@ export class ThemeUtils {
     .dialog-default-text, .attachments__allowed-extensions span,
     .v-btn.portfolio-rows-filter__button:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
     .import-wrapper-content .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
-    .v-tooltip__content.menu-icons, .hint-text-for-setings,
+    .v-tooltip__content.menu-icons, .hint-text-for-settings,
     .intel-invest-instruction__title, .intel-invest-instruction__format-text, .intel-invest-instruction__title-values,
     .intel-invest-instruction__values, .intel-invest-instruction__template-requirements, .import-instructions, .import-default-text .tooltip-text,
     .snotifyToast__body, .info-share-page__empty, .import-dialog-wrapper__title-text, .fs18, .fs36, .import-default-text,
-    .snotifyToast__buttons button, .update-service-dialog__content,
+    .snotifyToast__buttons button, .update-service-dialog__content, .provider__name-select
     .custom-v-menu .v-menu-content, .section-title, .public-portfolio-item__title, .public-portfolio-item__footer-title,
     .public-portfolio-item__footer-social > div, .portfolio-item__body-info>div>span:first-child,
     .v-date-picker-years, .empty-station__description, .v-tabs .v-tabs__item, .promo-codes ul {color: #fff}
@@ -190,10 +190,10 @@ export class ThemeUtils {
     .v-text-field .v-input__slot,
     .v-btn.portfolio-rows-filter__button:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light,
     .v-btn.portfolio-rows-filter__button:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
-    .portfolio-rows-filter__button, .import-wrapper-content .setings-menu .v-btn,
+    .portfolio-rows-filter__button, .import-wrapper-content .settings-menu .v-btn,
     .snotifyToast, .theme--light.v-chip,
-    .import-wrapper-content .setings-menu .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light,
-    .import-wrapper-content .setings-menu .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
+    .import-wrapper-content .settings-menu .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light,
+    .import-wrapper-content .settings-menu .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
     .wrapper-content-panel__privacy-section-up-page-btn, .free-subscribe, .events__info-panel, .info-block,
     .sing-in-wrap .pre-footer, .tariff-notification, .import-history-block, .promo-codes__img-user, .promo-codes__img-partner,
     .import-result-info .exp-panel, .import-result-info .exp-panel .v-card, .achievements__item,
@@ -210,10 +210,10 @@ export class ThemeUtils {
     .v-btn.portfolio-rows-filter__button:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
     .import-wrapper-content .v-btn.portfolio-rows-filter__button:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light,
     .import-wrapper-content .v-btn.portfolio-rows-filter__button:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
-    .import-wrapper-content .setings-menu .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light,
-    .import-wrapper-content .setings-menu .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro) {border-color: #fff !important}
+    .import-wrapper-content .settings-menu .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro).theme--light,
+    .import-wrapper-content .settings-menu .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro) {border-color: #fff !important}
 
-    .import-wrapper-content .setings-menu .v-btn,
+    .import-wrapper-content .settings-menu .v-btn,
     .portfolio-rows-filter__button__icon {background-image: url("./img/fileimport/settings-light.svg")}
     .qr-code-btn {background-image: url("./img/portfolio/qrbtn-light.svg")}
 

@@ -91,31 +91,27 @@ const MainStore = namespace(StoreType.MAIN);
                                     <div class="provider">
                                         <div :class="['provider__image', selectedProvider.code.toLowerCase()]"></div>
                                         <div class="provider__name">
-                                            {{ selectedProvider.description }}
-                                            <div v-if="selectedPortfolio && selectedPortfolio.overview.totalTradesCount">
+                                            <v-menu content-class="dialog-type-menu" nudge-bottom="32" bottom right max-height="480">
+                                                <div slot="activator" class="provider__name-select">
+                                                    {{ selectedPortfolio ? portfolioParams.name : 'Выберите портфель' }}
+                                                    <v-icon>keyboard_arrow_down</v-icon>
+                                                </div>
+                                                <v-list dense>
+                                                    <v-flex>
+                                                        <div class="menu-text" v-for="portfolioParams in availablePortfolios" :key="portfolioParams.id"
+                                                             @click="changePortfolio(portfolioParams.id)">
+                                                            {{ portfolioParams.name }}
+                                                        </div>
+                                                    </v-flex>
+                                                </v-list>
+                                            </v-menu>
+                                            <div v-if="selectedPortfolio && selectedPortfolio.overview.totalTradesCount" class="provider__name-date">
                                                 Дата последней сделки: {{ selectedPortfolio.overview.lastTradeDate | date }}
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <broker-switcher @selectProvider="onSelectProvider" class="margR12"></broker-switcher>
-                                <v-menu content-class="dialog-type-menu" :class="{'margR12': showImportHistory}"
-                                        nudge-bottom="20" bottom right max-height="480">
-                                    <span slot="activator">
-                                        <v-btn>
-                                            <v-icon left>icon-edit-portfolio</v-icon>
-                                            {{ selectedPortfolio ? portfolioParams.name : 'Выберите портфель' }}
-                                        </v-btn>
-                                    </span>
-                                    <v-list dense>
-                                        <v-flex>
-                                            <div class="menu-text" v-for="portfolioParams in availablePortfolios" :key="portfolioParams.id"
-                                                 @click="changePortfolio(portfolioParams.id)">
-                                                {{ portfolioParams.name }}
-                                            </div>
-                                        </v-flex>
-                                    </v-list>
-                                </v-menu>
                                 <v-btn v-if="showImportHistory" @click="goToImportHistory" color="#EBEFF7">
                                     <v-icon left>icon-import-history</v-icon>
                                     История импорта
