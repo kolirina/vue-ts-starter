@@ -127,7 +127,7 @@ const MainStore = namespace(StoreType.MAIN);
                                     <p>Превышены лимиты по сделкам.</p>
                                     <p>Лимит бумаг в одном портфеле равен 30, чтобы снять ограничение подпишитесь<br>
                                         на тарифный план "‎Профессионал" и получите полный набор инструментов для учета активов</p>
-                                    <router-link :to="{name: 'tariffs'}" class="big-link">Сменить тариф</router-link>
+                                    <a @click="goToTariffs" class="big-link">Сменить тариф</a>
                                 </div>
 
                                 <v-stepper-header>
@@ -648,6 +648,11 @@ export class ImportPage extends UI {
 
     private async goToImportHistory(): Promise<void> {
         this.$router.push("import-history");
+    }
+
+    private async goToTariffs(): Promise<void> {
+        const routeData = this.$router.resolve({name: "tariffs"});
+        window.open(routeData.href, "_blank");
     }
 
     /**

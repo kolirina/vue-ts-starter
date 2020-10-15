@@ -24,6 +24,7 @@ import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {Filters} from "../../platform/filters/Filters";
 import {Storage} from "../../platform/services/storage";
+import {ClientService} from "../../services/clientService";
 import {OverviewService} from "../../services/overviewService";
 import {PortfolioParams, PortfolioService} from "../../services/portfolioService";
 import {TableHeadersState, TABLES_NAME, TablesService} from "../../services/tablesService";
@@ -296,8 +297,12 @@ export class BondTable extends UI {
     private overviewService: OverviewService;
     @Inject
     private portfolioService: PortfolioService;
+    @Inject
+    private clientService: ClientService;
     @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
     private reloadPortfolio: () => Promise<void>;
+    @MainStore.Action(MutationType.RELOAD_CLIENT_INFO)
+    private reloadUser: () => Promise<void>;
     @MainStore.Getter
     private portfolio: Portfolio;
     /** Комбинированный портфель */
@@ -433,6 +438,8 @@ export class BondTable extends UI {
         });
         await this.reloadPortfolio();
         this.resetCombinedOverviewCache(this.portfolio.id);
+        this.clientService.resetClientInfo();
+        await this.reloadUser();
     }
 
     private amount(value: string): number {

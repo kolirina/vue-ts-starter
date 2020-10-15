@@ -630,7 +630,9 @@ export class ChartUtils {
                                 // добавляем только четыре, так как основная точка тоже учтена
                                 if (i === 4) {
                                     const remainCount = point.initialPoints.length - 5;
-                                    text += `<p>Еще ${remainCount} ${Filters.declension(remainCount, "событие", "события", "событий")} в этот день</p>`;
+                                    if (remainCount) {
+                                        text += `<p>Еще ${remainCount} ${Filters.declension(remainCount, "событие", "события", "событий")} в этот день</p>`;
+                                    }
                                     break;
                                 }
                             }

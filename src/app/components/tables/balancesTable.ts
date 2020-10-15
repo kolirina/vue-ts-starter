@@ -18,6 +18,7 @@ import {Inject} from "typescript-ioc";
 import {namespace} from "vuex-class/lib/bindings";
 import {Component, Prop, UI, Watch} from "../../app/ui";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
+import {ClientService} from "../../services/clientService";
 import {OverviewService} from "../../services/overviewService";
 import {PortfolioParams} from "../../services/portfolioService";
 import {TradeService} from "../../services/tradeService";
@@ -82,6 +83,10 @@ export class BalancesTable extends UI {
     private combinedPortfolioParams: PortfolioParams;
     @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
     private reloadPortfolio: () => Promise<void>;
+    @MainStore.Action(MutationType.RELOAD_CLIENT_INFO)
+    private reloadUser: () => Promise<void>;
+    @Inject
+    private clientService: ClientService;
 
     private balancesTableRow: BalancesTableRow[] = [];
 
@@ -123,6 +128,8 @@ export class BalancesTable extends UI {
             });
             this.resetCombinedOverviewCache(this.portfolio.id);
             await this.reloadPortfolio();
+            this.clientService.resetClientInfo();
+            await this.reloadUser();
         }
     }
 

@@ -60,9 +60,9 @@ export class TariffLimitExceedInfo extends UI {
 
     get maxSharesCount(): string {
         if (this.newTariffsApplicable) {
-            return this.clientInfo.user.tariff.maxSharesCountNew === 0x7fffffff ? "Без ограничений" : String(this.clientInfo.user.tariff.maxSharesCountNew);
+            return this.tariff.maxSharesCountNew === 0x7fffffff ? "Без ограничений" : String(this.tariff.maxSharesCountNew);
         }
-        return this.clientInfo.user.tariff.maxSharesCount === 0x7fffffff ? "Без ограничений" : String(this.clientInfo.user.tariff.maxSharesCount);
+        return this.tariff.maxSharesCount === 0x7fffffff ? "Без ограничений" : String(this.tariff.maxSharesCount);
     }
 
     get tariffForeignShares(): boolean {
@@ -261,9 +261,14 @@ export class TariffBlock extends UI {
      * Возвращает признак доступности тарифа для выбора
      */
     private get available(): boolean {
-        return this.tariff.maxSharesCount >= this.clientInfo.user.sharesCount &&
-            this.tariff.maxPortfoliosCount >= this.clientInfo.user.portfoliosCount &&
-            (this.tariff.hasPermission(Permission.FOREIGN_SHARES) || !this.clientInfo.user.foreignShares);
+        if (this.newTariffsApplicable) {
+            return this.tariff.maxSharesCountNew >= this.clientInfo.user.sharesCount &&
+                this.tariff.maxPortfoliosCount >= this.clientInfo.user.portfoliosCount;
+        } else {
+            return this.tariff.maxSharesCount >= this.clientInfo.user.sharesCount &&
+                this.tariff.maxPortfoliosCount >= this.clientInfo.user.portfoliosCount &&
+                (this.tariff.hasPermission(Permission.FOREIGN_SHARES) || !this.clientInfo.user.foreignShares);
+        }
     }
 
     /**
@@ -273,10 +278,7 @@ export class TariffBlock extends UI {
         if (!this.available) {
             return "Недоступно";
         }
-        if (this.activeSubscription) {
-            return this.selected ? "Продлить" : "Подписаться";
-        }
-        return "Подписаться";
+        return this.selected ? "Продлить" : "Подписаться";
     }
 
     private get expirationDescription(): string {
