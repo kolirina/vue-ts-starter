@@ -87,7 +87,7 @@ const MainStore = namespace(StoreType.MAIN);
                         <v-card-text class="import-wrapper-content">
                             <div class="provider__info">
                                 <div class="margRAuto">
-                                    <!-- Иконка брокера и меню Изменить брокера -->
+                                    <!-- Иконка брокера и меню Изменить портфель -->
                                     <div class="provider">
                                         <div :class="['provider__image', selectedProvider.code.toLowerCase()]"></div>
                                         <div class="provider__name">
@@ -378,6 +378,9 @@ export class ImportPage extends UI {
             // если выбран обычный портфель, загружаем данные по нему, иначе пользователь должен сам выбрать портфель
             if (this.portfolio.id) {
                 await this.changePortfolio(this.portfolio.id);
+                if (!this.selectedProvider) {
+                    this.selectUserProvider();
+                }
                 this.showInstruction = [this.portfolioParams.brokerId ? 0 : 1];
             }
         } finally {
@@ -685,8 +688,11 @@ export class ImportPage extends UI {
         this.selectedPortfolio = await this.overviewService.getById(portfolioId);
         this.portfolioParams = {...this.selectedPortfolio.portfolioParams};
         await this.loadImportHistory();
-        if (!this.selectedProvider) {
-            this.selectUserProvider();
+        if (this.portfolioParams.brokerId) {
+            const provider = DealsImportProvider.valueById(this.portfolioParams.brokerId);
+            if (provider) {
+                this.onSelectProvider(provider);
+            }
         }
     }
 
