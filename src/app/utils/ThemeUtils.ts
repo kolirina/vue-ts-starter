@@ -164,7 +164,7 @@ export class ThemeUtils {
     .intel-invest-instruction__title, .intel-invest-instruction__format-text, .intel-invest-instruction__title-values,
     .intel-invest-instruction__values, .intel-invest-instruction__template-requirements, .import-instructions, .import-default-text .tooltip-text,
     .snotifyToast__body, .info-share-page__empty, .import-dialog-wrapper__title-text, .fs18, .fs36, .import-default-text,
-    .snotifyToast__buttons button, .update-service-dialog__content, .provider__name-select
+    .snotifyToast__buttons button, .update-service-dialog__content, .provider__name-select,
     .custom-v-menu .v-menu-content, .section-title, .public-portfolio-item__title, .public-portfolio-item__footer-title,
     .public-portfolio-item__footer-social > div, .portfolio-item__body-info>div>span:first-child,
     .v-date-picker-years, .empty-station__description, .v-tabs .v-tabs__item, .promo-codes ul {color: #fff}
