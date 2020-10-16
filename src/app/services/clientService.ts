@@ -83,11 +83,11 @@ export class ClientService {
 
     /**
      * Отправляет запрос на смену E-mail пользователя
-     * @param request запрос на смену E-mail пользователя
+     * @param email новый email пользователя
      * @returns {Promise<void>}
      */
-    async changeEmail(request: ChangeEmailRequest): Promise<void> {
-        await this.http.post(`/user/change-email`, request);
+    async changeEmail(email: string): Promise<void> {
+        await this.http.post(`/user/change-email`, email);
     }
 
     /**

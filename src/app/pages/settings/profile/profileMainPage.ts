@@ -161,7 +161,7 @@ export class ProfileMainPage extends UI {
         }
         // отправляем запрос только если действительно поменяли
         if (this.email !== this.clientInfo.user.email) {
-            await this.clientService.changeEmail({id: this.clientInfo.user.id, email: this.email});
+            await this.clientService.changeEmail(this.email);
             this.clientInfo.user.email = this.email;
             this.$snotify.info("Вам отправлено письмо с подтверждением на новый адрес эл. почты");
         }
