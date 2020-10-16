@@ -36,7 +36,7 @@ export class RestorePasswordDialog extends CustomDialog<string, void> {
             return;
         }
         await this.clientService.restorePassword(this.email);
-        this.$snotify.info("Письмо с новым паролем успешно отправлено на эл.почту", {
+        this.$snotify.info("Письмо с инструкцией по восстановлению пароля отправлено на эл.почту", {
             timeout: 0
         });
         this.close();
@@ -46,7 +46,7 @@ export class RestorePasswordDialog extends CustomDialog<string, void> {
         this.$validator.attach({name: "value", rules: "required|email"});
         const result = await this.$validator.validate("value", this.email);
         if (!result) {
-            this.$snotify.warning("Неверное значение e-mail");
+            this.$snotify.warning("Неверный e-mail");
         }
         return result;
     }
