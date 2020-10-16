@@ -76,17 +76,17 @@ const MainStore = namespace(StoreType.MAIN);
                             <v-flex xs12 class="mb-2">
                                 <v-checkbox v-model="portfolio.dividendsAccess" :true-value="false" :false-value="true"
                                             hide-details class="shrink mr-2 mt-0 portfolio-default-text"
-                                            label="Скрыть дивиденды"></v-checkbox>
+                                            label="Скрыть Дивиденды"></v-checkbox>
                             </v-flex>
                             <v-flex xs12 class="mb-2">
                                 <v-checkbox v-model="portfolio.tradesAccess" :true-value="false" :false-value="true"
                                             hide-details class="shrink mr-2 mt-0 portfolio-default-text"
-                                            label="Скрыть сделки"></v-checkbox>
+                                            label="Скрыть Сделки"></v-checkbox>
                             </v-flex>
                             <v-flex xs12 class="mb-2">
-                                <v-checkbox v-model="portfolio.lineDataAccess" :true-value="false" :false-value="true"
+                                <v-checkbox v-model="portfolio.analyticsAccess" :true-value="false" :false-value="true"
                                             hide-details class="shrink mr-2 mt-0 portfolio-default-text"
-                                            label="Скрыть график"></v-checkbox>
+                                            label="Скрыть Аналитику"></v-checkbox>
                             </v-flex>
                             <v-fade-transition mode="out-in" group>
                                 <template v-if="portfolio.access === 2">
