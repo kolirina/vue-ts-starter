@@ -30,7 +30,7 @@
       .v-btn {
         padding: 0px 38px 0px 20px;
         border-radius: 30px !important;
-        background: url("../img/fileimport/setings.svg") no-repeat;
+        background: url("../img/fileimport/settings.svg") no-repeat;
         background-position: 86% center;
       }
 
@@ -176,9 +176,19 @@
     font-size: 18px;
     line-height: 22px;
 
-    div {
+    &-select {
+      color: $main--font-color;
+
+      i {transition: transform 0.15s ease}
+    }
+
+    &-date {
       font-size: 12px;
       color: #9095A6;
+    }
+
+    .v-menu__activator--active &-select i {
+      transform: rotate(-180deg);
     }
   }
 
@@ -549,4 +559,5 @@
   height: 52px;
   margin-right: 12px;
   background-color: rgba(255,255,255,.3) !important;
+  flex: none;
 }
