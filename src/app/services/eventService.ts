@@ -80,21 +80,21 @@ export class EventService {
     }
 
     /**
-     * Возвращает список дивидендных новостей
+     * Возвращает список новостей
      * @param portfolioId идентификатор портфеля
      */
-    async getDividendNews(portfolioId: number): Promise<DividendNewsItem[]> {
-        return this.http.get<DividendNewsItem[]>(`/events/news/${portfolioId}`);
+    async getEventNews(portfolioId: number): Promise<EventNewsResponse> {
+        return this.http.get<EventNewsResponse>(`/events/news/${portfolioId}`);
     }
 
     /**
-     * Возвращает список дивидендных новостей для составного портфеля
+     * Возвращает список новостей для составного портфеля
      * @param viewCurrency валюта портфеля
      * @param ids идентификаторы портфелей
      */
-    async getDividendNewsCombined(viewCurrency: string, ids: number[]): Promise<DividendNewsItem[]> {
+    async getEventNewsCombined(viewCurrency: string, ids: number[]): Promise<EventNewsResponse> {
         const request: CombinedInfoRequest = {viewCurrency, ids};
-        return this.http.post<DividendNewsItem[]>("/events/news/combined", request);
+        return this.http.post<EventNewsResponse>("/events/news/combined", request);
     }
 
     /**
@@ -290,6 +290,14 @@ export interface DividendNewsItem {
     isin?: string;
     /** Идентификатор бумаги в системе */
     stockId: number;
+}
+
+/** Ответ с новостями по событиям */
+export interface EventNewsResponse {
+    /** Дивидендные новости */
+    dividendNews: DividendNewsItem[];
+    /** Новости по облигациям */
+    bondNews: ShareEvent[];
 }
 
 /** Типы событий календаря */

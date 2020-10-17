@@ -24,6 +24,7 @@ import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {Filters} from "../../platform/filters/Filters";
 import {Storage} from "../../platform/services/storage";
+import {ClientService} from "../../services/clientService";
 import {OverviewService} from "../../services/overviewService";
 import {PortfolioParams, PortfolioService} from "../../services/portfolioService";
 import {TableHeadersState, TABLES_NAME, TablesService} from "../../services/tablesService";
@@ -84,11 +85,11 @@ const MainStore = namespace(StoreType.MAIN);
                     <td v-if="tableHeadersState.ticker" class="text-xs-left">
                         <bond-link v-if="props.item.bond" :ticker="props.item.bond.ticker"></bond-link>
                     </td>
-                    <td v-if="tableHeadersState.quantity" class="text-xs-right ii-number-cell" v-tariff-expired-hint>{{ props.item.quantity | quantity(!!props.item.bond) }}</td>
-                    <td v-if="tableHeadersState.avgBuy" class="text-xs-right ii-number-cell" v-tariff-expired-hint>
+                    <td v-if="tableHeadersState.quantity" class="text-xs-right ii-number-cell">{{ props.item.quantity | quantity(!!props.item.bond) }}</td>
+                    <td v-if="tableHeadersState.avgBuy" class="text-xs-right ii-number-cell">
                         <template>{{ props.item.avgBuy | number(false) }}</template>
                     </td>
-                    <td v-if="tableHeadersState.currPrice" class="text-xs-right ii-number-cell" v-tariff-expired-hint>
+                    <td v-if="tableHeadersState.currPrice" class="text-xs-right ii-number-cell">
                         <template>{{ props.item.currPrice | number(false) }}</template>
                     </td>
                     <td v-if="tableHeadersState.bcost" class="text-xs-right ii-number-cell" v-tariff-expired-hint>{{ props.item.bcost | amount(true) }}</td>
@@ -296,8 +297,12 @@ export class BondTable extends UI {
     private overviewService: OverviewService;
     @Inject
     private portfolioService: PortfolioService;
+    @Inject
+    private clientService: ClientService;
     @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
     private reloadPortfolio: () => Promise<void>;
+    @MainStore.Action(MutationType.RELOAD_CLIENT_INFO)
+    private reloadUser: () => Promise<void>;
     @MainStore.Getter
     private portfolio: Portfolio;
     /** Комбинированный портфель */
@@ -433,6 +438,8 @@ export class BondTable extends UI {
         });
         await this.reloadPortfolio();
         this.resetCombinedOverviewCache(this.portfolio.id);
+        this.clientService.resetClientInfo();
+        await this.reloadUser();
     }
 
     private amount(value: string): number {

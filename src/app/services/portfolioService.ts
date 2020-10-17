@@ -148,7 +148,7 @@ export class PortfolioService {
             iisType: portfolio.iisType ? portfolio.iisType.value : null,
             dividendsAccess: portfolio.dividendsAccess,
             tradesAccess: portfolio.tradesAccess,
-            lineDataAccess: portfolio.lineDataAccess,
+            analyticsAccess: portfolio.analyticsAccess,
             dashboardAccess: portfolio.dashboardAccess,
             professionalMode: portfolio.professionalMode,
             brokerId: portfolio.brokerId,
@@ -276,7 +276,7 @@ export interface BasePortfolioParams {
     /** Доступ к разделу Сделки в публичном портфеле */
     tradesAccess?: boolean;
     /** Доступ к графику стоимости в публичном портфеле */
-    lineDataAccess?: boolean;
+    analyticsAccess?: boolean;
     /** Доступ к дашборду в публичном портфеле */
     dashboardAccess?: boolean;
     /** Профессиональный режим */
@@ -301,6 +301,8 @@ export interface BasePortfolioParams {
     shareNotes?: { [key: string]: string };
     /** Цель портфеля */
     description?: string;
+    /** Общее количество ценнных бумаг в составе портфеля */
+    sharesCount?: number;
 }
 
 /** Запрос на создание портфеля */
@@ -342,7 +344,7 @@ export interface UpdatePortfolioRequest {
     /** Доступ к разделу Сделки в публичном портфеле */
     tradesAccess?: boolean;
     /** Доступ к графику стоимости в публичном портфеле */
-    lineDataAccess?: boolean;
+    analyticsAccess?: boolean;
     /** Доступ к дашборду в публичном портфеле */
     dashboardAccess?: boolean;
     /** Профессиональный режим */

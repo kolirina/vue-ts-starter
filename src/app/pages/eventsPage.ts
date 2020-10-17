@@ -7,6 +7,8 @@ import {UI} from "../app/ui";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
 import {ConfirmDialog} from "../components/dialogs/confirmDialog";
 import {EventsAggregateInfoComponent} from "../components/eventsAggregateInfoComponent";
+import {BondNewsTable} from "../components/tables/bondNewsTable";
+import {DividendNewsTable} from "../components/tables/dividendNewsTable";
 import {DisableConcurrentExecution} from "../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {BtnReturn} from "../platform/dialogs/customDialog";
@@ -18,6 +20,7 @@ import {
     CalendarParams,
     CalendarType,
     DividendNewsItem,
+    EventNewsResponse,
     EventsAggregateInfo,
     EventService,
     EventsResponse,
@@ -97,7 +100,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-card-title>
 
                         <v-card-text>
-                            <events-aggregate-info :events-aggregate-info="eventsAggregateInfo" :viewCurrency="currencyClass"></events-aggregate-info>
+                            <events-aggregate-info v-if="eventsAggregateInfo" :events-aggregate-info="eventsAggregateInfo" :viewCurrency="currencyClass"></events-aggregate-info>
 
                             <v-data-table v-if="events.length" :headers="eventsHeaders" :items="events" item-key="id" :custom-sort="customSortEvents"
                                           class="data-table events-table" :pagination.sync="eventsPagination" hide-actions must-sort>
@@ -147,42 +150,24 @@ const MainStore = namespace(StoreType.MAIN);
                         <v-card-title class="events__card-title">Дивидендные новости</v-card-title>
 
                         <v-card-text>
-                            <v-data-table v-if="dividendNews.length" :headers="dividendNewsHeaders" :items="dividendNews" item-key="id" :custom-sort="customSortNews"
-                                          class="data-table dividend-news-table events-table" hide-actions must-sort>
-                                <template #headerCell="props">
-                                    <v-tooltip v-if="props.header.tooltip" content-class="custom-tooltip-wrap" bottom>
-                                        <template #activator="{ on }">
-                                            <span class="data-table__header-with-tooltip" v-on="on">
-                                                {{ props.header.text }}
-                                            </span>
-                                        </template>
-                                        <span>
-                                          {{ props.header.tooltip }}
-                                        </span>
-                                    </v-tooltip>
-                                    <span v-else>
-                                        {{ props.header.text }}
-                                    </span>
-                                </template>
-                                <template #items="props">
-                                    <tr class="selectable">
-                                        <td class="text-xs-left pl-30">
-                                            <stock-link :ticker="props.item.ticker"></stock-link>
-                                        </td>
-                                        <td class="text-xs-left">{{ props.item.shortname }}</td>
-                                        <td class="text-xs-right">{{ props.item.meetDate | date }}</td>
-                                        <td class="text-xs-right">{{ props.item.cutDate | date }}</td>
-                                        <td class="text-xs-right ii-number-cell">
-                                            {{ props.item.recCommonValue | number }}
-                                            <span class="amount__currency">{{ props.item.currency | currencySymbolByCurrency }}</span>
-                                            <span title="Доходность относительно текущей цены">({{ props.item.yield }} %)</span>
-                                        </td>
-                                        <td class="text-xs-center pr-3">{{ props.item.source }}</td>
-                                    </tr>
-                                </template>
-                            </v-data-table>
+                            <dividend-news-table v-if="dividendNews.length" :dividend-news="dividendNews"></dividend-news-table>
 
                             <div v-else class="dividend-news-table__empty">Дивидендных новостей по вашим бумагам нет</div>
+                        </v-card-text>
+                    </v-card>
+
+                    <v-card style="margin-top: 30px" flat data-v-step="1">
+                        <v-card-title class="events__card-title">
+                            Новости по облигациям
+                            <tooltip>
+                                Выплаты по облигациям (Купоны, Амортизация, Погашения) на ближайший месяц.<br/>
+                            </tooltip>
+                        </v-card-title>
+
+                        <v-card-text>
+                            <bond-news-table v-if="bondNews.length" :bondNews="bondNews"></bond-news-table>
+
+                            <div v-else class="dividend-news-table__empty">По вашим бумагам нет новостей по облигациям</div>
                         </v-card-text>
                     </v-card>
 
@@ -201,7 +186,8 @@ const MainStore = namespace(StoreType.MAIN);
                                                class="exp-panel-menu"></chart-export-menu>
                         </template>
                         <v-card-text>
-                            <events-aggregate-info :events-aggregate-info="eventsAggregateInfoFuture" :viewCurrency="currencyClass" class="margT20"></events-aggregate-info>
+                            <events-aggregate-info v-if="eventsAggregateInfoFuture" :events-aggregate-info="eventsAggregateInfoFuture" :viewCurrency="currencyClass"
+                                                   class="margT20"></events-aggregate-info>
 
                             <template v-if="futureEventsChartData && futureEventsChartData.categoryNames.length">
                                 <column-chart :ref="ChartType.FUTURE_EVENTS_CHART"
@@ -322,7 +308,9 @@ const MainStore = namespace(StoreType.MAIN);
         </v-slide-x-reverse-transition>
     `,
     components: {
-        "events-aggregate-info": EventsAggregateInfoComponent
+        "events-aggregate-info": EventsAggregateInfoComponent,
+        DividendNewsTable,
+        BondNewsTable
     }
 })
 export class EventsPage extends PortfolioBasedPage {
@@ -345,6 +333,8 @@ export class EventsPage extends PortfolioBasedPage {
     private futureEventsChartData: ColumnChartData = null;
     /** Дивидендные новости */
     private dividendNews: DividendNewsItem[] = [];
+    /** Новости по облигациям */
+    private bondNews: ShareEvent[] = [];
     /** Зголовки таблицы События */
     private eventsHeaders: TableHeader[] = [
         {text: "Событие", align: "left", value: "label", width: "150"},
@@ -353,15 +343,6 @@ export class EventsPage extends PortfolioBasedPage {
         {text: "Дата выплаты/Закрытия реестра", align: "right", value: "date", width: "50"},
         {text: "Период", align: "center", value: "period", sortable: false, width: "180"},
         {text: "Начислено", align: "right", value: "cleanAmount", width: "150"},
-    ];
-    /** Заголовки таблицы Дивидендные новости */
-    private dividendNewsHeaders: TableHeader[] = [
-        {text: "Тикер", align: "left", value: "ticker", width: "50"},
-        {text: "Компания", align: "left", value: "shortname"},
-        {text: "Дата собрания акционеров", align: "right", value: "meetDate", width: "70"},
-        {text: "Закрытие реестра", align: "right", value: "cutDate", width: "70"},
-        {text: "Размер возможных дивидендов", align: "right", value: "recCommonValue", width: "60", tooltip: "Доходность рассчитана относительно текущей цена акции."},
-        {text: "Источник", align: "center", value: "source", sortable: false, width: "70"}
     ];
     /** Параметры дат для отправки в апи */
     private calendarRequestParams: CalendarDateParams = {start: "", end: "", calendarEventTypes: []};
@@ -602,11 +583,14 @@ export class EventsPage extends PortfolioBasedPage {
     }
 
     private async loadDividendNews(): Promise<void> {
+        let response: EventNewsResponse = null;
         if (this.portfolio.portfolioParams.combinedFlag) {
-            this.dividendNews = await this.eventService.getDividendNewsCombined(this.currency, this.portfolio.portfolioParams.combinedIds);
+            response = await this.eventService.getEventNewsCombined(this.currency, this.portfolio.portfolioParams.combinedIds);
         } else {
-            this.dividendNews = await this.eventService.getDividendNews(this.portfolio.id);
+            response = await this.eventService.getEventNews(this.portfolio.id);
         }
+        this.dividendNews = response.dividendNews;
+        this.bondNews = response.bondNews;
     }
 
     private async openTradeDialog(event: ShareEvent): Promise<void> {
@@ -693,10 +677,6 @@ export class EventsPage extends PortfolioBasedPage {
 
     private customSortEvents(items: ShareEvent[], index: string, isDesc: boolean): ShareEvent[] {
         return SortUtils.customSortEvents(items, index, isDesc);
-    }
-
-    private customSortNews(items: DividendNewsItem[], index: string, isDesc: boolean): DividendNewsItem[] {
-        return SortUtils.customSortNews(items, index, isDesc);
     }
 
     private get currencyClass(): string {

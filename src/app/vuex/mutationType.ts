@@ -24,5 +24,7 @@ export enum MutationType {
     /** Обновление портфеля в сторе */
     UPDATE_PORTFOLIO = "UPDATE_PORTFOLIO",
     /** Обновление признака открытого меню */
-    CHANGE_SIDEBAR_STATE = "CHANGE_SIDEBAR_STATE"
+    CHANGE_SIDEBAR_STATE = "CHANGE_SIDEBAR_STATE",
+    /** Установка системных свойств */
+    SET_SYSTEM_PROPERTIES = "SET_SYSTEM_PROPERTIES"
 }

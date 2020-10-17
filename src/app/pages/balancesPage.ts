@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import Decimal from "decimal.js";
 import {Inject} from "typescript-ioc";
+import {Field} from "vee-validate";
 import {namespace} from "vuex-class/lib/bindings";
 import {Component, UI} from "../app/ui";
 import {CurrencyBalances} from "../components/currencyBalances";
@@ -18,6 +19,7 @@ import {EventType} from "../types/eventType";
 import {Operation} from "../types/operation";
 import {TradeDataHolder} from "../types/trade/tradeDataHolder";
 import {ErrorInfo, Portfolio, Share} from "../types/types";
+import {CommonUtils} from "../utils/commonUtils";
 import {DateUtils} from "../utils/dateUtils";
 import {TradeUtils} from "../utils/tradeUtils";
 import {MutationType} from "../vuex/mutationType";
@@ -316,7 +318,14 @@ export class BalancesPage extends UI implements TradeDataHolder {
     }
 
     private handleError(error: ErrorInfo): void {
-        const validatorFields = this.$validator.fields.items.map(f => f.name);
+        // если 403 ошибки при добавлении сделок, диалог уже отобразили, больше ошибок показывать не нужно
+        if (!CommonUtils.exists(error.fields)) {
+            if ((error as any).code !== "403") {
+                throw error;
+            }
+            return;
+        }
+        const validatorFields = this.$validator.fields.items.map((f: Field) => f.name);
         for (const errorInfo of error.fields) {
             if (validatorFields.includes(errorInfo.name)) {
                 this.$validator.errors.add({field: errorInfo.name, msg: errorInfo.errorMessage});

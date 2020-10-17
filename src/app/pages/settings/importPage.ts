@@ -10,7 +10,7 @@ import {ImportResultComponent} from "../../components/importResultComponent";
 import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
-import {ClientInfo} from "../../services/clientService";
+import {ClientInfo, ClientService} from "../../services/clientService";
 import {EventService} from "../../services/eventService";
 import {
     DealImportError,
@@ -26,11 +26,12 @@ import {OverviewService} from "../../services/overviewService";
 import {PortfolioParams, PortfolioService} from "../../services/portfolioService";
 import {CurrencyUnit} from "../../types/currency";
 import {EventType} from "../../types/eventType";
-import {Portfolio, Share, Status} from "../../types/types";
+import {MapType, Portfolio, Share, Status} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {DateUtils} from "../../utils/dateUtils";
 import {FileUtils} from "../../utils/fileUtils";
 import {PortfolioUtils} from "../../utils/portfolioUtils";
+import {TariffUtils} from "../../utils/tariffUtils";
 import {MutationType} from "../../vuex/mutationType";
 import {StoreType} from "../../vuex/storeType";
 import {ImportInstructions} from "./importInstructions";
@@ -86,41 +87,45 @@ const MainStore = namespace(StoreType.MAIN);
                         <v-card-text class="import-wrapper-content">
                             <div class="provider__info">
                                 <div class="margRAuto">
-                                    <!-- Иконка брокера и меню Изменить брокера -->
+                                    <!-- Иконка брокера и меню Изменить портфель -->
                                     <div class="provider">
                                         <div :class="['provider__image', selectedProvider.code.toLowerCase()]"></div>
                                         <div class="provider__name">
-                                            {{ selectedProvider.description }}
-                                            <div v-if="selectedPortfolio && selectedPortfolio.overview.totalTradesCount">
+                                            <v-menu content-class="dialog-type-menu" nudge-bottom="32" bottom right max-height="480">
+                                                <div slot="activator" class="provider__name-select">
+                                                    {{ selectedPortfolio ? portfolioParams.name : 'Выберите портфель' }}
+                                                    <v-icon>keyboard_arrow_down</v-icon>
+                                                </div>
+                                                <v-list dense>
+                                                    <v-flex>
+                                                        <div class="menu-text" v-for="portfolioParams in availablePortfolios" :key="portfolioParams.id"
+                                                             @click="changePortfolio(portfolioParams.id)">
+                                                            {{ portfolioParams.name }}
+                                                        </div>
+                                                    </v-flex>
+                                                </v-list>
+                                            </v-menu>
+                                            <div v-if="selectedPortfolio && selectedPortfolio.overview.totalTradesCount" class="provider__name-date">
                                                 Дата последней сделки: {{ selectedPortfolio.overview.lastTradeDate | date }}
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <broker-switcher @selectProvider="onSelectProvider" class="margR12"></broker-switcher>
-                                <v-menu content-class="dialog-type-menu" :class="{'margR12': showImportHistory}"
-                                        nudge-bottom="20" bottom right max-height="480">
-                                    <span slot="activator">
-                                        <v-btn>
-                                            <v-icon left>icon-edit-portfolio</v-icon>
-                                            {{ selectedPortfolio ? portfolioParams.name : 'Выберите портфель' }}
-                                        </v-btn>
-                                    </span>
-                                    <v-list dense>
-                                        <v-flex>
-                                            <div class="menu-text" v-for="portfolioParams in availablePortfolios" :key="portfolioParams.id"
-                                                 @click="changePortfolio(portfolioParams.id)">
-                                                {{ portfolioParams.name }}
-                                            </div>
-                                        </v-flex>
-                                    </v-list>
-                                </v-menu>
                                 <v-btn v-if="showImportHistory" @click="goToImportHistory" color="#EBEFF7">
                                     <v-icon left>icon-import-history</v-icon>
                                     История импорта
                                 </v-btn>
                             </div>
                             <v-stepper v-model="currentStep" class="provider__stepper">
+
+                                <div v-if="currentStep === '3' && tariffLimitExceeded" class="info-block info-block__warning margB24">
+                                    <p>Превышены лимиты по сделкам.</p>
+                                    <p>Лимит бумаг в одном портфеле равен 30, чтобы снять ограничение подпишитесь<br>
+                                        на тарифный план "‎Профессионал" и получите полный набор инструментов для учета активов</p>
+                                    <a @click="goToTariffs" class="big-link">Сменить тариф</a>
+                                </div>
+
                                 <v-stepper-header>
                                     <v-stepper-step step="1">Загрузка отчета</v-stepper-step>
                                     <v-stepper-step step="2">Дополнительные данные</v-stepper-step>
@@ -304,9 +309,15 @@ export class ImportPage extends UI {
     private portfolio: Portfolio;
     @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
     private reloadPortfolio: () => Promise<void>;
+    @MainStore.Action(MutationType.RELOAD_CLIENT_INFO)
+    private reloadUser: () => Promise<void>;
     /** Комбинированный портфель */
     @MainStore.Getter
     private combinedPortfolioParams: PortfolioParams;
+    @MainStore.Getter
+    private systemProperties: MapType;
+    @Inject
+    private clientService: ClientService;
     @Inject
     private importService: ImportService;
     @Inject
@@ -367,6 +378,9 @@ export class ImportPage extends UI {
             // если выбран обычный портфель, загружаем данные по нему, иначе пользователь должен сам выбрать портфель
             if (this.portfolio.id) {
                 await this.changePortfolio(this.portfolio.id);
+                if (!this.selectedProvider) {
+                    this.selectUserProvider();
+                }
                 this.showInstruction = [this.portfolioParams.brokerId ? 0 : 1];
             }
         } finally {
@@ -592,6 +606,8 @@ export class ImportPage extends UI {
         }
         if (this.importResult.validatedTradesCount) {
             await this.resetPortfolioCache();
+            this.clientService.resetClientInfo();
+            await this.reloadUser();
         }
         // если это повторная загрузка после сохранения алиасов, поторно в этот блок не заходи и сразу идем на третий шаг
         if (!retryUpload && this.importResult.errors && this.importResult.errors.length) {
@@ -633,6 +649,11 @@ export class ImportPage extends UI {
         this.$router.push("import-history");
     }
 
+    private async goToTariffs(): Promise<void> {
+        const routeData = this.$router.resolve({name: "tariffs"});
+        window.open(routeData.href, "_blank");
+    }
+
     /**
      * Обрабатывает событие выбора провайдера из стороннего компонента
      * @param provider выбранный провайдер
@@ -672,8 +693,11 @@ export class ImportPage extends UI {
         this.selectedPortfolio = await this.overviewService.getById(portfolioId);
         this.portfolioParams = {...this.selectedPortfolio.portfolioParams};
         await this.loadImportHistory();
-        if (!this.selectedProvider) {
-            this.selectUserProvider();
+        if (this.portfolioParams.brokerId) {
+            const provider = DealsImportProvider.valueById(this.portfolioParams.brokerId);
+            if (provider) {
+                this.onSelectProvider(provider);
+            }
         }
     }
 
@@ -775,6 +799,10 @@ export class ImportPage extends UI {
      */
     private get availablePortfolios(): PortfolioParams[] {
         return this.clientInfo.user.portfolios.filter(portfolio => !portfolio.combinedFlag);
+    }
+
+    private get tariffLimitExceeded(): boolean {
+        return TariffUtils.limitsExceeded(this.clientInfo.user, this.systemProperties);
     }
 
     /**

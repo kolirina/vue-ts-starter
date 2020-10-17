@@ -22,7 +22,7 @@ import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {Filters} from "../../platform/filters/Filters";
 import {Storage} from "../../platform/services/storage";
 import {AssetCategory} from "../../services/assetService";
-import {ClientInfo} from "../../services/clientService";
+import {ClientInfo, ClientService} from "../../services/clientService";
 import {OverviewService} from "../../services/overviewService";
 import {PortfolioParams, PortfolioService} from "../../services/portfolioService";
 import {TableHeadersState, TABLES_NAME, TablesService, TableType} from "../../services/tablesService";
@@ -295,8 +295,12 @@ export class StockTable extends UI {
     private overviewService: OverviewService;
     @Inject
     private portfolioService: PortfolioService;
+    @Inject
+    private clientService: ClientService;
     @MainStore.Action(MutationType.RELOAD_CURRENT_PORTFOLIO)
     private reloadPortfolio: () => Promise<void>;
+    @MainStore.Action(MutationType.RELOAD_CLIENT_INFO)
+    private reloadUser: () => Promise<void>;
     @MainStore.Getter
     private clientInfo: ClientInfo;
     @MainStore.Getter
@@ -480,6 +484,8 @@ export class StockTable extends UI {
         this.$snotify.info(`Сделки по бумаге ${stockRow.share.name} успешно удалены`);
         this.resetCombinedOverviewCache();
         await this.reloadPortfolio();
+        this.clientService.resetClientInfo();
+        await this.reloadUser();
     }
 
     private amount(value: string): number {

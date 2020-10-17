@@ -1,6 +1,7 @@
 import {Decimal} from "decimal.js";
 import {BigMoney} from "../../types/bigMoney";
 import {CurrencyUnit, isCurrencyAllowed} from "../../types/currency";
+import {Operation} from "../../types/operation";
 import {PortfolioAssetType} from "../../types/portfolioAssetType";
 import {DateFormat, DateUtils} from "../../utils/dateUtils";
 
@@ -17,6 +18,14 @@ export class Filters {
 
     static assetDesc(type: string): string {
         return PortfolioAssetType.valueByName(type)?.description;
+    }
+
+    /**
+     * Возвращает название операции по ее типу
+     * @param type тип операции
+     */
+    static operationDesc(type: string): string {
+        return Operation.valueByName(type)?.description;
     }
 
     static formatMoneyAmount(value: string, needRound?: boolean, scale?: number, returnZeros: boolean = true, needFormat: boolean = true): string {

@@ -116,6 +116,7 @@ gulp.task("default", gulp.series("build", () => {
         // proxy: "localhost:8080",
         proxy: "http://test.intelinvest.ru",
         serveStatic: [TARGET_DIR],
+        ghostMode: false
     });
     gulp.watch(["src/**/*.ts"], gulp.parallel("scripts"));
     gulp.watch(["src/assets/scss/**/*.scss"], gulp.parallel("css"));
