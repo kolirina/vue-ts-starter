@@ -49,6 +49,10 @@ export class TariffUtils {
 
     static limitsExceeded(clientInfo: Client, systemProperties: MapType): boolean {
         const tariff = clientInfo.tariff;
+        return TariffUtils.limitsExceededByTariff(clientInfo, systemProperties, tariff);
+    }
+
+    static limitsExceededByTariff(clientInfo: Client, systemProperties: MapType, tariff: Tariff): boolean {
         const isNewTariffsApplicable = DateUtils.parseDate(clientInfo.regDate).isAfter(DateUtils.parseDate(systemProperties[SystemPropertyName.NEW_TARIFFS_DATE_FROM]));
         // если действуют новые тарифы, то проверяем на всех тарифах превышение лимитов, без учета превышения по зарубежным бумагам
         if (isNewTariffsApplicable) {
