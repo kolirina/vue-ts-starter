@@ -166,6 +166,7 @@ export class TariffLimitExceedInfo extends UI {
                 <div class="tariff-description-wrap">
                     <div>Учет акций, облигаций, ПИФов и&nbsp;драгметаллов</div>
                     <div v-if="newTariffsApplicable">Учёт активов номинированных в&nbsp;рублях и&nbsp;валюте</div>
+                    <div>Учет валютных пар и криптовалюты</div>
                     <div>Импорт отчетов 18 брокеров</div>
                     <div>Полная аналитика по портфелю</div>
                     <div>Учет дивидендов, купонов, комиссий и&nbsp;амортизации</div>
@@ -198,7 +199,6 @@ export class TariffLimitExceedInfo extends UI {
                                 <tooltip>Используйте профессиональные возможности для более точного учета</tooltip>
                             </span>
                         </div>
-                        <div>Учет валютных пар и криптовалюты</div>
                     </template>
                 </div>
             </v-layout>
