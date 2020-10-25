@@ -8,6 +8,7 @@ import {PortfolioAccountType, PortfolioParams, PortfolioService} from "../servic
 import {SystemPropertiesService} from "../services/systemPropertiesService";
 import {CurrencyUnit} from "../types/currency";
 import {StoreKeys} from "../types/storeKeys";
+import {Tariff} from "../types/tariff";
 import {CombinedInfoRequest, CombinedPortfolioParams, MapType, Overview, Portfolio, TariffHint} from "../types/types";
 import {DateUtils} from "../utils/dateUtils";
 import {TariffUtils} from "../utils/tariffUtils";
@@ -118,22 +119,34 @@ const Mutations = {
     },
     [MutationType.RELOAD_CURRENT_PORTFOLIO](state: StateHolder, portfolio: Portfolio): void {
         state.currentPortfolio = portfolio;
+        const hasCombinedPortfolio = state.clientInfo.user.portfolios.filter(value => value.combined).length > 0 ||
+            state.clientInfo.user.portfolios.length > 1 && state.clientInfo.user.tariff !== Tariff.FREE;
         const withoutCurrent = state.clientInfo.user.portfolios.filter(p => p.id !== portfolio.id);
         state.clientInfo.user.portfolios = [...withoutCurrent, portfolio.portfolioParams];
         state.clientInfo.user.portfolios = state.clientInfo.user.portfolios.filter(p => !!p.id);
-        state.clientInfo.user.portfolios.push(state.combinedPortfolioParams);
+        if (hasCombinedPortfolio) {
+            state.clientInfo.user.portfolios.push(state.combinedPortfolioParams);
+        }
     },
     [MutationType.RELOAD_PORTFOLIOS](state: StateHolder, portfolios: PortfolioParams[]): void {
         state.clientInfo.user.portfolios = [...portfolios];
+        const hasCombinedPortfolio = state.clientInfo.user.portfolios.filter(value => value.combined).length > 0 ||
+            state.clientInfo.user.portfolios.length > 1 && state.clientInfo.user.tariff !== Tariff.FREE;
         state.clientInfo.user.portfolios = state.clientInfo.user.portfolios.filter(p => !!p.id);
-        state.clientInfo.user.portfolios.push(state.combinedPortfolioParams);
+        if (hasCombinedPortfolio) {
+            state.clientInfo.user.portfolios.push(state.combinedPortfolioParams);
+        }
     },
     [MutationType.UPDATE_PORTFOLIO](state: StateHolder, portfolio: PortfolioParams): void {
+        const hasCombinedPortfolio = state.clientInfo.user.portfolios.filter(value => value.combined).length > 0 ||
+            state.clientInfo.user.portfolios.length > 1 && state.clientInfo.user.tariff !== Tariff.FREE;
         const withoutCurrent = state.clientInfo.user.portfolios.filter(p => p.id !== portfolio.id);
         state.clientInfo.user.portfolios = [...withoutCurrent, portfolio];
         state.currentPortfolio.portfolioParams = portfolio;
         state.clientInfo.user.portfolios = state.clientInfo.user.portfolios.filter(p => !!p.id);
-        state.clientInfo.user.portfolios.push(state.combinedPortfolioParams);
+        if (hasCombinedPortfolio) {
+            state.clientInfo.user.portfolios.push(state.combinedPortfolioParams);
+        }
     },
     [MutationType.CHANGE_SIDEBAR_STATE](state: StateHolder, sideBarState: boolean): void {
         state.sideBarOpened = sideBarState;

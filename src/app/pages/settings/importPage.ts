@@ -505,9 +505,9 @@ export class ImportPage extends UI {
             this.$snotify.warning("Пожалуйста, загружайте по одному файлу для более точных результатов импорта.");
             filtered = [fileList[0]];
         }
-        const isValid = fileList.map(file => FileUtils.checkExtension(file)).every(result => result);
+        const isValid = fileList.map(file => FileUtils.checkExtension(this.selectedProvider.allowedExtensions, file)).every(result => result);
         if (!isValid) {
-            this.$snotify.warning(`Формат файла не соответствует разрешенным: ${FileUtils.ALLOWED_EXTENSION}.`);
+            this.$snotify.warning(`Формат файла не соответствует разрешенным: ${this.selectedProvider.allowedExtensions}.`);
             return;
         }
         if (filtered.map(file => file.size).reduce((previousValue: number, currentValue: number): number => previousValue + currentValue, 0) > this.MAX_SIZE) {
