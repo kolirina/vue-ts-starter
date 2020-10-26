@@ -214,8 +214,8 @@ export class ThemeUtils {
     .import-wrapper-content .settings-menu .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro) {border-color: #fff !important}
 
     .import-wrapper-content .settings-menu .v-btn,
-    .portfolio-rows-filter__button__icon {background-image: url("./img/fileimport/settings-light.svg")}
-    .qr-code-btn {background-image: url("./img/portfolio/qrbtn-light.svg")}
+    .portfolio-rows-filter__button__icon {background-image: url("./img/fileimport/settings-light.svg?version=${version}")}
+    .qr-code-btn {background-image: url("./img/portfolio/qrbtn-light.svg?version=${version}")}
 
     .theme--light.v-table tbody tr.selectable:hover:not(.v-datatable__expand-row) {background: #3b6ec9 !important;}
 
@@ -267,17 +267,17 @@ export class ThemeUtils {
 
     .content-loader stop {stop-color: #2c3040}
 
-    .sing-in-wrap .paired-section__right-section {background-image: url(../img/sign_in/bg-dark.svg)}
-    .wrapper-payment-info__title.pan {background-image: url(../img/profile/done-light.svg) !important}
-    .btn-group .v-btn.btn_icon-list {background-image: url("../img/portfolio/list-light.svg?version=${version}")}
-    .btn-group .v-btn.btn_icon-tile {background-image: url("../img/portfolio/tile-light.svg?version=${version}")}
+    .sing-in-wrap .paired-section__right-section {background-image: url(../img/sign_in/bg-dark.svg?version=${version})}
+    .wrapper-payment-info__title.pan {background-image: url(./img/profile/done-light.svg?version=${version}) !important}
+    .btn-group .v-btn.btn_icon-list {background-image: url("./img/portfolio/list-light.svg?version=${version}")}
+    .btn-group .v-btn.btn_icon-tile {background-image: url("./img/portfolio/tile-light.svg?version=${version}")}
 
     .v-input input::-webkit-input-placeholder {color: #cfd0d4 !important}
     .v-input input::-ms-input-placeholder {color: #cfd0d4 !important}
     .v-input input::-moz-placeholder {color: #cfd0d4 !important}
 
     .public-portfolio-item .highcharts-background {fill: none !important}
-    .public-portfolio-item__chart:after {background-image: url(../img/public-portfolio/chart-bg-dark.png)}
+    .public-portfolio-item__chart:after {background-image: url(./img/public-portfolio/chart-bg-dark.png?version=${version})}
 
     .theme--light.v-tabs__bar .v-tabs__item--disabled {
         color: #fff;

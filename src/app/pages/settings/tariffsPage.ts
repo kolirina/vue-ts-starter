@@ -126,8 +126,7 @@ export class TariffLimitExceedInfo extends UI {
                         <span v-if="!busyState[tariff.name]">{{ buttonLabel }}</span>
                         <v-progress-circular v-if="busyState[tariff.name]" indeterminate color="white" :size="20"></v-progress-circular>
                     </v-btn>
-                    <tariff-limit-exceed-info v-if="!available" :tariff="tariff">
-                    </tariff-limit-exceed-info>
+                    <tariff-limit-exceed-info v-if="!available" :tariff="tariff"></tariff-limit-exceed-info>
                     <div v-else class="pa-3">
                         При переходе на данный тарифный план, остаток неиспользованных дней текущего тарифа пересчитается согласно новому тарифу и продлит срок его действия
                     </div>
@@ -140,8 +139,7 @@ export class TariffLimitExceedInfo extends UI {
                     <expanded-panel :value="notAvailablePanelState" class="margT16 promo-codes__statistics w100pc">
                         <template #header>{{ available ? 'Подробнее' : 'Почему мне недоступен тариф?' }}</template>
                         <div class="statistics">
-                            <tariff-limit-exceed-info v-if="!available" :tariff="tariff">
-                            </tariff-limit-exceed-info>
+                            <tariff-limit-exceed-info v-if="!available" :tariff="tariff"></tariff-limit-exceed-info>
                             <div v-else>
                                 При переходе на данный тарифный план, остаток неиспользованных дней текущего тарифа пересчитается согласно новому тарифу и продлит срок его действия
                             </div>
@@ -168,6 +166,7 @@ export class TariffLimitExceedInfo extends UI {
                 <div class="tariff-description-wrap">
                     <div>Учет акций, облигаций, ПИФов и&nbsp;драгметаллов</div>
                     <div v-if="newTariffsApplicable">Учёт активов номинированных в&nbsp;рублях и&nbsp;валюте</div>
+                    <div>Учет валютных пар и криптовалюты</div>
                     <div>Импорт отчетов 18 брокеров</div>
                     <div>Полная аналитика по портфелю</div>
                     <div>Учет дивидендов, купонов, комиссий и&nbsp;амортизации</div>
@@ -183,7 +182,7 @@ export class TariffLimitExceedInfo extends UI {
                         <div>
                             <span>
                                 Произвольные активы (недвижимость, депозиты, кредиты, и тд.)
-                                <tooltip>Позволяет учитывать любые виды активо, которые не поддерживаются напрямую сервисом</tooltip>
+                                <tooltip>Позволяет учитывать любые виды активов, которые не поддерживаются напрямую сервисом</tooltip>
                             </span>
                         </div>
                         <div>Возможность объединения двух и&nbsp;более портфелей</div>
@@ -200,7 +199,6 @@ export class TariffLimitExceedInfo extends UI {
                                 <tooltip>Используйте профессиональные возможности для более точного учета</tooltip>
                             </span>
                         </div>
-                        <div>Учет валютных пар и криптовалюты</div>
                     </template>
                 </div>
             </v-layout>
@@ -261,14 +259,7 @@ export class TariffBlock extends UI {
      * Возвращает признак доступности тарифа для выбора
      */
     private get available(): boolean {
-        if (this.newTariffsApplicable) {
-            return this.tariff.maxSharesCountNew >= this.clientInfo.user.sharesCount &&
-                this.tariff.maxPortfoliosCount >= this.clientInfo.user.portfoliosCount;
-        } else {
-            return this.tariff.maxSharesCount >= this.clientInfo.user.sharesCount &&
-                this.tariff.maxPortfoliosCount >= this.clientInfo.user.portfoliosCount &&
-                (this.tariff.hasPermission(Permission.FOREIGN_SHARES) || !this.clientInfo.user.foreignShares);
-        }
+        return !TariffUtils.limitsExceededByTariff(this.clientInfo.user, this.systemProperties, this.tariff);
     }
 
     /**

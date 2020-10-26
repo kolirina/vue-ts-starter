@@ -3,8 +3,6 @@
  */
 export class FileUtils {
 
-    /** Допустимые расширения файлов */
-    static readonly ALLOWED_EXTENSION = ["txt", "csv", "xml", "xls", "xlsx", "json", "cpt", "html", "htm"];
     /** Допустимые MIME типы */
     static readonly ALLOWED_MIME_TYPES = "text/plain, application/excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel," +
         " application/x-excel, application/x-msexcel, application/xml, text/xml, .csv, .json, .cpt, application/x-cpt, text/html";
@@ -24,8 +22,8 @@ export class FileUtils {
         return Array.prototype.map.call(fileList, (item: File) => item) as File[];
     }
 
-    static checkExtension(file: File): boolean {
-        return FileUtils.ALLOWED_EXTENSION.includes(this.getFileExtension(file));
+    static checkExtension(allowedExtensions: string[], file: File): boolean {
+        return allowedExtensions.includes(this.getFileExtension(file));
     }
 
     /**
