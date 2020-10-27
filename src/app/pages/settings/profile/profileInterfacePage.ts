@@ -70,7 +70,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <v-layout wrap @click.stop>
                         <v-switch v-model="clientInfo.user.needShowHelpDeskWidget" @change="onShowHelpDeskWidgetChange">
                             <template #label>
-                                <span>Отображать виджет помощи</span>
+                                <span class="fs14">Отображать виджет помощи</span>
                             </template>
                         </v-switch>
                     </v-layout>
