@@ -152,7 +152,13 @@ export class OverviewService {
     }
 
     async saveOrUpdatePortfolioRebalancing(portfolioId: number, rebalancingModel: RebalancingModel): Promise<void> {
-        await this.http.post(`/portfolios/${portfolioId}/rebalancing`, rebalancingModel);
+        await this.http.post(`/portfolios/${portfolioId}/rebalancing`, {
+            id: rebalancingModel.id,
+            minShare: rebalancingModel.maxShare,
+            maxShare: rebalancingModel.maxShare,
+            targetShare: rebalancingModel.targetShare,
+            instrumentRebalancingModels: JSON.stringify(rebalancingModel.instrumentRebalancingModels)
+        });
     }
 
     /**

@@ -1,6 +1,8 @@
 import {Enum, EnumType, IStaticEnum} from "../platform/enum";
 import {PortfolioParams} from "../services/portfolioService";
 import {BaseChartDot, BasePriceDot, ColumnChartData, Dot, HighStockEventsGroup} from "./charts/types";
+import {PortfolioAssetType} from "./portfolioAssetType";
+import {CalculateRow} from "../services/rebalancingService";
 
 export type _portfolioRow = {
     /** Прибыль */
@@ -688,6 +690,12 @@ export enum BlockType {
 
 /** Информация по ребалансировке */
 export interface InstrumentRebalancingModel {
+    assetType: string;
+    rows: InstrumentRebalancingRow[];
+    targetPercent: string;
+}
+
+export interface InstrumentRebalancingRow {
     /** Целевая доля внутри актива (Акции, Облиации, Прочие Активы) */
     shareId: string;
     /** Целевая доля внутри актива (Акции, Облиации, Прочие Активы) */
@@ -712,9 +720,9 @@ export interface RebalancingModel {
     id?: number;
     /** Целевая доля внутри актива (Акции, Облиации, Прочие Активы) */
     instrumentRebalancingModels: InstrumentRebalancingModel[];
-    /** Минимальная доля любого инструмента внутри портфеля */
+    /** Минимальная доля группы инструментов внутри портфеля */
     minShare: string;
-    /** Максимальная доля любого инструмента внутри портфеля */
+    /** Максимальная доля группы инструментов внутри портфеля */
     maxShare: string;
 }
 
