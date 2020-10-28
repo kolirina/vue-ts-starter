@@ -36,20 +36,21 @@ export class RebalancingService {
     private http: Http;
 
     calculateRows(assetRows: RebalancingAggregateRow[], incomeAmountString: string, rowLimit: number = 5, onlyBuyTrades: boolean = true, type: RebalancingType): void {
-        const totalAmount: Decimal = assetRows
+        const currentTotalAmount: Decimal = assetRows
             .reduce((previousValue, currentValue) => currentValue.rows.concat(previousValue), [])
             .map(row => row.currentCost.plus(row.amountForLots).mul(row.targetPercent === 0 ? this.ZERO : this.ONE))
             .reduce((result: Decimal, current: Decimal) => result.add(current), new Decimal("0"));
         assetRows.forEach(assetRow => {
-            const assetAmount = incomeAmountString ? new Decimal(incomeAmountString).mul(assetRow.targetPercent === "0" ? this.ZERO : this.ONE).mul(this._001) : this.ZERO;
+            const assetAmount = incomeAmountString ? new Decimal(incomeAmountString)
+                .mul(assetRow.targetPercent || "0.00").mul(this._001) : this.ZERO;
             const assetCurrentCost = assetRow.currentCost ? new BigMoney(assetRow.currentCost).amount : this.ZERO;
-            this.calculateAssetRows(assetRow.rows, assetAmount.toString(), assetCurrentCost, totalAmount, rowLimit, onlyBuyTrades, type);
+            this.calculateAssetRows(assetRow.rows, assetAmount.toString(), assetCurrentCost, currentTotalAmount, rowLimit, onlyBuyTrades, type);
         });
         const usedTotalAmount = assetRows.reduce((previousValue, currentValue) => currentValue.rows.concat(previousValue), [])
             .map(row => new Decimal(row.amountForLots))
             .reduce((result: Decimal, current: Decimal) => result.add(current), new Decimal("0"));
         assetRows.forEach(assetRow => {
-            this.calculateResultPercents(assetRow.rows, totalAmount.plus(usedTotalAmount));
+            this.calculateResultPercents(assetRow.rows, currentTotalAmount.plus(usedTotalAmount));
         });
     }
 
