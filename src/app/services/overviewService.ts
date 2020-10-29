@@ -156,7 +156,6 @@ export class OverviewService {
             id: rebalancingModel.id,
             minShare: rebalancingModel.maxShare,
             maxShare: rebalancingModel.maxShare,
-            targetShare: rebalancingModel.targetShare,
             instrumentRebalancingModels: JSON.stringify(rebalancingModel.instrumentRebalancingModels)
         });
     }

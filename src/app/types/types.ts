@@ -1,8 +1,6 @@
 import {Enum, EnumType, IStaticEnum} from "../platform/enum";
 import {PortfolioParams} from "../services/portfolioService";
 import {BaseChartDot, BasePriceDot, ColumnChartData, Dot, HighStockEventsGroup} from "./charts/types";
-import {PortfolioAssetType} from "./portfolioAssetType";
-import {CalculateRow} from "../services/rebalancingService";
 
 export type _portfolioRow = {
     /** Прибыль */
