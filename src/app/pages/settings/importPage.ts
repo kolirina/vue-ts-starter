@@ -807,11 +807,11 @@ export class ImportPage extends UI {
      * Сбрасывает кэш портфеля
      */
     private async resetPortfolioCache(): Promise<void> {
+        this.overviewService.resetCacheForId(this.selectedPortfolio.id);
+        this.resetCombinedOverviewCache(this.selectedPortfolio.id);
         if (this.selectedPortfolio.id === this.clientInfo.user.currentPortfolioId) {
             await this.reloadPortfolio();
         }
-        this.overviewService.resetCacheForId(this.selectedPortfolio.id);
-        this.resetCombinedOverviewCache(this.selectedPortfolio.id);
     }
 }
 

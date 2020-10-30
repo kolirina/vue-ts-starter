@@ -86,7 +86,7 @@ export class BondNewsTable extends UI {
         {text: "Событие", align: "right", value: "type", width: "100"},
         {text: "На 1 бумагу", align: "right", value: "amountPerShare", width: "100"},
         {text: "Всего", align: "right", value: "totalAmount", width: "150", tooltip: "Сумма выплаты"},
-        {text: "Дата", align: "center", value: "date", sortable: false, width: "70"},
+        {text: "Дата", align: "center", value: "date", sortable: true, width: "70"},
     ];
 
     private showOriginalAmount(event: ShareEvent): boolean {
