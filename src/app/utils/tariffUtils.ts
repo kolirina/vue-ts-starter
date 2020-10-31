@@ -49,10 +49,10 @@ export class TariffUtils {
 
     static limitsExceeded(clientInfo: Client, systemProperties: MapType): boolean {
         const tariff = clientInfo.tariff;
-        return TariffUtils.limitsExceededByTariff(clientInfo, systemProperties, tariff);
+        return TariffUtils.limitsExceededByTariff(clientInfo, systemProperties, tariff, false);
     }
 
-    static limitsExceededByTariff(clientInfo: Client, systemProperties: MapType, tariff: Tariff): boolean {
+    static limitsExceededByTariff(clientInfo: Client, systemProperties: MapType, tariff: Tariff, skipFreeTariffChecking: boolean = true): boolean {
         const isNewTariffsApplicable = DateUtils.parseDate(clientInfo.regDate).isAfter(DateUtils.parseDate(systemProperties[SystemPropertyName.NEW_TARIFFS_DATE_FROM]));
         // если действуют новые тарифы, то проверяем на всех тарифах превышение лимитов, без учета превышения по зарубежным бумагам
         if (isNewTariffsApplicable) {
@@ -61,7 +61,7 @@ export class TariffUtils {
         } else {
             return clientInfo.portfoliosCount > tariff.maxPortfoliosCount ||
                 clientInfo.portfolios.some(portfolio => portfolio.sharesCount > tariff.maxSharesCount) ||
-                (tariff === Tariff.FREE && clientInfo.foreignShares && !tariff.hasPermission(Permission.FOREIGN_SHARES));
+                ((skipFreeTariffChecking || tariff === Tariff.FREE) && clientInfo.foreignShares && !tariff.hasPermission(Permission.FOREIGN_SHARES));
         }
     }
 

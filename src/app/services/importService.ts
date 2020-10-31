@@ -118,6 +118,8 @@ export class DealsImportProvider extends (EnumType as IStaticEnum<DealsImportPro
 }
 
 export interface ImportResponse {
+    /** Идентификатор импорта в истории */
+    importId?: number;
     /** Сообщение */
     message: string;
     /** Список ошибок валидации сделок */

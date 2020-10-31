@@ -84,6 +84,15 @@ export class CustomDialog<ParamType, ReturnType> extends UI {
         this.$emit("close", result);
     }
 
+    /**
+     * Закрывает все диалоговые окна
+     */
+    protected closeAllDialogs(): void {
+        while (CustomDialog.instances.length) {
+            CustomDialog.instances[CustomDialog.instances.length - 1].close();
+        }
+    }
+
     protected getDialogName(): string {
         return null;
     }

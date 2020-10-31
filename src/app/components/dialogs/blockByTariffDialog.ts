@@ -55,6 +55,6 @@ export class BlockByTariffDialog extends CustomDialog<ForbiddenCode, BtnReturn> 
 
     private tariffs(): void {
         window.location.assign(location.origin + location.pathname + "#/settings/tariffs");
-        this.close();
+        this.closeAllDialogs();
     }
 }

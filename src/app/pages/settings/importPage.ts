@@ -404,28 +404,9 @@ export class ImportPage extends UI {
         await this.loadImportHistory();
     }
 
-    private async revertImport(userImportId: number): Promise<void> {
-        const result = await new ConfirmDialog().show("Вы собираетесь откатить импорт, это приведет к удалению информации о нем из портфеля");
-        if (result === BtnReturn.YES) {
-            await this.revertImportConfirmed(userImportId);
-            if (this.selectedPortfolio.id === this.clientInfo.user.currentPortfolioId) {
-                await this.reloadPortfolio();
-            }
-            this.overviewService.resetCacheForId(this.selectedPortfolio.id);
-            this.resetCombinedOverviewCache(this.selectedPortfolio.id);
-            this.$snotify.info("Результаты импорта были успешно отменены");
-        }
-    }
-
     @ShowProgress
     private async loadImportHistory(): Promise<void> {
         this.importHistory = await this.importService.importHistory();
-    }
-
-    @ShowProgress
-    private async revertImportConfirmed(userImportId: number): Promise<void> {
-        await this.importService.revertImport(userImportId, this.portfolioParams.id);
-        await this.loadImportHistory();
     }
 
     private onShareSelect(share: Share, aliasItem: ShareAliasItem): void {
@@ -445,6 +426,7 @@ export class ImportPage extends UI {
         await new FeedbackDialog().show({clientInfo: this.clientInfo.user, message: message});
     }
 
+    @ShowProgress
     private async goToFinalStep(): Promise<void> {
         if (this.importProviderFeatures.confirmMoneyBalance) {
             const result = await this.$refs.currencyBalances.validateResiduals();
@@ -467,6 +449,7 @@ export class ImportPage extends UI {
         // отправляем запрос на сохранение алиасов и повторную загрузку отчета, только если в списке алиасов есть значения
         if (filled.length) {
             await this.importService.saveShareAliases(filled);
+            await this.revertImport(this.importResult.importId);
             this.importResult = await this.importReport();
             await this.handleUploadResponse(true);
         } else {
@@ -478,6 +461,17 @@ export class ImportPage extends UI {
             this.hasNewEventsAfterImport = (await this.eventService.getEvents(this.portfolioParams.id)).events.length > 0;
         }
         this.currentStep = ImportStep._3;
+    }
+
+    private async revertImport(userImportId: number): Promise<void> {
+        // если был составной импорт, идентификатора ну будет
+        if (!userImportId) {
+            return;
+        }
+        await this.importService.revertImport(userImportId, this.portfolioParams.id);
+        await this.loadImportHistory();
+        this.overviewService.resetCacheForId(this.selectedPortfolio.id);
+        this.resetCombinedOverviewCache(this.selectedPortfolio.id);
     }
 
     private aliasDescription(shareAlias: ShareAliasItem): string {
@@ -507,7 +501,9 @@ export class ImportPage extends UI {
         }
         const isValid = fileList.map(file => FileUtils.checkExtension(this.selectedProvider.allowedExtensions, file)).every(result => result);
         if (!isValid) {
-            this.$snotify.warning(`Формат файла не соответствует разрешенным: ${this.selectedProvider.allowedExtensions}.`);
+            this.$snotify.warning(`Формат файла не соответствует разрешенным: ${this.selectedProvider.allowedExtensions}.
+            Пожалуйста, обратите внимание на инструкцию по получению отчета.`);
+            this.showInstruction = [1];
             return;
         }
         if (filtered.map(file => file.size).reduce((previousValue: number, currentValue: number): number => previousValue + currentValue, 0) > this.MAX_SIZE) {
@@ -574,7 +570,9 @@ export class ImportPage extends UI {
         if (results.length > 1) {
             const hasErrorStatus = results.some(result => result.status === Status.ERROR);
             const hasWarnStatus = results.some(result => result.status === Status.WARN);
+            // для таких случаев не будет отката импорта
             return {
+                importId: null,
                 validatedTradesCount: results.map(result => result.validatedTradesCount).reduce((previousValue, currentValue) => previousValue + currentValue, 0),
                 generalError: hasErrorStatus ? results.find(result => result.generalError)?.generalError : null,
                 message: hasErrorStatus ? results.find(result => result.generalError)?.message :
@@ -809,11 +807,11 @@ export class ImportPage extends UI {
      * Сбрасывает кэш портфеля
      */
     private async resetPortfolioCache(): Promise<void> {
+        this.overviewService.resetCacheForId(this.selectedPortfolio.id);
+        this.resetCombinedOverviewCache(this.selectedPortfolio.id);
         if (this.selectedPortfolio.id === this.clientInfo.user.currentPortfolioId) {
             await this.reloadPortfolio();
         }
-        this.overviewService.resetCacheForId(this.selectedPortfolio.id);
-        this.resetCombinedOverviewCache(this.selectedPortfolio.id);
     }
 }
 
