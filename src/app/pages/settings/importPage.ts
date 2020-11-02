@@ -24,6 +24,7 @@ import {
 } from "../../services/importService";
 import {OverviewService} from "../../services/overviewService";
 import {PortfolioParams, PortfolioService} from "../../services/portfolioService";
+import {SystemPropertyName} from "../../services/systemPropertiesService";
 import {CurrencyUnit} from "../../types/currency";
 import {EventType} from "../../types/eventType";
 import {MapType, Portfolio, Share, Status} from "../../types/types";
@@ -66,7 +67,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         Если в списке нет вашего брокера или терминала, вы всегда можете осуществить импорт через универсальный формат Intelinvest (csv)
                                         или обратиться к нам через <a @click.stop="openFeedBackDialog">обратную связь</a> ,
                                         <a href="mailto:web@intelinvest.ru">по почте</a> или в группе <a href="https://vk.com/intelinvest">вконтакте</a>.
-                                </span>
+                                    </span>
                                 </v-menu>
                             </div>
                         </v-card-title>
@@ -120,8 +121,8 @@ const MainStore = namespace(StoreType.MAIN);
                             <v-stepper v-model="currentStep" class="provider__stepper">
 
                                 <div v-if="currentStep === '3' && tariffLimitExceeded" class="info-block info-block__warning margB24">
-                                    <p>Превышены лимиты по сделкам.</p>
-                                    <p>Лимит бумаг в одном портфеле равен 30, чтобы снять ограничение подпишитесь<br>
+                                    <p>Превышены лимиты по бумагам.</p>
+                                    <p>Лимит бумаг в одном портфеле равен {{ maxSharesCount }}, чтобы снять ограничение подпишитесь<br>
                                         на тарифный план "‎Профессионал" и получите полный набор инструментов для учета активов</p>
                                     <a @click="goToTariffs" class="big-link">Сменить тариф</a>
                                 </div>
@@ -801,6 +802,17 @@ export class ImportPage extends UI {
 
     private get tariffLimitExceeded(): boolean {
         return TariffUtils.limitsExceeded(this.clientInfo.user, this.systemProperties);
+    }
+
+    private get newTariffsApplicable(): boolean {
+        return DateUtils.parseDate(this.clientInfo.user.regDate).isAfter(DateUtils.parseDate(this.systemProperties[SystemPropertyName.NEW_TARIFFS_DATE_FROM]));
+    }
+
+    get maxSharesCount(): string {
+        if (this.newTariffsApplicable) {
+            return this.clientInfo.user.tariff.maxSharesCountNew === 0x7fffffff ? "Без ограничений" : String(this.clientInfo.user.tariff.maxSharesCountNew);
+        }
+        return this.clientInfo.user.tariff.maxSharesCount === 0x7fffffff ? "Без ограничений" : String(this.clientInfo.user.tariff.maxSharesCount);
     }
 
     /**
