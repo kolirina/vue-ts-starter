@@ -618,6 +618,7 @@ export type ErrorFieldInfo = {
 export enum Status {
     SUCCESS = "SUCCESS",
     WARN = "WARN",
+    NO_TRADES = "NO_TRADES",
     ERROR = "ERROR"
 }
 

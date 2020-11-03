@@ -263,8 +263,20 @@ const MainStore = namespace(StoreType.MAIN);
                                                     {{ savedTradesCount | declension("Добавлена", "Добавлено", "Добавлено") }}
                                                     {{ savedTradesCount }} {{ savedTradesCount | declension("сделка", "сделки", "сделок") }}
                                                 </span>
+                                                <span v-if="importStatus === Status.NO_TRADES">
+                                                    Брокерский отчет не содержит сделок. <br/>
+                                                    Увеличьте период отчета, и загрузите отчет за все время (несколько отчетов, что охватывают все время)
+                                                </span>
                                             </div>
                                         </div>
+
+                                        <expanded-panel v-if="portfolioParams && importStatus === Status.NO_TRADES" :value="showInstruction" class="promo-codes__statistics">
+                                            <template #header>Как выгрузить отчет брокера?</template>
+                                            <import-instructions :provider="selectedProvider" @selectProvider="onSelectProvider"
+                                                                 @changePortfolioParams="changePortfolioParams" :portfolio-params="portfolioParams"
+                                                                 class="margT20"></import-instructions>
+                                        </expanded-panel>
+
                                         <div v-if="showResultsPanel" class="info-block">
                                             Портфель почти сформирован, для полного соответствия, возможно, потребуются дополнительные действия
                                         </div>
@@ -571,14 +583,17 @@ export class ImportPage extends UI {
         if (results.length > 1) {
             const hasErrorStatus = results.some(result => result.status === Status.ERROR);
             const hasWarnStatus = results.some(result => result.status === Status.WARN);
+            const hasNoTradesStatus = results.some(result => result.status === Status.NO_TRADES);
             // для таких случаев не будет отката импорта
             return {
                 importId: null,
                 validatedTradesCount: results.map(result => result.validatedTradesCount).reduce((previousValue, currentValue) => previousValue + currentValue, 0),
                 generalError: hasErrorStatus ? results.find(result => result.generalError)?.generalError : null,
                 message: hasErrorStatus ? results.find(result => result.generalError)?.message :
-                    hasWarnStatus ? results.find(result => result.status === Status.WARN)?.message : results.find(result => result.status === Status.SUCCESS)?.message,
-                status: hasErrorStatus ? Status.ERROR : hasWarnStatus ? Status.WARN : Status.SUCCESS,
+                    hasWarnStatus ? results.find(result => result.status === Status.WARN)?.message :
+                        hasNoTradesStatus ? results.find(result => result.status === Status.NO_TRADES)?.message :
+                            results.find(result => result.status === Status.SUCCESS)?.message,
+                status: hasErrorStatus ? Status.ERROR : hasWarnStatus ? Status.WARN : hasNoTradesStatus ? Status.NO_TRADES : Status.SUCCESS,
                 firstTradeDate: results.sort((a, b) => DateUtils.parseDate(a.firstTradeDate).isAfter(DateUtils.parseDate(b.firstTradeDate)) ? 1 : -1)[0].firstTradeDate,
                 lastTradeDate: results.sort((a, b) => DateUtils.parseDate(a.lastTradeDate).isBefore(DateUtils.parseDate(b.lastTradeDate)) ? 1 : -1)[0].lastTradeDate,
                 errors: results.map(result => result.errors).reduce((a, b) => a.concat(b), [])
@@ -623,6 +638,9 @@ export class ImportPage extends UI {
                 this.currentStep = ImportStep._2;
                 return;
             }
+        }
+        if (this.importResult.status === Status.NO_TRADES) {
+            this.showInstruction = [1];
         }
         // если не повторная загрузка и требуется подтверждение балансов, переходим на второй шаг
         if (!retryUpload && this.importProviderFeatures.confirmMoneyBalance) {
@@ -718,6 +736,9 @@ export class ImportPage extends UI {
             }
             if (this.importResult.generalError) {
                 return Status.ERROR;
+            }
+            if (this.importResult.status === Status.NO_TRADES) {
+                return Status.NO_TRADES;
             }
             return Status.SUCCESS;
         }
