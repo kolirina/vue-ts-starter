@@ -21,8 +21,10 @@ const MainStore = namespace(StoreType.MAIN);
                     <v-btn @click.stop="openDialog" fab dark small color="indigo" depressed class="add-btn-menu">
                         <v-icon dark>add</v-icon>
                     </v-btn>
-                    <div v-if="sideBarOpened" class="iconMenu">
-                        <navigation-link v-for="item in mainSection" :item="item" :key="item.action" icon-mode></navigation-link>
+                    <div v-if="sideBarOpened" class="iconMenu iconMenu-calc-height">
+                        <vue-scroll>
+                            <navigation-link v-for="item in mainSection" :item="item" :key="item.action" icon-mode></navigation-link>
+                        </vue-scroll>
                     </div>
                 </div>
                 <menu-bottom-navigation :side-bar-opened="sideBarOpened"></menu-bottom-navigation>
