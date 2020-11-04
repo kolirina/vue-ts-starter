@@ -142,24 +142,9 @@
   cursor: pointer;
 }
 
-.settings-icon {
-  @extend .icon;
-  background: url('../img/sidebar/settings.svg') no-repeat center;
-}
-
 .broken-portfolio-icon {
   @extend .icon;
   background: url('../img/portfolio/broken_portfolio.svg') no-repeat center;
-}
-
-.profile-icon {
-  @extend .icon;
-  background: url('../img/sidebar/account.svg') no-repeat center;
-}
-
-.logout-icon {
-  @extend .icon;
-  background: url('../img/common/logout.svg') no-repeat center;
 }
 
 .sidebar-icon {
