@@ -18,7 +18,9 @@ import {UI, Watch} from "../app/ui";
             </v-layout>
             <v-layout v-show="!editMode" class="initial-flex btn-action-section" align-center justify-end>
                 <v-btn @click.stop="onEdit" flat icon color="indigo">
-                    <i class="profile-edit"></i>
+                    <slot name="editIcon">
+                        <i class="profile-edit"></i>
+                    </slot>
                 </v-btn>
             </v-layout>
             <v-layout v-show="editMode" class="initial-flex btn-action-section" align-center justify-end>

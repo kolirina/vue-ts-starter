@@ -182,6 +182,7 @@ export class AppFrame extends UI {
             {
                 title: "Настройки", action: "settings", subMenu: [
                     {title: "Управление портфелями", action: "portfolio-management"},
+                    {title: "Управление тэгами", action: "tags"},
                     {title: "Профиль", action: "profile"},
                     {title: "Импорт сделок", action: "import"},
                     {title: "Экспорт сделок", action: "export"},

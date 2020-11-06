@@ -47,6 +47,7 @@ import {ruLocale} from "../platform/locale/veeValidateMessages";
 import {ChartUtils} from "../utils/chartUtils";
 import {UiStateHelper} from "../utils/uiStateHelper";
 import {UI} from "./ui";
+import {ShareTags} from "../components/shareTags";
 
 exporting(Highcharts);
 exporting(Highstock);
@@ -119,6 +120,7 @@ export class UIRegistry {
         UI.component("stock-link", StockLink);
         UI.component("asset-link", AssetLink);
         UI.component("bond-link", BondLink);
+        UI.component("share-tags", ShareTags);
         /* Компонент с маской для десятичных дробей */
         UI.component("ii-number-field", IINumberField);
         UI.component("share-search", ShareSearchComponent);

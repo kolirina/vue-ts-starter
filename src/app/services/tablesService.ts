@@ -18,6 +18,7 @@ export class TablesService {
         {text: "", align: "left", ghost: true, sortable: false, value: "", active: true, width: "50"},
         {text: "Компания", align: "left", value: TABLE_HEADERS.COMPANY, active: true, width: "120"},
         {text: "Тикер", align: "left", value: TABLE_HEADERS.TICKER, active: false, width: "90"},
+        {text: "Тэги", align: "center", value: "", active: true, sortable: false, ghost: true, width: "50"},
         {text: "Количество", align: "right", value: TABLE_HEADERS.QUANTITY, active: true, width: "60"},
         {
             text: "Ср. цена",
@@ -160,6 +161,7 @@ export class TablesService {
             {text: "", align: "left", ghost: true, sortable: false, value: "", active: true, width: "50"},
             {text: "Компания", align: "left", value: TABLE_HEADERS.COMPANY, active: true, width: "135"},
             {text: "Тикер", align: "left", value: TABLE_HEADERS.TICKER, active: false, width: "90"},
+            {text: "Тэги", align: "center", value: "", active: true, sortable: false, ghost: true, width: "50"},
             {text: "Количество", align: "right", value: TABLE_HEADERS.QUANTITY, active: true, width: "60"},
             {
                 text: "Ср. цена, %",
