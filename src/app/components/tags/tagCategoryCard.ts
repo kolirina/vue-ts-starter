@@ -41,29 +41,27 @@ import {Tag, TagCategory} from "../../types/tags";
 @Component({
     // language=Vue
     template: `
-        <div class="portfolio-item">
-            <div class="portfolio-item__header">
-                <div v-if="!categoryEditMode" class="portfolio-item__header-description">{{ tagCategory.name }}</div>
-                <div v-show="categoryEditMode" class="portfolio-item__header-description">
+        <div class="tags-list-item">
+            <div class="tags-list-item__header">
+                <div v-if="!categoryEditMode" class="tags-list-item__header-description">{{ tagCategory.name }}</div>
+                <div v-show="categoryEditMode" class="tags-list-item__header-description">
                     <v-text-field label="Название категории" v-model="categoryName" :counter="50" ref="categoryNameInput"
                                   v-validate="'required|max:50'" :error-messages="errors.collect('categoryNameInput')" name="categoryNameInput"
                                   @keydown.enter="editCategoryName" @keydown.esc="closeEditCategory"></v-text-field>
                 </div>
-                <v-icon title="Редактировать" @click="editCategory" small>fas fa-pencil-alt</v-icon>
+                <div title="Редактировать" @click="editCategory" class="intel-icon icon-edit"></div>
                 <div @click.stop class="margLAuto">
-                    <v-icon title="Удалить" @click="deleteCategory" small>fas fa-trash-alt</v-icon>
+                    <div title="Удалить" @click="deleteCategory" class="intel-icon icon-delete"></div>
                 </div>
             </div>
-            <div class="portfolio-item__body">
-                <div class="portfolio-item__body-info">
-                    <tag-item v-for="tag in tagCategory.tags" :key="tag.id" :tag="tag" @deleteTag="onDeleteTag"></tag-item>
-                    <span @click="showCreateTagField">+</span>
-                    <v-text-field v-show="createTag" label="Введите новый тэг" v-model="tagName" :counter="50" ref="tagNameInput"
-                                  v-validate="'required|max:50'" :error-messages="errors.collect('tagName')" name="tagName"
-                                  @keydown.enter="addTag" @keydown.esc="closeAddTag"></v-text-field>
-                    <v-btn v-show="createTag" color="primary" @click.native="addTag" :disabled="!isTagValid">Сохранить</v-btn>
-                    <v-btn v-show="createTag" @click.native="closeAddTag">Отмена</v-btn>
-                </div>
+            <div class="tags-list-item__body">
+                <tag-item v-for="tag in tagCategory.tags" :key="tag.id" :tag="tag" @deleteTag="onDeleteTag"></tag-item>
+                <div @click="showCreateTagField" class="tags-list-item__add-btn">+</div>
+                <v-text-field v-show="createTag" label="Введите новый тэг" v-model="tagName" :counter="50" ref="tagNameInput"
+                              v-validate="'required|max:50'" :error-messages="errors.collect('tagName')" name="tagName"
+                              @keydown.enter="addTag" @keydown.esc="closeAddTag"></v-text-field>
+                <v-btn v-show="createTag" color="primary" @click.native="addTag" :disabled="!isTagValid" class="margR12">Сохранить</v-btn>
+                <v-btn v-show="createTag" @click.native="closeAddTag">Отмена</v-btn>
             </div>
         </div>
     `,

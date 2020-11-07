@@ -57,13 +57,11 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-card-title>
             </v-card>
             <v-layout class="profile" column>
-                <v-card class="import-wrapper">
-                    <div class="portfolio-list" data-v-step="1">
-                        <tag-category-card v-for="tagCategory in tagCategories" :key="tagCategory.id" :tag-category="tagCategory"
-                                           @deleteCategory="onDeleteCategory" @deleteTag="onDeleteTag" @createTag="onCreateTag" @editCategory="onEditCategory"></tag-category-card>
-                        <v-btn @click.stop="createNewCategory" color="#f7f9fb" class="portfolio-item-add"></v-btn>
-                    </div>
-                </v-card>
+                <div class="tags-list" data-v-step="1">
+                    <tag-category-card v-for="tagCategory in tagCategories" :key="tagCategory.id" :tag-category="tagCategory"
+                                       @deleteCategory="onDeleteCategory" @deleteTag="onDeleteTag" @createTag="onCreateTag" @editCategory="onEditCategory"></tag-category-card>
+                    <v-btn @click.stop="createNewCategory" color="#f7f9fb" class="tags-list-item-add"></v-btn>
+                </div>
             </v-layout>
         </v-container>
     `,

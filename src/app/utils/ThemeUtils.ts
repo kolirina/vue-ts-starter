@@ -196,7 +196,7 @@ export class ThemeUtils {
     .import-wrapper-content .settings-menu .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
     .wrapper-content-panel__privacy-section-up-page-btn, .free-subscribe, .events__info-panel, .info-block,
     .sing-in-wrap .pre-footer, .tariff-notification, .import-history-block, .promo-codes__img-user, .promo-codes__img-partner,
-    .import-result-info .exp-panel, .import-result-info .exp-panel .v-card, .achievements__item,
+    .import-result-info .exp-panel, .import-result-info .exp-panel .v-card, .achievements__item, .tags-list-item__add-btn,
     input.highcharts-range-selector:focus, .inplace-custom-input, .currency-card.v-card {background-color: #252A35 !important}
 
     .dashboard-wrap {background-color: #0a0d19;}
