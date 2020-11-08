@@ -1,0 +1,64 @@
+// Список плиток
+
+%panel {
+  &-list {
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 1000px;
+  }
+
+  &-item {
+    cursor: pointer;
+    margin: 0 12px 12px 0;
+    overflow: hidden;
+    border: 1px solid $sidebar-hr-color;
+    width: calc(50% - 6px);
+    max-width: 492px;
+    min-width: 288px;
+    padding: 12px 16px 16px;
+    border-radius: 8px;
+    min-height: 169px;
+    transition: background-color 0.1s linear;
+
+    &:nth-child(2n) {margin-right: 0}
+
+    &:hover {
+      background-color: rgba($sidebar-blue-color, 0.06);
+      border-color: $sidebar-blue-color;
+    }
+
+    &__header {
+      display: flex;
+      align-items: center;
+      padding-bottom: 12px;
+      border-bottom: 1px solid $sidebar-hr-color;
+      font-size: 14px;
+      line-height: 22px;
+
+      &-description {
+        @extend .ellipsis;
+        margin-right: 12px
+      }
+
+      .v-btn {
+        height: auto;
+        width: auto;
+      }
+    }
+
+    &__body {
+
+      &-info {}
+    }
+
+    &-add {
+      border: 1px solid $sidebar-hr-color !important;
+      width: calc(50% - 6px);
+      max-width: 492px;
+      border-radius: 8px;
+      background: url('../img/portfolio/add.svg') no-repeat center;
+      margin: 0 12px 12px 0;
+      min-height: 169px;
+    }
+  }
+}
