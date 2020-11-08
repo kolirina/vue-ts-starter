@@ -23,6 +23,7 @@ export interface TariffHint {
 
 export type NavBarItem = {
     title: string,
+    name?: string,
     /** routing, для корневых элементов может не заполнен */
     action?: string,
     path?: string,
