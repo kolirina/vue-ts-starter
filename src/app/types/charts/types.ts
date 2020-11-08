@@ -6,6 +6,7 @@ export interface CustomDataPoint extends DataPoint {
     period?: string;
     totalAmount?: string;
     currencySymbol?: string;
+    tickers?: string;
 }
 
 export interface YieldCompareData {
@@ -209,6 +210,7 @@ export enum ChartType {
     BOND_SECTORS_CHART = "bondSectorsChart",
     AGGREGATE_CHART = "aggregatePieChart",
     YIELD_CONTRIBUTORS_CHART = "yieldContributorsChart",
+    TAGS_CHART = "tagsChart",
     WHOLE_PORTFOLIO_SHARES_ALLOCATION_CHART = "wholePortfolioSharesAllocationChart",
     PORTFOLIO_LINE_CHART = "portfolioLineChart",
     PROFIT_LINE_CHART = "profitLineChart",

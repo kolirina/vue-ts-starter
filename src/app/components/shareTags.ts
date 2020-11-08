@@ -35,7 +35,7 @@
  */
 import {Inject} from "typescript-ioc";
 import {namespace} from "vuex-class";
-import {Component, Prop, UI} from "../app/ui";
+import {Component, Prop, UI, Watch} from "../app/ui";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {ClientInfo} from "../services/clientService";
 import {PortfolioService} from "../services/portfolioService";
@@ -123,7 +123,12 @@ export class ShareTags extends UI {
      */
     async created(): Promise<void> {
         await this.loadTagCategories();
-        this.selectedCategory = this.tagCategories[0];
+        this.selectedCategory = this.tagCategories.length ? this.tagCategories[0] : null;
+        this.initSelectedTags();
+    }
+
+    @Watch("portfolio")
+    private onPortfolioChange(): void {
         this.initSelectedTags();
     }
 
@@ -131,6 +136,7 @@ export class ShareTags extends UI {
      * Восстанавливает выбранные тэги из данных портфеля
      */
     private initSelectedTags(): void {
+        this.selectedTags = [];
         const key = `${this.share.shareType}:${this.share.id}`;
         const shareTags = this.data[key];
         if (shareTags) {

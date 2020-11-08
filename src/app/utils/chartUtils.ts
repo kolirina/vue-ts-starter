@@ -23,7 +23,8 @@ import {
 } from "../types/charts/types";
 import {Operation} from "../types/operation";
 import {PortfolioAssetType} from "../types/portfolioAssetType";
-import {BondPortfolioRow, Overview, StockTypePortfolioRow} from "../types/types";
+import {PortfolioTag, Tag, TagCategory} from "../types/tags";
+import {BondPortfolioRow, Overview, Share, StockTypePortfolioRow} from "../types/types";
 import {CommonUtils} from "./commonUtils";
 import {DateFormat, DateUtils} from "./dateUtils";
 
@@ -38,6 +39,7 @@ export class ChartUtils {
         // PROFIT: "<b>{point.period}</b>: {point.profit} {point.currencySymbol} <b>({point.description})</b>"
         PROFIT: "<b>{point.period}</b>: {point.profit} {point.currencySymbol}",
         EVENTS: "<b>{point.name}</b>: {point.y}<br/>{point.description}<br/><b>Всего</b>: {point.totalAmount}",
+        TAGS: "<br/>{point.description}<br/>Прибыль: {point.profit} {point.currencySymbol}<br/><b>Бумаги:</b><br/>{point.tickers}"
     };
     /** Цвета операций */
     static OPERATION_COLORS: { [key: string]: string } = {
@@ -152,7 +154,7 @@ export class ChartUtils {
     }
 
     static doFutureEventsChartData(futureEvents: ShareEvent[]): ColumnChartData {
-        const pointsByType: { [key: string]: CustomDataPoint[]} = {};
+        const pointsByType: { [key: string]: CustomDataPoint[] } = {};
         const reduced: { [key: string]: ShareEvent[] } = {};
         // группируем события в разбивке по периоду (Месяц Год)
         futureEvents
@@ -343,6 +345,80 @@ export class ChartUtils {
                 {name: "Убыток", data: negative, color: this.NEGATIVE_COLOR}
             ]
         };
+    }
+
+    /**
+     * Возвращает набор для графика по тэгам
+     * @param overview данные по портфелю
+     * @param currencySymbol символ валюты
+     * @param portfolioTags символ валюты
+     * @param selectedCategory символ валюты
+     */
+    static doTagsChartData(overview: Overview, currencySymbol: string, portfolioTags: { [key: string]: PortfolioTag[] },
+                           selectedCategory: TagCategory, tagCategories: TagCategory[]): CustomDataPoint[] {
+        const data: CustomDataPoint[] = [];
+        const rows: Array<{ share: Share, currCost: string, profit: string, currency: string }> = [
+            ...overview.stockPortfolio.rows.map(row => {
+                return {share: row.share, currCost: row.currCost, profit: row.profit, currency: currencySymbol};
+            }),
+            ...overview.etfPortfolio.rows.map(row => {
+                return {share: row.share, currCost: row.currCost, profit: row.profit, currency: currencySymbol};
+            }),
+            ...overview.bondPortfolio.rows.map(row => {
+                return {share: row.bond, currCost: row.currCost, profit: row.profit, currency: currencySymbol};
+            }),
+            ...overview.assetPortfolio.rows.map(row => {
+                return {share: row.share, currCost: row.currCost, profit: row.profit, currency: currencySymbol};
+            })
+        ].filter(row => {
+            const shareKey = `${row.share.shareType}:${row.share.id}`;
+            const shareTags = portfolioTags[shareKey];
+            return shareTags.some(category => category.categoryId === selectedCategory.id);
+        });
+        const rowsByTag: { [key: string]: [{ share: Share, currCost: string, profit: string, currency: string }] } = {};
+        const tagsByCategoryIdAndByTagId: { [key: number]: { [key: number]: Tag } } = {};
+        tagCategories.forEach(tagCategory => {
+            const tagsById: { [key: number]: Tag } = {};
+            tagCategory.tags.forEach(tag => tagsById[tag.id] = tag);
+            tagsByCategoryIdAndByTagId[tagCategory.id] = tagsById;
+        });
+        rows.filter(value => value.currCost && !new BigMoney(value.currCost).amount.isZero()).forEach(row => {
+            const shareKey = `${row.share.shareType}:${row.share.id}`;
+            const shareTag = portfolioTags[shareKey].filter(portfolioTag => portfolioTag.categoryId === selectedCategory.id)[0];
+            const tagName = ChartUtils.getTagName(tagsByCategoryIdAndByTagId, shareTag);
+            // @ts-ignore
+            const byTag: [{ share: Share, currCost: string, profit: string, currency: string }] = rowsByTag[tagName] || [];
+            byTag.push(row);
+            rowsByTag[tagName] = byTag;
+        });
+        Object.keys(rowsByTag).forEach(tagName => {
+            const currentRows = rowsByTag[tagName];
+            const currCost = currentRows.map(row => new BigMoney(row.currCost).amount.abs())
+                .reduce((previousValue, currentValue) => previousValue.plus(currentValue), new Decimal("0"))
+                .toDP(2, Decimal.ROUND_HALF_UP);
+            const profit = currentRows.map(row => new BigMoney(row.profit).amount.abs())
+                .reduce((previousValue, currentValue) => previousValue.plus(currentValue), new Decimal("0"))
+                .toDP(2, Decimal.ROUND_HALF_UP);
+            const tickers = currentRows.map(row => row.share.shortname).join(",<br/>");
+            data.push({
+                name: `<b>${tagName}</b>`,
+                tickers,
+                description: `Стоимость: ${Filters.formatNumber(currCost.toString())} ${currencySymbol}`,
+                profit: Filters.formatNumber(profit.toString()),
+                currencySymbol: currencySymbol,
+                y: currCost.toNumber(),
+            });
+        });
+        data.sort((a, b) => b.y - a.y);
+        return data;
+    }
+
+    static getTagName(tagsByCategoryIdAndByTagId: { [key: number]: { [key: number]: Tag } }, shareTag: PortfolioTag): string {
+        const tagsById = tagsByCategoryIdAndByTagId[shareTag.categoryId];
+        if (tagsById) {
+            return tagsById[shareTag.tagId]?.name;
+        }
+        return null;
     }
 
     /**

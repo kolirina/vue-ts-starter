@@ -34,9 +34,9 @@
  * Компонент для отображения ссылки на просмотр информации по акции
  */
 import {Component, Prop, UI} from "../../app/ui";
+import {Tag, TagCategory} from "../../types/tags";
 import {CommonUtils} from "../../utils/commonUtils";
 import {TagItem} from "./tagItem";
-import {Tag, TagCategory} from "../../types/tags";
 
 @Component({
     // language=Vue

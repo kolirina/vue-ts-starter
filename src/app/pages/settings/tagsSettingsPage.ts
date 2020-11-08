@@ -108,6 +108,7 @@ export class TagsSettingsPage extends UI {
     @ShowProgress
     private async deleteTagCategory(categoryId: number): Promise<void> {
         await this.tagsService.deleteTagCategory(categoryId);
+        this.tagsService.resetTagCategoriesCache();
         await this.loadTagCategories();
         this.$snotify.info("Категория успешно удалена");
     }
@@ -130,6 +131,7 @@ export class TagsSettingsPage extends UI {
         const categoryName = await new CreateTagCategoryDialog().show();
         if (categoryName) {
             await this.tagsService.createTagCategory({name: categoryName});
+            this.tagsService.resetTagCategoriesCache();
             await this.loadTagCategories();
         }
     }
