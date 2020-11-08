@@ -47,7 +47,7 @@ import {TagItem} from "./tagItem";
                 <div v-show="categoryEditMode" class="tags-list-item__header-description">
                     <v-text-field label="Название категории" v-model="categoryName" :counter="50" ref="categoryNameInput"
                                   v-validate="'required|max:50'" :error-messages="errors.collect('categoryNameInput')" name="categoryNameInput"
-                                  @keydown.enter="editCategoryName" @keydown.esc="closeEditCategory"></v-text-field>
+                                  @keydown.enter="editCategoryName" @keydown.esc="closeEditCategory" class="small-size"></v-text-field>
                 </div>
                 <div title="Редактировать" @click="editCategory" class="intel-icon icon-edit"></div>
                 <div @click.stop class="margLAuto">
@@ -56,12 +56,17 @@ import {TagItem} from "./tagItem";
             </div>
             <div class="tags-list-item__body">
                 <tag-item v-for="tag in tagCategory.tags" :key="tag.id" :tag="tag" @deleteTag="onDeleteTag"></tag-item>
-                <div @click="showCreateTagField" class="tags-list-item__add-btn">+</div>
-                <v-text-field v-show="createTag" label="Введите новый тэг" v-model="tagName" :counter="50" ref="tagNameInput"
-                              v-validate="'required|max:50'" :error-messages="errors.collect('tagName')" name="tagName"
-                              @keydown.enter="addTag" @keydown.esc="closeAddTag"></v-text-field>
-                <v-btn v-show="createTag" color="primary" @click.native="addTag" :disabled="!isTagValid" class="margR12">Сохранить</v-btn>
-                <v-btn v-show="createTag" @click.native="closeAddTag">Отмена</v-btn>
+                <div @click="showCreateTagField" class="tags__add-btn"></div>
+                <div v-show="createTag" class="field-with-btns w100pc">
+                    <v-text-field label="Введите новый тэг" v-model="tagName" :counter="50" ref="tagNameInput"
+                                  v-validate="'required|max:50'" :error-messages="errors.collect('tagName')" name="tagName"
+                                  @keydown.enter="addTag" @keydown.esc="closeAddTag" class="small-size">
+                    </v-text-field>
+                    <div class="field-with-btns__actions">
+                        <div @click="addTag" :disabled="!isTagValid" class="intel-icon icon-check"></div>
+                        <div @click="closeAddTag" class="intel-icon icon-cancel"></div>
+                    </div>
+                </div>
             </div>
         </div>
     `,

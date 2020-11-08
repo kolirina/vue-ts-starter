@@ -22,21 +22,23 @@ import {CustomDialog} from "../../platform/dialogs/customDialog";
 @Component({
     // language=Vue
     template: `
-        <v-dialog v-model="showed" max-width="400px" closable>
+        <v-dialog v-model="showed" max-width="600px" closable>
             <v-card class="dialog-wrap">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
-
-                <v-card-title class="headline">Добавление категории</v-card-title>
-                <v-card-text>
-                    <v-text-field label="Название категории" v-model="categoryName" :counter="50" ref="input"
-                                  v-validate="'required|max:50'" :error-messages="errors.collect('categoryName')" name="categoryName"
-                                  @keydown.enter="closeDialog"></v-text-field>
-                </v-card-text>
-                <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn color="primary" @click.native="closeDialog">Добавить</v-btn>
-                    <v-btn @click.native="close">Отмена</v-btn>
-                </v-card-actions>
+                <div class="dialog__element-centering maxW275">
+                    <img src="/img/tags/add-category.svg" class="dialog-header__img" alt="">
+                    <v-card-title class="dialog-header-text">Добавление категории</v-card-title>
+                    <v-card-text>
+                        <v-text-field label="Введите название категории" v-model="categoryName" :counter="50" ref="input"
+                                      v-validate="'required|max:50'" :error-messages="errors.collect('categoryName')" name="categoryName"
+                                      @keydown.enter="closeDialog"></v-text-field>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="primary" @click.native="closeDialog">Добавить</v-btn>
+                        <v-btn @click.native="close">Отмена</v-btn>
+                    </v-card-actions>
+                </div>
             </v-card>
         </v-dialog>
     `

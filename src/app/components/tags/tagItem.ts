@@ -24,9 +24,7 @@ import {Tag} from "../../types/tags";
     // language=Vue
     template: `
         <span class="tag-item">
-            <span @click="$emit('select', tag)">
-                {{ tag.name }}
-            </span>
+            <span @click="$emit('select', tag)" class="tag-item__name">{{ tag.name }}</span>
             <span @click="$emit('deleteTag', tag)" class="intel-icon icon-remove"></span>
         </span>
     `

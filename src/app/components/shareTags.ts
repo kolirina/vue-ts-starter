@@ -54,29 +54,40 @@ const MainStore = namespace(StoreType.MAIN);
     template: `
         <v-menu :close-on-content-click="false" v-model="showComponent" offset-y transition="slide-y-transition" max-width="600px" min-width="260px" z-index="300">
             <v-tooltip bottom slot="activator">
-                <v-icon small slot="activator">fas fa-tags</v-icon>
+                <span class="intel-icon icon-tag fs16" slot="activator"></span>
                 <span>Настройте тэги для данного актива</span>
             </v-tooltip>
-            <div>
-                <div>
+            <div class="tags-menu">
+                <div v-if="selectedTags.length" class="tags-menu__selected">
                     <tag-item v-for="tag in selectedTags" :key="tag.id" :tag="tag" @deleteTag="onDeleteSelectedTag"></tag-item>
                 </div>
-                <v-tabs v-if="selectedCategory">
-                    <v-tab v-for="tagCategory in tagCategories" :key="tagCategory.id" @change="onTabSelected(tagCategory)"
-                           :class="{'active': tagCategory.id === selectedCategory.id}" :ripple="false">
-                        {{ tagCategory.name }}
-                    </v-tab>
-                </v-tabs>
-                <span @click="goToTagSettings($event)">S</span>
-                <div v-if="selectedCategory">
+                <div class="tags-menu__tabs">
+                    <v-tabs v-if="selectedCategory" show-arrows>
+                        <v-tab v-for="tagCategory in tagCategories" :key="tagCategory.id" @change="onTabSelected(tagCategory)"
+                               :class="{'active': tagCategory.id === selectedCategory.id}" :ripple="false">
+                            {{ tagCategory.name }}
+                        </v-tab>
+                    </v-tabs>
+                    <span @click="goToTagSettings($event)" class="intel-icon icon-m-portfolio-management"></span>
+                </div>
+
+                <div v-if="selectedCategory" class="tags-list-item__body">
                     <tag-item v-for="tag in selectedCategory.tags" :key="tag.id" :tag="tag" @deleteTag="onDeleteTag" @select="onSelectTag"
                               :class="{'selected': tagSelected(tag)}"></tag-item>
-                    <span @click="showCreateTagField">+</span>
-                    <v-text-field v-show="createTag" label="Введите новый тэг" v-model="tagName" :counter="50" ref="tagNameInput"
-                                  v-validate="'required|max:50'" :error-messages="errors.collect('tagName')" name="tagName"
-                                  @keydown.enter="addTag" @keydown.esc="closeAddTag"></v-text-field>
+                    <div @click="showCreateTagField" class="tags__add-btn"></div>
+                    <div v-show="createTag" class="field-with-btns w100pc">
+                        <v-text-field label="Введите новый тэг" v-model="tagName" :counter="50" ref="tagNameInput"
+                                      v-validate="'required|max:50'" :error-messages="errors.collect('tagName')" name="tagName"
+                                      @keydown.enter="addTag" @keydown.esc="closeAddTag" class="small-size"></v-text-field>
+                        <div class="field-with-btns__actions">
+                            <div @click="addTag" :disabled="!isTagValid" class="intel-icon icon-check"></div>
+                            <div @click="closeAddTag" class="intel-icon icon-cancel"></div>
+                        </div>
+                    </div>
                 </div>
-                <v-btn color="primary" @click.native="saveTagsSettings">Сохранить</v-btn>
+                <div class="marT4 alignR">
+                    <v-btn color="primary" @click.native="saveTagsSettings">Сохранить</v-btn>
+                </div>
             </div>
         </v-menu>
     `,
