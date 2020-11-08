@@ -4,7 +4,7 @@ import {NavBarItem} from "../../types/types";
 @Component({
     // language=Vue
     template: `
-        <div :class="[iconMode ? 'iconMenu-btn' : '']">
+        <div :class="[iconMode ? 'iconMenu-btn' : '']" :title="item.title">
             <template v-if="item.subMenu">
                 <v-menu transition="slide-y-transition" bottom left class="submenu-item-list" content-class="submenu-v-menu" nudge-bottom="47">
                     <v-list-tile slot="activator" :class="[iconMode ? 'intel-icon icon-m-' + item.name : '', subMenuRouteSelected(item) ? 'active-link' : '']">
