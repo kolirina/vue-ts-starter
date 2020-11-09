@@ -50,7 +50,7 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-container fluid>
+        <v-container fluid class="page-wrapper">
             <v-card flat class="header-first-card">
                 <v-card-title class="header-first-card__wrapper-title">
                     <div class="section-title header-first-card__title-text">Управление тэгами</div>

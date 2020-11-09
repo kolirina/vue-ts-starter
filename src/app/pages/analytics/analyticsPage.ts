@@ -218,7 +218,7 @@ const MainStore = namespace(StoreType.MAIN);
                             <chart-export-menu @print="print(ChartType.TAGS_CHART)" @exportTo="exportTo(ChartType.TAGS_CHART, $event)" class="exp-panel-menu"></chart-export-menu>
                         </template>
                         <v-card-text>
-                            <v-tabs v-if="selectedCategory">
+                            <v-tabs v-if="selectedCategory" class="card-tabs">
                                 <v-tab v-for="tagCategory in tagCategories" :key="tagCategory.id" @change="onTabSelected(tagCategory)"
                                        :class="{'active': tagCategory.id === selectedCategory.id}" :ripple="false">
                                     {{ tagCategory.name }}

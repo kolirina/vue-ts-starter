@@ -61,4 +61,12 @@
       min-height: 169px;
     }
   }
+
+  @media only screen and (max-width: $sm-breakpoint) {
+    &-item,
+    &-item-add {
+      width: 100%;
+      margin: 0 0 12px;
+    }
+  }
 }

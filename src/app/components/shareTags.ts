@@ -52,22 +52,27 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-menu :close-on-content-click="false" v-model="showComponent" offset-y transition="slide-y-transition" max-width="600px" min-width="260px" z-index="300">
+        <v-menu :close-on-content-click="false" v-model="showComponent" offset-y transition="slide-y-transition" max-width="600px" min-width="260px" z-index="300"
+            class="tags-menu" content-class="tags-menu">
             <v-tooltip bottom slot="activator">
-                <span class="intel-icon icon-tag fs16" slot="activator"></span>
+                <span class="intel-icon icon-tag fs16 relative" slot="activator">
+                    <span v-if="selectedTags.length" class="tags-counter">{{ selectedTags.length }}</span>
+                </span>
                 <span>Настройте тэги для данного актива</span>
             </v-tooltip>
-            <div class="tags-menu">
+            <div class="tags-menu__content">
                 <div v-if="selectedTags.length" class="tags-menu__selected">
                     <tag-item v-for="tag in selectedTags" :key="tag.id" :tag="tag" @deleteTag="onDeleteSelectedTag"></tag-item>
                 </div>
                 <div class="tags-menu__tabs">
-                    <v-tabs v-if="selectedCategory" show-arrows>
-                        <v-tab v-for="tagCategory in tagCategories" :key="tagCategory.id" @change="onTabSelected(tagCategory)"
-                               :class="{'active': tagCategory.id === selectedCategory.id}" :ripple="false">
-                            {{ tagCategory.name }}
-                        </v-tab>
-                    </v-tabs>
+                    <div style="width: 100%">
+                        <v-tabs v-if="selectedCategory" show-arrows>
+                            <v-tab v-for="tagCategory in tagCategories" :key="tagCategory.id" @change="onTabSelected(tagCategory)"
+                                   :class="{'active': tagCategory.id === selectedCategory.id}" :ripple="false">
+                                {{ tagCategory.name }}
+                            </v-tab>
+                        </v-tabs>
+                    </div>
                     <span @click="goToTagSettings($event)" class="intel-icon icon-m-portfolio-management"></span>
                 </div>
 
@@ -85,7 +90,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </div>
                     </div>
                 </div>
-                <div class="marT4 alignR">
+                <div class="margT4 alignR">
                     <v-btn color="primary" @click.native="saveTagsSettings">Сохранить</v-btn>
                 </div>
             </div>

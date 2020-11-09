@@ -107,7 +107,16 @@
   margin: 0 auto;
   padding: 24px 0;
 
-  .dialog-header__img {margin-bottom: 12px}
+  .dialog-header__img {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 72px;
+    height: 72px;
+    background-color: #F7F9FB;
+    border-radius: 50%;
+    margin-bottom: 12px;
+  }
 
   .dialog-header-text {
     padding: 0;

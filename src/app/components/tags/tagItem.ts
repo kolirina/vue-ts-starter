@@ -23,7 +23,7 @@ import {Tag} from "../../types/tags";
 @Component({
     // language=Vue
     template: `
-        <span class="tag-item">
+        <span :class="['tag-item', 'tag-color-' + tag.categoryId]">
             <span @click="$emit('select', tag)" class="tag-item__name">{{ tag.name }}</span>
             <span @click="$emit('deleteTag', tag)" class="intel-icon icon-remove"></span>
         </span>

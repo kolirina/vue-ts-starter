@@ -82,7 +82,7 @@ export class ThemeUtils {
     .empty-station {background: #2C3040 !important;}
 
     .tariff-description-wrap div:nth-child(even),
-    .theme--light.v-tabs__bar,
+    .theme--light.v-tabs__bar, .tags-menu__content .tags__add-btn,
     .section-content {background-color: #2C3040}
 
     .v-content__wrap,
@@ -102,7 +102,8 @@ export class ThemeUtils {
     .portfolio-rows-filter__button:hover,
     .v-tooltip__content.menu-icons,
     .theme--light.application, .mobile-wrapper-menu,
-    .custom-v-menu .v-menu-content,
+    .custom-v-menu .v-menu-content, .tags-menu__selected,
+    .tags__add-btn:hover,
     .promo-codes__hint {background: #21232F !important}
 
     .active-link, .wrap-list-menu .v-list__tile:hover,
@@ -154,7 +155,7 @@ export class ThemeUtils {
     .info-share-page .info-about-stock__content-value,
     .import-wrapper-header__title,
     .import-wrapper-content .intelinvest-section__description,
-    .providers .item-text,
+    .providers .item-text, .tag-item__name,
     .select-section .v-select__selection,
     .v-menu__content .v-select-list .v-list__tile__title,
     .dialog-default-text, .attachments__allowed-extensions span,
@@ -196,7 +197,8 @@ export class ThemeUtils {
     .import-wrapper-content .settings-menu .v-btn:not(.v-btn--floating):not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline):not(.v-btn--ro),
     .wrapper-content-panel__privacy-section-up-page-btn, .free-subscribe, .events__info-panel, .info-block,
     .sing-in-wrap .pre-footer, .tariff-notification, .import-history-block, .promo-codes__img-user, .promo-codes__img-partner,
-    .import-result-info .exp-panel, .import-result-info .exp-panel .v-card, .achievements__item, .tags-list-item__add-btn,
+    .import-result-info .exp-panel, .import-result-info .exp-panel .v-card, .achievements__item, .tags-menu__content,
+    .tags-menu__tabs .v-tabs__bar, .tags__add-btn, .dialog-header__img,
     input.highcharts-range-selector:focus, .inplace-custom-input, .currency-card.v-card {background-color: #252A35 !important}
 
     .dashboard-wrap {background-color: #0a0d19;}
@@ -283,6 +285,8 @@ export class ThemeUtils {
         color: #fff;
         opacity: 0.5;
     }
+
+    .tags-menu__selected {border: none}
     `;
 
     static setStyles(nightTheme: boolean): void {

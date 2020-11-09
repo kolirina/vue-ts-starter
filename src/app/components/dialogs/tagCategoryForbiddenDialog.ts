@@ -43,7 +43,8 @@ import {CustomDialog} from "../../platform/dialogs/customDialog";
         <v-dialog v-model="showed" max-width="600px" content-class="change-tariff-dialog">
             <v-card class="dialog-wrap">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
-                <div class="dialog__element-centering">
+                <div class="dialog__element-centering maxW370">
+                    <img src="/img/common/well-done.svg" class="dialog-header__img" alt="">
                     <v-card-title class="dialog-header-text">Полный порядок!</v-card-title>
                     <v-card-text>
                         <div class="import-default-text">
