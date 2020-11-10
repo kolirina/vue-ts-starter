@@ -351,12 +351,16 @@ export class ChartUtils {
      * Возвращает набор для графика по тэгам
      * @param overview данные по портфелю
      * @param currencySymbol символ валюты
-     * @param portfolioTags символ валюты
-     * @param selectedCategory символ валюты
+     * @param portfolioTags тэги по бумагам в портфеле
+     * @param selectedCategory выбранная категория
+     * @param tagCategories категории пользователя
      */
     static doTagsChartData(overview: Overview, currencySymbol: string, portfolioTags: { [key: string]: PortfolioTag[] },
                            selectedCategory: TagCategory, tagCategories: TagCategory[]): CustomDataPoint[] {
         const data: CustomDataPoint[] = [];
+        if (!selectedCategory) {
+            return data;
+        }
         const rows: Array<{ share: Share, currCost: string, profit: string, currency: string }> = [
             ...overview.stockPortfolio.rows.map(row => {
                 return {share: row.share, currCost: row.currCost, profit: row.profit, currency: currencySymbol};
@@ -373,7 +377,7 @@ export class ChartUtils {
         ].filter(row => {
             const shareKey = `${row.share.shareType}:${row.share.id}`;
             const shareTags = portfolioTags[shareKey];
-            return shareTags.some(category => category.categoryId === selectedCategory.id);
+            return shareTags && shareTags.some(category => category.categoryId === selectedCategory.id);
         });
         const rowsByTag: { [key: string]: [{ share: Share, currCost: string, profit: string, currency: string }] } = {};
         const tagsByCategoryIdAndByTagId: { [key: number]: { [key: number]: Tag } } = {};
@@ -386,10 +390,12 @@ export class ChartUtils {
             const shareKey = `${row.share.shareType}:${row.share.id}`;
             const shareTag = portfolioTags[shareKey].filter(portfolioTag => portfolioTag.categoryId === selectedCategory.id)[0];
             const tagName = ChartUtils.getTagName(tagsByCategoryIdAndByTagId, shareTag);
-            // @ts-ignore
-            const byTag: [{ share: Share, currCost: string, profit: string, currency: string }] = rowsByTag[tagName] || [];
-            byTag.push(row);
-            rowsByTag[tagName] = byTag;
+            if (tagName) {
+                // @ts-ignore
+                const byTag: [{ share: Share, currCost: string, profit: string, currency: string }] = rowsByTag[tagName] || [];
+                byTag.push(row);
+                rowsByTag[tagName] = byTag;
+            }
         });
         Object.keys(rowsByTag).forEach(tagName => {
             const currentRows = rowsByTag[tagName];
@@ -811,9 +817,10 @@ export class ChartUtils {
      * @param title заголовк графика
      * @param viewCurrency валюта
      * @param tooltipFormat формат тултипа
+     * @param colors набор цветов для диаграммы
      */
     static drawPieChart(container: HTMLElement, chartData: any[], balloonTitle: string, title: string = "", viewCurrency: string = "",
-                        tooltipFormat: PieChartTooltipFormat = PieChartTooltipFormat.COMMON): ChartObject {
+                        tooltipFormat: PieChartTooltipFormat = PieChartTooltipFormat.COMMON, colors: string[] = null): ChartObject {
         if (!container) {
             return null;
         }
@@ -838,7 +845,7 @@ export class ChartUtils {
                 pointFormat: this.PIE_CHART_TOOLTIP_FORMAT[tooltipFormat],
                 valueSuffix: `${viewCurrency ? ` ${Filters.currencySymbolByCurrency(viewCurrency)}` : ""}`
             },
-            colors: ChartUtils.getColors(chartData.length),
+            colors: colors ? colors : ChartUtils.getColors(chartData.length),
             plotOptions: {
                 pie: {
                     allowPointSelect: true,

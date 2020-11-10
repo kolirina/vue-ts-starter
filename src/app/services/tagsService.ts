@@ -33,7 +33,7 @@
 import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {Http} from "../platform/services/http";
-import {NewTagCategoryRequest, NewTagRequest, TagCategory, UpdateTagCategoryRequest, UpdateTagRequest} from "../types/tags";
+import {COLORS, NewTagCategoryRequest, NewTagRequest, TagCategory, UpdateTagCategoryRequest, UpdateTagRequest} from "../types/tags";
 
 @Service("TagsService")
 @Singleton
@@ -60,8 +60,13 @@ export class TagsService {
         this.tagCategories = null;
     }
 
-    async createTagCategory(tagCategory: NewTagCategoryRequest): Promise<number> {
-        return this.http.post<number>(`${this.BASE}/category`, tagCategory);
+    async createTagCategory(tagCategoryName: string): Promise<number> {
+        const color = await this.getNewCategoryColor();
+        const request: NewTagCategoryRequest = {
+            name: tagCategoryName,
+            color: color
+        };
+        return this.http.post<number>(`${this.BASE}/category`, request);
     }
 
     async createTag(newTagRequest: NewTagRequest): Promise<number> {
@@ -82,5 +87,13 @@ export class TagsService {
 
     async deleteTag(tagId: number): Promise<void> {
         return this.http.delete(`${this.BASE}/tag/${tagId}`);
+    }
+
+    /**
+     * Возвращает цвет для новой категории
+     */
+    async getNewCategoryColor(): Promise<string> {
+        const newCategoryIndex = (await this.getTagCategories()).length;
+        return COLORS[newCategoryIndex % 10];
     }
 }

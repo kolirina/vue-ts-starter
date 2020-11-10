@@ -32,6 +32,19 @@
 
 import {ShareType} from "./types";
 
+export const COLORS: { [key: number]: string } = {
+    0: "#84ABEF",
+    1: "#91DA4A",
+    2: "#FF3E70",
+    3: "#B2BFD4",
+    4: "#FF9A51",
+    5: "#4C9F70",
+    6: "#A566E4",
+    7: "#B8B8F3",
+    8: "#63CCCA",
+    9: "#EC5766",
+};
+
 export interface ShareTagsData {
     ticker: string;
     shareId: number;
@@ -42,6 +55,8 @@ export interface ShareTagsData {
 export interface NewTagCategoryRequest {
     /** Название категории */
     name: string;
+    /** Цвет категории */
+    color: string;
 }
 
 export interface NewTagRequest {
@@ -72,6 +87,8 @@ export interface TagCategory {
     id: number;
     /** Название категории */
     name: string;
+    /** Цвет категории */
+    color: string;
     /** Список тэгов */
     tags: Tag[];
 }

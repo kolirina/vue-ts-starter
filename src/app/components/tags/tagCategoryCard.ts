@@ -56,7 +56,7 @@ import {TagItem} from "./tagItem";
             </div>
             <div class="tags-list-item__body">
                 <tag-item v-for="tag in tagCategory.tags" :key="tag.id" :tag="tag" @deleteTag="onDeleteTag"></tag-item>
-                <div @click="showCreateTagField" class="tags__add-btn"></div>
+                <div @click="showCreateTagField" title="Добавить тэг" class="tags__add-btn"></div>
                 <div v-show="createTag" class="field-with-btns w100pc">
                     <v-text-field label="Введите новый тэг" v-model="tagName" :counter="50" ref="tagNameInput"
                                   v-validate="'required|max:50'" :error-messages="errors.collect('tagName')" name="tagName"

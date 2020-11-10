@@ -114,7 +114,7 @@ export class TagsSettingsPage extends UI {
     @ShowProgress
     private async onDeleteTag(tag: Tag): Promise<void> {
         await this.tagsService.deleteTag(tag.id);
-        const tagCategory = this.tagCategories.find(tagCategoryItem => tagCategoryItem.id === tag.id);
+        const tagCategory = this.tagCategories.find(tagCategoryItem => tagCategoryItem.id === tag.categoryId);
         tagCategory.tags = tagCategory.tags.filter(tagItem => tagItem.id !== tag.id);
     }
 
@@ -128,7 +128,7 @@ export class TagsSettingsPage extends UI {
         }
         const categoryName = await new CreateTagCategoryDialog().show();
         if (categoryName) {
-            await this.tagsService.createTagCategory({name: categoryName});
+            await this.tagsService.createTagCategory(categoryName);
             this.tagsService.resetTagCategoriesCache();
             await this.loadTagCategories();
         }
