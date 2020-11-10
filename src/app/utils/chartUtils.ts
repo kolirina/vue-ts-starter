@@ -472,6 +472,64 @@ export class ChartUtils {
         return data;
     }
 
+    static doCurrencyChartData(overview: Overview, currencySymbol: string): CustomDataPoint[] {
+        const data: CustomDataPoint[] = [];
+        const skippedTypes = [PortfolioAssetType.STOCK, PortfolioAssetType.BOND, PortfolioAssetType.ETF, PortfolioAssetType.OTHER];
+        const rows: Array<{ shareName: string, percentShare: string, currCost: string, profit: string, currency: string }> = [
+            ...overview.stockPortfolio.rows.map(row => {
+                return {shareName: row.share.shortname, percentShare: row.percCurrShareInWholePortfolio, currCost: row.currCost, profit: row.profit, currency: row.share.currency};
+            }),
+            ...overview.etfPortfolio.rows.map(row => {
+                return {shareName: row.share.shortname, percentShare: row.percCurrShareInWholePortfolio, currCost: row.currCost, profit: row.profit, currency: row.share.currency};
+            }),
+            ...overview.bondPortfolio.rows.map(row => {
+                return {shareName: row.bond.shortname, percentShare: row.percCurrShareInWholePortfolio, currCost: row.currCost, profit: row.profit, currency: row.bond.currency};
+            }),
+            ...overview.assetPortfolio.rows.map(row => {
+                return {shareName: row.share.shortname, percentShare: row.percCurrShareInWholePortfolio, currCost: row.currCost, profit: row.profit, currency: row.share.currency};
+            }),
+            ...overview.assetRows.filter(row => !skippedTypes.includes(PortfolioAssetType.valueByName(row.type))).map(row => {
+                return {
+                    shareName: PortfolioAssetType.valueByName(row.type)?.description, percentShare: row.percCurrShareInWholePortfolio,
+                    currency: new BigMoney(row.currCost).currency,
+                    currCost: row.currCost,
+                    profit: row.profit
+                };
+            })
+        ];
+        const rowsByCurrency: { [key: string]: [{ shareName: string, percentShare: string, currCost: string, profit: string, currency: string }] } = {};
+        rows.filter(value => value.percentShare && !new Decimal(value.percentShare).isZero()).forEach(row => {
+            const currencyKey = row.currency;
+            // @ts-ignore
+            const byCurrency: [{ shareName: string, percentShare: string, currCost: string, profit: string, currency: string }] = rowsByCurrency[currencyKey] || [];
+            byCurrency.push(row);
+            rowsByCurrency[currencyKey] = byCurrency;
+        });
+        Object.keys(rowsByCurrency).forEach(currency => {
+            const currentRows = rowsByCurrency[currency];
+            const currCost = currentRows.map(row => new BigMoney(row.currCost).amount.abs())
+                .reduce((previousValue, currentValue) => previousValue.plus(currentValue), new Decimal("0"))
+                .toDP(2, Decimal.ROUND_HALF_UP);
+            const profit = currentRows.filter(row => !!row.profit).map(row => new BigMoney(row.profit).amount.abs())
+                .reduce((previousValue, currentValue) => previousValue.plus(currentValue), new Decimal("0"))
+                .toDP(2, Decimal.ROUND_HALF_UP);
+            let tickers = currentRows.filter((value, index) => index < 20).map(row => row.shareName).join(",<br/>");
+            if (currentRows.length - 20 > 0) {
+                tickers = `${tickers}<br/> и еще <b>${currentRows.length - 20}</b> ${Filters.declension(currentRows.length - 20, "актив", "актива", "активов")}`;
+            }
+            data.push({
+                name: `<b>${currency}</b>`,
+                tickers,
+                description: `Стоимость: ${Filters.formatNumber(currCost.toString())} ${currencySymbol}`,
+                profit: Filters.formatNumber(profit.toString()),
+                currencySymbol: currencySymbol,
+                y: currCost.toNumber(),
+            });
+        });
+        data.sort((a, b) => b.y - a.y);
+        return data;
+    }
+
     static doBondPieChartData(overview: Overview): DataPoint[] {
         const data: DataPoint[] = [];
         overview.bondPortfolio.rows.filter(value => new BigMoney(value.currCost).amount.toString() !== "0").forEach(row => {

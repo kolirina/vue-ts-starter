@@ -211,6 +211,7 @@ export enum ChartType {
     AGGREGATE_CHART = "aggregatePieChart",
     YIELD_CONTRIBUTORS_CHART = "yieldContributorsChart",
     TAGS_CHART = "tagsChart",
+    CURRENCY_CHART = "currencyChart",
     WHOLE_PORTFOLIO_SHARES_ALLOCATION_CHART = "wholePortfolioSharesAllocationChart",
     PORTFOLIO_LINE_CHART = "portfolioLineChart",
     PROFIT_LINE_CHART = "profitLineChart",

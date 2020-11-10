@@ -232,6 +232,23 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-card-text>
                     </expanded-panel>
 
+                    <expanded-panel v-if="currencyChartData.length" :value="$uistate.currencyChart" :state="$uistate.CURRENCY_CHART_PANEL" custom-menu class="mt-3">
+                        <template #header>
+                            Распределение активов по валютам
+                            <tooltip>
+                                Диаграмма распределения всех активов по валютам
+                            </tooltip>
+                        </template>
+                        <template #customMenu>
+                            <chart-export-menu @print="print(ChartType.CURRENCY_CHART)" @exportTo="exportTo(ChartType.CURRENCY_CHART, $event)"
+                                               class="exp-panel-menu"></chart-export-menu>
+                        </template>
+                        <v-card-text>
+                            <pie-chart v-if="currencyChartData.length" :ref="ChartType.CURRENCY_CHART" :data="currencyChartData" :view-currency="viewCurrency"
+                                       balloon-title="Распределение активов по валютам" tooltip-format="TAGS" v-tariff-expired-hint></pie-chart>
+                        </v-card-text>
+                    </expanded-panel>
+
                     <expanded-panel v-show="showInfoPanel && false" :value="$uistate.analyticsInfoPanel" :withMenu="false" :state="$uistate.ANALYTICS_INFO_PANEL" class="mt-3">
                         <template #header>Информация об ИИС</template>
 
@@ -294,6 +311,7 @@ export class AnalyticsPage extends PortfolioBasedPage {
         profitMonthChart: ColumnChart,
         profitYearChart: ColumnChart,
         tagsChart: PieChart,
+        currencyChart: PieChart,
     };
 
     @MainStore.Getter
@@ -336,6 +354,8 @@ export class AnalyticsPage extends PortfolioBasedPage {
     private wholePortfolioSharesAllocationChartData: CustomDataPoint[] = [];
     /** Данные для диаграммы по тэгам */
     private tagsChartData: CustomDataPoint[] = [];
+    /** Данные для диаграммы по валютам */
+    private currencyChartData: CustomDataPoint[] = [];
     /** Данные графика портфеля */
     private portfolioLineChartData: PortfolioLineChartData = null;
     /** События для графика прибыли портфеля */
@@ -385,6 +405,7 @@ export class AnalyticsPage extends PortfolioBasedPage {
         this.doYieldContributorsChartData();
         this.doWholePortfolioSharesAllocationChartData();
         this.doTagsChartData();
+        this.doCurrencyChartData();
     }
 
     /**
@@ -468,6 +489,10 @@ export class AnalyticsPage extends PortfolioBasedPage {
 
     private doTagsChartData(): void {
         this.tagsChartData = ChartUtils.doTagsChartData(this.portfolio.overview, this.viewCurrency, this.portfolio.portfolioParams.tags, this.selectedCategory, this.tagCategories);
+    }
+
+    private doCurrencyChartData(): void {
+        this.currencyChartData = ChartUtils.doCurrencyChartData(this.portfolio.overview, this.viewCurrency);
     }
 
     private doPortfolioProfitMonthData(): ColumnChartData {
