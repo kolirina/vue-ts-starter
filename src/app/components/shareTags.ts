@@ -53,9 +53,9 @@ const MainStore = namespace(StoreType.MAIN);
     // language=Vue
     template: `
         <v-menu :close-on-content-click="false" v-model="showComponent" offset-y transition="slide-y-transition" max-width="600px" min-width="260px" z-index="300"
-            class="tags-menu" content-class="tags-menu">
+                class="tags-menu" content-class="tags-menu">
             <v-tooltip bottom slot="activator">
-                <span class="intel-icon icon-tag fs16 relative" slot="activator">
+                <span class="intel-icon icon-tag fs16 relative" slot="activator" @click="showTagsPanel">
                     <span v-if="selectedTags.length" class="tags-counter">{{ selectedTags.length }}</span>
                 </span>
                 <span>Настройте тэги для данного актива</span>
@@ -73,13 +73,13 @@ const MainStore = namespace(StoreType.MAIN);
                             </v-tab>
                         </v-tabs>
                     </div>
-                    <span @click="goToTagSettings($event)" class="intel-icon icon-m-portfolio-management"></span>
+                    <span @click="goToTagSettings($event)" title="Настройка категорий" class="intel-icon icon-m-portfolio-management"></span>
                 </div>
 
                 <div v-if="selectedCategory" class="tags-list-item__body">
                     <tag-item v-for="tag in selectedCategory.tags" :key="tag.id" :tag="tag" @deleteTag="onDeleteTag" @select="onSelectTag"
                               :class="{'selected': tagSelected(tag)}"></tag-item>
-                    <div @click="showCreateTagField" class="tags__add-btn"></div>
+                    <div @click="showCreateTagField" class="tags__add-btn" title="Добавить тэг"></div>
                     <div v-show="createTag" class="field-with-btns w100pc">
                         <v-text-field label="Введите новый тэг" v-model="tagName" :counter="50" ref="tagNameInput"
                                       v-validate="'required|max:50'" :error-messages="errors.collect('tagName')" name="tagName"
@@ -180,6 +180,20 @@ export class ShareTags extends UI {
     @ShowProgress
     private async loadTagCategories(): Promise<void> {
         this.tagCategories = await this.tagsService.getTagCategories();
+    }
+
+    /**
+     * Инициализирует выбранные тэги при открытии панели
+     */
+    private showTagsPanel(): void {
+        this.initSelectedTags();
+    }
+
+    @Watch("showComponent")
+    private onShowComponentChange(): void {
+        if (!this.showComponent) {
+            this.initSelectedTags();
+        }
     }
 
     /**

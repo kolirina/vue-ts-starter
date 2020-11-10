@@ -45,6 +45,27 @@ export const COLORS: { [key: number]: string } = {
     9: "#EC5766",
 };
 
+export const DEFAULT_TAG_CATEGORY_NAME = "Страны";
+
+export const DEFAULT_TAGS: NewTagRequest[] = [
+    {
+        categoryId: null,
+        name: "Россия"
+    },
+    {
+        categoryId: null,
+        name: "Европа"
+    },
+    {
+        categoryId: null,
+        name: "США"
+    },
+    {
+        categoryId: null,
+        name: "Китай"
+    },
+];
+
 export interface ShareTagsData {
     ticker: string;
     shareId: number;

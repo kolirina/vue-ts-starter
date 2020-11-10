@@ -33,7 +33,7 @@
 import {Inject, Singleton} from "typescript-ioc";
 import {Service} from "../platform/decorators/service";
 import {Http} from "../platform/services/http";
-import {COLORS, NewTagCategoryRequest, NewTagRequest, TagCategory, UpdateTagCategoryRequest, UpdateTagRequest} from "../types/tags";
+import {COLORS, DEFAULT_TAG_CATEGORY_NAME, DEFAULT_TAGS, NewTagCategoryRequest, NewTagRequest, TagCategory, UpdateTagCategoryRequest, UpdateTagRequest} from "../types/tags";
 
 @Service("TagsService")
 @Singleton
@@ -87,6 +87,15 @@ export class TagsService {
 
     async deleteTag(tagId: number): Promise<void> {
         return this.http.delete(`${this.BASE}/tag/${tagId}`);
+    }
+
+    async createDefaults(): Promise<void> {
+        const categoryId = await this.createTagCategory(DEFAULT_TAG_CATEGORY_NAME);
+        for (const tag of DEFAULT_TAGS) {
+            tag.categoryId = categoryId;
+            await this.createTag(tag);
+        }
+        this.resetTagCategoriesCache();
     }
 
     /**

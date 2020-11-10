@@ -43,6 +43,7 @@ import {ClientInfo} from "../../services/clientService";
 import {TagsService} from "../../services/tagsService";
 import {Tag, TagCategory} from "../../types/tags";
 import {Tariff} from "../../types/tariff";
+import {Portfolio} from "../../types/types";
 import {StoreType} from "../../vuex/storeType";
 
 const MainStore = namespace(StoreType.MAIN);
@@ -73,6 +74,8 @@ export class TagsSettingsPage extends UI {
     private tagsService: TagsService;
     @MainStore.Getter
     private clientInfo: ClientInfo;
+    @MainStore.Getter
+    protected portfolio: Portfolio;
     /** Категории тэгов пользователя */
     private tagCategories: TagCategory[] = [];
 
@@ -81,7 +84,17 @@ export class TagsSettingsPage extends UI {
      * @inheritDoc
      */
     async created(): Promise<void> {
+        await this.createDefaultTagCategories();
         await this.loadTagCategories();
+    }
+
+    /**
+     * Создает новые категории
+     */
+    private async createDefaultTagCategories(): Promise<void> {
+        if (this.portfolio.overview.totalTradesCount && (await this.tagsService.getTagCategories()).length === 0) {
+            await this.tagsService.createDefaults();
+        }
     }
 
     /**

@@ -88,7 +88,7 @@ const MainStore = namespace(StoreType.MAIN);
                         <stock-link v-if="props.item.share && props.item.assetType === 'STOCK'" :ticker="props.item.share.ticker"></stock-link>
                         <asset-link v-if="props.item.share && props.item.assetType === 'ASSET'" :ticker="String(props.item.share.id)">{{ props.item.share.ticker }}</asset-link>
                     </td>
-                    <td>
+                    <td v-if="tableHeadersState.tags" class="text-xs-center">
                         <share-tags v-if="props.item.share" :share="props.item.share" :data="portfolio.portfolioParams.tags"></share-tags>
                     </td>
                     <td v-if="tableHeadersState.quantity" class="text-xs-right ii-number-cell">{{props.item.quantity | quantity(!!props.item.share) }}</td>
