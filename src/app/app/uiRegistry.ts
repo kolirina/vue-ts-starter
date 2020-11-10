@@ -33,6 +33,7 @@ import {FileLink} from "../components/file-upload/fileLink";
 import {IINumberField} from "../components/iiNumberField";
 import {InplaceInput} from "../components/inplaceInput";
 import {ShareSearchComponent} from "../components/shareSearchComponent";
+import {ShareTags} from "../components/shareTags";
 import {StockLink} from "../components/stockLink";
 import {Tooltip} from "../components/tooltip";
 import {VideoLink} from "../components/videoLink";
@@ -47,7 +48,6 @@ import {ruLocale} from "../platform/locale/veeValidateMessages";
 import {ChartUtils} from "../utils/chartUtils";
 import {UiStateHelper} from "../utils/uiStateHelper";
 import {UI} from "./ui";
-import {ShareTags} from "../components/shareTags";
 
 exporting(Highcharts);
 exporting(Highstock);
