@@ -28,10 +28,10 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <span :class="['tag-item', 'tag-color-' + tag.categoryId]">
+        <div class="tag-item" :style="getRgbaBg()">
             <span @click="selectTag" class="tag-item__name">{{ tag.name }}</span>
-            <span v-if="allowActions" @click="$emit('deleteTag', tag)" class="intel-icon icon-remove"></span>
-        </span>
+            <span v-if="allowActions" @click="$emit('deleteTag', tag)" class="intel-icon icon-remove" :style="'color:' + tag.color"></span>
+        </div>
     `
 })
 export class TagItem extends UI {
@@ -51,5 +51,13 @@ export class TagItem extends UI {
 
     private get allowActions(): boolean {
         return !this.portfolio.portfolioParams.combinedFlag;
+    }
+
+    /** Возвращает цвет фона с прозрачностью */
+    private getRgbaBg(): string {
+        const r = parseInt(this.tag.color.slice(1, 3), 16);
+        const g = parseInt(this.tag.color.slice(3, 5), 16);
+        const b = parseInt(this.tag.color.slice(5, 7), 16);
+        return `background-color: rgba(${r}, ${g}, ${b}, 0.2)`;
     }
 }

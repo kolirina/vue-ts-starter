@@ -76,7 +76,7 @@
 
     .icon-remove {
       cursor: pointer;
-      color: rgba($main-color-1, 0.2);
+      color: $main-color-1;
       font-size: 8px;
       margin-left: 4px;
     }
@@ -108,15 +108,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  left: 8px;
-  height: 12px;
-  min-width: 12px;
-  border-radius: 6px;
+  top: -3px;
+  left: 13px;
+  height: 16px;
+  min-width: 16px;
+  border-radius: 8px;
   font-size: 9px;
   line-height: 1.5;
   color: #fff;
   background-color: $table--num--red-color;
   padding: 0 2px;
+  border: 2px solid #fff;
 }
 
 $tag-colors: #84ABEF, #91DA4A, #FF3E70, #B2BFD4, #FF9A51, #4C9F70, #A566E4, #B8B8F3, #63CCCA, #EC5766;
