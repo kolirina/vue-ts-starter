@@ -161,36 +161,36 @@ export class AppFrame extends UI {
             this.loggedIn = true;
         }
         this.mainSection = [
-            {title: "Инвестотека", action: "investoteka"},
-            {title: "Портфель", action: "portfolio"},
-            {title: "Аналитика", action: "adviser"},
-            {title: "Сделки", action: "trades"},
+            {title: "Инвестотека", action: "investoteka", name: "investoteka"},
+            {title: "Портфель", action: "portfolio", name: "portfolio"},
+            {title: "Аналитика", action: "adviser", name: "adviser"},
+            {title: "Сделки", action: "trades", name: "trades"},
             {
-                title: "Инструменты", subMenu: [
-                    {title: "Начисления", action: "calculations"},
-                    {title: "Составной портфель", action: "combined-portfolio", active: !DateUtils.parseDate(this.clientInfo?.user.regDate).isBefore(this.NEW_USERS_DATE)},
-                    {title: "События", action: "events"},
-                    {title: "Уведомления", action: "notifications"}
+                title: "Инструменты", name: "tools", subMenu: [
+                    {title: "Начисления", action: "calculations", name: "calculations"},
+                    {title: "Составной портфель", action: "combined-portfolio", active: !DateUtils.parseDate(this.clientInfo?.user.regDate).isBefore(this.NEW_USERS_DATE), name: "combined-portfolio"},
+                    {title: "События", action: "events", name: "events"},
+                    {title: "Уведомления", action: "notifications", name: "notifications"}
                 ]
             },
             {
-                title: "Рынок", subMenu: [
-                    {title: "Котировки", path: "/quotes"},
-                    {title: "Поиск бумаги", path: "/share-info"},
+                title: "Рынок", name: "market", subMenu: [
+                    {title: "Котировки", path: "/quotes", name: "quotes"},
+                    {title: "Поиск бумаги", path: "/share-info", name: "share-info"},
                 ]
             },
             {
-                title: "Настройки", action: "settings", subMenu: [
-                    {title: "Управление портфелями", action: "portfolio-management"},
-                    {title: "Управление тэгами", action: "tags"},
-                    {title: "Профиль", action: "profile"},
-                    {title: "Импорт сделок", action: "import"},
-                    {title: "Экспорт сделок", action: "export"},
-                    {title: "Тарифы", action: "tariffs"},
-                    {title: "Партнерская программа", action: "promo-codes"},
+                title: "Настройки", action: "settings", name: "settings", subMenu: [
+                    {title: "Управление портфелями", action: "portfolio-management", name: "portfolio-management"},
+                    {title: "Управление тэгами", action: "tags", name: "tags"},
+                    {title: "Профиль", action: "profile", name: "profile"},
+                    {title: "Импорт сделок", action: "import", name: "import"},
+                    {title: "Экспорт сделок", action: "export", name: "export"},
+                    {title: "Тарифы", action: "tariffs", name: "tariffs"},
+                    {title: "Партнерская программа", action: "promo-codes", name: "promo-codes"},
                 ]
             },
-            {title: "Помощь", action: "help"}
+            {title: "Помощь", action: "help", name: "help"}
         ];
     }
 
