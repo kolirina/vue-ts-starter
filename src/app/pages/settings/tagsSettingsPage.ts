@@ -138,7 +138,7 @@ export class TagsSettingsPage extends UI {
     private async onCreateTag(tagCreateEvent: { categoryId: number, tagName: string }): Promise<void> {
         const tagId = await this.tagsService.createTag({categoryId: tagCreateEvent.categoryId, name: tagCreateEvent.tagName});
         const tagCategory = this.tagCategories.find(tagCategoryItem => tagCategoryItem.id === tagCreateEvent.categoryId);
-        tagCategory.tags.push({id: tagId, name: tagCreateEvent.tagName, categoryId: tagCreateEvent.categoryId});
+        tagCategory.tags.push({id: tagId, name: tagCreateEvent.tagName, categoryId: tagCreateEvent.categoryId, color: tagCategory.color});
     }
 
     /**

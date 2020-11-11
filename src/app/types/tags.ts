@@ -119,6 +119,8 @@ export interface Tag {
     id: number;
     /** Название тэга */
     name: string;
+    /** Цвет категории */
+    color: string;
     /** Идентификатор родительской категории */
     categoryId: number;
 }

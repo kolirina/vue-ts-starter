@@ -227,7 +227,9 @@ const MainStore = namespace(StoreType.MAIN);
                             <pie-chart v-if="tagsChartData.length" :ref="ChartType.TAGS_CHART" :data="tagsChartData" :view-currency="viewCurrency"
                                        balloon-title="Распределение активов по тэгам" tooltip-format="TAGS" v-tariff-expired-hint></pie-chart>
                             <div class="pie-chart-wrapper" v-else>
-                                <span>Нет назначенных тэгов по данной категории</span>
+                                <span>
+                                    Нет назначенных тэгов по данной категории
+                                </span>
                             </div>
                         </v-card-text>
                     </expanded-panel>

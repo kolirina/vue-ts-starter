@@ -283,7 +283,7 @@ export class ShareTags extends UI {
         }
         const tagId = await this.tagsService.createTag({categoryId: this.selectedCategory.id, name: this.tagName});
         const tagCategory = this.tagCategories.find(tagCategoryItem => tagCategoryItem.id === this.selectedCategory.id);
-        const newTag: Tag = {id: tagId, name: this.tagName, categoryId: this.selectedCategory.id};
+        const newTag: Tag = {id: tagId, name: this.tagName, categoryId: this.selectedCategory.id, color: tagCategory.color};
         tagCategory.tags.push(newTag);
         this.onSelectTag(newTag);
         this.closeAddTag();
