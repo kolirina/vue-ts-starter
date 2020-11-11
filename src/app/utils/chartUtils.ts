@@ -21,6 +21,7 @@ import {
     SectorChartData,
     SimpleChartData
 } from "../types/charts/types";
+import {COUNTRY_BY_CODE} from "../types/country";
 import {Operation} from "../types/operation";
 import {PortfolioAssetType} from "../types/portfolioAssetType";
 import {PortfolioTag, Tag, TagCategory} from "../types/tags";
@@ -519,6 +520,56 @@ export class ChartUtils {
             }
             data.push({
                 name: `<b>${currency}</b>`,
+                tickers,
+                description: `Стоимость: ${Filters.formatNumber(currCost.toString())} ${currencySymbol}`,
+                profit: Filters.formatNumber(profit.toString()),
+                currencySymbol: currencySymbol,
+                y: currCost.toNumber(),
+            });
+        });
+        data.sort((a, b) => b.y - a.y);
+        return data;
+    }
+
+    static doCountryChartData(overview: Overview, currencySymbol: string): CustomDataPoint[] {
+        const data: CustomDataPoint[] = [];
+        const skippedTypes = [PortfolioAssetType.STOCK, PortfolioAssetType.BOND, PortfolioAssetType.ETF, PortfolioAssetType.OTHER];
+        const rows: Array<{ share: Share, percentShare: string, currCost: string, profit: string, currency: string }> = [
+            ...overview.stockPortfolio.rows.map(row => {
+                return {share: row.share, percentShare: row.percCurrShareInWholePortfolio, currCost: row.currCost, profit: row.profit, currency: row.share.currency};
+            }),
+            ...overview.etfPortfolio.rows.map(row => {
+                return {share: row.share, percentShare: row.percCurrShareInWholePortfolio, currCost: row.currCost, profit: row.profit, currency: row.share.currency};
+            }),
+            ...overview.bondPortfolio.rows.map(row => {
+                return {share: row.share, percentShare: row.percCurrShareInWholePortfolio, currCost: row.currCost, profit: row.profit, currency: row.bond.currency};
+            }),
+            ...overview.assetPortfolio.rows.map(row => {
+                return {share: row.share, percentShare: row.percCurrShareInWholePortfolio, currCost: row.currCost, profit: row.profit, currency: row.share.currency};
+            })
+        ];
+        const rowsByCountry: { [key: string]: [{ share: Share, percentShare: string, currCost: string, profit: string, currency: string }] } = {};
+        rows.filter(value => value.percentShare && !new Decimal(value.percentShare).isZero()).forEach(row => {
+            const countryKey = COUNTRY_BY_CODE[row.share.isin?.substring(0, 2)] || "Прочие";
+            // @ts-ignore
+            const byCountry: [{ share: Share, percentShare: string, currCost: string, profit: string, currency: string }] = rowsByCountry[countryKey] || [];
+            byCountry.push(row);
+            rowsByCountry[countryKey] = byCountry;
+        });
+        Object.keys(rowsByCountry).forEach(country => {
+            const currentRows = rowsByCountry[country];
+            const currCost = currentRows.map(row => new BigMoney(row.currCost).amount.abs())
+                .reduce((previousValue, currentValue) => previousValue.plus(currentValue), new Decimal("0"))
+                .toDP(2, Decimal.ROUND_HALF_UP);
+            const profit = currentRows.filter(row => !!row.profit).map(row => new BigMoney(row.profit).amount.abs())
+                .reduce((previousValue, currentValue) => previousValue.plus(currentValue), new Decimal("0"))
+                .toDP(2, Decimal.ROUND_HALF_UP);
+            let tickers = currentRows.filter((value, index) => index < 20).map(row => row.share.shortname).join(",<br/>");
+            if (currentRows.length - 20 > 0) {
+                tickers = `${tickers}<br/> и еще <b>${currentRows.length - 20}</b> ${Filters.declension(currentRows.length - 20, "актив", "актива", "активов")}`;
+            }
+            data.push({
+                name: `<b>${country}</b>`,
                 tickers,
                 description: `Стоимость: ${Filters.formatNumber(currCost.toString())} ${currencySymbol}`,
                 profit: Filters.formatNumber(profit.toString()),

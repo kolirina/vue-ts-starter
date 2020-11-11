@@ -236,7 +236,7 @@ const MainStore = namespace(StoreType.MAIN);
                         <template #header>
                             Распределение активов по валютам
                             <tooltip>
-                                Диаграмма распределения всех активов по валютам
+                                Позволяет оценить диверсификацию портфеля по валютам
                             </tooltip>
                         </template>
                         <template #customMenu>
@@ -246,6 +246,23 @@ const MainStore = namespace(StoreType.MAIN);
                         <v-card-text>
                             <pie-chart v-if="currencyChartData.length" :ref="ChartType.CURRENCY_CHART" :data="currencyChartData" :view-currency="viewCurrency"
                                        balloon-title="Распределение активов по валютам" tooltip-format="TAGS" v-tariff-expired-hint></pie-chart>
+                        </v-card-text>
+                    </expanded-panel>
+
+                    <expanded-panel v-if="countryChartData.length" :value="$uistate.countryChart" :state="$uistate.COUNTRY_CHART_PANEL" custom-menu class="mt-3">
+                        <template #header>
+                            Распределение активов по странам
+                            <tooltip>
+                                Позволяет оценить диверсификацию портфеля по странам
+                            </tooltip>
+                        </template>
+                        <template #customMenu>
+                            <chart-export-menu @print="print(ChartType.COUNTRY_CHART)" @exportTo="exportTo(ChartType.COUNTRY_CHART, $event)"
+                                               class="exp-panel-menu"></chart-export-menu>
+                        </template>
+                        <v-card-text>
+                            <pie-chart v-if="countryChartData.length" :ref="ChartType.COUNTRY_CHART" :data="countryChartData" :view-currency="viewCurrency"
+                                       balloon-title="Распределение активов по странам" tooltip-format="TAGS" v-tariff-expired-hint></pie-chart>
                         </v-card-text>
                     </expanded-panel>
 
@@ -312,6 +329,7 @@ export class AnalyticsPage extends PortfolioBasedPage {
         profitYearChart: ColumnChart,
         tagsChart: PieChart,
         currencyChart: PieChart,
+        [ChartType.COUNTRY_CHART]: PieChart,
     };
 
     @MainStore.Getter
@@ -356,6 +374,8 @@ export class AnalyticsPage extends PortfolioBasedPage {
     private tagsChartData: CustomDataPoint[] = [];
     /** Данные для диаграммы по валютам */
     private currencyChartData: CustomDataPoint[] = [];
+    /** Данные для диаграммы по Странам */
+    private countryChartData: CustomDataPoint[] = [];
     /** Данные графика портфеля */
     private portfolioLineChartData: PortfolioLineChartData = null;
     /** События для графика прибыли портфеля */
@@ -406,6 +426,7 @@ export class AnalyticsPage extends PortfolioBasedPage {
         this.doWholePortfolioSharesAllocationChartData();
         this.doTagsChartData();
         this.doCurrencyChartData();
+        this.doCountryChartData();
     }
 
     /**
@@ -493,6 +514,10 @@ export class AnalyticsPage extends PortfolioBasedPage {
 
     private doCurrencyChartData(): void {
         this.currencyChartData = ChartUtils.doCurrencyChartData(this.portfolio.overview, this.viewCurrency);
+    }
+
+    private doCountryChartData(): void {
+        this.countryChartData = ChartUtils.doCountryChartData(this.portfolio.overview, this.viewCurrency);
     }
 
     private doPortfolioProfitMonthData(): ColumnChartData {

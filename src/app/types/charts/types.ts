@@ -212,6 +212,7 @@ export enum ChartType {
     YIELD_CONTRIBUTORS_CHART = "yieldContributorsChart",
     TAGS_CHART = "tagsChart",
     CURRENCY_CHART = "currencyChart",
+    COUNTRY_CHART = "countryChart",
     WHOLE_PORTFOLIO_SHARES_ALLOCATION_CHART = "wholePortfolioSharesAllocationChart",
     PORTFOLIO_LINE_CHART = "portfolioLineChart",
     PROFIT_LINE_CHART = "profitLineChart",

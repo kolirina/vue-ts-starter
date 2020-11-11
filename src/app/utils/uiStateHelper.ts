@@ -21,6 +21,7 @@ export class UiStateHelper {
     static readonly YIELD_CONTRIBUTORS_CHART_PANEL = "yieldContributorsChartPanel";
     static readonly TAGS_CHART_PANEL = "tagsChartPanel";
     static readonly CURRENCY_CHART_PANEL = "currencyChartPanel";
+    static readonly COUNTRY_CHART_PANEL = "countryChartPanel";
     static readonly WHOLE_PORTFOLIO_SHARES_ALLOCATION_CHART_PANEL = "wholePortfolioSharesAllocationChartChartPanel";
     static readonly SECTORS_PANEL = "sectorsPanel";
     static readonly BOND_SECTORS_PANEL = "bondSectorsPanel";
@@ -246,6 +247,14 @@ export class UiStateHelper {
 
     static get currencyChart(): number[] {
         return [localStorage.get(UiStateHelper.CURRENCY_CHART_PANEL, 0)];
+    }
+
+    static set countryChart(value: number[]) {
+        localStorage.set(UiStateHelper.COUNTRY_CHART_PANEL, value);
+    }
+
+    static get countryChart(): number[] {
+        return [localStorage.get(UiStateHelper.COUNTRY_CHART_PANEL, 0)];
     }
 
     static set wholePortfolioSharesAllocationChart(value: number[]) {
