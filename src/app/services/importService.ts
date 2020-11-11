@@ -86,7 +86,7 @@ export class DealsImportProvider extends (EnumType as IStaticEnum<DealsImportPro
 
     static readonly SBERBANK = new DealsImportProvider("SBERBANK", "Сбербанк", 400, [XLS, XLSX, HTML, HTM]);
     static readonly TINKOFF = new DealsImportProvider("TINKOFF", "Тинькофф", 458, [XLS, XLSX]);
-    static readonly VTB24 = new DealsImportProvider("VTB24", "ВТБ 24", 103, [XLS, XLSX]);
+    static readonly VTB24 = new DealsImportProvider("VTB24", "ВТБ", 103, [XLS, XLSX]);
     static readonly PSBANK = new DealsImportProvider("PSBANK", "ПромСвязьБанк", 337, [XLS, XLSX]);
     static readonly OTKRYTIE = new DealsImportProvider("OTKRYTIE", "Открытие", 304, [XML]);
     static readonly BCS = new DealsImportProvider("BCS", "БКС", 193, [XLS, XLSX]);
@@ -102,7 +102,7 @@ export class DealsImportProvider extends (EnumType as IStaticEnum<DealsImportPro
     static readonly ITINVEST = new DealsImportProvider("ITINVEST", "ITIcapital", 15, [CSV]);
     static readonly QUIK = new DealsImportProvider("QUIK", "QUIK", -2, [XLS, XLSX, HTML, HTM]);
     static readonly BCS_CYPRUS = new DealsImportProvider("BCS_CYPRUS", "BCScyprus", 193, [XLS, XLSX]);
-    static readonly INTELINVEST = new DealsImportProvider("INTELINVEST", "Intelinvest", -1, [CSV]);
+    static readonly INTELINVEST = new DealsImportProvider("INTELINVEST", "Формат Intelinvest", -1, [CSV]);
 
     private constructor(public code: string, public description: string, public id: number, public allowedExtensions: string[]) {
         super();

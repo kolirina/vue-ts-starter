@@ -161,10 +161,10 @@ export class AppFrame extends UI {
             this.loggedIn = true;
         }
         this.mainSection = [
-            {title: "Инвестотека", action: "investoteka", name: "investoteka"},
             {title: "Портфель", action: "portfolio", name: "portfolio"},
             {title: "Аналитика", action: "adviser", name: "adviser"},
             {title: "Сделки", action: "trades", name: "trades"},
+            {title: "Инвестотека", action: "investoteka", name: "investoteka"},
             {
                 title: "Инструменты", name: "tools", subMenu: [
                     {title: "Начисления", action: "calculations", name: "calculations"},

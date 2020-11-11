@@ -8,6 +8,7 @@ import {PortfolioAccountType, PortfolioParams, PortfolioService} from "../servic
 import {SystemPropertiesService} from "../services/systemPropertiesService";
 import {CurrencyUnit} from "../types/currency";
 import {StoreKeys} from "../types/storeKeys";
+import {PortfolioTag} from "../types/tags";
 import {Tariff} from "../types/tariff";
 import {CombinedInfoRequest, CombinedPortfolioParams, MapType, Overview, Portfolio, TariffHint} from "../types/types";
 import {DateUtils} from "../utils/dateUtils";
@@ -48,7 +49,8 @@ export class StateHolder {
         viewCurrency: CurrencyUnit.RUB.code,
         access: 0,
         combinedFlag: true,
-        combinedIds: []
+        combinedIds: [],
+        tags: {},
     };
     /** Координаты подсказки об истечении тарифа */
     tariffExpiredHintCoords: TariffHint = {
@@ -107,6 +109,12 @@ const Mutations = {
     [MutationType.UPDATE_COMBINED_PORTFOLIO](state: StateHolder, viewCurrency: string): void {
         state.combinedPortfolioParams.combinedIds = state.clientInfo.user.portfolios.filter(value => value.combined).map(value => value.id);
         state.combinedPortfolioParams.viewCurrency = viewCurrency;
+        const tags: { [key: string]: PortfolioTag[] } = {};
+        // заполняем тэги на основе составляющих портфелей, перезатирая уже существующие
+        state.clientInfo.user.portfolios.filter(value => value.combined).forEach(portfolio => {
+            Object.keys(portfolio.tags).forEach(shareKey => tags[shareKey] = portfolio.tags[shareKey]);
+        });
+        state.combinedPortfolioParams.tags = tags;
         const portfolioParams = localStorage.get<CombinedPortfolioParams>(StoreKeys.COMBINED_PORTFOLIO_PARAMS_KEY, {});
         localStorage.set<CombinedPortfolioParams>(StoreKeys.COMBINED_PORTFOLIO_PARAMS_KEY, {
             ids: state.combinedPortfolioParams.combinedIds,

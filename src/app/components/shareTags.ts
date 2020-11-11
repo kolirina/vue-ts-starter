@@ -90,7 +90,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </div>
                     </div>
                 </div>
-                <div class="margT4 alignR">
+                <div v-if="allowActions" class="margT4 alignR">
                     <v-btn color="primary" @click.native="saveTagsSettings">Сохранить</v-btn>
                 </div>
             </div>
@@ -108,7 +108,7 @@ export class ShareTags extends UI {
     private share: Share;
 
     @Prop({type: Object, required: true})
-    private data: { [key: string]: PortfolioTag[] };
+    private portfolioTags: { [key: string]: PortfolioTag[] };
 
     @MainStore.Getter
     private portfolio: Portfolio;
@@ -154,7 +154,7 @@ export class ShareTags extends UI {
     private initSelectedTags(): void {
         this.selectedTags = [];
         const key = `${this.share.shareType}:${this.share.id}`;
-        const shareTags = this.data[key];
+        const shareTags = this.portfolioTags[key];
         if (shareTags) {
             const tagsByCategoryIdAndByTagId: { [key: number]: { [key: number]: Tag } } = {};
             this.tagCategories.forEach(tagCategory => {
@@ -333,9 +333,13 @@ export class ShareTags extends UI {
      */
     private hasNoChanges(): boolean {
         const tagIds = this.selectedTags.map(tag => tag.id);
-        return Object.keys(this.data).every(shareKey => {
-            const tags = this.data[shareKey];
+        return Object.keys(this.portfolioTags).every(shareKey => {
+            const tags = this.portfolioTags[shareKey];
             return tags.every(tag => tagIds.includes(tag.tagId));
         });
+    }
+
+    private get allowActions(): boolean {
+        return !this.portfolio.portfolioParams.combinedFlag;
     }
 }

@@ -17,15 +17,20 @@
 /**
  * Компонент для отображения тэга
  */
+import {namespace} from "vuex-class";
 import {Component, Prop, UI} from "../../app/ui";
 import {Tag} from "../../types/tags";
+import {Portfolio} from "../../types/types";
+import {StoreType} from "../../vuex/storeType";
+
+const MainStore = namespace(StoreType.MAIN);
 
 @Component({
     // language=Vue
     template: `
         <span :class="['tag-item', 'tag-color-' + tag.categoryId]">
-            <span @click="$emit('select', tag)" class="tag-item__name">{{ tag.name }}</span>
-            <span @click="$emit('deleteTag', tag)" class="intel-icon icon-remove"></span>
+            <span @click="selectTag" class="tag-item__name">{{ tag.name }}</span>
+            <span v-if="allowActions" @click="$emit('deleteTag', tag)" class="intel-icon icon-remove"></span>
         </span>
     `
 })
@@ -33,4 +38,18 @@ export class TagItem extends UI {
 
     @Prop({type: Object, required: true})
     private tag: Tag;
+
+    @MainStore.Getter
+    private portfolio: Portfolio;
+
+    private selectTag(): void {
+        if (!this.allowActions) {
+            return;
+        }
+        this.$emit("select", this.tag);
+    }
+
+    private get allowActions(): boolean {
+        return !this.portfolio.portfolioParams.combinedFlag;
+    }
 }
