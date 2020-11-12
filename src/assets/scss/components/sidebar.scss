@@ -244,6 +244,8 @@
   .intel-icon,
   .active-link {width: 100%}
 
+  .active-link {border-radius: 4px}
+
   .intel-icon {
     display: flex;
     align-items: center;
@@ -262,7 +264,7 @@
 
   .exp-panel-arrow {
     position: absolute;
-    margin: 0 0 0 2px;
+    margin: 0 0 0 3px;
     transform: rotate(90deg);
     width: 6px;
     height: 6px;

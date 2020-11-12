@@ -2,7 +2,9 @@
 
   &__content {
     background-color: #fff;
-    padding: 16px;
+    padding: 16px 16px 24px;
+
+    .tags-list-item__body .tag-item {cursor: pointer}
   }
 
   &__selected {
@@ -12,11 +14,11 @@
     border: 1px solid $form-element--border-color;
     border-radius: $form-element--border-radius;
     padding: 8px 16px 0;
+    margin-bottom: 16px;
   }
 
   &__tabs {
     position: relative;
-    margin-top: 16px;
 
     .v-tabs {
       margin-bottom: 0;
@@ -119,15 +121,4 @@
   background-color: $table--num--red-color;
   padding: 0 2px;
   border: 2px solid #fff;
-}
-
-$tag-colors: #84ABEF, #91DA4A, #FF3E70, #B2BFD4, #FF9A51, #4C9F70, #A566E4, #B8B8F3, #63CCCA, #EC5766;
-
-@each $tag-color in $tag-colors {
-  $i: index($tag-colors, $tag-color);
-  .tag-color-#{$i} {
-    background-color: rgba($tag-color, 0.2);
-
-    .icon-remove {color: $tag-color}
-  }
 }

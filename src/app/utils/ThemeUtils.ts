@@ -265,7 +265,8 @@ export class ThemeUtils {
     .profitability-diagram .highcharts-series .highcharts-point:nth-child(3) {fill: #74D1F4 !important}
     .profitability-diagram .highcharts-series .highcharts-point:nth-child(4) {fill: #178BC6 !important}
 
-    .providers .item-img-block {filter: none}
+    .providers .item-img-block,
+    .iconMenu .exp-panel-arrow {filter: none}
 
     .content-loader stop {stop-color: #2c3040}
 
