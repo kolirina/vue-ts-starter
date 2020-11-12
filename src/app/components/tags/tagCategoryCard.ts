@@ -45,9 +45,15 @@ import {TagItem} from "./tagItem";
             <div class="tags-list-item__header">
                 <div v-if="!categoryEditMode" class="tags-list-item__header-description">{{ tagCategory.name }}</div>
                 <div v-show="categoryEditMode" class="tags-list-item__header-description">
-                    <v-text-field label="Название категории" v-model="categoryName" :counter="50" ref="categoryNameInput"
-                                  v-validate="'required|max:50'" :error-messages="errors.collect('categoryNameInput')" name="categoryNameInput"
-                                  @keydown.enter="editCategoryName" @keydown.esc="closeEditCategory" class="small-size"></v-text-field>
+                    <div v-show="categoryEditMode" class="field-with-btns w100pc">
+                        <v-text-field label="Название категории" v-model="categoryName" maxLength="50" ref="categoryNameInput"
+                                      v-validate="'required|max:50'" :error-messages="errors.collect('categoryNameInput')" name="categoryNameInput"
+                                      @keydown.enter="editCategoryName" @keydown.esc="closeEditCategory" class="small-size"></v-text-field>
+                        <div class="field-with-btns__actions">
+                            <div @click="editCategoryName" class="intel-icon icon-check"></div>
+                            <div @click="closeEditCategory" class="intel-icon icon-cancel"></div>
+                        </div>
+                    </div>
                 </div>
                 <div title="Редактировать" @click="editCategory" class="intel-icon icon-edit"></div>
                 <div @click.stop class="margLAuto">
@@ -163,8 +169,8 @@ export class TagCategoryCard extends UI {
         // отправляем запрос только если действительно поменяли
         if (this.categoryName !== this.tagCategory.name) {
             this.$emit("editCategory", {categoryId: this.tagCategory.id, categoryName: this.categoryName});
-            this.closeEditCategory();
         }
+        this.closeEditCategory();
     }
 
     /**
