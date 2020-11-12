@@ -19,6 +19,9 @@ export class UiStateHelper {
     static readonly ASSET_CHART_PANEL = "assetChartPanel";
     static readonly AGGREGATE_CHART_PANEL = "aggregateChartPanel";
     static readonly YIELD_CONTRIBUTORS_CHART_PANEL = "yieldContributorsChartPanel";
+    static readonly TAGS_CHART_PANEL = "tagsChartPanel";
+    static readonly CURRENCY_CHART_PANEL = "currencyChartPanel";
+    static readonly COUNTRY_CHART_PANEL = "countryChartPanel";
     static readonly WHOLE_PORTFOLIO_SHARES_ALLOCATION_CHART_PANEL = "wholePortfolioSharesAllocationChartChartPanel";
     static readonly SECTORS_PANEL = "sectorsPanel";
     static readonly BOND_SECTORS_PANEL = "bondSectorsPanel";
@@ -228,6 +231,30 @@ export class UiStateHelper {
 
     static get yieldContributorsChart(): number[] {
         return [localStorage.get(UiStateHelper.YIELD_CONTRIBUTORS_CHART_PANEL, 0)];
+    }
+
+    static set tagsChart(value: number[]) {
+        localStorage.set(UiStateHelper.TAGS_CHART_PANEL, value);
+    }
+
+    static get tagsChart(): number[] {
+        return [localStorage.get(UiStateHelper.TAGS_CHART_PANEL, 0)];
+    }
+
+    static set currencyChart(value: number[]) {
+        localStorage.set(UiStateHelper.CURRENCY_CHART_PANEL, value);
+    }
+
+    static get currencyChart(): number[] {
+        return [localStorage.get(UiStateHelper.CURRENCY_CHART_PANEL, 0)];
+    }
+
+    static set countryChart(value: number[]) {
+        localStorage.set(UiStateHelper.COUNTRY_CHART_PANEL, value);
+    }
+
+    static get countryChart(): number[] {
+        return [localStorage.get(UiStateHelper.COUNTRY_CHART_PANEL, 0)];
     }
 
     static set wholePortfolioSharesAllocationChart(value: number[]) {

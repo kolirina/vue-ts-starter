@@ -18,6 +18,7 @@ export class TablesService {
         {text: "", align: "left", ghost: true, sortable: false, value: "", active: true, width: "50"},
         {text: "Компания", align: "left", value: TABLE_HEADERS.COMPANY, active: true, width: "120"},
         {text: "Тикер", align: "left", value: TABLE_HEADERS.TICKER, active: false, width: "90"},
+        {text: "Тэги", align: "center", value: "tags", active: true, sortable: false, ghost: false, width: "50"},
         {text: "Количество", align: "right", value: TABLE_HEADERS.QUANTITY, active: true, width: "60"},
         {
             text: "Ср. цена",
@@ -50,7 +51,7 @@ export class TablesService {
             currency: true
         },
         {text: "Стоимость покупок", align: "right", value: TABLE_HEADERS.B_COST, active: false, width: "80", tooltip: StockTooltips[TABLE_HEADERS.B_COST], currency: true},
-        {text: "Стоимость продаж", align: "right", value: TABLE_HEADERS.S_COST, active: false, width: "90", tooltip: StockTooltips[TABLE_HEADERS.S_COST], currency: true},
+        {text: "Стоимость продаж", align: "right", value: TABLE_HEADERS.S_COST, active: false, width: "80", tooltip: StockTooltips[TABLE_HEADERS.S_COST], currency: true},
         {
             text: "Тек. стоимость",
             align: "right",
@@ -74,7 +75,7 @@ export class TablesService {
             align: "right",
             value: TABLE_HEADERS.PROFIT_FROM_DIVIDENDS_PERCENT,
             active: false,
-            width: "80",
+            width: "60",
             class: "wrap-cell",
             tooltip: StockTooltips[TABLE_HEADERS.PROFIT_FROM_DIVIDENDS_PERCENT]
         },
@@ -92,7 +93,7 @@ export class TablesService {
             align: "right",
             value: TABLE_HEADERS.RATE_PROFIT_PERCENT,
             active: true,
-            width: "80",
+            width: "50",
             tooltip: StockTooltips[TABLE_HEADERS.RATE_PROFIT_PERCENT]
         },
         {
@@ -109,7 +110,7 @@ export class TablesService {
             align: "right",
             value: TABLE_HEADERS.EXCHANGE_PROFIT_PERCENT,
             active: false,
-            width: "80",
+            width: "60",
             tooltip: StockTooltips[TABLE_HEADERS.EXCHANGE_PROFIT_PERCENT]
         },
         {text: "Прибыль", align: "right", value: TABLE_HEADERS.PROFIT, active: true, width: "80", tooltip: StockTooltips[TABLE_HEADERS.PROFIT], currency: true},
@@ -126,7 +127,7 @@ export class TablesService {
             align: "right",
             value: TABLE_HEADERS.YEAR_YIELD,
             active: false,
-            width: "65",
+            width: "60",
             tooltip: StockTooltips[TABLE_HEADERS.YEAR_YIELD]
         },
         {text: "P/L за день", align: "right", value: TABLE_HEADERS.DAILY_PL, active: false, width: "60", tooltip: CommonTooltips[TABLE_HEADERS.DAILY_PL], currency: true},
@@ -160,6 +161,7 @@ export class TablesService {
             {text: "", align: "left", ghost: true, sortable: false, value: "", active: true, width: "50"},
             {text: "Компания", align: "left", value: TABLE_HEADERS.COMPANY, active: true, width: "135"},
             {text: "Тикер", align: "left", value: TABLE_HEADERS.TICKER, active: false, width: "90"},
+            {text: "Тэги", align: "center", value: "tags", active: true, sortable: false, ghost: false, width: "50"},
             {text: "Количество", align: "right", value: TABLE_HEADERS.QUANTITY, active: true, width: "60"},
             {
                 text: "Ср. цена, %",
@@ -206,7 +208,7 @@ export class TablesService {
                 align: "right",
                 value: TABLE_HEADERS.PROFIT_FROM_COUPONS_PERCENT,
                 active: false,
-                width: "65",
+                width: "60",
                 tooltip: BondTooltips[TABLE_HEADERS.PROFIT_FROM_COUPONS_PERCENT]
             },
             {
@@ -223,7 +225,7 @@ export class TablesService {
                 align: "right",
                 value: TABLE_HEADERS.EXCHANGE_PROFIT_PERCENT,
                 active: false,
-                width: "65",
+                width: "60",
                 tooltip: BondTooltips[TABLE_HEADERS.EXCHANGE_PROFIT_PERCENT]
             },
             {
@@ -240,14 +242,14 @@ export class TablesService {
                 align: "right",
                 value: TABLE_HEADERS.RATE_PROFIT_PERCENT,
                 active: true,
-                width: "65",
+                width: "60",
                 tooltip: BondTooltips[TABLE_HEADERS.RATE_PROFIT_PERCENT]
             },
             {text: "Выплаченный НКД", align: "right", value: TABLE_HEADERS.BUY_NKD, active: false, width: "85", tooltip: BondTooltips[TABLE_HEADERS.BUY_NKD], currency: true},
             {text: "Полученный НКД", align: "right", value: TABLE_HEADERS.SELL_NKD, active: false, width: "85", tooltip: BondTooltips[TABLE_HEADERS.SELL_NKD], currency: true},
             {text: "Прибыль", align: "right", value: TABLE_HEADERS.PROFIT, active: true, width: "80", tooltip: BondTooltips[TABLE_HEADERS.PROFIT], currency: true},
-            {text: "Прибыль, %", align: "right", value: TABLE_HEADERS.PERC_PROFIT, active: false, width: "65", tooltip: BondTooltips[TABLE_HEADERS.PERC_PROFIT]},
-            {text: "Доходность, %", align: "right", value: TABLE_HEADERS.YEAR_YIELD, active: false, width: "65", tooltip: BondTooltips[TABLE_HEADERS.YEAR_YIELD]},
+            {text: "Прибыль, %", align: "right", value: TABLE_HEADERS.PERC_PROFIT, active: false, width: "60", tooltip: BondTooltips[TABLE_HEADERS.PERC_PROFIT]},
+            {text: "Доходность, %", align: "right", value: TABLE_HEADERS.YEAR_YIELD, active: false, width: "60", tooltip: BondTooltips[TABLE_HEADERS.YEAR_YIELD]},
             {text: "P/L за день", align: "right", value: TABLE_HEADERS.DAILY_PL, active: false, width: "60", tooltip: CommonTooltips[TABLE_HEADERS.DAILY_PL], currency: true},
             {
                 text: "P/L за день, %",
@@ -407,6 +409,7 @@ export interface TableHeaders {
 export interface TableHeadersState {
     company?: boolean;
     ticker?: boolean;
+    tags?: boolean;
     quantity?: boolean;
     avgBuy?: boolean;
     currPrice?: boolean;

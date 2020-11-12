@@ -15,6 +15,11 @@
     height: 500px;
     margin: 0 auto;
 
+  &__empty {
+    @extend %center-elements;
+    height: 100%;
+  }
+
     @media only screen and (max-width: $sm-breakpoint) {
         height: 350px;
     }

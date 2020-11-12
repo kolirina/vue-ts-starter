@@ -88,6 +88,9 @@ const MainStore = namespace(StoreType.MAIN);
                         <stock-link v-if="props.item.share && props.item.assetType === 'STOCK'" :ticker="props.item.share.ticker"></stock-link>
                         <asset-link v-if="props.item.share && props.item.assetType === 'ASSET'" :ticker="String(props.item.share.id)">{{ props.item.share.ticker }}</asset-link>
                     </td>
+                    <td v-if="tableHeadersState.tags" class="text-xs-center">
+                        <share-tags v-if="props.item.share" :share="props.item.share" :portfolio-tags="portfolio.portfolioParams.tags"></share-tags>
+                    </td>
                     <td v-if="tableHeadersState.quantity" class="text-xs-right ii-number-cell">{{props.item.quantity | quantity(!!props.item.share) }}</td>
                     <td v-if="tableHeadersState.openPositionAvgPrice" class="text-xs-right ii-number-cell">
                         <v-tooltip content-class="custom-tooltip-wrap" bottom>
@@ -444,14 +447,14 @@ export class StockTable extends UI {
         const data = await new EditShareNoteDialog().show({ticker: share.ticker, note: this.shareNotes[key], shareType: share.shareType});
         if (data) {
             data.ticker = key;
-            await this.editShareNote(data, share.shareType);
+            await this.editShareNote(data, share.shareType, share);
         }
     }
 
     @ShowProgress
-    private async editShareNote(data: EditShareNoteDialogData, shareType: ShareType): Promise<void> {
+    private async editShareNote(data: EditShareNoteDialogData, shareType: ShareType, share: Share): Promise<void> {
         await this.portfolioService.updateShareNotes(this.portfolio.id, this.shareNotes, data);
-        this.$snotify.info(`Заметка по ${shareType === ShareType.ASSET ? "активу" : "бумаге"} ${data.ticker} была успешно сохранена`);
+        this.$snotify.info(`Заметка по ${shareType === ShareType.ASSET ? "активу" : "бумаге"} ${share.ticker} была успешно сохранена`);
     }
 
     private async openTradeDialog(stockRow: StockTypePortfolioRow, operation: Operation): Promise<void> {

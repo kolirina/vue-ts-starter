@@ -161,10 +161,10 @@ export class AppFrame extends UI {
             this.loggedIn = true;
         }
         this.mainSection = [
-            {title: "Инвестотека", action: "investoteka", name: "investoteka"},
             {title: "Портфель", action: "portfolio", name: "portfolio"},
             {title: "Аналитика", action: "adviser", name: "adviser"},
             {title: "Сделки", action: "trades", name: "trades"},
+            {title: "Инвестотека", action: "investoteka", name: "investoteka"},
             {
                 title: "Инструменты", name: "tools", subMenu: [
                     {title: "Начисления", action: "calculations", name: "calculations"},
@@ -182,6 +182,7 @@ export class AppFrame extends UI {
             {
                 title: "Настройки", action: "settings", name: "settings", subMenu: [
                     {title: "Управление портфелями", action: "portfolio-management", name: "portfolio-management"},
+                    {title: "Управление тэгами", action: "tags", name: "tags"},
                     {title: "Профиль", action: "profile", name: "profile"},
                     {title: "Импорт сделок", action: "import", name: "import"},
                     {title: "Экспорт сделок", action: "export", name: "export"},

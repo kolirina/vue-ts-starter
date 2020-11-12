@@ -85,6 +85,9 @@ const MainStore = namespace(StoreType.MAIN);
                     <td v-if="tableHeadersState.ticker" class="text-xs-left">
                         <bond-link v-if="props.item.bond" :ticker="props.item.bond.ticker"></bond-link>
                     </td>
+                    <td v-if="tableHeadersState.tags" class="text-xs-center">
+                        <share-tags v-if="props.item.share" :share="props.item.share" :portfolio-tags="portfolio.portfolioParams.tags"></share-tags>
+                    </td>
                     <td v-if="tableHeadersState.quantity" class="text-xs-right ii-number-cell">{{ props.item.quantity | quantity(!!props.item.bond) }}</td>
                     <td v-if="tableHeadersState.avgBuy" class="text-xs-right ii-number-cell">
                         <template>{{ props.item.avgBuy | number(false) }}</template>

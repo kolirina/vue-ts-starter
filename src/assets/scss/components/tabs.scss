@@ -10,7 +10,7 @@
   &__div {
     margin-right: 30px;
 
-    &.active .v-tabs__item{
+    &.active .v-tabs__item {
       color: $sidebar-blue-color !important;
       position: relative !important;
 
@@ -36,4 +36,13 @@
   }
 
   &__slider-wrapper {display: none}
+
+  &.card-tabs {
+    .v-tabs__bar {
+      box-shadow: none;
+      border-bottom: 1px solid $form-element--border-color;
+      border-radius: 0;
+      padding: 0;
+    }
+  }
 }

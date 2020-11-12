@@ -215,6 +215,8 @@ export type BondPortfolioRow = BondPortfolioSumRow & {
     id: string,
     /** Облигация */
     bond: Bond,
+    /** Облигация */
+    share: Bond,
     /** Количество */
     quantity: string,
     /** Средняя цена покупки */

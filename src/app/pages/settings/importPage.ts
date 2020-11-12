@@ -737,7 +737,7 @@ export class ImportPage extends UI {
             if (this.importResult.generalError) {
                 return Status.ERROR;
             }
-            if (this.importResult.status === Status.NO_TRADES) {
+            if (this.importResult.status === Status.NO_TRADES || this.importResult.validatedTradesCount === 0) {
                 return Status.NO_TRADES;
             }
             return Status.SUCCESS;

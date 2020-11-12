@@ -41,6 +41,9 @@ export class PieChart extends UI {
     /** Данные */
     @Prop({required: true})
     private data: DataPoint[];
+    /** Цвета для диаграммы */
+    @Prop({required: false, default: null})
+    private colors: string[];
 
     async mounted(): Promise<void> {
         await this.draw();
@@ -52,6 +55,7 @@ export class PieChart extends UI {
     }
 
     private async draw(): Promise<void> {
-        this.chart = ChartUtils.drawPieChart(this.$refs.container, this.data, this.balloonTitle, this.title, this.viewCurrency, this.tooltipFormat as PieChartTooltipFormat);
+        this.chart = ChartUtils.drawPieChart(this.$refs.container, this.data, this.balloonTitle, this.title, this.viewCurrency,
+            this.tooltipFormat as PieChartTooltipFormat, this.colors);
     }
 }

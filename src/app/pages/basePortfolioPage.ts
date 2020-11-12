@@ -130,7 +130,6 @@ import {UiStateHelper} from "../utils/uiStateHelper";
                         </v-fade-transition>
                     </template>
                     <template #list>
-                        <!-- todo assets настрока колонок и экспорт таблицы -->
                         <v-list-tile-title @click="openTableHeadersDialog(TABLES_NAME.ASSET)">Настроить колонки</v-list-tile-title>
                         <v-list-tile-title v-if="exportable" @click="exportTable(ExportType.ASSETS)">Экспорт в xlsx</v-list-tile-title>
                     </template>

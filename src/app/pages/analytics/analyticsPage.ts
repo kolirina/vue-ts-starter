@@ -19,9 +19,11 @@ import {ClientInfo, ClientService} from "../../services/clientService";
 import {MarketHistoryService} from "../../services/marketHistoryService";
 import {OverviewService} from "../../services/overviewService";
 import {PortfolioAccountType, PortfolioService} from "../../services/portfolioService";
+import {TagsService} from "../../services/tagsService";
 import {BigMoney} from "../../types/bigMoney";
 import {ChartType, ColumnChartData, CustomDataPoint, HighStockEventsGroup, PortfolioLineChartData, SimpleChartData, YieldCompareData} from "../../types/charts/types";
 import {EventType} from "../../types/eventType";
+import {TagCategory} from "../../types/tags";
 import {Portfolio} from "../../types/types";
 import {ChartUtils} from "../../utils/chartUtils";
 import {CommonUtils} from "../../utils/commonUtils";
@@ -205,6 +207,67 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-card-text>
                     </expanded-panel>
 
+                    <expanded-panel v-if="showTagsPanel" :value="$uistate.tagsChart" :state="$uistate.TAGS_CHART_PANEL" custom-menu class="mt-3">
+                        <template #header>
+                            Распределение активов на основе тэгов
+                            <tooltip>
+                                Диаграмма распределения активов по категориям и тэгам
+                            </tooltip>
+                        </template>
+                        <template #customMenu>
+                            <chart-export-menu @print="print(ChartType.TAGS_CHART)" @exportTo="exportTo(ChartType.TAGS_CHART, $event)" class="exp-panel-menu"></chart-export-menu>
+                        </template>
+                        <v-card-text>
+                            <v-tabs v-if="selectedCategory" class="card-tabs">
+                                <v-tab v-for="tagCategory in tagCategories" :key="tagCategory.id" @change="onTabSelected(tagCategory)"
+                                       :class="{'active': tagCategory.id === selectedCategory.id}" :ripple="false">
+                                    {{ tagCategory.name }}
+                                </v-tab>
+                            </v-tabs>
+                            <pie-chart v-if="tagsChartData.length" :ref="ChartType.TAGS_CHART" :data="tagsChartData" :view-currency="viewCurrency"
+                                       balloon-title="Распределение активов по тэгам" tooltip-format="TAGS" v-tariff-expired-hint></pie-chart>
+                            <div class="pie-chart-wrapper" v-else>
+                                <span class="pie-chart-wrapper__empty">
+                                    Нет назначенных тэгов по данной категории
+                                </span>
+                            </div>
+                        </v-card-text>
+                    </expanded-panel>
+
+                    <expanded-panel v-if="currencyChartData.length" :value="$uistate.currencyChart" :state="$uistate.CURRENCY_CHART_PANEL" custom-menu class="mt-3">
+                        <template #header>
+                            Распределение активов по валютам
+                            <tooltip>
+                                Позволяет оценить диверсификацию портфеля по валютам
+                            </tooltip>
+                        </template>
+                        <template #customMenu>
+                            <chart-export-menu @print="print(ChartType.CURRENCY_CHART)" @exportTo="exportTo(ChartType.CURRENCY_CHART, $event)"
+                                               class="exp-panel-menu"></chart-export-menu>
+                        </template>
+                        <v-card-text>
+                            <pie-chart v-if="currencyChartData.length" :ref="ChartType.CURRENCY_CHART" :data="currencyChartData" :view-currency="viewCurrency"
+                                       balloon-title="Распределение активов по валютам" tooltip-format="TAGS" v-tariff-expired-hint></pie-chart>
+                        </v-card-text>
+                    </expanded-panel>
+
+                    <expanded-panel v-if="countryChartData.length" :value="$uistate.countryChart" :state="$uistate.COUNTRY_CHART_PANEL" custom-menu class="mt-3">
+                        <template #header>
+                            Распределение активов по странам
+                            <tooltip>
+                                Позволяет оценить диверсификацию портфеля по странам
+                            </tooltip>
+                        </template>
+                        <template #customMenu>
+                            <chart-export-menu @print="print(ChartType.COUNTRY_CHART)" @exportTo="exportTo(ChartType.COUNTRY_CHART, $event)"
+                                               class="exp-panel-menu"></chart-export-menu>
+                        </template>
+                        <v-card-text>
+                            <pie-chart v-if="countryChartData.length" :ref="ChartType.COUNTRY_CHART" :data="countryChartData" :view-currency="viewCurrency"
+                                       balloon-title="Распределение активов по странам" tooltip-format="TAGS" v-tariff-expired-hint></pie-chart>
+                        </v-card-text>
+                    </expanded-panel>
+
                     <expanded-panel v-show="showInfoPanel && false" :value="$uistate.analyticsInfoPanel" :withMenu="false" :state="$uistate.ANALYTICS_INFO_PANEL" class="mt-3">
                         <template #header>Информация об ИИС</template>
 
@@ -266,6 +329,9 @@ export class AnalyticsPage extends PortfolioBasedPage {
         profitLineChart: ProfitLineChart,
         profitMonthChart: ColumnChart,
         profitYearChart: ColumnChart,
+        tagsChart: PieChart,
+        currencyChart: PieChart,
+        [ChartType.COUNTRY_CHART]: PieChart,
     };
 
     @MainStore.Getter
@@ -288,6 +354,8 @@ export class AnalyticsPage extends PortfolioBasedPage {
     private portfolioService: PortfolioService;
     @Inject
     private marketHistoryService: MarketHistoryService;
+    @Inject
+    private tagsService: TagsService;
     /** Данные для сравнения доходностей */
     private yieldCompareData: YieldCompareData = null;
     /** Ставки по инфляции */
@@ -304,6 +372,12 @@ export class AnalyticsPage extends PortfolioBasedPage {
     private profitByYearsChartData: ColumnChartData = null;
     /** Данные для диаграммы эффективности бумаг */
     private wholePortfolioSharesAllocationChartData: CustomDataPoint[] = [];
+    /** Данные для диаграммы по тэгам */
+    private tagsChartData: CustomDataPoint[] = [];
+    /** Данные для диаграммы по валютам */
+    private currencyChartData: CustomDataPoint[] = [];
+    /** Данные для диаграммы по Странам */
+    private countryChartData: CustomDataPoint[] = [];
     /** Данные графика портфеля */
     private portfolioLineChartData: PortfolioLineChartData = null;
     /** События для графика прибыли портфеля */
@@ -312,6 +386,10 @@ export class AnalyticsPage extends PortfolioBasedPage {
     private indexLineChartData: any[] = null;
     /** Типы круговых диаграмм */
     private ChartType = ChartType;
+    /** Категории тэгов пользователя */
+    private tagCategories: TagCategory[] = [];
+    /** Выбранная категория */
+    private selectedCategory: TagCategory = null;
     /** Признак инициализации */
     private initialized = false;
 
@@ -344,8 +422,21 @@ export class AnalyticsPage extends PortfolioBasedPage {
         if (this.showProfitChart && (UiStateHelper.profitChartPanel[0] === 1 || UiStateHelper.profitMonthChartPanel[0] === 1 || UiStateHelper.profitYearChartPanel[0] === 1)) {
             await this.loadProfitLineChart();
         }
-        this.yieldContributorsChartData = await this.doYieldContributorsChartData();
-        this.wholePortfolioSharesAllocationChartData = await this.doWholePortfolioSharesAllocationChartData();
+        await this.loadTagCategories();
+        this.selectedCategory = this.tagCategories[0];
+        this.doYieldContributorsChartData();
+        this.doWholePortfolioSharesAllocationChartData();
+        this.doTagsChartData();
+        this.doCurrencyChartData();
+        this.doCountryChartData();
+    }
+
+    /**
+     * Загружает категории пользователя
+     */
+    @ShowProgress
+    private async loadTagCategories(): Promise<void> {
+        this.tagCategories = await this.tagsService.getTagCategories();
     }
 
     private async loadDiagramData(): Promise<void> {
@@ -411,12 +502,24 @@ export class AnalyticsPage extends PortfolioBasedPage {
         return this.totalDepositInCurrentYear.amount.div(new Decimal("10000")).toDP(2, Decimal.ROUND_HALF_UP).toNumber();
     }
 
-    private doYieldContributorsChartData(): ColumnChartData {
-        return ChartUtils.doYieldContributorsPieChartData(this.portfolio.overview, this.viewCurrency);
+    private doYieldContributorsChartData(): void {
+        this.yieldContributorsChartData = ChartUtils.doYieldContributorsPieChartData(this.portfolio.overview, this.viewCurrency);
     }
 
-    private doWholePortfolioSharesAllocationChartData(): CustomDataPoint[] {
-        return ChartUtils.doWholePortfolioSharesAllocationChartData(this.portfolio.overview, this.viewCurrency);
+    private doWholePortfolioSharesAllocationChartData(): void {
+        this.wholePortfolioSharesAllocationChartData = ChartUtils.doWholePortfolioSharesAllocationChartData(this.portfolio.overview, this.viewCurrency);
+    }
+
+    private doTagsChartData(): void {
+        this.tagsChartData = ChartUtils.doTagsChartData(this.portfolio.overview, this.viewCurrency, this.portfolio.portfolioParams.tags, this.selectedCategory, this.tagCategories);
+    }
+
+    private doCurrencyChartData(): void {
+        this.currencyChartData = ChartUtils.doCurrencyChartData(this.portfolio.overview, this.viewCurrency);
+    }
+
+    private doCountryChartData(): void {
+        this.countryChartData = ChartUtils.doCountryChartData(this.portfolio.overview, this.viewCurrency);
     }
 
     private doPortfolioProfitMonthData(): ColumnChartData {
@@ -448,6 +551,15 @@ export class AnalyticsPage extends PortfolioBasedPage {
         ((this.$refs as any)[chart] as PieChart).chart.print();
     }
 
+    /**
+     * Выставляет выбранную категорию
+     * @param selected выбранная категория
+     */
+    private onTabSelected(selected: TagCategory): void {
+        this.selectedCategory = selected;
+        this.doTagsChartData();
+    }
+
     private get showAnalyticsPanel(): boolean {
         return Math.abs(dayjs(this.portfolio.overview.firstTradeDate).diff(dayjs(), "day")) > 365;
     }
@@ -455,5 +567,9 @@ export class AnalyticsPage extends PortfolioBasedPage {
     private get showProfitChart(): boolean {
         return this.portfolio.overview.bondPortfolio.rows.length !== 0 || this.portfolio.overview.stockPortfolio.rows.length !== 0 ||
             this.portfolio.overview.assetPortfolio.rows.length !== 0 || this.portfolio.overview.etfPortfolio.rows.length !== 0;
+    }
+
+    private get showTagsPanel(): boolean {
+        return this.tagCategories.length !== 0 && Object.keys(this.portfolio.portfolioParams.tags).length !== 0;
     }
 }

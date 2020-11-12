@@ -10,6 +10,7 @@ import {ExportService, ExportType} from "../services/exportService";
 import {MarketHistoryService} from "../services/marketHistoryService";
 import {OverviewService} from "../services/overviewService";
 import {PortfolioParams} from "../services/portfolioService";
+import {TagsService} from "../services/tagsService";
 import {HighStockEventsGroup, LineChartItem, PortfolioLineChartData} from "../types/charts/types";
 import {EventType} from "../types/eventType";
 import {StoreKeys} from "../types/storeKeys";
@@ -109,6 +110,8 @@ export class PortfolioPage extends PortfolioBasedPage {
     private marketHistoryService: MarketHistoryService;
     @Inject
     private exportService: ExportService;
+    @Inject
+    private tagsService: TagsService;
     /** Данные графика стоимости портфеля */
     private lineChartData: LineChartItem[] = null;
     /** Данные графика портфеля */
@@ -133,6 +136,8 @@ export class PortfolioPage extends PortfolioBasedPage {
      * @inheritDoc
      */
     async created(): Promise<void> {
+        await this.tagsService.getTagCategories();
+        await this.createDefaultTagCategories();
         await this.init();
     }
 
@@ -173,6 +178,15 @@ export class PortfolioPage extends PortfolioBasedPage {
             });
         } finally {
             this.initialized = true;
+        }
+    }
+
+    /**
+     * Создает новые категории
+     */
+    private async createDefaultTagCategories(): Promise<void> {
+        if (this.portfolio.overview.totalTradesCount && (await this.tagsService.getTagCategories()).length === 0) {
+            await this.tagsService.createDefaults();
         }
     }
 
