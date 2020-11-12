@@ -228,7 +228,9 @@ const MainStore = namespace(StoreType.MAIN);
                                        balloon-title="Распределение активов по тэгам" tooltip-format="TAGS" v-tariff-expired-hint></pie-chart>
                             <div class="pie-chart-wrapper" v-else>
                                 <span class="pie-chart-wrapper__empty">
-                                    Нет назначенных тэгов по данной категории
+                                    Назначьте теги по активам на странице&nbsp;
+                                    <router-link :to="{name: 'portfolio'}">Портфель</router-link>,
+                                    и контролируйте распределение активов по любым критериям
                                 </span>
                             </div>
                         </v-card-text>

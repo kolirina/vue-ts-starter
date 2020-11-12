@@ -18,7 +18,11 @@ export class TablesService {
         {text: "", align: "left", ghost: true, sortable: false, value: "", active: true, width: "50"},
         {text: "Компания", align: "left", value: TABLE_HEADERS.COMPANY, active: true, width: "120"},
         {text: "Тикер", align: "left", value: TABLE_HEADERS.TICKER, active: false, width: "90"},
-        {text: "Тэги", align: "center", value: "tags", active: true, sortable: false, ghost: false, width: "50"},
+        {
+            text: "Тэги", align: "center", value: "tags", active: true, sortable: false, ghost: false,
+            tooltip: CommonTooltips[TABLE_HEADERS.TAGS],
+            width: "50"
+        },
         {text: "Количество", align: "right", value: TABLE_HEADERS.QUANTITY, active: true, width: "60"},
         {
             text: "Ср. цена",
@@ -161,7 +165,11 @@ export class TablesService {
             {text: "", align: "left", ghost: true, sortable: false, value: "", active: true, width: "50"},
             {text: "Компания", align: "left", value: TABLE_HEADERS.COMPANY, active: true, width: "135"},
             {text: "Тикер", align: "left", value: TABLE_HEADERS.TICKER, active: false, width: "90"},
-            {text: "Тэги", align: "center", value: "tags", active: true, sortable: false, ghost: false, width: "50"},
+            {
+                text: "Тэги", align: "center", value: "tags", active: true, sortable: false, ghost: false,
+                tooltip: CommonTooltips[TABLE_HEADERS.TAGS],
+                width: "50"
+            },
             {text: "Количество", align: "right", value: TABLE_HEADERS.QUANTITY, active: true, width: "60"},
             {
                 text: "Ср. цена, %",
@@ -351,6 +359,7 @@ export enum TABLE_HEADERS {
     COMPANY = "company",
     TICKER = "ticker",
     QUANTITY = "quantity",
+    TAGS = "tags",
     OPEN_POSITION_AVG_PRICE = "openPositionAvgPrice",
     AVG_PRICE = "avgBuy",
     CURR_PRICE = "currPrice",
@@ -451,6 +460,8 @@ export const CommonTooltips: { [key: string]: string } = {
     [TABLE_HEADERS.DAILY_PL_PERCENT]: "Это дневная прибыль/убыток, по отношению к предыдущему дню в процентах.",
     [TABLE_HEADERS.PERC_CURR_SHARE]: "Доля бумаги посчитанная к суммарной стоимости активов, к которым относится бумага.",
     [TABLE_HEADERS.PERC_CURR_SHARE_WHOLE_PORTFOLIO]: "Доля бумаги посчитанная к суммарной стоимости всего портфеля.",
+    [TABLE_HEADERS.TAGS]: "Теги - пользовательские метки по активам. Настройки находятся в \"Управлении тегами\"," +
+    " Круговая диаграмма по тегам находится в \"Аналитике\".",
 };
 
 /** Тултипы для акций */

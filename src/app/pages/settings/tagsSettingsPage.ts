@@ -120,7 +120,7 @@ export class TagsSettingsPage extends UI {
      */
     private async createNewCategory(): Promise<void> {
         if (this.tagCategories.length >= 1 && ![Tariff.PRO, Tariff.TRIAL].includes(this.clientInfo.user.tariff)) {
-            await new TagCategoryForbiddenDialog().show();
+            await new TagCategoryForbiddenDialog().show(this.$router);
             return;
         }
         const categoryName = await new CreateTagCategoryDialog().show();

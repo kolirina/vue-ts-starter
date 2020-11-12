@@ -4,6 +4,7 @@ import {Decimal} from "decimal.js";
 import Highcharts, {AreaChart, ChartObject, DataPoint, Gradient, IndividualSeriesOptions, PlotLines, SeriesChart} from "highcharts";
 import Highstock from "highcharts/highstock";
 import {Filters} from "../platform/filters/Filters";
+import {AssetCategory} from "../services/assetService";
 import {ShareEvent} from "../services/eventService";
 import {BigMoney} from "../types/bigMoney";
 import {
@@ -22,10 +23,11 @@ import {
     SimpleChartData
 } from "../types/charts/types";
 import {COUNTRY_BY_CODE} from "../types/country";
+import {CurrencyUnit} from "../types/currency";
 import {Operation} from "../types/operation";
 import {PortfolioAssetType} from "../types/portfolioAssetType";
 import {PortfolioTag, Tag, TagCategory} from "../types/tags";
-import {BondPortfolioRow, Overview, Share, StockTypePortfolioRow} from "../types/types";
+import {Asset, AssetPortfolioRow, BondPortfolioRow, Overview, Share, StockTypePortfolioRow} from "../types/types";
 import {CommonUtils} from "./commonUtils";
 import {DateFormat, DateUtils} from "./dateUtils";
 
@@ -400,10 +402,10 @@ export class ChartUtils {
         });
         Object.keys(rowsByTag).forEach(tagName => {
             const currentRows = rowsByTag[tagName];
-            const currCost = currentRows.map(row => new BigMoney(row.currCost).amount.abs())
+            const currCost = currentRows.map(row => new BigMoney(row.currCost).amount)
                 .reduce((previousValue, currentValue) => previousValue.plus(currentValue), new Decimal("0"))
                 .toDP(2, Decimal.ROUND_HALF_UP);
-            const profit = currentRows.map(row => new BigMoney(row.profit).amount.abs())
+            const profit = currentRows.map(row => new BigMoney(row.profit).amount)
                 .reduce((previousValue, currentValue) => previousValue.plus(currentValue), new Decimal("0"))
                 .toDP(2, Decimal.ROUND_HALF_UP);
             const tickers = currentRows.map(row => row.share.shortname).join(",<br/>");
@@ -487,25 +489,50 @@ export class ChartUtils {
                 return {shareName: row.bond.shortname, percentShare: row.percCurrShareInWholePortfolio, currCost: row.currCost, profit: row.profit, currency: row.bond.currency};
             }),
             ...overview.assetPortfolio.rows.map(row => {
+                if ((row as AssetPortfolioRow).asset.category === AssetCategory.CURRENCY.code) {
+                    if (row.share.ticker.startsWith(CurrencyUnit.GBP.code)) {
+                        return {
+                            shareName: row.share.shortname, percentShare: row.percCurrShareInWholePortfolio, currCost: row.currCost,
+                            profit: row.profit, currency: CurrencyUnit.GBP.code
+                        };
+                    }
+                    if (row.share.ticker.startsWith(CurrencyUnit.EUR.code)) {
+                        return {
+                            shareName: row.share.shortname, percentShare: row.percCurrShareInWholePortfolio, currCost: row.currCost,
+                            profit: row.profit, currency: CurrencyUnit.EUR.code
+                        };
+                    }
+                    if (row.share.ticker.startsWith(CurrencyUnit.USD.code)) {
+                        return {
+                            shareName: row.share.shortname, percentShare: row.percCurrShareInWholePortfolio, currCost: row.currCost,
+                            profit: row.profit, currency: CurrencyUnit.USD.code
+                        };
+                    }
+                    return {
+                        shareName: row.share.shortname, percentShare: row.percCurrShareInWholePortfolio, currCost: row.currCost, profit: row.profit,
+                        currency: row.share.currency
+                    };
+                }
                 return {shareName: row.share.shortname, percentShare: row.percCurrShareInWholePortfolio, currCost: row.currCost, profit: row.profit, currency: row.share.currency};
             }),
             ...overview.assetRows.filter(row => !skippedTypes.includes(PortfolioAssetType.valueByName(row.type))).map(row => {
                 return {
                     shareName: PortfolioAssetType.valueByName(row.type)?.description, percentShare: row.percCurrShareInWholePortfolio,
                     currency: new BigMoney(row.currCost).currency,
-                    currCost: row.currCost,
+                    currCost: row.amountInViewCurrency,
                     profit: row.profit
                 };
             })
         ];
         const rowsByCurrency: { [key: string]: [{ shareName: string, percentShare: string, currCost: string, profit: string, currency: string }] } = {};
-        rows.filter(value => value.percentShare && !new Decimal(value.percentShare).isZero()).forEach(row => {
-            const currencyKey = row.currency;
-            // @ts-ignore
-            const byCurrency: [{ shareName: string, percentShare: string, currCost: string, profit: string, currency: string }] = rowsByCurrency[currencyKey] || [];
-            byCurrency.push(row);
-            rowsByCurrency[currencyKey] = byCurrency;
-        });
+        rows.filter(row => row.percentShare && !new Decimal(row.percentShare).isZero() && row.currCost && new BigMoney(row.currCost).amount.isPositive())
+            .forEach(row => {
+                const currencyKey = row.currency;
+                // @ts-ignore
+                const byCurrency: [{ shareName: string, percentShare: string, currCost: string, profit: string, currency: string }] = rowsByCurrency[currencyKey] || [];
+                byCurrency.push(row);
+                rowsByCurrency[currencyKey] = byCurrency;
+            });
         Object.keys(rowsByCurrency).forEach(currency => {
             const currentRows = rowsByCurrency[currency];
             const currCost = currentRows.map(row => new BigMoney(row.currCost).amount.abs())
@@ -550,7 +577,7 @@ export class ChartUtils {
         ];
         const rowsByCountry: { [key: string]: [{ share: Share, percentShare: string, currCost: string, profit: string, currency: string }] } = {};
         rows.filter(value => value.percentShare && !new Decimal(value.percentShare).isZero()).forEach(row => {
-            const countryKey = COUNTRY_BY_CODE[row.share.isin?.substring(0, 2)] || "Прочие";
+            const countryKey = COUNTRY_BY_CODE[row.share.isin?.substring(0, 2)] || COUNTRY_BY_CODE[(row.share as Asset).tags?.substring(0, 2)] || "Прочие";
             // @ts-ignore
             const byCountry: [{ share: Share, percentShare: string, currCost: string, profit: string, currency: string }] = rowsByCountry[countryKey] || [];
             byCountry.push(row);

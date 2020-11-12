@@ -28,6 +28,7 @@ import {PortfolioTag, ShareTagsData, Tag, TagCategory} from "../types/tags";
 import {Tariff} from "../types/tariff";
 import {Portfolio, Share} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
+import {TariffUtils} from "../utils/tariffUtils";
 import {StoreType} from "../vuex/storeType";
 import {TagItem} from "./tags/tagItem";
 
@@ -51,13 +52,14 @@ const MainStore = namespace(StoreType.MAIN);
                     </svg>
                     <span v-if="selectedTags.length" class="tags-counter">{{ selectedTags.length }}</span>
                 </div>
-                <span>Настройте тэги для данного актива</span>
+                <span v-if="allowActions">Настройте тэги для данного актива</span>
+                <span v-else>Назначенные тэги по активу</span>
             </v-tooltip>
             <div class="tags-menu__content">
                 <div v-if="selectedTags.length" class="tags-menu__selected">
                     <tag-item v-for="tag in selectedTags" :key="tag.id" :tag="tag" @deleteTag="onDeleteSelectedTag"></tag-item>
                 </div>
-                <div class="tags-menu__tabs">
+                <div v-if="allowActions" class="tags-menu__tabs">
                     <v-tabs v-if="selectedCategory">
                         <v-tab v-for="tagCategory in tagCategories" :key="tagCategory.id" @change="onTabSelected(tagCategory)"
                                :class="{'active': tagCategory.id === selectedCategory.id}" :ripple="false">
@@ -66,8 +68,11 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-tabs>
                     <span @click="goToTagSettings($event)" title="Настройка категорий" class="intel-icon icon-m-portfolio-management"></span>
                 </div>
+                <div v-if="!allowActions && selectedTags.length === 0">
+                    Нет назначенных тэгов
+                </div>
 
-                <div v-if="selectedCategory" class="tags-list-item__body">
+                <div v-if="selectedCategory && allowActions" class="tags-list-item__body">
                     <tag-item v-for="tag in selectedCategory.tags" :key="tag.id" :tag="tag" @deleteTag="onDeleteTag" @select="onSelectTag"
                               :class="{'selected': tagSelected(tag)}"></tag-item>
                     <div @click="showCreateTagField" class="tags__add-btn" title="Добавить тэг"></div>
@@ -211,14 +216,14 @@ export class ShareTags extends UI {
      * @param tag тэг
      */
     private onSelectTag(tag: Tag): void {
-        if (this.selectedTags.length >= 1 && ![Tariff.PRO, Tariff.TRIAL].includes(this.clientInfo.user.tariff)) {
+        const creationAllowed = this.clientInfo.user.tariff === Tariff.PRO || (this.clientInfo.user.tariff === Tariff.TRIAL && !TariffUtils.isTariffExpired(this.clientInfo.user));
+        if (this.selectedTags.length >= 1 && !creationAllowed && !this.selectedTags.some(t => t.categoryId === tag.categoryId)) {
             this.$snotify.warning("На вашем тарифном плане нельзя присвоить больше одного тэга на бумагу. Подключите тариф Профессионал, чтобы устанавливать" +
                 "неограниченное количество тэгов.");
             return;
         }
-        if (!this.selectedTags.some(t => t.categoryId === tag.categoryId)) {
-            this.selectedTags.push(tag);
-        }
+        this.selectedTags = this.selectedTags.filter(t => t.categoryId !== tag.categoryId);
+        this.selectedTags.push(tag);
     }
 
     /**

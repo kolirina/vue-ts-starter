@@ -2,7 +2,7 @@
 
   &__content {
     background-color: #fff;
-    padding: 16px 16px 24px;
+    padding: 16px;
   }
 
   &__selected {
@@ -12,11 +12,11 @@
     border: 1px solid $form-element--border-color;
     border-radius: $form-element--border-radius;
     padding: 8px 16px 0;
-    margin-bottom: 16px;
   }
 
   &__tabs {
     position: relative;
+    margin-top: 16px;
 
     .v-tabs {
       margin-bottom: 0;
