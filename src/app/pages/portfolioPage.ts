@@ -136,6 +136,7 @@ export class PortfolioPage extends PortfolioBasedPage {
      * @inheritDoc
      */
     async created(): Promise<void> {
+        await this.tagsService.getTagCategories();
         await this.createDefaultTagCategories();
         await this.init();
     }
@@ -175,8 +176,6 @@ export class PortfolioPage extends PortfolioBasedPage {
                 await this.reloadPortfolio();
                 // срабатывает вотчер на портфеле
             });
-            await this.tagsService.getTagCategories();
-            await this.tagsService.getTagCategories();
         } finally {
             this.initialized = true;
         }
