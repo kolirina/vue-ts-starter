@@ -86,7 +86,12 @@ export class TagsService {
      * Возвращает цвет для новой категории
      */
     async getNewCategoryColor(): Promise<string> {
-        const newCategoryIndex = (await this.getTagCategories()).length;
-        return COLORS[newCategoryIndex % 10];
+        const currentCategories = await this.getTagCategories();
+        const newCategoryIndex = currentCategories.length;
+        const color = COLORS[newCategoryIndex % 10];
+        if (currentCategories.some(category => category.color === color)) {
+            return COLORS[(newCategoryIndex + 1) % 10];
+        }
+        return color;
     }
 }
