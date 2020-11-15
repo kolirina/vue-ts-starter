@@ -40,6 +40,14 @@
         @extend .ellipsis;
         justify-content: flex-start;
       }
+
+      &__wrapper.v-tabs__wrapper--show-arrows {margin: 0 24px}
+
+      &__icon {
+        width: 24px;
+
+        &__icon--next {right: 24px}
+      }
     }
 
     .icon-m-portfolio-management {

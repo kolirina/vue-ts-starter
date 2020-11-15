@@ -45,4 +45,11 @@
       padding: 0;
     }
   }
+
+  &__icon {
+    margin-right: 0 !important;
+
+    &--prev {left: 0}
+    &--next {right: 0}
+  }
 }
