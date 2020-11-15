@@ -98,15 +98,29 @@
     }
   }
 }
+
 .dashboard-wrap {
   .dashboard-item {
+    position: relative;
+
     &:first-child {
       .dashboard-card {
         filter: none !important;
       }
     }
+
+    .icon-stock {
+      color: #fff;
+      position: absolute;
+      top: 32px;
+      right: 20px;
+      cursor: pointer;
+    }
+
     @media only screen and (max-width: $sm-breakpoint) {
       .v-card__title {padding-top: 0}
+
+      .icon-stock {top: 8px}
     }
   }
 
@@ -151,6 +165,13 @@
           flex: none;
           margin-right: 8px;
         }
+      }
+
+      .icon-stock {
+        left: 0;
+        bottom: 0;
+        top: auto;
+        right: auto;
       }
     }
   }
