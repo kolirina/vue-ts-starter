@@ -207,7 +207,7 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-card-text>
                     </expanded-panel>
 
-                    <expanded-panel v-if="showTagsPanel" :value="$uistate.tagsChart" :state="$uistate.TAGS_CHART_PANEL" custom-menu class="mt-3">
+                    <expanded-panel v-if="showTagsPanel" :value="$uistate.tagsChart" :state="$uistate.TAGS_CHART_PANEL" custom-menu class="mt-3" @click="callResizeEvent">
                         <template #header>
                             Распределение активов на основе тэгов
                             <tooltip>
@@ -401,6 +401,7 @@ export class AnalyticsPage extends PortfolioBasedPage {
             await this.init();
         } finally {
             this.initialized = true;
+            setTimeout(() => { window.dispatchEvent(new Event("resize")); }, 100);
         }
         UI.on(EventType.TRADE_CREATED, async () => await this.init());
     }
@@ -551,6 +552,10 @@ export class AnalyticsPage extends PortfolioBasedPage {
 
     private async print(chart: ChartType): Promise<void> {
         ((this.$refs as any)[chart] as PieChart).chart.print();
+    }
+
+    private callResizeEvent(): void {
+        window.dispatchEvent(new Event("resize"));
     }
 
     /**

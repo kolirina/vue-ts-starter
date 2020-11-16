@@ -183,6 +183,7 @@ export class ShareTags extends UI {
      */
     private showTagsPanel(): void {
         this.initSelectedTags();
+        setTimeout(() => { window.dispatchEvent(new Event("resize")); }, 100);
     }
 
     @Watch("showComponent")

@@ -28,7 +28,7 @@ import {TagItem} from "./tagItem";
         <div class="tags-list-item">
             <div class="tags-list-item__header">
                 <div v-if="!categoryEditMode" class="tags-list-item__header-description">{{ tagCategory.name }}</div>
-                <div v-show="categoryEditMode" class="tags-list-item__header-description">
+                <div v-show="categoryEditMode" :class="['tags-list-item__header-description', categoryEditMode ? 'w100pc' : '']">
                     <div v-show="categoryEditMode" class="field-with-btns w100pc">
                         <v-text-field label="Название категории" v-model="categoryName" maxLength="50" ref="categoryNameInput"
                                       v-validate="'required|max:50'" :error-messages="errors.collect('categoryNameInput')" name="categoryNameInput"
