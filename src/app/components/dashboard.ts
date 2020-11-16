@@ -100,7 +100,8 @@ export class DashboardBrickComponent extends UI {
                 </v-flex>
                 <v-flex class="dashboard-item" xl3 lg3 md6 sm6 xs12>
                     <dashboard-brick-component :block="blocks[3]"></dashboard-brick-component>
-                    <v-tooltip content-class="custom-tooltip-wrap dashboard-tooltip" :max-width="450" bottom right>
+                    <v-menu transition="slide-y-transition" open-on-hover right bottom nudge-bottom="24px" close-delay="100" max-width="450"
+                            content-class="custom-tooltip-wrap dashboard-tooltip">
                         <div slot="activator" class="intel-icon icon-stock"></div>
                         <span>
                             Котировки активов обновляются в рабочее время MOEX и NYSE с 15 минутной задержкой.
@@ -108,7 +109,7 @@ export class DashboardBrickComponent extends UI {
                             биржи <span class="no-wrap">в Нью-Йорке</span>
                             (<a href="https://www.nyse.com/markets/hours-calendars" target="_blank">https://www.nyse.com/markets/hours-calendars</a>).
                         </span>
-                    </v-tooltip>
+                    </v-menu>
                 </v-flex>
             </v-layout>
         </v-container>
