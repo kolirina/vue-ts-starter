@@ -20,7 +20,7 @@
 import dayjs from "dayjs";
 import Decimal from "decimal.js";
 import {Component, Prop, UI} from "../app/ui";
-import {DealImportError, DealsImportProvider, ImportProviderFeatures, ImportResponse} from "../services/importService";
+import {DealImportError, DealsImportProvider, ImportProviderFeatures, ImportResponse, ImportResultLabel} from "../services/importService";
 import {PortfolioParams} from "../services/portfolioService";
 import {DateUtils} from "../utils/dateUtils";
 import {ImportErrorsTable} from "./imp/importErrorsTable";
@@ -31,7 +31,7 @@ import {ImportErrorsTable} from "./imp/importErrorsTable";
         <div class="import-result-info">
             <!-- Блок отображается если из отчета не импортируются начисления или если импортируются, и есть новые события -->
             <expanded-panel v-if="hasNewEventsAfterImport || importProviderFeatures.autoEvents" name="calculations" :value="[expandPanels]"
-                            class="selectable import-history">
+                            class="selectable import-history" :label="ImportResultLabel.ATTENTION">
                 <template #header>
                     <span>Отчет {{ importProviderFeatures.autoEvents ? "не" : "" }} содержит информацию по дивидендам, купонам, амортизации</span>
                     <tooltip v-if="importProviderFeatures.autoEvents">
@@ -57,7 +57,8 @@ import {ImportErrorsTable} from "./imp/importErrorsTable";
                 </span>
             </expanded-panel>
 
-            <expanded-panel v-if="notFoundShareErrors.length" name="tickers" :value="[expandPanels]" class="selectable import-history">
+            <expanded-panel v-if="notFoundShareErrors.length" name="tickers" :value="[expandPanels]" class="selectable import-history"
+                            :label="ImportResultLabel.CRITICAL">
                 <template #header>
                     <span>Не распознаны тикеры следующих бумаг</span>
                     <tooltip>
@@ -72,7 +73,7 @@ import {ImportErrorsTable} from "./imp/importErrorsTable";
             </expanded-panel>
 
             <expanded-panel v-if="isQuik || importProviderFeatures.confirmMoneyBalance" name="residuals" :value="[expandPanels]"
-                            class="selectable import-history">
+                            class="selectable import-history" :label="ImportResultLabel.ATTENTION">
                 <template #header>
                     <span>Остаток денежных средств может отличаться от брокера</span>
                     <tooltip>
@@ -91,12 +92,13 @@ import {ImportErrorsTable} from "./imp/importErrorsTable";
                 </template>
             </expanded-panel>
 
-            <expanded-panel v-if="isFinam" name="residuals" :value="[expandPanels]" class="selectable import-history">
+            <expanded-panel v-if="hasProviderAutoCommission" name="residuals" :value="[expandPanels]" class="selectable import-history"
+                            :label="ImportResultLabel.ATTENTION">
                 <template #header>
                     <span>Сверьте расходы по комиссиям брокера</span>
                 </template>
                 Отчет вашего брокера не содержит информацию об удерживаемых комиссиях по сделкам. <br/>
-                <template v-if="finamHasFixFee">
+                <template v-if="hasAutoCommission">
                     Вы указали в настройках Портфеля размер фиксированной комиссии, и мы расчитали ее автоматически.<br/>
                 </template>
                 <template v-else>
@@ -106,14 +108,16 @@ import {ImportErrorsTable} from "./imp/importErrorsTable";
                 Вы можете сверить результат и добавить корректирующию сделку типа Расход, если будет необходимо.
             </expanded-panel>
 
-            <expanded-panel v-if="requireMoreReports" name="requireMoreReports" :value="[expandPanels]" class="selectable import-history">
+            <expanded-panel v-if="requireMoreReports" name="requireMoreReports" :value="[expandPanels]" class="selectable import-history"
+                            :label="ImportResultLabel.CRITICAL">
                 <template #header>
                     <span>Не хватает сделок для формирования портфеля</span>
                 </template>
                 Для формирования портфеля загрузите отчет(отчеты) за все время ведения счета.
             </expanded-panel>
 
-            <expanded-panel v-if="otherErrors.length" name="otherErrors" :value="[expandPanels]" class="selectable import-history">
+            <expanded-panel v-if="otherErrors.length" name="otherErrors" :value="[expandPanels]" class="selectable import-history"
+                            :label="ImportResultLabel.ATTENTION">
                 <template #header>
                     <span>При импорте отчета возникли следующие ошибки</span>
                     <tooltip>
@@ -123,7 +127,8 @@ import {ImportErrorsTable} from "./imp/importErrorsTable";
                 <import-errors-table :error-items="otherErrors"></import-errors-table>
             </expanded-panel>
 
-            <expanded-panel v-if="repoTradeErrors.length" name="repoTradeErrors" :value="[expandPanels]" class="selectable import-history">
+            <expanded-panel v-if="repoTradeErrors.length" name="repoTradeErrors" :value="[expandPanels]" class="selectable import-history"
+                            :label="ImportResultLabel.INFO">
                 <template #header>
                     <span>РЕПО сделки не были добавлены</span>
                     <tooltip>
@@ -143,7 +148,8 @@ import {ImportErrorsTable} from "./imp/importErrorsTable";
                 </span>
             </expanded-panel>
 
-            <expanded-panel v-if="duplicateTradeErrors.length" name="duplicateTradeErrors" :value="[expandPanels]" class="selectable import-history">
+            <expanded-panel v-if="duplicateTradeErrors.length" name="duplicateTradeErrors" :value="[expandPanels]" class="selectable import-history"
+                            :label="ImportResultLabel.INFO">
                 <template #header>
                     <span>Некоторые сделки уже были импортированые ранее</span>
                     <tooltip>
@@ -157,7 +163,8 @@ import {ImportErrorsTable} from "./imp/importErrorsTable";
                 </span>
             </expanded-panel>
 
-            <expanded-panel v-if="isAlfaDirekt || isFf" :value="[expandPanels]" class="selectable import-history">
+            <expanded-panel v-if="isAlfaDirekt || isFf" :value="[expandPanels]" class="selectable import-history"
+                            :label="ImportResultLabel.ATTENTION">
                 <template #header>
                     <span>Комиссии по бумагам в валюте не переносятся</span>
                 </template>
@@ -200,6 +207,8 @@ export class ImportResultComponent extends UI {
     @Prop({type: Boolean, default: true})
     /** Признак наличия события после импорта */
     private expandPanels: boolean;
+    /** Перечисление результатов импорта для доступа из шаблона */
+    private ImportResultLabel = ImportResultLabel;
 
     private get notFoundShareErrors(): DealImportError[] {
         return this.importResult ? this.importResult.errors.filter(error => error.shareNotFound) : [];
@@ -218,17 +227,17 @@ export class ImportResultComponent extends UI {
         return this.importResult ? this.importResult.errors.filter(error => error.message === ImportResultComponent.DUPLICATE_MSG) : [];
     }
 
-    private get isFinam(): boolean {
-        return this.importProvider === DealsImportProvider.FINAM;
+    private get hasProviderAutoCommission(): boolean {
+        return [DealsImportProvider.FINAM, DealsImportProvider.BCS].includes(this.importProvider);
     }
 
     private get isQuik(): boolean {
         return this.importProvider === DealsImportProvider.QUIK;
     }
 
-    private get finamHasFixFee(): boolean {
+    private get hasAutoCommission(): boolean {
         const fixFee = this.portfolioParams.fixFee ? new Decimal(this.portfolioParams.fixFee) : null;
-        return this.isFinam && !fixFee && !fixFee.isZero();
+        return this.hasProviderAutoCommission && !fixFee && !fixFee.isZero();
     }
 
     private get isAlfaDirekt(): boolean {
@@ -253,5 +262,41 @@ export class ImportResultComponent extends UI {
      */
     private get requireMoreReports(): boolean {
         return DateUtils.parseDate(this.importResult?.lastTradeDate).get("year") < dayjs().get("year");
+    }
+
+    private get resultLabels(): ImportResultLabel[] {
+        const labels: ImportResultLabel[] = [];
+        if (this.hasNewEventsAfterImport || this.importProviderFeatures.autoEvents) {
+            labels.push(ImportResultLabel.ATTENTION);
+        }
+        if (this.notFoundShareErrors.length) {
+            labels.push(ImportResultLabel.CRITICAL);
+        }
+        if (this.isQuik || this.importProviderFeatures.confirmMoneyBalance) {
+            labels.push(ImportResultLabel.ATTENTION);
+        }
+        if (this.hasProviderAutoCommission) {
+            labels.push(ImportResultLabel.ATTENTION);
+        }
+        if (this.requireMoreReports) {
+            labels.push(ImportResultLabel.CRITICAL);
+        }
+        if (this.otherErrors.length) {
+            labels.push(ImportResultLabel.ATTENTION);
+        }
+        if (this.repoTradeErrors.length) {
+            labels.push(ImportResultLabel.INFO);
+        }
+        if (this.duplicateTradeErrors.length) {
+            labels.push(ImportResultLabel.INFO);
+        }
+        if (this.isAlfaDirekt || this.isFf) {
+            labels.push(ImportResultLabel.ATTENTION);
+        }
+        const reduced: { [key: string]: ImportResultLabel } = {};
+        labels.forEach(label => {
+           reduced[label] = label;
+        });
+        return Object.keys(reduced).map(key => reduced[key]);
     }
 }
