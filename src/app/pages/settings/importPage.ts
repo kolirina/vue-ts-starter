@@ -554,7 +554,7 @@ export class ImportPage extends UI {
                     return;
                 }
             }
-            if (this.isFinam && this.portfolioParams.fixFee !== this.portfolioParams.fixFee) {
+            if (this.needUpdateAutoCommission && this.portfolioParams.fixFee !== this.portfolio.portfolioParams.fixFee) {
                 await this.portfolioService.updatePortfolio(this.portfolioParams);
             }
             this.importResult = await this.importReport();
@@ -762,7 +762,7 @@ export class ImportPage extends UI {
      */
     private get hasNotesAfterImport(): boolean {
         return this.hasNewEventsAfterImport || this.importProviderFeatures.autoEvents || this.notFoundShareErrors.length > 0 ||
-            this.isQuik || this.importProviderFeatures.confirmMoneyBalance || this.isFinam || this.requireMoreReports || this.otherErrors.length > 0 ||
+            this.isQuik || this.importProviderFeatures.confirmMoneyBalance || this.needUpdateAutoCommission || this.requireMoreReports || this.otherErrors.length > 0 ||
             this.repoTradeErrors.length > 0 || this.duplicateTradeErrors.length > 0;
     }
 
@@ -790,8 +790,8 @@ export class ImportPage extends UI {
         return 0;
     }
 
-    private get isFinam(): boolean {
-        return this.selectedProvider === DealsImportProvider.FINAM;
+    private get needUpdateAutoCommission(): boolean {
+        return [DealsImportProvider.FINAM, DealsImportProvider.BCS].includes(this.selectedProvider);
     }
 
     private get isQuik(): boolean {
