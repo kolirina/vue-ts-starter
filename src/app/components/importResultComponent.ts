@@ -20,8 +20,9 @@
 import dayjs from "dayjs";
 import Decimal from "decimal.js";
 import {Component, Prop, UI} from "../app/ui";
-import {DealImportError, DealsImportProvider, ImportProviderFeatures, ImportResponse, ImportResultLabel} from "../services/importService";
+import {DealImportError, DealsImportProvider, ImportProviderFeatures, ImportResponse} from "../services/importService";
 import {PortfolioParams} from "../services/portfolioService";
+import {ResultLabel} from "../types/types";
 import {DateUtils} from "../utils/dateUtils";
 import {ImportErrorsTable} from "./imp/importErrorsTable";
 
@@ -31,7 +32,7 @@ import {ImportErrorsTable} from "./imp/importErrorsTable";
         <div class="import-result-info">
             <!-- Блок отображается если из отчета не импортируются начисления или если импортируются, и есть новые события -->
             <expanded-panel v-if="hasNewEventsAfterImport || importProviderFeatures.autoEvents" name="calculations" :value="[expandPanels]"
-                            class="selectable import-history" :label="ImportResultLabel.ATTENTION">
+                            class="selectable import-history" :label="ResultLabel.ATTENTION">
                 <template #header>
                     <span>Отчет {{ importProviderFeatures.autoEvents ? "не" : "" }} содержит информацию по дивидендам, купонам, амортизации</span>
                     <tooltip v-if="importProviderFeatures.autoEvents">
@@ -58,7 +59,7 @@ import {ImportErrorsTable} from "./imp/importErrorsTable";
             </expanded-panel>
 
             <expanded-panel v-if="notFoundShareErrors.length" name="tickers" :value="[expandPanels]" class="selectable import-history"
-                            :label="ImportResultLabel.CRITICAL">
+                            :label="ResultLabel.CRITICAL">
                 <template #header>
                     <span>Не распознаны тикеры следующих бумаг</span>
                     <tooltip>
@@ -73,7 +74,7 @@ import {ImportErrorsTable} from "./imp/importErrorsTable";
             </expanded-panel>
 
             <expanded-panel v-if="isQuik || importProviderFeatures.confirmMoneyBalance" name="residuals" :value="[expandPanels]"
-                            class="selectable import-history" :label="ImportResultLabel.ATTENTION">
+                            class="selectable import-history" :label="ResultLabel.ATTENTION">
                 <template #header>
                     <span>Остаток денежных средств может отличаться от брокера</span>
                     <tooltip>
@@ -93,7 +94,7 @@ import {ImportErrorsTable} from "./imp/importErrorsTable";
             </expanded-panel>
 
             <expanded-panel v-if="hasProviderAutoCommission" name="residuals" :value="[expandPanels]" class="selectable import-history"
-                            :label="ImportResultLabel.ATTENTION">
+                            :label="ResultLabel.ATTENTION">
                 <template #header>
                     <span>Сверьте расходы по комиссиям брокера</span>
                 </template>
@@ -109,7 +110,7 @@ import {ImportErrorsTable} from "./imp/importErrorsTable";
             </expanded-panel>
 
             <expanded-panel v-if="requireMoreReports" name="requireMoreReports" :value="[expandPanels]" class="selectable import-history"
-                            :label="ImportResultLabel.CRITICAL">
+                            :label="ResultLabel.CRITICAL">
                 <template #header>
                     <span>Не хватает сделок для формирования портфеля</span>
                 </template>
@@ -117,7 +118,7 @@ import {ImportErrorsTable} from "./imp/importErrorsTable";
             </expanded-panel>
 
             <expanded-panel v-if="otherErrors.length" name="otherErrors" :value="[expandPanels]" class="selectable import-history"
-                            :label="ImportResultLabel.ATTENTION">
+                            :label="ResultLabel.ATTENTION">
                 <template #header>
                     <span>При импорте отчета возникли следующие ошибки</span>
                     <tooltip>
@@ -128,7 +129,7 @@ import {ImportErrorsTable} from "./imp/importErrorsTable";
             </expanded-panel>
 
             <expanded-panel v-if="repoTradeErrors.length" name="repoTradeErrors" :value="[expandPanels]" class="selectable import-history"
-                            :label="ImportResultLabel.INFO">
+                            :label="ResultLabel.INFO">
                 <template #header>
                     <span>РЕПО сделки не были добавлены</span>
                     <tooltip>
@@ -149,7 +150,7 @@ import {ImportErrorsTable} from "./imp/importErrorsTable";
             </expanded-panel>
 
             <expanded-panel v-if="duplicateTradeErrors.length" name="duplicateTradeErrors" :value="[expandPanels]" class="selectable import-history"
-                            :label="ImportResultLabel.INFO">
+                            :label="ResultLabel.INFO">
                 <template #header>
                     <span>Некоторые сделки уже были импортированые ранее</span>
                     <tooltip>
@@ -164,7 +165,7 @@ import {ImportErrorsTable} from "./imp/importErrorsTable";
             </expanded-panel>
 
             <expanded-panel v-if="isAlfaDirekt || isFf" :value="[expandPanels]" class="selectable import-history"
-                            :label="ImportResultLabel.ATTENTION">
+                            :label="ResultLabel.ATTENTION">
                 <template #header>
                     <span>Комиссии по бумагам в валюте не переносятся</span>
                 </template>
@@ -208,7 +209,7 @@ export class ImportResultComponent extends UI {
     /** Признак наличия события после импорта */
     private expandPanels: boolean;
     /** Перечисление результатов импорта для доступа из шаблона */
-    private ImportResultLabel = ImportResultLabel;
+    private ResultLabel = ResultLabel;
 
     private get notFoundShareErrors(): DealImportError[] {
         return this.importResult ? this.importResult.errors.filter(error => error.shareNotFound) : [];
@@ -264,38 +265,38 @@ export class ImportResultComponent extends UI {
         return DateUtils.parseDate(this.importResult?.lastTradeDate).get("year") < dayjs().get("year");
     }
 
-    private get resultLabels(): ImportResultLabel[] {
-        const labels: ImportResultLabel[] = [];
+    private get resultLabels(): ResultLabel[] {
+        const labels: ResultLabel[] = [];
         if (this.hasNewEventsAfterImport || this.importProviderFeatures.autoEvents) {
-            labels.push(ImportResultLabel.ATTENTION);
+            labels.push(ResultLabel.ATTENTION);
         }
         if (this.notFoundShareErrors.length) {
-            labels.push(ImportResultLabel.CRITICAL);
+            labels.push(ResultLabel.CRITICAL);
         }
         if (this.isQuik || this.importProviderFeatures.confirmMoneyBalance) {
-            labels.push(ImportResultLabel.ATTENTION);
+            labels.push(ResultLabel.ATTENTION);
         }
         if (this.hasProviderAutoCommission) {
-            labels.push(ImportResultLabel.ATTENTION);
+            labels.push(ResultLabel.ATTENTION);
         }
         if (this.requireMoreReports) {
-            labels.push(ImportResultLabel.CRITICAL);
+            labels.push(ResultLabel.CRITICAL);
         }
         if (this.otherErrors.length) {
-            labels.push(ImportResultLabel.ATTENTION);
+            labels.push(ResultLabel.ATTENTION);
         }
         if (this.repoTradeErrors.length) {
-            labels.push(ImportResultLabel.INFO);
+            labels.push(ResultLabel.INFO);
         }
         if (this.duplicateTradeErrors.length) {
-            labels.push(ImportResultLabel.INFO);
+            labels.push(ResultLabel.INFO);
         }
         if (this.isAlfaDirekt || this.isFf) {
-            labels.push(ImportResultLabel.ATTENTION);
+            labels.push(ResultLabel.ATTENTION);
         }
-        const reduced: { [key: string]: ImportResultLabel } = {};
+        const reduced: { [key: string]: ResultLabel } = {};
         labels.forEach(label => {
-           reduced[label] = label;
+           reduced[label.label] = label;
         });
         return Object.keys(reduced).map(key => reduced[key]);
     }

@@ -1,6 +1,7 @@
 import Component from "vue-class-component";
 import {Prop} from "vue-property-decorator";
 import {UI} from "../app/ui";
+import {ResultLabel} from "../types/types";
 
 @Component({
     // language=Vue
@@ -53,4 +54,7 @@ export class ExpandedPanel extends UI {
     private customMenu: boolean;
     @Prop({type: Boolean, default: false})
     private alwaysOpen: boolean;
+    /** Метка */
+    @Prop({type: Object, required: false})
+    private label: ResultLabel;
 }

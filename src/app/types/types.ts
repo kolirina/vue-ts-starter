@@ -803,6 +803,24 @@ export class BondType extends (EnumType as IStaticEnum<BondType>) {
     }
 }
 
+/**
+ * Перечисление меток к результатам импорта
+ */
+@Enum("code")
+export class ResultLabel extends (EnumType as IStaticEnum<ResultLabel>) {
+
+    static readonly CRITICAL = new ResultLabel("CRITICAL", "Критично",
+        "Обратите внимание! Комментарий к результату импорта отражает, что необходимо сделать для формирования корректного портфеля. ");
+    static readonly ATTENTION = new ResultLabel("ATTENTION", "Важно учесть",
+        "Ознакомьтесь с особенность импорта. Учтите это для формирования корректного портфеля. При необходимости внести изменения.");
+    static readonly INFO = new ResultLabel("INFO", "Для справки",
+        "Носит информационных характер. Дополнительно ничего выполнять для формирования портфеля не требуется.");
+
+    private constructor(public code: string, public label: string, public description: string) {
+        super();
+    }
+}
+
 export enum Theme {
     DAY = "DAY",
     NIGHT = "NIGHT"

@@ -237,12 +237,3 @@ export enum UserLogStatus {
 export enum UserImportState {
     REVERTED = "REVERTED"
 }
-
-/**
- * Перечисление меток к результатам импорта
- */
-export enum ImportResultLabel {
-    CRITICAL = "CRITICAL",
-    ATTENTION = "ATTENTION",
-    INFO = "INFO",
-}
