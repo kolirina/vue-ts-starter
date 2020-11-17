@@ -57,7 +57,7 @@ const MainStore = namespace(StoreType.MAIN);
             </v-tooltip>
             <div class="tags-menu__content">
                 <div v-if="selectedTags.length" class="tags-menu__selected">
-                    <tag-item v-for="tag in selectedTags" :key="tag.id" :tag="tag" @deleteTag="onDeleteSelectedTag"></tag-item>
+                    <tag-item v-for="tag in selectedTags" :key="tag.id" :tag="tag" @deleteTag="onDeleteSelectedTag" @select="switchCategory"></tag-item>
                 </div>
                 <div v-if="allowActions" class="tags-menu__tabs">
                     <v-tabs v-if="selectedCategory">
@@ -210,6 +210,7 @@ export class ShareTags extends UI {
         await this.tagsService.deleteTag(tag.id);
         const tagCategory = this.tagCategories.find(tagCategoryItem => tagCategoryItem.id === tag.categoryId);
         tagCategory.tags = tagCategory.tags.filter(tagItem => tagItem.id !== tag.id);
+        this.selectedTags = this.selectedTags.filter(t => t.id !== tag.id);
     }
 
     /**
@@ -223,8 +224,20 @@ export class ShareTags extends UI {
                 "неограниченное количество тэгов.");
             return;
         }
-        this.selectedTags = this.selectedTags.filter(t => t.categoryId !== tag.categoryId);
-        this.selectedTags.push(tag);
+        const index = this.selectedTags.findIndex(value => value.categoryId === tag.categoryId);
+        if (index !== -1) {
+            this.selectedTags.splice(index, 1, tag);
+        } else {
+            this.selectedTags.push(tag);
+        }
+    }
+
+    /**
+     * Переключает категорию при клике на уже выбранный тэг
+     * @param tag тэг
+     */
+    private switchCategory(tag: Tag): void {
+        this.selectedCategory = this.tagCategories.find(category => category.id === tag.categoryId);
     }
 
     /**

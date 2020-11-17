@@ -49,7 +49,7 @@ import {TagItem} from "./tagItem";
                 <div @click="showCreateTagField" title="Добавить тэг" class="tags__add-btn"></div>
                 <div v-show="createTag" class="field-with-btns w100pc">
                     <v-text-field label="Введите новый тэг" v-model="tagName" :counter="50" ref="tagNameInput"
-                                  v-validate="'required|max:50'" :error-messages="errors.collect('tagName')" name="tagName"
+                                  v-validate="'required|max:50'" maxLength="50" :error-messages="errors.collect('tagName')" name="tagName"
                                   @keydown.enter="addTag" @keydown.esc="closeAddTag" class="small-size">
                     </v-text-field>
                     <div class="field-with-btns__actions">

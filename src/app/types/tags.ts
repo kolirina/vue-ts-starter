@@ -38,7 +38,15 @@ export const DEFAULT_TAGS: NewTagRequest[] = [
     },
     {
         categoryId: null,
-        name: "Европа"
+        name: "Германия"
+    },
+    {
+        categoryId: null,
+        name: "Великобритания"
+    },
+    {
+        categoryId: null,
+        name: "Италия"
     },
     {
         categoryId: null,
