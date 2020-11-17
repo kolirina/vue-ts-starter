@@ -81,7 +81,7 @@
 
     .v-list__tile {
       font-size: 14px;
-      font-family: "Open Sans";
+      font-family: "Open Sans", sans-serif;
     }
 
     .v-list {
@@ -91,6 +91,25 @@
 
   .v-expansion-panel__header {
     position: relative;
+  }
+
+  // индикаторы панели
+  &__indicator {
+    padding-left: 16px;
+
+    &:before {
+      content: "";
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      top: 7px;
+      left: 0;
+      border-radius: 50%;
+    }
+
+    &.indicator-critical:before {background-color: #FF3E70;}
+    &.indicator-attention:before {background-color: #FFE600;}
+    &.indicator-info:before {background-color: #84ABEF;}
   }
 }
 

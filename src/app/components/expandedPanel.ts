@@ -26,7 +26,7 @@ import {ResultLabel} from "../types/types";
                         <i v-if="!alwaysOpen" class="exp-panel-arrow"></i>
                         <div class="exp-panel-attach" :id="'exp-panel-attach-' + name"></div>
                     </template>
-                    <div slot="header">
+                    <div slot="header" :class="headerClass">
                         <slot name="header"></slot>
                     </div>
 
@@ -57,4 +57,8 @@ export class ExpandedPanel extends UI {
     /** Метка */
     @Prop({type: Object, required: false})
     private label: ResultLabel;
+
+    get headerClass(): string {
+        return this.label ? `exp-panel__indicator indicator-${this.label.code.toLowerCase()}` : "";
+    }
 }
