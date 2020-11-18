@@ -105,9 +105,9 @@ export class DashboardBrickComponent extends UI {
                         <div slot="activator" class="intel-icon icon-stock"></div>
                         <span>
                             Котировки активов обновляются в рабочее время MOEX и NYSE с 15 минутной задержкой.
-                            Расписание Московской биржи (<a href="https://www.moex.com/s223" target="_blank">https://www.moex.com/s223</a>),
-                            биржи <span class="no-wrap">в Нью-Йорке</span>
-                            (<a href="https://www.nyse.com/markets/hours-calendars" target="_blank">https://www.nyse.com/markets/hours-calendars</a>).
+                            <a href="https://www.moex.com/s223" target="_blank">Расписание Московской биржи</a>,
+                            биржи <span class="no-wrap">
+                            в <a href="https://www.nyse.com/markets/hours-calendars" target="_blank">Нью-Йорке</a></span>.
                         </span>
                     </v-menu>
                 </v-flex>

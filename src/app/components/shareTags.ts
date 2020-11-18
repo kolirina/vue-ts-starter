@@ -42,15 +42,17 @@ const MainStore = namespace(StoreType.MAIN);
             <v-tooltip bottom slot="activator">
                 <div class="relative" slot="activator" @click="showTagsPanel">
                     <svg width="28" height="24" viewBox="0 0 28 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M11.4813 18.943L6.33644 13.7981C6.00561 13.4673 5.80123 13.0309 5.75887 12.565L5.33461 7.89807C5.22153 6.6542 6.26359 5.61213 7.50746 5.72521L12.1744
+                        <path d="M11.4813 18.943L6.33644 13.7981C6.00561 13.4673 5.80123 13.0309 5.75887 12.565L5.33461 7.89807C5.22153 6.6542 6.26359 5.61213 7.50746 5.72521L12.1744
                      6.14947C12.6403 6.19183 13.0767 6.39621 13.4075 6.72705L18.5523 11.8719C19.3334 12.6529 19.3334 13.9193 18.5523 14.7003L14.3097 18.943C13.5287 19.724 12.2623
                       19.724 11.4813 18.943Z" :stroke="selectedTags.length ? selectedTags[0].color : '#84ABEF'" stroke-width="2"/>
-                    <circle cx="10.0671" cy="10.4575" r="1" transform="rotate(-45 10.0671 10.4575)" :stroke="selectedTags.length ? selectedTags[0].color : '#84ABEF'" stroke-width="2"/>
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M17.8453 5.50796C18.2358 5.11743 18.8689 5.11743 19.2595 5.50796L24.9163 11.1648C26.0879 12.3364 26.0879
+                        <circle cx="10.0671" cy="10.4575" r="1" transform="rotate(-45 10.0671 10.4575)" :stroke="selectedTags.length ? selectedTags[0].color : '#84ABEF'"
+                                stroke-width="2"/>
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M17.8453 5.50796C18.2358 5.11743 18.8689 5.11743 19.2595 5.50796L24.9163 11.1648C26.0879 12.3364 26.0879
                      14.2359 24.9163 15.4075L19.2595 21.0643C18.8689 21.4548 18.2358 21.4548 17.8453 21.0643C17.4547 20.6738 17.4547 20.0406 17.8453 19.6501L23.5021 13.9932C23.8926
-                      13.6027 23.8926 12.9696 23.5021 12.579L17.8453 6.92217C17.4547 6.53165 17.4547 5.89848 17.8453 5.50796Z" :fill="selectedTags.length > 1 ? selectedTags[1].color : '#84ABEF'"/>
+                      13.6027 23.8926 12.9696 23.5021 12.579L17.8453 6.92217C17.4547 6.53165 17.4547 5.89848 17.8453 5.50796Z"
+                              :fill="selectedTags.length > 1 ? selectedTags[1].color : '#84ABEF'"/>
                     </svg>
-                    <span v-if="selectedTags.length" class="tags-counter">{{ selectedTags.length }}</span>
+                    <span v-if="shareTagsCount" class="tags-counter">{{ shareTagsCount }}</span>
                 </div>
                 <span v-if="allowActions">Настройте тэги для данного актива</span>
                 <span v-else>Назначенные тэги по активу</span>
@@ -149,25 +151,7 @@ export class ShareTags extends UI {
      */
     private initSelectedTags(): void {
         this.selectedTags = [];
-        const key = `${this.share.shareType}:${this.share.id}`;
-        const shareTags = this.portfolioTags[key];
-        if (shareTags) {
-            const tagsByCategoryIdAndByTagId: { [key: number]: { [key: number]: Tag } } = {};
-            this.tagCategories.forEach(tagCategory => {
-                const tagsById: { [key: number]: Tag } = {};
-                tagCategory.tags.forEach(tag => tagsById[tag.id] = tag);
-                tagsByCategoryIdAndByTagId[tagCategory.id] = tagsById;
-            });
-            shareTags.forEach(shareTag => {
-                const tagsById = tagsByCategoryIdAndByTagId[shareTag.categoryId];
-                if (tagsById) {
-                    const tag = tagsById[shareTag.tagId];
-                    if (tag) {
-                        this.selectedTags.push(tag);
-                    }
-                }
-            });
-        }
+        this.selectedTags = this.getShareTags();
     }
 
     /**
@@ -183,7 +167,9 @@ export class ShareTags extends UI {
      */
     private showTagsPanel(): void {
         this.initSelectedTags();
-        setTimeout(() => { window.dispatchEvent(new Event("resize")); }, 100);
+        setTimeout(() => {
+            window.dispatchEvent(new Event("resize"));
+        }, 100);
     }
 
     @Watch("showComponent")
@@ -265,6 +251,7 @@ export class ShareTags extends UI {
             ticker: this.share.ticker
         };
         await this.portfolioService.updateTags(this.portfolio.id, this.portfolio.portfolioParams.tags, shareTags);
+        this.initSelectedTags();
         this.$snotify.info("Настройки тэгов успешно сохранены");
         this.showComponent = false;
     }
@@ -347,6 +334,34 @@ export class ShareTags extends UI {
             const tags = this.portfolioTags[shareKey];
             return tags.every(tag => tagIds.includes(tag.tagId));
         });
+    }
+
+    private getShareTags(): Tag[] {
+        const tags: Tag[] = [];
+        const key = `${this.share.shareType}:${this.share.id}`;
+        const shareTags = this.portfolioTags[key];
+        if (shareTags) {
+            const tagsByCategoryIdAndByTagId: { [key: number]: { [key: number]: Tag } } = {};
+            this.tagCategories.forEach(tagCategory => {
+                const tagsById: { [key: number]: Tag } = {};
+                tagCategory.tags.forEach(tag => tagsById[tag.id] = tag);
+                tagsByCategoryIdAndByTagId[tagCategory.id] = tagsById;
+            });
+            shareTags.forEach(shareTag => {
+                const tagsById = tagsByCategoryIdAndByTagId[shareTag.categoryId];
+                if (tagsById) {
+                    const tag = tagsById[shareTag.tagId];
+                    if (tag) {
+                        tags.push(tag);
+                    }
+                }
+            });
+        }
+        return tags;
+    }
+
+    private get shareTagsCount(): number {
+        return this.getShareTags().length;
     }
 
     private get allowActions(): boolean {
