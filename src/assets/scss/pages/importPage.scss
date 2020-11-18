@@ -482,6 +482,41 @@
   padding-bottom: 32px;
   border-bottom: 1px solid $sidebar-hr-color;
 
+  &__header {
+    display: flex;
+    flex-wrap: wrap;
+    font-weight: 600;
+    font-size: 13px;
+    margin-bottom: 16px;
+
+    > div {
+      @extend %result-panel;
+      margin-right: 12px;
+
+      &:last-child {margin-right: 0}
+
+      &.import-result__critical {
+        background: rgba(#FF3E70, 0.2);
+
+        &:before {background: #FF3E70}
+      }
+
+      &.import-result__attention {
+        background: rgba(#FFE600, 0.2);
+
+        &:before {background: #FFE600}
+      }
+
+      &.import-result__info {
+        background: rgba(#84ABEF, 0.2);
+
+        &:before {background: #84ABEF}
+      }
+    }
+
+    &-name {margin-right: auto}
+  }
+
   .exp-panel {
     background: $main--bg-color;
     border-radius: 4px;
@@ -501,6 +536,18 @@
       border-bottom: 1px solid $sidebar-hr-color;
       margin-bottom: 16px;
       padding-bottom: 12px;
+    }
+  }
+
+  @media only screen and (max-width: $xs-breakpoint) {
+    &__header {
+
+      &-name {width: 100%}
+
+      > div {
+        margin-top: 6px;
+        margin-right: 6px;
+      }
     }
   }
 }
@@ -538,40 +585,6 @@
   }
 }
 
-.import-result {
-  &__header {
-    display: flex;
-    font-weight: 600;
-    font-size: 13px;
-    margin-bottom: 16px;
-
-    > div {
-      @extend %result-panel;
-      margin-left: 12px;
-
-      &:first-child {margin-left: auto;}
-
-      &.import-result__critical {
-        background: rgba(#FF3E70, 0.2);
-
-        &:before {background: #FF3E70}
-      }
-
-      &.import-result__attention {
-        background: rgba(#FFE600, 0.2);
-
-        &:before {background: #FFE600}
-      }
-
-      &.import-result__info {
-        background: rgba(#84ABEF, 0.2);
-
-        &:before {background: #84ABEF}
-      }
-    }
-  }
-}
-
 %provider-image {
   border: 1px solid $sidebar-hr-color;
   border-radius: 50%;
@@ -586,6 +599,8 @@
   padding: 0 8px 0 22px;
   font-size: 12px;
   line-height: 24px;
+  height: 24px;
+  white-space: nowrap;
   font-weight: normal;
   border-radius: 4px;
   position: relative;

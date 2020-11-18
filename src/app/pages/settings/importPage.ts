@@ -27,7 +27,7 @@ import {PortfolioParams, PortfolioService} from "../../services/portfolioService
 import {SystemPropertyName} from "../../services/systemPropertiesService";
 import {CurrencyUnit} from "../../types/currency";
 import {EventType} from "../../types/eventType";
-import {MapType, Portfolio, ResultLabel, Share, Status} from "../../types/types";
+import {MapType, Portfolio, Share, Status} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {DateUtils} from "../../utils/dateUtils";
 import {FileUtils} from "../../utils/fileUtils";
@@ -281,13 +281,7 @@ const MainStore = namespace(StoreType.MAIN);
                                             <div class="info-block margB24">
                                                 Портфель почти сформирован, для полного соответствия, возможно, потребуются дополнительные действия
                                             </div>
-                                            <div class="import-result__header">
-                                                Комментарии к отчету
-                                                <div :class="'import-result__' + resultLabel.CRITICAL.code.toLowerCase()">{{ resultLabel.CRITICAL.label }}</div>
-                                                <div :class="'import-result__' + resultLabel.ATTENTION.code.toLowerCase()">{{ resultLabel.ATTENTION.label }}</div>
-                                                <div :class="'import-result__' + resultLabel.INFO.code.toLowerCase()">{{ resultLabel.INFO.label }}</div>
-                                            </div>
-                                            <import-result v-if="false" :import-result="importResult" :import-provider="selectedProvider"
+                                            <import-result :import-result="importResult" :import-provider="selectedProvider"
                                                            :portfolio-params="portfolioParams" :import-provider-features="importProviderFeatures"
                                                            :has-new-events-after-import="hasNewEventsAfterImport"></import-result>
                                         </template>
@@ -385,8 +379,6 @@ export class ImportPage extends UI {
     private autoEvents = true;
     /** Признак инициализации */
     private initialized = false;
-    /** Метки к результатам импорта */
-    private resultLabel = ResultLabel;
 
     /**
      * Инициализирует необходимые для работы данные

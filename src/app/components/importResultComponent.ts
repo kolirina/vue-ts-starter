@@ -30,6 +30,12 @@ import {ImportErrorsTable} from "./imp/importErrorsTable";
     // language=Vue
     template: `
         <div class="import-result-info">
+            <div class="import-result-info__header">
+                <span class="import-result-info__header-name">Комментарии к отчету</span>
+                <div v-for="result in resultLabels" :class="'import-result__' + result.code.toLowerCase()">
+                    {{result.label}}
+                </div>
+            </div>
             <!-- Блок отображается если из отчета не импортируются начисления или если импортируются, и есть новые события -->
             <expanded-panel v-if="hasNewEventsAfterImport || importProviderFeatures.autoEvents" name="calculations" :value="[expandPanels]"
                             class="selectable import-history" :label="ResultLabel.ATTENTION">
