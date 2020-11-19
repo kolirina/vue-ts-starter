@@ -484,12 +484,13 @@
 
   &__header {
     display: flex;
+    align-items: center;
     flex-wrap: wrap;
     font-weight: 600;
     font-size: 13px;
     margin-bottom: 16px;
 
-    > div {
+    .import-result_tag {
       @extend %result-panel;
       margin-right: 12px;
 
@@ -544,7 +545,7 @@
 
       &-name {width: 100%}
 
-      > div {
+      .import-result_tag {
         margin-top: 6px;
         margin-right: 6px;
       }
