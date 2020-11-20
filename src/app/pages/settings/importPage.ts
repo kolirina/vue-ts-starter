@@ -277,14 +277,14 @@ const MainStore = namespace(StoreType.MAIN);
                                                                  class="margT20"></import-instructions>
                                         </expanded-panel>
 
-                                        <div v-if="showResultsPanel" class="info-block">
-                                            Портфель почти сформирован, для полного соответствия, возможно, потребуются дополнительные действия
-                                        </div>
-
-                                        <import-result v-if="showResultsPanel" :import-result="importResult" :import-provider="selectedProvider"
-                                                       :portfolio-params="portfolioParams" :import-provider-features="importProviderFeatures"
-                                                       :has-new-events-after-import="hasNewEventsAfterImport"></import-result>
-
+                                        <template v-if="showResultsPanel">
+                                            <div class="info-block margB24">
+                                                Портфель почти сформирован, для полного соответствия, возможно, потребуются дополнительные действия
+                                            </div>
+                                            <import-result :import-result="importResult" :import-provider="selectedProvider"
+                                                           :portfolio-params="portfolioParams" :import-provider-features="importProviderFeatures"
+                                                           :has-new-events-after-import="hasNewEventsAfterImport"></import-result>
+                                        </template>
                                         <v-btn @click="goToPortfolio" color="primary" class="margR12">Перейти в портфель</v-btn>
                                         <v-btn @click="goToNewImport">Новый импорт</v-btn>
                                     </v-stepper-content>
