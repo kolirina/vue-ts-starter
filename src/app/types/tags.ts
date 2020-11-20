@@ -29,7 +29,7 @@ export const COLORS: { [key: number]: string } = {
     9: "#EC5766",
 };
 
-export const DEFAULT_TAG_CATEGORY_NAME = "Страны";
+export const DEFAULT_TAG_CATEGORY_NAME = "Регион";
 
 export const DEFAULT_TAGS: NewTagRequest[] = [
     {
@@ -38,23 +38,23 @@ export const DEFAULT_TAGS: NewTagRequest[] = [
     },
     {
         categoryId: null,
-        name: "Германия"
+        name: "Северная Америка"
     },
     {
         categoryId: null,
-        name: "Великобритания"
+        name: "Европа"
     },
     {
         categoryId: null,
-        name: "Италия"
+        name: "Южная Азия"
     },
     {
         categoryId: null,
-        name: "США"
+        name: "Восточная Азия"
     },
     {
         categoryId: null,
-        name: "Китай"
+        name: "Австралия и Океания"
     },
 ];
 
