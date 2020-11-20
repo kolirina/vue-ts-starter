@@ -400,11 +400,7 @@
     }
 
     &__status {
-      padding: 0 8px 0 22px;
-      font-size: 12px;
-      line-height: 24px;
-      border-radius: 4px;
-      position: relative;
+      @extend %result-panel;
       margin-left: auto;
 
       &.error {
@@ -423,16 +419,6 @@
         background: rgba(#6CC11A, 0.2) !important;
 
         &:before {background: #6CC11A}
-      }
-
-      &:before {
-        content: "";
-        position: absolute;
-        left: 8px;
-        top: 8px;
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
       }
     }
 
@@ -496,6 +482,42 @@
   padding-bottom: 32px;
   border-bottom: 1px solid $sidebar-hr-color;
 
+  &__header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    font-weight: 600;
+    font-size: 13px;
+    margin-bottom: 16px;
+
+    .import-result_tag {
+      @extend %result-panel;
+      margin-right: 12px;
+
+      &:last-child {margin-right: 0}
+
+      &.import-result__critical {
+        background: rgba(#FF3E70, 0.2);
+
+        &:before {background: #FF3E70}
+      }
+
+      &.import-result__attention {
+        background: rgba(#FFE600, 0.2);
+
+        &:before {background: #FFE600}
+      }
+
+      &.import-result__info {
+        background: rgba(#84ABEF, 0.2);
+
+        &:before {background: #84ABEF}
+      }
+    }
+
+    &-name {margin-right: auto}
+  }
+
   .exp-panel {
     background: $main--bg-color;
     border-radius: 4px;
@@ -515,6 +537,18 @@
       border-bottom: 1px solid $sidebar-hr-color;
       margin-bottom: 16px;
       padding-bottom: 12px;
+    }
+  }
+
+  @media only screen and (max-width: $xs-breakpoint) {
+    &__header {
+
+      &-name {width: 100%}
+
+      .import-result_tag {
+        margin-top: 6px;
+        margin-right: 6px;
+      }
     }
   }
 }
@@ -560,4 +594,25 @@
   margin-right: 12px;
   background-color: rgba(255,255,255,.3) !important;
   flex: none;
+}
+
+%result-panel {
+  padding: 0 8px 0 22px;
+  font-size: 12px;
+  line-height: 24px;
+  height: 24px;
+  white-space: nowrap;
+  font-weight: normal;
+  border-radius: 4px;
+  position: relative;
+
+  &:before {
+    content: "";
+    position: absolute;
+    left: 8px;
+    top: 8px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
 }
