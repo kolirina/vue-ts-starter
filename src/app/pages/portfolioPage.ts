@@ -187,6 +187,8 @@ export class PortfolioPage extends PortfolioBasedPage {
     private async createDefaultTagCategories(): Promise<void> {
         if (this.portfolio.overview.totalTradesCount && (await this.tagsService.getTagCategories()).length === 0) {
             await this.tagsService.createDefaults();
+            await this.tagsService.resetTagCategoriesCache();
+            await this.tagsService.getTagCategories();
         }
     }
 
