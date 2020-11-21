@@ -29,7 +29,6 @@ import {Filters} from "../platform/filters/Filters";
 import {Storage} from "../platform/services/storage";
 import {ExportType} from "../services/exportService";
 import {PortfolioBlockType} from "../services/onBoardingTourService";
-import {OverviewService} from "../services/overviewService";
 import {TableHeaders, TABLES_NAME, TablesService, TableType} from "../services/tablesService";
 import {BigMoney} from "../types/bigMoney";
 import {ChartType, HighStockEventsGroup, LineChartItem, SectorChartData} from "../types/charts/types";
@@ -267,8 +266,6 @@ export class BasePortfolioPage extends UI {
     private tablesService: TablesService;
     @Inject
     private storageService: Storage;
-    @Inject
-    private overviewService: OverviewService;
     /** Данные по портфелю */
     @Prop({default: null, required: true})
     private overview: Overview;
