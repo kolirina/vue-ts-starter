@@ -4,6 +4,7 @@ import {Decimal} from "decimal.js";
 import Highcharts, {AreaChart, ChartObject, DataPoint, Gradient, IndividualSeriesOptions, PlotLines, SeriesChart} from "highcharts";
 import Highstock from "highcharts/highstock";
 import {Filters} from "../platform/filters/Filters";
+import {AssetCategory} from "../services/assetService";
 import {ShareEvent} from "../services/eventService";
 import {BigMoney} from "../types/bigMoney";
 import {
@@ -21,9 +22,12 @@ import {
     SectorChartData,
     SimpleChartData
 } from "../types/charts/types";
+import {COUNTRY_BY_CODE} from "../types/country";
+import {CurrencyUnit} from "../types/currency";
 import {Operation} from "../types/operation";
 import {PortfolioAssetType} from "../types/portfolioAssetType";
-import {BondPortfolioRow, Overview, StockTypePortfolioRow} from "../types/types";
+import {PortfolioTag, Tag, TagCategory} from "../types/tags";
+import {Asset, AssetPortfolioRow, BondPortfolioRow, Overview, Share, StockTypePortfolioRow} from "../types/types";
 import {CommonUtils} from "./commonUtils";
 import {DateFormat, DateUtils} from "./dateUtils";
 
@@ -38,6 +42,7 @@ export class ChartUtils {
         // PROFIT: "<b>{point.period}</b>: {point.profit} {point.currencySymbol} <b>({point.description})</b>"
         PROFIT: "<b>{point.period}</b>: {point.profit} {point.currencySymbol}",
         EVENTS: "<b>{point.name}</b>: {point.y}<br/>{point.description}<br/><b>Всего</b>: {point.totalAmount}",
+        TAGS: "<br/>{point.description}<br/>Прибыль: {point.profit} {point.currencySymbol}<br/><b>Бумаги:</b><br/>{point.tickers}"
     };
     /** Цвета операций */
     static OPERATION_COLORS: { [key: string]: string } = {
@@ -152,7 +157,7 @@ export class ChartUtils {
     }
 
     static doFutureEventsChartData(futureEvents: ShareEvent[]): ColumnChartData {
-        const pointsByType: { [key: string]: CustomDataPoint[]} = {};
+        const pointsByType: { [key: string]: CustomDataPoint[] } = {};
         const reduced: { [key: string]: ShareEvent[] } = {};
         // группируем события в разбивке по периоду (Месяц Год)
         futureEvents
@@ -346,6 +351,86 @@ export class ChartUtils {
     }
 
     /**
+     * Возвращает набор для графика по тэгам
+     * @param overview данные по портфелю
+     * @param currencySymbol символ валюты
+     * @param portfolioTags тэги по бумагам в портфеле
+     * @param selectedCategory выбранная категория
+     * @param tagCategories категории пользователя
+     */
+    static doTagsChartData(overview: Overview, currencySymbol: string, portfolioTags: { [key: string]: PortfolioTag[] },
+                           selectedCategory: TagCategory, tagCategories: TagCategory[]): CustomDataPoint[] {
+        const data: CustomDataPoint[] = [];
+        if (!selectedCategory) {
+            return data;
+        }
+        const rows: Array<{ share: Share, currCost: string, profit: string, currency: string }> = [
+            ...overview.stockPortfolio.rows.map(row => {
+                return {share: row.share, currCost: row.currCost, profit: row.profit, currency: currencySymbol};
+            }),
+            ...overview.etfPortfolio.rows.map(row => {
+                return {share: row.share, currCost: row.currCost, profit: row.profit, currency: currencySymbol};
+            }),
+            ...overview.bondPortfolio.rows.map(row => {
+                return {share: row.bond, currCost: row.currCost, profit: row.profit, currency: currencySymbol};
+            }),
+            ...overview.assetPortfolio.rows.map(row => {
+                return {share: row.share, currCost: row.currCost, profit: row.profit, currency: currencySymbol};
+            })
+        ].filter(row => {
+            const shareKey = `${row.share.shareType}:${row.share.id}`;
+            const shareTags = portfolioTags[shareKey];
+            return shareTags && shareTags.some(category => category.categoryId === selectedCategory.id);
+        });
+        const rowsByTag: { [key: string]: [{ share: Share, currCost: string, profit: string, currency: string }] } = {};
+        const tagsByCategoryIdAndByTagId: { [key: number]: { [key: number]: Tag } } = {};
+        tagCategories.forEach(tagCategory => {
+            const tagsById: { [key: number]: Tag } = {};
+            tagCategory.tags.forEach(tag => tagsById[tag.id] = tag);
+            tagsByCategoryIdAndByTagId[tagCategory.id] = tagsById;
+        });
+        rows.filter(value => value.currCost && !new BigMoney(value.currCost).amount.isZero()).forEach(row => {
+            const shareKey = `${row.share.shareType}:${row.share.id}`;
+            const shareTag = portfolioTags[shareKey].filter(portfolioTag => portfolioTag.categoryId === selectedCategory.id)[0];
+            const tagName = ChartUtils.getTagName(tagsByCategoryIdAndByTagId, shareTag);
+            if (tagName) {
+                // @ts-ignore
+                const byTag: [{ share: Share, currCost: string, profit: string, currency: string }] = rowsByTag[tagName] || [];
+                byTag.push(row);
+                rowsByTag[tagName] = byTag;
+            }
+        });
+        Object.keys(rowsByTag).forEach(tagName => {
+            const currentRows = rowsByTag[tagName];
+            const currCost = currentRows.map(row => new BigMoney(row.currCost).amount)
+                .reduce((previousValue, currentValue) => previousValue.plus(currentValue), new Decimal("0"))
+                .toDP(2, Decimal.ROUND_HALF_UP);
+            const profit = currentRows.map(row => new BigMoney(row.profit).amount)
+                .reduce((previousValue, currentValue) => previousValue.plus(currentValue), new Decimal("0"))
+                .toDP(2, Decimal.ROUND_HALF_UP);
+            const tickers = currentRows.map(row => row.share.shortname).join(",<br/>");
+            data.push({
+                name: `<b>${tagName}</b>`,
+                tickers,
+                description: `Стоимость: ${Filters.formatNumber(currCost.toString())} ${currencySymbol}`,
+                profit: Filters.formatNumber(profit.toString()),
+                currencySymbol: currencySymbol,
+                y: currCost.toNumber(),
+            });
+        });
+        data.sort((a, b) => b.y - a.y);
+        return data;
+    }
+
+    static getTagName(tagsByCategoryIdAndByTagId: { [key: number]: { [key: number]: Tag } }, shareTag: PortfolioTag): string {
+        const tagsById = tagsByCategoryIdAndByTagId[shareTag.categoryId];
+        if (tagsById) {
+            return tagsById[shareTag.tagId]?.name;
+        }
+        return null;
+    }
+
+    /**
      * Возвращает набор для графика эффективности бумаг в портфеле
      * @param overview данные по портфелю
      * @param currencySymbol символ валюты
@@ -384,6 +469,139 @@ export class ChartUtils {
                 profit: Filters.formatNumber(profit.toString()),
                 currencySymbol: currencySymbol,
                 y: percentShare.toNumber()
+            });
+        });
+        data.sort((a, b) => b.y - a.y);
+        return data;
+    }
+
+    static doCurrencyChartData(overview: Overview, currencySymbol: string): CustomDataPoint[] {
+        const data: CustomDataPoint[] = [];
+        const skippedTypes = [PortfolioAssetType.STOCK, PortfolioAssetType.BOND, PortfolioAssetType.ETF, PortfolioAssetType.OTHER];
+        const rows: Array<{ shareName: string, percentShare: string, currCost: string, profit: string, currency: string }> = [
+            ...overview.stockPortfolio.rows.map(row => {
+                return {shareName: row.share.shortname, percentShare: row.percCurrShareInWholePortfolio, currCost: row.currCost, profit: row.profit, currency: row.share.currency};
+            }),
+            ...overview.etfPortfolio.rows.map(row => {
+                return {shareName: row.share.shortname, percentShare: row.percCurrShareInWholePortfolio, currCost: row.currCost, profit: row.profit, currency: row.share.currency};
+            }),
+            ...overview.bondPortfolio.rows.map(row => {
+                return {shareName: row.bond.shortname, percentShare: row.percCurrShareInWholePortfolio, currCost: row.currCost, profit: row.profit, currency: row.bond.currency};
+            }),
+            ...overview.assetPortfolio.rows.map(row => {
+                if ((row as AssetPortfolioRow).asset.category === AssetCategory.CURRENCY.code) {
+                    if (row.share.ticker.startsWith(CurrencyUnit.GBP.code)) {
+                        return {
+                            shareName: row.share.shortname, percentShare: row.percCurrShareInWholePortfolio, currCost: row.currCost,
+                            profit: row.profit, currency: CurrencyUnit.GBP.code
+                        };
+                    }
+                    if (row.share.ticker.startsWith(CurrencyUnit.EUR.code)) {
+                        return {
+                            shareName: row.share.shortname, percentShare: row.percCurrShareInWholePortfolio, currCost: row.currCost,
+                            profit: row.profit, currency: CurrencyUnit.EUR.code
+                        };
+                    }
+                    if (row.share.ticker.startsWith(CurrencyUnit.USD.code)) {
+                        return {
+                            shareName: row.share.shortname, percentShare: row.percCurrShareInWholePortfolio, currCost: row.currCost,
+                            profit: row.profit, currency: CurrencyUnit.USD.code
+                        };
+                    }
+                    return {
+                        shareName: row.share.shortname, percentShare: row.percCurrShareInWholePortfolio, currCost: row.currCost, profit: row.profit,
+                        currency: row.share.currency
+                    };
+                }
+                return {shareName: row.share.shortname, percentShare: row.percCurrShareInWholePortfolio, currCost: row.currCost, profit: row.profit, currency: row.share.currency};
+            }),
+            ...overview.assetRows.filter(row => !skippedTypes.includes(PortfolioAssetType.valueByName(row.type))).map(row => {
+                return {
+                    shareName: PortfolioAssetType.valueByName(row.type)?.description, percentShare: row.percCurrShareInWholePortfolio,
+                    currency: new BigMoney(row.currCost).currency,
+                    currCost: row.amountInViewCurrency,
+                    profit: row.profit
+                };
+            })
+        ];
+        const rowsByCurrency: { [key: string]: [{ shareName: string, percentShare: string, currCost: string, profit: string, currency: string }] } = {};
+        rows.filter(row => row.percentShare && !new Decimal(row.percentShare).isZero() && row.currCost && new BigMoney(row.currCost).amount.isPositive())
+            .forEach(row => {
+                const currencyKey = row.currency;
+                // @ts-ignore
+                const byCurrency: [{ shareName: string, percentShare: string, currCost: string, profit: string, currency: string }] = rowsByCurrency[currencyKey] || [];
+                byCurrency.push(row);
+                rowsByCurrency[currencyKey] = byCurrency;
+            });
+        Object.keys(rowsByCurrency).forEach(currency => {
+            const currentRows = rowsByCurrency[currency];
+            const currCost = currentRows.map(row => new BigMoney(row.currCost).amount.abs())
+                .reduce((previousValue, currentValue) => previousValue.plus(currentValue), new Decimal("0"))
+                .toDP(2, Decimal.ROUND_HALF_UP);
+            const profit = currentRows.filter(row => !!row.profit).map(row => new BigMoney(row.profit).amount.abs())
+                .reduce((previousValue, currentValue) => previousValue.plus(currentValue), new Decimal("0"))
+                .toDP(2, Decimal.ROUND_HALF_UP);
+            let tickers = currentRows.filter((value, index) => index < 20).map(row => row.shareName).join(",<br/>");
+            if (currentRows.length - 20 > 0) {
+                tickers = `${tickers}<br/> и еще <b>${currentRows.length - 20}</b> ${Filters.declension(currentRows.length - 20, "актив", "актива", "активов")}`;
+            }
+            data.push({
+                name: `<b>${currency}</b>`,
+                tickers,
+                description: `Стоимость: ${Filters.formatNumber(currCost.toString())} ${currencySymbol}`,
+                profit: Filters.formatNumber(profit.toString()),
+                currencySymbol: currencySymbol,
+                y: currCost.toNumber(),
+            });
+        });
+        data.sort((a, b) => b.y - a.y);
+        return data;
+    }
+
+    static doCountryChartData(overview: Overview, currencySymbol: string): CustomDataPoint[] {
+        const data: CustomDataPoint[] = [];
+        const skippedTypes = [PortfolioAssetType.STOCK, PortfolioAssetType.BOND, PortfolioAssetType.ETF, PortfolioAssetType.OTHER];
+        const rows: Array<{ share: Share, percentShare: string, currCost: string, profit: string, currency: string }> = [
+            ...overview.stockPortfolio.rows.map(row => {
+                return {share: row.share, percentShare: row.percCurrShareInWholePortfolio, currCost: row.currCost, profit: row.profit, currency: row.share.currency};
+            }),
+            ...overview.etfPortfolio.rows.map(row => {
+                return {share: row.share, percentShare: row.percCurrShareInWholePortfolio, currCost: row.currCost, profit: row.profit, currency: row.share.currency};
+            }),
+            ...overview.bondPortfolio.rows.map(row => {
+                return {share: row.share, percentShare: row.percCurrShareInWholePortfolio, currCost: row.currCost, profit: row.profit, currency: row.bond.currency};
+            }),
+            ...overview.assetPortfolio.rows.map(row => {
+                return {share: row.share, percentShare: row.percCurrShareInWholePortfolio, currCost: row.currCost, profit: row.profit, currency: row.share.currency};
+            })
+        ];
+        const rowsByCountry: { [key: string]: [{ share: Share, percentShare: string, currCost: string, profit: string, currency: string }] } = {};
+        rows.filter(value => value.percentShare && !new Decimal(value.percentShare).isZero()).forEach(row => {
+            const countryKey = COUNTRY_BY_CODE[row.share.isin?.substring(0, 2)] || COUNTRY_BY_CODE[(row.share as Asset).tags?.substring(0, 2)] || "Прочие";
+            // @ts-ignore
+            const byCountry: [{ share: Share, percentShare: string, currCost: string, profit: string, currency: string }] = rowsByCountry[countryKey] || [];
+            byCountry.push(row);
+            rowsByCountry[countryKey] = byCountry;
+        });
+        Object.keys(rowsByCountry).forEach(country => {
+            const currentRows = rowsByCountry[country];
+            const currCost = currentRows.map(row => new BigMoney(row.currCost).amount.abs())
+                .reduce((previousValue, currentValue) => previousValue.plus(currentValue), new Decimal("0"))
+                .toDP(2, Decimal.ROUND_HALF_UP);
+            const profit = currentRows.filter(row => !!row.profit).map(row => new BigMoney(row.profit).amount.abs())
+                .reduce((previousValue, currentValue) => previousValue.plus(currentValue), new Decimal("0"))
+                .toDP(2, Decimal.ROUND_HALF_UP);
+            let tickers = currentRows.filter((value, index) => index < 20).map(row => row.share.shortname).join(",<br/>");
+            if (currentRows.length - 20 > 0) {
+                tickers = `${tickers}<br/> и еще <b>${currentRows.length - 20}</b> ${Filters.declension(currentRows.length - 20, "актив", "актива", "активов")}`;
+            }
+            data.push({
+                name: `<b>${country}</b>`,
+                tickers,
+                description: `Стоимость: ${Filters.formatNumber(currCost.toString())} ${currencySymbol}`,
+                profit: Filters.formatNumber(profit.toString()),
+                currencySymbol: currencySymbol,
+                y: currCost.toNumber(),
             });
         });
         data.sort((a, b) => b.y - a.y);
@@ -735,9 +953,10 @@ export class ChartUtils {
      * @param title заголовк графика
      * @param viewCurrency валюта
      * @param tooltipFormat формат тултипа
+     * @param colors набор цветов для диаграммы
      */
     static drawPieChart(container: HTMLElement, chartData: any[], balloonTitle: string, title: string = "", viewCurrency: string = "",
-                        tooltipFormat: PieChartTooltipFormat = PieChartTooltipFormat.COMMON): ChartObject {
+                        tooltipFormat: PieChartTooltipFormat = PieChartTooltipFormat.COMMON, colors: string[] = null): ChartObject {
         if (!container) {
             return null;
         }
@@ -762,7 +981,7 @@ export class ChartUtils {
                 pointFormat: this.PIE_CHART_TOOLTIP_FORMAT[tooltipFormat],
                 valueSuffix: `${viewCurrency ? ` ${Filters.currencySymbolByCurrency(viewCurrency)}` : ""}`
             },
-            colors: ChartUtils.getColors(chartData.length),
+            colors: colors ? colors : ChartUtils.getColors(chartData.length),
             plotOptions: {
                 pie: {
                     allowPointSelect: true,

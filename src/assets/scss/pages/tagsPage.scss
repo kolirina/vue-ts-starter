@@ -1,0 +1,43 @@
+.tags {
+
+  &-list {
+    @extend %panel-list;
+
+    &-item {
+      @extend %panel-item;
+      cursor: default;
+
+      &:hover {
+        background: none;
+        border-color: $sidebar-hr-color;
+      }
+
+      &__header {
+        @extend %panel-item__header;
+
+        &-description {@extend %panel-item__header-description;}
+
+        .intel-icon {
+          font-size: 16px;
+          transition: color 0.15s ease;
+          cursor: pointer;
+          color: #96A5BE;
+
+          &:hover {color: $main-color-1}
+        }
+
+        .icon-edit {margin-right: 12px}
+      }
+
+      &__body {
+        padding-top: 16px;
+        display: flex;
+        flex-wrap: wrap;
+      }
+
+      &-add {
+        @extend %panel-item-add;
+      }
+    }
+  }
+}

@@ -43,7 +43,7 @@ import {SortUtils} from "../../utils/sortUtils";
             <template #items="props">
                 <tr class="selectable">
                     <td class="text-xs-left pl-30">
-                        <stock-link :ticker="props.item.share.ticker"></stock-link>
+                        <bond-link :ticker="props.item.share.ticker"></bond-link>
                     </td>
                     <td class="text-xs-left">{{ props.item.share.name }}</td>
                     <td class="text-xs-right">{{ props.item.type | operationDesc }}</td>

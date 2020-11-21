@@ -96,6 +96,42 @@
   .import-default-text {text-align: center}
 }
 
+.dialog__element-centering {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 385px;
+  min-height: 400px;
+  height: 50vh;
+  margin: 0 auto;
+  padding: 24px 0;
+
+  .dialog-header__img {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 72px;
+    height: 72px;
+    background-color: #F7F9FB;
+    border-radius: 50%;
+    margin-bottom: 12px;
+  }
+
+  .dialog-header-text {
+    padding: 0;
+    margin-bottom: 24px;
+  }
+
+  .v-card__text {padding: 0}
+
+  .v-card__actions {
+    margin-top: 32px;
+    padding: 0;
+  }
+
+}
+
 /* Диалог с фиксированными хэдером и футером, контент скроллится. Только для мобильных */
 @media only screen and (max-width: $sm-breakpoint) {
 

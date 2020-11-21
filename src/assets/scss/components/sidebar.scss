@@ -128,7 +128,7 @@
   .toogle-menu-btn {
     z-index: 100;
     margin-right: -20px;
-    margin-top: -44px;
+    margin-top: 4px;
 
     .v-icon {
       color: #96A5BE;
@@ -142,14 +142,6 @@
 
 .overflow-hidden {
   overflow: hidden;
-}
-
-.link-icon-btn {
-  filter: grayscale(1);
-}
-
-.active-btn-link {
-  filter: none;
 }
 
 .small-screen-show-toogle-menu-btn {
@@ -236,4 +228,65 @@
     background: #FFE600;
     border-color: #FFE600;
   }
+}
+
+// Меню в виде иконок
+.iconMenu {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+
+  &-btn,
+  .v-menu {width: 50px}
+
+  &-calc-height {height: calc(100vh - 164px - 3 * 48px - 30px)} // высота viewport - высота от верха экрана - 3 элемента снизу по 48пкс - отступы(14 и 16)
+
+  .intel-icon,
+  .active-link {width: 100%}
+
+  .active-link {border-radius: 4px}
+
+  .intel-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row-reverse;
+
+    &:after {
+      font-size: 24px;
+      color: #96A5BE;
+    }
+
+    &:hover:after {color: $main-color-1}
+
+    &.v-list__tile__content {opacity: 1}
+  }
+
+  .exp-panel-arrow {
+    position: absolute;
+    margin: 0 0 0 3px;
+    transform: rotate(90deg);
+    width: 6px;
+    height: 6px;
+    background-size: contain;
+  }
+
+  .v-list__tile {
+    padding: 0;
+
+    &__action {
+      min-width: 0;
+      width: 0;
+    }
+
+    &__title {
+      font-size: 0;
+      width: 0;
+    }
+  }
+
+  .v-menu .v-list__tile {width: 0}
+
+  // vue-scroll
+  .__view {justify-content: start}
 }

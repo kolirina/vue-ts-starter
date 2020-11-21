@@ -78,7 +78,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                                               :ignore-asset-type="true"
                                               :asset-type="assetType"
                                               @change="onShareSelect" @clear="onShareClear" @requestNewShare="onRequestNewShare"
-                                              autofocus ellipsis allow-request></share-search>
+                                              ellipsis allow-request ref="shareSearchInput"></share-search>
                                 <!-- Дополнительная информация -->
                                 <div v-if="isAssetTrade" class="fs12-opacity mt-1">
                                     <span>
@@ -323,6 +323,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     $refs: {
         dateMenu: any,
         timeMenu: any,
+        shareSearchInput: any
     };
 
     @Inject
@@ -442,6 +443,14 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             this.portfolio = this.data.store.currentPortfolio;
         }
         await this.setDialogParams();
+        this.$nextTick(() => {
+            try {
+                this.$refs.shareSearchInput?.$refs?.shareSearch.$refs?.input?.focus();
+                this.$validator.errors.clear();
+            } catch (e) {
+                // mute
+            }
+        });
     }
 
     private async onChangeExchangeRate(): Promise<void> {

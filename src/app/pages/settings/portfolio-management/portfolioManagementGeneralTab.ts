@@ -89,8 +89,9 @@ import {DateUtils} from "../../../utils/dateUtils";
                 </broker-switcher>
             </div>
             <v-layout wrap class="wrap-calendar-section">
-                <ii-number-field label="Фиксированная комиссия в %" v-model="portfolio.fixFee"
-                                 hint="Для автоматического рассчета комиссии при внесении сделок." :decimals="5" @keyup.enter="savePortfolio">
+                <ii-number-field label="Фиксированная комиссия в %" v-model="portfolio.fixFee" persistent-hint
+                                 hint="Для автоматического рассчета комиссии при внесении сделок и импорте отчетов (если комиссии отсутствуют в отчете)."
+                                 :decimals="5" @keyup.enter="savePortfolio">
                 </ii-number-field>
 
                 <v-menu ref="dateMenu"

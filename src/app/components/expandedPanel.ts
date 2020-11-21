@@ -1,6 +1,7 @@
 import Component from "vue-class-component";
 import {Prop} from "vue-property-decorator";
 import {UI} from "../app/ui";
+import {ResultLabel} from "../types/types";
 
 @Component({
     // language=Vue
@@ -25,7 +26,7 @@ import {UI} from "../app/ui";
                         <i v-if="!alwaysOpen" class="exp-panel-arrow"></i>
                         <div class="exp-panel-attach" :id="'exp-panel-attach-' + name"></div>
                     </template>
-                    <div slot="header">
+                    <div slot="header" :class="headerClass">
                         <slot name="header"></slot>
                     </div>
 
@@ -53,4 +54,11 @@ export class ExpandedPanel extends UI {
     private customMenu: boolean;
     @Prop({type: Boolean, default: false})
     private alwaysOpen: boolean;
+    /** Метка */
+    @Prop({type: Object, required: false})
+    private label: ResultLabel;
+
+    get headerClass(): string {
+        return this.label ? `exp-panel__indicator indicator-${this.label.code.toLowerCase()}` : "";
+    }
 }

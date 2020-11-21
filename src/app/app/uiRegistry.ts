@@ -33,6 +33,7 @@ import {FileLink} from "../components/file-upload/fileLink";
 import {IINumberField} from "../components/iiNumberField";
 import {InplaceInput} from "../components/inplaceInput";
 import {ShareSearchComponent} from "../components/shareSearchComponent";
+import {ShareTags} from "../components/shareTags";
 import {StockLink} from "../components/stockLink";
 import {Tooltip} from "../components/tooltip";
 import {VideoLink} from "../components/videoLink";
@@ -119,6 +120,7 @@ export class UIRegistry {
         UI.component("stock-link", StockLink);
         UI.component("asset-link", AssetLink);
         UI.component("bond-link", BondLink);
+        UI.component("share-tags", ShareTags);
         /* Компонент с маской для десятичных дробей */
         UI.component("ii-number-field", IINumberField);
         UI.component("share-search", ShareSearchComponent);

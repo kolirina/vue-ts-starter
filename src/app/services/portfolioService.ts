@@ -20,7 +20,9 @@ import {Service} from "../platform/decorators/service";
 import {Enum, EnumType, IStaticEnum} from "../platform/enum";
 import {Http} from "../platform/services/http";
 import {BigMoney} from "../types/bigMoney";
+import {PortfolioTag, ShareTagsData} from "../types/tags";
 import {PortfolioBackup} from "../types/types";
+import {TagsService} from "./tagsService";
 
 @Service("PortfolioService")
 @Singleton
@@ -28,6 +30,9 @@ export class PortfolioService {
 
     @Inject
     private http: Http;
+
+    @Inject
+    private tagsService: TagsService;
 
     private readonly ENDPOINT_BASE = "portfolio-info";
 
@@ -225,6 +230,19 @@ export class PortfolioService {
     async votePortfolio(portfolioId: number, vote: number): Promise<void> {
         await this.http.post(`/portfolio-info/vote/${portfolioId}/${vote}`);
     }
+
+    /**
+     * Обновляет тэги по бумагам в портфеле
+     */
+    async updateTags(portfolioId: number, tags: { [key: string]: PortfolioTag[] }, shareTags: ShareTagsData): Promise<void> {
+        const tagsRequest: { [key: string]: PortfolioTag[] } = {};
+        tags[`${shareTags.shareType}:${shareTags.shareId}`] = shareTags.data;
+        Object.keys(tags).forEach(key => {
+            tagsRequest[key] = tags[key];
+        });
+        await this.http.put<PortfolioParamsResponse>(`/${this.ENDPOINT_BASE}/${portfolioId}/tags`, tagsRequest);
+        this.tagsService.resetTagCategoriesCache();
+    }
 }
 
 /** Тип счета портфеля. Брокерский или ИИС */
@@ -299,6 +317,8 @@ export interface BasePortfolioParams {
     combined?: boolean;
     /** Заметки по бумагам в портфеле */
     shareNotes?: { [key: string]: string };
+    /** Тэги по бумагам в портфеле */
+    tags?: { [key: string]: PortfolioTag[] };
     /** Цель портфеля */
     description?: string;
     /** Общее количество ценнных бумаг в составе портфеля */

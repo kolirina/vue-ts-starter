@@ -111,7 +111,10 @@ export class CustomDialog<ParamType, ReturnType> extends UI {
 
     private onEscapeListener(event: any): void {
         if (event.keyCode === 27 && this.isClosable()) {
-            CustomDialog.instances[CustomDialog.instances.length - 1].close();
+            const instance = CustomDialog.instances[CustomDialog.instances.length - 1];
+            if (instance) {
+                instance.close();
+            }
             event.stopImmediatePropagation();
         }
     }

@@ -23,6 +23,7 @@ export interface TariffHint {
 
 export type NavBarItem = {
     title: string,
+    name?: string,
     /** routing, для корневых элементов может не заполнен */
     action?: string,
     path?: string,
@@ -214,6 +215,8 @@ export type BondPortfolioRow = BondPortfolioSumRow & {
     id: string,
     /** Облигация */
     bond: Bond,
+    /** Облигация */
+    share: Bond,
     /** Количество */
     quantity: string,
     /** Средняя цена покупки */
@@ -618,6 +621,7 @@ export type ErrorFieldInfo = {
 export enum Status {
     SUCCESS = "SUCCESS",
     WARN = "WARN",
+    NO_TRADES = "NO_TRADES",
     ERROR = "ERROR"
 }
 
@@ -795,6 +799,24 @@ export class BondType extends (EnumType as IStaticEnum<BondType>) {
     static readonly CB_BOND = new BondType("CB_BOND", "Облигация центрального банка");
 
     private constructor(public code: string, public description: string) {
+        super();
+    }
+}
+
+/**
+ * Перечисление меток к результатам импорта
+ */
+@Enum("code")
+export class ResultLabel extends (EnumType as IStaticEnum<ResultLabel>) {
+
+    static readonly CRITICAL = new ResultLabel("CRITICAL", "Критично",
+        "Обратите внимание! Комментарий к результату импорта отражает, что необходимо сделать для формирования корректного портфеля.");
+    static readonly ATTENTION = new ResultLabel("ATTENTION", "Важно учесть",
+        "Ознакомьтесь с особенностями импорта. Учтите это для формирования корректного портфеля. При необходимости, внесите изменения.");
+    static readonly INFO = new ResultLabel("INFO", "Для справки",
+        "Носит информационный характер. Дополнительно ничего выполнять для формирования портфеля не требуется.");
+
+    private constructor(public code: string, public label: string, public description: string) {
         super();
     }
 }

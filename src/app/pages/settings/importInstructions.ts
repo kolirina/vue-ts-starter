@@ -50,7 +50,7 @@ import {ZerichInstruction} from "./import_instructions/zerichInstruction";
 
             <!-- BCS -->
             <div v-if="provider === providers.BCS">
-                <BcsInstruction></BcsInstruction>
+                <BcsInstruction :portfolio-params="portfolioParams" @changePortfolioParams="changePortfolioParams"></BcsInstruction>
             </div>
 
             <!-- BCS CYPRUS-->
@@ -60,8 +60,7 @@ import {ZerichInstruction} from "./import_instructions/zerichInstruction";
 
             <!-- FINAM -->
             <div v-if="provider === providers.FINAM">
-                <FinamInstruction :portfolio-params="portfolioParams" @changePortfolioParams="changePortfolioParams">
-                </FinamInstruction>
+                <FinamInstruction :portfolio-params="portfolioParams" @changePortfolioParams="changePortfolioParams"></FinamInstruction>
             </div>
 
             <!-- FREEDOM_FINANCE -->

@@ -31,6 +31,7 @@ import {ProfileSubscriptionPage} from "../pages/settings/profile/profileSubscrip
 import {ProfilePage} from "../pages/settings/profilePage";
 import {PromoCodesPage} from "../pages/settings/promoCodesPage";
 import {SettingsPage} from "../pages/settings/settingsPage";
+import {TagsSettingsPage} from "../pages/settings/tagsSettingsPage";
 import {TariffsPage} from "../pages/settings/tariffsPage";
 import {ShareInfoPage} from "../pages/shareInfoPage";
 import {TradesPage} from "../pages/tradesPage";
@@ -281,6 +282,14 @@ export class RouterConfiguration {
                         component: PortfolioManagementEditPage,
                         meta: {
                             title: "Управление портфелями"
+                        }
+                    },
+                    {
+                        name: "tags",
+                        path: "/settings/tags",
+                        component: TagsSettingsPage,
+                        meta: {
+                            title: "Управление тэгами"
                         }
                     },
                     {

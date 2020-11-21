@@ -24,6 +24,7 @@ import {
 } from "../../services/importService";
 import {OverviewService} from "../../services/overviewService";
 import {PortfolioParams, PortfolioService} from "../../services/portfolioService";
+import {SystemPropertyName} from "../../services/systemPropertiesService";
 import {CurrencyUnit} from "../../types/currency";
 import {EventType} from "../../types/eventType";
 import {MapType, Portfolio, Share, Status} from "../../types/types";
@@ -66,7 +67,7 @@ const MainStore = namespace(StoreType.MAIN);
                                         Если в списке нет вашего брокера или терминала, вы всегда можете осуществить импорт через универсальный формат Intelinvest (csv)
                                         или обратиться к нам через <a @click.stop="openFeedBackDialog">обратную связь</a> ,
                                         <a href="mailto:web@intelinvest.ru">по почте</a> или в группе <a href="https://vk.com/intelinvest">вконтакте</a>.
-                                </span>
+                                    </span>
                                 </v-menu>
                             </div>
                         </v-card-title>
@@ -120,8 +121,8 @@ const MainStore = namespace(StoreType.MAIN);
                             <v-stepper v-model="currentStep" class="provider__stepper">
 
                                 <div v-if="currentStep === '3' && tariffLimitExceeded" class="info-block info-block__warning margB24">
-                                    <p>Превышены лимиты по сделкам.</p>
-                                    <p>Лимит бумаг в одном портфеле равен 30, чтобы снять ограничение подпишитесь<br>
+                                    <p>Превышены лимиты по бумагам.</p>
+                                    <p>Лимит бумаг в одном портфеле равен {{ maxSharesCount }}, чтобы снять ограничение подпишитесь<br>
                                         на тарифный план "‎Профессионал" и получите полный набор инструментов для учета активов</p>
                                     <a @click="goToTariffs" class="big-link">Сменить тариф</a>
                                 </div>
@@ -262,16 +263,28 @@ const MainStore = namespace(StoreType.MAIN);
                                                     {{ savedTradesCount | declension("Добавлена", "Добавлено", "Добавлено") }}
                                                     {{ savedTradesCount }} {{ savedTradesCount | declension("сделка", "сделки", "сделок") }}
                                                 </span>
+                                                <span v-if="importStatus === Status.NO_TRADES">
+                                                    Брокерский отчет не содержит сделок. <br/>
+                                                    Увеличьте период отчета, и загрузите отчет за все время (несколько отчетов, что охватывают все время)
+                                                </span>
                                             </div>
                                         </div>
-                                        <div v-if="showResultsPanel" class="info-block">
-                                            Портфель почти сформирован, для полного соответствия, возможно, потребуются дополнительные действия
-                                        </div>
 
-                                        <import-result v-if="showResultsPanel" :import-result="importResult" :import-provider="selectedProvider"
-                                                       :portfolio-params="portfolioParams" :import-provider-features="importProviderFeatures"
-                                                       :has-new-events-after-import="hasNewEventsAfterImport"></import-result>
+                                        <expanded-panel v-if="portfolioParams && importStatus === Status.NO_TRADES" :value="showInstruction" class="promo-codes__statistics">
+                                            <template #header>Как выгрузить отчет брокера?</template>
+                                            <import-instructions :provider="selectedProvider" @selectProvider="onSelectProvider"
+                                                                 @changePortfolioParams="changePortfolioParams" :portfolio-params="portfolioParams"
+                                                                 class="margT20"></import-instructions>
+                                        </expanded-panel>
 
+                                        <template v-if="showResultsPanel">
+                                            <div class="info-block margB24">
+                                                Портфель почти сформирован, для полного соответствия, возможно, потребуются дополнительные действия
+                                            </div>
+                                            <import-result :import-result="importResult" :import-provider="selectedProvider"
+                                                           :portfolio-params="portfolioParams" :import-provider-features="importProviderFeatures"
+                                                           :has-new-events-after-import="hasNewEventsAfterImport"></import-result>
+                                        </template>
                                         <v-btn @click="goToPortfolio" color="primary" class="margR12">Перейти в портфель</v-btn>
                                         <v-btn @click="goToNewImport">Новый импорт</v-btn>
                                     </v-stepper-content>
@@ -541,7 +554,7 @@ export class ImportPage extends UI {
                     return;
                 }
             }
-            if (this.isFinam && this.portfolioParams.fixFee !== this.portfolioParams.fixFee) {
+            if (this.needUpdateAutoCommission && this.portfolioParams.fixFee !== this.portfolio.portfolioParams.fixFee) {
                 await this.portfolioService.updatePortfolio(this.portfolioParams);
             }
             this.importResult = await this.importReport();
@@ -570,14 +583,17 @@ export class ImportPage extends UI {
         if (results.length > 1) {
             const hasErrorStatus = results.some(result => result.status === Status.ERROR);
             const hasWarnStatus = results.some(result => result.status === Status.WARN);
+            const hasNoTradesStatus = results.some(result => result.status === Status.NO_TRADES);
             // для таких случаев не будет отката импорта
             return {
                 importId: null,
                 validatedTradesCount: results.map(result => result.validatedTradesCount).reduce((previousValue, currentValue) => previousValue + currentValue, 0),
                 generalError: hasErrorStatus ? results.find(result => result.generalError)?.generalError : null,
                 message: hasErrorStatus ? results.find(result => result.generalError)?.message :
-                    hasWarnStatus ? results.find(result => result.status === Status.WARN)?.message : results.find(result => result.status === Status.SUCCESS)?.message,
-                status: hasErrorStatus ? Status.ERROR : hasWarnStatus ? Status.WARN : Status.SUCCESS,
+                    hasWarnStatus ? results.find(result => result.status === Status.WARN)?.message :
+                        hasNoTradesStatus ? results.find(result => result.status === Status.NO_TRADES)?.message :
+                            results.find(result => result.status === Status.SUCCESS)?.message,
+                status: hasErrorStatus ? Status.ERROR : hasWarnStatus ? Status.WARN : hasNoTradesStatus ? Status.NO_TRADES : Status.SUCCESS,
                 firstTradeDate: results.sort((a, b) => DateUtils.parseDate(a.firstTradeDate).isAfter(DateUtils.parseDate(b.firstTradeDate)) ? 1 : -1)[0].firstTradeDate,
                 lastTradeDate: results.sort((a, b) => DateUtils.parseDate(a.lastTradeDate).isBefore(DateUtils.parseDate(b.lastTradeDate)) ? 1 : -1)[0].lastTradeDate,
                 errors: results.map(result => result.errors).reduce((a, b) => a.concat(b), [])
@@ -622,6 +638,9 @@ export class ImportPage extends UI {
                 this.currentStep = ImportStep._2;
                 return;
             }
+        }
+        if (this.importResult.status === Status.NO_TRADES) {
+            this.showInstruction = [1];
         }
         // если не повторная загрузка и требуется подтверждение балансов, переходим на второй шаг
         if (!retryUpload && this.importProviderFeatures.confirmMoneyBalance) {
@@ -718,6 +737,9 @@ export class ImportPage extends UI {
             if (this.importResult.generalError) {
                 return Status.ERROR;
             }
+            if (this.importResult.status === Status.NO_TRADES || this.importResult.validatedTradesCount === 0) {
+                return Status.NO_TRADES;
+            }
             return Status.SUCCESS;
         }
         return null;
@@ -740,7 +762,7 @@ export class ImportPage extends UI {
      */
     private get hasNotesAfterImport(): boolean {
         return this.hasNewEventsAfterImport || this.importProviderFeatures.autoEvents || this.notFoundShareErrors.length > 0 ||
-            this.isQuik || this.importProviderFeatures.confirmMoneyBalance || this.isFinam || this.requireMoreReports || this.otherErrors.length > 0 ||
+            this.isQuik || this.importProviderFeatures.confirmMoneyBalance || this.needUpdateAutoCommission || this.requireMoreReports || this.otherErrors.length > 0 ||
             this.repoTradeErrors.length > 0 || this.duplicateTradeErrors.length > 0;
     }
 
@@ -768,8 +790,8 @@ export class ImportPage extends UI {
         return 0;
     }
 
-    private get isFinam(): boolean {
-        return this.selectedProvider === DealsImportProvider.FINAM;
+    private get needUpdateAutoCommission(): boolean {
+        return [DealsImportProvider.FINAM, DealsImportProvider.BCS].includes(this.selectedProvider);
     }
 
     private get isQuik(): boolean {
@@ -801,6 +823,17 @@ export class ImportPage extends UI {
 
     private get tariffLimitExceeded(): boolean {
         return TariffUtils.limitsExceeded(this.clientInfo.user, this.systemProperties);
+    }
+
+    private get newTariffsApplicable(): boolean {
+        return DateUtils.parseDate(this.clientInfo.user.regDate).isAfter(DateUtils.parseDate(this.systemProperties[SystemPropertyName.NEW_TARIFFS_DATE_FROM]));
+    }
+
+    get maxSharesCount(): string {
+        if (this.newTariffsApplicable) {
+            return this.clientInfo.user.tariff.maxSharesCountNew === 0x7fffffff ? "Без ограничений" : String(this.clientInfo.user.tariff.maxSharesCountNew);
+        }
+        return this.clientInfo.user.tariff.maxSharesCount === 0x7fffffff ? "Без ограничений" : String(this.clientInfo.user.tariff.maxSharesCount);
     }
 
     /**
