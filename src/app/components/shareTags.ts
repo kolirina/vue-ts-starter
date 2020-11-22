@@ -142,7 +142,9 @@ export class ShareTags extends UI {
     }
 
     @Watch("portfolio")
-    private onPortfolioChange(): void {
+    private async onPortfolioChange(): Promise<void> {
+        await this.loadTagCategories();
+        this.selectedCategory = this.tagCategories.length ? this.tagCategories[0] : null;
         this.initSelectedTags();
     }
 

@@ -195,6 +195,7 @@ export class PortfolioPage extends PortfolioBasedPage {
     @Watch("portfolio")
     private async onPortfolioChange(): Promise<void> {
         await this.loadPortfolioData();
+        await this.createDefaultTagCategories();
     }
 
     @DisableConcurrentExecution
