@@ -26,7 +26,7 @@ import {CustomDialog} from "../../platform/dialogs/customDialog";
             <v-card class="dialog-wrap">
                 <v-icon class="closeDialog" @click.native="close">close</v-icon>
                 <div class="dialog__element-centering maxW275">
-                    <img src="/img/tags/add-category.svg" class="dialog-header__img" alt="">
+                    <img src="./img/tags/add-category.svg" class="dialog-header__img" alt="">
                     <v-card-title class="dialog-header-text">Добавление категории</v-card-title>
                     <v-card-text>
                         <v-text-field label="Введите название категории" v-model="categoryName" :counter="50" ref="input"

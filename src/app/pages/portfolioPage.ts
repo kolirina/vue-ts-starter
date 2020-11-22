@@ -14,6 +14,7 @@ import {TagsService} from "../services/tagsService";
 import {HighStockEventsGroup, LineChartItem, PortfolioLineChartData} from "../types/charts/types";
 import {EventType} from "../types/eventType";
 import {StoreKeys} from "../types/storeKeys";
+import {TagCategory} from "../types/tags";
 import {OverviewPeriod, Portfolio} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
 import {DateUtils} from "../utils/dateUtils";
@@ -44,6 +45,7 @@ const MainStore = namespace(StoreType.MAIN);
                                      :share-notes="portfolio.portfolioParams.shareNotes"
                                      :professional-mode="portfolio.portfolioParams.professionalMode"
                                      :current-money-remainder="currentMoneyRemainder"
+                                     :tag-categories="tagCategories"
                                      @reloadLineChart="loadPortfolioLineChart"
                                      @exportTable="onExportTable"
                                      exportable>
@@ -130,13 +132,15 @@ export class PortfolioPage extends PortfolioBasedPage {
     private currentMoneyRemainder: string = null;
     /** Признак инициализации */
     private initialized = false;
+    /** Категории тэгов */
+    private tagCategories: TagCategory[] = [];
 
     /**
      * Инициализация данных страницы
      * @inheritDoc
      */
     async created(): Promise<void> {
-        await this.tagsService.getTagCategories();
+        await this.loadTagCategories();
         await this.createDefaultTagCategories();
         await this.init();
     }
@@ -188,13 +192,15 @@ export class PortfolioPage extends PortfolioBasedPage {
         if (this.portfolio.overview.totalTradesCount && (await this.tagsService.getTagCategories()).length === 0) {
             await this.tagsService.createDefaults();
             await this.tagsService.resetTagCategoriesCache();
-            await this.tagsService.getTagCategories();
+            await this.loadTagCategories();
         }
     }
 
     @Watch("portfolio")
     private async onPortfolioChange(): Promise<void> {
         await this.loadPortfolioData();
+        await this.createDefaultTagCategories();
+        await this.loadTagCategories();
     }
 
     @DisableConcurrentExecution
@@ -240,6 +246,14 @@ export class PortfolioPage extends PortfolioBasedPage {
                 this.lineChartEvents = await this.overviewService.getEventsChartDataWithDefaults(this.portfolio.id);
             }
         }
+    }
+
+    /**
+     * Загружает категории пользователя
+     */
+    @ShowProgress
+    private async loadTagCategories(): Promise<void> {
+        this.tagCategories = await this.tagsService.getTagCategories();
     }
 
     /**

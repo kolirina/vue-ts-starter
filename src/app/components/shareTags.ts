@@ -59,7 +59,7 @@ const MainStore = namespace(StoreType.MAIN);
             </v-tooltip>
             <div class="tags-menu__content">
                 <div v-if="selectedTags.length" class="tags-menu__selected">
-                    <tag-item v-for="tag in selectedTags" :key="tag.id" :tag="tag" @deleteTag="onDeleteSelectedTag" @select="switchCategory"></tag-item>
+                    <tag-item v-for="tag in selectedTags" :key="tag.id" :tag="tag" @deleteTag="onDeleteSelectedTag" @select="switchCategory" :editable="false"></tag-item>
                 </div>
                 <div v-if="allowActions" class="tags-menu__tabs">
                     <v-tabs v-if="selectedCategory">
@@ -75,8 +75,8 @@ const MainStore = namespace(StoreType.MAIN);
                 </div>
 
                 <div v-if="selectedCategory && allowActions" class="tags-list-item__body">
-                    <tag-item v-for="tag in selectedCategory.tags" :key="tag.id" :tag="tag" @deleteTag="onDeleteTag" @select="onSelectTag"
-                              :selected="tagSelected(tag)"></tag-item>
+                    <tag-item v-for="tag in selectedCategory.tags" :key="tag.id" :tag="tag" @select="onSelectTag"
+                              :selected="tagSelected(tag)" :deletable="false" :editable="false"></tag-item>
                     <div @click="showCreateTagField" class="tags__add-btn" title="Добавить тэг"></div>
                     <div v-show="createTag" class="field-with-btns w100pc">
                         <v-text-field label="Введите новый тэг" v-model="tagName" :counter="50" ref="tagNameInput"
@@ -108,6 +108,10 @@ export class ShareTags extends UI {
     @Prop({type: Object, required: true})
     private portfolioTags: { [key: string]: PortfolioTag[] };
 
+    /** Текущие категории */
+    @Prop({type: Array, required: true})
+    private tagCategories: TagCategory[];
+
     @MainStore.Getter
     private portfolio: Portfolio;
     @MainStore.Getter
@@ -117,9 +121,6 @@ export class ShareTags extends UI {
 
     @Inject
     private portfolioService: PortfolioService;
-
-    /** Текущие категории */
-    private tagCategories: TagCategory[] = [];
     /** Выбранная категория */
     private selectedCategory: TagCategory = null;
     /** Выбранные тэги */
@@ -136,13 +137,19 @@ export class ShareTags extends UI {
      * @inheritDoc
      */
     async created(): Promise<void> {
-        await this.loadTagCategories();
         this.selectedCategory = this.tagCategories.length ? this.tagCategories[0] : null;
         this.initSelectedTags();
     }
 
     @Watch("portfolio")
-    private onPortfolioChange(): void {
+    private async onPortfolioChange(): Promise<void> {
+        this.selectedCategory = this.tagCategories.length ? this.tagCategories[0] : null;
+        this.initSelectedTags();
+    }
+
+    @Watch("tagCategories")
+    private onTagCategoriesChange(newValue: TagCategory[]): void {
+        this.selectedCategory = this.tagCategories.length ? this.tagCategories[0] : null;
         this.initSelectedTags();
     }
 
@@ -152,14 +159,6 @@ export class ShareTags extends UI {
     private initSelectedTags(): void {
         this.selectedTags = [];
         this.selectedTags = this.getShareTags();
-    }
-
-    /**
-     * Загружает категории пользователя
-     */
-    @ShowProgress
-    private async loadTagCategories(): Promise<void> {
-        this.tagCategories = await this.tagsService.getTagCategories();
     }
 
     /**
@@ -185,18 +184,6 @@ export class ShareTags extends UI {
      */
     private onTabSelected(selected: TagCategory): void {
         this.selectedCategory = selected;
-    }
-
-    /**
-     * Удаляет тэг из пользовательских
-     * @param tag тэг
-     */
-    @ShowProgress
-    private async onDeleteTag(tag: Tag): Promise<void> {
-        await this.tagsService.deleteTag(tag.id);
-        const tagCategory = this.tagCategories.find(tagCategoryItem => tagCategoryItem.id === tag.categoryId);
-        tagCategory.tags = tagCategory.tags.filter(tagItem => tagItem.id !== tag.id);
-        this.selectedTags = this.selectedTags.filter(t => t.id !== tag.id);
     }
 
     /**
@@ -251,6 +238,7 @@ export class ShareTags extends UI {
             ticker: this.share.ticker
         };
         await this.portfolioService.updateTags(this.portfolio.id, this.portfolio.portfolioParams.tags, shareTags);
+        this.tagsService.resetTagCategoriesCache();
         this.initSelectedTags();
         this.$snotify.info("Настройки тэгов успешно сохранены");
         this.showComponent = false;

@@ -30,7 +30,10 @@ const MainStore = namespace(StoreType.MAIN);
     template: `
         <div class="tag-item" :style="getStyles()">
             <span @click="selectTag" class="tag-item__name">{{ tag.name }}</span>
-            <span v-if="allowActions" @click="$emit('deleteTag', tag)" class="intel-icon icon-remove" :style="'color:' + tag.color"></span>
+            <span v-if="allowActions && editable" @click="$emit('editTag', tag)" title="Редактировать"
+                  class="intel-icon icon-edit" :style="'color:' + tag.color"></span>
+            <span v-if="allowActions && deletable" @click.stop="$emit('deleteTag', tag)" title="Удалить"
+                  class="intel-icon icon-remove" :style="'color:' + tag.color"></span>
         </div>
     `
 })
@@ -41,6 +44,12 @@ export class TagItem extends UI {
 
     @Prop({type: Boolean, required: false})
     private selected: boolean;
+
+    @Prop({type: Boolean, default: true})
+    private editable: boolean;
+
+    @Prop({type: Boolean, default: true})
+    private deletable: boolean;
 
     @MainStore.Getter
     private portfolio: Portfolio;

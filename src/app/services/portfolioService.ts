@@ -31,9 +31,6 @@ export class PortfolioService {
     @Inject
     private http: Http;
 
-    @Inject
-    private tagsService: TagsService;
-
     private readonly ENDPOINT_BASE = "portfolio-info";
 
     /**
@@ -241,7 +238,6 @@ export class PortfolioService {
             tagsRequest[key] = tags[key];
         });
         await this.http.put<PortfolioParamsResponse>(`/${this.ENDPOINT_BASE}/${portfolioId}/tags`, tagsRequest);
-        this.tagsService.resetTagCategoriesCache();
     }
 }
 

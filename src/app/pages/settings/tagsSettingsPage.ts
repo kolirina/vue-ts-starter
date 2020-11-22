@@ -44,8 +44,9 @@ const MainStore = namespace(StoreType.MAIN);
             <v-layout class="profile" column>
                 <div class="tags-list" data-v-step="1">
                     <tag-category-card v-for="tagCategory in tagCategories" :key="tagCategory.id" :tag-category="tagCategory"
-                                       @deleteCategory="onDeleteCategory" @deleteTag="onDeleteTag" @createTag="onCreateTag" @editCategory="onEditCategory"></tag-category-card>
-                    <v-btn @click.stop="createNewCategory" color="#f7f9fb" class="tags-list-item-add"></v-btn>
+                                       @deleteCategory="onDeleteCategory" @deleteTag="onDeleteTag" @editTag="onEditTag"
+                                       @createTag="onCreateTag" @editCategory="onEditCategory"></tag-category-card>
+                    <v-btn @click.stop="createNewCategory" color="#f7f9fb" title="Добавить новую категорию тэгов" class="tags-list-item-add"></v-btn>
                 </div>
             </v-layout>
         </v-container>
@@ -113,6 +114,14 @@ export class TagsSettingsPage extends UI {
         await this.tagsService.deleteTag(tag.id);
         const tagCategory = this.tagCategories.find(tagCategoryItem => tagCategoryItem.id === tag.categoryId);
         tagCategory.tags = tagCategory.tags.filter(tagItem => tagItem.id !== tag.id);
+    }
+
+    @ShowProgress
+    private async onEditTag(tag: Tag): Promise<void> {
+        await this.tagsService.editTag({tagId: tag.id, name: tag.name});
+        const tagCategory = this.tagCategories.find(tagCategoryItem => tagCategoryItem.id === tag.categoryId);
+        tagCategory.tags = tagCategory.tags.filter(tagItem => tagItem.id !== tag.id);
+        tagCategory.tags.push(tag);
     }
 
     /**
