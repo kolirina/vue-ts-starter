@@ -30,6 +30,7 @@ import {TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
 import {BigMoney} from "../../types/bigMoney";
 import {Operation} from "../../types/operation";
+import {TagCategory} from "../../types/tags";
 import {Asset, Pagination, Portfolio, Share, ShareType, StockTypePortfolioRow, TableHeader} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {PortfolioUtils} from "../../utils/portfolioUtils";
@@ -89,7 +90,7 @@ const MainStore = namespace(StoreType.MAIN);
                         <asset-link v-if="props.item.share && props.item.assetType === 'ASSET'" :ticker="String(props.item.share.id)">{{ props.item.share.ticker }}</asset-link>
                     </td>
                     <td v-if="tableHeadersState.tags" class="text-xs-center">
-                        <share-tags v-if="props.item.share" :share="props.item.share" :portfolio-tags="portfolio.portfolioParams.tags"></share-tags>
+                        <share-tags v-if="props.item.share" :share="props.item.share" :portfolio-tags="portfolio.portfolioParams.tags" :tag-categories="tagCategories"></share-tags>
                     </td>
                     <td v-if="tableHeadersState.quantity" class="text-xs-right ii-number-cell">{{props.item.quantity | quantity(!!props.item.share) }}</td>
                     <td v-if="tableHeadersState.openPositionAvgPrice" class="text-xs-right ii-number-cell">
@@ -336,6 +337,9 @@ export class StockTable extends UI {
         }
     })
     private filter: PortfolioRowFilter;
+    /** Текущие категории */
+    @Prop({type: Array, required: true})
+    private tagCategories: TagCategory[];
     /** Список отображаемых строк */
     private filteredRows: StockTypePortfolioRow[] = [];
     /** Состояние столбцов таблицы */

@@ -32,6 +32,7 @@ import {TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
 import {BigMoney} from "../../types/bigMoney";
 import {Operation} from "../../types/operation";
+import {TagCategory} from "../../types/tags";
 import {BondPortfolioRow, Pagination, Portfolio, Share, ShareType, TableHeader} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {PortfolioUtils} from "../../utils/portfolioUtils";
@@ -86,7 +87,7 @@ const MainStore = namespace(StoreType.MAIN);
                         <bond-link v-if="props.item.bond" :ticker="props.item.bond.ticker"></bond-link>
                     </td>
                     <td v-if="tableHeadersState.tags" class="text-xs-center">
-                        <share-tags v-if="props.item.share" :share="props.item.share" :portfolio-tags="portfolio.portfolioParams.tags"></share-tags>
+                        <share-tags v-if="props.item.share" :share="props.item.share" :portfolio-tags="portfolio.portfolioParams.tags" :tag-categories="tagCategories"></share-tags>
                     </td>
                     <td v-if="tableHeadersState.quantity" class="text-xs-right ii-number-cell">{{ props.item.quantity | quantity(!!props.item.bond) }}</td>
                     <td v-if="tableHeadersState.avgBuy" class="text-xs-right ii-number-cell">
@@ -333,6 +334,9 @@ export class BondTable extends UI {
         }
     })
     private filter: PortfolioRowFilter;
+    /** Текущие категории */
+    @Prop({type: Array, required: true})
+    private tagCategories: TagCategory[];
     /** Список отображаемых строк */
     private filteredRows: BondPortfolioRow[] = [];
     /** Состояние столбцов таблицы */

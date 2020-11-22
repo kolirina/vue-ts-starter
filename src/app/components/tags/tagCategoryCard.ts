@@ -18,8 +18,10 @@
  * Компонент для отображения ссылки на просмотр информации по акции
  */
 import {Component, Prop, UI} from "../../app/ui";
+import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {Tag, TagCategory} from "../../types/tags";
 import {CommonUtils} from "../../utils/commonUtils";
+import {ConfirmDialog} from "../dialogs/confirmDialog";
 import {TagItem} from "./tagItem";
 
 @Component({
@@ -45,15 +47,15 @@ import {TagItem} from "./tagItem";
                 </div>
             </div>
             <div class="tags-list-item__body">
-                <tag-item v-for="tag in tagCategory.tags" :key="tag.id" :tag="tag" @deleteTag="onDeleteTag"></tag-item>
+                <tag-item v-for="tag in tagCategory.tags" :key="tag.id" :tag="tag" @deleteTag="onDeleteTag" @editTag="onEditTag"></tag-item>
                 <div @click="showCreateTagField" title="Добавить тэг" class="tags__add-btn"></div>
-                <div v-show="createTag" class="field-with-btns w100pc">
-                    <v-text-field label="Введите новый тэг" v-model="tagName" :counter="50" ref="tagNameInput"
+                <div v-show="createOrEditTag" class="field-with-btns w100pc">
+                    <v-text-field :label="editableTag.id ? 'Редактирование тэга' : 'Введите новый тэг'" v-model="editableTag.name" :counter="50" ref="tagNameInput"
                                   v-validate="'required|max:50'" maxLength="50" :error-messages="errors.collect('tagName')" name="tagName"
-                                  @keydown.enter="addTag" @keydown.esc="closeAddTag" class="small-size">
+                                  @keydown.enter="addOrEditTag" @keydown.esc="closeAddTag" class="small-size">
                     </v-text-field>
                     <div class="field-with-btns__actions">
-                        <div @click="addTag" :disabled="!isTagValid" class="intel-icon icon-check"></div>
+                        <div @click="addOrEditTag" :disabled="!isTagValid" class="intel-icon icon-check"></div>
                         <div @click="closeAddTag" class="intel-icon icon-cancel"></div>
                     </div>
                 </div>
@@ -72,10 +74,10 @@ export class TagCategoryCard extends UI {
     @Prop({type: Object, required: true})
     private tagCategory: TagCategory;
 
-    /** Признак создания тэга */
-    private createTag = false;
-    /** Название тэга */
-    private tagName = "";
+    /** Признак создания/редактирования тэга */
+    private createOrEditTag = false;
+    /** Редактируемый тэг */
+    private editableTag: Tag = {id: null, name: "", categoryId: null, color: null};
     /** Признак создания категории */
     private categoryEditMode = false;
     /** Название категории */
@@ -99,8 +101,11 @@ export class TagCategoryCard extends UI {
      * Посылает событие удаления тэга
      * @param tag тэг
      */
-    private onDeleteTag(tag: Tag): void {
-        this.$emit("deleteTag", tag);
+    private async onDeleteTag(tag: Tag): Promise<void> {
+        const result = await new ConfirmDialog().show("Вы уверены, что хотите удалить тэг? Удаление приведет к снятию тэга со всех активов, на которых он был установлен");
+        if (result === BtnReturn.YES) {
+            this.$emit("deleteTag", tag);
+        }
     }
 
     /**
@@ -123,7 +128,23 @@ export class TagCategoryCard extends UI {
      * Отображает поле для создания тэга и ставит в него фокус
      */
     private showCreateTagField(): void {
-        this.createTag = true;
+        this.createOrEditTag = true;
+        this.$nextTick(() => {
+            try {
+                this.$refs.tagNameInput?.$refs?.input?.focus();
+                this.$validator.errors.clear();
+            } catch (e) {
+                // mute
+            }
+        });
+    }
+
+    /**
+     * Отображает поле для редактирования тэга и ставит в него фокус
+     */
+    private onEditTag(tag: Tag): void {
+        this.createOrEditTag = true;
+        this.editableTag = {...tag};
         this.$nextTick(() => {
             try {
                 this.$refs.tagNameInput?.$refs?.input?.focus();
@@ -137,11 +158,15 @@ export class TagCategoryCard extends UI {
     /**
      * Валидирует и посылает событие добавления тэга
      */
-    private addTag(): void {
+    private addOrEditTag(): void {
         if (!this.isTagValid()) {
             return;
         }
-        this.$emit("createTag", {categoryId: this.tagCategory.id, tagName: this.tagName});
+        if (this.editableTag.id) {
+            this.$emit("editTag", this.editableTag);
+        } else {
+            this.$emit("createTag", {categoryId: this.tagCategory.id, tagName: this.editableTag.name});
+        }
         this.closeAddTag();
     }
 
@@ -161,8 +186,8 @@ export class TagCategoryCard extends UI {
      * Закрывает поле ввода нового тэга и очищает его
      */
     private closeAddTag(): void {
-        this.createTag = false;
-        this.tagName = "";
+        this.createOrEditTag = false;
+        this.editableTag = {id: null, name: "", categoryId: null, color: null};
     }
 
     /**
@@ -177,6 +202,14 @@ export class TagCategoryCard extends UI {
      * Проверяет название тэга
      */
     private isTagValid(): boolean {
-        return !CommonUtils.isBlank(this.tagName);
+        if (CommonUtils.isBlank(this.editableTag.name)) {
+            this.$snotify.warning("Название тэга должно быть указано");
+            return false;
+        }
+        if (this.tagCategory.tags.some(tag => tag.name.localeCompare(this.editableTag.name) === 0)) {
+            this.$snotify.warning("Тэг с таким названием уже существует в данной категории");
+            return false;
+        }
+        return true;
     }
 }
