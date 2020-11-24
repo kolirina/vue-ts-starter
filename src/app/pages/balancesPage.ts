@@ -228,6 +228,7 @@ export class BalancesPage extends UI implements TradeDataHolder {
     beforeDestroy(): void {
         UI.off(EventType.TRADE_CREATED);
     }
+
     private async specifyResidues(): Promise<void> {
         await this.reloadPortfolio();
     }

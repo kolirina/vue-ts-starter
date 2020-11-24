@@ -172,7 +172,7 @@ const Actions = {
             });
         });
     },
-    /** Дейстие проставляющие информацию о клиенте */
+    /** Действие проставляющие информацию о клиенте */
     [MutationType.SET_CLIENT_INFO](context: ActionContext<StateHolder, void>, clientInfo: ClientInfo): void {
         localStorage.set(StoreKeys.TOKEN_KEY, clientInfo.token);
         localStorage.set(StoreKeys.REFRESH_TOKEN, clientInfo.refreshToken);
@@ -213,6 +213,7 @@ const Actions = {
         return new Promise<void>((resolve): void => {
             clientService.getClientInfo().then((client: Client) => {
                 context.commit(MutationType.SET_CLIENT, client);
+                context.commit(MutationType.RELOAD_PORTFOLIOS, client.portfolios);
                 resolve();
             });
         });
