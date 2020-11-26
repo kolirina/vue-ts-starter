@@ -22,6 +22,7 @@ import {PortfolioLineChart} from "../components/charts/portfolioLineChart";
 import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog";
 import {NegativeBalanceNotification} from "../components/negativeBalanceNotification";
 import {PortfolioRowFilter, PortfolioRowsTableFilter} from "../components/portfolioRowsTableFilter";
+import {SaleComponent} from "../components/sale";
 import {AggregateAssetTable} from "../components/tables/aggregateAssetTable";
 import {BondTable} from "../components/tables/bondTable";
 import {StockTable} from "../components/tables/stockTable";
@@ -44,6 +45,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
     template: `
         <v-container v-if="overview" fluid class="page-wrapper">
             <v-layout column>
+                <sale-component v-if="showSaleBanner" @closeBanner="onCloseBanner"></sale-component>
                 <dashboard :overview="overview" :view-currency="viewCurrency" :side-bar-opened="sideBarOpened"
                            :data-v-step="getTourStepIndex(PortfolioBlockType.DASHBOARD)"></dashboard>
 
@@ -252,7 +254,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
             </v-layout>
         </v-container>
     `,
-    components: {AggregateAssetTable, StockTable, BondTable, PortfolioLineChart, PortfolioRowsTableFilter, NegativeBalanceNotification}
+    components: {AggregateAssetTable, StockTable, BondTable, PortfolioLineChart, PortfolioRowsTableFilter, NegativeBalanceNotification, SaleComponent}
 })
 export class BasePortfolioPage extends UI {
 
@@ -357,6 +359,8 @@ export class BasePortfolioPage extends UI {
     private ChartType = ChartType;
     /** Типы таблиц */
     private TableType = TableType;
+    /** Скидочный баннер */
+    private showSaleBanner = true;
 
     /**
      * Инициализация данных компонента
@@ -379,6 +383,7 @@ export class BasePortfolioPage extends UI {
         this.bondFilter = this.storageService.get(StoreKeys.BONDS_TABLE_FILTER_KEY, {});
         this.assetFilter = this.storageService.get(StoreKeys.ASSETS_TABLE_FILTER_KEY, {});
         this.blockIndexes = PortfolioUtils.getShowedBlocks(this.overview);
+        this.showSaleBanner = this.storageService.get("saleBanner", true);
     }
 
     @Watch("overview")
@@ -495,6 +500,11 @@ export class BasePortfolioPage extends UI {
 
     private getTourStepIndex(portfolioBlockType: PortfolioBlockType): number {
         return this.blockIndexes[portfolioBlockType];
+    }
+
+    private onCloseBanner(): void {
+        this.storageService.set("saleBanner", false);
+        this.showSaleBanner = false;
     }
 
     private get stockRows(): StockTypePortfolioRow[] {
