@@ -13,7 +13,7 @@ const MainStore = namespace(StoreType.MAIN);
             <v-icon class="sale__close" @click.native="close">close</v-icon>
             <div class="sale__content">
                 <div class="sale__title">Черная пятница в Intelinvest</div>
-                <div class="sale__description">
+                <div class="sale__description selectable">
                     <template v-if="discountApplied">
                         оплатите со своей персональной скидкой {{ clientInfo.user.nextPurchaseDiscount }}%
                     </template>
