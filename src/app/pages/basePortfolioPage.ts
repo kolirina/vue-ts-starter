@@ -16,34 +16,46 @@
 
 import {DataPoint} from "highcharts";
 import {Inject} from "typescript-ioc";
+import {namespace} from "vuex-class";
 import {Component, Prop, UI, Watch} from "../app/ui";
 import {PieChart} from "../components/charts/pieChart";
 import {PortfolioLineChart} from "../components/charts/portfolioLineChart";
 import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog";
 import {NegativeBalanceNotification} from "../components/negativeBalanceNotification";
 import {PortfolioRowFilter, PortfolioRowsTableFilter} from "../components/portfolioRowsTableFilter";
+import {SaleComponent} from "../components/sale";
 import {AggregateAssetTable} from "../components/tables/aggregateAssetTable";
 import {BondTable} from "../components/tables/bondTable";
 import {StockTable} from "../components/tables/stockTable";
 import {Filters} from "../platform/filters/Filters";
 import {Storage} from "../platform/services/storage";
+import {ClientInfo} from "../services/clientService";
 import {ExportType} from "../services/exportService";
 import {PortfolioBlockType} from "../services/onBoardingTourService";
+import {SystemPropertyName} from "../services/systemPropertiesService";
 import {TableHeaders, TABLES_NAME, TablesService, TableType} from "../services/tablesService";
 import {BigMoney} from "../types/bigMoney";
 import {ChartType, HighStockEventsGroup, LineChartItem, SectorChartData} from "../types/charts/types";
 import {StoreKeys} from "../types/storeKeys";
 import {TagCategory} from "../types/tags";
-import {AssetPortfolioRow, AssetRow, BlockType, BondPortfolioRow, EventType, Overview, StockPortfolioRow, StockTypePortfolioRow, TableHeader} from "../types/types";
+import {AssetPortfolioRow, AssetRow, BlockType, BondPortfolioRow, EventType, MapType, Overview, StockPortfolioRow, StockTypePortfolioRow, TableHeader} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
+import {DateUtils} from "../utils/dateUtils";
 import {PortfolioUtils} from "../utils/portfolioUtils";
+import {TariffUtils} from "../utils/tariffUtils";
 import {UiStateHelper} from "../utils/uiStateHelper";
+import {StoreType} from "../vuex/storeType";
+
+const MainStore = namespace(StoreType.MAIN);
 
 @Component({
     // language=Vue
     template: `
         <v-container v-if="overview" fluid class="page-wrapper">
             <v-layout column>
+                <v-slide-x-reverse-transition>
+                    <sale-component v-if="showSaleBanner" @closeBanner="onCloseBanner"></sale-component>
+                </v-slide-x-reverse-transition>
                 <dashboard :overview="overview" :view-currency="viewCurrency" :side-bar-opened="sideBarOpened"
                            :data-v-step="getTourStepIndex(PortfolioBlockType.DASHBOARD)"></dashboard>
 
@@ -252,7 +264,7 @@ import {UiStateHelper} from "../utils/uiStateHelper";
             </v-layout>
         </v-container>
     `,
-    components: {AggregateAssetTable, StockTable, BondTable, PortfolioLineChart, PortfolioRowsTableFilter, NegativeBalanceNotification}
+    components: {AggregateAssetTable, StockTable, BondTable, PortfolioLineChart, PortfolioRowsTableFilter, NegativeBalanceNotification, SaleComponent}
 })
 export class BasePortfolioPage extends UI {
 
@@ -267,6 +279,12 @@ export class BasePortfolioPage extends UI {
     private tablesService: TablesService;
     @Inject
     private storageService: Storage;
+
+    @MainStore.Getter
+    private clientInfo: ClientInfo;
+    @MainStore.Getter
+    private systemProperties: MapType;
+
     /** Данные по портфелю */
     @Prop({default: null, required: true})
     private overview: Overview;
@@ -357,6 +375,8 @@ export class BasePortfolioPage extends UI {
     private ChartType = ChartType;
     /** Типы таблиц */
     private TableType = TableType;
+    /** Скидочный баннер */
+    private showSaleBanner = true;
 
     /**
      * Инициализация данных компонента
@@ -379,6 +399,7 @@ export class BasePortfolioPage extends UI {
         this.bondFilter = this.storageService.get(StoreKeys.BONDS_TABLE_FILTER_KEY, {});
         this.assetFilter = this.storageService.get(StoreKeys.ASSETS_TABLE_FILTER_KEY, {});
         this.blockIndexes = PortfolioUtils.getShowedBlocks(this.overview);
+        this.showSaleBanner = this.storageService.get("saleBanner", this.needShowSaleBanner);
     }
 
     @Watch("overview")
@@ -497,6 +518,11 @@ export class BasePortfolioPage extends UI {
         return this.blockIndexes[portfolioBlockType];
     }
 
+    private onCloseBanner(): void {
+        this.storageService.set("saleBanner", false);
+        this.showSaleBanner = false;
+    }
+
     private get stockRows(): StockTypePortfolioRow[] {
         return [...this.overview.stockPortfolio.rows, this.overview.stockPortfolio.sumRow as StockPortfolioRow];
     }
@@ -542,5 +568,17 @@ export class BasePortfolioPage extends UI {
     private get bondRowsCountLabel(): string {
         const count = this.overview.bondPortfolio.rows.filter(row => Number(row.quantity) !== 0).length;
         return `${count} ${Filters.declension(count, "облигация", "облигации", "облигаций")}`;
+    }
+
+    /**
+     * Отображаем баннер только для старых тарифов и до 29.11 включительно
+     */
+    private get needShowSaleBanner(): boolean {
+        const valid = DateUtils.parseDate(DateUtils.currentDate()).isBefore(DateUtils.parseDate("2020-11-30"));
+        return valid && !this.newTariffsApplicable;
+    }
+
+    private get newTariffsApplicable(): boolean {
+        return DateUtils.parseDate(this.clientInfo.user.regDate).isAfter(DateUtils.parseDate(this.systemProperties[SystemPropertyName.NEW_TARIFFS_DATE_FROM]));
     }
 }

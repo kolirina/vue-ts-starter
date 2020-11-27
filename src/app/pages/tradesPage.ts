@@ -116,6 +116,11 @@ export class TradesPage extends PortfolioBasedPage {
         UI.on(EventType.TRADE_UPDATED, async () => await this.reloadPortfolio());
     }
 
+    beforeDestroy(): void {
+        UI.off(EventType.TRADE_CREATED);
+        UI.off(EventType.TRADE_UPDATED);
+    }
+
     private getHeaders(): TableHeader[] {
         return this.tablesService.getFilterHeaders(this.TABLES_NAME.TRADE, !this.allowActions);
     }
