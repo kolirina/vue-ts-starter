@@ -133,7 +133,7 @@ export class ExportPage extends UI {
     }
 
     private goToTariffs(): void {
-        this.$router.push("tariffs");
+        this.$router.push({name: "tariffs"});
     }
 
     private async loadPortfolioBackup(): Promise<void> {
