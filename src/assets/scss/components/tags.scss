@@ -61,6 +61,13 @@
     }
   }
 
+  .icon-add {
+    font-size: 24px;
+    color: #84ABEF;
+
+    &:hover {color: $main-color-1}
+  }
+
   @media all and (max-width: $xs-breakpoint) {
     width: calc(100% - 32px);
     margin: 0 16px;
@@ -84,14 +91,8 @@
       text-overflow: ellipsis;
     }
 
-    .icon-remove {
-      cursor: pointer;
-      color: $main-color-1;
-      font-size: 8px;
-      margin-left: 4px;
-    }
-
-    .icon-edit {
+    .icon-remove,
+    .icon-edit_xs {
       cursor: pointer;
       color: $main-color-1;
       font-size: 8px;

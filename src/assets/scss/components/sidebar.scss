@@ -244,7 +244,11 @@
   .intel-icon,
   .active-link {width: 100%}
 
-  .active-link {border-radius: 4px}
+  .active-link {
+    border-radius: 4px;
+
+    &.intel-icon:after {color: $main-color-1}
+  }
 
   .intel-icon {
     display: flex;
@@ -288,5 +292,8 @@
   .v-menu .v-list__tile {width: 0}
 
   // vue-scroll
-  .__view {justify-content: start}
+  .__view {
+    justify-content: start;
+    align-items: center;
+  }
 }

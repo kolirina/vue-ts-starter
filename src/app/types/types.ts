@@ -344,7 +344,6 @@ export type DashboardBrick = {
     mainValue: string,
     secondValue: string,
     secondValueDesc?: string,
-    hasNotBorderLeft?: boolean,
     isSummaryIncome?: {
         isUpward: boolean
     },

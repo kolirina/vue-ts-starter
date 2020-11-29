@@ -3,6 +3,12 @@
   &-wrap {
     background-color: $dashboard--bg-color;
     box-shadow: 0 4px 7px rgba(4, 4, 39, 0.14);
+    padding: 16px 20px 16px 30px;
+    margin: 0 -4px;
+
+    .arrow-up {color: $dashboard--green-color !important;}
+
+    .arrow-down {color: $dashboard--red-color !important;}
   }
 
   &-card {
@@ -11,20 +17,28 @@
     height: 100%;
   }
 
+  &-value {margin: 16px 0 0 !important}
+
   &-card-big-nums {
     font-family: $dashbord--big-num--font-family !important;
     font-weight: $dashbord--big-num--font-weight !important;
     font-size: $dashbord--big-num--font-size;
     color: $dashbord--big-num--font-color !important;
+    line-height: 32px;
   }
 
   &-card-string {
     display: flex;
     align-items: center;
+    text-align: left;
     font-size: 13px;
+    line-height: 18px;
     color: #fff;
 
     .v-tooltip {
+      line-height: 0;
+      margin-left: 10px;
+
       > span {
         font-size: 0;
 
@@ -40,8 +54,20 @@
     font-family: $dashbord--num--font-family !important;
     font-size: $dashbord--num--font-size !important;
     font-weight: $dashbord--num--font-weight !important;
+    margin: 2px 0 0 !important;
+    line-height: 28px;
 
-    @media only screen and (max-width: $sm-breakpoint) {text-align: left}
+    &__description {text-align: left}
+
+    @media only screen and (max-width: $sm-breakpoint) {
+      &__description {font-size: 14px !important;}
+    }
+
+    @media only screen and (max-width: $xs-breakpoint) {
+      justify-content: flex-end;
+
+      &__description {text-align: right}
+    }
   }
 
   &-second-value-desc {
@@ -55,78 +81,71 @@
     align-items: center;
 
     &-icon {
-      background-color: $dashbord--icon-circle--color;
+      @extend %center-elements;
       border-radius: 50%;
       width: 28px;
       height: 28px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
 
       i {
         font-size: 20px;
         font-weight: bold;
       }
+    }
 
+    &.arrow-up &-icon {
+      background-color: rgba($dashboard--green-color, 0.2);
+
+      i {color: $dashboard--green-color !important;}
     }
-    &.arrow-up &-icon i {
-      color: $dashboard--green-color !important;
-    }
-    &.arrow-down &-icon i {
-      color: $dashboard--red-color !important;
+
+    &.arrow-down &-icon {
+      background-color: rgba($dashboard--red-color, 0.2);
+
+      i {color: $dashboard--red-color !important;}
     }
 
     &-text {
       margin-left: 12px;
       font-size: 16px;
-      font-family: 'Gilroy Semibold';
+      font-family: 'Gilroy Semibold', sans-serif;
     }
 
-    &.arrow-up &-text {
-      color: $dashboard--green-color !important;
-    }
-    &.arrow-down &-text {
-      color: $dashboard--red-color !important;
-    }
-  }
-
-  &-border {
-    border-left: 1px solid #fff;
-
-    @media(max-width: $md-breakpoint) {
-      border-left: none;
-    }
+    &.arrow-up &-text {color: $dashboard--green-color !important}
+    &.arrow-down &-text {color: $dashboard--red-color !important}
   }
 }
 
 .dashboard-wrap {
+
   .dashboard-item {
     position: relative;
+    padding: 0 18px !important;
 
-    &:first-child {
-      .dashboard-card {
-        filter: none !important;
-      }
-    }
+    + .dashboard-item {border-left: 1px solid rgba(#fff, 0.2)}
 
     .icon-stock {
       color: #fff;
       position: absolute;
-      top: 32px;
-      right: 20px;
+      top: 0;
+      right: 0;
       cursor: pointer;
     }
 
     @media only screen and (max-width: $sm-breakpoint) {
+
       .v-card__title {padding-top: 0}
 
-      .icon-stock {top: 8px}
+      .icon-stock {top: 12px}
     }
   }
 
-  .arrow-up {color: $dashboard--green-color !important;}
+  @media(max-width: $md-breakpoint) {
+    .dashboard-item {
+      padding-top: 16px !important;
 
-  .arrow-down {color: $dashboard--red-color !important;}
+      & + .dashboard-item {border-left: none;}
+    }
+  }
 
   @media only screen and (max-width: $xs-breakpoint) {
     padding: 0 0 6px !important;
@@ -141,10 +160,6 @@
       .dashboard-card {
         display: flex;
         align-items: flex-start;
-
-        .v-card__title {
-          padding: 0;
-        }
 
         .container {
           display: flex;
@@ -165,11 +180,18 @@
           flex: none;
           margin-right: 8px;
         }
+
+        .dashboard-card__info {margin: -8px 0 0 auto}
+
+        .dashboard-value {
+          margin-top: 0 !important;
+          justify-content: flex-end;
+        }
       }
 
       .icon-stock {
         left: 0;
-        bottom: 0;
+        bottom: 16px;
         top: auto;
         right: auto;
       }

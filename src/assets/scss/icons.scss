@@ -164,8 +164,10 @@
 }
 .dashboard-info {
   @extend .icon;
+  width: 16px;
+  height: 16px;
   background: url('../img/common/dashboard-info.svg') no-repeat center;
-  margin-left: 0px !important;
+  margin-left: 0 !important;
 }
 .profile-edit {
   @extend .icon;
@@ -269,4 +271,10 @@
 }
 .icon-stock:after {
   content: "\e91d";
+}
+.icon-add:after {
+  content: "\e91e";
+}
+.icon-edit_xs:after {
+  content: "\e91f";
 }
