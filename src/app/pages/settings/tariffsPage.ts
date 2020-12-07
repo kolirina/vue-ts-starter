@@ -490,10 +490,10 @@ export class TariffsPage extends UI {
             const promoCode = this.$route.query.promoCode as string || this.storage.get("intelinvest_promo_code", null);
             if (promoCode) {
                 if (promoCode) {
+                    this.$router.replace("/settings/tariffs");
                     await this.tariffService.applyPromoCode(promoCode);
                     this.clientService.resetClientInfo();
                     await this.reloadUser();
-                    this.$router.replace("/settings/tariffs");
                 }
             }
             this.storage.delete("intelinvest_promo_code");
