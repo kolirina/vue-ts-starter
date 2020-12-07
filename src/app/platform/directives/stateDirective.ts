@@ -16,6 +16,9 @@ export class StateDirective implements DirectiveOptions {
      * @param {VNodeDirective} binding  контекст связывания
      */
     bind(el: HTMLElement, binding: VNodeDirective): void {
+        if (!binding.value) {
+            return;
+        }
         el.addEventListener("click", () => UiStateHelper.toggleState(binding.value));
     }
 }

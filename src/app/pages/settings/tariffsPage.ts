@@ -7,6 +7,7 @@ import {ApplyPromoCodeDialog} from "../../components/dialogs/applyPromoCodeDialo
 import {ConfirmDialog} from "../../components/dialogs/confirmDialog";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
+import {Storage} from "../../platform/services/storage";
 import {ClientInfo, ClientService} from "../../services/clientService";
 import {SystemPropertyName} from "../../services/systemPropertiesService";
 import {TariffService, UserPaymentInfo} from "../../services/tariffService";
@@ -433,6 +434,8 @@ export class TariffsPage extends UI {
     @Inject
     private clientService: ClientService;
     @Inject
+    private storage: Storage;
+    @Inject
     private tariffService: TariffService;
     @MainStore.Getter
     private clientInfo: ClientInfo;
@@ -471,11 +474,30 @@ export class TariffsPage extends UI {
             this.$snotify.info("Оплата заказа успешно завершена");
             this.$router.push({name: "tariffs"});
         }
+        await this.applyPromoCodeFromParams();
         UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio());
     }
 
     beforeDestroy(): void {
         UI.off(EventType.TRADE_CREATED);
+    }
+
+    /**
+     * Применяет промокод переданный в query параметре или через localstorage (потом удаляя его)
+     */
+    private async applyPromoCodeFromParams(): Promise<void> {
+        try {
+            const promoCode = this.$route.query.promoCode as string || this.storage.get("intelinvest_promo_code", null);
+            if (promoCode) {
+                if (promoCode) {
+                    await this.tariffService.applyPromoCode(promoCode);
+                    this.clientService.resetClientInfo();
+                    await this.reloadUser();
+                }
+            }
+            this.storage.delete("intelinvest_promo_code");
+        } catch (mute) {
+        }
     }
 
     /**
