@@ -520,6 +520,13 @@ export class TariffsPage extends UI {
         if (this.isProgress) {
             return;
         }
+        if (this.needShowConfirm(tariff)) {
+            const newExpired = this.getNewExpired(tariff);
+            const answer = await new ConfirmDialog().show(`Вы собираетесь сменить тариф на "${tariff.description}", подписка будет действовать до: "${newExpired}"`);
+            if (answer !== BtnReturn.YES) {
+                return;
+            }
+        }
         this.isProgress = true;
         this.busyState[tariff.name] = true;
         let result = BtnReturn.YES;
@@ -553,6 +560,37 @@ export class TariffsPage extends UI {
         } finally {
             this.busyState[tariff.name] = false;
             this.isProgress = false;
+        }
+    }
+
+    /**
+     * Возвращает признак отображения диалога подтверждения при смене тарифа
+     * Отображается только в случае если у пользователя платный, действующий тариф и переход осуществляется на платный тариф, и тарифы не совпадают
+     * @param tariff
+     */
+    private needShowConfirm(tariff: Tariff): boolean {
+        return [Tariff.PRO, Tariff.STANDARD].includes(this.clientInfo.user.tariff) && [Tariff.PRO, Tariff.STANDARD].includes(tariff) &&
+            tariff !== this.clientInfo.user.tariff && !this.isSubscriptionExpired();
+    }
+
+    /**
+     * Возвращает срок новой подписки
+     * @param tariff тариф
+     */
+    private getNewExpired(tariff: Tariff): string {
+        // если это upgrade тарифа
+        // срок действия перерасчитывается
+        if (tariff.compare(this.clientInfo.user.tariff) > 0) {
+            // перассчитываем оставшиеся дни
+            const oldDaysLeft = DateUtils.calculateDaysBetween(DateUtils.currentDate(), this.clientInfo.user.paidTill);
+            const newMonthlyPrice = tariff.monthlyPrice;
+            const oldMonthlyPrice = this.clientInfo.user.tariff.monthlyPrice;
+            const newDaysLeft = oldMonthlyPrice.mul(new Decimal(oldDaysLeft)).div(newMonthlyPrice).toDP(0).toNumber();
+            return DateUtils.addDaysToCurrent(newDaysLeft + 1);
+        } else {
+            // если это downgrade тарифа
+            // тариф не перерасчитывается и просто остается таким же по сроку действия
+            return DateUtils.formatDate(DateUtils.parseDate(this.clientInfo.user.paidTill));
         }
     }
 
