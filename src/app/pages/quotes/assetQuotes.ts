@@ -87,11 +87,10 @@ const MainStore = namespace(StoreType.MAIN);
                             </td>
                             <td class="text-xs-left">{{ props.item.name }}</td>
                             <td class="text-xs-left">{{ props.item.category.description }}</td>
-                            <td class="text-xs-center ii-number-cell">
+                            <td class="text-xs-right ii-number-cell">
                                 {{ props.item.price | amount(true, null, true, false) }} <span class="second-value">{{ currencyForPrice(props.item) }}</span>
                             </td>
                             <td class="text-xs-left">{{ props.item.source }}</td>
-                            <td class="text-xs-left">{{ props.item.regex }}</td>
                             <td class="text-xs-center">{{ props.item.currency }}</td>
                             <td class="text-xs-left">{{ props.item.tags }}</td>
                             <td class="justify-end layout px-0" @click.stop>
@@ -111,17 +110,17 @@ const MainStore = namespace(StoreType.MAIN);
                                             </v-list-tile-title>
                                         </v-list-tile>
                                         <v-divider></v-divider>
-                                        <v-list-tile @click="openTradeDialog(props.item, operation.BUY)">
+                                        <v-list-tile @click="openTradeDialog(props.item, Operation.BUY)">
                                             <v-list-tile-title>
                                                 Купить
                                             </v-list-tile-title>
                                         </v-list-tile>
-                                        <v-list-tile @click="openTradeDialog(props.item, operation.SELL)">
+                                        <v-list-tile @click="openTradeDialog(props.item, Operation.SELL)">
                                             <v-list-tile-title>
                                                 Продать
                                             </v-list-tile-title>
                                         </v-list-tile>
-                                        <v-list-tile @click="openTradeDialog(props.item, operation.DIVIDEND)">
+                                        <v-list-tile @click="openTradeDialog(props.item, Operation.DIVIDEND)">
                                             <v-list-tile-title>
                                                 Дивиденд
                                             </v-list-tile-title>
@@ -153,7 +152,7 @@ export class AssetQuotes extends UI {
     @MainStore.Getter
     private clientInfo: ClientInfo;
     /** Текущая операция */
-    private operation = Operation;
+    private Operation = Operation;
     @Inject
     private assetService: AssetService;
     @Inject
@@ -174,12 +173,11 @@ export class AssetQuotes extends UI {
 
     private headers: TableHeader[] = [
         {text: "", align: "left", sortable: false, value: "", width: "50"},
-        {text: "Тикер", align: "left", value: "ticker", width: "80"},
-        {text: "Компания", align: "left", value: "name", width: "200"},
+        {text: "Тикер", align: "left", value: "ticker"},
+        {text: "Компания", align: "left", value: "name"},
         {text: "Тип", align: "left", value: "category", width: "50"},
         {text: "Цена", align: "center", value: "price", width: "50"},
         {text: "Источник", align: "center", value: "source", width: "300"},
-        {text: "Регулярное выражение", align: "center", value: "regex", sortable: false, width: "100"},
         {text: "Валюта", align: "center", value: "currency", width: "50"},
         {text: "Тэги", align: "center", value: "tags", sortable: false, width: "50"},
         {text: "", value: "", align: "center", sortable: false, width: "50"}

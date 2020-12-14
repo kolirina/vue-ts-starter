@@ -7,6 +7,7 @@ import {ApplyPromoCodeDialog} from "../../components/dialogs/applyPromoCodeDialo
 import {ConfirmDialog} from "../../components/dialogs/confirmDialog";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
+import {Storage} from "../../platform/services/storage";
 import {ClientInfo, ClientService} from "../../services/clientService";
 import {SystemPropertyName} from "../../services/systemPropertiesService";
 import {TariffService, UserPaymentInfo} from "../../services/tariffService";
@@ -433,6 +434,8 @@ export class TariffsPage extends UI {
     @Inject
     private clientService: ClientService;
     @Inject
+    private storage: Storage;
+    @Inject
     private tariffService: TariffService;
     @MainStore.Getter
     private clientInfo: ClientInfo;
@@ -471,11 +474,31 @@ export class TariffsPage extends UI {
             this.$snotify.info("Оплата заказа успешно завершена");
             this.$router.push({name: "tariffs"});
         }
+        await this.applyPromoCodeFromParams();
         UI.on(EventType.TRADE_CREATED, async () => await this.reloadPortfolio());
     }
 
     beforeDestroy(): void {
         UI.off(EventType.TRADE_CREATED);
+    }
+
+    /**
+     * Применяет промокод переданный в query параметре или через localstorage (потом удаляя его)
+     */
+    private async applyPromoCodeFromParams(): Promise<void> {
+        try {
+            const promoCode = this.$route.query.promoCode as string || this.storage.get("intelinvest_promo_code", null);
+            if (promoCode) {
+                if (promoCode) {
+                    this.$router.replace("/settings/tariffs");
+                    await this.tariffService.applyPromoCode(promoCode);
+                    this.clientService.resetClientInfo();
+                    await this.reloadUser();
+                }
+            }
+            this.storage.delete("intelinvest_promo_code");
+        } catch (mute) {
+        }
     }
 
     /**
@@ -496,6 +519,13 @@ export class TariffsPage extends UI {
     private async makePayment(tariff: Tariff): Promise<void> {
         if (this.isProgress) {
             return;
+        }
+        if (this.needShowConfirm(tariff)) {
+            const newExpired = this.getNewExpired(tariff);
+            const answer = await new ConfirmDialog().show(`Вы собираетесь сменить тариф на "${tariff.description}", подписка будет действовать до: "${newExpired}"`);
+            if (answer !== BtnReturn.YES) {
+                return;
+            }
         }
         this.isProgress = true;
         this.busyState[tariff.name] = true;
@@ -530,6 +560,37 @@ export class TariffsPage extends UI {
         } finally {
             this.busyState[tariff.name] = false;
             this.isProgress = false;
+        }
+    }
+
+    /**
+     * Возвращает признак отображения диалога подтверждения при смене тарифа
+     * Отображается только в случае если у пользователя платный, действующий тариф и переход осуществляется на платный тариф, и тарифы не совпадают
+     * @param tariff
+     */
+    private needShowConfirm(tariff: Tariff): boolean {
+        return [Tariff.PRO, Tariff.STANDARD].includes(this.clientInfo.user.tariff) && [Tariff.PRO, Tariff.STANDARD].includes(tariff) &&
+            tariff !== this.clientInfo.user.tariff && !this.isSubscriptionExpired();
+    }
+
+    /**
+     * Возвращает срок новой подписки
+     * @param tariff тариф
+     */
+    private getNewExpired(tariff: Tariff): string {
+        // если это upgrade тарифа
+        // срок действия перерасчитывается
+        if (tariff.compare(this.clientInfo.user.tariff) > 0) {
+            // перассчитываем оставшиеся дни
+            const oldDaysLeft = DateUtils.calculateDaysBetween(DateUtils.currentDate(), this.clientInfo.user.paidTill);
+            const newMonthlyPrice = tariff.monthlyPrice;
+            const oldMonthlyPrice = this.clientInfo.user.tariff.monthlyPrice;
+            const newDaysLeft = oldMonthlyPrice.mul(new Decimal(oldDaysLeft)).div(newMonthlyPrice).toDP(0).toNumber();
+            return DateUtils.addDaysToCurrent(newDaysLeft + 1);
+        } else {
+            // если это downgrade тарифа
+            // тариф не перерасчитывается и просто остается таким же по сроку действия
+            return DateUtils.formatDate(DateUtils.parseDate(this.clientInfo.user.paidTill));
         }
     }
 

@@ -145,6 +145,25 @@ export class DateUtils {
     static getNameMonthDate(date: string): string {
         return dayjs(date).format("MMMM");
     }
+
+    /**
+     * Добавляет переданное количество дней к текущей дате
+     * @param days количество дней
+     * @return {string} месяц даты в формате строки
+     */
+    static addDaysToCurrent(days: number): string {
+        return DateUtils.formatDate(dayjs().add(days, "day"));
+    }
+
+    /**
+     * Возвращает разницу между двумя датами, без учета текущей даты
+     * @param startDate дата начала
+     * @param endDate   дата окончания
+     * @return кол-во дней между датами
+     */
+    static calculateDaysBetween(startDate: string, endDate: string): number {
+        return DateUtils.parseDate(endDate).diff(DateUtils.parseDate(startDate), "day") - 1;
+    }
 }
 
 /**
