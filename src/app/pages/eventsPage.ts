@@ -6,9 +6,11 @@ import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
 import {AddTradeDialog} from "../components/dialogs/addTradeDialog";
 import {ConfirmDialog} from "../components/dialogs/confirmDialog";
+import {ExecuteSplitEventDialog} from "../components/dialogs/executeSplitEventDialog";
 import {EventsAggregateInfoComponent} from "../components/eventsAggregateInfoComponent";
 import {BondNewsTable} from "../components/tables/bondNewsTable";
 import {DividendNewsTable} from "../components/tables/dividendNewsTable";
+import {SplitEventsTable} from "../components/tables/splitEventsTable";
 import {DisableConcurrentExecution} from "../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../platform/decorators/showProgress";
 import {BtnReturn} from "../platform/dialogs/customDialog";
@@ -24,7 +26,8 @@ import {
     EventsAggregateInfo,
     EventService,
     EventsResponse,
-    ShareEvent
+    ShareEvent,
+    SplitEvent
 } from "../services/eventService";
 import {AssetType} from "../types/assetType";
 import {ChartType, ColumnChartData} from "../types/charts/types";
@@ -143,6 +146,14 @@ const MainStore = namespace(StoreType.MAIN);
                             </v-data-table>
 
                             <div v-else class="events-table__empty">{{ emptyTableText }}</div>
+                        </v-card-text>
+                    </v-card>
+
+                    <v-card v-if="splitEvents.length" style="margin-top: 30px" flat>
+                        <v-card-title class="events__card-title">Сплиты и консолидации бумаг</v-card-title>
+
+                        <v-card-text>
+                            <split-events-table :events="splitEvents" @execute="onExecuteSplitEvent" @reject="onRejectSplitEvent"></split-events-table>
                         </v-card-text>
                     </v-card>
 
@@ -310,7 +321,8 @@ const MainStore = namespace(StoreType.MAIN);
     components: {
         "events-aggregate-info": EventsAggregateInfoComponent,
         DividendNewsTable,
-        BondNewsTable
+        BondNewsTable,
+        SplitEventsTable
     }
 })
 export class EventsPage extends PortfolioBasedPage {
@@ -572,6 +584,11 @@ export class EventsPage extends PortfolioBasedPage {
         return this.eventsResponse ? this.eventsResponse.events : [];
     }
 
+    /** События */
+    private get splitEvents(): SplitEvent[] {
+        return this.eventsResponse ? this.eventsResponse.splitEvents : [];
+    }
+
     /** Агрегированная информация по событиям */
     private get eventsAggregateInfo(): EventsAggregateInfo {
         return this.eventsResponse ? this.eventsResponse.eventsAggregateInfo : null;
@@ -625,6 +642,33 @@ export class EventsPage extends PortfolioBasedPage {
 
     private async openDialog(): Promise<void> {
         await new AddTradeDialog().show({store: this.$store.state[StoreType.MAIN], router: this.$router});
+    }
+
+    private async onExecuteSplitEvent(splitEvent: SplitEvent): Promise<void> {
+        await new ExecuteSplitEventDialog().show({
+            event: splitEvent,
+            portfolio: this.portfolio,
+            router: this.$router,
+            store: this.$store.state[StoreType.MAIN]
+        });
+    }
+
+    /**
+     * Выдает запрос на удаление события сплита и удаляет его в случае подтверждения
+     * @param splitEvent сплит
+     */
+    private async onRejectSplitEvent(splitEvent: SplitEvent): Promise<void> {
+        const result = await new ConfirmDialog().show(`Вы действительно хотите удалить событие по бумаге ${splitEvent.share.ticker}?`);
+        if (result === BtnReturn.YES) {
+            await this.confirmedRejectSplitEvent(splitEvent);
+        }
+    }
+
+    @ShowProgress
+    private async confirmedRejectSplitEvent(splitEvent: SplitEvent): Promise<void> {
+        await this.eventService.rejectSplitEvent({eventId: splitEvent.id, portfolioId: this.portfolio.id});
+        await this.loadEvents();
+        this.$snotify.info("Событие успешно удалено");
     }
 
     private async confirmDeleteAllEvents(): Promise<void> {

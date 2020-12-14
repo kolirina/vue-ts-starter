@@ -121,6 +121,14 @@ export class EventService {
     async rejectEvent(request: RejectShareEventRequest): Promise<void> {
         await this.http.post(`/events/reject`, request);
     }
+
+    /**
+     * Удаляет все события пользователя
+     * @param request запрос на отклонение сделки
+     */
+    async rejectSplitEvent(request: RejectSplitEventRequest): Promise<void> {
+        await this.http.post(`/events/split/reject`, request);
+    }
 }
 
 @Enum("code")
@@ -238,6 +246,8 @@ export interface EventFields {
 export interface EventsResponse {
     /** Список событий */
     events: ShareEvent[];
+    /** Список сплитов */
+    splitEvents: SplitEvent[];
     /** Агрегированная информация по событиям */
     eventsAggregateInfo: EventsAggregateInfo;
 }
@@ -290,6 +300,34 @@ export interface DividendNewsItem {
     isin?: string;
     /** Идентификатор бумаги в системе */
     stockId: number;
+}
+
+/** Информация о событии сплита по ценной бумаге */
+export interface SplitEvent {
+    /** Идентификатор события */
+    id: number;
+    /** Бумага */
+    share: Share;
+    /** Количество бумаг после сплита */
+    to: number;
+    /** Количество бумаг до сплита */
+    from: number;
+    /** Количество бумаг до сплита посчитанное для бумаги в портфеле */
+    toSharesCount: string;
+    /** Количество бумаг после сплита посчитанное для бумаги в портфеле */
+    fromShareCount: string;
+    /** Дата сплита */
+    date: string;
+    /** Тип сплита */
+    type: "Сплит" | "Консолидация";
+}
+
+/** Запрос на исполнение сплита */
+export interface RejectSplitEventRequest {
+    /** Идентификатор события */
+    eventId: number;
+    /** Идентификатор портфеля */
+    portfolioId: number;
 }
 
 /** Ответ с новостями по событиям */

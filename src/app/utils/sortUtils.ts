@@ -14,10 +14,10 @@
  * (c) ООО "Интеллектуальные инвестиции", 2019
  */
 
-import {DividendNewsItem, ShareEvent} from "../services/eventService";
+import {DividendNewsItem, ShareEvent, SplitEvent} from "../services/eventService";
 import {TABLE_HEADERS} from "../services/tablesService";
 import {BigMoney} from "../types/bigMoney";
-import {BondPortfolioRow, StockPortfolioRow, StockTypePortfolioRow} from "../types/types";
+import {BondPortfolioRow, StockTypePortfolioRow} from "../types/types";
 import {CommonUtils} from "./commonUtils";
 import {DateUtils} from "./dateUtils";
 
@@ -112,6 +112,39 @@ export class SortUtils {
                     return a.share.ticker.localeCompare(b.share.ticker);
                 } else {
                     return b.share.ticker.localeCompare(a.share.ticker);
+                }
+            } else {
+                const first = (a as any)[index];
+                const second = (b as any)[index];
+                if (!isDesc) {
+                    return this.compareValues(first, second) * -1;
+                } else {
+                    return this.compareValues(first, second);
+                }
+            }
+        });
+        return items;
+    }
+
+    /**
+     * todo привести к одному интерфейсу и убрать копипасту
+     * @param items
+     * @param index
+     * @param isDesc
+     */
+    static customSortSplitEvents(items: SplitEvent[], index: string, isDesc: boolean): SplitEvent[] {
+        items.sort((a: SplitEvent, b: SplitEvent): number => {
+            if (index === "ticker") {
+                if (!isDesc) {
+                    return a.share.ticker.localeCompare(b.share.ticker);
+                } else {
+                    return b.share.ticker.localeCompare(a.share.ticker);
+                }
+            } else if (index === "shortname") {
+                if (!isDesc) {
+                    return a.share.shortname.localeCompare(b.share.shortname);
+                } else {
+                    return b.share.shortname.localeCompare(a.share.shortname);
                 }
             } else {
                 const first = (a as any)[index];
