@@ -24,9 +24,9 @@ import {
 } from "../../services/importService";
 import {OverviewService} from "../../services/overviewService";
 import {PortfolioParams, PortfolioService} from "../../services/portfolioService";
-import {SystemPropertyName} from "../../services/systemPropertiesService";
 import {CurrencyUnit} from "../../types/currency";
 import {EventType} from "../../types/eventType";
+import {Tariff} from "../../types/tariff";
 import {MapType, Portfolio, Share, Status} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {DateUtils} from "../../utils/dateUtils";
@@ -822,16 +822,20 @@ export class ImportPage extends UI {
     }
 
     private get tariffLimitExceeded(): boolean {
-        return TariffUtils.limitsExceeded(this.clientInfo.user, this.systemProperties);
+        return TariffUtils.limitsExceeded(this.clientInfo.user);
     }
 
-    private get newTariffsApplicable(): boolean {
-        return DateUtils.parseDate(this.clientInfo.user.regDate).isAfter(DateUtils.parseDate(this.systemProperties[SystemPropertyName.NEW_TARIFFS_DATE_FROM]));
+    /**
+     * Возвращает признак применения лимитов по новым тарифам
+     */
+    private get oldStandardTariffsLimitsApplicable(): boolean {
+        return this.clientInfo.user.tariff === Tariff.STANDARD && this.clientInfo.user.skipTariffValidationDate &&
+            DateUtils.parseDate(this.clientInfo.user.skipTariffValidationDate).isAfter(DateUtils.parseDate(DateUtils.currentDate()));
     }
 
     get maxSharesCount(): string {
-        if (this.newTariffsApplicable) {
-            return this.clientInfo.user.tariff.maxSharesCountNew === 0x7fffffff ? "Без ограничений" : String(this.clientInfo.user.tariff.maxSharesCountNew);
+        if (this.oldStandardTariffsLimitsApplicable) {
+            return "Без ограничений";
         }
         return this.clientInfo.user.tariff.maxSharesCount === 0x7fffffff ? "Без ограничений" : String(this.clientInfo.user.tariff.maxSharesCount);
     }

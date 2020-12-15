@@ -16,10 +16,7 @@
 
 import dayjs from "dayjs";
 import {Client, ClientInfo} from "../services/clientService";
-import {SystemPropertyName} from "../services/systemPropertiesService";
-import {Permission} from "../types/permission";
 import {Tariff} from "../types/tariff";
-import {MapType} from "../types/types";
 import {DateUtils} from "./dateUtils";
 
 export class TariffUtils {
@@ -47,22 +44,25 @@ export class TariffUtils {
         return clientInfo.tariff !== Tariff.FREE && paidTill.isBefore(currentDate) && !paidTill.isSame(currentDate, "date");
     }
 
-    static limitsExceeded(clientInfo: Client, systemProperties: MapType): boolean {
-        const tariff = clientInfo.tariff;
-        return TariffUtils.limitsExceededByTariff(clientInfo, systemProperties, tariff, false);
+    /**
+     * Проверяет лимиты тарифа с учетом того что пользователя старого Стандарта будут работать без лимита по бумага до определенной даты
+     * @param clientInfo информация о клиенте
+     */
+    static limitsExceeded(clientInfo: Client): boolean {
+        const skipCheckSharesLimit = clientInfo.tariff === Tariff.STANDARD && clientInfo.skipTariffValidationDate &&
+            DateUtils.parseDate(clientInfo.skipTariffValidationDate).isAfter(DateUtils.parseDate(DateUtils.currentDate()));
+        return clientInfo.portfoliosCount > clientInfo.tariff.maxPortfoliosCount ||
+            (!skipCheckSharesLimit && clientInfo.portfolios.some(portfolio => portfolio.sharesCount > clientInfo.tariff.maxSharesCount));
     }
 
-    static limitsExceededByTariff(clientInfo: Client, systemProperties: MapType, tariff: Tariff, skipFreeTariffChecking: boolean = true): boolean {
-        const isNewTariffsApplicable = DateUtils.parseDate(clientInfo.regDate).isAfter(DateUtils.parseDate(systemProperties[SystemPropertyName.NEW_TARIFFS_DATE_FROM]));
-        // если действуют новые тарифы, то проверяем на всех тарифах превышение лимитов, без учета превышения по зарубежным бумагам
-        if (isNewTariffsApplicable) {
-            return clientInfo.portfoliosCount > tariff.maxPortfoliosCount ||
-                clientInfo.portfolios.some(portfolio => portfolio.sharesCount > tariff.maxSharesCountNew);
-        } else {
-            return clientInfo.portfoliosCount > tariff.maxPortfoliosCount ||
-                clientInfo.portfolios.some(portfolio => portfolio.sharesCount > tariff.maxSharesCount) ||
-                ((skipFreeTariffChecking || tariff === Tariff.FREE) && clientInfo.foreignShares && !tariff.hasPermission(Permission.FOREIGN_SHARES));
-        }
+    /**
+     * Проверяет лимиты тарифа
+     * @param clientInfo информация о клиенте
+     * @param tariff тариф
+     */
+    static limitsExceededByTariff(clientInfo: Client, tariff: Tariff): boolean {
+        return clientInfo.portfoliosCount > tariff.maxPortfoliosCount ||
+            clientInfo.portfolios.some(portfolio => portfolio.sharesCount > tariff.maxSharesCount);
     }
 
     static getSubscribeDescription(clientInfo: Client, appendToSuffix: boolean = false): string {

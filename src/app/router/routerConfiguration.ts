@@ -38,7 +38,6 @@ import {TradesPage} from "../pages/tradesPage";
 import {Storage} from "../platform/services/storage";
 import {ClientService} from "../services/clientService";
 import {LogoutService} from "../services/logoutService";
-import {SystemPropertiesService} from "../services/systemPropertiesService";
 import {RouteMeta} from "../types/router/types";
 import {StoreKeys} from "../types/storeKeys";
 import {ForbiddenCode} from "../types/types";
@@ -50,8 +49,6 @@ Vue.use(VueRouter);
 
 /** Сервис работы с клиентом */
 const clientService: ClientService = Container.get(ClientService);
-/** Сервис работы с настройками intelinvest */
-const systemPropertiesService: SystemPropertiesService = Container.get(SystemPropertiesService);
 /** Сервис работы с localStorage */
 const localStorage: Storage = Container.get(Storage);
 /** Стор приложения */
@@ -191,7 +188,7 @@ export class RouterConfiguration {
                 },
                 beforeEnter: async (to: Route, from: Route, next: Resolver): Promise<void> => {
                     const client = await clientService.getClientInfo();
-                    const tariffLimitsExceeded = TariffUtils.limitsExceeded(client, await systemPropertiesService.getSystemProperties());
+                    const tariffLimitsExceeded = TariffUtils.limitsExceeded(client);
 
                     if (tariffLimitsExceeded) {
                         await new BlockByTariffDialog().show(ForbiddenCode.LIMIT_EXCEEDED);
