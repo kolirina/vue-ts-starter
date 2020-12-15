@@ -574,11 +574,6 @@ export class BasePortfolioPage extends UI {
      * Отображаем баннер только для старых тарифов и до 29.11 включительно
      */
     private get needShowSaleBanner(): boolean {
-        const valid = DateUtils.parseDate(DateUtils.currentDate()).isBefore(DateUtils.parseDate("2020-11-30"));
-        return valid && !this.newTariffsApplicable;
-    }
-
-    private get newTariffsApplicable(): boolean {
-        return DateUtils.parseDate(this.clientInfo.user.regDate).isAfter(DateUtils.parseDate(this.systemProperties[SystemPropertyName.NEW_TARIFFS_DATE_FROM]));
+        return DateUtils.parseDate(DateUtils.currentDate()).isBefore(DateUtils.parseDate("2020-11-30"));
     }
 }

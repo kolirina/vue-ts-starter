@@ -9,10 +9,8 @@ import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {Storage} from "../../platform/services/storage";
 import {ClientInfo, ClientService} from "../../services/clientService";
-import {SystemPropertyName} from "../../services/systemPropertiesService";
 import {TariffService, UserPaymentInfo} from "../../services/tariffService";
 import {EventType} from "../../types/eventType";
-import {Permission} from "../../types/permission";
 import {Tariff} from "../../types/tariff";
 import {MapType} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
@@ -29,17 +27,12 @@ const MainStore = namespace(StoreType.MAIN);
         <span>
             Превышены лимиты
             <p>
-                Создано портфелей: <b>{{ portfoliosCount }}</b> Доступно на тарифе: <b>{{ maxPortfoliosCount }}</b><br>
-                <template v-if="newTariffsApplicable">
-                    В одном из портфелей превышено допустимое количество бумаг. Доступно на тарифе: <b>{{ maxSharesCount }}</b> на портфель <br>
+                <template v-if="exceedLimitByPortfolios">
+                    Создано портфелей: <b>{{ portfoliosCount }}</b> Доступно на тарифе: <b>{{ maxPortfoliosCount }}</b><br>
                 </template>
-                <template v-else>
-                    Добавлено ценных бумаг: <b>{{ sharesCount }}</b> Доступно на тарифе: <b>{{ maxSharesCount }}</b> <br>
+                <template v-if="exceedLimitByShareCount">
+                   В одном из портфелей превышено допустимое количество бумаг. Доступно на тарифе: <b>{{ maxSharesCount }}</b> на портфель <br>
                 </template>
-            </p>
-            <p v-if="!newTariffsApplicable && foreignShares">
-                В ваших портфелях имеются сделки с валютой или по иностранным ценным бумагам<br>
-                Тариф {{ tariffForeignShares ? "" : "не " }}позволяет учитывать сделки по ценным бумагам в долларах или евро.
             </p>
         </span>
     `
@@ -60,33 +53,23 @@ export class TariffLimitExceedInfo extends UI {
     }
 
     get maxSharesCount(): string {
-        if (this.newTariffsApplicable) {
-            return this.tariff.maxSharesCountNew === 0x7fffffff ? "Без ограничений" : String(this.tariff.maxSharesCountNew);
-        }
         return this.tariff.maxSharesCount === 0x7fffffff ? "Без ограничений" : String(this.tariff.maxSharesCount);
     }
 
-    get tariffForeignShares(): boolean {
-        return this.tariff.hasPermission(Permission.FOREIGN_SHARES);
-    }
-
-    private get newTariffsApplicable(): boolean {
-        return DateUtils.parseDate(this.clientInfo.user.regDate).isAfter(DateUtils.parseDate(this.systemProperties[SystemPropertyName.NEW_TARIFFS_DATE_FROM]));
-    }
-
-    private get foreignShares(): boolean {
-        return this.clientInfo.user.foreignShares;
-    }
-
     private get sharesCount(): number {
-        if (this.newTariffsApplicable) {
-            return this.clientInfo.user.portfolios.map(portfolio => portfolio.sharesCount).reduce((previousValue, currentValue) => previousValue + currentValue, 0);
-        }
-        return this.clientInfo.user.sharesCount;
+        return this.clientInfo.user.portfolios.map(portfolio => portfolio.sharesCount).reduce((previousValue, currentValue) => previousValue + currentValue, 0);
     }
 
     private get portfoliosCount(): number {
         return this.clientInfo.user.portfoliosCount;
+    }
+
+    private get exceedLimitByPortfolios(): boolean {
+        return this.clientInfo.user.portfoliosCount > this.clientInfo.user.tariff.maxPortfoliosCount;
+    }
+
+    private get exceedLimitByShareCount(): boolean {
+        return this.clientInfo.user.portfolios.some(portfolio => portfolio.sharesCount > this.clientInfo.user.tariff.maxSharesCount);
     }
 }
 
@@ -110,8 +93,7 @@ export class TariffLimitExceedInfo extends UI {
                 </div>
                 <div class="tariff__limits fs13">
                     <span v-if="tariff === Tariff.FREE">7 ценных бумаг,</span>
-                    <span v-if="tariff === Tariff.STANDARD && newTariffsApplicable">30 бумаг на портфель,</span>
-                    <span v-if="tariff === Tariff.STANDARD && !newTariffsApplicable">&infin; кол-во бумаг,</span>
+                    <span v-if="tariff === Tariff.STANDARD">30 бумаг на портфель,</span>
                     <span v-if="tariff === Tariff.PRO">&infin; кол-во бумаг,</span>
                     <span class="mt-1">
                         <template v-if="tariff === Tariff.PRO">
@@ -166,7 +148,7 @@ export class TariffLimitExceedInfo extends UI {
                 </div>
                 <div class="tariff-description-wrap">
                     <div>Учет акций, облигаций, ПИФов и&nbsp;драгметаллов</div>
-                    <div v-if="newTariffsApplicable">Учёт активов номинированных в&nbsp;рублях и&nbsp;валюте</div>
+                    <div>Учёт активов номинированных в&nbsp;рублях и&nbsp;валюте</div>
                     <div>Учет валютных пар и криптовалюты</div>
                     <div>Импорт отчетов 18 брокеров</div>
                     <div>Полная аналитика по портфелю</div>
@@ -187,10 +169,6 @@ export class TariffLimitExceedInfo extends UI {
                             </span>
                         </div>
                         <div>Возможность объединения двух и&nbsp;более портфелей</div>
-                    </template>
-                    <template v-if="!newTariffsApplicable">
-                        <div v-if="tariff === Tariff.PRO">Учёт активов номинированных в&nbsp;рублях и&nbsp;валюте</div>
-                        <div v-if="tariff !== Tariff.PRO">Учёт активов номинированных в рублях</div>
                     </template>
                     <template v-if="tariff === Tariff.PRO">
                         <div>
@@ -260,7 +238,7 @@ export class TariffBlock extends UI {
      * Возвращает признак доступности тарифа для выбора
      */
     private get available(): boolean {
-        return !TariffUtils.limitsExceededByTariff(this.clientInfo.user, this.systemProperties, this.tariff);
+        return !TariffUtils.limitsExceededByTariff(this.clientInfo.user, this.tariff);
     }
 
     /**
@@ -299,11 +277,7 @@ export class TariffBlock extends UI {
      * Возвращает цену без скидок, с учетом признака нового пользователя
      */
     private get commonPrice(): Decimal {
-        if (this.newTariffsApplicable) {
-            return this.monthly ? this.tariff.monthlyPriceNew : this.tariff.monthlyYearPriceNew;
-        } else {
-            return this.monthly ? this.tariff.monthlyPrice : this.tariff.monthlyYearPrice;
-        }
+        return this.monthly ? this.tariff.monthlyPrice : this.tariff.monthlyYearPrice;
     }
 
     /**
@@ -345,10 +319,6 @@ export class TariffBlock extends UI {
 
     private get isMobile(): boolean {
         return CommonUtils.isMobile();
-    }
-
-    private get newTariffsApplicable(): boolean {
-        return DateUtils.parseDate(this.clientInfo.user.regDate).isAfter(DateUtils.parseDate(this.systemProperties[SystemPropertyName.NEW_TARIFFS_DATE_FROM]));
     }
 }
 
@@ -406,6 +376,9 @@ export class TariffBlock extends UI {
                 <div class="free-subscribe">
                     <span>Получите бесплатный месяц подписки.</span>
                     <a @click="$router.push({name: 'promo-codes'})">Подробнее</a>
+                </div>
+                <div v-if="oldStandardTariffsLimitsApplicable" class="free-subscribe">
+                    На Вашем текущем тарифе не действует ограничение 30 бумаг на портфель до 1 июля 2021 года
                 </div>
                 <div class="payment-system">
                     <div class="payment-system__text">
@@ -624,5 +597,13 @@ export class TariffsPage extends UI {
      */
     private get activeSubscription(): boolean {
         return this.paymentInfo && CommonUtils.exists(this.paymentInfo.expDate) && CommonUtils.exists(this.paymentInfo.pan);
+    }
+
+    /**
+     * Возвращает признак применения лимитов по новым тарифам
+     */
+    private get oldStandardTariffsLimitsApplicable(): boolean {
+        return this.clientInfo.user.tariff === Tariff.STANDARD && this.clientInfo.user.skipTariffValidationDate &&
+            DateUtils.parseDate(this.clientInfo.user.skipTariffValidationDate).isAfter(DateUtils.parseDate(DateUtils.currentDate()));
     }
 }
