@@ -65,11 +65,11 @@ export class TariffLimitExceedInfo extends UI {
     }
 
     private get exceedLimitByPortfolios(): boolean {
-        return this.clientInfo.user.portfoliosCount > this.clientInfo.user.tariff.maxPortfoliosCount;
+        return this.clientInfo.user.portfoliosCount > this.tariff.maxPortfoliosCount;
     }
 
     private get exceedLimitByShareCount(): boolean {
-        return this.clientInfo.user.portfolios.some(portfolio => portfolio.sharesCount > this.clientInfo.user.tariff.maxSharesCount);
+        return this.clientInfo.user.portfolios.some(portfolio => portfolio.sharesCount > this.tariff.maxSharesCount);
     }
 }
 

@@ -788,7 +788,7 @@ export class OverviewPeriod extends (EnumType as IStaticEnum<OverviewPeriod>) {
 @Enum("code")
 export class BondType extends (EnumType as IStaticEnum<BondType>) {
 
-    static readonly EXCHANGE_BOND = new BondType("EXCHANGE_BOND", "Корпоративная облигация");
+    static readonly EXCHANGE_BOND = new BondType("EXCHANGE_BOND", "Биржевая облигация");
     static readonly OFZ_BOND = new BondType("OFZ_BOND", "ОФЗ");
     static readonly CORPORATE_BOND = new BondType("CORPORATE_BOND", "Корпоративная облигация");
     static readonly SUBFEDERAL_BOND = new BondType("SUBFEDERAL_BOND", "Региональная облигация");
