@@ -191,7 +191,7 @@ export class Dashboard extends UI {
         };
         const showSecondYield = !this.invalidYieldData[0];
         this.blocks[2] = {
-            name: "Среднегодовая доходность",
+            name: "Доходность",
             mainValue: newValue.yearYield,
             secondValue: showSecondYield ? newValue.yearYieldWithoutDividendsAndCoupons : null,
             mainCurrency: "percent",
