@@ -2,7 +2,9 @@
  * Сборка проекта
  */
 const MODES = {
+    development: "development",
     d: "development",
+    production: "production",
     p: "production",
 };
 const TARGET_DIR = "dist";
