@@ -17,7 +17,7 @@
 
 .v-content {
   @media (max-width: 550px) {
-    padding: 0px !important;
+    padding: 0 !important;
   }
 }
 
@@ -26,16 +26,16 @@
 }
 
 .mini-menu-width {
-  min-width: 80px;
-  max-width: 80px;
+  min-width: 64px;
+  max-width: 64px;
 }
 
 .sidebar-list-item {
   z-index: 1;
 
   .v-list__tile {
-    padding-right: 0px !important;
-    padding-left: 0px !important;
+    padding-right: 0 !important;
+    padding-left: 0 !important;
   }
 
   .portfolio-content {
