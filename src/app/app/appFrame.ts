@@ -34,7 +34,7 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-app id="inspire" light>
+        <v-app id="inspire" light :class="{'sidebar-open': !sideBarOpened}">
             <!-- Подсказка об истекшем тарифе -->
             <tariff-expired-hint></tariff-expired-hint>
             <!-- Компонент сообщений -->
