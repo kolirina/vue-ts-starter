@@ -164,8 +164,10 @@
 }
 .dashboard-info {
   @extend .icon;
+  width: 16px;
+  height: 16px;
   background: url('../img/common/dashboard-info.svg') no-repeat center;
-  margin-left: 0px !important;
+  margin-left: 0 !important;
 }
 .profile-edit {
   @extend .icon;
@@ -174,7 +176,7 @@
 
 %portfolio-switcher-icon {
   background: url('../img/sidebar/case.svg') no-repeat center;
-  background-size: 27px 27px !important;
+  background-size: 26px 26px !important;
   background-color: rgba(255, 255, 255, 0.3) !important;
   border-radius: 50%;
   width: 34px;
@@ -269,4 +271,10 @@
 }
 .icon-stock:after {
   content: "\e91d";
+}
+.icon-add:after {
+  content: "\e91e";
+}
+.icon-edit_xs:after {
+  content: "\e91f";
 }

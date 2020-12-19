@@ -227,9 +227,6 @@ export class ThemeUtils {
 
     .custom-action-icon, .exp-panel-arrow, .profile-edit {filter: brightness(2)}
 
-    .arrow-up .dashboard-summary-income-icon {background: #405242}
-    .arrow-down .dashboard-summary-income-icon {background: #61343f}
-
     .highcharts-legend text,
     .highcharts-axis-labels text,
     .highcharts-label text,

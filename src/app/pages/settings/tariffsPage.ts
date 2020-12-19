@@ -168,7 +168,7 @@ export class TariffLimitExceedInfo extends UI {
                                 <tooltip>Позволяет учитывать любые виды активов, которые не поддерживаются напрямую сервисом</tooltip>
                             </span>
                         </div>
-                        <div>Возможность объединения двух и&nbsp;более портфелей</div>
+                        <div>Возможность объединения двух{{ tariff === Tariff.PRO ? ' и&nbsp;более' : '' }} портфелей</div>
                     </template>
                     <template v-if="tariff === Tariff.PRO">
                         <div>

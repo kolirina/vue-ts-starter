@@ -34,7 +34,7 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-app id="inspire" light>
+        <v-app id="inspire" light :class="{'sidebar-open': !sideBarOpened}">
             <!-- Подсказка об истекшем тарифе -->
             <tariff-expired-hint></tariff-expired-hint>
             <!-- Компонент сообщений -->
@@ -47,7 +47,7 @@ const MainStore = namespace(StoreType.MAIN);
             </template>
 
             <template v-if="!loading && loggedIn">
-                <v-navigation-drawer disable-resize-watcher fixed stateless app class="sidebar" v-model="drawer" :mini-variant="sideBarOpened" width="320">
+                <v-navigation-drawer disable-resize-watcher fixed stateless app class="sidebar" v-model="drawer" :mini-variant="sideBarOpened" width="320" mini-variant-width="64">
                     <menu-header :side-bar-opened="sideBarOpened" :portfolio="portfolio" :clientInfo="clientInfo" @togglePanel="togglePanel"></menu-header>
                     <div v-if="!sideBarOpened" :class="['wrap-toogle-menu-btn', 'small-screen-hide-toogle-menu-btn']">
                         <v-btn @click="togglePanel" fab dark small depressed color="#F0F3F8" class="toogle-menu-btn">
