@@ -179,6 +179,13 @@ export class TariffLimitExceedInfo extends UI {
                             </span>
                         </div>
                     </template>
+                    <div>
+                        <span>
+                            <template v-if="tariff === Tariff.PRO">Безлимит категорий тегов для пользовательской классификации</template>
+                            <template v-else>1 категория тегов для пользовательской классификации</template>
+                            <tooltip>Теги - пользовательские метки на активы. Позволяют классифицировать активы по любому признаку.</tooltip>
+                        </span>
+                    </div>
                 </div>
             </v-layout>
         </v-layout>
