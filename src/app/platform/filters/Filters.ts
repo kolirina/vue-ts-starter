@@ -33,20 +33,7 @@ export class Filters {
             return returnZeros ? "0.00" : "";
         }
         const amount = new BigMoney(value);
-        if (amount.amount.isZero()) {
-            return returnZeros ? "0.00" : "";
-        }
-        if (needRound) {
-            let roundingScale = DEFAULT_SCALE;
-            if (amount.amount.abs().comparedTo(new Decimal("1.00")) < 0) {
-                roundingScale = scale || NO_SCALE;
-            }
-            const am = amount.amount.toDecimalPlaces(roundingScale, Decimal.ROUND_HALF_UP).toNumber();
-            return Filters.replaceCommaToDot(roundingScale === NO_SCALE ? DF_MAX_SCALE.format(am) : DF.format(am));
-        } else {
-            return Filters.replaceCommaToDot(needFormat ? DF_MAX_SCALE.format(scale ? amount.amount.toDecimalPlaces(scale, Decimal.ROUND_HALF_UP).toNumber() :
-                amount.amount.toNumber()) : String(amount.amount.toNumber()));
-        }
+        return Filters.formatDecimalValue(amount.amount, needRound, scale, returnZeros, needFormat);
     }
 
     static currencySymbolByCurrency(value: string): string {
@@ -70,21 +57,34 @@ export class Filters {
     /**
      * Используется для форматирования чисел
      * @param value строка
+     * @param needRound
      * @param returnZeros признак возврата нулевого значения вместо пустого
      * @param scale
      * @param needFormat
      */
-    static formatNumber(value: string, returnZeros: boolean = true, scale?: number, needFormat: boolean = true): string {
+    static formatNumber(value: string, needRound?: boolean, scale?: number, returnZeros: boolean = true, needFormat: boolean = true): string {
         if (!value) {
             return returnZeros ? "0.00" : "";
         }
         const amount = new Decimal(value);
+        return Filters.formatDecimalValue(amount, needRound, scale, returnZeros, needFormat);
+    }
+
+    static formatDecimalValue(amount: Decimal, needRound?: boolean, scale?: number, returnZeros: boolean = true, needFormat: boolean = true): string {
         if (amount.isZero()) {
             return returnZeros ? "0.00" : "";
         }
-        return Filters.replaceCommaToDot(needFormat ? DF_NO_SCALE.format(scale ? amount.toDecimalPlaces(scale, Decimal.ROUND_HALF_UP).toNumber() :
-            amount.toNumber()) : String(amount.toNumber()));
-
+        if (needRound) {
+            let roundingScale = DEFAULT_SCALE;
+            if (amount.abs().comparedTo(new Decimal("1.00")) < 0) {
+                roundingScale = scale || NO_SCALE;
+            }
+            const am = amount.toDecimalPlaces(roundingScale, Decimal.ROUND_HALF_UP).toNumber();
+            return Filters.replaceCommaToDot(roundingScale === NO_SCALE ? DF_MAX_SCALE.format(am) : DF.format(am));
+        } else {
+            return Filters.replaceCommaToDot(needFormat ? DF_MAX_SCALE.format(scale ? amount.toDecimalPlaces(scale, Decimal.ROUND_HALF_UP).toNumber() :
+                amount.toNumber()) : String(amount.toNumber()));
+        }
     }
 
     /**

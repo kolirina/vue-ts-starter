@@ -13,68 +13,66 @@ const MainStore = namespace(StoreType.MAIN);
 @Component({
     // language=Vue
     template: `
-        <v-card dark class="dashboard-card" :class="{ 'dashboard-border': !block.hasNotBorderLeft }" v-tariff-expired-hint>
-            <v-card-title primary-title class="pb-2 dashboard-card-string">
+        <v-card dark class="dashboard-card" v-tariff-expired-hint>
+            <div class="dashboard-card-string">
                 <span>{{ block.name }}</span>
                 <v-tooltip content-class="custom-tooltip-wrap dashboard-tooltip" :max-width="450" bottom right>
                     <v-icon class="dashboard-info" slot="activator" small></v-icon>
                     <span v-html="block.tooltip"></span>
                 </v-tooltip>
-            </v-card-title>
-            <v-container fluid pl-3 pt-0>
-                <v-layout row class="mx-0 py-2">
-                    <span class="dashboard-currency dashboard-card-big-nums mr-1" :class="block.mainValueIcon ? '' : block.mainCurrency">
+            </div>
+            <div class="dashboard-card__info">
+                <v-layout class="dashboard-value">
+                    <span class="dashboard-currency dashboard-card-big-nums" :class="block.mainValueIcon ? '' : block.mainCurrency">
                         <template v-if="block.mainValueIcon">
-                            <v-tooltip content-class="custom-tooltip-wrap dashboard-tooltip" :max-width="450" bottom right>
+                            <v-tooltip content-class="custom-tooltip-wrap dashboard-tooltip" class="ml-1" :max-width="450" bottom right>
                                 <span slot="activator" :class="block.mainValueIcon"></span>
                                 <span v-html="block.tooltip"></span>
-                         </v-tooltip>
+                             </v-tooltip>
                         </template>
                         <template v-else>
                             {{ block.mainValue }}
                         </template>
                     </span>
-                    <v-tooltip v-if="block.mainValueTooltip" content-class="custom-tooltip-wrap dashboard-tooltip" :max-width="450" bottom right>
+                    <v-tooltip v-if="block.mainValueTooltip" content-class="custom-tooltip-wrap dashboard-tooltip" class="ml-1" :max-width="450" bottom right>
                         <sup slot="activator">
                             <v-icon slot="activator" style="font-size: 12px">far fa-question-circle</v-icon>
                         </sup>
                         <span v-html="block.mainValueTooltip"></span>
                     </v-tooltip>
                 </v-layout>
-                <v-layout row class="mx-0 dashboard-card-small-nums">
-                    <div>
-                        <template v-if="block.isSummaryIncome">
-                            <div class="dashboard-summary-income dashboard-currency" :class="block.isSummaryIncome.isUpward ? 'arrow-up' : 'arrow-down'">
-                                <div class="dashboard-summary-income-icon">
-                                    <v-icon>{{ block.isSummaryIncome.isUpward ? 'arrow_upward' : 'arrow_downward' }}</v-icon>
-                                </div>
-                                <div v-if="block.secondValue" class="dashboard-summary-income-text dashboard-currency" :class="block.secondCurrency">
-                                    <span>{{ block.secondValue }} </span>
-                                </div>
-                                <v-tooltip v-if="block.secondTooltip" content-class="custom-tooltip-wrap dashboard-tooltip" class="ml-1" :max-width="450" bottom right>
-                                    <sup slot="activator">
-                                        <v-icon slot="activator" style="font-size: 12px" :class="block.isSummaryIncome.isUpward ? 'arrow-up' : 'arrow-down'">far
-                                            fa-question-circle
-                                        </v-icon>
-                                    </sup>
-                                    <span v-html="block.secondTooltip"></span>
-                                </v-tooltip>
+                <v-layout row class="dashboard-card-small-nums">
+                    <template v-if="block.isSummaryIncome">
+                        <div class="dashboard-summary-income dashboard-currency" :class="block.isSummaryIncome.isUpward ? 'arrow-up' : 'arrow-down'">
+                            <div class="dashboard-summary-income-icon">
+                                <v-icon>{{ block.isSummaryIncome.isUpward ? 'arrow_upward' : 'arrow_downward' }}</v-icon>
                             </div>
-                        </template>
-
-                        <template v-else>
-                            <span v-if="block.secondValue" class="dashboard-currency" :class="block.secondCurrency">{{ block.secondValue }} </span>
-                            <span class="dashboard-second-value-desc">{{ block.secondValueDesc }} </span>
-                            <v-tooltip v-if="block.secondTooltip" content-class="custom-tooltip-wrap dashboard-tooltip" :max-width="450" bottom right>
+                            <div v-if="block.secondValue" class="dashboard-summary-income-text dashboard-currency" :class="block.secondCurrency">
+                                <span>{{ block.secondValue }} </span>
+                            </div>
+                            <v-tooltip v-if="block.secondTooltip" content-class="custom-tooltip-wrap dashboard-tooltip" class="ml-1" :max-width="450" bottom right>
                                 <sup slot="activator">
-                                    <v-icon slot="activator" style="font-size: 12px">far fa-question-circle</v-icon>
+                                    <v-icon slot="activator" style="font-size: 12px" :class="block.isSummaryIncome.isUpward ? 'arrow-up' : 'arrow-down'">far
+                                        fa-question-circle
+                                    </v-icon>
                                 </sup>
                                 <span v-html="block.secondTooltip"></span>
                             </v-tooltip>
-                        </template>
-                    </div>
+                        </div>
+                    </template>
+
+                    <template v-else>
+                        <span v-if="block.secondValue" class="dashboard-currency" :class="block.secondCurrency">{{ block.secondValue }} </span>
+                        <span class="dashboard-second-value-desc">{{ block.secondValueDesc }} </span>
+                        <v-tooltip v-if="block.secondTooltip" content-class="custom-tooltip-wrap dashboard-tooltip" class="ml-1" :max-width="450" bottom right>
+                            <sup slot="activator">
+                                <v-icon slot="activator" style="font-size: 12px">far fa-question-circle</v-icon>
+                            </sup>
+                            <span v-html="block.secondTooltip"></span>
+                        </v-tooltip>
+                    </template>
                 </v-layout>
-            </v-container>
+            </div>
         </v-card>
     `
 })
@@ -87,7 +85,7 @@ export class DashboardBrickComponent extends UI {
 @Component({
     // language=Vue
     template: `
-        <v-container v-if="overview" px-0 grid-list-md text-xs-center fluid>
+        <v-container v-if="overview" px-0 py-0 grid-list-md text-xs-center fluid>
             <v-layout class="dashboard-wrap selectable" row wrap :class="{'menu-open': !sideBarOpened}">
                 <v-flex class="dashboard-item" xl3 lg3 md6 sm6 xs12>
                     <dashboard-brick-component :block="blocks[0]"></dashboard-brick-component>
@@ -101,7 +99,7 @@ export class DashboardBrickComponent extends UI {
                 <v-flex class="dashboard-item" xl3 lg3 md6 sm6 xs12>
                     <dashboard-brick-component :block="blocks[3]"></dashboard-brick-component>
                     <v-menu transition="slide-y-transition" open-on-hover right bottom nudge-bottom="24px" close-delay="100" max-width="450"
-                            content-class="custom-tooltip-wrap dashboard-tooltip">
+                            content-class="custom-tooltip-wrap dashboard-tooltip" class="block">
                         <div slot="activator" class="intel-icon icon-stock"></div>
                         <span>
                             Котировки активов обновляются в рабочее время MOEX и NYSE с 15 минутной задержкой.
@@ -161,7 +159,6 @@ export class Dashboard extends UI {
             name: "Стоимость",
             mainValue: Filters.formatMoneyAmount(newValue.currentCost, true),
             secondValue: Filters.formatMoneyAmount(newValue.currentCostInAlternativeCurrency, true),
-            hasNotBorderLeft: true,
             mainCurrency,
             secondCurrency: secondCurrency,
             tooltip: "Сумма текущей рыночной стоимости всех активов портфеля: акций, облигаций, денежных средств.<br/>" +
@@ -194,7 +191,7 @@ export class Dashboard extends UI {
         };
         const showSecondYield = !this.invalidYieldData[0];
         this.blocks[2] = {
-            name: "Среднегодовая доходность",
+            name: "Доходность",
             mainValue: newValue.yearYield,
             secondValue: showSecondYield ? newValue.yearYieldWithoutDividendsAndCoupons : null,
             mainCurrency: "percent",

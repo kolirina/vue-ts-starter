@@ -57,11 +57,13 @@ export class RebalancingService {
     calculateAssetRows(rows: CalculateRow[], incomeAmountString: string, assetCurrentCost: Decimal, portfolioTotalAmount: Decimal, rowLimit: number = 5,
                        onlyBuyTrades: boolean = true, type: RebalancingType): void {
         this.resetRows(rows);
-        const targetPercents = rows.map(row => new Decimal((type === RebalancingType.BY_PERCENT ? row.targetPercent : row.currentPercent) || "0.00"))
-            .reduce((result: Decimal, current: Decimal) => result.add(current), new Decimal("0"))
-            .toDP(2, Decimal.ROUND_HALF_UP);
-        if (!targetPercents.equals(this._100)) {
-            throw Error("Сумма целевых долей должна составлять 100%");
+        if (type === RebalancingType.BY_PERCENT) {
+            const targetPercents = rows.map(row => new Decimal((type === RebalancingType.BY_PERCENT ? row.targetPercent : row.currentPercent) || "0.00"))
+                .reduce((result: Decimal, current: Decimal) => result.add(current), new Decimal("0"))
+                .toDP(2, Decimal.ROUND_HALF_UP);
+            if (!targetPercents.equals(this._100)) {
+                throw Error("Сумма целевых долей должна составлять 100%");
+            }
         }
         const totalAmount = incomeAmountString ? new Decimal(incomeAmountString) : this.ZERO;
         this.calculateRowLimits(rows, totalAmount, assetCurrentCost, rowLimit, onlyBuyTrades, type);
@@ -215,6 +217,8 @@ export interface CalculateRow {
     lotSize: number;
     /** Текущая цена */
     price: string;
+    /** Средняя цена в портфеле */
+    avgPrice: string;
     /** Лотов для покупки */
     lots: number;
     /** Шт. для покупки */

@@ -165,9 +165,15 @@ const MainStore = namespace(StoreType.MAIN);
                                                 <template v-if="row.share.shareType === 'BOND'">
                                                     Стоимость одного лота: {{ row.lotPrice | number }}
                                                     <span class="second-value">{{ currencyForPrice(row) }}</span>
+                                                    <br/>
+                                                    Средняя цена в портфеле: {{ row.avgPrice | amount }}
+                                                    <span class="second-value">{{ currencyForPrice(row) }}</span>
                                                 </template>
                                                 <template v-else>
-                                                    Стоимость одного лота: {{ row.lotPrice | number }}
+                                                    Стоимость одного лота: {{ row.lotPrice | number(true) }}
+                                                    <span class="second-value">{{ currencyForPrice(row) }}</span>
+                                                    <br/>
+                                                    Средняя цена в портфеле: {{ row.avgPrice | amount }}
                                                     <span class="second-value">{{ currencyForPrice(row) }}</span>
                                                 </template>
                                             </span>
@@ -378,7 +384,7 @@ export class RebalancingPage extends PortfolioBasedPage {
             });
             this.aggregateRows.forEach(assetRow => {
                 const rebalanceItem = rebalancingModelsByAssetAndShare[assetRow.assetType.enumName];
-                assetRow.targetPercent = rebalanceItem?.targetPercent;
+                assetRow.targetPercent = rebalanceItem?.targetPercent || assetRow.targetPercent;
                 assetRow.rows.forEach(row => {
                     const rowItem = (rebalanceItem?.rows || {})[row.shareId];
                     if (rowItem) {
@@ -397,6 +403,8 @@ export class RebalancingPage extends PortfolioBasedPage {
             lotSize: Number(share.lotsize || 1),
             // @ts-ignore
             price: share.shareType === ShareType.BOND ? row.absolutePrice : row.currPrice,
+            // @ts-ignore
+            avgPrice: share.shareType === ShareType.BOND ? row.absoluteAvgPrice : row.avgBuy,
             currentAmount: new BigMoney(row.currCost).amount.toString(),
             lots: 0,
             pieces: "0",

@@ -25,27 +25,25 @@ import {DashboardBrick} from "../../types/types";
 @Component({
     // language=Vue
     template: `
-        <v-card dark class="dashboard-card" :class="{ 'dashboard-border': !block.hasNotBorderLeft }">
-            <v-card-title primary-title class="pb-2 dashboard-card-string">
-                <div>
-                    <span>{{ block.name }}</span>
-                    <v-tooltip content-class="custom-tooltip-wrap dashboard-tooltip" :max-width="450" bottom right>
-                        <v-icon class="custom-tooltip" slot="activator" small>far fa-question-circle</v-icon>
-                        <span v-html="block.tooltip"></span>
-                    </v-tooltip>
-                </div>
-            </v-card-title>
-            <v-container fluid pl-3 pt-0>
-                <v-layout row class="mx-0 py-2 dashboard-card-big-nums">
-                    <span class="dashboard-currency" :class="block.mainCurrency">{{ block.mainValue }} </span>
+        <v-card dark class="dashboard-card">
+            <div class="dashboard-card-string">
+                <span>{{ block.name }}</span>
+                <v-tooltip content-class="custom-tooltip-wrap dashboard-tooltip" :max-width="450" bottom right>
+                    <v-icon class="custom-tooltip" slot="activator" small>far fa-question-circle</v-icon>
+                    <span v-html="block.tooltip"></span>
+                </v-tooltip>
+            </div>
+            <div class="dashboard-card__info">
+                <v-layout class="dashboard-value">
+                    <span class="dashboard-currency dashboard-card-big-nums">
+                        <span :class="block.mainCurrency">{{ block.mainValue }} </span>
+                    </span>
                 </v-layout>
-                <v-layout row class="mx-0 dashboard-card-small-nums">
-                    <div>
-                        <span class="dashboard-currency" :class="block.secondCurrency">{{ block.secondValue }} </span>
-                        <span>{{ block.secondValueDesc }}</span>
-                    </div>
+                <v-layout row class="dashboard-card-small-nums">
+                    <span class="dashboard-currency no-wrap" :class="block.secondCurrency">{{ block.secondValue }} </span>
+                    <span class="ml-1 dashboard-card-small-nums__description">{{ block.secondValueDesc }}</span>
                 </v-layout>
-            </v-container>
+            </div>
         </v-card>
     `
 })
@@ -60,10 +58,10 @@ export class DashboardBrickComponent extends UI {
     template: `
         <v-container v-if="data" px-0 grid-list-md text-xs-center fluid>
             <v-layout class="dashboard-wrap px-4 selectable" row wrap :class="{'menu-open': !sideBarOpened}">
-                <v-flex xl6 lg6 md6 sm12 xs12>
+                <v-flex class="dashboard-item" xl6 lg6 md6 sm12 xs12>
                     <dashboard-brick-component :block="blocks[0]"></dashboard-brick-component>
                 </v-flex>
-                <v-flex xl6 lg6 md6 sm12 xs12 :align-content-start="true">
+                <v-flex class="dashboard-item" xl6 lg6 md6 sm12 xs12 :align-content-start="true">
                     <dashboard-brick-component :block="blocks[1]" v-tariff-expired-hint></dashboard-brick-component>
                 </v-flex>
             </v-layout>
@@ -102,7 +100,6 @@ export class DividendDashboardComponent extends UI {
             name: "Всего дивидендов и купонов",
             mainValue: Filters.formatMoneyAmount(newValue.dividendsTotal, true),
             secondValue: Filters.formatMoneyAmount(newValue.dividendsTotalInAlternativeCurrency, true),
-            hasNotBorderLeft: true,
             mainCurrency,
             secondCurrency: secondCurrency,
             tooltip: "Общая сумма полученных дивидендов и купонов за все время ведения портфеля"

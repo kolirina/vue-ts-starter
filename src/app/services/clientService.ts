@@ -261,6 +261,8 @@ export interface BaseClient {
     canLikePortfolio: boolean;
     /** Признак верифицированного пользователя */
     verified: boolean;
+    /** Дата до которой не действуют новые условия тарифов */
+    skipTariffValidationDate?: string;
 }
 
 export interface ClientResponse extends BaseClient {
