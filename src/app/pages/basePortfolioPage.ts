@@ -21,6 +21,7 @@ import {Component, Prop, UI, Watch} from "../app/ui";
 import {PieChart} from "../components/charts/pieChart";
 import {PortfolioLineChart} from "../components/charts/portfolioLineChart";
 import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog";
+import {GiftBanner} from "../components/gift-banner";
 import {NegativeBalanceNotification} from "../components/negativeBalanceNotification";
 import {PortfolioRowFilter, PortfolioRowsTableFilter} from "../components/portfolioRowsTableFilter";
 import {SaleComponent} from "../components/sale";
@@ -32,7 +33,6 @@ import {Storage} from "../platform/services/storage";
 import {ClientInfo} from "../services/clientService";
 import {ExportType} from "../services/exportService";
 import {PortfolioBlockType} from "../services/onBoardingTourService";
-import {SystemPropertyName} from "../services/systemPropertiesService";
 import {TableHeaders, TABLES_NAME, TablesService, TableType} from "../services/tablesService";
 import {BigMoney} from "../types/bigMoney";
 import {ChartType, HighStockEventsGroup, LineChartItem, SectorChartData} from "../types/charts/types";
@@ -42,7 +42,6 @@ import {AssetPortfolioRow, AssetRow, BlockType, BondPortfolioRow, EventType, Map
 import {ChartUtils} from "../utils/chartUtils";
 import {DateUtils} from "../utils/dateUtils";
 import {PortfolioUtils} from "../utils/portfolioUtils";
-import {TariffUtils} from "../utils/tariffUtils";
 import {UiStateHelper} from "../utils/uiStateHelper";
 import {StoreType} from "../vuex/storeType";
 
@@ -55,6 +54,7 @@ const MainStore = namespace(StoreType.MAIN);
             <v-layout column>
                 <v-slide-x-reverse-transition>
                     <sale-component v-if="showSaleBanner" @closeBanner="onCloseBanner"></sale-component>
+                    <gift-banner v-if="showGiftBanner" @closeBanner="onCloseGiftBanner"></gift-banner>
                 </v-slide-x-reverse-transition>
                 <dashboard :overview="overview" :view-currency="viewCurrency" :side-bar-opened="sideBarOpened"
                            :data-v-step="getTourStepIndex(PortfolioBlockType.DASHBOARD)"></dashboard>
@@ -264,7 +264,7 @@ const MainStore = namespace(StoreType.MAIN);
             </v-layout>
         </v-container>
     `,
-    components: {AggregateAssetTable, StockTable, BondTable, PortfolioLineChart, PortfolioRowsTableFilter, NegativeBalanceNotification, SaleComponent}
+    components: {AggregateAssetTable, StockTable, BondTable, PortfolioLineChart, PortfolioRowsTableFilter, NegativeBalanceNotification, SaleComponent, GiftBanner}
 })
 export class BasePortfolioPage extends UI {
 
@@ -377,6 +377,8 @@ export class BasePortfolioPage extends UI {
     private TableType = TableType;
     /** Скидочный баннер */
     private showSaleBanner = true;
+    /** Баннер подарочного сертификата */
+    private showGiftBanner = true;
 
     /**
      * Инициализация данных компонента
@@ -400,6 +402,7 @@ export class BasePortfolioPage extends UI {
         this.assetFilter = this.storageService.get(StoreKeys.ASSETS_TABLE_FILTER_KEY, {});
         this.blockIndexes = PortfolioUtils.getShowedBlocks(this.overview);
         this.showSaleBanner = this.storageService.get("saleBanner", this.needShowSaleBanner);
+        this.showGiftBanner = this.storageService.get("giftBanner", true);
     }
 
     @Watch("overview")
@@ -521,6 +524,11 @@ export class BasePortfolioPage extends UI {
     private onCloseBanner(): void {
         this.storageService.set("saleBanner", false);
         this.showSaleBanner = false;
+    }
+
+    private onCloseGiftBanner(): void {
+        this.storageService.set("giftBanner", false);
+        this.showGiftBanner = false;
     }
 
     private get stockRows(): StockTypePortfolioRow[] {
