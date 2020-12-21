@@ -50,7 +50,7 @@ const MainStore = namespace(StoreType.MAIN);
                                      @exportTable="onExportTable"
                                      exportable>
                     <template v-if="combinedPortfolioSelected" #afterDashboard>
-                        <v-layout align-center>
+                        <v-layout align-center class="mt-4">
                             <div :class="['control-portfolios-title', !isEmptyBlockShowed ? '' : 'pl-3']">
                                 Управление составным портфелем
                             </div>
