@@ -21,6 +21,7 @@ import {Component, Prop, UI, Watch} from "../app/ui";
 import {PieChart} from "../components/charts/pieChart";
 import {PortfolioLineChart} from "../components/charts/portfolioLineChart";
 import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog";
+import {GiftBanner} from "../components/gift-banner";
 import {NegativeBalanceNotification} from "../components/negativeBalanceNotification";
 import {PortfolioRowFilter, PortfolioRowsTableFilter} from "../components/portfolioRowsTableFilter";
 import {SaleComponent} from "../components/sale";
@@ -32,12 +33,12 @@ import {Storage} from "../platform/services/storage";
 import {ClientInfo} from "../services/clientService";
 import {ExportType} from "../services/exportService";
 import {PortfolioBlockType} from "../services/onBoardingTourService";
-import {SystemPropertyName} from "../services/systemPropertiesService";
 import {TableHeaders, TABLES_NAME, TablesService, TableType} from "../services/tablesService";
 import {BigMoney} from "../types/bigMoney";
 import {ChartType, HighStockEventsGroup, LineChartItem, SectorChartData} from "../types/charts/types";
 import {StoreKeys} from "../types/storeKeys";
 import {TagCategory} from "../types/tags";
+import {Tariff} from "../types/tariff";
 import {AssetPortfolioRow, AssetRow, BlockType, BondPortfolioRow, EventType, MapType, Overview, StockPortfolioRow, StockTypePortfolioRow, TableHeader} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
 import {DateUtils} from "../utils/dateUtils";
@@ -55,6 +56,7 @@ const MainStore = namespace(StoreType.MAIN);
             <v-layout column>
                 <v-slide-x-reverse-transition>
                     <sale-component v-if="showSaleBanner" @closeBanner="onCloseBanner"></sale-component>
+                    <gift-banner v-if="showGiftBanner" @closeBanner="onCloseGiftBanner"></gift-banner>
                 </v-slide-x-reverse-transition>
                 <dashboard :overview="overview" :view-currency="viewCurrency" :side-bar-opened="sideBarOpened"
                            :data-v-step="getTourStepIndex(PortfolioBlockType.DASHBOARD)"></dashboard>
@@ -264,7 +266,7 @@ const MainStore = namespace(StoreType.MAIN);
             </v-layout>
         </v-container>
     `,
-    components: {AggregateAssetTable, StockTable, BondTable, PortfolioLineChart, PortfolioRowsTableFilter, NegativeBalanceNotification, SaleComponent}
+    components: {AggregateAssetTable, StockTable, BondTable, PortfolioLineChart, PortfolioRowsTableFilter, NegativeBalanceNotification, SaleComponent, GiftBanner}
 })
 export class BasePortfolioPage extends UI {
 
@@ -377,6 +379,8 @@ export class BasePortfolioPage extends UI {
     private TableType = TableType;
     /** Скидочный баннер */
     private showSaleBanner = true;
+    /** Баннер подарочного сертификата */
+    private showGiftBanner = true;
 
     /**
      * Инициализация данных компонента
@@ -400,6 +404,7 @@ export class BasePortfolioPage extends UI {
         this.assetFilter = this.storageService.get(StoreKeys.ASSETS_TABLE_FILTER_KEY, {});
         this.blockIndexes = PortfolioUtils.getShowedBlocks(this.overview);
         this.showSaleBanner = this.storageService.get("saleBanner", this.needShowSaleBanner);
+        this.showGiftBanner = this.storageService.get("giftBanner", this.needShowGiftBanner);
     }
 
     @Watch("overview")
@@ -523,6 +528,11 @@ export class BasePortfolioPage extends UI {
         this.showSaleBanner = false;
     }
 
+    private onCloseGiftBanner(): void {
+        this.storageService.set("giftBanner", false);
+        this.showGiftBanner = false;
+    }
+
     private get stockRows(): StockTypePortfolioRow[] {
         return [...this.overview.stockPortfolio.rows, this.overview.stockPortfolio.sumRow as StockPortfolioRow];
     }
@@ -575,5 +585,13 @@ export class BasePortfolioPage extends UI {
      */
     private get needShowSaleBanner(): boolean {
         return DateUtils.parseDate(DateUtils.currentDate()).isBefore(DateUtils.parseDate("2020-11-30"));
+    }
+
+    /**
+     * Отображаем баннер только для активных подписок
+     */
+    private get needShowGiftBanner(): boolean {
+        return !TariffUtils.isTariffExpired(this.clientInfo.user) && [Tariff.STANDARD, Tariff.PRO].includes(this.clientInfo.user.tariff) &&
+            DateUtils.parseDate(DateUtils.currentDate()).isBefore(DateUtils.parseDate("2021-01-03"));
     }
 }
