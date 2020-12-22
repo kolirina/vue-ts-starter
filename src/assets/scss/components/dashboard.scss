@@ -4,7 +4,7 @@
     background-color: $dashboard--bg-color;
     box-shadow: 0 4px 7px rgba(4, 4, 39, 0.14);
     padding: 16px 20px 16px 30px;
-    margin: 0 -4px;
+    margin: 0 -4px 16px !important;
 
     .arrow-up {color: $dashboard--green-color !important;}
 
@@ -261,6 +261,8 @@
 .negative-balance-notification {
   background: #FFFFFF;
   padding: 12px 35px 19px;
+  margin-bottom: 24px;
+
   .description {
     margin-top: 7px;
   }
