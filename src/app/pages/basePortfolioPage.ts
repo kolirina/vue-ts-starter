@@ -38,10 +38,12 @@ import {BigMoney} from "../types/bigMoney";
 import {ChartType, HighStockEventsGroup, LineChartItem, SectorChartData} from "../types/charts/types";
 import {StoreKeys} from "../types/storeKeys";
 import {TagCategory} from "../types/tags";
+import {Tariff} from "../types/tariff";
 import {AssetPortfolioRow, AssetRow, BlockType, BondPortfolioRow, EventType, MapType, Overview, StockPortfolioRow, StockTypePortfolioRow, TableHeader} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
 import {DateUtils} from "../utils/dateUtils";
 import {PortfolioUtils} from "../utils/portfolioUtils";
+import {TariffUtils} from "../utils/tariffUtils";
 import {UiStateHelper} from "../utils/uiStateHelper";
 import {StoreType} from "../vuex/storeType";
 
@@ -402,7 +404,7 @@ export class BasePortfolioPage extends UI {
         this.assetFilter = this.storageService.get(StoreKeys.ASSETS_TABLE_FILTER_KEY, {});
         this.blockIndexes = PortfolioUtils.getShowedBlocks(this.overview);
         this.showSaleBanner = this.storageService.get("saleBanner", this.needShowSaleBanner);
-        this.showGiftBanner = this.storageService.get("giftBanner", true);
+        this.showGiftBanner = this.storageService.get("giftBanner", this.needShowGiftBanner);
     }
 
     @Watch("overview")
@@ -583,5 +585,13 @@ export class BasePortfolioPage extends UI {
      */
     private get needShowSaleBanner(): boolean {
         return DateUtils.parseDate(DateUtils.currentDate()).isBefore(DateUtils.parseDate("2020-11-30"));
+    }
+
+    /**
+     * Отображаем баннер только для активных подписок
+     */
+    private get needShowGiftBanner(): boolean {
+        return !TariffUtils.isTariffExpired(this.clientInfo.user) && [Tariff.STANDARD, Tariff.PRO].includes(this.clientInfo.user.tariff) &&
+            DateUtils.parseDate(DateUtils.currentDate()).isBefore(DateUtils.parseDate("2021-01-03"));
     }
 }

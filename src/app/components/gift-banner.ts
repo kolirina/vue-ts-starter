@@ -10,7 +10,7 @@ import {Component, UI} from "../app/ui";
                 <div class="banner__description">
                     подарите контроль инвестиций родным, друзьям или коллегам
                 </div>
-                <v-btn color="primary" class="big_btn" href="https://intelinvest.ru/gift" target="_blank">Купить сертификат</v-btn>
+                <v-btn color="primary" class="big_btn" @click="openGiftLink">Купить сертификат</v-btn>
             </div>
             <img src="./img/portfolio/gift-img.png" alt="sale">
         </div>
@@ -20,5 +20,14 @@ export class GiftBanner extends UI {
 
     private close(): void {
         this.$emit("closeBanner");
+    }
+
+    /**
+     * Осуществляет переход на страницу просмотра портфеля
+     * @param id идентификатор портфеля
+     */
+    private openGiftLink(id: number): void {
+        const url = `${window.location.protocol}//${window.location.host}/gift`;
+        window.open(url, "_blank");
     }
 }
