@@ -83,7 +83,7 @@ export class ThemeUtils {
 
     .tariff-description-wrap div:nth-child(even),
     .theme--light.v-tabs__bar, .tags-menu__content .tags__add-btn,
-    .section-content {background-color: #2C3040}
+    .section-content, .gift-banner {background-color: #2C3040}
 
     .v-content__wrap,
     .header-first-card,
