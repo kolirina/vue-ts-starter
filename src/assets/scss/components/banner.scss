@@ -82,7 +82,12 @@
 
   .banner__title {margin-bottom: 8px}
 
-  img {margin: -52px 0 -32px}
+  .banner__img {
+    max-width: 295px;
+    margin: -52px 0 -32px;
+  }
+
+  img {max-width: 100%}
 
   @media all and (max-width: $sm-breakpoint) {
     padding: 40px 20px 24px;
@@ -101,5 +106,7 @@
     }
 
     &:after {left: 58px}
+
+    .banner__img {display: none}
   }
 }
