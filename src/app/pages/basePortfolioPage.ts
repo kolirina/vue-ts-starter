@@ -20,7 +20,6 @@ import {namespace} from "vuex-class";
 import {Component, Prop, UI, Watch} from "../app/ui";
 import {PieChart} from "../components/charts/pieChart";
 import {PortfolioLineChart} from "../components/charts/portfolioLineChart";
-import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog";
 import {GiftBanner} from "../components/gift-banner";
 import {NegativeBalanceNotification} from "../components/negativeBalanceNotification";
 import {PortfolioRowFilter, PortfolioRowsTableFilter} from "../components/portfolioRowsTableFilter";
@@ -33,7 +32,7 @@ import {Storage} from "../platform/services/storage";
 import {ClientInfo} from "../services/clientService";
 import {ExportType} from "../services/exportService";
 import {PortfolioBlockType} from "../services/onBoardingTourService";
-import {TableHeaders, TABLES_NAME, TablesService, TableType} from "../services/tablesService";
+import {TABLES_NAME, TablesService, TableType} from "../services/tablesService";
 import {BigMoney} from "../types/bigMoney";
 import {ChartType, HighStockEventsGroup, LineChartItem, SectorChartData} from "../types/charts/types";
 import {StoreKeys} from "../types/storeKeys";
@@ -83,11 +82,8 @@ const MainStore = namespace(StoreType.MAIN);
                             </span>
                         </v-fade-transition>
                     </template>
-                    <template #list>
-                        <v-list-tile-title @click="openTableHeadersDialog(TABLES_NAME.STOCK)">Настроить колонки</v-list-tile-title>
-                        <v-list-tile-title v-if="exportable" @click="exportTable(ExportType.STOCKS)">Экспорт в xlsx</v-list-tile-title>
-                    </template>
-                    <portfolio-rows-table-filter :filter.sync="stockFilter" :store-key="StoreKeys.STOCKS_TABLE_FILTER_KEY"></portfolio-rows-table-filter>
+                    <portfolio-rows-table-filter :filter.sync="stockFilter" :store-key="StoreKeys.STOCKS_TABLE_FILTER_KEY" :exportable="exportable"
+                                                 :table-name="TABLES_NAME.STOCK" @exportTable="exportTable(ExportType.STOCKS)"></portfolio-rows-table-filter>
                     <stock-table :rows="stockRows" :headers="getHeaders(TABLES_NAME.STOCK)" :search="stockFilter.search" :filter="stockFilter" :table-type="TableType.STOCK"
                                  :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes" :tag-categories="tagCategories"></stock-table>
                 </expanded-panel>
@@ -103,11 +99,8 @@ const MainStore = namespace(StoreType.MAIN);
                             </span>
                         </v-fade-transition>
                     </template>
-                    <template #list>
-                        <v-list-tile-title @click="openTableHeadersDialog('bondTable')">Настроить колонки</v-list-tile-title>
-                        <v-list-tile-title v-if="exportable" @click="exportTable(ExportType.BONDS)">Экспорт в xlsx</v-list-tile-title>
-                    </template>
-                    <portfolio-rows-table-filter :filter.sync="bondFilter" :store-key="StoreKeys.BONDS_TABLE_FILTER_KEY"></portfolio-rows-table-filter>
+                    <portfolio-rows-table-filter :filter.sync="bondFilter" :store-key="StoreKeys.BONDS_TABLE_FILTER_KEY" :exportable="exportable"
+                                                 :table-name="TABLES_NAME.BOND" @exportTable="exportTable(ExportType.BONDS)"></portfolio-rows-table-filter>
                     <bond-table :rows="bondRows" :headers="getHeaders(TABLES_NAME.BOND)" :search="bondFilter.search" :filter="bondFilter"
                                 :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes" :tag-categories="tagCategories"></bond-table>
                 </expanded-panel>
@@ -123,11 +116,8 @@ const MainStore = namespace(StoreType.MAIN);
                             </span>
                         </v-fade-transition>
                     </template>
-                    <template #list>
-                        <v-list-tile-title @click="openTableHeadersDialog(TABLES_NAME.ETF)">Настроить колонки</v-list-tile-title>
-                        <v-list-tile-title v-if="exportable" @click="exportTable(ExportType.ETF)">Экспорт в xlsx</v-list-tile-title>
-                    </template>
-                    <portfolio-rows-table-filter :filter.sync="etfFilter" :store-key="StoreKeys.ETF_TABLE_FILTER_KEY"></portfolio-rows-table-filter>
+                    <portfolio-rows-table-filter :filter.sync="etfFilter" :store-key="StoreKeys.ETF_TABLE_FILTER_KEY" :exportable="exportable"
+                                                 :table-name="TABLES_NAME.ETF" @exportTable="exportTable(ExportType.ETF)"></portfolio-rows-table-filter>
                     <stock-table :rows="etfRows" :headers="getHeaders(TABLES_NAME.ETF)" :search="etfFilter.search" :filter="etfFilter" :table-type="TableType.ETF"
                                  :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes" :tag-categories="tagCategories"></stock-table>
                 </expanded-panel>
@@ -143,11 +133,8 @@ const MainStore = namespace(StoreType.MAIN);
                             </span>
                         </v-fade-transition>
                     </template>
-                    <template #list>
-                        <v-list-tile-title @click="openTableHeadersDialog(TABLES_NAME.ASSET)">Настроить колонки</v-list-tile-title>
-                        <v-list-tile-title v-if="exportable" @click="exportTable(ExportType.ASSETS)">Экспорт в xlsx</v-list-tile-title>
-                    </template>
-                    <portfolio-rows-table-filter :filter.sync="assetFilter" :store-key="StoreKeys.ASSETS_TABLE_FILTER_KEY"></portfolio-rows-table-filter>
+                    <portfolio-rows-table-filter :filter.sync="assetFilter" :store-key="StoreKeys.ASSETS_TABLE_FILTER_KEY" :exportable="exportable"
+                                                 :table-name="TABLES_NAME.ASSET" @exportTable="exportTable(ExportType.ASSETS)"></portfolio-rows-table-filter>
                     <stock-table :rows="assetRows" :headers="getHeaders(TABLES_NAME.ASSET)" :search="assetFilter.search" :filter="assetFilter" :table-type="TableType.ASSET"
                                  :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes" :tag-categories="tagCategories"></stock-table>
                 </expanded-panel>
@@ -329,8 +316,6 @@ export class BasePortfolioPage extends UI {
     /** Текущие категории */
     @Prop({type: Array, required: true})
     private tagCategories: TagCategory[];
-    /** Список заголовков таблиц */
-    private headers: TableHeaders = this.tablesService.headers;
     /** Названия таблиц с заголовками */
     private TABLES_NAME = TABLES_NAME;
     /** Типы экспорта */
@@ -498,13 +483,6 @@ export class BasePortfolioPage extends UI {
 
     private async onPortfolioLineChartPanelStateChanges(): Promise<void> {
         this.$emit(EventType.reloadLineChart);
-    }
-
-    private async openTableHeadersDialog(tableName: string): Promise<void> {
-        await new TableSettingsDialog().show({
-            tableName: tableName,
-            headers: this.headers[tableName]
-        });
     }
 
     private async exportTable(exportType: ExportType): Promise<void> {

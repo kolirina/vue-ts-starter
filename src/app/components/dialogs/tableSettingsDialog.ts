@@ -15,23 +15,20 @@ import {TableHeader} from "../../types/types";
             <div class="scroll-dialog__header">
                 <v-icon @click.native="close" class="closeDialog">close</v-icon>
                 <v-card-title class="pb-0">
-                    <span class="dialog-header-text pl-3">Настройка колонок</span>
+                    <span class="dialog-header-text pl-3">Настройте колонки для отображения</span>
                 </v-card-title>
             </div>
             <div class="scroll-dialog__body">
                 <v-card-text class="speaker-settings-content">
-                    <div class="choose-currency__description mb-3">
-                      Выберите колонки для отображения.
-                    </div>
                     <v-layout row>
                         <v-flex xs6>
                             <template v-for="header in column1">
-                                <v-checkbox v-if="!header.ghost" :label="header.text" v-model="header.active"></v-checkbox>
+                                <v-switch v-if="!header.ghost" :label="header.text" v-model="header.active"></v-switch>
                             </template>
                         </v-flex>
                         <v-flex xs6>
                             <template v-for="header in column2">
-                                <v-checkbox v-if="!header.ghost" :label="header.text" v-model="header.active"></v-checkbox>
+                                <v-switch v-if="!header.ghost" :label="header.text" v-model="header.active"></v-switch>
                             </template>
                         </v-flex>
                     </v-layout>

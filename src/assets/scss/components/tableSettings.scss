@@ -35,3 +35,27 @@
     font-size: 14px !important;
   }
 }
+
+.table-filter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    flex: none;
+    margin: 0 20px 0 24px;
+
+    > .intel-icon {
+      font-size: 24px;
+      color: $icon--color;
+      cursor: pointer;
+      transition: color 0.15s linear;
+
+      &:last-child {margin-left: 12px}
+
+      &:hover {color: $main-color-1}
+    }
+  }
+}
