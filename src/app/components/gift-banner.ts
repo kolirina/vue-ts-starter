@@ -12,7 +12,9 @@ import {Component, UI} from "../app/ui";
                 </div>
                 <v-btn color="primary" class="big_btn" @click="openGiftLink">Купить сертификат</v-btn>
             </div>
-            <img src="./img/portfolio/gift-img.png" alt="sale">
+            <div class="banner__img">
+                <img src="./img/portfolio/gift-img.png" alt="sale">
+            </div>
         </div>
     `
 })
