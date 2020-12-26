@@ -34,6 +34,83 @@
   label {
     font-size: 14px !important;
   }
+
+  &-menu {
+    background-color: #fff;
+    padding: 24px 20px;
+    max-width: 720px;
+
+    &__header {
+      display: flex;
+
+      > div {
+        font-weight: 600;
+        font-size: 14px;
+        line-height: 16px;
+        margin-right: 16px;
+      }
+
+      > a {
+        margin-left: auto;
+        font-size: 12px;
+      }
+    }
+
+    &__wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      margin-top: 20px;
+
+      .v-input--switch {
+        width: calc(100% / 3);
+      }
+
+      .v-input--selection-controls {
+        margin-top: 0;
+        padding-top: 0;
+      }
+
+      .v-label {
+        font-size: 14px;
+        white-space: nowrap;
+      }
+
+      .v-messages {display: none}
+    }
+  }
+
+  @media all and (max-width: $md-breakpoint) {
+    .sidebar-open &-menu {
+      max-width: 600px;
+
+      &__wrapper .v-input--switch {width: calc(100% / 2)}
+    }
+  }
+
+  @media all and (max-width: $sm-breakpoint) {
+    .sidebar-open &-menu {
+      max-width: 300px;
+
+      &__wrapper .v-input--switch {width: 100%}
+    }
+
+    &-menu__wrapper .v-input--switch {width: calc(100% / 2)}
+  }
+
+  @media all and (max-width: $xs-breakpoint) {
+    .sidebar-open &-menu {
+      max-width: 600px;
+
+      &__wrapper .v-input--switch {width: 100%}
+    }
+
+    &-menu__wrapper .v-input--switch {width: calc(100% / 2)}
+  }
+
+
+  @media all and (max-width: $sm-breakpoint) {
+    &-menu__wrapper .v-input--switch {width: 100%}
+  }
 }
 
 .table-filter {
@@ -47,15 +124,17 @@
     flex: none;
     margin: 0 20px 0 24px;
 
-    > .intel-icon {
+    .intel-icon {
       font-size: 24px;
       color: $icon--color;
       cursor: pointer;
       transition: color 0.15s linear;
 
-      &:last-child {margin-left: 12px}
-
       &:hover {color: $main-color-1}
     }
+
+    .icon-export {margin-right: 12px}
   }
+
+  .section-with-pickers {width: auto}
 }

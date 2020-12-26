@@ -17,12 +17,10 @@
 import {Inject} from "typescript-ioc";
 import {Component, Prop, UI} from "../app/ui";
 import {Storage} from "../platform/services/storage";
-import {ExportType} from "../services/exportService";
-import {TableHeaders, TablesService} from "../services/tablesService";
 import {EventType} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
-import {TableSettingsDialog} from "./dialogs/tableSettingsDialog";
 import {TableFilterBase} from "./tableFilterBase";
+import {TableSettingsMenu} from "./tableSettingsMenu";
 
 @Component({
     // language=Vue
@@ -45,19 +43,20 @@ import {TableFilterBase} from "./tableFilterBase";
             </table-filter-base>
             <div class="table-filter__actions">
                 <div v-if="exportable" @click="exportTable" title="Экспорт в xlsx" class="intel-icon icon-export"></div>
-                <div @click="openTableHeadersDialog(tableName)" title="Настроить колонки" class="intel-icon icon-table-filter-settings"></div>
+                <v-menu :close-on-content-click="false" :nudge-bottom="40" bottom right>
+                    <div slot="activator" title="Настроить колонки" class="intel-icon icon-table-filter-settings"></div>
+                    <table-settings-menu :table-name="tableName"></table-settings-menu>
+                </v-menu>
             </div>
         </div>
 
     `,
-    components: {TableFilterBase}
+    components: {TableFilterBase, TableSettingsMenu}
 })
 export class PortfolioRowsTableFilter extends UI {
 
     @Inject
     private storageService: Storage;
-    @Inject
-    private tablesService: TablesService;
     /** Ключ для хранения состояния */
     @Prop({required: true, type: String})
     private storeKey: string;
@@ -72,8 +71,6 @@ export class PortfolioRowsTableFilter extends UI {
     private exportable: boolean;
     /** Плэйсхолдер строки поиска */
     private searchLabel = "Поиск по Названию/Тикеру бумаги, Текущей цене и Доходности";
-    /** Список заголовков таблиц */
-    private headers: TableHeaders = this.tablesService.headers;
 
     private onChange(): void {
         this.emitFilterChange();
@@ -91,13 +88,6 @@ export class PortfolioRowsTableFilter extends UI {
     private emitFilterChange(): void {
         this.$emit("update:filter", this.filter);
         this.storageService.set(this.storeKey, this.filter);
-    }
-
-    private async openTableHeadersDialog(tableName: string): Promise<void> {
-        await new TableSettingsDialog().show({
-            tableName: tableName,
-            headers: this.headers[tableName]
-        });
     }
 
     private async exportTable(): Promise<void> {

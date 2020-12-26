@@ -15,19 +15,30 @@
  */
 
 import {Inject} from "typescript-ioc";
+import {namespace} from "vuex-class/lib/bindings";
 import {Component, Prop, UI} from "../app/ui";
+import {ShowProgress} from "../platform/decorators/showProgress";
+import {ClientInfo} from "../services/clientService";
+import {ExportService, ExportType} from "../services/exportService";
+import {PortfolioParams} from "../services/portfolioService";
 import {TradesFilter} from "../services/tradeService";
 import {TradesFilterService} from "../services/tradesFilterService";
 import {ALLOWED_CURRENCIES} from "../types/currency";
 import {Operation} from "../types/operation";
 import {StoreKeys} from "../types/storeKeys";
 import {TradeListType} from "../types/tradeListType";
+import {Portfolio} from "../types/types";
+import {ExportUtils} from "../utils/exportUtils";
+import {StoreType} from "../vuex/storeType";
 import {TableFilterBase} from "./tableFilterBase";
+import {TableSettingsMenu} from "./tableSettingsMenu";
+
+const MainStore = namespace(StoreType.MAIN);
 
 @Component({
     // language=Vue
     template: `
-        <v-layout align-center wrap>
+        <v-layout align-center wrap class="table-filter">
             <table-filter-base @search="onSearch" :search-query="filter.search" :search-label="searchLabel" :min-length="2" :is-default="isDefault"
                                :start-date="filter.start" :end-date="filter.end" @startDateChanged="onStartDateChanged" @endDateChanged="onEndDateChanged"
                                :search-timeout="500"
@@ -61,15 +72,33 @@ import {TableFilterBase} from "./tableFilterBase";
                     </div>
                 </div>
             </table-filter-base>
+            <div class="table-filter__actions">
+                <div @click="exportTable" title="Экспорт в xlsx" class="intel-icon icon-export"></div>
+                <div v-if="!isDownloadNotAllowed()" @click="downloadFile" title="Экспорт в csv" class="intel-icon icon-export"></div>
+                <v-menu :close-on-content-click="false" :nudge-bottom="40" bottom right>
+                    <div slot="activator" title="Настроить колонки" class="intel-icon icon-table-filter-settings"></div>
+                    <table-settings-menu :table-name="tableName"></table-settings-menu>
+                </v-menu>
+            </div>
         </v-layout>
     `,
-    components: {TableFilterBase}
+    components: {TableFilterBase, TableSettingsMenu}
 })
 export class TradesTableFilter extends UI {
 
     /** Операции загружаемые по умполчанию */
     static readonly DEFAULT_OPERATIONS = [Operation.BUY, Operation.DIVIDEND, Operation.SELL, Operation.INCOME, Operation.COUPON, Operation.LOSS, Operation.AMORTIZATION,
         Operation.CURRENCY_BUY, Operation.CURRENCY_SELL];
+    /** Инофрмация о пользователе */
+    @MainStore.Getter
+    protected clientInfo: ClientInfo;
+    @Inject
+    protected exportService: ExportService;
+    @MainStore.Getter
+    protected portfolio: Portfolio;
+    /** Комбинированный портфель */
+    @MainStore.Getter
+    protected combinedPortfolioParams: PortfolioParams;
     @Inject
     private tradesFilterService: TradesFilterService;
     /** Фильтр */
@@ -78,6 +107,9 @@ export class TradesTableFilter extends UI {
     /** Признак дефолтного фильтра */
     @Prop({default: false, type: Boolean})
     private isDefault: boolean;
+    /** Имя таблицы */
+    @Prop({required: true, type: String})
+    private tableName: string;
     /** Плэйсхолдер строки поиска */
     private searchLabel = "Поиск по названию бумаги, по тикеру бумаги, по заметке к сделке";
     /** Список типов */
@@ -86,6 +118,7 @@ export class TradesTableFilter extends UI {
     private operations: Operation[] = TradesTableFilter.DEFAULT_OPERATIONS;
     /** Список валют */
     private currencyList = ALLOWED_CURRENCIES;
+    private ExportType = ExportType;
 
     private onChange(): void {
         this.emitFilterChange();
@@ -163,5 +196,34 @@ export class TradesTableFilter extends UI {
     private emitFilterChange(): void {
         this.$emit("filter", this.filter);
         this.tradesFilterService.saveFilter(StoreKeys.TRADES_FILTER_SETTINGS_KEY, this.filter);
+    }
+
+    @ShowProgress
+    private async exportTable(): Promise<void> {
+        if (this.portfolio.id) {
+            await this.exportService.exportReport(this.portfolio.id, ExportType.TRADES);
+        } else {
+            await this.exportService.exportCombinedReport({ids: this.combinedPortfolioParams.combinedIds, viewCurrency: this.combinedPortfolioParams.viewCurrency},
+                ExportType.TRADES);
+        }
+    }
+
+    /**
+     * Отправляет запрос на скачивание файла со сделками в формате csv
+     */
+    @ShowProgress
+    private async downloadFile(): Promise<void> {
+        if (this.portfolio.id) {
+            await this.exportService.exportTrades(this.portfolio.id);
+        } else {
+            await this.exportService.exportTradesCombined(this.combinedPortfolioParams.viewCurrency, this.combinedPortfolioParams.combinedIds);
+        }
+    }
+
+    /**
+     * Возвращает признак доступности для загрузки файла со сделками
+     */
+    private isDownloadNotAllowed(): boolean {
+        return ExportUtils.isDownloadNotAllowed(this.clientInfo);
     }
 }
