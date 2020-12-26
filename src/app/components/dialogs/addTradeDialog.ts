@@ -461,11 +461,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private onAssetTypeChange(clearFields: boolean = true): void {
-        if (this.data.operation === undefined) {
-            this.operation = this.assetType.operations[0];
-        } else {
-            this.operation = this.data.operation;
-        }
+        this.operation = this.assetType.operations[0];
         if (clearFields) {
             // исправление бага валидатора https://github.com/logaretm/vee-validate/issues/2109
             this.$nextTick(() => this.clearFields());
