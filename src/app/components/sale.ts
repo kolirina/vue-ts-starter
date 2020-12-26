@@ -12,13 +12,13 @@ const MainStore = namespace(StoreType.MAIN);
         <div class="banner sale-banner">
             <v-icon class="banner__close" @click.native="close">close</v-icon>
             <div class="banner__content">
-                <div class="banner__title">Черная пятница в Intelinvest</div>
+                <div class="banner__title">Новогодние скидки в Intelinvest</div>
                 <div class="banner__description selectable">
                     <template v-if="discountApplied">
                         оплатите со своей персональной скидкой {{ clientInfo.user.nextPurchaseDiscount }}%
                     </template>
                     <template v-else>
-                        скидка 20% по промокоду: BLACKFRIDAY<br>действует до 28.11.20
+                        скидка 20% по промокоду: NY2021<br>действует до 03.01.2021
                     </template>
                 </div>
                 <v-btn color="primary" class="big_btn" @click="goToTariffs">Оплатить тарифный план</v-btn>
@@ -34,7 +34,8 @@ export class SaleComponent extends UI {
 
     /** Переход на страницу тарифов */
     private goToTariffs(): void {
-        this.$router.push({name: "tariffs"});
+        this.$router.push({name: "tariffs", query: {promoCode: "NY2021"}});
+        this.close();
     }
 
     private close(): void {

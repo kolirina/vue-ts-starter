@@ -403,8 +403,8 @@ export class BasePortfolioPage extends UI {
         this.bondFilter = this.storageService.get(StoreKeys.BONDS_TABLE_FILTER_KEY, {});
         this.assetFilter = this.storageService.get(StoreKeys.ASSETS_TABLE_FILTER_KEY, {});
         this.blockIndexes = PortfolioUtils.getShowedBlocks(this.overview);
-        this.showSaleBanner = this.storageService.get("saleBanner", this.needShowSaleBanner);
         this.showGiftBanner = this.storageService.get("giftBanner", this.needShowGiftBanner);
+        this.showSaleBanner = this.storageService.get("saleBanner", this.needShowSaleBanner);
     }
 
     @Watch("overview")
@@ -584,7 +584,8 @@ export class BasePortfolioPage extends UI {
      * Отображаем баннер только для старых тарифов и до 29.11 включительно
      */
     private get needShowSaleBanner(): boolean {
-        return DateUtils.parseDate(DateUtils.currentDate()).isBefore(DateUtils.parseDate("2020-11-30"));
+        return DateUtils.parseDate(DateUtils.currentDate()).isBefore(DateUtils.parseDate("2021-01-03")) &&
+            !this.showGiftBanner;
     }
 
     /**
