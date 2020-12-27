@@ -12,18 +12,24 @@ const MainStore = namespace(StoreType.MAIN);
         <div class="banner sale-banner">
             <v-icon class="banner__close" @click.native="close">close</v-icon>
             <div class="banner__content">
-                <div class="banner__title">Черная пятница в Intelinvest</div>
+                <div class="banner__title">Новый год с Intelinvest!</div>
                 <div class="banner__description selectable">
                     <template v-if="discountApplied">
                         оплатите со своей персональной скидкой {{ clientInfo.user.nextPurchaseDiscount }}%
                     </template>
                     <template v-else>
-                        скидка 20% по промокоду: BLACKFRIDAY<br>действует до 28.11.20
+                        cкидка 20% по коду
                     </template>
+                </div>
+                <div v-if="!discountApplied" class="banner__ny-code">
+                    <div class="banner__ny-code_code selectable">NY2021</div>
+                    <div class="banner__ny-code_active">Активен до 03.01.2021</div>
                 </div>
                 <v-btn color="primary" class="big_btn" @click="goToTariffs">Оплатить тарифный план</v-btn>
             </div>
-            <img src="./img/portfolio/sale-img.svg" alt="sale">
+            <div class="banner__img">
+                <img src="./img/portfolio/ny-banner-balls.svg" alt="sale">
+            </div>
         </div>
     `
 })
@@ -34,7 +40,8 @@ export class SaleComponent extends UI {
 
     /** Переход на страницу тарифов */
     private goToTariffs(): void {
-        this.$router.push({name: "tariffs"});
+        this.$router.push({name: "tariffs", query: {promoCode: "NY2021"}});
+        this.close();
     }
 
     private close(): void {
