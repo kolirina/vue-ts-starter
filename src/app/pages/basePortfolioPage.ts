@@ -404,7 +404,7 @@ export class BasePortfolioPage extends UI {
         this.assetFilter = this.storageService.get(StoreKeys.ASSETS_TABLE_FILTER_KEY, {});
         this.blockIndexes = PortfolioUtils.getShowedBlocks(this.overview);
         this.showGiftBanner = this.storageService.get("giftBanner", this.needShowGiftBanner);
-        this.showSaleBanner = this.storageService.get("saleBanner", this.needShowSaleBanner);
+        this.showSaleBanner = this.storageService.get("saleBanner1", this.needShowSaleBanner);
     }
 
     @Watch("overview")
