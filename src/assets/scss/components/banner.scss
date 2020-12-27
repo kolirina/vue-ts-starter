@@ -46,30 +46,101 @@
 }
 
 .sale-banner {
-  background: $theme-color-dark-blue;
-  color: #fff;
+  background: #EFF2F8 url("../img/portfolio/sale-bg.png") no-repeat center right;
   font-size: 24px;
+  color: $main--font-color;
   margin: 32px 0;
   align-items: center;
 
-  img {
-    height: 290px;
-    margin: -56px 0 -48px;
+  .banner__close.theme--light.v-icon {color: #B0B4C2 !important;}
+
+  .banner__title {font-size: 30px}
+
+  .banner__description {font-size: 24px}
+
+  .banner__content {
+    flex: none;
+    margin-right: 32px;
   }
 
-  @media all and (max-width: $sm-breakpoint){
-    background: $theme-color-dark-blue url("../img/portfolio/sale-img-bg.svg") no-repeat top 0 center;
-    background-size: 800px 200px;
-    padding: 60px 16px 32px;
+  .banner__ny-code {
+    @extend %center-elements;
+    border: 1px solid #51545F;
+    border-radius: 8px;
+    margin-top: 8px;
 
-    .banner__content:before {
-      content: "";
-      position: absolute;
-      width: 100%;
-      height: 68px;
-      bottom: calc(100% + 16px);
-      background: url("../img/portfolio/sale-img-mobile.svg") no-repeat center;
+    &_code {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: none;
+      width: 50%;
+      background: #51545F url("../img/portfolio/ny-code-bg.svg") repeat;
+      font-size: 24px;
+      line-height: 28px;
+      color: #fff;
+      padding: 0 8px;
+      align-self: stretch;
+      border-radius: 6px 0 0 6px;
     }
+
+    &_active {
+      display: flex;
+      flex: none;
+      align-items: center;
+      justify-content: center;
+      width: 50%;
+      color: #51545F;
+      font-weight: 600;
+      font-size: 12px;
+      line-height: 20px;
+      padding: 0 8px;
+      background: #eff2f8;
+      position: relative;
+      align-self: stretch;
+      border-radius: 0 6px 6px 0;
+
+      &:after {
+        content: "";
+        position: absolute;
+        width: 36px;
+        height: 36px;
+        background: url("../img/portfolio/ny-code-after.svg") no-repeat;
+        background-size: contain;
+        right: -19px;
+        top: -24px;
+      }
+    }
+  }
+
+  .banner__img {
+    margin-top: -24px;
+    margin-left: auto;
+    height: 100%;
+    align-self: stretch;
+  }
+
+  img {max-width: 100%}
+
+  @media all and (max-width: $sm-breakpoint){
+    background: #EFF2F8;
+    padding: 16px 12px 12px;
+
+    .banner__content {
+      margin-right: 0;
+
+      &:before {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 42px;
+        top: -16px;
+        right: 28px;
+        background: url("../img/portfolio/sale-img-mobile.svg") no-repeat center right 12px;
+      }
+    }
+
+    .banner__img {display: none}
   }
 }
 
