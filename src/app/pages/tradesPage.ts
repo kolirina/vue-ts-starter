@@ -11,7 +11,7 @@ import {ShowProgress} from "../platform/decorators/showProgress";
 import {ExportService, ExportType} from "../services/exportService";
 import {OverviewService} from "../services/overviewService";
 import {PortfolioParams} from "../services/portfolioService";
-import {TableHeaders, TABLES_NAME, TablesService} from "../services/tablesService";
+import {TablesService, TableType} from "../services/tablesService";
 import {CopyMoveTradeRequest, TradeService, TradesFilter} from "../services/tradeService";
 import {TradesFilterService} from "../services/tradesFilterService";
 import {AssetType} from "../types/assetType";
@@ -36,12 +36,12 @@ const MainStore = namespace(StoreType.MAIN);
                     <template #header>Сделки</template>
                     <v-layout justify-space-between wrap class="trades-filter-section">
                         <trades-table-filter v-if="tradesFilter" :store-key="StoreKeys.TRADES_FILTER_SETTINGS_KEY" @filter="onFilterChange" :filter="tradesFilter"
-                                             :is-default="isDefaultFilter" data-v-step="1" :table-name="TABLES_NAME.TRADE" @filterHeaders="updateHeaders"></trades-table-filter>
+                                             :is-default="isDefaultFilter" data-v-step="1" :table-type="TableType.TRADE"></trades-table-filter>
                         <additional-pagination :pagination="pagination" @update:pagination="onTablePaginationChange"></additional-pagination>
                     </v-layout>
                     <empty-search-result v-if="isEmptySearchResult" @resetFilter="resetFilter"></empty-search-result>
                     <trades-table v-else :trades="trades" :pagination="pagination" @copyTrade="copyTrade" @moveTrade="moveTrade"
-                                  :headers="getHeaders()" @delete="onDelete" @resetFilter="resetFilter" @update:pagination="onTablePaginationChange"
+                                  @delete="onDelete" @resetFilter="resetFilter" @update:pagination="onTablePaginationChange"
                                   data-v-step="2">
                     </trades-table>
                 </expanded-panel>
@@ -74,9 +74,7 @@ export class TradesPage extends PortfolioBasedPage {
     private sideBarOpened: boolean;
     /** Ключи для сохранения информации */
     private StoreKeys = StoreKeys;
-    /** Список заголовков таблиц */
-    private headers: TableHeaders = this.tablesService.headers;
-
+    /** Паджинация */
     private pagination: Pagination = {
         descending: true,
         page: 1,
@@ -92,7 +90,7 @@ export class TradesPage extends PortfolioBasedPage {
 
     private isEmptySearchResult: boolean = false;
 
-    private TABLES_NAME = TABLES_NAME;
+    private TableType = TableType;
     private ExportType = ExportType;
 
     /**
@@ -108,14 +106,6 @@ export class TradesPage extends PortfolioBasedPage {
     beforeDestroy(): void {
         UI.off(EventType.TRADE_CREATED);
         UI.off(EventType.TRADE_UPDATED);
-    }
-
-    private getHeaders(): TableHeader[] {
-        return this.tablesService.getFilterHeaders(this.TABLES_NAME.TRADE, !this.allowActions);
-    }
-
-    private updateHeaders(): void {
-        this.headers = this.tablesService.headers;
     }
 
     private async onTablePaginationChange(pagination: Pagination): Promise<void> {

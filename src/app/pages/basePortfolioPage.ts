@@ -32,7 +32,7 @@ import {Storage} from "../platform/services/storage";
 import {ClientInfo} from "../services/clientService";
 import {ExportType} from "../services/exportService";
 import {PortfolioBlockType} from "../services/onBoardingTourService";
-import {TableHeaders, TABLES_NAME, TablesService, TableType} from "../services/tablesService";
+import {TablesService, TableType} from "../services/tablesService";
 import {BigMoney} from "../types/bigMoney";
 import {ChartType, HighStockEventsGroup, LineChartItem, SectorChartData} from "../types/charts/types";
 import {StoreKeys} from "../types/storeKeys";
@@ -83,8 +83,8 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-fade-transition>
                     </template>
                     <portfolio-rows-table-filter :filter.sync="stockFilter" :store-key="StoreKeys.STOCKS_TABLE_FILTER_KEY" :exportable="exportable"
-                                                 :table-name="TABLES_NAME.STOCK" @exportTable="exportTable(ExportType.STOCKS)" @filterHeaders="updateHeaders"></portfolio-rows-table-filter>
-                    <stock-table :rows="stockRows" :headers="getHeaders(TABLES_NAME.STOCK)" :search="stockFilter.search" :filter="stockFilter" :table-type="TableType.STOCK"
+                                                 :table-type="TableType.STOCK" @exportTable="exportTable(ExportType.STOCKS)"></portfolio-rows-table-filter>
+                    <stock-table :rows="stockRows" :search="stockFilter.search" :filter="stockFilter" :table-type="TableType.STOCK"
                                  :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes" :tag-categories="tagCategories"></stock-table>
                 </expanded-panel>
 
@@ -100,8 +100,8 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-fade-transition>
                     </template>
                     <portfolio-rows-table-filter :filter.sync="bondFilter" :store-key="StoreKeys.BONDS_TABLE_FILTER_KEY" :exportable="exportable"
-                                                 :table-name="TABLES_NAME.BOND" @exportTable="exportTable(ExportType.BONDS)" @filterHeaders="updateHeaders"></portfolio-rows-table-filter>
-                    <bond-table :rows="bondRows" :headers="getHeaders(TABLES_NAME.BOND)" :search="bondFilter.search" :filter="bondFilter"
+                                                 :table-type="TableType.BOND" @exportTable="exportTable(ExportType.BONDS)"></portfolio-rows-table-filter>
+                    <bond-table :rows="bondRows" :search="bondFilter.search" :filter="bondFilter"
                                 :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes" :tag-categories="tagCategories"></bond-table>
                 </expanded-panel>
 
@@ -117,8 +117,8 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-fade-transition>
                     </template>
                     <portfolio-rows-table-filter :filter.sync="etfFilter" :store-key="StoreKeys.ETF_TABLE_FILTER_KEY" :exportable="exportable"
-                                                 :table-name="TABLES_NAME.ETF" @exportTable="exportTable(ExportType.ETF)" @filterHeaders="updateHeaders"></portfolio-rows-table-filter>
-                    <stock-table :rows="etfRows" :headers="getHeaders(TABLES_NAME.ETF)" :search="etfFilter.search" :filter="etfFilter" :table-type="TableType.ETF"
+                                                 :table-type="TableType.ETF" @exportTable="exportTable(ExportType.ETF)"></portfolio-rows-table-filter>
+                    <stock-table :rows="etfRows" :search="etfFilter.search" :filter="etfFilter" :table-type="TableType.ETF"
                                  :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes" :tag-categories="tagCategories"></stock-table>
                 </expanded-panel>
 
@@ -134,8 +134,8 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-fade-transition>
                     </template>
                     <portfolio-rows-table-filter :filter.sync="assetFilter" :store-key="StoreKeys.ASSETS_TABLE_FILTER_KEY" :exportable="exportable"
-                                                 :table-name="TABLES_NAME.ASSET" @exportTable="exportTable(ExportType.ASSETS)" @filterHeaders="updateHeaders"></portfolio-rows-table-filter>
-                    <stock-table :rows="assetRows" :headers="getHeaders(TABLES_NAME.ASSET)" :search="assetFilter.search" :filter="assetFilter" :table-type="TableType.ASSET"
+                                                 :table-type="TableType.ASSET" @exportTable="exportTable(ExportType.ASSETS)"></portfolio-rows-table-filter>
+                    <stock-table :rows="assetRows" :search="assetFilter.search" :filter="assetFilter" :table-type="TableType.ASSET"
                                  :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes" :tag-categories="tagCategories"></stock-table>
                 </expanded-panel>
 
@@ -316,10 +316,6 @@ export class BasePortfolioPage extends UI {
     /** Текущие категории */
     @Prop({type: Array, required: true})
     private tagCategories: TagCategory[];
-    /** Список заголовков таблиц */
-    private headers: TableHeaders = this.tablesService.headers;
-    /** Названия таблиц с заголовками */
-    private TABLES_NAME = TABLES_NAME;
     /** Типы экспорта */
     private ExportType = ExportType;
     /** Ключи для сохранения информации */
@@ -461,14 +457,6 @@ export class BasePortfolioPage extends UI {
 
     private doBondSectorsChartData(): SectorChartData {
         return ChartUtils.doBondSectorsChartData(this.overview);
-    }
-
-    private updateHeaders(): void {
-        this.headers = this.tablesService.headers;
-    }
-
-    private getHeaders(name: string): TableHeader[] {
-        return this.tablesService.getFilterHeaders(name);
     }
 
     private onStockTablePanelClick(): void {

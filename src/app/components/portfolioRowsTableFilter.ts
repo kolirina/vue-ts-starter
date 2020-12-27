@@ -17,6 +17,7 @@
 import {Inject} from "typescript-ioc";
 import {Component, Prop, UI} from "../app/ui";
 import {Storage} from "../platform/services/storage";
+import {TableType} from "../services/tablesService";
 import {EventType} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
 import {TableFilterBase} from "./tableFilterBase";
@@ -45,7 +46,7 @@ import {TableSettingsMenu} from "./tableSettingsMenu";
                 <div v-if="exportable" @click="exportTable" title="Экспорт в xlsx" class="intel-icon icon-export"></div>
                 <v-menu :close-on-content-click="false" :nudge-bottom="40" bottom right>
                     <div slot="activator" title="Настроить колонки" class="intel-icon icon-table-filter-settings"></div>
-                    <table-settings-menu :table-name="tableName" @filterHeaders="$emit('filterHeaders')"></table-settings-menu>
+                    <table-settings-menu :table-type="tableType"></table-settings-menu>
                 </v-menu>
             </div>
         </div>
@@ -65,7 +66,7 @@ export class PortfolioRowsTableFilter extends UI {
     private filter: PortfolioRowFilter;
     /** Имя таблицы */
     @Prop({required: true, type: String})
-    private tableName: string;
+    private tableType: TableType;
     /** Признак доступности экспорта таблиц */
     @Prop({type: Boolean, required: false})
     private exportable: boolean;

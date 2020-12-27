@@ -20,7 +20,8 @@
 import {Inject} from "typescript-ioc";
 import {Component, Prop, UI} from "../app/ui";
 import {Storage} from "../platform/services/storage";
-import {TableHeaders, TablesService} from "../services/tablesService";
+import {TableHeaders, TablesService, TableType} from "../services/tablesService";
+import {EventType} from "../types/eventType";
 import {TableHeader} from "../types/types";
 
 @Component({
@@ -45,25 +46,27 @@ export class TableSettingsMenu extends UI {
     @Inject
     private localStorage: Storage;
     @Prop({required: true, type: String})
-    private tableName: string;
+    private tableType: TableType;
     /** Список заголовков таблиц */
     private headers: TableHeader[] = [];
 
     mounted(): void {
-        this.headers = this.tablesService.headers[this.tableName].map(el => ({...el}));
+        this.headers = this.tablesService.headers[this.tableType];
     }
 
     private filterHeaders(): void {
-        this.tablesService.setHeaders(this.tableName, this.headers);
-        this.$emit("filterHeaders");
+        this.tablesService.setHeaders(this.tableType, this.headers);
+        UI.emit(EventType.FILTER_HEADERS, this.tableType);
     }
 
     /** Устанавливает заголовки по умолчанию */
     private setDefaults(): void {
-        const tables = this.localStorage.get<TableHeaders>("tableHeadersParams", null);
-        tables[this.tableName] = this.tablesService.HEADERS[this.tableName];
-        this.headers = tables[this.tableName];
-        this.localStorage.set("tableHeadersParams", tables);
+        const headers = this.localStorage.get<TableHeaders>("tableHeadersParams", null);
+        if (!headers) {
+            this.tablesService.setHeaders(this.tableType, this.tablesService.HEADERS[this.tableType]);
+            return;
+        }
+        this.headers = [...this.tablesService.HEADERS[this.tableType].map(el => ({...el}))];
         this.filterHeaders();
     }
 }

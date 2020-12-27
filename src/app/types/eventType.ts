@@ -12,6 +12,7 @@ export enum EventType {
     ASSET_CREATED = "ASSET_CREATED",
     ASSET_UPDATED = "ASSET_UPDATED",
     TOUR_EVENT = "TOUR_EVENT",
+    FILTER_HEADERS = "filterHeaders"
 }
 
 export interface AddTradeEvent {

@@ -21,6 +21,7 @@ import {ShowProgress} from "../platform/decorators/showProgress";
 import {ClientInfo} from "../services/clientService";
 import {ExportService, ExportType} from "../services/exportService";
 import {PortfolioParams} from "../services/portfolioService";
+import { TableType } from "../services/tablesService";
 import {TradesFilter} from "../services/tradeService";
 import {TradesFilterService} from "../services/tradesFilterService";
 import {ALLOWED_CURRENCIES} from "../types/currency";
@@ -86,7 +87,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </v-menu>
                 <v-menu :close-on-content-click="false" :nudge-bottom="40" bottom right>
                     <div slot="activator" title="Настроить колонки" class="intel-icon icon-table-filter-settings"></div>
-                    <table-settings-menu :table-name="tableName" @filterHeaders="$emit('filterHeaders')"></table-settings-menu>
+                    <table-settings-menu :table-type="TableType.TRADE"></table-settings-menu>
                 </v-menu>
             </div>
         </v-layout>
@@ -116,9 +117,6 @@ export class TradesTableFilter extends UI {
     /** Признак дефолтного фильтра */
     @Prop({default: false, type: Boolean})
     private isDefault: boolean;
-    /** Имя таблицы */
-    @Prop({required: true, type: String})
-    private tableName: string;
     /** Плэйсхолдер строки поиска */
     private searchLabel = "Поиск по названию бумаги, по тикеру бумаги, по заметке к сделке";
     /** Список типов */
@@ -128,6 +126,8 @@ export class TradesTableFilter extends UI {
     /** Список валют */
     private currencyList = ALLOWED_CURRENCIES;
     private ExportType = ExportType;
+
+    private TableType = TableType;
 
     private onChange(): void {
         this.emitFilterChange();
