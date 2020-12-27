@@ -72,7 +72,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </expanded-panel>
 
                 <expanded-panel v-if="blockNotEmpty(emptyBlockType.STOCK_PORTFOLIO)" :value="$uistate.stocksTablePanel"
-                                with-menu name="stock" :state="$uistate.STOCKS" @click="onStockTablePanelClick" class="mt-3 selectable"
+                                name="stock" :state="$uistate.STOCKS" @click="onStockTablePanelClick" class="mt-3 selectable"
                                 :data-v-step="getTourStepIndex(PortfolioBlockType.STOCK_TABLE)">
                     <template #header>
                         <span>Акции</span>
@@ -89,7 +89,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </expanded-panel>
 
                 <expanded-panel v-if="blockNotEmpty(emptyBlockType.BOND_PORTFOLIO)" :value="$uistate.bondsTablePanel"
-                                with-menu name="bond" :state="$uistate.BONDS" @click="onBondTablePanelClick" class="mt-3 selectable"
+                                name="bond" :state="$uistate.BONDS" @click="onBondTablePanelClick" class="mt-3 selectable"
                                 :data-v-step="getTourStepIndex(PortfolioBlockType.BOND_TABLE)">
                     <template #header>
                         <span>Облигации</span>
@@ -106,7 +106,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </expanded-panel>
 
                 <expanded-panel v-if="blockNotEmpty(emptyBlockType.ETF_PORTFOLIO)" :value="$uistate.etfTablePanel"
-                                with-menu name="etf" :state="$uistate.ETF" @click="onEtfTablePanelClick" class="mt-3 selectable"
+                                name="etf" :state="$uistate.ETF" @click="onEtfTablePanelClick" class="mt-3 selectable"
                                 :data-v-step="getTourStepIndex(PortfolioBlockType.ETF_TABLE)">
                     <template #header>
                         <span>ПИФы/ETF</span>
@@ -123,7 +123,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </expanded-panel>
 
                 <expanded-panel v-if="blockNotEmpty(emptyBlockType.ASSETS)" :value="$uistate.assetsTablePanel"
-                                with-menu name="asset" :state="$uistate.ASSET_TABLE" @click="onAssetTablePanelClick" class="mt-3 selectable"
+                                name="asset" :state="$uistate.ASSET_TABLE" @click="onAssetTablePanelClick" class="mt-3 selectable"
                                 :data-v-step="getTourStepIndex(PortfolioBlockType.ASSET_TABLE)">
                     <template #header>
                         <span>Прочие активы</span>
