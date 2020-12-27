@@ -584,7 +584,7 @@ export class BasePortfolioPage extends UI {
      * Отображаем баннер только для старых тарифов и до 29.11 включительно
      */
     private get needShowSaleBanner(): boolean {
-        return DateUtils.parseDate(DateUtils.currentDate()).isBefore(DateUtils.parseDate("2021-01-03")) &&
+        return DateUtils.parseDate(DateUtils.currentDate()).isBefore(DateUtils.parseDate("2021-01-04")) &&
             !this.showGiftBanner;
     }
 
