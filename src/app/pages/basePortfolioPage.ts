@@ -593,6 +593,6 @@ export class BasePortfolioPage extends UI {
      */
     private get needShowGiftBanner(): boolean {
         return !TariffUtils.isTariffExpired(this.clientInfo.user) && [Tariff.STANDARD, Tariff.PRO].includes(this.clientInfo.user.tariff) &&
-            DateUtils.parseDate(DateUtils.currentDate()).isBefore(DateUtils.parseDate("2021-01-03"));
+            DateUtils.parseDate(DateUtils.currentDate()).isBefore(DateUtils.parseDate("2021-01-04"));
     }
 }
