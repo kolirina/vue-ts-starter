@@ -73,8 +73,17 @@ const MainStore = namespace(StoreType.MAIN);
                 </div>
             </table-filter-base>
             <div class="table-filter__actions">
-                <div @click="exportTable" title="Экспорт в xlsx" class="intel-icon icon-export"></div>
-                <div v-if="!isDownloadNotAllowed()" @click="downloadFile" title="Экспорт в csv" class="intel-icon icon-export"></div>
+                <v-menu :close-on-content-click="false" :nudge-bottom="40" bottom right>
+                    <div slot="activator" title="Настроить колонки" class="intel-icon icon-export"></div>
+                    <v-list dense style="cursor: pointer;">
+                        <v-list-tile @click.native="exportTable">
+                            <v-list-tile-title>Экспорт в xlsx</v-list-tile-title>
+                        </v-list-tile>
+                        <v-list-tile v-if="!isDownloadNotAllowed()" @click.native="downloadFile">
+                            <v-list-tile-title>Экспорт в csv</v-list-tile-title>
+                        </v-list-tile>
+                    </v-list>
+                </v-menu>
                 <v-menu :close-on-content-click="false" :nudge-bottom="40" bottom right>
                     <div slot="activator" title="Настроить колонки" class="intel-icon icon-table-filter-settings"></div>
                     <table-settings-menu :table-name="tableName"></table-settings-menu>

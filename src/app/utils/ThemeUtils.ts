@@ -103,7 +103,7 @@ export class ThemeUtils {
     .v-tooltip__content.menu-icons,
     .theme--light.application, .mobile-wrapper-menu,
     .custom-v-menu .v-menu-content, .tags-menu__selected,
-    .tags__add-btn:hover,
+    .tags__add-btn:hover, .table-settings-menu,
     .promo-codes__hint {background: #21232F !important}
 
     .active-link, .wrap-list-menu .v-list__tile:hover,
@@ -168,7 +168,7 @@ export class ThemeUtils {
     .snotifyToast__buttons button, .update-service-dialog__content, .provider__name-select,
     .custom-v-menu .v-menu-content, .section-title, .public-portfolio-item__title, .public-portfolio-item__footer-title,
     .public-portfolio-item__footer-social > div, .portfolio-item__body-info>div>span:first-child,
-    .v-date-picker-years, .empty-station__description, .v-tabs .v-tabs__item, .promo-codes ul {color: #fff}
+    .v-date-picker-years, .empty-station__description, .v-tabs .v-tabs__item, .promo-codes ul, .table-settings-menu {color: #fff}
 
     .theme--light.v-label,
     .fs12-opacity,

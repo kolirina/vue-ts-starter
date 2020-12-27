@@ -19,7 +19,8 @@
  */
 import {Inject} from "typescript-ioc";
 import {Component, Prop, UI} from "../app/ui";
-import {TablesService} from "../services/tablesService";
+import {Storage} from "../platform/services/storage";
+import {TableHeaders, TablesService} from "../services/tablesService";
 import {TableHeader} from "../types/types";
 
 @Component({
@@ -41,6 +42,8 @@ import {TableHeader} from "../types/types";
 export class TableSettingsMenu extends UI {
     @Inject
     private tablesService: TablesService;
+    @Inject
+    private localStorage: Storage;
     @Prop({required: true, type: String})
     private tableName: string;
     /** Список заголовков таблиц */
@@ -53,6 +56,10 @@ export class TableSettingsMenu extends UI {
     private filterHeaders(): void {
         this.tablesService.setHeaders(this.tableName, this.headers);
     }
-
-    private setDefaults(): void {}
+    /** Устанавливает заголовки по умолчанию */
+    private setDefaults(): void {
+        const tables = this.localStorage.get<TableHeaders>("tableHeadersParams", null);
+        tables[this.tableName] = this.tablesService.HEADERS[this.tableName];
+        this.localStorage.set("tableHeadersParams", tables);
+    }
 }
