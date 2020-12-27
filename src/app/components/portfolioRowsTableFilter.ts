@@ -45,7 +45,7 @@ import {TableSettingsMenu} from "./tableSettingsMenu";
                 <div v-if="exportable" @click="exportTable" title="Экспорт в xlsx" class="intel-icon icon-export"></div>
                 <v-menu :close-on-content-click="false" :nudge-bottom="40" bottom right>
                     <div slot="activator" title="Настроить колонки" class="intel-icon icon-table-filter-settings"></div>
-                    <table-settings-menu :table-name="tableName"></table-settings-menu>
+                    <table-settings-menu :table-name="tableName" @filterHeaders="$emit('filterHeaders')"></table-settings-menu>
                 </v-menu>
             </div>
         </div>

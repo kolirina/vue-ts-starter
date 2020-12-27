@@ -36,7 +36,7 @@ const MainStore = namespace(StoreType.MAIN);
                     <template #header>Сделки</template>
                     <v-layout justify-space-between wrap class="trades-filter-section">
                         <trades-table-filter v-if="tradesFilter" :store-key="StoreKeys.TRADES_FILTER_SETTINGS_KEY" @filter="onFilterChange" :filter="tradesFilter"
-                                             :is-default="isDefaultFilter" data-v-step="1" :table-name="TABLES_NAME.TRADE"></trades-table-filter>
+                                             :is-default="isDefaultFilter" data-v-step="1" :table-name="TABLES_NAME.TRADE" @filterHeaders="updateHeaders"></trades-table-filter>
                         <additional-pagination :pagination="pagination" @update:pagination="onTablePaginationChange"></additional-pagination>
                     </v-layout>
                     <empty-search-result v-if="isEmptySearchResult" @resetFilter="resetFilter"></empty-search-result>
@@ -74,6 +74,8 @@ export class TradesPage extends PortfolioBasedPage {
     private sideBarOpened: boolean;
     /** Ключи для сохранения информации */
     private StoreKeys = StoreKeys;
+    /** Список заголовков таблиц */
+    private headers: TableHeaders = this.tablesService.headers;
 
     private pagination: Pagination = {
         descending: true,
@@ -110,6 +112,10 @@ export class TradesPage extends PortfolioBasedPage {
 
     private getHeaders(): TableHeader[] {
         return this.tablesService.getFilterHeaders(this.TABLES_NAME.TRADE, !this.allowActions);
+    }
+
+    private updateHeaders(): void {
+        this.headers = this.tablesService.headers;
     }
 
     private async onTablePaginationChange(pagination: Pagination): Promise<void> {

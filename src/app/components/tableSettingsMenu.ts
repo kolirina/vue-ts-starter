@@ -55,11 +55,15 @@ export class TableSettingsMenu extends UI {
 
     private filterHeaders(): void {
         this.tablesService.setHeaders(this.tableName, this.headers);
+        this.$emit("filterHeaders");
     }
+
     /** Устанавливает заголовки по умолчанию */
     private setDefaults(): void {
         const tables = this.localStorage.get<TableHeaders>("tableHeadersParams", null);
         tables[this.tableName] = this.tablesService.HEADERS[this.tableName];
+        this.headers = tables[this.tableName];
         this.localStorage.set("tableHeadersParams", tables);
+        this.filterHeaders();
     }
 }
