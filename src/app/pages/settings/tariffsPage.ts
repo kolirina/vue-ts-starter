@@ -474,6 +474,7 @@ export class TariffsPage extends UI {
                     await this.tariffService.applyPromoCode(promoCode);
                     this.clientService.resetClientInfo();
                     await this.reloadUser();
+                    this.$snotify.info(`Промокод ${promoCode} успешно применен`);
                 }
             }
             this.storage.delete("intelinvest_promo_code");
@@ -577,7 +578,7 @@ export class TariffsPage extends UI {
     private async afterSuccessPayment(): Promise<void> {
         this.clientService.resetClientInfo();
         await this.reloadUser();
-        this.$snotify.info("Оплата заказа успешно завершена");
+        this.$snotify.info(`Поздравляем! Вы перешли на тариф "${this.clientInfo.user.tariff.description}"`);
     }
 
     /**
