@@ -23,7 +23,7 @@ import {ResultLabel} from "../types/types";
             <v-expansion-panel :readonly="alwaysOpen" focusable expand :value="value">
                 <v-expansion-panel-content :lazy="true" v-state="state">
                     <template #actions>
-                        <i v-if="!alwaysOpen" class="exp-panel-arrow"></i>
+                        <i v-if="!alwaysOpen" :class="{'exp-panel-arrow': true, 'mr-0': !withMenu && !customMenu}"></i>
                         <div class="exp-panel-attach" :id="'exp-panel-attach-' + name"></div>
                     </template>
                     <div slot="header" :class="headerClass">
