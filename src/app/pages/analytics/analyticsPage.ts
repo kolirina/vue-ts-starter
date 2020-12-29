@@ -100,7 +100,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </expanded-panel>
 
                     <expanded-panel v-if="showProfitChart" :value="$uistate.profitChartPanel"
-                                    :state="$uistate.PROFIT_CHART_PANEL" @click="onProfitPanelStateChange" customMenu class="mt-3"
+                                    :state="$uistate.PROFIT_CHART_PANEL" @click="onProfitPanelStateChange" class="mt-3"
                                     :data-v-step="0">
                         <template #header>
                             Прибыль портфеля
@@ -110,13 +110,10 @@ const MainStore = namespace(StoreType.MAIN);
                                 Курсовую, По сделкам, От начислений
                             </tooltip>
                         </template>
-                        <template #customMenu>
-                            <chart-export-menu v-if="portfolioLineChartData && profitLineChartEvents" @print="print(ChartType.PROFIT_LINE_CHART)"
-                                               @exportTo="exportTo(ChartType.PROFIT_LINE_CHART, $event)"
-                                               class="exp-panel-menu"></chart-export-menu>
-                        </template>
 
                         <v-card-text class="px-1">
+                            <chart-export-menu v-if="portfolioLineChartData && profitLineChartEvents" @print="print(ChartType.PROFIT_LINE_CHART)"
+                                               @exportTo="exportTo(ChartType.PROFIT_LINE_CHART, $event)"></chart-export-menu>
                             <profit-line-chart v-if="portfolioLineChartData && profitLineChartEvents" :ref="ChartType.PROFIT_LINE_CHART"
                                                :data="portfolioLineChartData.lineChartData"
                                                :moex-index-data="indexLineChartData" state-key-prefix="ANALYTICS"
@@ -132,7 +129,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </expanded-panel>
 
                     <expanded-panel v-if="profitByMonthsChartData && profitByMonthsChartData.categoryNames.length" :value="$uistate.profitMonthChartPanel"
-                                    :state="$uistate.PROFIT_MONTH_CHART_PANEL" @click="onProfitPanelStateChange" custom-menu class="mt-3">
+                                    :state="$uistate.PROFIT_MONTH_CHART_PANEL" @click="onProfitPanelStateChange" class="mt-3">
                         <template #header>
                             Прибыль по месяцам
                             <tooltip>
@@ -140,18 +137,15 @@ const MainStore = namespace(StoreType.MAIN);
                                 Процент изменения считается по отношению к предыдущему периоду
                             </tooltip>
                         </template>
-                        <template #customMenu>
-                            <chart-export-menu @print="print(ChartType.PROFIT_MONTH_CHART)" @exportTo="exportTo(ChartType.PROFIT_MONTH_CHART, $event)"
-                                               class="exp-panel-menu"></chart-export-menu>
-                        </template>
-                        <v-card-text>
+                        <v-card-text class="with-chart-export">
+                            <chart-export-menu @print="print(ChartType.PROFIT_MONTH_CHART)" @exportTo="exportTo(ChartType.PROFIT_MONTH_CHART, $event)"></chart-export-menu>
                             <column-chart :ref="ChartType.PROFIT_MONTH_CHART" :data="profitByMonthsChartData" :view-currency="viewCurrency"
                                           tooltip-format="PROFIT" v-tariff-expired-hint></column-chart>
                         </v-card-text>
                     </expanded-panel>
 
                     <expanded-panel v-if="profitByYearsChartData && profitByYearsChartData.categoryNames.length" :value="$uistate.profitYearChartPanel"
-                                    :state="$uistate.PROFIT_YEAR_CHART_PANEL" @click="onProfitPanelStateChange" custom-menu class="mt-3">
+                                    :state="$uistate.PROFIT_YEAR_CHART_PANEL" @click="onProfitPanelStateChange" class="mt-3">
                         <template #header>
                             Прибыль по годам
                             <tooltip>
@@ -159,65 +153,54 @@ const MainStore = namespace(StoreType.MAIN);
                                 Процент изменения считается по отношению к предыдущему периоду
                             </tooltip>
                         </template>
-                        <template #customMenu>
-                            <chart-export-menu @print="print(ChartType.PROFIT_YEAR_CHART)" @exportTo="exportTo(ChartType.PROFIT_YEAR_CHART, $event)"
-                                               class="exp-panel-menu"></chart-export-menu>
-                        </template>
-                        <v-card-text>
+                        <v-card-text class="with-chart-export">
+                            <chart-export-menu @print="print(ChartType.PROFIT_YEAR_CHART)" @exportTo="exportTo(ChartType.PROFIT_YEAR_CHART, $event)"></chart-export-menu>
                             <column-chart :ref="ChartType.PROFIT_YEAR_CHART" :data="profitByYearsChartData" :view-currency="viewCurrency"
                                           tooltip-format="PROFIT" v-tariff-expired-hint></column-chart>
                         </v-card-text>
                     </expanded-panel>
 
                     <expanded-panel v-if="yieldContributorsChartData && yieldContributorsChartData.categoryNames.length" :value="$uistate.yieldContributorsChart"
-                                    :state="$uistate.YIELD_CONTRIBUTORS_CHART_PANEL" custom-menu class="mt-3">
+                                    :state="$uistate.YIELD_CONTRIBUTORS_CHART_PANEL" class="mt-3">
                         <template #header>
                             Эффективность бумаг в портфеле
                             <tooltip>
                                 Диаграмма бумаг, оказавших максимальный эффект на доходность портфеля
                             </tooltip>
                         </template>
-                        <template #customMenu>
-                            <chart-export-menu @print="print(ChartType.YIELD_CONTRIBUTORS_CHART)" @exportTo="exportTo(ChartType.YIELD_CONTRIBUTORS_CHART, $event)"
-                                               class="exp-panel-menu"></chart-export-menu>
-                        </template>
-                        <v-card-text>
+                        <v-card-text class="with-chart-export">
+                            <chart-export-menu @print="print(ChartType.YIELD_CONTRIBUTORS_CHART)" @exportTo="exportTo(ChartType.YIELD_CONTRIBUTORS_CHART, $event)"></chart-export-menu>
                             <bar-chart :ref="ChartType.YIELD_CONTRIBUTORS_CHART" :data="yieldContributorsChartData" :view-currency="viewCurrency"
                                        tooltip-format="YIELDS" v-tariff-expired-hint></bar-chart>
                         </v-card-text>
                     </expanded-panel>
 
                     <expanded-panel v-if="wholePortfolioSharesAllocationChartData.length" :value="$uistate.wholePortfolioSharesAllocationChart"
-                                    :state="$uistate.WHOLE_PORTFOLIO_SHARES_ALLOCATION_CHART_PANEL"
-                                    custom-menu class="mt-3">
+                                    :state="$uistate.WHOLE_PORTFOLIO_SHARES_ALLOCATION_CHART_PANEL" class="mt-3">
                         <template #header>
                             Распределение всех активов в портфеле
                             <tooltip>
                                 Диаграмма сквозного распределения всех ваших активов, включая денежные средства, в портфеле
                             </tooltip>
                         </template>
-                        <template #customMenu>
+                        <v-card-text>
                             <chart-export-menu @print="print(ChartType.WHOLE_PORTFOLIO_SHARES_ALLOCATION_CHART)"
                                                @exportTo="exportTo(ChartType.WHOLE_PORTFOLIO_SHARES_ALLOCATION_CHART, $event)"
                                                class="exp-panel-menu"></chart-export-menu>
-                        </template>
-                        <v-card-text>
                             <pie-chart :ref="ChartType.WHOLE_PORTFOLIO_SHARES_ALLOCATION_CHART" :data="wholePortfolioSharesAllocationChartData" :view-currency="viewCurrency"
                                        balloon-title="Распределение всех активов в портфеле" tooltip-format="YIELDS" v-tariff-expired-hint></pie-chart>
                         </v-card-text>
                     </expanded-panel>
 
-                    <expanded-panel v-if="showTagsPanel" :value="$uistate.tagsChart" :state="$uistate.TAGS_CHART_PANEL" custom-menu class="mt-3" @click="callResizeEvent">
+                    <expanded-panel v-if="showTagsPanel" :value="$uistate.tagsChart" :state="$uistate.TAGS_CHART_PANEL" class="mt-3" @click="callResizeEvent">
                         <template #header>
                             Распределение активов на основе тэгов
                             <tooltip>
                                 Диаграмма распределения активов по категориям и тэгам
                             </tooltip>
                         </template>
-                        <template #customMenu>
-                            <chart-export-menu @print="print(ChartType.TAGS_CHART)" @exportTo="exportTo(ChartType.TAGS_CHART, $event)" class="exp-panel-menu"></chart-export-menu>
-                        </template>
                         <v-card-text>
+                            <chart-export-menu @print="print(ChartType.TAGS_CHART)" @exportTo="exportTo(ChartType.TAGS_CHART, $event)" class="with-tabs"></chart-export-menu>
                             <v-tabs v-if="selectedCategory" class="card-tabs">
                                 <v-tab v-for="tagCategory in tagCategories" :key="tagCategory.id" @change="onTabSelected(tagCategory)"
                                        :class="{'active': tagCategory.id === selectedCategory.id}" :ripple="false">
@@ -236,35 +219,31 @@ const MainStore = namespace(StoreType.MAIN);
                         </v-card-text>
                     </expanded-panel>
 
-                    <expanded-panel v-if="currencyChartData.length" :value="$uistate.currencyChart" :state="$uistate.CURRENCY_CHART_PANEL" custom-menu class="mt-3">
+                    <expanded-panel v-if="currencyChartData.length" :value="$uistate.currencyChart" :state="$uistate.CURRENCY_CHART_PANEL" class="mt-3">
                         <template #header>
                             Распределение активов по валютам
                             <tooltip>
                                 Позволяет оценить диверсификацию портфеля по валютам
                             </tooltip>
                         </template>
-                        <template #customMenu>
+                        <v-card-text>
                             <chart-export-menu @print="print(ChartType.CURRENCY_CHART)" @exportTo="exportTo(ChartType.CURRENCY_CHART, $event)"
                                                class="exp-panel-menu"></chart-export-menu>
-                        </template>
-                        <v-card-text>
                             <pie-chart v-if="currencyChartData.length" :ref="ChartType.CURRENCY_CHART" :data="currencyChartData" :view-currency="viewCurrency"
                                        balloon-title="Распределение активов по валютам" tooltip-format="TAGS" v-tariff-expired-hint></pie-chart>
                         </v-card-text>
                     </expanded-panel>
 
-                    <expanded-panel v-if="countryChartData.length" :value="$uistate.countryChart" :state="$uistate.COUNTRY_CHART_PANEL" custom-menu class="mt-3">
+                    <expanded-panel v-if="countryChartData.length" :value="$uistate.countryChart" :state="$uistate.COUNTRY_CHART_PANEL" class="mt-3">
                         <template #header>
                             Распределение активов по странам
                             <tooltip>
                                 Позволяет оценить диверсификацию портфеля по странам
                             </tooltip>
                         </template>
-                        <template #customMenu>
+                        <v-card-text>
                             <chart-export-menu @print="print(ChartType.COUNTRY_CHART)" @exportTo="exportTo(ChartType.COUNTRY_CHART, $event)"
                                                class="exp-panel-menu"></chart-export-menu>
-                        </template>
-                        <v-card-text>
                             <pie-chart v-if="countryChartData.length" :ref="ChartType.COUNTRY_CHART" :data="countryChartData" :view-currency="viewCurrency"
                                        balloon-title="Распределение активов по странам" tooltip-format="TAGS" v-tariff-expired-hint></pie-chart>
                         </v-card-text>

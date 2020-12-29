@@ -140,16 +140,12 @@ const MainStore = namespace(StoreType.MAIN);
                 </expanded-panel>
 
                 <expanded-panel v-if="blockNotEmpty(emptyBlockType.HISTORY_PANEL)" :value="$uistate.historyPanel"
-                                :state="$uistate.HISTORY_PANEL" @click="onPortfolioLineChartPanelStateChanges" customMenu class="mt-3"
+                                :state="$uistate.HISTORY_PANEL" @click="onPortfolioLineChartPanelStateChanges" class="mt-3"
                                 :data-v-step="getTourStepIndex(PortfolioBlockType.HISTORY_CHART)">
                     <template #header>Стоимость портфеля</template>
-                    <template #customMenu>
-                        <chart-export-menu v-if="lineChartData && lineChartEvents" @print="print(ChartType.PORTFOLIO_LINE_CHART)"
-                                           @exportTo="exportTo(ChartType.PORTFOLIO_LINE_CHART, $event)"
-                                           class="exp-panel-menu"></chart-export-menu>
-                    </template>
-
                     <v-card-text class="px-1">
+                        <chart-export-menu v-if="lineChartData && lineChartEvents" @print="print(ChartType.PORTFOLIO_LINE_CHART)"
+                                           @exportTo="exportTo(ChartType.PORTFOLIO_LINE_CHART, $event)"></chart-export-menu>
                         <portfolio-line-chart v-if="lineChartData && lineChartEvents" :ref="ChartType.PORTFOLIO_LINE_CHART" :data="lineChartData"
                                               :moex-index-data="indexLineChartData" :state-key-prefix="stateKeyPrefix"
                                               :events-chart-data="lineChartEvents" :balloon-title="portfolioName"></portfolio-line-chart>
@@ -163,89 +159,69 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-card-text>
                 </expanded-panel>
 
-                <expanded-panel v-if="blockNotEmpty(emptyBlockType.AGGREGATE)" :value="$uistate.aggregateGraph" :state="$uistate.AGGREGATE_CHART_PANEL" customMenu class="mt-3"
+                <expanded-panel v-if="blockNotEmpty(emptyBlockType.AGGREGATE)" :value="$uistate.aggregateGraph" :state="$uistate.AGGREGATE_CHART_PANEL" class="mt-3"
                                 :data-v-step="getTourStepIndex(PortfolioBlockType.AGGREGATE_CHART)">
                     <template #header>Состав портфеля по категориям</template>
-                    <template #customMenu>
-                        <chart-export-menu @print="print(ChartType.AGGREGATE_CHART)" @exportTo="exportTo(ChartType.AGGREGATE_CHART, $event)"
-                                           class="exp-panel-menu"></chart-export-menu>
-                    </template>
                     <v-card-text>
+                        <chart-export-menu @print="print(ChartType.AGGREGATE_CHART)" @exportTo="exportTo(ChartType.AGGREGATE_CHART, $event)"></chart-export-menu>
                         <!-- Валюта тут не нужна так как валюта будет браться из каждого актива в отдельности -->
                         <pie-chart :ref="ChartType.AGGREGATE_CHART" :data="aggregatePieChartData" :balloon-title="portfolioName"
                                    tooltip-format="ASSETS" v-tariff-expired-hint></pie-chart>
                     </v-card-text>
                 </expanded-panel>
 
-                <expanded-panel v-if="blockNotEmpty(emptyBlockType.STOCK_PIE)" :value="$uistate.stockGraph" :state="$uistate.STOCK_CHART_PANEL" customMenu class="mt-3"
+                <expanded-panel v-if="blockNotEmpty(emptyBlockType.STOCK_PIE)" :value="$uistate.stockGraph" :state="$uistate.STOCK_CHART_PANEL" class="mt-3"
                                 :data-v-step="getTourStepIndex(PortfolioBlockType.STOCK_CHART)">
                     <template #header>Состав портфеля акций</template>
-                    <template #customMenu>
-                        <chart-export-menu @print="print(ChartType.STOCK_CHART)" @exportTo="exportTo(ChartType.STOCK_CHART, $event)"
-                                           class="exp-panel-menu"></chart-export-menu>
-                    </template>
                     <v-card-text>
+                        <chart-export-menu @print="print(ChartType.STOCK_CHART)" @exportTo="exportTo(ChartType.STOCK_CHART, $event)"></chart-export-menu>
                         <pie-chart :ref="ChartType.STOCK_CHART" :data="stockPieChartData" :view-currency="viewCurrency" v-tariff-expired-hint></pie-chart>
                     </v-card-text>
                 </expanded-panel>
 
-                <expanded-panel v-if="blockNotEmpty(emptyBlockType.ETF_PIE)" :value="$uistate.etfGraph" :state="$uistate.ETF_CHART_PANEL" customMenu class="mt-3"
+                <expanded-panel v-if="blockNotEmpty(emptyBlockType.ETF_PIE)" :value="$uistate.etfGraph" :state="$uistate.ETF_CHART_PANEL" class="mt-3"
                                 :data-v-step="getTourStepIndex(PortfolioBlockType.ETF_CHART)">
                     <template #header>Состав портфеля ПИФов/ETF</template>
-                    <template #customMenu>
+                    <v-card-text>
                         <chart-export-menu @print="print(ChartType.ETF_CHART)" @exportTo="exportTo(ChartType.ETF_CHART, $event)"
                                            class="exp-panel-menu"></chart-export-menu>
-                    </template>
-                    <v-card-text>
                         <pie-chart :ref="ChartType.ETF_CHART" :data="etfPieChartData" :view-currency="viewCurrency" v-tariff-expired-hint></pie-chart>
                     </v-card-text>
                 </expanded-panel>
 
-                <expanded-panel v-if="blockNotEmpty(emptyBlockType.BOND_PIE)" :value="$uistate.bondGraph" :state="$uistate.BOND_CHART_PANEL" customMenu class="mt-3"
+                <expanded-panel v-if="blockNotEmpty(emptyBlockType.BOND_PIE)" :value="$uistate.bondGraph" :state="$uistate.BOND_CHART_PANEL" class="mt-3"
                                 :data-v-step="getTourStepIndex(PortfolioBlockType.BOND_CHART)">
                     <template #header>Состав портфеля облигаций</template>
-                    <template #customMenu>
-                        <chart-export-menu @print="print(ChartType.BOND_CHART)" @exportTo="exportTo(ChartType.BOND_CHART, $event)"
-                                           class="exp-panel-menu"></chart-export-menu>
-                    </template>
                     <v-card-text>
+                        <chart-export-menu @print="print(ChartType.BOND_CHART)" @exportTo="exportTo(ChartType.BOND_CHART, $event)"></chart-export-menu>
                         <pie-chart :ref="ChartType.BOND_CHART" :data="bondPieChartData" :view-currency="viewCurrency" v-tariff-expired-hint></pie-chart>
                     </v-card-text>
                 </expanded-panel>
 
-                <expanded-panel v-if="blockNotEmpty(emptyBlockType.ASSETS)" :value="$uistate.assetGraph" :state="$uistate.ASSET_CHART_PANEL" customMenu class="mt-3"
+                <expanded-panel v-if="blockNotEmpty(emptyBlockType.ASSETS)" :value="$uistate.assetGraph" :state="$uistate.ASSET_CHART_PANEL" class="mt-3"
                                 :data-v-step="getTourStepIndex(PortfolioBlockType.ASSETS_CHART)">
                     <template #header>Состав портфеля активов</template>
-                    <template #customMenu>
-                        <chart-export-menu @print="print(ChartType.ASSETS_CHART)" @exportTo="exportTo(ChartType.ASSETS_CHART, $event)"
-                                           class="exp-panel-menu"></chart-export-menu>
-                    </template>
                     <v-card-text>
+                        <chart-export-menu @print="print(ChartType.ASSETS_CHART)" @exportTo="exportTo(ChartType.ASSETS_CHART, $event)"></chart-export-menu>
                         <pie-chart :ref="ChartType.ASSETS_CHART" :data="assetsPieChartData" :balloon-title="portfolioName" v-tariff-expired-hint></pie-chart>
                     </v-card-text>
                 </expanded-panel>
 
-                <expanded-panel v-if="blockNotEmpty(emptyBlockType.SECTORS_PIE)" :value="$uistate.sectorsGraph" :state="$uistate.SECTORS_PANEL" customMenu class="mt-3"
+                <expanded-panel v-if="blockNotEmpty(emptyBlockType.SECTORS_PIE)" :value="$uistate.sectorsGraph" :state="$uistate.SECTORS_PANEL" class="mt-3"
                                 :data-v-step="getTourStepIndex(PortfolioBlockType.SECTORS_CHART)">
                     <template #header>Состав портфеля по секторам</template>
-                    <template #customMenu>
-                        <chart-export-menu @print="print(ChartType.SECTORS_CHART)" @exportTo="exportTo(ChartType.SECTORS_CHART, $event)"
-                                           class="exp-panel-menu"></chart-export-menu>
-                    </template>
                     <v-card-text>
+                        <chart-export-menu @print="print(ChartType.SECTORS_CHART)" @exportTo="exportTo(ChartType.SECTORS_CHART, $event)"></chart-export-menu>
                         <pie-chart v-if="sectorsChartData" :ref="ChartType.SECTORS_CHART" v-tariff-expired-hint
                                    :data="sectorsChartData.data" :balloon-title="portfolioName" :view-currency="viewCurrency"></pie-chart>
                     </v-card-text>
                 </expanded-panel>
 
-                <expanded-panel v-if="blockNotEmpty(emptyBlockType.BOND_SECTORS_PIE)" :value="$uistate.bondSectorsPanel" :state="$uistate.BOND_SECTORS_PANEL" customMenu
+                <expanded-panel v-if="blockNotEmpty(emptyBlockType.BOND_SECTORS_PIE)" :value="$uistate.bondSectorsPanel" :state="$uistate.BOND_SECTORS_PANEL"
                                 class="mt-3" :data-v-step="getTourStepIndex(PortfolioBlockType.BOND_SECTORS_CHART)">
                     <template #header>Распределение облигаций по типу</template>
-                    <template #customMenu>
-                        <chart-export-menu @print="print(ChartType.BOND_SECTORS_CHART)" @exportTo="exportTo(ChartType.BOND_SECTORS_CHART, $event)"
-                                           class="exp-panel-menu"></chart-export-menu>
-                    </template>
                     <v-card-text>
+                        <chart-export-menu @print="print(ChartType.BOND_SECTORS_CHART)" @exportTo="exportTo(ChartType.BOND_SECTORS_CHART, $event)"></chart-export-menu>
                         <pie-chart v-if="bondSectorsChartData" :ref="ChartType.BOND_SECTORS_CHART" v-tariff-expired-hint
                                    :data="bondSectorsChartData.data" :balloon-title="portfolioName" :view-currency="viewCurrency"></pie-chart>
                     </v-card-text>

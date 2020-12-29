@@ -83,7 +83,8 @@ export class ThemeUtils {
 
     .tariff-description-wrap div:nth-child(even),
     .theme--light.v-tabs__bar, .tags-menu__content .tags__add-btn,
-    .section-content, .gift-banner {background-color: #2C3040}
+    .section-content, .gift-banner,
+    .adviser-wrap .adviser-diagram-section .left-section .flex, .adviser-wrap .adviser-diagram-section .right-section .flex{background-color: #2C3040}
 
     .v-content__wrap,
     .header-first-card,
@@ -184,7 +185,6 @@ export class ThemeUtils {
     .data-table thead tr:first-child th,
     .theme--light.v-data-iterator .v-data-iterator__actions thead tr:first-child th,
     .theme--light.v-expansion-panel .v-expansion-panel__container .v-expansion-panel__header .v-expansion-panel__header__icon .v-icon thead tr:first-child th,
-    .adviser-wrap .adviser-diagram-section .left-section .flex, .adviser-wrap .adviser-diagram-section .right-section .flex,
     .eventsAggregateInfo .item-block,
     .events-calendar-wrap .calendar-events-title,
     .tariff-item,
@@ -238,7 +238,7 @@ export class ThemeUtils {
         stroke-width: 0;
         font-weight: normal !important;
     }
-    .highcharts-background {fill: #252A35 !important}
+    .highcharts-background {fill: #2c3040 !important}
     .highcharts-markers.highcharts-spline-series path,
     .simple-line .highcharts-label-box.highcharts-tooltip-box,
     .highcharts-tooltip .highcharts-label-box {fill: #3B6EC9 !important}

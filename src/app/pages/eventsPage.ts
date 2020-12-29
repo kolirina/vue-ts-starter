@@ -181,11 +181,8 @@ const MainStore = namespace(StoreType.MAIN);
                                 Дивиденды формируются на основании прошлых выплат, с учетом, что они останутся на том же уровне.
                             </tooltip>
                         </template>
-                        <template #customMenu>
-                            <chart-export-menu @print="print(ChartType.FUTURE_EVENTS_CHART)" @exportTo="exportTo(ChartType.FUTURE_EVENTS_CHART, $event)"
-                                               class="exp-panel-menu"></chart-export-menu>
-                        </template>
                         <v-card-text>
+                            <chart-export-menu @print="print(ChartType.FUTURE_EVENTS_CHART)" @exportTo="exportTo(ChartType.FUTURE_EVENTS_CHART, $event)"></chart-export-menu>
                             <events-aggregate-info v-if="eventsAggregateInfoFuture" :events-aggregate-info="eventsAggregateInfoFuture" :viewCurrency="currencyClass"
                                                    class="margT20"></events-aggregate-info>
 

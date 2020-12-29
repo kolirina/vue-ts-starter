@@ -3,3 +3,10 @@
   align-items: center;
   justify-content: center;
 }
+
+%icon-hover {
+  color: $icon--color;
+  transition: color 0.15s linear;
+
+  &:hover {color: $main-color-1}
+}

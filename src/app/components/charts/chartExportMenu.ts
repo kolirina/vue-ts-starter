@@ -19,38 +19,34 @@ import {EventType} from "../../types/eventType";
 @Component({
     // language=Vue
     template: `
-        <v-menu v-model="visible" transition="slide-y-transition" bottom left>
-            <v-btn slot="activator" flat icon dark @click.stop="toggleMenu">
-                <span class="menuDots"></span>
-            </v-btn>
-            <v-list dense style="cursor: pointer;">
-                <v-list-tile @click.native="print">
-                    <v-list-tile-title>
-                        Напечатать график
-                    </v-list-tile-title>
-                </v-list-tile>
-                <v-list-tile @click.native="exportTo('JPG')">
-                    <v-list-tile-title>
-                        Скачать JPG
-                    </v-list-tile-title>
-                </v-list-tile>
-                <v-list-tile @click.native="exportTo('PNG')">
-                    <v-list-tile-title>
-                        Скачать PNG
-                    </v-list-tile-title>
-                </v-list-tile>
-                <v-list-tile @click.native="exportTo('SVG')">
-                    <v-list-tile-title>
-                        Скачать SVG
-                    </v-list-tile-title>
-                </v-list-tile>
-                <v-list-tile @click.native="exportTo('PDF')">
-                    <v-list-tile-title>
-                        Скачать PDF
-                    </v-list-tile-title>
-                </v-list-tile>
-            </v-list>
-        </v-menu>
+        <div class="chart-export-menu">
+            <div @click="print" class="intel-icon icon-print" title="Напечатать график"></div>
+            <v-menu v-model="visible" transition="slide-y-transition" bottom left nudge-bottom="40">
+                <div  slot="activator" class="intel-icon icon-export" @click.stop="toggleMenu"></div>
+                <v-list dense style="cursor: pointer;">
+                    <v-list-tile @click.native="exportTo('JPG')">
+                        <v-list-tile-title>
+                            Скачать JPG
+                        </v-list-tile-title>
+                    </v-list-tile>
+                    <v-list-tile @click.native="exportTo('PNG')">
+                        <v-list-tile-title>
+                            Скачать PNG
+                        </v-list-tile-title>
+                    </v-list-tile>
+                    <v-list-tile @click.native="exportTo('SVG')">
+                        <v-list-tile-title>
+                            Скачать SVG
+                        </v-list-tile-title>
+                    </v-list-tile>
+                    <v-list-tile @click.native="exportTo('PDF')">
+                        <v-list-tile-title>
+                            Скачать PDF
+                        </v-list-tile-title>
+                    </v-list-tile>
+                </v-list>
+            </v-menu>
+        </div>
     `
 })
 export class ChartExportMenu extends UI {
