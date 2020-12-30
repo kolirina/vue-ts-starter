@@ -30,7 +30,7 @@ import {ResultLabel} from "../types/types";
                         <slot name="header"></slot>
                     </div>
 
-                    <v-card style="overflow: auto" @click.stop>
+                    <v-card :class="{'overflowXA': scrollContent}" @click.stop>
                         <slot></slot>
                     </v-card>
 
@@ -57,6 +57,9 @@ export class ExpandedPanel extends UI {
     /** Метка */
     @Prop({type: Object, required: false})
     private label: ResultLabel;
+    /** Возможность скролла контента */
+    @Prop({type: Boolean, required: false, default: true})
+    private scrollContent: boolean;
 
     get headerClass(): string {
         return this.label ? `exp-panel__indicator indicator-${this.label.code.toLowerCase()}` : "";

@@ -145,7 +145,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </expanded-panel>
 
                     <expanded-panel v-if="profitByYearsChartData && profitByYearsChartData.categoryNames.length" :value="$uistate.profitYearChartPanel"
-                                    :state="$uistate.PROFIT_YEAR_CHART_PANEL" @click="onProfitPanelStateChange" class="mt-3">
+                                    :state="$uistate.PROFIT_YEAR_CHART_PANEL" @click="onProfitPanelStateChange" class="mt-3" :scroll-content="false">
                         <template #header>
                             Прибыль по годам
                             <tooltip>
@@ -155,13 +155,15 @@ const MainStore = namespace(StoreType.MAIN);
                         </template>
                         <v-card-text class="with-chart-export">
                             <chart-export-menu @print="print(ChartType.PROFIT_YEAR_CHART)" @exportTo="exportTo(ChartType.PROFIT_YEAR_CHART, $event)"></chart-export-menu>
-                            <column-chart :ref="ChartType.PROFIT_YEAR_CHART" :data="profitByYearsChartData" :view-currency="viewCurrency"
-                                          tooltip-format="PROFIT" v-tariff-expired-hint></column-chart>
+                            <div class="overflowXA">
+                                <column-chart :ref="ChartType.PROFIT_YEAR_CHART" :data="profitByYearsChartData" :view-currency="viewCurrency"
+                                              tooltip-format="PROFIT" v-tariff-expired-hint></column-chart>
+                            </div>
                         </v-card-text>
                     </expanded-panel>
 
                     <expanded-panel v-if="yieldContributorsChartData && yieldContributorsChartData.categoryNames.length" :value="$uistate.yieldContributorsChart"
-                                    :state="$uistate.YIELD_CONTRIBUTORS_CHART_PANEL" class="mt-3">
+                                    :state="$uistate.YIELD_CONTRIBUTORS_CHART_PANEL" class="mt-3" :scroll-content="false">
                         <template #header>
                             Эффективность бумаг в портфеле
                             <tooltip>
@@ -170,8 +172,10 @@ const MainStore = namespace(StoreType.MAIN);
                         </template>
                         <v-card-text class="with-chart-export">
                             <chart-export-menu @print="print(ChartType.YIELD_CONTRIBUTORS_CHART)" @exportTo="exportTo(ChartType.YIELD_CONTRIBUTORS_CHART, $event)"></chart-export-menu>
-                            <bar-chart :ref="ChartType.YIELD_CONTRIBUTORS_CHART" :data="yieldContributorsChartData" :view-currency="viewCurrency"
-                                       tooltip-format="YIELDS" v-tariff-expired-hint></bar-chart>
+                            <div class="overflowXA">
+                                <bar-chart :ref="ChartType.YIELD_CONTRIBUTORS_CHART" :data="yieldContributorsChartData" :view-currency="viewCurrency"
+                                           tooltip-format="YIELDS" v-tariff-expired-hint></bar-chart>
+                            </div>
                         </v-card-text>
                     </expanded-panel>
 

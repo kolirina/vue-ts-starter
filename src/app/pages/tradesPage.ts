@@ -32,7 +32,7 @@ const MainStore = namespace(StoreType.MAIN);
             <empty-portfolio-stub v-if="isEmptyBlockShowed" @openCombinedDialog="showDialogCompositePortfolio"></empty-portfolio-stub>
             <v-container v-else fluid class="paddT0 h100pc">
                 <dashboard :overview="portfolio.overview" :side-bar-opened="sideBarOpened" :view-currency="portfolio.portfolioParams.viewCurrency"></dashboard>
-                <expanded-panel name="trades" :value="[true]" class="auto-cursor" data-v-step="0" disabled with-menu always-open>
+                <expanded-panel name="trades" :value="[true]" class="auto-cursor" data-v-step="0" disabled always-open>
                     <template #header>Сделки</template>
                     <v-layout justify-space-between wrap class="trades-filter-section">
                         <trades-table-filter v-if="tradesFilter" :store-key="StoreKeys.TRADES_FILTER_SETTINGS_KEY" @filter="onFilterChange" :filter="tradesFilter"
