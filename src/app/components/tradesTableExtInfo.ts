@@ -17,6 +17,7 @@
 import Component from "vue-class-component";
 import {Prop} from "vue-property-decorator";
 import {UI} from "../app/ui";
+import {Operation} from "../types/operation";
 import {TradeRow} from "../types/types";
 import {TradeUtils} from "../utils/tradeUtils";
 
@@ -55,7 +56,13 @@ import {TradeUtils} from "../utils/tradeUtils";
                         Операция {{ tradeRow.operationLabel }}<br>
                         Дата {{ getTradeDate(tradeRow) }}<br>
                         Количество {{ tradeRow.quantity | quantity }} <span>шт.</span><br>
-                        Цена {{ getPrice(tradeRow) }} <span>{{ currencyForPrice(tradeRow) }}</span><br>
+                        <template v-if="calculationAssetType(tradeRow.operation)">
+                            На одну бумагу {{ tradeRow.moneyPrice | amount(true) }}
+                        </template>
+                        <template v-else>
+                            Цена {{ getPrice(tradeRow) }}
+                        </template>
+                         <span>{{ currencyForPrice(tradeRow) }}</span><br>
                     </div>
                 </td>
                 <td>
@@ -84,7 +91,13 @@ import {TradeUtils} from "../utils/tradeUtils";
                 </td>
                 <td>
                     <div class="ext-info__item">
-                        Цена {{ getPrice(tradeRow) }} <span>{{ currencyForPrice(tradeRow) }}</span><br>
+                        <template v-if="calculationAssetType(tradeRow.operation)">
+                            На одну бумагу {{ tradeRow.moneyPrice | amount(true) }}
+                        </template>
+                        <template v-else>
+                            Цена {{ getPrice(tradeRow) }}
+                        </template>
+                        <span>{{ currencyForPrice(tradeRow) }}</span><br>
                         Номинал
                         <template v-if="tradeRow.facevalue">
                             {{ tradeRow.facevalue | amount(false, null, false) }} <span>{{ tradeRow.facevalue | currencySymbol }}</span><br>
@@ -144,5 +157,9 @@ export class TradesTableExtInfo extends UI {
 
     private currencyForPrice(trade: TradeRow): string {
         return this.moneyPrice(trade) ? TradeUtils.currencySymbolByAmount(trade.moneyPrice).toLowerCase() : this.percentPrice(trade) ? "%" : "";
+    }
+
+    private calculationAssetType(operation: string): boolean {
+        return TradeUtils.isCalculationAssetType(Operation.valueByName(operation));
     }
 }

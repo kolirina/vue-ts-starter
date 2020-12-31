@@ -40,7 +40,10 @@ export class SaleComponent extends UI {
 
     /** Переход на страницу тарифов */
     private goToTariffs(): void {
-        this.$router.push({name: "tariffs", query: {promoCode: "NY2021"}});
+        // если у пользователя уже есть скидка и она больше 20% то промокод не применяем
+        const needApply = TariffUtils.isDiscountApplied(this.clientInfo) &&
+            this.clientInfo.user.nextPurchaseDiscount <= 20;
+        this.$router.push({name: "tariffs", query: {promoCode: "NY2021", needApply: String(needApply)}});
         this.close();
     }
 
@@ -49,6 +52,7 @@ export class SaleComponent extends UI {
     }
 
     private get discountApplied(): boolean {
-        return TariffUtils.isDiscountApplied(this.clientInfo);
+        return TariffUtils.isDiscountApplied(this.clientInfo) &&
+            this.clientInfo.user.nextPurchaseDiscount > 20;
     }
 }

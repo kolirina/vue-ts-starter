@@ -15,6 +15,7 @@
  */
 
 import dayjs from "dayjs";
+import Decimal from "decimal.js";
 import {Client, ClientInfo} from "../services/clientService";
 import {Tariff} from "../types/tariff";
 import {DateUtils} from "./dateUtils";
@@ -80,5 +81,39 @@ export class TariffUtils {
             }
         }
         return "";
+    }
+
+    /**
+     * Возвращает срок новой подписки
+     * @param tariff тариф
+     * @param clientInfo информация о клиенте
+     */
+    static getNewExpired(tariff: Tariff, clientInfo: ClientInfo): string {
+        // если это upgrade тарифа
+        // срок действия перерасчитывается
+        if (tariff.compare(clientInfo.user.tariff) > 0) {
+            // перассчитываем оставшиеся дни
+            const oldDaysLeft = DateUtils.calculateDaysBetween(DateUtils.currentDate(), clientInfo.user.paidTill);
+            const newMonthlyPrice = tariff.monthlyPrice;
+            const oldMonthlyPrice = clientInfo.user.tariff.monthlyPrice;
+            const newDaysLeft = oldMonthlyPrice.mul(new Decimal(oldDaysLeft)).div(newMonthlyPrice).toDP(0).toNumber();
+            return DateUtils.addDaysToCurrent(newDaysLeft + 1);
+        } else {
+            // если это downgrade тарифа
+            // тариф не перерасчитывается и просто остается таким же по сроку действия
+            return DateUtils.formatDate(DateUtils.parseDate(clientInfo.user.paidTill));
+        }
+    }
+
+    /**
+     * Возвращает признак отображения диалога подтверждения при смене тарифа
+     * Отображается только в случае если у пользователя платный, действующий тариф и переход осуществляется на платный тариф, и тарифы не совпадают
+     * @param tariff тариф
+     * @param clientInfo информация о клиенте
+     * @param isSubscriptionExpired признак истекшей подписки
+     */
+    static needShowConfirm(tariff: Tariff, clientInfo: ClientInfo, isSubscriptionExpired: boolean): boolean {
+        return [Tariff.PRO, Tariff.STANDARD].includes(clientInfo.user.tariff) && [Tariff.PRO, Tariff.STANDARD].includes(tariff) &&
+            tariff !== clientInfo.user.tariff && !isSubscriptionExpired;
     }
 }
