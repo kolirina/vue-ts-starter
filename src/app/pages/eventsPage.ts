@@ -172,7 +172,7 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-card>
 
                     <expanded-panel :value="$uistate.futureEventsChartPanel"
-                                    :state="$uistate.FUTURE_EVENTS_CHART_PANEL" @click="onFutureEventsPanelStateChange" custom-menu class="mt-3">
+                                    :state="$uistate.FUTURE_EVENTS_CHART_PANEL" @click="onFutureEventsPanelStateChange" class="mt-3">
                         <template #header>
                             Будущие выплаты
                             <tooltip>
