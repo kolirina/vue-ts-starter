@@ -22,7 +22,8 @@ import {EventType} from "../../types/eventType";
         <div class="chart-export-menu">
             <div @click="print" class="intel-icon icon-print" title="Напечатать график"></div>
             <v-menu v-model="visible" transition="slide-y-transition" bottom left nudge-bottom="40">
-                <div  slot="activator" class="intel-icon icon-export" @click.stop="toggleMenu"></div>
+                <div slot="activator" class="intel-icon icon-export" @click.stop="toggleMenu"
+                      title="Скачать"></div>
                 <v-list dense style="cursor: pointer;">
                     <v-list-tile @click.native="exportTo('JPG')">
                         <v-list-tile-title>

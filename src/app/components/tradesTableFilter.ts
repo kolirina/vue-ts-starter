@@ -75,7 +75,7 @@ const MainStore = namespace(StoreType.MAIN);
             </table-filter-base>
             <div class="table-filter__actions">
                 <v-menu :close-on-content-click="false" :nudge-bottom="40" bottom right>
-                    <div slot="activator" title="Настроить колонки" class="intel-icon icon-export"></div>
+                    <div slot="activator" title="Экспорт сделок" class="intel-icon icon-export"></div>
                     <v-list dense style="cursor: pointer;">
                         <v-list-tile @click.native="exportTable">
                             <v-list-tile-title>Экспорт в xlsx</v-list-tile-title>
@@ -125,8 +125,9 @@ export class TradesTableFilter extends UI {
     private operations: Operation[] = TradesTableFilter.DEFAULT_OPERATIONS;
     /** Список валют */
     private currencyList = ALLOWED_CURRENCIES;
+    /** Типы экспорта */
     private ExportType = ExportType;
-
+    /** Типы таблицы */
     private TableType = TableType;
 
     private onChange(): void {
