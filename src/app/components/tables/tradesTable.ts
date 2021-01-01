@@ -22,10 +22,11 @@ import {UI} from "../../app/ui";
 import {Filters} from "../../platform/filters/Filters";
 import {ClientInfo, ClientService} from "../../services/clientService";
 import {PortfolioParams} from "../../services/portfolioService";
-import {TableHeadersState, TABLES_NAME, TablesService} from "../../services/tablesService";
+import {TableHeadersState, TablesService, TableType} from "../../services/tablesService";
 import {TradeFields, TradeType} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
 import {BigMoney} from "../../types/bigMoney";
+import {EventType} from "../../types/eventType";
 import {Operation} from "../../types/operation";
 import {Pagination, Portfolio, TableHeader, TradeRow} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
@@ -213,9 +214,6 @@ export class TradesTable extends UI {
     private portfolio: Portfolio;
     @MainStore.Getter
     private clientInfo: ClientInfo;
-    /** Список заголовков таблицы */
-    @Prop()
-    private headers: TableHeader[];
     /** Список отображаемых строк */
     @Prop({default: [], required: true})
     private trades: TradeRow[];
@@ -226,38 +224,47 @@ export class TradesTable extends UI {
     private tableHeadersState: TableHeadersState;
     /** Текущая операция */
     private operation = Operation;
-    /** Перечисление типов таблиц */
-    private TABLES_NAME = TABLES_NAME;
     /** Типы активов */
     private AssetType = AssetType;
     /** Признак доступности профессионального режима */
     private portfolioProModeEnabled = false;
     /** Типы сделок */
     private tradeType = TradeType;
+    /** Список заголовков таблицы */
+    private headers: TableHeader[] = [];
 
     /**
      * Инициализация данных
      * @inheritDoc
      */
     async created(): Promise<void> {
-        /** Установка состояния заголовков таблицы */
+        this.headers = this.getHeaders();
         this.setHeadersState();
         const clientInfo = await this.clientService.getClientInfo();
         this.portfolioProModeEnabled = TradeUtils.isPortfolioProModeEnabled(this.portfolio, clientInfo);
+        UI.on(EventType.FILTER_HEADERS, (tableType: TableType) => {
+            if (TableType.TRADE === tableType) {
+                this.headers = this.getHeaders();
+                this.setHeadersState();
+            }
+        });
+    }
+
+    beforeDestroy(): void {
+        UI.off(EventType.FILTER_HEADERS);
     }
 
     setHeadersState(): void {
         this.tableHeadersState = this.tablesService.getHeadersState(this.headers);
     }
 
-    @Watch("headers")
-    onHeadersChange(): void {
-        this.setHeadersState();
-    }
-
     @Watch("trades")
     onTradesUpdate(trades: TradeRow[]): void {
         this.trades = trades;
+    }
+
+    private getHeaders(): TableHeader[] {
+        return this.tablesService.getFilterHeaders(TableType.TRADE);
     }
 
     private onTablePaginationChange(pagination: Pagination): void {

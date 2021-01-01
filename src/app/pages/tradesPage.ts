@@ -4,23 +4,20 @@ import {Watch} from "vue-property-decorator";
 import {namespace} from "vuex-class/lib/bindings";
 import {UI} from "../app/ui";
 import {AdditionalPagination} from "../components/additionalPagination";
-import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog";
 import {EmptySearchResult} from "../components/emptySearchResult";
 import {TradesTable} from "../components/tables/tradesTable";
 import {TradesTableFilter} from "../components/tradesTableFilter";
 import {ShowProgress} from "../platform/decorators/showProgress";
-import {ClientInfo} from "../services/clientService";
 import {ExportService, ExportType} from "../services/exportService";
 import {OverviewService} from "../services/overviewService";
 import {PortfolioParams} from "../services/portfolioService";
-import {TableHeaders, TABLES_NAME, TablesService} from "../services/tablesService";
+import {TablesService, TableType} from "../services/tablesService";
 import {CopyMoveTradeRequest, TradeService, TradesFilter} from "../services/tradeService";
 import {TradesFilterService} from "../services/tradesFilterService";
 import {AssetType} from "../types/assetType";
 import {EventType} from "../types/eventType";
 import {StoreKeys} from "../types/storeKeys";
 import {Pagination, Portfolio, TableHeader, TradeRow} from "../types/types";
-import {ExportUtils} from "../utils/exportUtils";
 import {PortfolioUtils} from "../utils/portfolioUtils";
 import {MutationType} from "../vuex/mutationType";
 import {StoreType} from "../vuex/storeType";
@@ -35,21 +32,16 @@ const MainStore = namespace(StoreType.MAIN);
             <empty-portfolio-stub v-if="isEmptyBlockShowed" @openCombinedDialog="showDialogCompositePortfolio"></empty-portfolio-stub>
             <v-container v-else fluid class="paddT0 h100pc">
                 <dashboard :overview="portfolio.overview" :side-bar-opened="sideBarOpened" :view-currency="portfolio.portfolioParams.viewCurrency"></dashboard>
-                <expanded-panel name="trades" :value="[true]" class="auto-cursor" data-v-step="0" disabled with-menu always-open>
+                <expanded-panel name="trades" :value="[true]" class="auto-cursor" data-v-step="0" disabled always-open>
                     <template #header>Сделки</template>
-                    <template #list>
-                        <v-list-tile-title @click="openTableSettings(TABLES_NAME.TRADE)">Настроить колонки</v-list-tile-title>
-                        <v-list-tile-title @click="exportTable(ExportType.TRADES)">Экспорт в xlsx</v-list-tile-title>
-                        <v-list-tile-title :disabled="isDownloadNotAllowed()" @click="downloadFile">Экспорт в csv</v-list-tile-title>
-                    </template>
                     <v-layout justify-space-between wrap class="trades-filter-section">
                         <trades-table-filter v-if="tradesFilter" :store-key="StoreKeys.TRADES_FILTER_SETTINGS_KEY" @filter="onFilterChange" :filter="tradesFilter"
-                                             :is-default="isDefaultFilter" data-v-step="1"></trades-table-filter>
+                                             :is-default="isDefaultFilter" data-v-step="1" :table-type="TableType.TRADE"></trades-table-filter>
                         <additional-pagination :pagination="pagination" @update:pagination="onTablePaginationChange"></additional-pagination>
                     </v-layout>
                     <empty-search-result v-if="isEmptySearchResult" @resetFilter="resetFilter"></empty-search-result>
                     <trades-table v-else :trades="trades" :pagination="pagination" @copyTrade="copyTrade" @moveTrade="moveTrade"
-                                  :headers="getHeaders()" @delete="onDelete" @resetFilter="resetFilter" @update:pagination="onTablePaginationChange"
+                                  @delete="onDelete" @resetFilter="resetFilter" @update:pagination="onTablePaginationChange"
                                   data-v-step="2">
                     </trades-table>
                 </expanded-panel>
@@ -71,9 +63,6 @@ export class TradesPage extends PortfolioBasedPage {
     @Inject
     protected exportService: ExportService;
 
-    /** Инофрмация о пользователе */
-    @MainStore.Getter
-    protected clientInfo: ClientInfo;
     @MainStore.Getter
     protected portfolio: Portfolio;
     /** Комбинированный портфель */
@@ -85,7 +74,7 @@ export class TradesPage extends PortfolioBasedPage {
     private sideBarOpened: boolean;
     /** Ключи для сохранения информации */
     private StoreKeys = StoreKeys;
-
+    /** Паджинация */
     private pagination: Pagination = {
         descending: true,
         page: 1,
@@ -99,11 +88,9 @@ export class TradesPage extends PortfolioBasedPage {
 
     private tradesFilter: TradesFilter = null;
 
-    private headers: TableHeaders = this.tablesService.headers;
-
     private isEmptySearchResult: boolean = false;
 
-    private TABLES_NAME = TABLES_NAME;
+    private TableType = TableType;
     private ExportType = ExportType;
 
     /**
@@ -119,10 +106,6 @@ export class TradesPage extends PortfolioBasedPage {
     beforeDestroy(): void {
         UI.off(EventType.TRADE_CREATED);
         UI.off(EventType.TRADE_UPDATED);
-    }
-
-    private getHeaders(): TableHeader[] {
-        return this.tablesService.getFilterHeaders(this.TABLES_NAME.TRADE, !this.allowActions);
     }
 
     private async onTablePaginationChange(pagination: Pagination): Promise<void> {
@@ -145,16 +128,6 @@ export class TradesPage extends PortfolioBasedPage {
         this.resetCombinedOverviewCache(requestData.toPortfolioId);
         await this.loadTrades();
         this.$snotify.info("Сделка успешно перемещена");
-    }
-
-    /**
-     * Открывает диалог с настройкой заголовков таблицы
-     */
-    private async openTableSettings(tableName: string): Promise<void> {
-        await new TableSettingsDialog().show({
-            tableName: tableName,
-            headers: this.headers[tableName]
-        });
     }
 
     private async resetFilter(): Promise<void> {
@@ -198,27 +171,6 @@ export class TradesPage extends PortfolioBasedPage {
         this.isEmptySearchResult = this.trades.length === 0;
     }
 
-    @ShowProgress
-    private async exportTable(exportType: ExportType): Promise<void> {
-        if (this.portfolio.id) {
-            await this.exportService.exportReport(this.portfolio.id, exportType);
-        } else {
-            await this.exportService.exportCombinedReport({ids: this.combinedPortfolioParams.combinedIds, viewCurrency: this.combinedPortfolioParams.viewCurrency}, exportType);
-        }
-    }
-
-    /**
-     * Отправляет запрос на скачивание файла со сделками в формате csv
-     */
-    @ShowProgress
-    private async downloadFile(): Promise<void> {
-        if (this.portfolio.id) {
-            await this.exportService.exportTrades(this.portfolio.id);
-        } else {
-            await this.exportService.exportTradesCombined(this.combinedPortfolioParams.viewCurrency, this.combinedPortfolioParams.combinedIds);
-        }
-    }
-
     private async onFilterChange(): Promise<void> {
         await this.loadTrades();
         // при смене фильтра сбрасываем паджинацию чтобы не остаться на несуществующей странице
@@ -232,13 +184,6 @@ export class TradesPage extends PortfolioBasedPage {
 
     private get isDefaultFilter(): boolean {
         return this.tradesFilterService.isDefaultFilter(this.tradesFilter);
-    }
-
-    /**
-     * Возвращает признак доступности для загрузки файла со сделками
-     */
-    private isDownloadNotAllowed(): boolean {
-        return ExportUtils.isDownloadNotAllowed(this.clientInfo);
     }
 
     private get allowActions(): boolean {

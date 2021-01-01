@@ -27,10 +27,11 @@ import {Storage} from "../../platform/services/storage";
 import {ClientService} from "../../services/clientService";
 import {OverviewService} from "../../services/overviewService";
 import {PortfolioParams, PortfolioService} from "../../services/portfolioService";
-import {TableHeadersState, TABLES_NAME, TablesService} from "../../services/tablesService";
+import {TableHeadersState, TablesService, TableType} from "../../services/tablesService";
 import {TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
 import {BigMoney} from "../../types/bigMoney";
+import {EventType} from "../../types/eventType";
 import {Operation} from "../../types/operation";
 import {TagCategory} from "../../types/tags";
 import {BondPortfolioRow, Pagination, Portfolio, Share, ShareType, TableHeader} from "../../types/types";
@@ -318,9 +319,6 @@ export class BondTable extends UI {
     /** Заметки по бумагам портфеля */
     @Prop({default: null, type: Object, required: false})
     private shareNotes: { [key: string]: string };
-    /** Список заголовков таблицы */
-    @Prop()
-    private headers: TableHeader[];
     /** Список отображаемых строк */
     @Prop({default: [], required: true})
     private rows: BondPortfolioRow[];
@@ -343,8 +341,6 @@ export class BondTable extends UI {
     private tableHeadersState: TableHeadersState;
     /** Текущая операция */
     private operation = Operation;
-    /** Перечисление типов таблиц */
-    private TABLES_NAME = TABLES_NAME;
     /** Типы активов */
     private AssetType = AssetType;
     /** Паджинация для задания дефолтной сортировки */
@@ -353,20 +349,27 @@ export class BondTable extends UI {
         sortBy: "percCurrShare",
         rowsPerPage: -1
     });
+    /** Список заголовков таблицы */
+    private headers: TableHeader[] = [];
 
     /**
      * Инициализация данных
      * @inheritDoc
      */
     created(): void {
-        /** Установка состояния заголовков таблицы */
+        this.headers = this.getHeaders();
         this.setHeadersState();
         this.setFilteredRows();
+        UI.on(EventType.FILTER_HEADERS, (tableType: TableType) => {
+            if (TableType.BOND === tableType) {
+                this.headers = this.getHeaders();
+                this.setHeadersState();
+            }
+        });
     }
 
-    @Watch("headers")
-    onHeadersChange(): void {
-        this.setHeadersState();
+    beforeDestroy(): void {
+        UI.off(EventType.FILTER_HEADERS);
     }
 
     @Watch("rows")
@@ -389,6 +392,10 @@ export class BondTable extends UI {
 
     setHeadersState(): void {
         this.tableHeadersState = this.tablesService.getHeadersState(this.headers);
+    }
+
+    private getHeaders(): TableHeader[] {
+        return this.tablesService.getFilterHeaders(TableType.BOND);
     }
 
     private async openShareTradesDialog(share: Share): Promise<void> {
