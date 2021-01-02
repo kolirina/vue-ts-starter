@@ -731,6 +731,9 @@ export class ImportPage extends UI {
 
     private get importStatus(): Status {
         if (this.importResult) {
+            if (this.isIntelinvest) {
+                return this.importResult.status;
+            }
             if (this.hasNotesAfterImport) {
                 return Status.WARN;
             }
