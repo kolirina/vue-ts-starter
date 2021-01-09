@@ -332,12 +332,9 @@ const MainStore = namespace(StoreType.MAIN);
             <template v-if="dividends.length">
                 <div class="space-between-blocks"></div>
                 <v-card v-if="share" flat class="dividends-chart" data-v-step="3">
-                    <v-card-title class="chart-title">
-                        Дивиденды
-                        <v-spacer></v-spacer>
-                        <chart-export-menu @print="print" @exportTo="exportTo($event)"></chart-export-menu>
-                    </v-card-title>
+                    <v-card-title class="chart-title">Дивиденды</v-card-title>
                     <v-card-text class="chart-overflow">
+                        <chart-export-menu @print="print" @exportTo="exportTo($event)"></chart-export-menu>
                         <dividend-chart ref="chartComponent" :data="dividends" title="Дивиденды"></dividend-chart>
                     </v-card-text>
                 </v-card>

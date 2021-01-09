@@ -60,9 +60,9 @@ const MainStore = namespace(StoreType.MAIN);
                             <div class="import-wrapper-header__title">
                                 Выберите своего брокера
                                 <v-menu open-on-hover bottom nudge-bottom="11" content-class="pa-3 bg-white" max-width="600">
-                                <span class="custom-tooltip" slot="activator">
-                                    <v-icon>fas fa-info-circle</v-icon>
-                                </span>
+                                    <span class="custom-tooltip" slot="activator">
+                                        <v-icon>fas fa-info-circle</v-icon>
+                                    </span>
                                     <span class="fs13">
                                         Если в списке нет вашего брокера или терминала, вы всегда можете осуществить импорт через универсальный формат Intelinvest (csv)
                                         или обратиться к нам через <a @click.stop="openFeedBackDialog">обратную связь</a> ,
@@ -731,6 +731,9 @@ export class ImportPage extends UI {
 
     private get importStatus(): Status {
         if (this.importResult) {
+            if (this.isIntelinvest) {
+                return this.importResult.status;
+            }
             if (this.hasNotesAfterImport) {
                 return Status.WARN;
             }

@@ -104,18 +104,24 @@ export class TariffLimitExceedInfo extends UI {
                         </template>
                     </span>
                 </div>
-                <v-tooltip v-if="!isMobile && (!available || isTariffsDifferent)" :content-class="classPaymentBtn" bottom>
-                    <v-btn slot="activator" @click.stop="makePayment(tariff)" :class="{'big_btn': true, 'selected': selected}" :disabled="disabled">
+                <v-tooltip v-if="!isMobile && (!available || needShowConfirm || (needPaidTariff && !isSubscriptionExpired))"
+                           :content-class="classPaymentBtn" bottom>
+                    <v-btn slot="activator" @click.stop="makePayment" :class="{'big_btn': true, 'selected': selected}" :disabled="disabled">
                         <span v-if="!busyState[tariff.name]">{{ buttonLabel }}</span>
                         <v-progress-circular v-if="busyState[tariff.name]" indeterminate color="white" :size="20"></v-progress-circular>
                     </v-btn>
                     <tariff-limit-exceed-info v-if="!available" :tariff="tariff"></tariff-limit-exceed-info>
                     <div v-else class="pa-3">
-                        При переходе на данный тарифный план, остаток неиспользованных дней текущего тарифа пересчитается согласно новому тарифу и продлит срок его действия
+                        <template v-if="needShowConfirm">
+                            При переходе на данный тарифный новый срок подписки составит: <b>{{ newExpired }}</b>
+                        </template>
+                        <template v-else-if="needPaidTariff && !isSubscriptionExpired">
+                            При оплате тарифа, остаток неиспользованных дней текущего тарифа продлит срок его действия
+                        </template>
                     </div>
                 </v-tooltip>
-                <template v-if="isMobile && (!available || isTariffsDifferent)">
-                    <v-btn slot="activator" @click.stop="makePayment(tariff)" :class="{'big_btn': true, 'selected': selected}" :disabled="disabled">
+                <template v-if="isMobile && (!available || needShowConfirm || (needPaidTariff && !isSubscriptionExpired))">
+                    <v-btn slot="activator" @click.stop="makePayment" :class="{'big_btn': true, 'selected': selected}" :disabled="disabled">
                         <span v-if="!busyState[tariff.name]">{{ buttonLabel }}</span>
                         <v-progress-circular v-if="busyState[tariff.name]" indeterminate color="white" :size="20"></v-progress-circular>
                     </v-btn>
@@ -123,13 +129,19 @@ export class TariffLimitExceedInfo extends UI {
                         <template #header>{{ available ? 'Подробнее' : 'Почему мне недоступен тариф?' }}</template>
                         <div class="statistics">
                             <tariff-limit-exceed-info v-if="!available" :tariff="tariff"></tariff-limit-exceed-info>
-                            <div v-else>
-                                При переходе на данный тарифный план, остаток неиспользованных дней текущего тарифа пересчитается согласно новому тарифу и продлит срок его действия
-                            </div>
+                            <template v-else>
+                                <template v-if="needShowConfirm">
+                                    При переходе на данный тарифный новый срок подписки составит: <b>{{ newExpired }}</b>
+                                </template>
+                                <template v-else-if="needPaidTariff && !isSubscriptionExpired">
+                                    При оплате тарифа, остаток неиспользованных дней текущего тарифа продлит срок его действия
+                                </template>
+                            </template>
                         </div>
                     </expanded-panel>
                 </template>
-                <v-btn v-if="available && !isTariffsDifferent" @click.stop="makePayment(tariff)"
+                <v-btn v-if="available && !needShowConfirm && !(needPaidTariff && !isSubscriptionExpired)"
+                       @click.stop="makePayment"
                        :class="{'big_btn': true, 'selected': selected}"
                        :style="disabled ? 'opacity: 0.7;' : ''"
                        :disabled="disabled">
@@ -224,10 +236,9 @@ export class TariffBlock extends UI {
 
     /**
      * Сделать платеж
-     * @param tariff выбранный тариф
      */
-    private makePayment(tariff: Tariff): void {
-        this.$emit("pay", tariff);
+    private makePayment(): void {
+        this.$emit("pay", this.tariff);
     }
 
     /**
@@ -318,6 +329,32 @@ export class TariffBlock extends UI {
      */
     private get isTariffsDifferent(): boolean {
         return ![Tariff.TRIAL, Tariff.FREE].includes(this.clientInfo.user.tariff) && this.tariff !== Tariff.FREE && this.clientInfo.user.tariff !== this.tariff;
+    }
+
+    /**
+     * Возвращает срок новой подписки
+     */
+    private get newExpired(): string {
+        return TariffUtils.getNewExpired(this.tariff, this.clientInfo);
+    }
+
+    /**
+     * Возвращает признак отображения диалога подтверждения при смене тарифа
+     * Отображается только в случае если у пользователя платный, действующий тариф и переход осуществляется на платный тариф, и тарифы не совпадают
+     */
+    private get needShowConfirm(): boolean {
+        return TariffUtils.needShowConfirm(this.tariff, this.clientInfo, this.isSubscriptionExpired);
+    }
+
+    /**
+     * Возвращает признак истекшей подписки
+     */
+    private get isSubscriptionExpired(): boolean {
+        return this.expiredTariff;
+    }
+
+    private get needPaidTariff(): boolean {
+        return this.clientInfo.user.tariff !== Tariff.FREE && this.tariff !== Tariff.FREE;
     }
 
     private get classPaymentBtn(): string {
@@ -467,6 +504,10 @@ export class TariffsPage extends UI {
      */
     private async applyPromoCodeFromParams(): Promise<void> {
         try {
+            const needApply = this.$route.query.needApply === "true";
+            if (!needApply) {
+                return;
+            }
             const promoCode = this.$route.query.promoCode as string || this.storage.get("intelinvest_promo_code", null);
             if (promoCode) {
                 if (promoCode) {
@@ -550,8 +591,7 @@ export class TariffsPage extends UI {
      * @param tariff
      */
     private needShowConfirm(tariff: Tariff): boolean {
-        return [Tariff.PRO, Tariff.STANDARD].includes(this.clientInfo.user.tariff) && [Tariff.PRO, Tariff.STANDARD].includes(tariff) &&
-            tariff !== this.clientInfo.user.tariff && !this.isSubscriptionExpired();
+        return TariffUtils.needShowConfirm(tariff, this.clientInfo, this.isSubscriptionExpired());
     }
 
     /**
@@ -559,20 +599,7 @@ export class TariffsPage extends UI {
      * @param tariff тариф
      */
     private getNewExpired(tariff: Tariff): string {
-        // если это upgrade тарифа
-        // срок действия перерасчитывается
-        if (tariff.compare(this.clientInfo.user.tariff) > 0) {
-            // перассчитываем оставшиеся дни
-            const oldDaysLeft = DateUtils.calculateDaysBetween(DateUtils.currentDate(), this.clientInfo.user.paidTill);
-            const newMonthlyPrice = tariff.monthlyPrice;
-            const oldMonthlyPrice = this.clientInfo.user.tariff.monthlyPrice;
-            const newDaysLeft = oldMonthlyPrice.mul(new Decimal(oldDaysLeft)).div(newMonthlyPrice).toDP(0).toNumber();
-            return DateUtils.addDaysToCurrent(newDaysLeft + 1);
-        } else {
-            // если это downgrade тарифа
-            // тариф не перерасчитывается и просто остается таким же по сроку действия
-            return DateUtils.formatDate(DateUtils.parseDate(this.clientInfo.user.paidTill));
-        }
+        return TariffUtils.getNewExpired(tariff, this.clientInfo);
     }
 
     private async afterSuccessPayment(): Promise<void> {

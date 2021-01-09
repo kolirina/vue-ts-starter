@@ -266,7 +266,7 @@ export class ImportResultComponent extends UI {
 
     /**
      * Возвращает признак необходимости загрузки дополнительных отчетов
-     * Если дата последней сдеки не в текущем году
+     * Если дата последней сделки не в текущем году
      */
     private get requireMoreReports(): boolean {
         const currentDate = dayjs();

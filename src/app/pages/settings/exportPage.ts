@@ -69,12 +69,8 @@ const MainStore = namespace(StoreType.MAIN);
                                     Настройте автоматический бэкап портфеля
                                 </div>
                                 <div class="fs14 mw640 margT20">
-                                    Настройте автоматический бэкап портфеля. Файлы выбранных портфелей (в csv формате) будут отравляться на вашу эл почту по заданному расписанию.
-                                </div>
-                                <v-layout align-center class="margT20">
-                                    <v-btn color="primary" @click.stop="openBackupDialog" :disabled="!clientInfo.user.emailConfirmed || isDownloadNotAllowed()">
-                                        Настроить
-                                    </v-btn>
+                                    Настройте автоматический бэкап портфеля. Файлы выбранных портфелей (в csv формате) будут отравляться
+                                    на вашу эл почту по заданному расписанию.
                                     <v-menu v-if="!clientInfo.user.emailConfirmed || isDownloadNotAllowed()" open-on-hover bottom nudge-bottom="12"
                                             content-class="pa-3 bg-white" max-width="400">
                                         <span slot="activator">
@@ -89,6 +85,11 @@ const MainStore = namespace(StoreType.MAIN);
                                             Или воспользуйтесь экспортом в xlsx.
                                         </span>
                                     </v-menu>
+                                </div>
+                                <v-layout align-center class="margT20">
+                                    <v-btn color="primary" @click.stop="openBackupDialog" :disabled="!clientInfo.user.emailConfirmed || isDownloadNotAllowed()">
+                                        Настроить
+                                    </v-btn>
                                 </v-layout>
                             </div>
                         </v-card-text>

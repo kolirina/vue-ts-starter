@@ -17,29 +17,42 @@
 import {Inject} from "typescript-ioc";
 import {Component, Prop, UI} from "../app/ui";
 import {Storage} from "../platform/services/storage";
+import {TableType} from "../services/tablesService";
+import {EventType} from "../types/types";
 import {CommonUtils} from "../utils/commonUtils";
 import {TableFilterBase} from "./tableFilterBase";
+import {TableSettingsMenu} from "./tableSettingsMenu";
 
 @Component({
     // language=Vue
     template: `
-        <table-filter-base @search="onSearch" :search-query="filter.search" :search-label="searchLabel" :min-length="0" :is-default="isDefaultFilter">
-            <v-switch v-model="filter.hideSoldRows" @change="onChange">
-                <template #label>
-                    <span>Скрыть проданные</span>
-                    <v-tooltip content-class="custom-tooltip-wrap" bottom>
-                        <sup class="custom-tooltip" slot="activator">
-                            <v-icon>fas fa-info-circle</v-icon>
-                        </sup>
-                        <span>
+        <div class="table-filter">
+            <table-filter-base @search="onSearch" :search-query="filter.search" :search-label="searchLabel" :min-length="0" :is-default="isDefaultFilter">
+                <v-switch v-model="filter.hideSoldRows" @change="onChange">
+                    <template #label>
+                        <span>Скрыть проданные</span>
+                        <v-tooltip content-class="custom-tooltip-wrap" bottom>
+                            <sup class="custom-tooltip" slot="activator">
+                                <v-icon>fas fa-info-circle</v-icon>
+                            </sup>
+                            <span>
                             Включите, если хотите скрыть проданные позиции
                         </span>
-                    </v-tooltip>
-                </template>
-            </v-switch>
-        </table-filter-base>
+                        </v-tooltip>
+                    </template>
+                </v-switch>
+            </table-filter-base>
+            <div class="table-filter__actions">
+                <div v-if="exportable" @click="exportTable" title="Экспорт в xlsx" class="intel-icon icon-export"></div>
+                <v-menu :close-on-content-click="false" :nudge-bottom="40" bottom right>
+                    <div slot="activator" title="Настроить колонки" class="intel-icon icon-table-filter-settings"></div>
+                    <table-settings-menu :table-type="tableType"></table-settings-menu>
+                </v-menu>
+            </div>
+        </div>
+
     `,
-    components: {TableFilterBase}
+    components: {TableFilterBase, TableSettingsMenu}
 })
 export class PortfolioRowsTableFilter extends UI {
 
@@ -51,6 +64,12 @@ export class PortfolioRowsTableFilter extends UI {
     /** Фильтр */
     @Prop({required: true, type: Object})
     private filter: PortfolioRowFilter;
+    /** Имя таблицы */
+    @Prop({required: true, type: String})
+    private tableType: TableType;
+    /** Признак доступности экспорта таблиц */
+    @Prop({type: Boolean, required: false})
+    private exportable: boolean;
     /** Плэйсхолдер строки поиска */
     private searchLabel = "Поиск по Названию/Тикеру бумаги, Текущей цене и Доходности";
 
@@ -70,6 +89,10 @@ export class PortfolioRowsTableFilter extends UI {
     private emitFilterChange(): void {
         this.$emit("update:filter", this.filter);
         this.storageService.set(this.storeKey, this.filter);
+    }
+
+    private async exportTable(): Promise<void> {
+        this.$emit(EventType.exportTable);
     }
 }
 

@@ -157,11 +157,11 @@ export class TablesService {
     ];
 
     readonly HEADERS: TableHeaders = {
-        [TABLES_NAME.STOCK]: [...getHeaders(this.SHARE_TYPES_HEADERS)],
-        [TABLES_NAME.ASSET]: [...(getHeaders(this.SHARE_TYPES_HEADERS, true))],
-        [TABLES_NAME.ETF]: [...(getHeaders(this.SHARE_TYPES_HEADERS, true))],
+        [TableType.STOCK]: [...getHeaders(this.SHARE_TYPES_HEADERS)],
+        [TableType.ASSET]: [...(getHeaders(this.SHARE_TYPES_HEADERS, true))],
+        [TableType.ETF]: [...(getHeaders(this.SHARE_TYPES_HEADERS, true))],
 
-        [TABLES_NAME.BOND]: [
+        [TableType.BOND]: [
             {text: "", align: "left", ghost: true, sortable: false, value: "", active: true, width: "50"},
             {text: "Компания", align: "left", value: TABLE_HEADERS.COMPANY, active: true, width: "135"},
             {text: "Тикер", align: "left", value: TABLE_HEADERS.TICKER, active: false, width: "90"},
@@ -280,7 +280,7 @@ export class TablesService {
             {text: "", align: "center", value: "actions", ghost: true, sortable: false, width: "25", active: true},
         ],
 
-        [TABLES_NAME.TRADE]: [
+        [TableType.TRADE]: [
             {text: "", align: "left", ghost: true, sortable: false, value: "", active: true, width: "25"},
             {text: "Тикер/ISIN", align: "left", value: TABLE_HEADERS.TICKER, active: true, width: "90"},
             {text: "Название", align: "left", value: TABLE_HEADERS.NAME, active: true, width: "160"},
@@ -396,19 +396,12 @@ export enum TABLE_HEADERS {
     TOTAL_WITHOUT_FEE = "totalWithoutFee",
 }
 
-export enum TABLES_NAME {
+export enum TableType {
     STOCK = "stockTable",
     ETF = "etfTable",
     ASSET = "assetTable",
     BOND = "bondTable",
     TRADE = "tradesTable",
-}
-
-export enum TableType {
-    STOCK = "stock",
-    BOND = "bond",
-    ETF = "etf",
-    asset = "asset"
 }
 
 export interface TableHeaders {
