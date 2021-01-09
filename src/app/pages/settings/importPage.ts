@@ -811,7 +811,8 @@ export class ImportPage extends UI {
      * Если дата последней сдеки не в текущем году
      */
     private get requireMoreReports(): boolean {
-        return DateUtils.parseDate(this.importResult?.lastTradeDate).get("year") < dayjs().get("year");
+        const currentDate = dayjs();
+        return DateUtils.parseDate(this.importResult?.lastTradeDate).get("year") < currentDate.get("year") && !(currentDate.get("month") === 0 && currentDate.get("date") < 15);
     }
 
     /**
