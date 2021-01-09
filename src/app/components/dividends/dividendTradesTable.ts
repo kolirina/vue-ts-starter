@@ -29,7 +29,7 @@ import {TradeFields, TradeService} from "../../services/tradeService";
 import {AssetType} from "../../types/assetType";
 import {BigMoney} from "../../types/bigMoney";
 import {Operation} from "../../types/operation";
-import {Portfolio, TableHeader} from "../../types/types";
+import {Portfolio, ShareType, TableHeader} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {DateFormat} from "../../utils/dateUtils";
 import {PortfolioUtils} from "../../utils/portfolioUtils";
@@ -179,7 +179,7 @@ export class DividendTradesTable extends UI {
             store: this.$store.state[StoreType.MAIN],
             router: this.$router,
             assetType: shareType,
-            operation: Operation.DIVIDEND,
+            operation: trade.shareType === ShareType.BOND ? Operation.COUPON : Operation.DIVIDEND,
             tradeFields: tradeFields,
             tradeId: trade.id,
             editedMoneyTradeId: trade.moneyTradeId

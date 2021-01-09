@@ -905,7 +905,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         this.facevalue = TradeUtils.decimal(this.data.tradeFields.facevalue);
         this.nkd = TradeUtils.decimal(this.data.tradeFields.nkd);
         this.perOne = true;
-        if (this.isBondTrade && new Decimal(this.nkd).comparedTo(new Decimal("0.01")) < 0) {
+        if (this.isBondTrade && this.nkd && new Decimal(this.nkd).comparedTo(new Decimal("0.01")) < 0) {
             const nkdValue = new Decimal(this.nkd);
             this.perOne = false;
             this.nkd = nkdValue.mul(new Decimal(this.quantity).toDP(2, Decimal.ROUND_HALF_UP)).toString();
