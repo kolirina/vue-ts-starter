@@ -32,7 +32,8 @@ import {ImportErrorsTable} from "./imp/importErrorsTable";
         <div class="import-result-info">
             <div class="import-result-info__header">
                 <span class="import-result-info__header-name">Комментарии к отчету</span>
-                <v-tooltip v-for="result in resultLabels" :class="'import-result_tag import-result__' + result.code.toLowerCase()" content-class="custom-tooltip-wrap" bottom>
+                <v-tooltip v-for="result in resultLabels" :key="result.code" :class="'import-result_tag import-result__' + result.code.toLowerCase()"
+                           content-class="custom-tooltip-wrap" bottom>
                     <span slot="activator">{{ result.label }}</span>
                     <span>{{ result.description }}</span>
                 </v-tooltip>
