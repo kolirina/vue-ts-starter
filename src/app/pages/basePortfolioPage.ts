@@ -20,7 +20,7 @@ import {namespace} from "vuex-class";
 import {Component, Prop, UI, Watch} from "../app/ui";
 import {PieChart} from "../components/charts/pieChart";
 import {PortfolioLineChart} from "../components/charts/portfolioLineChart";
-import {TableSettingsDialog} from "../components/dialogs/tableSettingsDialog";
+import {GiftBanner} from "../components/gift-banner";
 import {NegativeBalanceNotification} from "../components/negativeBalanceNotification";
 import {PortfolioRowFilter, PortfolioRowsTableFilter} from "../components/portfolioRowsTableFilter";
 import {SaleComponent} from "../components/sale";
@@ -32,12 +32,12 @@ import {Storage} from "../platform/services/storage";
 import {ClientInfo} from "../services/clientService";
 import {ExportType} from "../services/exportService";
 import {PortfolioBlockType} from "../services/onBoardingTourService";
-import {SystemPropertyName} from "../services/systemPropertiesService";
-import {TableHeaders, TABLES_NAME, TablesService, TableType} from "../services/tablesService";
+import {TablesService, TableType} from "../services/tablesService";
 import {BigMoney} from "../types/bigMoney";
 import {ChartType, HighStockEventsGroup, LineChartItem, SectorChartData} from "../types/charts/types";
 import {StoreKeys} from "../types/storeKeys";
 import {TagCategory} from "../types/tags";
+import {Tariff} from "../types/tariff";
 import {AssetPortfolioRow, AssetRow, BlockType, BondPortfolioRow, EventType, MapType, Overview, StockPortfolioRow, StockTypePortfolioRow, TableHeader} from "../types/types";
 import {ChartUtils} from "../utils/chartUtils";
 import {DateUtils} from "../utils/dateUtils";
@@ -55,6 +55,7 @@ const MainStore = namespace(StoreType.MAIN);
             <v-layout column>
                 <v-slide-x-reverse-transition>
                     <sale-component v-if="showSaleBanner" @closeBanner="onCloseBanner"></sale-component>
+                    <gift-banner v-if="showGiftBanner" @closeBanner="onCloseGiftBanner"></gift-banner>
                 </v-slide-x-reverse-transition>
                 <dashboard :overview="overview" :view-currency="viewCurrency" :side-bar-opened="sideBarOpened"
                            :data-v-step="getTourStepIndex(PortfolioBlockType.DASHBOARD)"></dashboard>
@@ -71,7 +72,7 @@ const MainStore = namespace(StoreType.MAIN);
                 </expanded-panel>
 
                 <expanded-panel v-if="blockNotEmpty(emptyBlockType.STOCK_PORTFOLIO)" :value="$uistate.stocksTablePanel"
-                                with-menu name="stock" :state="$uistate.STOCKS" @click="onStockTablePanelClick" class="mt-3 selectable"
+                                name="stock" :state="$uistate.STOCKS" @click="onStockTablePanelClick" class="mt-3 selectable"
                                 :data-v-step="getTourStepIndex(PortfolioBlockType.STOCK_TABLE)">
                     <template #header>
                         <span>Акции</span>
@@ -81,17 +82,14 @@ const MainStore = namespace(StoreType.MAIN);
                             </span>
                         </v-fade-transition>
                     </template>
-                    <template #list>
-                        <v-list-tile-title @click="openTableHeadersDialog(TABLES_NAME.STOCK)">Настроить колонки</v-list-tile-title>
-                        <v-list-tile-title v-if="exportable" @click="exportTable(ExportType.STOCKS)">Экспорт в xlsx</v-list-tile-title>
-                    </template>
-                    <portfolio-rows-table-filter :filter.sync="stockFilter" :store-key="StoreKeys.STOCKS_TABLE_FILTER_KEY"></portfolio-rows-table-filter>
-                    <stock-table :rows="stockRows" :headers="getHeaders(TABLES_NAME.STOCK)" :search="stockFilter.search" :filter="stockFilter" :table-type="TableType.STOCK"
+                    <portfolio-rows-table-filter :filter.sync="stockFilter" :store-key="StoreKeys.STOCKS_TABLE_FILTER_KEY" :exportable="exportable"
+                                                 :table-type="TableType.STOCK" @exportTable="exportTable(ExportType.STOCKS)"></portfolio-rows-table-filter>
+                    <stock-table :rows="stockRows" :search="stockFilter.search" :filter="stockFilter" :table-type="TableType.STOCK"
                                  :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes" :tag-categories="tagCategories"></stock-table>
                 </expanded-panel>
 
                 <expanded-panel v-if="blockNotEmpty(emptyBlockType.BOND_PORTFOLIO)" :value="$uistate.bondsTablePanel"
-                                with-menu name="bond" :state="$uistate.BONDS" @click="onBondTablePanelClick" class="mt-3 selectable"
+                                name="bond" :state="$uistate.BONDS" @click="onBondTablePanelClick" class="mt-3 selectable"
                                 :data-v-step="getTourStepIndex(PortfolioBlockType.BOND_TABLE)">
                     <template #header>
                         <span>Облигации</span>
@@ -101,17 +99,14 @@ const MainStore = namespace(StoreType.MAIN);
                             </span>
                         </v-fade-transition>
                     </template>
-                    <template #list>
-                        <v-list-tile-title @click="openTableHeadersDialog('bondTable')">Настроить колонки</v-list-tile-title>
-                        <v-list-tile-title v-if="exportable" @click="exportTable(ExportType.BONDS)">Экспорт в xlsx</v-list-tile-title>
-                    </template>
-                    <portfolio-rows-table-filter :filter.sync="bondFilter" :store-key="StoreKeys.BONDS_TABLE_FILTER_KEY"></portfolio-rows-table-filter>
-                    <bond-table :rows="bondRows" :headers="getHeaders(TABLES_NAME.BOND)" :search="bondFilter.search" :filter="bondFilter"
+                    <portfolio-rows-table-filter :filter.sync="bondFilter" :store-key="StoreKeys.BONDS_TABLE_FILTER_KEY" :exportable="exportable"
+                                                 :table-type="TableType.BOND" @exportTable="exportTable(ExportType.BONDS)"></portfolio-rows-table-filter>
+                    <bond-table :rows="bondRows" :search="bondFilter.search" :filter="bondFilter"
                                 :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes" :tag-categories="tagCategories"></bond-table>
                 </expanded-panel>
 
                 <expanded-panel v-if="blockNotEmpty(emptyBlockType.ETF_PORTFOLIO)" :value="$uistate.etfTablePanel"
-                                with-menu name="etf" :state="$uistate.ETF" @click="onEtfTablePanelClick" class="mt-3 selectable"
+                                name="etf" :state="$uistate.ETF" @click="onEtfTablePanelClick" class="mt-3 selectable"
                                 :data-v-step="getTourStepIndex(PortfolioBlockType.ETF_TABLE)">
                     <template #header>
                         <span>ПИФы/ETF</span>
@@ -121,17 +116,14 @@ const MainStore = namespace(StoreType.MAIN);
                             </span>
                         </v-fade-transition>
                     </template>
-                    <template #list>
-                        <v-list-tile-title @click="openTableHeadersDialog(TABLES_NAME.ETF)">Настроить колонки</v-list-tile-title>
-                        <v-list-tile-title v-if="exportable" @click="exportTable(ExportType.ETF)">Экспорт в xlsx</v-list-tile-title>
-                    </template>
-                    <portfolio-rows-table-filter :filter.sync="etfFilter" :store-key="StoreKeys.ETF_TABLE_FILTER_KEY"></portfolio-rows-table-filter>
-                    <stock-table :rows="etfRows" :headers="getHeaders(TABLES_NAME.ETF)" :search="etfFilter.search" :filter="etfFilter" :table-type="TableType.ETF"
+                    <portfolio-rows-table-filter :filter.sync="etfFilter" :store-key="StoreKeys.ETF_TABLE_FILTER_KEY" :exportable="exportable"
+                                                 :table-type="TableType.ETF" @exportTable="exportTable(ExportType.ETF)"></portfolio-rows-table-filter>
+                    <stock-table :rows="etfRows" :search="etfFilter.search" :filter="etfFilter" :table-type="TableType.ETF"
                                  :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes" :tag-categories="tagCategories"></stock-table>
                 </expanded-panel>
 
                 <expanded-panel v-if="blockNotEmpty(emptyBlockType.ASSETS)" :value="$uistate.assetsTablePanel"
-                                with-menu name="asset" :state="$uistate.ASSET_TABLE" @click="onAssetTablePanelClick" class="mt-3 selectable"
+                                name="asset" :state="$uistate.ASSET_TABLE" @click="onAssetTablePanelClick" class="mt-3 selectable"
                                 :data-v-step="getTourStepIndex(PortfolioBlockType.ASSET_TABLE)">
                     <template #header>
                         <span>Прочие активы</span>
@@ -141,26 +133,19 @@ const MainStore = namespace(StoreType.MAIN);
                             </span>
                         </v-fade-transition>
                     </template>
-                    <template #list>
-                        <v-list-tile-title @click="openTableHeadersDialog(TABLES_NAME.ASSET)">Настроить колонки</v-list-tile-title>
-                        <v-list-tile-title v-if="exportable" @click="exportTable(ExportType.ASSETS)">Экспорт в xlsx</v-list-tile-title>
-                    </template>
-                    <portfolio-rows-table-filter :filter.sync="assetFilter" :store-key="StoreKeys.ASSETS_TABLE_FILTER_KEY"></portfolio-rows-table-filter>
-                    <stock-table :rows="assetRows" :headers="getHeaders(TABLES_NAME.ASSET)" :search="assetFilter.search" :filter="assetFilter" :table-type="TableType.ASSET"
+                    <portfolio-rows-table-filter :filter.sync="assetFilter" :store-key="StoreKeys.ASSETS_TABLE_FILTER_KEY" :exportable="exportable"
+                                                 :table-type="TableType.ASSET" @exportTable="exportTable(ExportType.ASSETS)"></portfolio-rows-table-filter>
+                    <stock-table :rows="assetRows" :search="assetFilter.search" :filter="assetFilter" :table-type="TableType.ASSET"
                                  :portfolio-id="portfolioId" :view-currency="viewCurrency" :share-notes="shareNotes" :tag-categories="tagCategories"></stock-table>
                 </expanded-panel>
 
                 <expanded-panel v-if="blockNotEmpty(emptyBlockType.HISTORY_PANEL)" :value="$uistate.historyPanel"
-                                :state="$uistate.HISTORY_PANEL" @click="onPortfolioLineChartPanelStateChanges" customMenu class="mt-3"
+                                :state="$uistate.HISTORY_PANEL" @click="onPortfolioLineChartPanelStateChanges" class="mt-3"
                                 :data-v-step="getTourStepIndex(PortfolioBlockType.HISTORY_CHART)">
                     <template #header>Стоимость портфеля</template>
-                    <template #customMenu>
-                        <chart-export-menu v-if="lineChartData && lineChartEvents" @print="print(ChartType.PORTFOLIO_LINE_CHART)"
-                                           @exportTo="exportTo(ChartType.PORTFOLIO_LINE_CHART, $event)"
-                                           class="exp-panel-menu"></chart-export-menu>
-                    </template>
-
                     <v-card-text class="px-1">
+                        <chart-export-menu v-if="lineChartData && lineChartEvents" @print="print(ChartType.PORTFOLIO_LINE_CHART)"
+                                           @exportTo="exportTo(ChartType.PORTFOLIO_LINE_CHART, $event)"></chart-export-menu>
                         <portfolio-line-chart v-if="lineChartData && lineChartEvents" :ref="ChartType.PORTFOLIO_LINE_CHART" :data="lineChartData"
                                               :moex-index-data="indexLineChartData" :state-key-prefix="stateKeyPrefix"
                                               :events-chart-data="lineChartEvents" :balloon-title="portfolioName"></portfolio-line-chart>
@@ -174,89 +159,69 @@ const MainStore = namespace(StoreType.MAIN);
                     </v-card-text>
                 </expanded-panel>
 
-                <expanded-panel v-if="blockNotEmpty(emptyBlockType.AGGREGATE)" :value="$uistate.aggregateGraph" :state="$uistate.AGGREGATE_CHART_PANEL" customMenu class="mt-3"
+                <expanded-panel v-if="blockNotEmpty(emptyBlockType.AGGREGATE)" :value="$uistate.aggregateGraph" :state="$uistate.AGGREGATE_CHART_PANEL" class="mt-3"
                                 :data-v-step="getTourStepIndex(PortfolioBlockType.AGGREGATE_CHART)">
                     <template #header>Состав портфеля по категориям</template>
-                    <template #customMenu>
-                        <chart-export-menu @print="print(ChartType.AGGREGATE_CHART)" @exportTo="exportTo(ChartType.AGGREGATE_CHART, $event)"
-                                           class="exp-panel-menu"></chart-export-menu>
-                    </template>
                     <v-card-text>
+                        <chart-export-menu @print="print(ChartType.AGGREGATE_CHART)" @exportTo="exportTo(ChartType.AGGREGATE_CHART, $event)"></chart-export-menu>
                         <!-- Валюта тут не нужна так как валюта будет браться из каждого актива в отдельности -->
                         <pie-chart :ref="ChartType.AGGREGATE_CHART" :data="aggregatePieChartData" :balloon-title="portfolioName"
                                    tooltip-format="ASSETS" v-tariff-expired-hint></pie-chart>
                     </v-card-text>
                 </expanded-panel>
 
-                <expanded-panel v-if="blockNotEmpty(emptyBlockType.STOCK_PIE)" :value="$uistate.stockGraph" :state="$uistate.STOCK_CHART_PANEL" customMenu class="mt-3"
+                <expanded-panel v-if="blockNotEmpty(emptyBlockType.STOCK_PIE)" :value="$uistate.stockGraph" :state="$uistate.STOCK_CHART_PANEL" class="mt-3"
                                 :data-v-step="getTourStepIndex(PortfolioBlockType.STOCK_CHART)">
                     <template #header>Состав портфеля акций</template>
-                    <template #customMenu>
-                        <chart-export-menu @print="print(ChartType.STOCK_CHART)" @exportTo="exportTo(ChartType.STOCK_CHART, $event)"
-                                           class="exp-panel-menu"></chart-export-menu>
-                    </template>
                     <v-card-text>
+                        <chart-export-menu @print="print(ChartType.STOCK_CHART)" @exportTo="exportTo(ChartType.STOCK_CHART, $event)"></chart-export-menu>
                         <pie-chart :ref="ChartType.STOCK_CHART" :data="stockPieChartData" :view-currency="viewCurrency" v-tariff-expired-hint></pie-chart>
                     </v-card-text>
                 </expanded-panel>
 
-                <expanded-panel v-if="blockNotEmpty(emptyBlockType.ETF_PIE)" :value="$uistate.etfGraph" :state="$uistate.ETF_CHART_PANEL" customMenu class="mt-3"
+                <expanded-panel v-if="blockNotEmpty(emptyBlockType.ETF_PIE)" :value="$uistate.etfGraph" :state="$uistate.ETF_CHART_PANEL" class="mt-3"
                                 :data-v-step="getTourStepIndex(PortfolioBlockType.ETF_CHART)">
                     <template #header>Состав портфеля ПИФов/ETF</template>
-                    <template #customMenu>
+                    <v-card-text>
                         <chart-export-menu @print="print(ChartType.ETF_CHART)" @exportTo="exportTo(ChartType.ETF_CHART, $event)"
                                            class="exp-panel-menu"></chart-export-menu>
-                    </template>
-                    <v-card-text>
                         <pie-chart :ref="ChartType.ETF_CHART" :data="etfPieChartData" :view-currency="viewCurrency" v-tariff-expired-hint></pie-chart>
                     </v-card-text>
                 </expanded-panel>
 
-                <expanded-panel v-if="blockNotEmpty(emptyBlockType.BOND_PIE)" :value="$uistate.bondGraph" :state="$uistate.BOND_CHART_PANEL" customMenu class="mt-3"
+                <expanded-panel v-if="blockNotEmpty(emptyBlockType.BOND_PIE)" :value="$uistate.bondGraph" :state="$uistate.BOND_CHART_PANEL" class="mt-3"
                                 :data-v-step="getTourStepIndex(PortfolioBlockType.BOND_CHART)">
                     <template #header>Состав портфеля облигаций</template>
-                    <template #customMenu>
-                        <chart-export-menu @print="print(ChartType.BOND_CHART)" @exportTo="exportTo(ChartType.BOND_CHART, $event)"
-                                           class="exp-panel-menu"></chart-export-menu>
-                    </template>
                     <v-card-text>
+                        <chart-export-menu @print="print(ChartType.BOND_CHART)" @exportTo="exportTo(ChartType.BOND_CHART, $event)"></chart-export-menu>
                         <pie-chart :ref="ChartType.BOND_CHART" :data="bondPieChartData" :view-currency="viewCurrency" v-tariff-expired-hint></pie-chart>
                     </v-card-text>
                 </expanded-panel>
 
-                <expanded-panel v-if="blockNotEmpty(emptyBlockType.ASSETS)" :value="$uistate.assetGraph" :state="$uistate.ASSET_CHART_PANEL" customMenu class="mt-3"
+                <expanded-panel v-if="blockNotEmpty(emptyBlockType.ASSETS)" :value="$uistate.assetGraph" :state="$uistate.ASSET_CHART_PANEL" class="mt-3"
                                 :data-v-step="getTourStepIndex(PortfolioBlockType.ASSETS_CHART)">
                     <template #header>Состав портфеля активов</template>
-                    <template #customMenu>
-                        <chart-export-menu @print="print(ChartType.ASSETS_CHART)" @exportTo="exportTo(ChartType.ASSETS_CHART, $event)"
-                                           class="exp-panel-menu"></chart-export-menu>
-                    </template>
                     <v-card-text>
+                        <chart-export-menu @print="print(ChartType.ASSETS_CHART)" @exportTo="exportTo(ChartType.ASSETS_CHART, $event)"></chart-export-menu>
                         <pie-chart :ref="ChartType.ASSETS_CHART" :data="assetsPieChartData" :balloon-title="portfolioName" v-tariff-expired-hint></pie-chart>
                     </v-card-text>
                 </expanded-panel>
 
-                <expanded-panel v-if="blockNotEmpty(emptyBlockType.SECTORS_PIE)" :value="$uistate.sectorsGraph" :state="$uistate.SECTORS_PANEL" customMenu class="mt-3"
+                <expanded-panel v-if="blockNotEmpty(emptyBlockType.SECTORS_PIE)" :value="$uistate.sectorsGraph" :state="$uistate.SECTORS_PANEL" class="mt-3"
                                 :data-v-step="getTourStepIndex(PortfolioBlockType.SECTORS_CHART)">
                     <template #header>Состав портфеля по секторам</template>
-                    <template #customMenu>
-                        <chart-export-menu @print="print(ChartType.SECTORS_CHART)" @exportTo="exportTo(ChartType.SECTORS_CHART, $event)"
-                                           class="exp-panel-menu"></chart-export-menu>
-                    </template>
                     <v-card-text>
+                        <chart-export-menu @print="print(ChartType.SECTORS_CHART)" @exportTo="exportTo(ChartType.SECTORS_CHART, $event)"></chart-export-menu>
                         <pie-chart v-if="sectorsChartData" :ref="ChartType.SECTORS_CHART" v-tariff-expired-hint
                                    :data="sectorsChartData.data" :balloon-title="portfolioName" :view-currency="viewCurrency"></pie-chart>
                     </v-card-text>
                 </expanded-panel>
 
-                <expanded-panel v-if="blockNotEmpty(emptyBlockType.BOND_SECTORS_PIE)" :value="$uistate.bondSectorsPanel" :state="$uistate.BOND_SECTORS_PANEL" customMenu
+                <expanded-panel v-if="blockNotEmpty(emptyBlockType.BOND_SECTORS_PIE)" :value="$uistate.bondSectorsPanel" :state="$uistate.BOND_SECTORS_PANEL"
                                 class="mt-3" :data-v-step="getTourStepIndex(PortfolioBlockType.BOND_SECTORS_CHART)">
                     <template #header>Распределение облигаций по типу</template>
-                    <template #customMenu>
-                        <chart-export-menu @print="print(ChartType.BOND_SECTORS_CHART)" @exportTo="exportTo(ChartType.BOND_SECTORS_CHART, $event)"
-                                           class="exp-panel-menu"></chart-export-menu>
-                    </template>
                     <v-card-text>
+                        <chart-export-menu @print="print(ChartType.BOND_SECTORS_CHART)" @exportTo="exportTo(ChartType.BOND_SECTORS_CHART, $event)"></chart-export-menu>
                         <pie-chart v-if="bondSectorsChartData" :ref="ChartType.BOND_SECTORS_CHART" v-tariff-expired-hint
                                    :data="bondSectorsChartData.data" :balloon-title="portfolioName" :view-currency="viewCurrency"></pie-chart>
                     </v-card-text>
@@ -264,7 +229,7 @@ const MainStore = namespace(StoreType.MAIN);
             </v-layout>
         </v-container>
     `,
-    components: {AggregateAssetTable, StockTable, BondTable, PortfolioLineChart, PortfolioRowsTableFilter, NegativeBalanceNotification, SaleComponent}
+    components: {AggregateAssetTable, StockTable, BondTable, PortfolioLineChart, PortfolioRowsTableFilter, NegativeBalanceNotification, SaleComponent, GiftBanner}
 })
 export class BasePortfolioPage extends UI {
 
@@ -327,10 +292,6 @@ export class BasePortfolioPage extends UI {
     /** Текущие категории */
     @Prop({type: Array, required: true})
     private tagCategories: TagCategory[];
-    /** Список заголовков таблиц */
-    private headers: TableHeaders = this.tablesService.headers;
-    /** Названия таблиц с заголовками */
-    private TABLES_NAME = TABLES_NAME;
     /** Типы экспорта */
     private ExportType = ExportType;
     /** Ключи для сохранения информации */
@@ -377,6 +338,8 @@ export class BasePortfolioPage extends UI {
     private TableType = TableType;
     /** Скидочный баннер */
     private showSaleBanner = true;
+    /** Баннер подарочного сертификата */
+    private showGiftBanner = true;
 
     /**
      * Инициализация данных компонента
@@ -399,6 +362,7 @@ export class BasePortfolioPage extends UI {
         this.bondFilter = this.storageService.get(StoreKeys.BONDS_TABLE_FILTER_KEY, {});
         this.assetFilter = this.storageService.get(StoreKeys.ASSETS_TABLE_FILTER_KEY, {});
         this.blockIndexes = PortfolioUtils.getShowedBlocks(this.overview);
+        this.showGiftBanner = this.storageService.get("giftBanner", this.needShowGiftBanner);
         this.showSaleBanner = this.storageService.get("saleBanner", this.needShowSaleBanner);
     }
 
@@ -471,10 +435,6 @@ export class BasePortfolioPage extends UI {
         return ChartUtils.doBondSectorsChartData(this.overview);
     }
 
-    private getHeaders(name: string): TableHeader[] {
-        return this.tablesService.getFilterHeaders(name);
-    }
-
     private onStockTablePanelClick(): void {
         this.stockTablePanelClosed = UiStateHelper.stocksTablePanel[0] === 0;
     }
@@ -493,13 +453,6 @@ export class BasePortfolioPage extends UI {
 
     private async onPortfolioLineChartPanelStateChanges(): Promise<void> {
         this.$emit(EventType.reloadLineChart);
-    }
-
-    private async openTableHeadersDialog(tableName: string): Promise<void> {
-        await new TableSettingsDialog().show({
-            tableName: tableName,
-            headers: this.headers[tableName]
-        });
     }
 
     private async exportTable(exportType: ExportType): Promise<void> {
@@ -521,6 +474,11 @@ export class BasePortfolioPage extends UI {
     private onCloseBanner(): void {
         this.storageService.set("saleBanner", false);
         this.showSaleBanner = false;
+    }
+
+    private onCloseGiftBanner(): void {
+        this.storageService.set("giftBanner", false);
+        this.showGiftBanner = false;
     }
 
     private get stockRows(): StockTypePortfolioRow[] {
@@ -574,11 +532,15 @@ export class BasePortfolioPage extends UI {
      * Отображаем баннер только для старых тарифов и до 29.11 включительно
      */
     private get needShowSaleBanner(): boolean {
-        const valid = DateUtils.parseDate(DateUtils.currentDate()).isBefore(DateUtils.parseDate("2020-11-30"));
-        return valid && !this.newTariffsApplicable;
+        return DateUtils.parseDate(DateUtils.currentDate()).isBefore(DateUtils.parseDate("2021-01-04")) &&
+            !this.showGiftBanner;
     }
 
-    private get newTariffsApplicable(): boolean {
-        return DateUtils.parseDate(this.clientInfo.user.regDate).isAfter(DateUtils.parseDate(this.systemProperties[SystemPropertyName.NEW_TARIFFS_DATE_FROM]));
+    /**
+     * Отображаем баннер только для активных подписок
+     */
+    private get needShowGiftBanner(): boolean {
+        return !TariffUtils.isTariffExpired(this.clientInfo.user) && [Tariff.STANDARD, Tariff.PRO].includes(this.clientInfo.user.tariff) &&
+            DateUtils.parseDate(DateUtils.currentDate()).isBefore(DateUtils.parseDate("2021-01-04"));
     }
 }

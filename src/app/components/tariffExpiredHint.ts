@@ -1,10 +1,8 @@
 import {namespace} from "vuex-class/lib/bindings";
 import {Component, UI} from "../app/ui";
 import {ClientInfo} from "../services/clientService";
-import {SystemPropertyName} from "../services/systemPropertiesService";
-import {Permission} from "../types/permission";
 import {Tariff} from "../types/tariff";
-import {MapType, TariffHint} from "../types/types";
+import {TariffHint} from "../types/types";
 import {DateUtils} from "../utils/dateUtils";
 import {TariffUtils} from "../utils/tariffUtils";
 import {StoreType} from "../vuex/storeType";
@@ -36,17 +34,13 @@ const MainStore = namespace(StoreType.MAIN);
                             Создано портфелей: <b>{{ clientInfo.user.portfoliosCount }}</b> Доступно на тарифе: <b>{{ maxPortfoliosCount }}</b><br/>
                         </template>
                         <template v-if="exceedLimitByShareCount">
-                            <template v-if="newTariffsApplicable">
-                                В одном из портфелей превышено допустимое количество бумаг. Доступно на тарифе: <b>{{ maxSharesCount }}</b> на портфель <br>
-                            </template>
-                            <template v-else>
+                            <template v-if="oldStandardTariffsLimitsApplicable">
                                 Добавлено ценных бумаг: <b>{{ sharesCount }}</b> Доступно на тарифе: <b>{{ maxSharesCount }}</b> <br>
                             </template>
+                            <template v-else>
+                                В одном из портфелей превышено допустимое количество бумаг. Доступно на тарифе: <b>{{ maxSharesCount }}</b> на портфель <br>
+                            </template>
                         </template>
-                    </p>
-                    <p v-if="exceedLimitByForeignShares">
-                        В ваших портфелях имеются сделки с валютой или по иностранным ценным бумагам<br/>
-                        Тариф не позволяет учитывать сделки по ценным бумагам номинированными в валюте.
                     </p>
                 </template>
                 Подробнее узнать о тарифных планах Intelinvest, вы можете по <span @click.stop="goToTariff" class="link">ссылке</span>.
@@ -60,8 +54,6 @@ export class TariffExpiredHint extends UI {
     private hintCoords: TariffHint;
     @MainStore.Getter
     private clientInfo: ClientInfo;
-    @MainStore.Getter
-    private systemProperties: MapType;
 
     private goToTariff(): void {
         this.$router.push({path: "/settings/tariffs"});
@@ -84,10 +76,10 @@ export class TariffExpiredHint extends UI {
     }
 
     private get sharesCount(): number {
-        if (this.newTariffsApplicable) {
-            return this.clientInfo.user.portfolios.map(portfolio => portfolio.sharesCount).reduce((previousValue, currentValue) => previousValue + currentValue, 0);
+        if (this.oldStandardTariffsLimitsApplicable) {
+            return this.clientInfo.user.sharesCount;
         }
-        return this.clientInfo.user.sharesCount;
+        return this.clientInfo.user.portfolios.map(portfolio => portfolio.sharesCount).reduce((previousValue, currentValue) => previousValue + currentValue, 0);
     }
 
     get maxPortfoliosCount(): string {
@@ -95,24 +87,19 @@ export class TariffExpiredHint extends UI {
     }
 
     get maxSharesCount(): string {
-        if (this.newTariffsApplicable) {
-            return this.clientInfo.user.tariff.maxSharesCountNew === 0x7fffffff ? "Без ограничений" : String(this.clientInfo.user.tariff.maxSharesCountNew);
+        if (this.oldStandardTariffsLimitsApplicable) {
+            return "Без ограничений";
         }
         return this.clientInfo.user.tariff.maxSharesCount === 0x7fffffff ? "Без ограничений" : String(this.clientInfo.user.tariff.maxSharesCount);
-    }
-
-    get tariffForeignShares(): boolean {
-        return this.clientInfo.user.tariff.hasPermission(Permission.FOREIGN_SHARES);
     }
 
     /**
      * Возвращает true если текущие показатели пользователя превышают лимиты тарифа по портфелям/бумагам/содержанию
      */
     private get limitsExceeded(): boolean {
-        if (this.newTariffsApplicable) {
-            return this.exceedLimitByPortfolios || this.exceedLimitByShareCount;
-        }
-        return this.clientInfo.user.tariff === Tariff.FREE && (this.exceedLimitByPortfolios || this.exceedLimitByShareCount || this.exceedLimitByForeignShares);
+        const skipCheckSharesLimit = this.clientInfo.user.tariff === Tariff.STANDARD && this.clientInfo.user.skipTariffValidationDate &&
+            DateUtils.parseDate(this.clientInfo.user.skipTariffValidationDate).isAfter(DateUtils.parseDate(DateUtils.currentDate()));
+        return this.exceedLimitByPortfolios || (!skipCheckSharesLimit && this.exceedLimitByShareCount);
     }
 
     private get tariffExpired(): boolean {
@@ -124,17 +111,17 @@ export class TariffExpiredHint extends UI {
     }
 
     private get exceedLimitByShareCount(): boolean {
-        if (this.newTariffsApplicable) {
-            return this.clientInfo.user.portfolios.some(portfolio => portfolio.sharesCount > this.clientInfo.user.tariff.maxSharesCountNew);
+        if (this.oldStandardTariffsLimitsApplicable) {
+            return false;
         }
-        return this.clientInfo.user.sharesCount > this.clientInfo.user.tariff.maxSharesCount;
+        return this.clientInfo.user.portfolios.some(portfolio => portfolio.sharesCount > this.clientInfo.user.tariff.maxSharesCount);
     }
 
-    private get exceedLimitByForeignShares(): boolean {
-        return !this.newTariffsApplicable && this.clientInfo.user.foreignShares && !this.clientInfo.user.tariff.hasPermission(Permission.FOREIGN_SHARES);
-    }
-
-    private get newTariffsApplicable(): boolean {
-        return DateUtils.parseDate(this.clientInfo.user.regDate).isAfter(DateUtils.parseDate(this.systemProperties[SystemPropertyName.NEW_TARIFFS_DATE_FROM]));
+    /**
+     * Возвращает признак применения лимитов по новым тарифам
+     */
+    private get oldStandardTariffsLimitsApplicable(): boolean {
+        return this.clientInfo.user.tariff === Tariff.STANDARD &&
+            DateUtils.parseDate(this.clientInfo.user.skipTariffValidationDate).isAfter(DateUtils.parseDate(DateUtils.currentDate()));
     }
 }

@@ -31,7 +31,7 @@ const MainStore = namespace(StoreType.MAIN);
         <div class="tag-item" :style="getStyles()">
             <span @click="selectTag" class="tag-item__name">{{ tag.name }}</span>
             <span v-if="allowActions && editable" @click="$emit('editTag', tag)" title="Редактировать"
-                  class="intel-icon icon-edit" :style="'color:' + tag.color"></span>
+                  class="intel-icon icon-edit_xs" :style="'color:' + tag.color"></span>
             <span v-if="allowActions && deletable" @click.stop="$emit('deleteTag', tag)" title="Удалить"
                   class="intel-icon icon-remove" :style="'color:' + tag.color"></span>
         </div>

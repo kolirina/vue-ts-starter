@@ -2,7 +2,9 @@
  * Сборка проекта
  */
 const MODES = {
+    development: "development",
     d: "development",
+    production: "production",
     p: "production",
 };
 const TARGET_DIR = "dist";
@@ -114,7 +116,7 @@ gulp.task("default", gulp.series("build", () => {
         open: false,
         port: 3000,
         // proxy: "localhost:8080",
-        proxy: "http://test.intelinvest.ru",
+        proxy: "https://test.intelinvest.ru",
         serveStatic: [TARGET_DIR],
         ghostMode: false
     });

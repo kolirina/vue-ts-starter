@@ -24,9 +24,9 @@ import {
 } from "../../services/importService";
 import {OverviewService} from "../../services/overviewService";
 import {PortfolioParams, PortfolioService} from "../../services/portfolioService";
-import {SystemPropertyName} from "../../services/systemPropertiesService";
 import {CurrencyUnit} from "../../types/currency";
 import {EventType} from "../../types/eventType";
+import {Tariff} from "../../types/tariff";
 import {MapType, Portfolio, Share, Status} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {DateUtils} from "../../utils/dateUtils";
@@ -60,9 +60,9 @@ const MainStore = namespace(StoreType.MAIN);
                             <div class="import-wrapper-header__title">
                                 Выберите своего брокера
                                 <v-menu open-on-hover bottom nudge-bottom="11" content-class="pa-3 bg-white" max-width="600">
-                                <span class="custom-tooltip" slot="activator">
-                                    <v-icon>fas fa-info-circle</v-icon>
-                                </span>
+                                    <span class="custom-tooltip" slot="activator">
+                                        <v-icon>fas fa-info-circle</v-icon>
+                                    </span>
                                     <span class="fs13">
                                         Если в списке нет вашего брокера или терминала, вы всегда можете осуществить импорт через универсальный формат Intelinvest (csv)
                                         или обратиться к нам через <a @click.stop="openFeedBackDialog">обратную связь</a> ,
@@ -731,6 +731,9 @@ export class ImportPage extends UI {
 
     private get importStatus(): Status {
         if (this.importResult) {
+            if (this.isIntelinvest) {
+                return this.importResult.status;
+            }
             if (this.hasNotesAfterImport) {
                 return Status.WARN;
             }
@@ -811,7 +814,8 @@ export class ImportPage extends UI {
      * Если дата последней сдеки не в текущем году
      */
     private get requireMoreReports(): boolean {
-        return DateUtils.parseDate(this.importResult?.lastTradeDate).get("year") < dayjs().get("year");
+        const currentDate = dayjs();
+        return DateUtils.parseDate(this.importResult?.lastTradeDate).get("year") < currentDate.get("year") && !(currentDate.get("month") === 0 && currentDate.get("date") < 15);
     }
 
     /**
@@ -822,16 +826,20 @@ export class ImportPage extends UI {
     }
 
     private get tariffLimitExceeded(): boolean {
-        return TariffUtils.limitsExceeded(this.clientInfo.user, this.systemProperties);
+        return TariffUtils.limitsExceeded(this.clientInfo.user);
     }
 
-    private get newTariffsApplicable(): boolean {
-        return DateUtils.parseDate(this.clientInfo.user.regDate).isAfter(DateUtils.parseDate(this.systemProperties[SystemPropertyName.NEW_TARIFFS_DATE_FROM]));
+    /**
+     * Возвращает признак применения лимитов по новым тарифам
+     */
+    private get oldStandardTariffsLimitsApplicable(): boolean {
+        return this.clientInfo.user.tariff === Tariff.STANDARD && this.clientInfo.user.skipTariffValidationDate &&
+            DateUtils.parseDate(this.clientInfo.user.skipTariffValidationDate).isAfter(DateUtils.parseDate(DateUtils.currentDate()));
     }
 
     get maxSharesCount(): string {
-        if (this.newTariffsApplicable) {
-            return this.clientInfo.user.tariff.maxSharesCountNew === 0x7fffffff ? "Без ограничений" : String(this.clientInfo.user.tariff.maxSharesCountNew);
+        if (this.oldStandardTariffsLimitsApplicable) {
+            return "Без ограничений";
         }
         return this.clientInfo.user.tariff.maxSharesCount === 0x7fffffff ? "Без ограничений" : String(this.clientInfo.user.tariff.maxSharesCount);
     }

@@ -47,6 +47,7 @@ export class LocalStorageUpdater {
             this.updateTableColumns();
             this.updateCombinedPortfolioParams();
             this.localStorage.set<string>(StoreKeys.LOCAL_STORAGE_LAST_UPDATE_DATE_KEY, versionConfig.date);
+            this.localStorage.delete("saleBanner");
         }
     }
 

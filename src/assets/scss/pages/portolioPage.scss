@@ -31,3 +31,26 @@
   min-height: 200px;
   margin-bottom: 32px;
 }
+
+.chart-export-menu {
+  display: flex;
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  z-index: 7;
+
+  .intel-icon {
+    cursor: pointer;
+    @extend %icon-hover;
+
+    &:after {font-size: 24px;}
+  }
+
+  .v-menu {margin-left: 12px}
+
+  &.with-tabs {top: 80px}
+}
+
+.with-chart-export {
+  padding-top: 64px;
+}

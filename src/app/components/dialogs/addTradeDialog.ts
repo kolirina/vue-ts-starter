@@ -461,11 +461,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
     }
 
     private onAssetTypeChange(clearFields: boolean = true): void {
-        if (this.data.operation === undefined) {
-            this.operation = this.assetType.operations[0];
-        } else {
-            this.operation = this.data.operation;
-        }
+        this.operation = this.assetType.operations[0];
         if (clearFields) {
             // исправление бага валидатора https://github.com/logaretm/vee-validate/issues/2109
             this.$nextTick(() => this.clearFields());
@@ -909,7 +905,7 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
         this.facevalue = TradeUtils.decimal(this.data.tradeFields.facevalue);
         this.nkd = TradeUtils.decimal(this.data.tradeFields.nkd);
         this.perOne = true;
-        if (this.isBondTrade && new Decimal(this.nkd).comparedTo(new Decimal("0.01")) < 0) {
+        if (this.isBondTrade && this.nkd && new Decimal(this.nkd).comparedTo(new Decimal("0.01")) < 0) {
             const nkdValue = new Decimal(this.nkd);
             this.perOne = false;
             this.nkd = nkdValue.mul(new Decimal(this.quantity).toDP(2, Decimal.ROUND_HALF_UP)).toString();

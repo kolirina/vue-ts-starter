@@ -23,14 +23,14 @@ import {ResultLabel} from "../types/types";
             <v-expansion-panel :readonly="alwaysOpen" focusable expand :value="value">
                 <v-expansion-panel-content :lazy="true" v-state="state">
                     <template #actions>
-                        <i v-if="!alwaysOpen" class="exp-panel-arrow"></i>
+                        <i v-if="!alwaysOpen" :class="{'exp-panel-arrow': true, 'mr-0': !withMenu && !customMenu}"></i>
                         <div class="exp-panel-attach" :id="'exp-panel-attach-' + name"></div>
                     </template>
                     <div slot="header" :class="headerClass">
                         <slot name="header"></slot>
                     </div>
 
-                    <v-card style="overflow: auto" @click.stop>
+                    <v-card :class="{'overflowXA': scrollContent}" @click.stop>
                         <slot></slot>
                     </v-card>
 
@@ -57,6 +57,9 @@ export class ExpandedPanel extends UI {
     /** Метка */
     @Prop({type: Object, required: false})
     private label: ResultLabel;
+    /** Возможность скролла контента */
+    @Prop({type: Boolean, required: false, default: true})
+    private scrollContent: boolean;
 
     get headerClass(): string {
         return this.label ? `exp-panel__indicator indicator-${this.label.code.toLowerCase()}` : "";

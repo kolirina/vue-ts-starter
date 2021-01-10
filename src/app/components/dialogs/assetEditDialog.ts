@@ -96,17 +96,8 @@ import {TradeUtils} from "../../utils/tradeUtils";
 
                             <!-- Влюта -->
                             <v-flex xs12 sm6>
-                                <template v-if="!editMode && foreignCurrencyAllowed">
+                                <template v-if="!editMode">
                                     <v-select :items="currencyList" v-model="asset.currency" label="Валюта актива"></v-select>
-                                </template>
-                                <template v-if="!editMode && !foreignCurrencyAllowed">
-                                    <v-text-field :value="asset.currency" label="Валюта актива (Редактирование недоступно)" disabled></v-text-field>
-                                    <div class="fs12-opacity mt-1">
-                                            <span>
-                                                Добавление валютных активов доступно только на тарифном плане
-                                                <a @click="goToTariffs" title="Подключить">Профессионал</a>
-                                            </span>
-                                    </div>
                                 </template>
                                 <v-text-field v-if="editMode" :value="asset.currency" label="Валюта актива (Редактирование недоступно)" disabled></v-text-field>
                             </v-flex>
@@ -204,7 +195,7 @@ export class AssetEditDialog extends CustomDialog<AssetEditDialogData, AssetEdit
      */
     async mounted(): Promise<void> {
         this.clientInfo = await this.clientService.getClientInfo();
-        this.currencyList = ALLOWED_CURRENCIES.filter(code => this.foreignCurrencyAllowed || code === Currency.RUB);
+        this.currencyList = ALLOWED_CURRENCIES;
         await this.setDialogParams();
         this.autoPrice = !!this.asset.source && !!this.asset.regex;
     }
@@ -334,10 +325,6 @@ export class AssetEditDialog extends CustomDialog<AssetEditDialogData, AssetEdit
 
     private get preDefinedCode(): string {
         return this.asset && this.asset.name ? TextUtils.transliterate(this.asset.name).toUpperCase().replace(new RegExp("[-|_|\\s]*", "g"), "").substring(0, 5) : "";
-    }
-
-    private get foreignCurrencyAllowed(): boolean {
-        return this.clientInfo.tariff.hasPermission(Permission.FOREIGN_SHARES);
     }
 
     private get dialogTitle(): string {

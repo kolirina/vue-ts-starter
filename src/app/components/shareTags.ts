@@ -41,7 +41,7 @@ const MainStore = namespace(StoreType.MAIN);
                 class="tags-menu" content-class="tags-menu">
             <v-tooltip bottom slot="activator">
                 <div class="relative" slot="activator" @click="showTagsPanel">
-                    <svg width="28" height="24" viewBox="0 0 28 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg v-if="shareTagsCount()" width="28" height="24" viewBox="0 0 28 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M11.4813 18.943L6.33644 13.7981C6.00561 13.4673 5.80123 13.0309 5.75887 12.565L5.33461 7.89807C5.22153 6.6542 6.26359 5.61213 7.50746 5.72521L12.1744
                      6.14947C12.6403 6.19183 13.0767 6.39621 13.4075 6.72705L18.5523 11.8719C19.3334 12.6529 19.3334 13.9193 18.5523 14.7003L14.3097 18.943C13.5287 19.724 12.2623
                       19.724 11.4813 18.943Z" :stroke="selectedTags.length ? selectedTags[0].color : '#84ABEF'" stroke-width="2"/>
@@ -52,7 +52,8 @@ const MainStore = namespace(StoreType.MAIN);
                       13.6027 23.8926 12.9696 23.5021 12.579L17.8453 6.92217C17.4547 6.53165 17.4547 5.89848 17.8453 5.50796Z"
                               :fill="selectedTags.length > 1 ? selectedTags[1].color : '#84ABEF'"/>
                     </svg>
-                    <span v-if="shareTagsCount" class="tags-counter">{{ shareTagsCount }}</span>
+                    <span v-else class="intel-icon icon-add"></span>
+                    <span v-if="shareTagsCount()" class="tags-counter">{{ shareTagsCount() }}</span>
                 </div>
                 <span v-if="allowActions">Настройте тэги для данного актива</span>
                 <span v-else>Назначенные тэги по активу</span>
@@ -348,8 +349,9 @@ export class ShareTags extends UI {
         return tags;
     }
 
-    private get shareTagsCount(): number {
-        return this.getShareTags().length;
+    private shareTagsCount(): number {
+        const tags = this.portfolioTags[`${this.share.shareType}:${this.share.id}`];
+        return tags ? tags.length : null;
     }
 
     private get allowActions(): boolean {

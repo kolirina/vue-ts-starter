@@ -9,10 +9,8 @@ import {ShowProgress} from "../../platform/decorators/showProgress";
 import {BtnReturn} from "../../platform/dialogs/customDialog";
 import {Storage} from "../../platform/services/storage";
 import {ClientInfo, ClientService} from "../../services/clientService";
-import {SystemPropertyName} from "../../services/systemPropertiesService";
 import {TariffService, UserPaymentInfo} from "../../services/tariffService";
 import {EventType} from "../../types/eventType";
-import {Permission} from "../../types/permission";
 import {Tariff} from "../../types/tariff";
 import {MapType} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
@@ -29,17 +27,12 @@ const MainStore = namespace(StoreType.MAIN);
         <span>
             Превышены лимиты
             <p>
-                Создано портфелей: <b>{{ portfoliosCount }}</b> Доступно на тарифе: <b>{{ maxPortfoliosCount }}</b><br>
-                <template v-if="newTariffsApplicable">
-                    В одном из портфелей превышено допустимое количество бумаг. Доступно на тарифе: <b>{{ maxSharesCount }}</b> на портфель <br>
+                <template v-if="exceedLimitByPortfolios">
+                    Создано портфелей: <b>{{ portfoliosCount }}</b> Доступно на тарифе: <b>{{ maxPortfoliosCount }}</b><br>
                 </template>
-                <template v-else>
-                    Добавлено ценных бумаг: <b>{{ sharesCount }}</b> Доступно на тарифе: <b>{{ maxSharesCount }}</b> <br>
+                <template v-if="exceedLimitByShareCount">
+                   В одном из портфелей превышено допустимое количество бумаг. Доступно на тарифе: <b>{{ maxSharesCount }}</b> на портфель <br>
                 </template>
-            </p>
-            <p v-if="!newTariffsApplicable && foreignShares">
-                В ваших портфелях имеются сделки с валютой или по иностранным ценным бумагам<br>
-                Тариф {{ tariffForeignShares ? "" : "не " }}позволяет учитывать сделки по ценным бумагам в долларах или евро.
             </p>
         </span>
     `
@@ -60,33 +53,23 @@ export class TariffLimitExceedInfo extends UI {
     }
 
     get maxSharesCount(): string {
-        if (this.newTariffsApplicable) {
-            return this.tariff.maxSharesCountNew === 0x7fffffff ? "Без ограничений" : String(this.tariff.maxSharesCountNew);
-        }
         return this.tariff.maxSharesCount === 0x7fffffff ? "Без ограничений" : String(this.tariff.maxSharesCount);
     }
 
-    get tariffForeignShares(): boolean {
-        return this.tariff.hasPermission(Permission.FOREIGN_SHARES);
-    }
-
-    private get newTariffsApplicable(): boolean {
-        return DateUtils.parseDate(this.clientInfo.user.regDate).isAfter(DateUtils.parseDate(this.systemProperties[SystemPropertyName.NEW_TARIFFS_DATE_FROM]));
-    }
-
-    private get foreignShares(): boolean {
-        return this.clientInfo.user.foreignShares;
-    }
-
     private get sharesCount(): number {
-        if (this.newTariffsApplicable) {
-            return this.clientInfo.user.portfolios.map(portfolio => portfolio.sharesCount).reduce((previousValue, currentValue) => previousValue + currentValue, 0);
-        }
-        return this.clientInfo.user.sharesCount;
+        return this.clientInfo.user.portfolios.map(portfolio => portfolio.sharesCount).reduce((previousValue, currentValue) => previousValue + currentValue, 0);
     }
 
     private get portfoliosCount(): number {
         return this.clientInfo.user.portfoliosCount;
+    }
+
+    private get exceedLimitByPortfolios(): boolean {
+        return this.clientInfo.user.portfoliosCount > this.tariff.maxPortfoliosCount;
+    }
+
+    private get exceedLimitByShareCount(): boolean {
+        return this.clientInfo.user.portfolios.some(portfolio => portfolio.sharesCount > this.tariff.maxSharesCount);
     }
 }
 
@@ -110,8 +93,7 @@ export class TariffLimitExceedInfo extends UI {
                 </div>
                 <div class="tariff__limits fs13">
                     <span v-if="tariff === Tariff.FREE">7 ценных бумаг,</span>
-                    <span v-if="tariff === Tariff.STANDARD && newTariffsApplicable">30 бумаг на портфель,</span>
-                    <span v-if="tariff === Tariff.STANDARD && !newTariffsApplicable">&infin; кол-во бумаг,</span>
+                    <span v-if="tariff === Tariff.STANDARD">30 бумаг на портфель,</span>
                     <span v-if="tariff === Tariff.PRO">&infin; кол-во бумаг,</span>
                     <span class="mt-1">
                         <template v-if="tariff === Tariff.PRO">
@@ -122,18 +104,24 @@ export class TariffLimitExceedInfo extends UI {
                         </template>
                     </span>
                 </div>
-                <v-tooltip v-if="!isMobile && (!available || isTariffsDifferent)" :content-class="classPaymentBtn" bottom>
-                    <v-btn slot="activator" @click.stop="makePayment(tariff)" :class="{'big_btn': true, 'selected': selected}" :disabled="disabled">
+                <v-tooltip v-if="!isMobile && (!available || needShowConfirm || (needPaidTariff && !isSubscriptionExpired))"
+                           :content-class="classPaymentBtn" bottom>
+                    <v-btn slot="activator" @click.stop="makePayment" :class="{'big_btn': true, 'selected': selected}" :disabled="disabled">
                         <span v-if="!busyState[tariff.name]">{{ buttonLabel }}</span>
                         <v-progress-circular v-if="busyState[tariff.name]" indeterminate color="white" :size="20"></v-progress-circular>
                     </v-btn>
                     <tariff-limit-exceed-info v-if="!available" :tariff="tariff"></tariff-limit-exceed-info>
                     <div v-else class="pa-3">
-                        При переходе на данный тарифный план, остаток неиспользованных дней текущего тарифа пересчитается согласно новому тарифу и продлит срок его действия
+                        <template v-if="needShowConfirm">
+                            При переходе на данный тарифный новый срок подписки составит: <b>{{ newExpired }}</b>
+                        </template>
+                        <template v-else-if="needPaidTariff && !isSubscriptionExpired">
+                            При оплате тарифа, остаток неиспользованных дней текущего тарифа продлит срок его действия
+                        </template>
                     </div>
                 </v-tooltip>
-                <template v-if="isMobile && (!available || isTariffsDifferent)">
-                    <v-btn slot="activator" @click.stop="makePayment(tariff)" :class="{'big_btn': true, 'selected': selected}" :disabled="disabled">
+                <template v-if="isMobile && (!available || needShowConfirm || (needPaidTariff && !isSubscriptionExpired))">
+                    <v-btn slot="activator" @click.stop="makePayment" :class="{'big_btn': true, 'selected': selected}" :disabled="disabled">
                         <span v-if="!busyState[tariff.name]">{{ buttonLabel }}</span>
                         <v-progress-circular v-if="busyState[tariff.name]" indeterminate color="white" :size="20"></v-progress-circular>
                     </v-btn>
@@ -141,13 +129,19 @@ export class TariffLimitExceedInfo extends UI {
                         <template #header>{{ available ? 'Подробнее' : 'Почему мне недоступен тариф?' }}</template>
                         <div class="statistics">
                             <tariff-limit-exceed-info v-if="!available" :tariff="tariff"></tariff-limit-exceed-info>
-                            <div v-else>
-                                При переходе на данный тарифный план, остаток неиспользованных дней текущего тарифа пересчитается согласно новому тарифу и продлит срок его действия
-                            </div>
+                            <template v-else>
+                                <template v-if="needShowConfirm">
+                                    При переходе на данный тарифный новый срок подписки составит: <b>{{ newExpired }}</b>
+                                </template>
+                                <template v-else-if="needPaidTariff && !isSubscriptionExpired">
+                                    При оплате тарифа, остаток неиспользованных дней текущего тарифа продлит срок его действия
+                                </template>
+                            </template>
                         </div>
                     </expanded-panel>
                 </template>
-                <v-btn v-if="available && !isTariffsDifferent" @click.stop="makePayment(tariff)"
+                <v-btn v-if="available && !needShowConfirm && !(needPaidTariff && !isSubscriptionExpired)"
+                       @click.stop="makePayment"
                        :class="{'big_btn': true, 'selected': selected}"
                        :style="disabled ? 'opacity: 0.7;' : ''"
                        :disabled="disabled">
@@ -166,7 +160,7 @@ export class TariffLimitExceedInfo extends UI {
                 </div>
                 <div class="tariff-description-wrap">
                     <div>Учет акций, облигаций, ПИФов и&nbsp;драгметаллов</div>
-                    <div v-if="newTariffsApplicable">Учёт активов номинированных в&nbsp;рублях и&nbsp;валюте</div>
+                    <div>Учёт активов номинированных в&nbsp;рублях и&nbsp;валюте</div>
                     <div>Учет валютных пар и криптовалюты</div>
                     <div>Импорт отчетов 18 брокеров</div>
                     <div>Полная аналитика по портфелю</div>
@@ -186,11 +180,7 @@ export class TariffLimitExceedInfo extends UI {
                                 <tooltip>Позволяет учитывать любые виды активов, которые не поддерживаются напрямую сервисом</tooltip>
                             </span>
                         </div>
-                        <div>Возможность объединения двух и&nbsp;более портфелей</div>
-                    </template>
-                    <template v-if="!newTariffsApplicable">
-                        <div v-if="tariff === Tariff.PRO">Учёт активов номинированных в&nbsp;рублях и&nbsp;валюте</div>
-                        <div v-if="tariff !== Tariff.PRO">Учёт активов номинированных в рублях</div>
+                        <div>Возможность объединения двух{{ tariff === Tariff.PRO ? ' и&nbsp;более' : '' }} портфелей</div>
                     </template>
                     <template v-if="tariff === Tariff.PRO">
                         <div>
@@ -201,6 +191,13 @@ export class TariffLimitExceedInfo extends UI {
                             </span>
                         </div>
                     </template>
+                    <div>
+                        <span>
+                            <template v-if="tariff === Tariff.PRO">Безлимит категорий тегов для пользовательской классификации</template>
+                            <template v-else>1 категория тегов для пользовательской классификации</template>
+                            <tooltip>Теги - пользовательские метки на активы. Позволяют классифицировать активы по любому признаку.</tooltip>
+                        </span>
+                    </div>
                 </div>
             </v-layout>
         </v-layout>
@@ -239,10 +236,9 @@ export class TariffBlock extends UI {
 
     /**
      * Сделать платеж
-     * @param tariff выбранный тариф
      */
-    private makePayment(tariff: Tariff): void {
-        this.$emit("pay", tariff);
+    private makePayment(): void {
+        this.$emit("pay", this.tariff);
     }
 
     /**
@@ -260,7 +256,7 @@ export class TariffBlock extends UI {
      * Возвращает признак доступности тарифа для выбора
      */
     private get available(): boolean {
-        return !TariffUtils.limitsExceededByTariff(this.clientInfo.user, this.systemProperties, this.tariff);
+        return !TariffUtils.limitsExceededByTariff(this.clientInfo.user, this.tariff);
     }
 
     /**
@@ -299,11 +295,7 @@ export class TariffBlock extends UI {
      * Возвращает цену без скидок, с учетом признака нового пользователя
      */
     private get commonPrice(): Decimal {
-        if (this.newTariffsApplicable) {
-            return this.monthly ? this.tariff.monthlyPriceNew : this.tariff.monthlyYearPriceNew;
-        } else {
-            return this.monthly ? this.tariff.monthlyPrice : this.tariff.monthlyYearPrice;
-        }
+        return this.monthly ? this.tariff.monthlyPrice : this.tariff.monthlyYearPrice;
     }
 
     /**
@@ -339,16 +331,38 @@ export class TariffBlock extends UI {
         return ![Tariff.TRIAL, Tariff.FREE].includes(this.clientInfo.user.tariff) && this.tariff !== Tariff.FREE && this.clientInfo.user.tariff !== this.tariff;
     }
 
+    /**
+     * Возвращает срок новой подписки
+     */
+    private get newExpired(): string {
+        return TariffUtils.getNewExpired(this.tariff, this.clientInfo);
+    }
+
+    /**
+     * Возвращает признак отображения диалога подтверждения при смене тарифа
+     * Отображается только в случае если у пользователя платный, действующий тариф и переход осуществляется на платный тариф, и тарифы не совпадают
+     */
+    private get needShowConfirm(): boolean {
+        return TariffUtils.needShowConfirm(this.tariff, this.clientInfo, this.isSubscriptionExpired);
+    }
+
+    /**
+     * Возвращает признак истекшей подписки
+     */
+    private get isSubscriptionExpired(): boolean {
+        return this.expiredTariff;
+    }
+
+    private get needPaidTariff(): boolean {
+        return this.clientInfo.user.tariff !== Tariff.FREE && this.tariff !== Tariff.FREE;
+    }
+
     private get classPaymentBtn(): string {
         return `custom-tooltip-wrap ${this.available ? "pa-0" : ""}`;
     }
 
     private get isMobile(): boolean {
         return CommonUtils.isMobile();
-    }
-
-    private get newTariffsApplicable(): boolean {
-        return DateUtils.parseDate(this.clientInfo.user.regDate).isAfter(DateUtils.parseDate(this.systemProperties[SystemPropertyName.NEW_TARIFFS_DATE_FROM]));
     }
 }
 
@@ -406,6 +420,9 @@ export class TariffBlock extends UI {
                 <div class="free-subscribe">
                     <span>Получите бесплатный месяц подписки.</span>
                     <a @click="$router.push({name: 'promo-codes'})">Подробнее</a>
+                </div>
+                <div v-if="oldStandardTariffsLimitsApplicable" class="free-subscribe">
+                    На Вашем текущем тарифе не действует ограничение 30 бумаг на портфель до 1 июля 2021 года
                 </div>
                 <div class="payment-system">
                     <div class="payment-system__text">
@@ -487,6 +504,10 @@ export class TariffsPage extends UI {
      */
     private async applyPromoCodeFromParams(): Promise<void> {
         try {
+            const needApply = this.$route.query.needApply === "true";
+            if (!needApply) {
+                return;
+            }
             const promoCode = this.$route.query.promoCode as string || this.storage.get("intelinvest_promo_code", null);
             if (promoCode) {
                 if (promoCode) {
@@ -494,6 +515,7 @@ export class TariffsPage extends UI {
                     await this.tariffService.applyPromoCode(promoCode);
                     this.clientService.resetClientInfo();
                     await this.reloadUser();
+                    this.$snotify.info(`Промокод ${promoCode} успешно применен`);
                 }
             }
             this.storage.delete("intelinvest_promo_code");
@@ -569,8 +591,7 @@ export class TariffsPage extends UI {
      * @param tariff
      */
     private needShowConfirm(tariff: Tariff): boolean {
-        return [Tariff.PRO, Tariff.STANDARD].includes(this.clientInfo.user.tariff) && [Tariff.PRO, Tariff.STANDARD].includes(tariff) &&
-            tariff !== this.clientInfo.user.tariff && !this.isSubscriptionExpired();
+        return TariffUtils.needShowConfirm(tariff, this.clientInfo, this.isSubscriptionExpired());
     }
 
     /**
@@ -578,26 +599,13 @@ export class TariffsPage extends UI {
      * @param tariff тариф
      */
     private getNewExpired(tariff: Tariff): string {
-        // если это upgrade тарифа
-        // срок действия перерасчитывается
-        if (tariff.compare(this.clientInfo.user.tariff) > 0) {
-            // перассчитываем оставшиеся дни
-            const oldDaysLeft = DateUtils.calculateDaysBetween(DateUtils.currentDate(), this.clientInfo.user.paidTill);
-            const newMonthlyPrice = tariff.monthlyPrice;
-            const oldMonthlyPrice = this.clientInfo.user.tariff.monthlyPrice;
-            const newDaysLeft = oldMonthlyPrice.mul(new Decimal(oldDaysLeft)).div(newMonthlyPrice).toDP(0).toNumber();
-            return DateUtils.addDaysToCurrent(newDaysLeft + 1);
-        } else {
-            // если это downgrade тарифа
-            // тариф не перерасчитывается и просто остается таким же по сроку действия
-            return DateUtils.formatDate(DateUtils.parseDate(this.clientInfo.user.paidTill));
-        }
+        return TariffUtils.getNewExpired(tariff, this.clientInfo);
     }
 
     private async afterSuccessPayment(): Promise<void> {
         this.clientService.resetClientInfo();
         await this.reloadUser();
-        this.$snotify.info("Оплата заказа успешно завершена");
+        this.$snotify.info(`Поздравляем! Вы перешли на тариф "${this.clientInfo.user.tariff.description}"`);
     }
 
     /**
@@ -624,5 +632,13 @@ export class TariffsPage extends UI {
      */
     private get activeSubscription(): boolean {
         return this.paymentInfo && CommonUtils.exists(this.paymentInfo.expDate) && CommonUtils.exists(this.paymentInfo.pan);
+    }
+
+    /**
+     * Возвращает признак применения лимитов по новым тарифам
+     */
+    private get oldStandardTariffsLimitsApplicable(): boolean {
+        return this.clientInfo.user.tariff === Tariff.STANDARD && this.clientInfo.user.skipTariffValidationDate &&
+            DateUtils.parseDate(this.clientInfo.user.skipTariffValidationDate).isAfter(DateUtils.parseDate(DateUtils.currentDate()));
     }
 }
