@@ -39,6 +39,10 @@ export class TradeService {
         await this.http.post("/trades/move", copyMoveTradeRequest);
     }
 
+    async applySplitEvent(splitRequest: SplitRequest): Promise<void> {
+        await this.http.post("/trades/split", splitRequest);
+    }
+
     /**
      * Загружает и возвращает сделки по тикеру в портфеле
      * @param {string} portfolioId идентификатор портфеля
@@ -189,6 +193,14 @@ export interface CopyMoveTradeRequest {
     toPortfolioId: number;
     /** Идентификатор портфеля с которого происходит копирование */
     fromPortfolioId: number;
+}
+
+/** Запрос на исполнение сплита */
+export interface SplitRequest {
+    /** Идентификатор события */
+    eventId: number;
+    /** Идентификатор портфеля */
+    portfolioId: number;
 }
 
 /** Поля, содержащие информацию для удаления сделки */
