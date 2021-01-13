@@ -1,4 +1,3 @@
-import {Decimal} from "decimal.js";
 import {Inject} from "typescript-ioc";
 import {namespace} from "vuex-class/lib/bindings";
 import {Component, UI} from "../../app/ui";
@@ -58,15 +57,16 @@ const MainStore = namespace(StoreType.MAIN);
                                             </v-menu>
                                         </div>
                                     </div>
-                                    <v-btn v-if="showRequestWithdrawal" primary color="#EBEFF7" @click.stop="requestWithdrawal" class="promo-codes__withdrawal-btn">
+                                    <v-btn primary color="#EBEFF7" @click.stop="payoutSettings" class="promo-codes__withdrawal-btn">
                                         <span class="intel-icon icon-withdrawal"></span>
-                                        Вывод вознаграждения
+                                        Настройки вывода
                                     </v-btn>
                                 </div>
                                 <ul>
                                     <li>Рекомендуйте нас в социальных сетях, блоге или обучающем курсе</li>
                                     <li>Получайте 30% от оплат рефералов</li>
                                     <li>Выводите вознаграждение от 5 000 до 100 000 рублей</li>
+                                    <li>Узнайте все <a :href="partnersUrl">возможности партнерской программы</a></li>
                                 </ul>
                             </template>
                             <template v-else>
@@ -240,10 +240,10 @@ export class PromoCodesPage extends UI {
         ]);
     }
 
-    private async requestWithdrawal(): Promise<void> {
-        const result = await new PartnershipWithdrawalRequestDialog().show(this.promoCodeStatistics.referrerPaymentsTotalUnpaid);
+    private async payoutSettings(): Promise<void> {
+        const result = await new PartnershipWithdrawalRequestDialog().show();
         if (result) {
-            this.$snotify.info("Запрос на вывод средств успешно зарегистрирован");
+            this.$snotify.info("Настройки вывода сохранены");
         }
     }
 
@@ -272,12 +272,8 @@ export class PromoCodesPage extends UI {
         return this.currentTab === ReferralAwardType.PAYMENT;
     }
 
-    /**
-     * Возвращает признак отображения кнопки Запрос на вывод вознаграждения, если причитаемая сумма больше или равно 5000 рублей
-     */
-    private get showRequestWithdrawal(): boolean {
-        return this.promoCodeStatistics && this.clientInfo.user.referralAwardType === this.ReferralAwardType.PAYMENT &&
-            new Decimal(this.promoCodeStatistics.referrerPaymentsTotalUnpaid).comparedTo(new Decimal("5000")) >= 0;
+    private get partnersUrl(): string {
+        return `${window.location.protocol}//${window.location.host}/partners`;
     }
 }
 
