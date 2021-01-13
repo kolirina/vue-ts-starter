@@ -28,11 +28,22 @@ export class PromoCodeService {
     }
 
     /**
-     * Создает запрос на вывод партнерского вознаграждения
-     * @returns идентификатор созданного запроса
+     * Возвращает настройки вывода
+     * @returns настройки
      */
-    async createPartnershipWithdrawalRequest(withdrawalRequest: PartnershipWithdrawalRequest): Promise<number> {
-        return this.http.post<number>(`/promo-code/withdrawal-request`, withdrawalRequest);
+    async getPayoutSettings(): Promise<PartnerPayoutSettings> {
+        return this.http.get<PartnerPayoutSettings>(`/promo-code/payout-settings`);
+    }
+
+    /**
+     * Сохраняет настройки вывода
+     * @returns идентификатор созданных настроек
+     */
+    async savePayoutSettings(settingsRequest: PartnerPayoutSettings): Promise<number> {
+        if (settingsRequest.id) {
+            return this.http.put<number>(`/promo-code/payout-settings`, settingsRequest);
+        }
+        return this.http.post<number>(`/promo-code/payout-settings`, settingsRequest);
     }
 }
 
@@ -53,27 +64,45 @@ export interface PromoCodeStatistics {
 }
 
 /** Запрос на вывод партнерского вознаграждения */
-export interface PartnershipWithdrawalRequest {
-    /** Всего оплачено пользователями от партнера */
-    amount: string;
-    /** Всего оплачено пользователями от партнера */
+export interface PartnerPayoutSettings {
+    /** id */
+    id: number;
+    /** Контакт */
     contact: string;
-    /** Всего оплачено пользователями от партнера */
+    /** ФИО */
     fio: string;
-    /** Всего оплачено пользователями от партнера */
+    /** Тип настроек */
+    type: string;
+    /** ИНН */
     inn: string;
-    /** Всего оплачено пользователями от партнера */
+    /** КПП */
+    kpp: string;
+    /** Номер счета получателя */
     account: string;
-    /** Всего оплачено пользователями от партнера */
+    /** БИК банка */
     bankBic: string;
+    /** Комментарий */
+    comment: string;
 }
 
-/** Тип доступа к портфелю */
+/** Тип вознаграждения */
 @Enum("code")
 export class ReferralAwardType extends (EnumType as IStaticEnum<ReferralAwardType>) {
 
     static readonly PAYMENT = new ReferralAwardType("PAYMENT", "Партнерам");
     static readonly SUBSCRIPTION = new ReferralAwardType("SUBSCRIPTION", "Пользователям");
+
+    private constructor(public code: string, public description: string) {
+        super();
+    }
+}
+
+/** Тип получения выплаты */
+@Enum("code")
+export class PayoutType extends (EnumType as IStaticEnum<PayoutType>) {
+
+    static readonly WIRE = new PayoutType("WIRE", "По банковским реквизитам");
+    static readonly OTHER = new PayoutType("OTHER", "Прочее");
 
     private constructor(public code: string, public description: string) {
         super();
