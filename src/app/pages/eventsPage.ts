@@ -615,6 +615,7 @@ export class EventsPage extends PortfolioBasedPage {
             share: event.share,
             eventFields: {
                 amount: event.cleanAmount,
+                tax: event.tax,
                 amountPerShare: event.amountPerShare,
                 quantity: event.share?.shareType === ShareType.BOND ? new Decimal(event.quantity).abs().toString() : event.quantity,
                 eventPeriod: event.period,

@@ -4,7 +4,7 @@ import {Component, Prop, UI, Watch} from "../app/ui";
 import {Filters} from "../platform/filters/Filters";
 import {ClientInfo} from "../services/clientService";
 import {BigMoney} from "../types/bigMoney";
-import {DashboardBrick, DashboardData, Overview} from "../types/types";
+import {DashboardBrick, DashboardData, Overview, Portfolio} from "../types/types";
 import {DateUtils} from "../utils/dateUtils";
 import {StoreType} from "../vuex/storeType";
 
@@ -127,6 +127,8 @@ export class Dashboard extends UI {
     private overview: Overview;
     @MainStore.Getter
     private clientInfo: ClientInfo;
+    @MainStore.Getter
+    private portfolio: Portfolio;
     /** Блоки для отображения дашборда */
     private blocks: DashboardBrick[] = [];
     /** Дата, начиная с которой для новых пользователей будет отображаться показатель Прибыль в процентах рассчитаная относительно текущей стоимости */
@@ -211,7 +213,8 @@ export class Dashboard extends UI {
             secondCurrency: "percent",
             tooltip: "Показывает на сколько изменилась курсовая суммарная стоимость портфеля за последний торговый день." +
                 "                                Эта разница возникает за счет изменения биржевой цены входящих в портфель активов.",
-            secondTooltip: "Изменение за день в процентах, посчитанное относительно стоимости портфеля за предыдущий день, без учета денежных средств"
+            secondTooltip: this.portfolio.portfolioParams.combinedFlag ? "Изменения за день в процентах, посчитанное относительно средневзвешенной стоимости портфеля." :
+                "Изменение за день в процентах, посчитанное относительно стоимости портфеля за предыдущий день, без учета денежных средств"
         };
     }
 

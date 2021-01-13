@@ -6,6 +6,7 @@ import {Component, UI} from "../../app/ui";
 import {DisableConcurrentExecution} from "../../platform/decorators/disableConcurrentExecution";
 import {ShowProgress} from "../../platform/decorators/showProgress";
 import {CustomDialog} from "../../platform/dialogs/customDialog";
+import {Filters} from "../../platform/filters/Filters";
 import {Storage} from "../../platform/services/storage";
 import {AssetCategory, AssetService} from "../../services/assetService";
 import {Client, ClientService} from "../../services/clientService";
@@ -160,7 +161,7 @@ import {TariffExpiredDialog} from "./tariffExpiredDialog";
                             <v-flex v-if="shareAssetType" xs12 sm6>
                                 <ii-number-field :label="priceLabel" v-model="price" class="required" name="price" v-validate="'required|min_value:0.000001'"
                                                  :error-messages="errors.collect('price')" @keyup="calculateFee" persistent-hint maxLength="11"
-                                                 :hint="isBondTrade ? 'Указывается в процентах, например, 101.59' : ''">
+                                                 :hint="priceHint">
                                 </ii-number-field>
                             </v-flex>
 
@@ -1168,6 +1169,17 @@ export class AddTradeDialog extends CustomDialog<TradeDialogData, boolean> imple
             return "Цена покупки";
         }
         return [Operation.AMORTIZATION, Operation.COUPON, Operation.DIVIDEND].includes(this.operation) ? "Начисление" : "Цена";
+    }
+
+    private get priceHint(): string {
+        if (this.isBondTrade) {
+            return "Указывается в процентах, например, 101.59";
+        }
+        if (this.processShareEvent) {
+            return this.data.eventFields?.tax && new BigMoney(this.data.eventFields.tax).amount.comparedTo(new Decimal("0")) !== 0 ?
+                `За вычетом налога ${Filters.formatMoneyAmount(this.data.eventFields.tax)} ${Filters.currencySymbol(this.data.eventFields.tax)}` : "";
+        }
+        return "";
     }
 
     private get moneyResidual(): string {
