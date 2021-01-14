@@ -110,7 +110,7 @@ import {PartnerPayoutSettings, PayoutType, PromoCodeService} from "../../service
                                     <v-checkbox slot="activator" v-model="policyAgree" class="mt-4" v-validate="'required'" hide-details>
                                         <template #label>
                                         <span class="fs12">
-                                            Нажимая на кнопку <b>Сохранить</b>, я даю <a :href="policyUrl">согласие на обработку персональных данных</a>
+                                            Нажимая на кнопку <b>Сохранить</b>, я даю <a :href="policyUrl" target="_blank">согласие на обработку персональных данных</a>
                                         </span>
                                         </template>
                                     </v-checkbox>
@@ -121,7 +121,7 @@ import {PartnerPayoutSettings, PayoutType, PromoCodeService} from "../../service
                                     <v-checkbox slot="activator" v-model="partnershipAgree" class="mt-4" v-validate="'required'" hide-details>
                                         <template #label>
                                         <span class="fs12">
-                                            Я ознакомился с <a :href="partnershipUrl">Партнерским договором Реферальной Программы</a>
+                                            Я ознакомился с <a :href="partnershipUrl" target="_blank">Партнерским договором Реферальной Программы</a>
                                         </span>
                                         </template>
                                     </v-checkbox>
