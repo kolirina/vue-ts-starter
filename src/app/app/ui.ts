@@ -1,11 +1,8 @@
-import {ErrorBag, Validator} from "vee-validate";
 import Vue from "vue";
 import Component from "vue-class-component";
 import {Emit, Model, Prop, Watch} from "vue-property-decorator";
 import {Route} from "vue-router/types/router";
-import {Action, Getter, Mutation, namespace, State} from "vuex-class";
 import {Resolver} from "../../../typings/vue";
-import {UiStateHelper} from "../utils/uiStateHelper";
 
 Component.registerHooks([
     "beforeRouteEnter",
@@ -14,16 +11,11 @@ Component.registerHooks([
 ]);
 
 export {Component, Emit, Model, Prop, Watch};
-export {Action, Getter, Mutation, namespace, State};
 
 export class UI extends Vue {
 
     /** Глобальная шина событий */
     private static eventBus = new Vue();
-    /** Валидатор */
-    $validator: Validator;
-    /** Ошибки валидации */
-    protected $errors: ErrorBag;
 
     /**
      * Подписывает компонент на глобальное событие

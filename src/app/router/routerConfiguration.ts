@@ -25,11 +25,6 @@ export class RouterConfiguration {
                 routes: RouterConfiguration.createRoutes(),
                 scrollBehavior: ((): any => ({x: 0, y: 0}))
             });
-            RouterConfiguration.router.beforeEach(async (to: Route, from: Route, next: Resolver): Promise<void> => {
-                // добавляем meta-тэги
-                RouterConfiguration.renderMetaTags(to);
-                next();
-            });
         }
         return RouterConfiguration.router;
     }
@@ -44,17 +39,12 @@ export class RouterConfiguration {
             },
             {
                 path: "*",
-                redirect: "/"
+                redirect: "/main"
             },
+            {
+                name: "mainPage",
+                path: "/main"
+            }
         ];
-    }
-
-    /**
-     * Обрабатывает  meta-тэги. На данном этапе только меняет title страницы
-     * @param to route к которому осуществляется переход
-     */
-    private static renderMetaTags(to: Route): void {
-        const title = (to.meta as RouteMeta).title;
-        document.title = title || "DefaultTitle";
     }
 }

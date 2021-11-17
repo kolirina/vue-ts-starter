@@ -9,7 +9,6 @@ const MODES = {
 };
 const TARGET_DIR = "dist";
 
-const versionConfig = require("./src/version");
 const replace = require("gulp-replace");
 const args = require("yargs").argv;
 const gulp = require("gulp");
@@ -53,9 +52,6 @@ gulp.task("scripts", () => {
 });
 
 gulp.task("assets", () => {
-    gulp.src("./src/assets/favicons/*.*")
-        .pipe(gulp.dest(TARGET_DIR + "/favicons"));
-
     gulp.src("./node_modules/@fortawesome/fontawesome-free/css/all.css")
         .pipe(rename("fontawesome.css"))
         .pipe(minifyCSS())
@@ -71,22 +67,6 @@ gulp.task("assets", () => {
 
     gulp.src("./node_modules/@fortawesome/fontawesome-free/webfonts/*.*")
         .pipe(gulp.dest(TARGET_DIR + "/webfonts"));
-
-    gulp.src("./src/assets/img/**/*.*")
-        .pipe(gulp.dest(TARGET_DIR + "/img"));
-
-    const jsFiles = ["./src/assets/js/**/*.*"];
-    gulp.src(jsFiles)
-        .pipe(gulp.dest(TARGET_DIR + "/js"));
-
-    gulp.src("./src/assets/fonts/**/*.*")
-        .pipe(gulp.dest(TARGET_DIR + "/fonts"));
-
-    gulp.src("./src/assets/static/**/*.*")
-        .pipe(gulp.dest(TARGET_DIR + "/static"));
-
-    gulp.src("./src/version.json")
-        .pipe(gulp.dest(TARGET_DIR));
 
     return gulp.src("./index.html")
         .pipe(gulp.dest(TARGET_DIR))
