@@ -1,29 +1,9 @@
-/*
- * STRICTLY CONFIDENTIAL
- * TRADE SECRET
- * PROPRIETARY:
- *       "Intelinvest" Ltd, TIN 1655386205
- *       420107, REPUBLIC OF TATARSTAN, KAZAN CITY, SPARTAKOVSKAYA STREET, HOUSE 2, ROOM 119
- * (c) "Intelinvest" Ltd, 2019
- *
- * СТРОГО КОНФИДЕНЦИАЛЬНО
- * КОММЕРЧЕСКАЯ ТАЙНА
- * СОБСТВЕННИК:
- *       ООО "Интеллектуальные инвестиции", ИНН 1655386205
- *       420107, РЕСПУБЛИКА ТАТАРСТАН, ГОРОД КАЗАНЬ, УЛИЦА СПАРТАКОВСКАЯ, ДОМ 2, ПОМЕЩЕНИЕ 119
- * (c) ООО "Интеллектуальные инвестиции", 2019
- */
-
-/** Структура данных параметров для URL */
 import {Inject, Singleton} from "typescript-ioc";
-import {BlockByTariffDialog} from "../../components/dialogs/blockByTariffDialog";
-import {ForbiddenDialog} from "../../components/dialogs/forbiddenDialog";
-import {StoreKeys} from "../../types/storeKeys";
-import {ErrorInfo, ForbiddenCode, MapType} from "../../types/types";
 import {CommonUtils} from "../../utils/commonUtils";
 import {Service} from "../decorators/service";
 import {Storage} from "./storage";
 
+/** Структура данных параметров для URL */
 export type UrlParams = {
     [key: string]: string | number | boolean | string[]
 };
@@ -38,26 +18,7 @@ export class Http {
     @Inject
     private localStorage: Storage;
 
-    /** Ключ заголовка в ответе для необходимости обновления однодневного токена */
-    private readonly NEED_TO_REFRESH_TOKEN_HEADER = "__CALL_REFRESH_TOKEN__";
-    /** Ключ заголовка источника запроса */
-    private readonly SOURCE_HEADER_KEY = "Request-source";
-
     private readonly BASE_URL: string = `${window.location.protocol}//${window.location.host}/api`;
-
-    get importHeaders(): MapType {
-        const token = this.localStorage.get(StoreKeys.TOKEN_KEY, null);
-        if (!CommonUtils.isBlank(token)) {
-            const headers: MapType = {"Authorization": `Bearer ${token}`};
-            headers[this.SOURCE_HEADER_KEY] = "WEB";
-            const refreshToken = this.localStorage.get(StoreKeys.REFRESH_TOKEN, null);
-            if (!CommonUtils.isBlank(refreshToken)) {
-                headers[StoreKeys.REFRESH_TOKEN] = refreshToken;
-            }
-            return headers;
-        }
-        return {};
-    }
 
     /**
      * Выполнить POST-запрос на {@code url} с телом {@code body} и параметрами {@code options}
@@ -218,7 +179,6 @@ export class Http {
      * @return {Promise<T | undefined>} преобразованный ответа сервиса в зависимости от его контента или {@code undefined}
      */
     private async parseResult<T>(response: Response): Promise<T | undefined> {
-        await this.reNewRefreshToken(response);
         const contentType = response.headers.get("Content-Type");
         // Код 204 - запрос успешно выполнился, контента нет
         if (response.status === 204 || contentType === null) {
@@ -238,20 +198,6 @@ export class Http {
         throw new Error("Неподдерживаемый тип контента " + contentType);
     }
 
-    private async reNewRefreshToken(response: Response): Promise<void> {
-        const needToReNewRefreshToken = response.headers.get(this.NEED_TO_REFRESH_TOKEN_HEADER) === "true";
-        if (needToReNewRefreshToken) {
-            try {
-                const paramsInit = this.prepareRequestParams("GET", "/user/refresh-token/WEB", {options: null}, false);
-                const tokenResponse = await fetch(paramsInit.url, paramsInit.params);
-                const refreshToken = await tokenResponse.text();
-                this.localStorage.set(StoreKeys.REFRESH_TOKEN, refreshToken);
-            } catch (networkError) {
-                throw new Error("Не удалось выполнить запрос, повторите позже");
-            }
-        }
-    }
-
     /**
      * Возвращает пользовательские параметры, которые необходимо применить к запросу по умолчанию
      * @param params объект с параметрами для проверки и формирования заголовков к запросу по умолчанию
@@ -264,14 +210,9 @@ export class Http {
         if (!(params.body instanceof FormData)) {
             headers["Content-Type"] = "application/json;charset=UTF-8";
         }
-        headers[this.SOURCE_HEADER_KEY] = "WEB";
-        const token = this.localStorage.get(StoreKeys.TOKEN_KEY, null);
+        const token = this.localStorage.get("TOKEN_KEY", null);
         if (!CommonUtils.isBlank(token)) {
             headers.Authorization = `Bearer ${token}`;
-        }
-        const refreshToken = this.localStorage.get<string>(StoreKeys.REFRESH_TOKEN, null);
-        if (!CommonUtils.isBlank(refreshToken)) {
-            headers[StoreKeys.REFRESH_TOKEN] = refreshToken;
         }
         return {
             /** параметр передачи учетных данных в запросе */
@@ -289,7 +230,7 @@ export class Http {
     private async handleError(response: Response): Promise<any> {
         if (response.status === 401) {
             // при неавторизованном обращении отправляем пользователя на форму входа
-            this.localStorage.delete(StoreKeys.TOKEN_KEY);
+            this.localStorage.delete("TOKEN_KEY");
             window.location.assign(location.origin + location.pathname);
             throw new Error("Доступ запрещен");
         }
@@ -297,11 +238,6 @@ export class Http {
         let error: any = new Error("Внутренняя ошибка сервера");
         try {
             responseError = await response.json();
-            // кастомный тип с описанием ошибок и полями
-            const errorInfo = this.makeErrorInfo(responseError);
-            if (errorInfo) {
-                return errorInfo;
-            }
             if (responseError.message) {
                 error = new Error(responseError.message);
             }
@@ -313,13 +249,6 @@ export class Http {
             }
         } catch (e) {
             // пришел ответ, отличный от json
-        }
-        if (response.status === 403) {
-            // при запрете доступа отображаем соответствующий диалог
-            const reason = await this.makeForbiddenError(responseError);
-            if (reason) {
-                reason === ForbiddenCode.DEMO_MODE ? await new ForbiddenDialog().show() : await new BlockByTariffDialog().show(reason);
-            }
         }
         error.response = {
             status: response.status,
@@ -339,24 +268,6 @@ export class Http {
             out.push(encodeURIComponent(key) + "=" + encodeURIComponent(urlPrams[index]));
         });
         return out.join("&");
-    }
-
-    private makeErrorInfo(responseError: any): ErrorInfo {
-        if (CommonUtils.isUserError(responseError)) {
-            return responseError as ErrorInfo;
-        }
-        return null;
-    }
-
-    private async makeForbiddenError(response: any): Promise<ForbiddenCode> {
-        try {
-            if (response.message) {
-                return ForbiddenCode.valueByName(response.message);
-            }
-        } catch (e) {
-            // пришел ответ, отличный от json
-        }
-        return null;
     }
 }
 

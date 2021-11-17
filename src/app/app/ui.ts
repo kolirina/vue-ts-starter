@@ -22,8 +22,6 @@ export class UI extends Vue {
     private static eventBus = new Vue();
     /** Валидатор */
     $validator: Validator;
-    /** Состояние ui-элементов */
-    $uistate: UiStateHelper;
     /** Ошибки валидации */
     protected $errors: ErrorBag;
 

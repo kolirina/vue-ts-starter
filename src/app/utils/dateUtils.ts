@@ -167,7 +167,7 @@ export class DateUtils {
 }
 
 /**
- * Перечисление используемых форматов даты (см. {@link https://momentjs.com/docs/#/parsing/string-format/})
+ * Перечисление используемых форматов даты
  */
 export enum DateFormat {
     DATE = "DD.MM.YYYY",

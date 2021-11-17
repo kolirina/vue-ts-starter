@@ -1,8 +1,8 @@
 {
-  "name": "intelinvest-frontend",
+  "name": "stub-frontend",
   "version": "1.0.0",
   "private": true,
-  "description": "Frontend for intelinvest.ru",
+  "description": "Frontend stub",
   "main": "index.js",
   "scripts": {
     "tslint": "tslint --project tsconfig.json -r tslint.json",
@@ -12,34 +12,20 @@
   },
   "keywords": [],
   "author": {
-    "name": "Intelinvest Team",
-    "url": "https://bitbucket.org/intelinvestteam/intelinvest_frontend"
+    "name": "Stanislav Nedelko"
   },
   "license": "Apache-2.0",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.4.1",
-    "@sentry/browser": "^5.22.3",
-    "@sentry/integrations": "^5.22.3",
-    "@types/chroma-js": "^1.4.1",
-    "@types/highcharts": "^5.0.44",
-    "chroma-js": "^2.0.3",
     "dayjs": "^1.8.16",
-    "decimal.js": "^10.0.1",
     "font-awesome-animation": "^0.2.1",
-    "highcharts": "^6.2.0",
-    "imask": "^3.4.0",
     "typescript-ioc": "^1.2.5",
-    "v-clipboard": "^2.2.1",
     "vee-validate": "^2.1.7",
     "vue": "^2.6.10",
     "vue-class-component": "^7.1.0",
     "vue-content-loader": "^0.2.2",
     "vue-property-decorator": "^8.2.2",
-    "vue-qriously": "^1.1.1",
     "vue-router": "^3.1.3",
-    "vue-snotify": "^3.2.1",
-    "vue-tour": "^1.1.0",
-    "vuescroll": "^4.10.5",
     "vuetify": "^1.5.19",
     "vuex": "^3.1.1",
     "vuex-class": "^0.3.2"

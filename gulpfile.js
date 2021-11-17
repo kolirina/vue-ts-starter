@@ -22,13 +22,14 @@ const rename = require("gulp-rename");
 const notifier = require("node-notifier");
 const browserSync = require("browser-sync");
 const reload = browserSync.reload;
-const buildMode = MODES[args.env] || "development";
+const buildMode = MODES[args.env] || MODES.development;
 const env = require("gulp-env");
 env({
     vars: {
         NODE_ENV: buildMode,
     },
 });
+gutil.log("[gulp]", `build mode: ${buildMode}`);
 const webpackConfig = require("./webpack.config.js");
 // webpackConfig.watch = webpackConfig.mode === "development";
 
@@ -74,7 +75,8 @@ gulp.task("assets", () => {
     gulp.src("./src/assets/img/**/*.*")
         .pipe(gulp.dest(TARGET_DIR + "/img"));
 
-    gulp.src("./src/assets/js/**/*.*")
+    const jsFiles = ["./src/assets/js/**/*.*"];
+    gulp.src(jsFiles)
         .pipe(gulp.dest(TARGET_DIR + "/js"));
 
     gulp.src("./src/assets/fonts/**/*.*")
@@ -114,9 +116,8 @@ gulp.task("default", gulp.series("build", () => {
     browserSync.init({
         notify: false,
         open: false,
-        port: 3000,
-        // proxy: "localhost:8080",
-        proxy: "https://test.intelinvest.ru",
+        port: 3050,
+        proxy: "localhost:8080",
         serveStatic: [TARGET_DIR],
         ghostMode: false
     });

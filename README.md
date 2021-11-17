@@ -1,4 +1,4 @@
-# intelinvest frontend
+# frontend
 
 development mode with gulp
 В этом режиме запустится browserSync, по умолчанию порт 3000 и webpack с watch
