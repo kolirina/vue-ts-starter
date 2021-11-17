@@ -1,11 +1,8 @@
-import {Container} from "typescript-ioc";
 import Vue from "vue";
 import {AppFrame} from "./app/app/appFrame";
 import {UI} from "./app/app/ui";
 import {UIRegistry} from "./app/app/uiRegistry";
 import {RouterConfiguration} from "./app/router/routerConfiguration";
-import {EventType} from "./app/types/eventType";
-import {VuexConfiguration} from "./app/vuex/vuexConfiguration";
 
 /**
  * Запуск приложения
@@ -13,7 +10,7 @@ import {VuexConfiguration} from "./app/vuex/vuexConfiguration";
 export async function start(): Promise<void> {
     try {
         const errorHandler = (error: Error | string): void => {
-            UI.emit(EventType.HANDLE_ERROR, error);
+            UI.emit("HANDLE_ERROR", error);
             // логгируем ошибки только в prod-сборке
             if (!Vue.config.productionTip) {
                 // не логгируем в сентри пользовательские ошибки, например, о том что имя пользователя уже занято ошибка сети
@@ -27,8 +24,7 @@ export async function start(): Promise<void> {
         const router = RouterConfiguration.getRouter();
         // Обработчик _синхронных_ ошибок в lifecycle-хуках роутера
         router.onError(errorHandler);
-        const store = VuexConfiguration.getStore();
-        const app = new AppFrame({router, store});
+        const app = new AppFrame({router});
         app.$mount("#app");
     } catch (error) {
         console.error("ERROR WHILE INIT APPLICATION", error);

@@ -3,6 +3,7 @@ import VueRouter, {Route} from "vue-router";
 import {RouteConfig} from "vue-router/types/router";
 import {Resolver} from "../../../typings/vue";
 import {RouteMeta} from "../types/router/types";
+import {MainPage} from "../pages/mainPage";
 
 Vue.use(VueRouter);
 
@@ -32,18 +33,13 @@ export class RouterConfiguration {
     private static createRoutes(): RouteConfig[] {
         return [
             {
-                path: "/logout",
-                name: "logout",
-                beforeEnter: (): void => {
-                }
-            },
-            {
                 path: "*",
                 redirect: "/main"
             },
             {
                 name: "mainPage",
-                path: "/main"
+                path: "/main",
+                component: MainPage
             }
         ];
     }

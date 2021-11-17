@@ -5,7 +5,6 @@ import dayjs from "dayjs";
 import "dayjs/locale/ru";
 import Vue from "vue";
 import Vuetify from "vuetify";
-import {RU} from "../platform/locale/ru";
 
 export class UIRegistry {
 
@@ -15,7 +14,6 @@ export class UIRegistry {
     static init(): void {
         Vue.use(Vuetify, {
             lang: {
-                locales: {"ru": RU},
                 current: "ru"
             }
         });

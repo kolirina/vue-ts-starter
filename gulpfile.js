@@ -73,12 +73,6 @@ gulp.task("assets", () => {
         .pipe(reload({stream: true}));
 });
 
-gulp.task('version', function () {
-    return gulp.src(['index.html'])
-        .pipe(replace('$version', `${versionConfig.date}build${versionConfig.build}`))
-        .pipe(gulp.dest(TARGET_DIR));
-});
-
 // Компиляция SCSS
 gulp.task("css", () => {
     return gulp.src("./src/assets/scss/index.scss")
@@ -89,7 +83,7 @@ gulp.task("css", () => {
 });
 
 // Основной таск сборки
-gulp.task("build", gulp.parallel("scripts", "css", "assets", "version"));
+gulp.task("build", gulp.parallel("scripts", "css", "assets"));
 
 /** Таск с watch */
 gulp.task("default", gulp.series("build", () => {
