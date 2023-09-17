@@ -1,0 +1,198 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    /** Движку нужен проект TS для правил с типами */
+    "project": "tsconfig.json",
+    "tsconfigRootDir": "."
+  },
+  "env": {
+    /** Проект для браузера */
+    "browser": true,
+    "amd": true
+  },
+  "plugins": [
+    "@typescript-eslint",
+    "import",
+    "vuetify"
+  ],
+  "ignorePatterns": [
+    "**/*.d.ts",
+    "typings/typechain/",
+    "typings/typechain/*.ts",
+    "./typings/typechain/",
+    "./typings/typechain/*.ts"
+  ],
+  "extends": [
+    /** Базовый набор правил eslint */
+    "eslint:recommended",
+    /** Отключаем правила из базового набора */
+    "plugin:@typescript-eslint/eslint-recommended",
+    /** Базовые правила для TypeScript */
+    "plugin:@typescript-eslint/recommended",
+    /** Правила TS, требующие инфо о типах */
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    /** Правила для проверки импортов и экспортов */
+    "plugin:import/typescript"
+    //    "plugin:vue/base"
+  ],
+  "rules": {
+    /** Возвращаемый тип должен быть указан. TODO переключить на error и исправить все ошибки */
+    "@typescript-eslint/explicit-function-return-type": "off",
+    /** Разрешаем any */
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-this-alias": "off",
+    /** Разрешает кастовать типы через <any> а не 'as any' */
+    "@typescript-eslint/consistent-type-assertions": "off",
+    /** Схема расположения объектов как для java классов */
+    "@typescript-eslint/member-ordering": "off",
+    /** Отключаем обязательную заглавную букву I в названии интерфейсов */
+    "@typescript-eslint/interface-name": "off",
+    /** Явно типы указывать не нужно для переменных и для инициализируемых параметров */
+    "@typescript-eslint/no-inferrable-types": "off",
+    /** Запрещает создавать пустые функции */
+    "@typescript-eslint/no-empty-function": "off",
+    /** Запрещает создавать пустые интерфейсы */
+    "@typescript-eslint/no-empty-interface": "off",
+    /** Выключаем специальный разделитель внутри интерфейсов и типов */
+    "@typescript-eslint/member-delimiter-style": "off",
+    /** Разрешаем неиспользуемые переменные */
+    "@typescript-eslint/no-unused-vars": "off",
+    // Запрещаем ненужные конструкторы
+    "@typescript-eslint/no-useless-constructor": "error",
+    /** Разрешаем объявление переменных внутри блока switch case */
+    "no-case-declarations": "off",
+    /** Разрешает вызывать методы prototype (например hasOwnProperty) */
+    "no-prototype-builtins": "off",
+    /**=================================*/
+    "@typescript-eslint/no-floating-promises": "off",
+    "@typescript-eslint/no-unsafe-member-access": "off",
+    "@typescript-eslint/no-unnecessary-type-assertion": "off",
+    "@typescript-eslint/no-unsafe-assignment": "off",
+    "@typescript-eslint/no-unsafe-argument": "off",
+    "@typescript-eslint/no-misused-promises" : "off",
+    "@typescript-eslint/restrict-plus-operands": "off",
+    "@typescript-eslint/no-unsafe-call" : "off",
+    "@typescript-eslint/restrict-template-expressions": "off",
+    "@typescript-eslint/no-unsafe-return": "off",
+    "@typescript-eslint/ban-ts-comment": "off",
+    "@typescript-eslint/ban-types": "off",
+    "prefer-rest-params": "off",
+    "@typescript-eslint/await-thenable": "off",
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "no-useless-escape": "off",
+    /**=================================*/
+    /** По умолчанию public - модификатор доступа и его указывать не нужно */
+    "@typescript-eslint/explicit-member-accessibility": [
+      "error",
+      {
+        "accessibility": "no-public"
+      }
+    ],
+    /** Разрешаем использование до объявления */
+    "@typescript-eslint/no-use-before-define": "off",
+    /** Разрешаем внутри async функций не использовать await */
+    "@typescript-eslint/require-await": "off",
+    /** Отключаем проверку несвязанных методов */
+    "@typescript-eslint/unbound-method": "off",
+    /** Отключаем проверку на предпочитетельное использование Regexp */
+    "@typescript-eslint/prefer-regexp-exec": "off",
+    /** TODO проверить на ошибки */
+    "@typescript-eslint/typedef": [
+      "off",
+      {
+        "arrowParameter": false,
+        "variableDeclaration": true
+      }
+    ],
+    "@typescript-eslint/camelcase": "off",
+    /** Отключаем опцию, так как некорректно работает с !! */
+    "no-extra-boolean-cast": "off",
+    /** Отключаем опцию. TODO нужно проверить критичные места */
+    "require-atomic-updates": "off",
+    /** Отключаем обязательное расположение ключей по алфавиту */
+    "object-literal-sort-keys": "off",
+    /** Отключаем проверку на ненужные return await */
+    "no-return-await": "off",
+    /** Выключаем опцию, так как имеются глобальные импорты */
+    "no-undef": "off",
+    /** Максимальная длина строки - 160 символов. */
+    "max-len": [
+      "error",
+      {
+        "code": 240
+      }
+    ],
+    /** Разрешаем для определения строк использовать только двойные кавычки */
+    "quotes": [
+      "error",
+      "double",
+      {
+        "allowTemplateLiterals": true
+      }
+    ],
+    /** Определяем порядок импортов */
+    "import/order": [
+      "error",
+      {
+        "groups": [
+          "external",
+          "index",
+          [
+            "parent",
+            "sibling"
+          ],
+          "builtin",
+          "internal"
+        ]
+      }
+    ],
+    /** Разрешаем столько классов в одном файле, сколько требуется */
+    "max-classes-per-file": 0,
+    /** Отключаем экспорт класса по умолчанию */
+    "import/no-default-export": "off",
+    /** Разрешаем не указывать фигурные скобки для простых стрелочных функций */
+    "arrow-parens": 0,
+    /** Разрешаем декларирование стрелочных функций */
+    "func-style": [
+      "error",
+      "declaration",
+      {
+        "allowArrowFunctions": true
+      }
+    ],
+    /** Типизация объекта через <ObjectName>, а не через 'AS'. */
+    "no-angle-bracket-type-assertion": "off",
+    /** Разрешаем пустые блоки, они используются в заглушках и инициализациях */
+    "no-empty": 0,
+    /** Запрет пробелов в конце строк */
+    "no-trailing-spaces": "error",
+    /** Отключаем обязательное указание запятой после последнего элемента */
+    "trailing-comma": "off",
+    /** Краткий стиль указания свойств в JSON объекте делаем необязательным */
+    "object-literal-shorthand": "off",
+    /** Разрешаем указывать и типы и интерфейсы */
+    "interface-over-type-literal": "off",
+    /** Файл не должен заканчиваться символом переноса строки */
+    "eofline": "off",
+    /* Разрешаем расширять базовые правила нашими */
+    "curly": 1,
+    /** TODO не работает корректно с typescript */
+    "constructor-super": "off",
+    /** TODO не работает. Включаем camelCase нотацию для ts файлов */
+    //    "file-name-casing": [
+    //      true,
+    //      {
+    //        ".test.ts": "camel-case",
+    //        ".ts": "camel-case"
+    //      }
+    //    ],
+    /** Запрещается изменять аргументы функций */
+    "no-param-reassign": "error",
+    /** Ставим точку с запятой */
+    "semi": [
+      "warn",
+      "always"
+    ]
+    //    "vuetify/no-deprecated-classes": "error"
+  }
+}

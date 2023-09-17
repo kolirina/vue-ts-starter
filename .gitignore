@@ -1,5 +1,11 @@
+intelinvest/dist/
+fincake-app/dist/
 dist/
 node_modules/
 yarn-error.log
 .idea/
 /build/*
+*.iml
+# логотипы загружаются отдельно
+/intelinvest/src/assets/img/logos
+.scannerwork/

@@ -1,0 +1,10 @@
+node_modules/
+dist/
+intelinvest/dist/
+intelinvest/node_modules/
+fincake/dist/
+fincake/node_modules/
+.idea
+.gitlab
+.vscode
+.git
