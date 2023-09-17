@@ -1,0 +1,32 @@
+{
+    "compilerOptions": {
+        "outDir": "./built/",
+        "sourceMap": true,
+        "strict": true,
+        "module": "es2015",
+        "moduleResolution": "node",
+        "target": "ES2019",
+        "experimentalDecorators": true,
+        "allowSyntheticDefaultImports": true,
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
+        // добавлено1
+        //        "declaration": true,
+        //        "noImplicitAny": false,
+        //        "noImplicitReturns": true,
+
+        "emitDecoratorMetadata": true,
+        "preserveConstEnums": true,
+        //        "noResolve": true,
+        "strictNullChecks": false,
+        "composite": true,
+        "declaration": true,
+        "declarationMap": true, // enables importers to jump to source
+    },
+    "include": [
+        "./src/**/*",
+        "./typings"
+    ]
+}
