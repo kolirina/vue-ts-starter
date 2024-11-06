@@ -1,10 +1,11 @@
 import { Component, Vue } from "vue-property-decorator";
+import "../../assets/scss/index.scss";
 
 @Component({
   template: `
     <v-container fluid class="selectable">
       <template v-if="events.length > 0">
-        <h2>Events page events size: {{ events.length }}</h2>
+        <h2>Events</h2>
 
         <table
           class="events-table"
@@ -30,27 +31,32 @@ import { Component, Vue } from "vue-property-decorator";
                   @change="toggleSelection(index, $event)"
                 />
               </td>
-              <td>{{ event.date }}</td>
-              <td>{{ event.totalAmount }}</td>
-              <td>{{ event.quantity }}</td>
-              <td>{{ event.label }}</td>
-              <td>{{ event.comment }}</td>
-              <td>{{ event.period }}</td>
+              <td @click="goToEventDetail(event, index)">{{ event.date }}</td>
+              <td @click="goToEventDetail(event, index)">
+                {{ event.totalAmount }}
+              </td>
+              <td @click="goToEventDetail(event, index)">
+                {{ event.quantity }}
+              </td>
+              <td @click="goToEventDetail(event, index)">{{ event.label }}</td>
+              <td @click="goToEventDetail(event, index)">
+                {{ event.comment }}
+              </td>
+              <td @click="goToEventDetail(event, index)">{{ event.period }}</td>
             </tr>
           </tbody>
         </table>
 
+        <div v-if="selectedTotals" class="selectedTotals">
+          <h3>Сумма по выбранным событиям:</h3>
+          <p>{{ selectedTotals }}</p>
+        </div>
         <button
           @click="showSelectedTotals"
           :disabled="selectedEvents.length === 0"
         >
           Показать выбранные
         </button>
-
-        <div v-if="selectedTotals">
-          <h3>Сумма по выбранным событиям:</h3>
-          <p>{{ selectedTotals }}</p>
-        </div>
       </template>
 
       <template v-else>
@@ -61,7 +67,7 @@ import { Component, Vue } from "vue-property-decorator";
 })
 export default class EventsPage extends Vue {
   private events: any[] = [];
-  private selectedEvents: number[] = []; // Массив для хранения индексов выбранных событий
+  private selectedEvents: number[] = [];
   private selectedTotals: string | null = null;
 
   // Асинхронная загрузка событий при создании компонента
@@ -84,25 +90,20 @@ export default class EventsPage extends Vue {
     }
   }
 
-  // Проверяем, выбран ли конкретный элемент
   isEventSelected(index: number): boolean {
     return this.selectedEvents.includes(index);
   }
 
-  // Обрабатываем изменение чекбокса
   toggleSelection(index: number, event: Event) {
-    event.stopPropagation(); // Останавливаем всплытие события
+    event.stopPropagation();
     const eventIndex = this.selectedEvents.indexOf(index);
     if (eventIndex > -1) {
-      // Если элемент уже выбран, снимаем выбор
       this.selectedEvents.splice(eventIndex, 1);
     } else {
-      // Если элемент не выбран, добавляем в массив
       this.selectedEvents.push(index);
     }
   }
 
-  // Метод для суммирования выбранных событий по типам
   showSelectedTotals() {
     const selectedEventsData = this.events.filter((_, index) =>
       this.selectedEvents.includes(index)
@@ -120,5 +121,13 @@ export default class EventsPage extends Vue {
     this.selectedTotals = Object.entries(totals)
       .map(([type, total]) => `${type}: ${total}`)
       .join(", ");
+  }
+
+  goToEventDetail(event: any, index: number) {
+    const eventDetails = JSON.stringify(event);
+    this.$router.push({
+      name: "event-detail",
+      params: { eventData: eventDetails },
+    });
   }
 }
