@@ -22,12 +22,12 @@ import { Component, Vue } from "vue-property-decorator";
             </tr>
           </thead>
           <tbody>
-            <tr v-for="event in events" :key="event.id">
+            <tr v-for="(event, index) in events" :key="index">
               <td>
                 <input
                   type="checkbox"
-                  :checked="isEventSelected(event.id)"
-                  @change="toggleSelection(event.id, $event)"
+                  :checked="isEventSelected(index)"
+                  @change="toggleSelection(index, $event)"
                 />
               </td>
               <td>{{ event.date }}</td>
@@ -61,9 +61,10 @@ import { Component, Vue } from "vue-property-decorator";
 })
 export default class EventsPage extends Vue {
   private events: any[] = [];
-  private selectedEvents: Set<number> = new Set();
+  private selectedEvents: number[] = []; // Массив для хранения индексов выбранных событий
   private selectedTotals: string | null = null;
 
+  // Асинхронная загрузка событий при создании компонента
   async created(): Promise<void> {
     const params = {
       method: "GET",
@@ -83,22 +84,28 @@ export default class EventsPage extends Vue {
     }
   }
 
-  isEventSelected(eventId: number): boolean {
-    return this.selectedEvents.has(eventId);
+  // Проверяем, выбран ли конкретный элемент
+  isEventSelected(index: number): boolean {
+    return this.selectedEvents.includes(index);
   }
 
-  toggleSelection(eventId: number, event: Event) {
-    event.stopPropagation();
-    if (this.selectedEvents.has(eventId)) {
-      this.selectedEvents.delete(eventId);
+  // Обрабатываем изменение чекбокса
+  toggleSelection(index: number, event: Event) {
+    event.stopPropagation(); // Останавливаем всплытие события
+    const eventIndex = this.selectedEvents.indexOf(index);
+    if (eventIndex > -1) {
+      // Если элемент уже выбран, снимаем выбор
+      this.selectedEvents.splice(eventIndex, 1);
     } else {
-      this.selectedEvents.add(eventId);
+      // Если элемент не выбран, добавляем в массив
+      this.selectedEvents.push(index);
     }
   }
 
+  // Метод для суммирования выбранных событий по типам
   showSelectedTotals() {
-    const selectedEventsData = this.events.filter((event) =>
-      this.selectedEvents.has(event.id)
+    const selectedEventsData = this.events.filter((_, index) =>
+      this.selectedEvents.includes(index)
     );
 
     const totals: { [key: string]: number } = {};
@@ -107,7 +114,7 @@ export default class EventsPage extends Vue {
       if (!totals[event.type]) {
         totals[event.type] = 0;
       }
-      totals[event.type] += event.totalAmount;
+      totals[event.type] += Number(event.totalAmount.split(" ")[1]);
     });
 
     this.selectedTotals = Object.entries(totals)
