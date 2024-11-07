@@ -3,5 +3,9 @@
   "workspaces": [
     "platform",
     "intelinvest"
-  ]
+  ],
+  "devDependencies": {
+    "sass": "^1.32.0",
+    "sass-loader": "^10.1.1"
+  }
 }
