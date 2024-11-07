@@ -123,7 +123,7 @@ export default class EventsPage extends Vue {
       .join(", ");
   }
 
-  goToEventDetail(event: any, index: number) {
+  goToEventDetail(event: any, id: number) {
     const eventDetails = JSON.stringify(event);
     this.$router.push({
       name: "event-detail",
