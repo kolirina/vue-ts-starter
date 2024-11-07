@@ -44,7 +44,7 @@ export class RouterConfiguration {
       },
       {
         name: "event-detail",
-        path: "/event-detail",
+        path: "/event-detail/:id",
         component: EventDetailPage,
         meta: {
           title: "Детали события",

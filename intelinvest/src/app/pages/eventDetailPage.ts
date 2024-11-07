@@ -23,9 +23,12 @@ export default class EventDetailPage extends Vue {
   private event: any = null;
 
   created() {
-    const eventData = this.$route.params.eventData;
+    const eventData = this.$route.query.eventData;
     if (eventData) {
-      this.event = JSON.parse(eventData);
+      const eventDataString = Array.isArray(eventData)
+        ? eventData[0]
+        : eventData;
+      this.event = JSON.parse(eventDataString);
     }
   }
   goToEvents() {

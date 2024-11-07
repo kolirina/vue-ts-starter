@@ -127,7 +127,8 @@ export default class EventsPage extends Vue {
     const eventDetails = JSON.stringify(event);
     this.$router.push({
       name: "event-detail",
-      params: { eventData: eventDetails },
+      params: { id: String(id) },
+      query: { eventData: eventDetails },
     });
   }
 }
