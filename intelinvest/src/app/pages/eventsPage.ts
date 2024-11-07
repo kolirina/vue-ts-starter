@@ -1,5 +1,6 @@
 import { Component, Vue } from "vue-property-decorator";
 import "../../assets/scss/index.scss";
+import { EventType } from "../types/eventType";
 
 @Component({
   template: `
@@ -66,7 +67,7 @@ import "../../assets/scss/index.scss";
   `,
 })
 export default class EventsPage extends Vue {
-  private events: any[] = [];
+  private events: EventType[] = [];
   private selectedEvents: number[] = [];
   private selectedTotals: string | null = null;
 
@@ -123,7 +124,7 @@ export default class EventsPage extends Vue {
       .join(", ");
   }
 
-  goToEventDetail(event: any, id: number) {
+  goToEventDetail(event: EventType, id: number) {
     const eventDetails = JSON.stringify(event);
     this.$router.push({
       name: "event-detail",

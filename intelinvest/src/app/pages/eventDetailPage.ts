@@ -1,4 +1,5 @@
 import { Component, Vue } from "vue-property-decorator";
+import { EventType } from "../types/eventType";
 
 @Component({
   template: `
@@ -20,7 +21,7 @@ import { Component, Vue } from "vue-property-decorator";
   `,
 })
 export default class EventDetailPage extends Vue {
-  private event: any = null;
+  private event: EventType = null;
 
   created() {
     const eventData = this.$route.query.eventData;
